@@ -21,21 +21,21 @@ jobs:
         run: |
           node -e '
           const execSync = require("child_process").execSync;
+          const fs = require("fs");
           const commitMessage = execSync("git log -1 --pretty=%B").toString("utf-8");
           const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
           const match = commitMessage.match(semverRegex);
           if (match) {
-            execSync(`echo "version=${match[1]}" >> $GITHUB_ENV`);
+            # execSync(`echo "version=${match[1]}" >> $GITHUB_ENV`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `version=${version}\n`);
           } else {
             console.log("No SemVer found in commit body.");
             process.exit(0);
           }
           '
-        env:
-          commit_message: ${{ steps.get_commit_message.outputs.message }}
 
       - name: Create a new tag
-        if: steps.extract_semver.outputs.version
+        if: steps.extract_semver.env.version
         run: |
           git tag ${{ steps.extract_semver.outputs.version }}
           git push origin ${{ steps.extract_semver.outputs.version }}
