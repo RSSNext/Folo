@@ -26,7 +26,6 @@ jobs:
           const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
           const match = commitMessage.match(semverRegex);
           if (match) {
-            // execSync(`echo "version=${match[1]}" >> $GITHUB_ENV`);
             fs.appendFileSync(process.env.GITHUB_ENV, `tag_version=${match[1]}\n`);
           } else {
             console.log("No SemVer found in commit body.");
