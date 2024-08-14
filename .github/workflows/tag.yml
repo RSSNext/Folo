@@ -18,15 +18,18 @@ jobs:
       - name: Get last commit message
         id: get_commit_message
         run: |
-          message=$(git log -1 --pretty=format:'%B' | jq -R .)
-          echo "message=$message" >> $GITHUB_ENV
+          message=$(git log -1 --pretty=%B)
+          encoded_message=$(echo "$message" | base64)
+          echo "encoded_message=$encoded_message" >> $GITHUB_ENV
 
       - name: Extract SemVer using Node.js
         id: extract_semver
         run: |
-          export commit_message="${{ steps.get_commit_message.outputs.message }}"
+          export encoded_message="${{ steps.get_commit_message.outputs.encoded_message }}"
           node -e '
-          const commitMessage = process.env.commit_message;
+          console.log(process.env.encoded_message);
+          const commitMessage = Buffer.from(process.env.encoded_message, 'base64');
+          console.log(commitMessage);
           const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
           const match = commitMessage.match(semverRegex);
           if (match) {
