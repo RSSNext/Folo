@@ -7,6 +7,10 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag_version:
+        description: "Tag Version"
+        required: true
   workflow_run:
     workflows: ["Tag on SemVer Commit"]
     types:
@@ -92,7 +96,7 @@ jobs:
             out/make/**/*.dmg
           retention-days: 90
       - run: npx changelogithub
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || github.event.inputs.tag_version != ''
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -100,7 +104,7 @@ jobs:
         id: version
         uses: ./.github/actions/setup-version
       - name: Create Release Draft
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || github.event.inputs.tag_version != ''
         uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.version.outputs.APP_VERSION }}
