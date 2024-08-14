@@ -2,6 +2,10 @@ name: Build
 
 on:
   push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
   workflow_dispatch:
   repository_dispatch:
     types: [build]
