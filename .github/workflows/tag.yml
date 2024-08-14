@@ -25,7 +25,6 @@ jobs:
       - name: Extract SemVer using Node.js
         id: extract_semver
         run: |
-          export encoded_message="${{ steps.get_commit_message.outputs.encoded_message }}"
           node -e '
           console.log(process.env.encoded_message);
           const commitMessage = Buffer.from(process.env.encoded_message, "base64").toString("utf-8");
