@@ -162,6 +162,7 @@
     "fake-indexeddb": "6.0.0",
     "hono": "4.4.7",
     "lint-staged": "15.2.9",
+    "nbump": "1.5.11",
     "postcss": "8.4.41",
     "postcss-js": "4.0.1",
     "react": "^18.3.1",
@@ -192,6 +193,17 @@
   },
   "lint-staged": {
     "*": "eslint --fix"
+  },
+  "bump": {
+    "before": [
+      "git pull --rebase"
+    ],
+    "after": [
+      "gh pr create --title 'chore: Release v${NEW_VERSION}' --base main --head dev"
+    ],
+    "commit_message": "chore(release): release v${NEW_VERSION}",
+    "tag": false,
+    "changelog": true
   },
   "productName": "Follow"
 }
