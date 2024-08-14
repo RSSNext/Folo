@@ -28,7 +28,7 @@ jobs:
           export encoded_message="${{ steps.get_commit_message.outputs.encoded_message }}"
           node -e '
           console.log(process.env.encoded_message);
-          const commitMessage = Buffer.from(process.env.encoded_message, "base64");
+          const commitMessage = Buffer.from(process.env.encoded_message, "base64").toString("utf-8");
           console.log(commitMessage);
           const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
           const match = commitMessage.match(semverRegex);
