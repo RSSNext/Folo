@@ -20,7 +20,7 @@ jobs:
         run: |
           message=$(git log -1 --pretty=%B)
           encoded_message=$(echo "$message" | base64)
-          echo "encoded_message=$encoded_message" >> $GITHUB_ENV
+          printf "encoded_message=%s" "$encoded_message" >> $GITHUB_ENV
 
       - name: Extract SemVer using Node.js
         id: extract_semver
