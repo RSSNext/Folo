@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [111.11.1](https://github.com/RSSNext/follow/compare/v0.0.1-alpha.4...v111.11.1) (2024-08-14)
+## [111.11.3](https://github.com/RSSNext/follow/compare/v0.0.1-alpha.4...v111.11.3) (2024-08-14)
 
 
 
