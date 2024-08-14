@@ -39,5 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
           git tag ${{ env.tag_version }}
           git push origin ${{ env.tag_version }}
