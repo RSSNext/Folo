@@ -1,0 +1,34 @@
+on:
+  push:
+    branches: [main]
+
+name: Create Release Tag
+
+jobs:
+  create_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get last commit message
+        id: get_commit_message
+        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+
+      - name: Extract SemVer from commit body
+        id: extract_semver
+        run: |
+          commit_message="${{ steps.get_commit_message.outputs.message }}"
+          semver_regex="chore: Release (v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-.]+)?)"
+          if [[ "$commit_message" =~ $semver_regex ]]; then
+            echo "::set-output name=version::${BASH_REMATCH[1]}"
+          else
+            echo "No SemVer found in commit body."
+            exit 0
+          fi
+
+      - name: Create a new tag
+        if: steps.extract_semver.outputs.version
+        run: |
+          git tag ${{ steps.extract_semver.outputs.version }}
+          git push origin ${{ steps.extract_semver.outputs.version }}
