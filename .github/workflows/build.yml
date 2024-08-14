@@ -3,7 +3,8 @@ name: Build
 on:
   push:
   workflow_dispatch:
-
+  repository_dispatch:
+    types: [build]
 env:
   VITE_WEB_URL: ${{ vars.VITE_WEB_URL }}
   VITE_API_URL: ${{ vars.VITE_API_URL }}

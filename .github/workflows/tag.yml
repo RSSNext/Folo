@@ -39,3 +39,12 @@ jobs:
         run: |
           git tag ${{ env.tag_version }}
           git push origin ${{ env.tag_version }}
+
+      - name: Trigger Build Workflow
+        if: ${{ env.tag_version }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"event_type": "build"}' \
+            https://api.github.com/repos/innei/follow/dispatches
