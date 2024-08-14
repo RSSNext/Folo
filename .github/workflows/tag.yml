@@ -17,8 +17,9 @@ jobs:
           node-version: 22
       - name: Get last commit message
         id: get_commit_message
-        # run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
-        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+        run: |
+          message=$(git log -1 --pretty=format:'%B' | jq -R .)
+          echo "message=$message" >> $GITHUB_ENV
 
       - name: Extract SemVer using Node.js
         id: extract_semver
