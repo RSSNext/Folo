@@ -7,8 +7,10 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-  repository_dispatch:
-    types: [build]
+  workflow_run:
+    workflows: ["Tag on SemVer Commit"]
+    types:
+      - completed
 env:
   VITE_WEB_URL: ${{ vars.VITE_WEB_URL }}
   VITE_API_URL: ${{ vars.VITE_API_URL }}
