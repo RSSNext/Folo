@@ -27,7 +27,7 @@ jobs:
           const match = commitMessage.match(semverRegex);
           if (match) {
             // execSync(`echo "version=${match[1]}" >> $GITHUB_ENV`);
-            fs.appendFileSync(process.env.GITHUB_ENV, `version=${version}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `tag_version=${match[1]}\n`);
           } else {
             console.log("No SemVer found in commit body.");
             process.exit(0);
@@ -35,7 +35,7 @@ jobs:
           '
 
       - name: Create a new tag
-        if: steps.extract_semver.env.version
+        if: ${{ env.tag_version }}
         run: |
-          git tag ${{ steps.extract_semver.outputs.version }}
-          git push origin ${{ steps.extract_semver.outputs.version }}
+          git tag ${{ env.tag_version }}
+          git push origin ${{ env.tag_version }}
