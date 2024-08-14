@@ -203,7 +203,10 @@
     ],
     "commit_message": "chore(release): release v${NEW_VERSION}",
     "tag": false,
-    "changelog": true
+    "changelog": true,
+    "allowed_branches": [
+      "dev"
+    ]
   },
   "productName": "Follow"
 }
