@@ -1,8 +1,9 @@
+name: Tag on SemVer Commit
+
 on:
   push:
-    branches: [main]
-
-name: Create Release Tag
+    branches:
+      - main
 
 jobs:
   create_tag:
@@ -10,22 +11,31 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Get last commit message
         id: get_commit_message
         run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
 
-      - name: Extract SemVer from commit body
+      - name: Extract SemVer using Node.js
         id: extract_semver
         run: |
-          commit_message="${{ steps.get_commit_message.outputs.message }}"
-          semver_regex="chore: Release (v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-.]+)?)"
-          if [[ "$commit_message" =~ $semver_regex ]]; then
-            echo "::set-output name=version::${BASH_REMATCH[1]}"
-          else
-            echo "No SemVer found in commit body."
-            exit 0
-          fi
+          export commit_message="${{ steps.get_commit_message.outputs.message }}"
+          node -e '
+          const commitMessage = process.env.commit_message;
+          const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
+          const match = commitMessage.match(semverRegex);
+          if (match) {
+            console.log(`::set-output name=version::${match[1]}`);
+          } else {
+            console.log("No SemVer found in commit body.");
+            process.exit(0);
+          }
+          '
+        env:
+          commit_message: ${{ steps.get_commit_message.outputs.message }}
 
       - name: Create a new tag
         if: steps.extract_semver.outputs.version
