@@ -199,7 +199,7 @@
       "git pull --rebase"
     ],
     "after": [
-      "gh pr create --title 'chore: Release v${NEW_VERSION}' --base main --head dev"
+      "gh pr create --title 'chore: Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head dev"
     ],
     "commit_message": "chore(release): release v${NEW_VERSION}",
     "tag": false,
