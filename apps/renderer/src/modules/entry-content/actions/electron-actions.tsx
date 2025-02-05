@@ -14,6 +14,7 @@ import {
   ReadabilityStatus,
   useEntryInReadabilityStatus,
 } from "~/atoms/readability"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { shortcuts } from "~/constants/shortcuts"
 import { useEntryReadabilityToggle } from "~/hooks/biz/useEntryActions"
 import { tipcClient } from "~/lib/client"
@@ -50,6 +51,7 @@ export const ElectronAdditionActions = IN_ELECTRON
       })
 
       const [ttsLoading, setTtsLoading] = useState(false)
+      const voice = useGeneralSettingKey("voice")
 
       if (!populatedEntry) return null
 
@@ -70,7 +72,8 @@ export const ElectronAdditionActions = IN_ELECTRON
             } else {
               const filePath = await tipcClient?.tts({
                 id: populatedEntry.entries.id,
-                text: (await parseHtml(populatedEntry.entries.content)).toText(),
+                text: parseHtml(populatedEntry.entries.content).toText(),
+                voice,
               })
               if (filePath) {
                 AudioPlayer.mount({

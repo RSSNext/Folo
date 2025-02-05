@@ -44,6 +44,10 @@ class ListServiceStatic implements Hydratable, Resetable {
       })
       .where(eq(listsTable.id, params.listId))
   }
+
+  async deleteList(params: { listId: string }) {
+    await db.delete(listsTable).where(eq(listsTable.id, params.listId))
+  }
 }
 
 export const ListService = new ListServiceStatic()

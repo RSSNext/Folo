@@ -146,13 +146,13 @@ export function ListItem({
         >
           {entry.entries.title ? (
             <EntryTranslation
-              className={cn("break-all", lineClamp.title)}
+              className={cn("hyphens-auto", lineClamp.title)}
               source={entry.entries.title}
               target={translation?.title}
             />
           ) : (
             <EntryTranslation
-              className={cn("break-all", lineClamp.description)}
+              className={cn("hyphens-auto", lineClamp.description)}
               source={entry.entries.description}
               target={translation?.description}
             />

@@ -6,7 +6,12 @@ import { useCallback } from "react"
 import { getFeed } from "../feed/getter"
 import { getList } from "../list/getters"
 import { getUnreadCount } from "../unread/getter"
-import { getSubscription, getSubscriptionByCategory, getSubscriptionByView } from "./getter"
+import {
+  getFeedSubscriptionByView,
+  getSubscription,
+  getSubscriptionByCategory,
+  getSubscriptionByView,
+} from "./getter"
 import { subscriptionSyncService, useSubscriptionStore } from "./store"
 
 export const usePrefetchSubscription = (view: FeedViewType) => {
@@ -40,6 +45,10 @@ const sortUngroupedSubscriptionByAlphabet = (
 
 export const useSubscriptionByView = (view: FeedViewType) => {
   return useSubscriptionStore(useCallback(() => getSubscriptionByView(view), [view]))
+}
+
+export const useFeedSubscriptionByView = (view: FeedViewType) => {
+  return useSubscriptionStore(useCallback(() => getFeedSubscriptionByView(view), [view]))
 }
 
 export const useGroupedSubscription = (view: FeedViewType) => {
@@ -135,6 +144,19 @@ export const useSortedUngroupedSubscription = (
         return sortOrder === "asc" ? result : -result
       })
     }, [ids, sortBy, sortOrder]),
+  )
+}
+
+export const useSortedFeedSubscriptionByAlphabet = (ids: string[]) => {
+  return useSubscriptionStore(
+    useCallback(() => {
+      return ids.sort((a, b) => {
+        const leftFeed = getFeed(a)
+        const rightFeed = getFeed(b)
+        if (!leftFeed || !rightFeed) return 0
+        return sortByAlphabet(leftFeed.title!, rightFeed.title!)
+      })
+    }, [ids]),
   )
 }
 

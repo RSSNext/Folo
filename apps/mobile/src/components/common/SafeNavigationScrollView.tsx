@@ -1,8 +1,9 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
-import { useHeaderHeight } from "@react-navigation/elements"
+import { Header, useHeaderHeight } from "@react-navigation/elements"
+import type { NativeStackNavigationOptions } from "@react-navigation/native-stack"
 import { router, Stack, useNavigation } from "expo-router"
 import type { FC, PropsWithChildren } from "react"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useRef } from "react"
 import type { ScrollViewProps } from "react-native"
 import {
   Animated as RNAnimated,
@@ -11,10 +12,12 @@ import {
   useAnimatedValue,
   View,
 } from "react-native"
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
+import { useDefaultHeaderHeight } from "@/src/hooks/useDefaultHeaderHeight"
 import { MingcuteLeftLineIcon } from "@/src/icons/mingcute_left_line"
 
 import { AnimatedScrollView } from "./AnimatedComponents"
@@ -28,7 +31,7 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
   withTopInset?: boolean
   withBottomInset?: boolean
 } & PropsWithChildren
-const NavigationContext = createContext<{
+export const NavigationContext = createContext<{
   scrollY: RNAnimated.Value
 } | null>(null)
 
@@ -66,10 +69,16 @@ export const SafeNavigationScrollView: FC<SafeNavigationScrollViewProps> = ({
   )
 }
 
-export interface NavigationBlurEffectHeaderProps {
-  title?: string
-}
-export const NavigationBlurEffectHeader = (props: NavigationBlurEffectHeaderProps) => {
+export const NavigationBlurEffectHeader = ({
+  blurThreshold = 0,
+  headerHideableBottomHeight = 50,
+  headerHideableBottom,
+  ...props
+}: NativeStackNavigationOptions & {
+  blurThreshold?: number
+  headerHideableBottomHeight?: number
+  headerHideableBottom?: () => React.ReactNode
+}) => {
   const label = useColor("label")
 
   const canBack = useNavigation().canGoBack()
@@ -78,30 +87,57 @@ export const NavigationBlurEffectHeader = (props: NavigationBlurEffectHeaderProp
 
   const border = useColor("opaqueSeparator")
 
-  const [opacity, setOpacity] = useState(0)
+  const opacityAnimated = useSharedValue(0)
+
+  const originalDefaultHeaderHeight = useDefaultHeaderHeight()
+  const largeDefaultHeaderHeight = originalDefaultHeaderHeight + headerHideableBottomHeight
+
+  const largeHeaderHeight = useSharedValue(largeDefaultHeaderHeight)
+
+  const lastScrollY = useRef(0)
 
   useEffect(() => {
     const id = scrollY.addListener(({ value }) => {
-      setOpacity(Math.min(1, Math.max(0, Math.min(1, value / 10))))
+      opacityAnimated.value = Math.max(0, Math.min(1, (value + blurThreshold) / 10))
+      if (headerHideableBottom && value > 0) {
+        if (value > lastScrollY.current) {
+          largeHeaderHeight.value = withTiming(originalDefaultHeaderHeight)
+        } else {
+          largeHeaderHeight.value = withTiming(largeDefaultHeaderHeight)
+        }
+        lastScrollY.current = value
+      }
     })
 
     return () => {
       scrollY.removeListener(id)
     }
-  }, [scrollY])
+  }, [
+    blurThreshold,
+    scrollY,
+    headerHideableBottom,
+    largeHeaderHeight,
+    originalDefaultHeaderHeight,
+    largeDefaultHeaderHeight,
+    opacityAnimated,
+  ])
+
+  const style = useAnimatedStyle(() => ({
+    opacity: opacityAnimated.value,
+    ...StyleSheet.absoluteFillObject,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: border,
+  }))
+
+  const hideableBottom = headerHideableBottom?.()
 
   return (
     <Stack.Screen
       options={{
         headerBackground: () => (
-          <ThemedBlurView
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              opacity,
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              borderBottomColor: border,
-            }}
-          />
+          <Animated.View style={style}>
+            <ThemedBlurView className="flex-1" />
+          </Animated.View>
         ),
         headerTransparent: true,
 
@@ -112,7 +148,22 @@ export const NavigationBlurEffectHeader = (props: NavigationBlurEffectHeaderProp
               </TouchableOpacity>
             )
           : undefined,
-        title: props.title,
+
+        header: headerHideableBottom
+          ? ({ options }) => {
+              return (
+                <Animated.View style={{ height: largeHeaderHeight }} className="overflow-hidden">
+                  <View pointerEvents="box-none" style={[StyleSheet.absoluteFill]}>
+                    {options.headerBackground?.()}
+                  </View>
+                  <Header title={options.title ?? ""} {...options} headerBackground={() => null} />
+                  {hideableBottom}
+                </Animated.View>
+              )
+            }
+          : undefined,
+
+        ...props,
       }}
     />
   )

@@ -20,7 +20,7 @@ export const LoadingIndicator: FC<
     color?: string
     className?: string
   } & PropsWithChildren
-> = ({ size = 60, color, children, className }) => {
+> = ({ size = 36, color, children, className }) => {
   const rotateValue = useSharedValue(0)
 
   const rotation = useDerivedValue(() => {

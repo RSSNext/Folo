@@ -37,6 +37,7 @@ export function DropdownMenu<T>({
           : options.map((option) => ({
               title: option.label,
               selected: option.value === currentValue,
+              disabled: option.value === currentValue,
             }))
       }
       onPress={(e) => {

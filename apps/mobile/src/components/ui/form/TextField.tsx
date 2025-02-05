@@ -7,25 +7,36 @@ import { accentColor } from "@/src/theme/colors"
 
 import { FormLabel } from "./Label"
 
-interface TextFieldProps {
+interface BaseFieldProps {
   wrapperClassName?: string
   wrapperStyle?: StyleProp<ViewStyle>
-
   label?: string
   description?: string
   required?: boolean
+
+  inputPostfixElement?: React.ReactNode
 }
 
-export const TextField = forwardRef<TextInput, TextInputProps & TextFieldProps>(
+const BaseField = forwardRef<TextInput, TextInputProps & BaseFieldProps>(
   (
-    { className, style, wrapperClassName, wrapperStyle, label, description, required, ...rest },
+    {
+      className,
+      style,
+      wrapperClassName,
+      wrapperStyle,
+      label,
+      description,
+      required,
+      inputPostfixElement,
+      ...rest
+    },
     ref,
   ) => {
     return (
-      <>
-        {!!label && <FormLabel className="pl-1" label={label} optional={!required} />}
+      <View className="flex-1">
+        {!!label && <FormLabel className="pl-2.5" label={label} optional={!required} />}
         {!!description && (
-          <Text className="text-secondary-label mb-1 pl-1 text-sm">{description}</Text>
+          <Text className="text-secondary-label mb-1 pl-2.5 text-sm">{description}</Text>
         )}
         <View
           className={cn(
@@ -37,15 +48,41 @@ export const TextField = forwardRef<TextInput, TextInputProps & TextFieldProps>(
           <TextInput
             selectionColor={accentColor}
             ref={ref}
-            className={cn("text-text placeholder:text-secondary-label w-full flex-1", className)}
+            className={cn("text-label placeholder:text-secondary-label w-full flex-1", className)}
             style={StyleSheet.flatten([styles.textField, style])}
             {...rest}
           />
+          {inputPostfixElement}
         </View>
-      </>
+      </View>
     )
   },
 )
+
+export const TextField = forwardRef<TextInput, TextInputProps & BaseFieldProps>((props, ref) => (
+  <BaseField {...props} ref={ref} />
+))
+
+interface NumberFieldProps extends BaseFieldProps {
+  value?: number
+  onChangeNumber?: (value: number) => void
+  defaultValue?: number
+}
+
+export const NumberField = forwardRef<
+  TextInput,
+  Omit<TextInputProps, "keyboardType" | "value" | "onChangeText" | "defaultValue"> &
+    NumberFieldProps
+>(({ value, onChangeNumber, defaultValue, ...rest }, ref) => (
+  <BaseField
+    {...rest}
+    ref={ref}
+    keyboardType="number-pad"
+    value={value?.toString()}
+    onChangeText={(text) => onChangeNumber?.(Math.min(Number(text), Number.MAX_SAFE_INTEGER))}
+    defaultValue={defaultValue?.toString()}
+  />
+))
 
 const styles = StyleSheet.create({
   textField: {

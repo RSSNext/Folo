@@ -10,4 +10,7 @@ export type SettingsStackParamList = {
   Feeds: undefined
   Privacy: undefined
   About: undefined
+  ManageList: {
+    id: string
+  }
 }

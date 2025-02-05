@@ -8,6 +8,7 @@ import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { SubscriptionFeedCategoryContextMenu } from "../context-menu/feeds"
+import { closeDrawer, selectFeed } from "../feed-drawer/atoms"
 import { GroupedContext, useViewPageCurrentView } from "./ctx"
 import { ItemSeparator } from "./ItemSeparator"
 import { UnGroupedList } from "./UnGroupedList"
@@ -21,6 +22,7 @@ import { UnGroupedList } from "./UnGroupedList"
 //   })
 // }
 export const CategoryGrouped = memo(
+  // eslint-disable-next-line @eslint-react/no-unstable-context-value
   ({ category, subscriptionIds }: { category: string; subscriptionIds: string[] }) => {
     const unreadCounts = useUnreadCounts(subscriptionIds)
     const [expanded, setExpanded] = useState(false)
@@ -42,7 +44,11 @@ export const CategoryGrouped = memo(
         >
           <ItemPressable
             onPress={() => {
-              // TODO navigate to category
+              selectFeed({
+                type: "category",
+                categoryName: category,
+              })
+              closeDrawer()
             }}
             className="h-12 flex-row items-center px-3"
           >

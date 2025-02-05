@@ -1,39 +1,27 @@
-import { resolve } from "node:path"
+import type { Credentials } from "@eneris/push-receiver/dist/types"
+import type { Cookie } from "electron"
+import Store from "electron-store"
 
-import { app } from "electron"
-import { JSONFileSyncPreset } from "lowdb/node"
-
-let db: {
-  data: Record<string, unknown>
-  write: () => void
-  read: () => void
+// @keep-sorted
+type StoreData = {
+  "notifications-credentials"?: Credentials | null
+  "notifications-persistent-ids"?: string[] | null
+  appearance?: "light" | "dark" | "system" | null
+  betterAuthSessionCookie?: string | null
+  cacheSizeLimit?: number | null
+  cookies?: Cookie[] | null
+  minimizeToTray?: boolean | null
+  proxy?: string | null
+  user?: string | null
+  windowState?: {
+    height: number
+    width: number
+    x: number
+    y: number
+  } | null
 }
-
-const createOrGetDb = () => {
-  if (!db) {
-    db = JSONFileSyncPreset(resolve(app.getPath("userData"), "db.json"), {}) as typeof db
-  }
-  return db
-}
+export const store = new Store<StoreData>({ name: "db" })
 
 export enum StoreKey {
   CacheSizeLimit = "cacheSizeLimit",
-}
-
-export const store = {
-  get: (key: string) => {
-    const db = createOrGetDb()
-
-    return db.data[key] as any
-  },
-  set: (key: string, value: any) => {
-    const db = createOrGetDb()
-    db.data[key] = value
-    db.write()
-  },
-  delete: (key: string) => {
-    const db = createOrGetDb()
-    delete db.data[key]
-    db.write()
-  },
 }

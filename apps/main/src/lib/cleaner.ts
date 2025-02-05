@@ -14,8 +14,13 @@ import { getMainWindow } from "~/window"
 import { t } from "./i18n"
 import { store, StoreKey } from "./store"
 
+const esModuleInterop = (module: any) => {
+  return module.default || module
+}
 const require = createRequire(import.meta.url)
-const fastFolderSize = require("fast-folder-size") as any as typeof import("fast-folder-size")
+const fastFolderSize = esModuleInterop(
+  require("fast-folder-size"),
+) as typeof import("fast-folder-size").default
 
 export const clearAllDataAndConfirm = async () => {
   const win = getMainWindow()

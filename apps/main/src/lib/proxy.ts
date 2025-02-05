@@ -25,7 +25,7 @@ export const setProxyConfig = (inputProxy: string) => {
 }
 
 export const getProxyConfig = () => {
-  const proxyConfig = store.get("proxy") as string | undefined
+  const proxyConfig = store.get("proxy")
   if (!proxyConfig) {
     return
   }

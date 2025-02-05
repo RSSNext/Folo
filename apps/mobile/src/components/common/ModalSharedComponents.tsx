@@ -30,16 +30,16 @@ const ModalHeaderCloseButtonImpl = () => {
   )
 }
 
-export interface ModalHeaderShubmitButtonProps {
+export interface ModalHeaderSubmitButtonProps {
   isValid: boolean
   onPress: () => void
   isLoading?: boolean
 }
-export const ModalHeaderShubmitButton = ({
+export const ModalHeaderSubmitButton = ({
   isValid,
   onPress,
   isLoading,
-}: ModalHeaderShubmitButtonProps) => {
+}: ModalHeaderSubmitButtonProps) => {
   return <ModalHeaderShubmitButtonImpl isValid={isValid} onPress={onPress} isLoading={isLoading} />
 }
 
@@ -47,8 +47,9 @@ const ModalHeaderShubmitButtonImpl = ({
   isValid,
   onPress,
   isLoading,
-}: ModalHeaderShubmitButtonProps) => {
+}: ModalHeaderSubmitButtonProps) => {
   const label = useColor("label")
+
   return (
     <TouchableOpacity onPress={onPress} disabled={!isValid || isLoading}>
       {isLoading ? (

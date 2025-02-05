@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# Follow Mobile App 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is the mobile client for [Follow](https://app.follow.is), built with [Expo](https://expo.dev). Follow organizes content into one timeline, keeping you updated on what matters, noise-free.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Customized information hub for content discovery
+- AI-powered features like translation and summary
+- Dynamic content support (articles, videos, images, audio)
+- $POWER integration for creator economy
+- Cross-platform support (iOS & Android [WIP])
+- Modern UI design with native feel
+
+## Getting Started
+
+1. Enable Corepack (if not already enabled)
 
    ```bash
-   npm install
+   corepack enable
    ```
 
-2. Start the app
+2. Install dependencies
 
    ```bash
-    npx expo start
+   pnpm install
    ```
 
-In the output, you'll find options to open the app in a
+3. Start the development server
+   ```bash
+   pnpm run dev
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+You can run the app on:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- iOS Simulator (`pnpm run ios`)
+- iOS Device (`pnpm run ios:device`)
+- Android Emulator (`pnpm run android`)
+- Development build for full native feature testing
 
-## Get a fresh project
+## Project Structure
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/
+├── modules/         # Feature-specific modules
+│   ├── discover/    # Discovery feed features
+│   └── ...
+├── screens/         # App screens using file-based routing
+└── ...
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Development
 
-## Learn more
+- Built with Expo SDK [>=52]
+- Uses [Expo Router](https://docs.expo.dev/router/introduction/) for navigation
+- Styling with [NativeWind](https://www.nativewind.dev/)
+- State management with Jotai and Zustand
+- API integration with Tanstack Query
+- Full TypeScript support
 
-To learn more about developing your project with Expo, look at the following resources:
+## Useful Resources
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [Expo Documentation](https://docs.expo.dev/)
+- [NativeWind Documentation](https://www.nativewind.dev/)
+- [Main Project Repository](https://github.com/RSSNext/Follow)
 
-## Join the community
+## Need Help?
 
-Join our community of developers creating universal apps.
+- Join our [Discord](https://discord.gg/followapp)
+- Follow us on [Twitter](https://x.com/follow_app_)
+- Contact the mobile development team
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## License
+
+This project is licensed under the GNU General Public License version 3. See the main project repository for full license details.

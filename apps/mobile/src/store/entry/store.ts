@@ -130,8 +130,19 @@ class EntryActions {
     await tx.run()
   }
 
-  reset() {
-    set(defaultState)
+  reset(entries: EntryModel[] = []) {
+    if (entries.length > 0) {
+      immerSet((draft) => {
+        // remove all entries from draft.data not in entries
+        for (const existingEntry of Object.values(draft.data)) {
+          if (!entries.some((e) => e.id === existingEntry.id)) {
+            delete draft.data[existingEntry.id]
+          }
+        }
+      })
+    } else {
+      set(defaultState)
+    }
   }
 }
 
@@ -154,11 +165,8 @@ class EntrySyncServices {
       },
     })
 
-    if (!pageParam) {
-      entryActions.reset()
-    }
+    const entries = honoMorph.toEntryList(res.data)
 
-    const entries = honoMorph.toEntry(res.data)
     await entryActions.upsertMany(entries)
     if (params.listId) {
       await listActions.addEntryIds({
@@ -167,6 +175,14 @@ class EntrySyncServices {
       })
     }
     return entries
+  }
+
+  async fetchEntryContent(entryId: EntryId) {
+    const res = await apiClient.entries.$get({ query: { id: entryId } })
+    const entry = honoMorph.toEntry(res.data)
+    if (!entry) return null
+    await entryActions.upsertMany([entry])
+    return entry
   }
 }
 

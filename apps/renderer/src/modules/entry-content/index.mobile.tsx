@@ -205,7 +205,7 @@ export const EntryContent: Component<{
                           mediaInfo={mediaInfo}
                           noMedia={noMedia}
                           as="article"
-                          className="prose !max-w-full dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
+                          className="prose !max-w-full hyphens-auto dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
                           renderInlineStyle={readerRenderInlineStyle}
                         >
                           {content}

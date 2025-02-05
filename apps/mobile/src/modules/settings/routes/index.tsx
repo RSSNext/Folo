@@ -8,6 +8,7 @@ import { DataScreen } from "./Data"
 import { FeedsScreen } from "./Feeds"
 import { GeneralScreen } from "./General"
 import { ListsScreen } from "./Lists"
+import { ManageListScreen } from "./ManageList"
 import { NotificationsScreen } from "./Notifications"
 import { PrivacyScreen } from "./Privacy"
 import { ProfileScreen } from "./Profile"
@@ -25,5 +26,6 @@ export const SettingRoutes = (Stack: ReturnType<typeof createNativeStackNavigato
     <Stack.Screen key="Feeds" name="Feeds" component={FeedsScreen} />,
     <Stack.Screen key="Privacy" name="Privacy" component={PrivacyScreen} />,
     <Stack.Screen key="About" name="About" component={AboutScreen} />,
+    <Stack.Screen key="ManageList" name="ManageList" component={ManageListScreen} />,
   ]
 }

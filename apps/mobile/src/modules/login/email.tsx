@@ -134,7 +134,7 @@ export function EmailLogin() {
       <ReAnimatedPressable
         disabled={submitMutation.isPending || !formState.isValid}
         onPress={login}
-        className="mt-8 h-10 flex-row items-center justify-center rounded-lg"
+        className="mt-8 h-10 flex-row items-center justify-center rounded-3xl"
         style={buttonStyle}
       >
         {submitMutation.isPending ? (

@@ -1,5 +1,4 @@
 import type { FeedViewType } from "@follow/constants"
-import { cn } from "@follow/utils"
 import { Text, TouchableOpacity, View } from "react-native"
 
 import { Grid } from "@/src/components/ui/grid"
@@ -34,10 +33,10 @@ export const FeedViewSelector = ({ value, onChange, className, readOnly }: Props
                 width={18}
               />
               <Text
-                className={cn(
-                  "mt-1 whitespace-nowrap text-[8px] font-medium",
-                  isSelected ? "text-accent" : "text-secondary-label",
-                )}
+                className={"mt-1 whitespace-nowrap text-[8px] font-medium"}
+                style={{
+                  color: isSelected ? view.activeColor : secondaryLabelColor,
+                }}
               >
                 {view.name}
               </Text>

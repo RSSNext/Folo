@@ -20,7 +20,7 @@ import type {
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
-import { accentColor } from "@/src/theme/colors"
+import { accentColor, useColor } from "@/src/theme/colors"
 
 import type { Tab } from "./types"
 
@@ -110,20 +110,39 @@ export const TabBar = forwardRef<ScrollView, TabBarProps>(
     useEffect(() => {
       if (tabWidths.length > 0) {
         indicatorPosition.value = withSpring(tabPositions[currentTab] || 0, springConfig)
+      }
+    }, [currentTab, indicatorPosition, tabPositions, tabWidths.length])
 
-        if (tabRef.current) {
-          const x = currentTab > 0 ? tabPositions[currentTab - 1]! + tabWidths[currentTab - 1]! : 0
+    const tabBarScrollX = useRef(0)
+    useEffect(() => {
+      // If the current tab is not within the visible range of the scrollview, then scroll the scrollview to the visible area.
+      if (tabRef.current && tabPositions[currentTab] !== undefined && tabWidths[currentTab]) {
+        const tabPosition = tabPositions[currentTab]
+        const tabWidth = tabWidths[currentTab]
 
-          const isCurrentTabVisible =
-            sharedPagerOffsetX.value < tabPositions[currentTab]! &&
-            sharedPagerOffsetX.value + tabWidths[currentTab]! > tabPositions[currentTab]!
+        // Get the current scroll position and visible width of the ScrollView
+        const scrollView = tabRef.current
+        const currentScrollX = tabBarScrollX.current
 
-          if (!isCurrentTabVisible) {
-            tabRef.current.scrollTo({ x, y: 0, animated: true })
-          }
+        const visibleWidth = tabBarWidth
+
+        // Check if the tab is outside the visible area
+        const isTabOutsideView =
+          tabPosition < currentScrollX || // tab is to the left of visible area
+          tabPosition + tabWidth > currentScrollX + visibleWidth // tab is to the right
+
+        if (isTabOutsideView) {
+          // Add some padding to ensure the tab isn't right at the edge
+          const padding = 16
+
+          scrollView.scrollTo({
+            x: Math.max(0, tabPosition - padding),
+            animated: true,
+          })
         }
       }
-    }, [currentTab, indicatorPosition, sharedPagerOffsetX.value, tabPositions, tabWidths])
+    }, [currentTab, sharedPagerOffsetX.value, tabPositions, tabWidths, tabBarWidth])
+
     const handleTabItemLayout = useCallback((event: LayoutChangeEvent, index: number) => {
       const { width, x } = event.nativeEvent.layout
       setTabWidths((prev) => {
@@ -164,6 +183,9 @@ export const TabBar = forwardRef<ScrollView, TabBarProps>(
       <ScrollView
         onLayout={(event) => {
           setTabBarWidth(event.nativeEvent.layout.width)
+        }}
+        onScroll={(event) => {
+          tabBarScrollX.current = event.nativeEvent.contentOffset.x
         }}
         showsHorizontalScrollIndicator={false}
         className={cn(
@@ -210,9 +232,12 @@ const styles = StyleSheet.create({
 })
 
 const TabItemInner = ({ tab, isSelected }: { tab: Tab; isSelected: boolean }) => {
+  const gray = useColor("gray")
   return (
     <View className="p-2">
-      <Text style={{ color: isSelected ? accentColor : "gray" }}>{tab.name}</Text>
+      <Text style={{ color: isSelected ? accentColor : gray }} className="text-[15px] leading-none">
+        {tab.name}
+      </Text>
     </View>
   )
 }

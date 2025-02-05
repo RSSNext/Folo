@@ -1,5 +1,5 @@
 {
-  "ai_daily.title": "Actualités Principales - {{title}}",
+  "ai_daily.title": "Actualités Principales - {{- title}}",
   "ai_daily.tooltip.content": "Voici des nouvelles sélectionnées par l'IA à partir de votre chronologie (<From /> - <To />) qui peuvent être importantes pour vous.",
   "ai_daily.tooltip.update_schedule": "Mise à jour quotidienne à 8h00 et 20h00.",
   "app.copy_logo_svg": "Copier le logo SVG",

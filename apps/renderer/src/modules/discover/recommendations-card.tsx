@@ -71,38 +71,45 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
         </CardHeader>
         <CardContent className="flex grow flex-col p-5 pt-0">
           <ul className="grow columns-2 gap-2 space-y-1 text-sm text-foreground/90">
-            {Object.keys(data.routes).map((route) => (
-              <li
-                key={route}
-                className="group ml-1 hover:text-theme-foreground-hover"
-                onClick={(e) => {
-                  ;(e.target as HTMLElement).querySelector("button")?.click()
-                }}
-                tabIndex={-1}
-              >
-                <button
-                  type="button"
-                  className="relative rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-2 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:bg-accent before:content-[''] group-hover:bg-muted"
-                  onClick={() => {
-                    present({
-                      id: `recommendation-content-${route}`,
-                      content: () => (
-                        <RecommendationContent
-                          routePrefix={routePrefix}
-                          route={data.routes[route]!}
-                        />
-                      ),
-                      icon: (
-                        <FeedIcon className="size-4" size={16} siteUrl={`https://${data.url}`} />
-                      ),
-                      title: `${data.name} - ${data.routes[route]!.name}`,
-                    })
+            {Object.keys(data.routes).map((route) => {
+              const routeData = data.routes[route]!
+              // some routes have multiple paths, like `huxiu`
+              if (Array.isArray(routeData.path)) {
+                routeData.path = routeData.path.find((p) => p === route) ?? routeData.path[0]
+              }
+              return (
+                <li
+                  key={route}
+                  className="group ml-1 hover:text-theme-foreground-hover"
+                  onClick={(e) => {
+                    ;(e.target as HTMLElement).querySelector("button")?.click()
                   }}
+                  tabIndex={-1}
                 >
-                  {data.routes[route]!.name}
-                </button>
-              </li>
-            ))}
+                  <button
+                    type="button"
+                    className="relative rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-2 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:bg-accent before:content-[''] group-hover:bg-muted"
+                    onClick={() => {
+                      present({
+                        id: `recommendation-content-${route}`,
+                        content: () => (
+                          <RecommendationContent
+                            routePrefix={routePrefix}
+                            route={data.routes[route]!}
+                          />
+                        ),
+                        icon: (
+                          <FeedIcon className="size-4" size={16} siteUrl={`https://${data.url}`} />
+                        ),
+                        title: `${data.name} - ${data.routes[route]!.name}`,
+                      })
+                    }}
+                  >
+                    {data.routes[route]!.name}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
 
           <div className="mt-4 flex flex-col gap-2 text-muted-foreground">

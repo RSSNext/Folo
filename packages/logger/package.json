@@ -12,6 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "electron-log": "5.2.4"
+    "electron-log": "5.3.0"
   }
 }

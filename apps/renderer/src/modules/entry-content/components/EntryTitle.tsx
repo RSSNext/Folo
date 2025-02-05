@@ -97,7 +97,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
           showTranslation={showAITranslation}
           source={entry.entries.title}
           target={translation.data?.title}
-          className="select-text"
+          className="select-text hyphens-auto"
         />
       </div>
       <div className="mt-2 text-[13px] font-medium text-zinc-500">

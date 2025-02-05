@@ -1,5 +1,6 @@
 import type { FeedSchema, InboxSchema } from "../database/schemas/types"
 import type { EntryModel } from "../store/entry/types"
+import type { FeedModel } from "../store/feed/types"
 import type { ListModel } from "../store/list/store"
 import type { SubscriptionModel } from "../store/subscription/store"
 import type { HonoApiClient } from "./types"
@@ -82,7 +83,7 @@ class Morph {
     return { subscriptions, ...collections }
   }
 
-  toList({ list: data }: HonoApiClient.List_Get): ListModel {
+  toList(data: HonoApiClient.List_Get["list"] | HonoApiClient.List_List_Get): ListModel {
     return {
       id: data.id,
       title: data.title!,
@@ -97,7 +98,7 @@ class Morph {
     }
   }
 
-  toEntry(data?: HonoApiClient.Entry_Get): EntryModel[] {
+  toEntryList(data?: HonoApiClient.Entry_Post): EntryModel[] {
     const entries: EntryModel[] = []
     for (const item of data ?? []) {
       entries.push({
@@ -128,6 +129,51 @@ class Morph {
       })
     }
     return entries
+  }
+
+  toEntry(data?: HonoApiClient.Entry_Get): EntryModel | null {
+    if (!data) return null
+
+    return {
+      id: data.entries.id,
+      title: data.entries.title,
+      url: data.entries.url,
+      content: data.entries.content,
+      description: data.entries.description,
+      guid: data.entries.guid,
+      author: data.entries.author,
+      authorUrl: data.entries.authorUrl,
+      authorAvatar: data.entries.authorAvatar,
+      insertedAt: new Date(data.entries.insertedAt),
+      publishedAt: new Date(data.entries.publishedAt),
+      media: data.entries.media ?? null,
+      categories: data.entries.categories ?? null,
+      attachments: data.entries.attachments ?? null,
+      extra: data.entries.extra
+        ? {
+            links: data.entries.extra.links ?? undefined,
+          }
+        : null,
+      language: data.entries.language,
+      feedId: data.feeds.id,
+      // TODO: handle inboxHandle
+      inboxHandle: "",
+      read: false,
+    }
+  }
+
+  toFeed(data: HonoApiClient.Feed_Get["feed"]): FeedModel {
+    return {
+      id: data.id,
+      title: data.title!,
+      url: data.url,
+      image: data.image!,
+      description: data.description!,
+      ownerUserId: data.ownerUserId!,
+      errorAt: data.errorAt!,
+      errorMessage: data.errorMessage!,
+      siteUrl: data.siteUrl!,
+    }
   }
 }
 

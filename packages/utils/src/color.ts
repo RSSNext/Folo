@@ -148,7 +148,7 @@ export const isRGBColor = (color: string) => {
   return /^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$/.test(color)
 }
 export const isRGBAColor = (color: string) => {
-  return /^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*0?\.\d+\)$/.test(color)
+  return /^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*(?:0?\.\d+|1(?:\.0+)?)\)$/.test(color)
 }
 
 export const withOpacity = (color: string, opacity: number) => {

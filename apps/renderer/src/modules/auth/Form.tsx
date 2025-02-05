@@ -26,7 +26,7 @@ const formSchema = z.object({
   password: z.string().max(128),
 })
 
-export function LoginWithPassword({ runtime }: { runtime?: LoginRuntime }) {
+export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
   const { t } = useTranslation("app")
   const { t: tSettings } = useTranslation("settings")
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,7 +42,7 @@ export function LoginWithPassword({ runtime }: { runtime?: LoginRuntime }) {
   const { dismiss } = useCurrentModal()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await loginHandler("credential", runtime ?? "browser", {
+    const res = await loginHandler("credential", runtime, {
       email: values.email,
       password: values.password,
     })

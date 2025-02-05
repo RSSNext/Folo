@@ -1,3 +1,4 @@
+import { ActionSheetProvider } from "@expo/react-native-action-sheet"
 import { jotaiStore } from "@follow/utils"
 import { PortalProvider } from "@gorhom/portal"
 import { ThemeProvider } from "@react-navigation/native"
@@ -30,7 +31,9 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
             <QueryClientProvider client={queryClient}>
               <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
                 <GestureHandlerRootView>
-                  <PortalProvider>{children}</PortalProvider>
+                  <ActionSheetProvider>
+                    <PortalProvider>{children}</PortalProvider>
+                  </ActionSheetProvider>
                 </GestureHandlerRootView>
               </ThemeProvider>
             </QueryClientProvider>

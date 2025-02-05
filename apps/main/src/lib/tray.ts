@@ -54,7 +54,7 @@ const destroyAppTray = () => {
 
 const DEFAULT_MINIMIZE_TO_TRAY = isMacOS ? false : true
 
-export const getTrayConfig = (): boolean => store.get("minimizeToTray") ?? DEFAULT_MINIMIZE_TO_TRAY
+export const getTrayConfig = () => store.get("minimizeToTray") ?? DEFAULT_MINIMIZE_TO_TRAY
 
 export const setTrayConfig = (input: boolean) => {
   store.set("minimizeToTray", input)

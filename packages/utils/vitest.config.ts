@@ -13,7 +13,7 @@ export default defineProject({
   test: {
     globals: true,
     includeSource: [resolve(__dirname, ".")],
-    dom: true,
+    environment: "happy-dom",
   },
 
   define: {
@@ -27,7 +27,6 @@ export default defineProject({
   },
 
   plugins: [
-    // @ts-expect-error
     tsconfigPath({
       projects: ["./tsconfig.json"],
     }),

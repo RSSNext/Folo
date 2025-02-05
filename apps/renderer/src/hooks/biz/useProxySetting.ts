@@ -7,8 +7,8 @@ import { tipcClient } from "~/lib/client"
 const proxyAtom = atom("")
 
 proxyAtom.onMount = (setAtom) => {
-  tipcClient?.getProxyConfig().then((proxy: string) => {
-    setAtom(proxy)
+  tipcClient?.getProxyConfig().then((proxy) => {
+    setAtom(proxy || "")
   })
 }
 

@@ -30,7 +30,7 @@ const keepModules = new Set(["font-list", "vscode-languagedetection", "fast-fold
 const keepLanguages = new Set(["en", "en_GB", "en-US", "en_US"])
 
 // remove folders & files not to be included in the app
-async function cleanSources(buildPath, electronVersion, platform, arch, callback) {
+async function cleanSources(buildPath, _electronVersion, platform, _arch, callback) {
   // folders & files to be included in the app
   const appItems = new Set(["dist", "node_modules", "package.json", "resources"])
 
@@ -41,7 +41,7 @@ async function cleanSources(buildPath, electronVersion, platform, arch, callback
     )
 
     for (const file of readdirSync(frameworkResourcePath)) {
-      if (file.endsWith(".lproj") && !keepLanguages.has(file.split(".")[0])) {
+      if (file.endsWith(".lproj") && !keepLanguages.has(file.split(".")[0]!)) {
         rimrafSync(resolve(frameworkResourcePath, file))
       }
     }
@@ -81,7 +81,7 @@ async function cleanSources(buildPath, electronVersion, platform, arch, callback
   callback()
 }
 
-const noopAfterCopy = (buildPath, electronVersion, platform, arch, callback) => callback()
+const noopAfterCopy = (_buildPath, _electronVersion, _platform, _arch, callback) => callback()
 
 const ignorePattern = new RegExp(`^/node_modules/(?!${[...keepModules].join("|")})`)
 
@@ -194,7 +194,7 @@ const config: ForgeConfig = {
     },
   ],
   hooks: {
-    postMake: async (config, makeResults) => {
+    postMake: async (_config, makeResults) => {
       const yml: {
         version?: string
         files: {
@@ -204,7 +204,7 @@ const config: ForgeConfig = {
         }[]
         releaseDate?: string
       } = {
-        version: makeResults[0].packageJSON.version,
+        version: makeResults[0]?.packageJSON?.version,
         files: [],
       }
       makeResults = makeResults.map((result) => {
@@ -239,8 +239,8 @@ const config: ForgeConfig = {
       })
       yml.releaseDate = new Date().toISOString()
 
-      const ymlPath = `${path.dirname(makeResults[0].artifacts[0])}/${
-        ymlMapsMap[makeResults[0].platform]
+      const ymlPath = `${path.dirname(makeResults[0]?.artifacts?.[0]!)}/${
+        ymlMapsMap[makeResults[0]?.platform!]
       }`
 
       const ymlStr = yaml.dump(yml, {
@@ -250,9 +250,9 @@ const config: ForgeConfig = {
 
       makeResults.push({
         artifacts: [ymlPath],
-        platform: makeResults[0].platform,
-        arch: makeResults[0].arch,
-        packageJSON: makeResults[0].packageJSON,
+        platform: makeResults[0]!.platform,
+        arch: makeResults[0]!.arch,
+        packageJSON: makeResults[0]!.packageJSON,
       })
 
       return makeResults

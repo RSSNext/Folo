@@ -34,7 +34,7 @@ const MarkdownWeb: WebComponent<{
   overscroll-behavior: none;
 }
 body, html {
-  overflow: hidden;
+  overflow-y: hidden;
 }
         `,
         }}

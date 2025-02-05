@@ -84,7 +84,8 @@ export const AudioPlayer = {
     const currentUrl = parseSafeUrl(this.audio.src)?.toString() ?? this.audio.src
     const newUrl = parseSafeUrl(v.src)?.toString() ?? v.src
 
-    if (currentUrl !== newUrl) {
+    // It seems that audio load from local file has some limitations, i think reset the audio should be fine here
+    if (currentUrl !== newUrl || newUrl.startsWith("file://")) {
       this.audio.src = v.src
       this.audio.currentTime = v.currentTime ?? curV.currentTime ?? 0
     }

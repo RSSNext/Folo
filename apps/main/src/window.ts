@@ -222,12 +222,7 @@ export function createWindow(
 }
 export const windowStateStoreKey = "windowState"
 export const createMainWindow = () => {
-  const windowState = store.get(windowStateStoreKey) as {
-    height: number
-    width: number
-    x: number
-    y: number
-  } | null
+  const windowState = store.get(windowStateStoreKey)
   const primaryDisplay = screen.getPrimaryDisplay()
   const { workArea } = primaryDisplay
 

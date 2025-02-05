@@ -5,7 +5,9 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "follow-native": ["./native/src/index.ts"],
+      "follow-native/*": ["./native/*"]
     },
     "jsx": "preserve"
   },

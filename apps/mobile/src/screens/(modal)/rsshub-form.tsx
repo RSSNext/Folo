@@ -11,15 +11,15 @@ import { router, Stack, useLocalSearchParams } from "expo-router"
 import { memo, useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Linking, Text, TouchableOpacity, View } from "react-native"
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
+import { BlurEffectWithBottomBorder } from "@/src/components/common/BlurEffect"
 import { HeaderTitleExtra } from "@/src/components/common/HeaderTitleExtra"
 import {
   ModalHeaderCloseButton,
-  ModalHeaderShubmitButton,
+  ModalHeaderSubmitButton,
 } from "@/src/components/common/ModalSharedComponents"
+import { SafeModalScrollView } from "@/src/components/common/SafeModalScrollView"
 import { FormProvider, useFormContext } from "@/src/components/ui/form/FormProvider"
 import { Select } from "@/src/components/ui/form/Select"
 import { TextField } from "@/src/components/ui/form/TextField"
@@ -111,7 +111,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
     mode: "all",
   })
 
-  const insets = useSafeAreaInsets()
   return (
     <FormProvider form={form}>
       <ScreenOptions
@@ -122,10 +121,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
       />
 
       <PortalProvider>
-        <KeyboardAwareScrollView
-          className="bg-system-grouped-background"
-          contentContainerStyle={{ paddingBottom: insets.bottom, flexGrow: 1 }}
-        >
+        <SafeModalScrollView className="bg-system-grouped-background">
           <View className="bg-secondary-system-grouped-background mx-2 mt-2 gap-4 rounded-lg px-3 py-6">
             {keys.map((keyItem) => {
               const parameters = normalizeRSSHubParameters(route.parameters[keyItem.name]!)
@@ -187,7 +183,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
           <Maintainers maintainers={route.maintainers} />
 
           {!!route.description && (
-            <View className="bg-system-background mt-4 flex-1 px-4">
+            <View className="bg-system-background border-t-hairline border-opaque-separator mt-4 flex-1 px-4">
               <Markdown
                 style={{
                   paddingTop: 16,
@@ -198,7 +194,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
               />
             </View>
           )}
-        </KeyboardAwareScrollView>
+        </SafeModalScrollView>
       </PortalProvider>
     </FormProvider>
   )
@@ -244,10 +240,12 @@ const ScreenOptions = memo(({ name, routeName, route, routePrefix }: ScreenOptio
       options={{
         headerLeft: ModalHeaderCloseButton,
         gestureEnabled: !form.formState.isDirty,
+        headerBackground: BlurEffectWithBottomBorder,
+        headerTransparent: true,
 
         headerRight: () => (
           <FormProvider form={form}>
-            <ModalHeaderSubmitButton routePrefix={routePrefix} route={route} />
+            <ModalHeaderSubmitButtonImpl routePrefix={routePrefix} route={route} />
           </FormProvider>
         ),
 
@@ -267,17 +265,15 @@ const Title = ({ name, routeName, route, routePrefix }: ScreenOptionsProps) => {
   )
 }
 
-type ModalHeaderSubmitButtonProps = {
-  routePrefix: string
-  route: string
-}
-const ModalHeaderSubmitButton = ({ routePrefix, route }: ModalHeaderSubmitButtonProps) => {
-  return <ModalHeaderSubmitButtonImpl routePrefix={routePrefix} route={route} />
-}
-
 const routeParamsKeyPrefix = "route-params-"
 
-const ModalHeaderSubmitButtonImpl = ({ routePrefix, route }: ModalHeaderSubmitButtonProps) => {
+const ModalHeaderSubmitButtonImpl = ({
+  routePrefix,
+  route,
+}: {
+  routePrefix: string
+  route: string
+}) => {
   const form = useFormContext()
   const { isValid } = form.formState
 
@@ -339,5 +335,5 @@ const ModalHeaderSubmitButtonImpl = ({ routePrefix, route }: ModalHeaderSubmitBu
     }
   })
 
-  return <ModalHeaderShubmitButton isLoading={isLoading} isValid={isValid} onPress={submit} />
+  return <ModalHeaderSubmitButton isLoading={isLoading} isValid={isValid} onPress={submit} />
 }

@@ -1,8 +1,7 @@
 import { withOpacity } from "@follow/utils"
 import { useMemo } from "react"
-import { Text, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 
-import { LoadingIndicator } from "@/src/components/ui/loading"
 import { SadCuteReIcon } from "@/src/icons/sad_cute_re"
 import { useColor } from "@/src/theme/colors"
 
@@ -15,7 +14,8 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
       return (
         <BaseSearchPageRootView className="items-center justify-center">
           <View className="-mt-72" />
-          <LoadingIndicator color={withOpacity(textColor, 0.7)} size={32} />
+
+          <ActivityIndicator />
         </BaseSearchPageRootView>
       )
     }

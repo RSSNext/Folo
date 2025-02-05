@@ -17,7 +17,6 @@ export default defineProject({
     setupFiles: [resolve(__dirname, "./setup-file.ts")],
     environment: "happy-dom",
     includeSource: [resolve(__dirname, ".")],
-    dom: true,
   },
 
   define: {
@@ -31,9 +30,7 @@ export default defineProject({
   },
 
   plugins: [
-    // @ts-expect-error
     astPlugin,
-    // @ts-expect-error
     tsconfigPath({
       projects: ["./tsconfig.json"],
     }),

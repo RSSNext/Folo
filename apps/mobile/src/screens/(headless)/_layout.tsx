@@ -6,6 +6,7 @@ import { getSystemBackgroundColor } from "@/src/theme/utils"
 export default function HeadlessLayout() {
   useColorScheme()
   const systemBackgroundColor = getSystemBackgroundColor()
+
   return (
     <Stack
       screenOptions={{

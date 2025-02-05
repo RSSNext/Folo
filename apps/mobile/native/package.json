@@ -1,0 +1,40 @@
+{
+  "name": "follow-native",
+  "version": "0.1.0",
+  "description": "Nope",
+  "author": "Innei <tukon479@gmail.com> (https://github.com/Innei)",
+  "license": "MIT",
+  "homepage": "https://github.com/Innei/follow-native#readme",
+  "bugs": {
+    "url": "https://github.com/Innei/follow-native/issues"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "follow-native",
+    "FollowNative"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "//prepare": "expo-module prepare",
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "expo-module": "expo-module",
+    "lint": "expo-module lint",
+    "open:android": "open -a \"Android Studio\" example/android",
+    "open:ios": "xed example/ios",
+    "prepublishOnly": "expo-module prepublishOnly"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "npm:react-native@0.77.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "expo": "~52.0.0",
+    "expo-module-scripts": "^4.0.3",
+    "react-native": "npm:react-native@0.77.0"
+  }
+}

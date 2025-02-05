@@ -34,13 +34,14 @@ export const GeneralScreen = () => {
         <GroupedInsetListSectionHeader label="Language" />
         <GroupedInsetListCard>
           <GroupedInsetListBaseCell>
-            <Text>Language</Text>
+            <Text className="text-label">Language</Text>
 
-            <Text>{locales[0]?.languageTag}</Text>
+            <Text className="text-label">{locales[0]?.languageTag}</Text>
           </GroupedInsetListBaseCell>
 
           <GroupedInsetListBaseCell>
-            <Text>Translation Language</Text>
+            <Text className="text-label">Translation Language</Text>
+
             <Select
               value={translationLanguage}
               onValueChange={(value) => {

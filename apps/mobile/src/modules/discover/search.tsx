@@ -1,8 +1,9 @@
+import { RSSHubCategories } from "@follow/constants"
 import { getDefaultHeaderHeight } from "@react-navigation/elements"
 import { router } from "expo-router"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import type { FC } from "react"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import type { LayoutChangeEvent } from "react-native"
 import {
   Animated,
@@ -18,10 +19,13 @@ import {
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BlurEffect } from "@/src/components/common/BlurEffect"
+import { TabBar } from "@/src/components/ui/tabview/TabBar"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { accentColor, useColor } from "@/src/theme/colors"
 
+import { RSSHubCategoryCopyMap } from "./copy"
 import { useSearchPageContext } from "./ctx"
+import { DiscoverContext } from "./DiscoverContext"
 import { SearchTabBar } from "./SearchTabBar"
 
 export const SearchHeader: FC<{
@@ -54,13 +58,33 @@ const DiscoverHeaderImpl = () => {
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
+  const { animatedX, currentTabAtom, headerHeightAtom } = useContext(DiscoverContext)
+  const setCurrentTab = useSetAtom(currentTabAtom)
+  const setHeaderHeight = useSetAtom(headerHeightAtom)
 
   return (
-    <View style={{ height: headerHeight, paddingTop: insets.top }} className="relative">
+    <View
+      style={{ minHeight: headerHeight, paddingTop: insets.top }}
+      className="relative"
+      onLayout={(e) => {
+        setHeaderHeight(e.nativeEvent.layout.height)
+      }}
+    >
       <BlurEffect />
       <View style={styles.header}>
         <PlaceholerSearchBar />
       </View>
+
+      <TabBar
+        tabs={RSSHubCategories.map((category) => ({
+          name: RSSHubCategoryCopyMap[category],
+          value: category,
+        }))}
+        tabScrollContainerAnimatedX={animatedX}
+        onTabItemPress={(index) => {
+          setCurrentTab(index)
+        }}
+      />
     </View>
   )
 }

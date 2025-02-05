@@ -53,8 +53,7 @@ export const viteRenderBaseConfig = {
       disable: !isCI,
       bundleSizeOptimizations: {
         excludeDebugStatements: true,
-        // Only relevant if you added `browserTracingIntegration`
-        excludePerformanceMonitoring: true,
+
         // Only relevant if you added `replayIntegration`
         excludeReplayIframe: true,
         excludeReplayShadowDom: true,

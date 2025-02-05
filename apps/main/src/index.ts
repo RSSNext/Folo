@@ -5,7 +5,6 @@ import { env } from "@follow/shared/env"
 import { imageRefererMatches, selfRefererMatches } from "@follow/shared/image"
 import { parse } from "cookie-es"
 import { app, BrowserWindow, session } from "electron"
-import type { Cookie } from "electron/main"
 import squirrelStartup from "electron-squirrel-startup"
 
 import { DEVICE_ID } from "./constants/system"
@@ -77,7 +76,7 @@ function bootstrap() {
     mainWindow = createMainWindow()
 
     // restore cookies
-    const cookies = store.get("cookies") as Cookie[]
+    const cookies = store.get("cookies")
     if (cookies) {
       Promise.all(
         cookies.map((cookie) => {

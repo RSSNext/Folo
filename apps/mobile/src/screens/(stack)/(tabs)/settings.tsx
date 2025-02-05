@@ -1,4 +1,5 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import { getDefaultHeaderHeight } from "@react-navigation/elements"
 import { useIsFocused } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react"
@@ -6,7 +7,7 @@ import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from "react-
 import { findNodeHandle, Text, UIManager } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useEventCallback } from "usehooks-ts"
 
 import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents"
@@ -114,13 +115,18 @@ function Settings() {
     </>
   )
 }
-
 const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
+  const frame = useSafeAreaFrame()
+  const insets = useSafeAreaInsets()
+  const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
   const styles = useAnimatedStyle(() => {
     return {
       opacity: scrollY.value / 100,
+      height: headerHeight,
+      paddingTop: insets.top,
     }
   })
+
   return (
     <Animated.View
       pointerEvents="none"
@@ -129,7 +135,7 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
     >
       <BlurEffect />
 
-      <Text className="text-label flex-1 text-center text-lg font-medium">Settings</Text>
+      <Text className="text-label flex-1 text-center text-[17px] font-semibold">Settings</Text>
     </Animated.View>
   )
 }

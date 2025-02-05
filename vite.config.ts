@@ -74,6 +74,7 @@ export default ({ mode }) => {
       watch: {
         ignored: ["**/dist/**", "**/out/**", "**/public/**", ".git/**"],
       },
+      cors: true,
       proxy: {
         "/login": {
           target: "http://localhost:2234",

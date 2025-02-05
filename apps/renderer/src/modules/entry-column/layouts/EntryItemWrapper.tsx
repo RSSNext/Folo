@@ -104,6 +104,7 @@ export const EntryItemWrapper: FC<
                     COMMAND_ID.entry.viewSourceContent,
                     COMMAND_ID.entry.toggleAISummary,
                     COMMAND_ID.entry.toggleAITranslation,
+                    COMMAND_ID.settings.customizeToolbar,
                   ] as string[]
                 ).includes(item.id),
             )

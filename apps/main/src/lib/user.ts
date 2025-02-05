@@ -8,7 +8,7 @@ import { store } from "./store"
 
 const BetterAuthKey = "betterAuthSessionCookie"
 export const setBetterAuthSessionCookie = (cookie: string) => store.set(BetterAuthKey, cookie)
-export const getBetterAuthSessionCookie = (): string | null => store.get(BetterAuthKey)
+export const getBetterAuthSessionCookie = () => store.get(BetterAuthKey)
 export const cleanBetterAuthSessionCookie = () => store.set(BetterAuthKey, null)
 
 const UserKey = "user"

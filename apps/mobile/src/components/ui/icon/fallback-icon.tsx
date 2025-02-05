@@ -2,8 +2,9 @@ import { getBackgroundGradient, isCJKChar } from "@follow/utils"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { useMemo, useState } from "react"
-import type { StyleProp, TextStyle, ViewStyle } from "react-native"
+import type { DimensionValue, StyleProp, TextStyle, ViewStyle } from "react-native"
 import { StyleSheet, Text, View } from "react-native"
+import { useColor } from "react-native-uikit-colors"
 
 export const FallbackIcon = ({
   title,
@@ -13,14 +14,16 @@ export const FallbackIcon = ({
   style,
   textClassName,
   textStyle,
+  gray,
 }: {
   title: string
   url?: string
-  size: number
+  size: DimensionValue
   className?: string
   style?: StyleProp<ViewStyle>
   textClassName?: string
   textStyle?: StyleProp<TextStyle>
+  gray?: boolean
 }) => {
   const colors = useMemo(() => getBackgroundGradient(title || url || ""), [title, url])
   const sizeStyle = useMemo(() => ({ width: size, height: size }), [size])
@@ -36,10 +39,14 @@ export const FallbackIcon = ({
     )
   }, [title, textStyle, textClassName])
 
+  const grayColor = useColor("gray2")
+
   return (
     <LinearGradient
       className={className}
-      colors={[bgAccent!, bgAccentLight!, bgAccentUltraLight!]}
+      colors={
+        gray ? [grayColor, grayColor, grayColor] : [bgAccent!, bgAccentLight!, bgAccentUltraLight!]
+      }
       locations={[0, 0.99, 1]}
       style={[sizeStyle, styles.container, style]}
     >

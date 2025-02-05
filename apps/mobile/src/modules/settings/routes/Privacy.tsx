@@ -15,9 +15,9 @@ export const PrivacyScreen = () => {
       <NavigationBlurEffectHeader title="Privacy" />
       <GroupedInsetListCard className="mt-4">
         <GroupedInsetListNavigationLink
-          label="Teams"
+          label="Terms"
           onPress={() => {
-            router.push("/teams")
+            router.push("/terms")
           }}
         />
       </GroupedInsetListCard>

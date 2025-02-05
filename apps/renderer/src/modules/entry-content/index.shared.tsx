@@ -119,7 +119,7 @@ export const ReadabilityContent = ({ entryId, feedId }: { entryId: string; feedI
         feedId={feedId}
         entryId={entryId}
         as="article"
-        className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
+        className="prose hyphens-auto dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold"
       >
         {result?.content ?? ""}
       </EntryContentHTMLRenderer>

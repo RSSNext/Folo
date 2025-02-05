@@ -34,8 +34,8 @@
     "framer-motion": "11.13.1",
     "nanoid": "5.0.9",
     "path-to-regexp": "8.2.0",
-    "tailwind-merge": "2.5.5",
-    "tldts": "6.1.66",
+    "tailwind-merge": "3.0.1",
+    "tldts": "6.1.76",
     "uniqolor": "1.1.1"
   }
 }

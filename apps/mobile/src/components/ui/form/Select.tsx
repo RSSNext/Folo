@@ -69,7 +69,11 @@ export function Select<T>({
         )}
         style={wrapperStyle}
       >
-        <Text className="flex-1 font-semibold text-accent" ellipsizeMode="middle" numberOfLines={1}>
+        <Text
+          className="min-w-0 flex-1 text-right font-semibold text-accent"
+          ellipsizeMode="middle"
+          numberOfLines={1}
+        >
           {valueToLabelMap.get(currentValue)}
         </Text>
         <View className="ml-auto shrink-0 pl-1">

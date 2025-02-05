@@ -13,6 +13,12 @@ export const usePrefetchEntries = (props: FetchEntriesProps) => {
     queryFn: () => entrySyncServices.fetchEntries(props),
   })
 }
+export const usePrefetchEntryContent = (entryId: string) => {
+  return useQuery({
+    queryKey: ["entry", entryId],
+    queryFn: () => entrySyncServices.fetchEntryContent(entryId),
+  })
+}
 
 export const useEntry = (id: string): EntryModel | undefined => {
   return useEntryStore((state) => state.data[id])

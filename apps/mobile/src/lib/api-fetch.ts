@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { AppType } from "@follow/shared"
 import { router } from "expo-router"
-import { ofetch } from "ofetch"
+import { FetchError, ofetch } from "ofetch"
 
 import { getCookie } from "./auth"
 import { getApiUrl } from "./env"
@@ -12,11 +12,16 @@ export const apiFetch = ofetch.create({
   retry: false,
 
   baseURL: getApiUrl(),
-  onRequest: async ({ options, request }) => {
+  onRequest: async (ctx) => {
+    const { options, request } = ctx
     if (__DEV__) {
       // Logger
       console.log(`---> ${options.method} ${request as string}`)
     }
+
+    // add cookie
+    options.headers = options.headers || new Headers()
+    options.headers.set("cookie", getCookie())
   },
   onRequestError: ({ error, request, options }) => {
     if (__DEV__) {
@@ -54,3 +59,19 @@ export const apiClient = hc<AppType>(getApiUrl(), {
     }
   },
 })
+
+export const getBizFetchErrorMessage = (error: Error) => {
+  if (error instanceof FetchError && error.response) {
+    try {
+      const data = JSON.parse(error.response._data)
+
+      if (data.message && data.code) {
+        // TODO i18n handle by code
+        return data.message
+      }
+    } catch {
+      return error.message
+    }
+  }
+  return error.message
+}

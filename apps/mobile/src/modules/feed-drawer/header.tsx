@@ -26,7 +26,7 @@ export const ViewHeaderComponent = ({
       style={{ paddingTop: insets.top }}
     >
       <BlurEffect />
-      <Text className="text-text my-4 text-2xl font-bold">{viewDef.name}</Text>
+      <Text className="text-text my-4 text-2xl font-bold">{viewDef?.name}</Text>
       <SortActionButton />
     </View>
   )

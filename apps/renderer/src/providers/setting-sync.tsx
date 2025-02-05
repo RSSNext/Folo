@@ -75,12 +75,7 @@ const useLanguageSync = () => {
   }, [language])
 }
 const useGeneralSettingSync = () => {
-  const voice = useGeneralSettingKey("voice")
-  useEffect(() => {
-    if (voice) {
-      tipcClient?.setVoice(voice)
-    }
-  }, [voice])
+  useGeneralSettingKey("voice")
 }
 
 export const SettingSync = () => {

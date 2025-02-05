@@ -46,7 +46,7 @@ export const FeedDrawer = ({ children }: PropsWithChildren) => {
   return (
     <Drawer
       open={isDrawerOpen}
-      drawerStyle={{ width: Math.min(400, winDim.width * 0.85) }}
+      drawerStyle={{ width: winDim.width }}
       onOpen={openDrawer}
       onClose={closeDrawer}
       renderDrawerContent={renderDrawerContent}

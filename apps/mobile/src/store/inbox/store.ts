@@ -3,19 +3,27 @@ import { InboxService } from "@/src/services/inbox"
 
 import { createTransaction, createZustandStore } from "../internal/helper"
 
-const defaultState = {
-  inboxes: [],
+interface InboxState {
+  inboxes: Record<string, InboxSchema>
 }
-export const useInboxStore = createZustandStore<{
-  inboxes: InboxSchema[]
-}>("inbox")(() => defaultState)
+
+const defaultState = {
+  inboxes: {},
+}
+
+export const useInboxStore = createZustandStore<InboxState>("inbox")(() => defaultState)
 
 // const get = useInboxStore.getState
 const set = useInboxStore.setState
 class InboxActions {
   async upsertManyInSession(inboxes: InboxSchema[]) {
     const state = useInboxStore.getState()
-    const nextInboxes = [...state.inboxes, ...inboxes]
+    const nextInboxes: InboxState["inboxes"] = {
+      ...state.inboxes,
+    }
+    inboxes.forEach((inbox) => {
+      nextInboxes[inbox.id] = inbox
+    })
     set({
       ...state,
       inboxes: nextInboxes,

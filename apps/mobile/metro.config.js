@@ -5,6 +5,17 @@ const { wrapWithReanimatedMetroConfig } = require("react-native-reanimated/metro
 const config = getDefaultConfig(__dirname, { isCSSEnabled: true })
 config.resolver.sourceExts.push("sql")
 
+config.resolver.extraNodeModules = {
+  "follow-native": "./native",
+}
+
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: false,
+    inlineRequires: true,
+  },
+})
+
 module.exports = wrapWithReanimatedMetroConfig(
   withNativeWind(config, { input: "./src/global.css" }),
 )

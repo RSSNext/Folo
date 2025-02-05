@@ -23,3 +23,6 @@ vite.config.*.mjs
 
 apps/renderer/dev-dist
 tsconfig.tsbuildinfo
+
+apps/mobile/ios
+apps/mobile/android

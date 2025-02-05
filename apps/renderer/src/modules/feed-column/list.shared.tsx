@@ -223,7 +223,7 @@ const SortButton = () => {
           icon1={
             order === "asc" ? tw`i-mgc-sort-ascending-cute-re` : tw`i-mgc-sort-descending-cute-re`
           }
-          status={by === "count" ? "init" : "done"}
+          status={by === "count" ? "done" : "init"}
         />
       </HoverCard.Trigger>
 

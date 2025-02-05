@@ -74,5 +74,7 @@
   "i18n-ally.displayLanguage": "en",
   "i18n-ally.localesPaths": ["locales"],
   "i18n-ally.namespace": true,
-  "i18n-ally.pathMatcher": "{namespaces}/{locale}.json"
+  "i18n-ally.pathMatcher": "{namespaces}/{locale}.json",
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+  "lldb.launch.expressions": "native"
 }

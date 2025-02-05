@@ -1,8 +1,8 @@
+import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { cn, composeEventHandlers } from "@follow/utils"
-import { memo, useEffect, useState } from "react"
+import { Fragment, memo, useEffect, useState } from "react"
 import type { Pressable } from "react-native"
-import { StyleSheet } from "react-native"
-import {
+import Animated, {
   Easing,
   interpolateColor,
   useAnimatedStyle,
@@ -49,13 +49,20 @@ export const ItemPressable: typeof Pressable = memo(({ children, ...props }) => 
       onPressOut={composeEventHandlers(props.onPressOut, () => setIsPressing(false))}
       onHoverIn={composeEventHandlers(props.onHoverIn, () => setIsPressing(true))}
       onHoverOut={composeEventHandlers(props.onHoverOut, () => setIsPressing(false))}
-      className={cn(
-        // isPressing ? "bg-system-fill" : "bg-secondary-system-grouped-background",
-        props.className,
-      )}
-      style={StyleSheet.flatten([colorStyle, props.style])}
+      className={cn(props.className, "bg-secondary-system-background relative")}
+      style={props.style}
     >
-      {children}
+      {useTypeScriptHappyCallback(
+        (props) => {
+          return (
+            <Fragment>
+              <Animated.View className="absolute inset-0" style={colorStyle} />
+              {typeof children === "function" ? children(props) : children}
+            </Fragment>
+          )
+        },
+        [children, colorStyle],
+      )}
     </ReAnimatedPressable>
   )
 })

@@ -37,10 +37,12 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
         url: entry?.entries.url ?? "",
         mini: true,
         isIframe: !IN_ELECTRON,
+        attachments: entry?.entries.attachments,
       }),
       transformVideoUrl({
         url: entry?.entries.url ?? "",
         isIframe: !IN_ELECTRON,
+        attachments: entry?.entries.attachments,
       }),
     ],
     [entry?.entries.url],

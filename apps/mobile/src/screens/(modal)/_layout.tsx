@@ -21,6 +21,12 @@ export default function ModalLayout() {
           title: "Follow",
         }}
       />
+      <Stack.Screen
+        name="list"
+        options={{
+          title: "List",
+        }}
+      />
     </Stack>
   )
 }

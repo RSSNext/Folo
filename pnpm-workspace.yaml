@@ -1,3 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "apps/mobile/native"
+  - "!**/example"
+  - "!**/example/*"

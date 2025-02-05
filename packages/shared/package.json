@@ -34,14 +34,14 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@hono/node-server": "1.13.7",
-    "@t3-oss/env-core": "^0.11.1",
+    "@hono/node-server": "1.13.8",
+    "@t3-oss/env-core": "^0.12.0",
     "better-auth": "1.1.9-beta.1",
-    "drizzle-orm": "0.37.0",
+    "drizzle-orm": "0.39.1",
     "hono": "4.6.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sonner": "1.7.1",
+    "sonner": "1.7.4",
     "zod": "3.24.1"
   }
 }

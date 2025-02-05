@@ -11,6 +11,7 @@ import { useEventCallback } from "usehooks-ts"
 
 import { ItemPressable } from "@/src/components/ui/pressable/item-pressable"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
+import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import {
   useGroupedSubscription,
   useInboxSubscription,
@@ -22,6 +23,7 @@ import {
 } from "@/src/store/subscription/hooks"
 import { subscriptionSyncService } from "@/src/store/subscription/store"
 
+import { closeDrawer, selectFeed } from "../feed-drawer/atoms"
 import { useFeedListSortMethod, useFeedListSortOrder, viewAtom } from "./atoms"
 import { CategoryGrouped } from "./CategoryGrouped"
 import { ViewTabHeight } from "./constants"
@@ -200,7 +202,8 @@ const StarItem = () => {
   return (
     <ItemPressable
       onPress={() => {
-        // TODO
+        selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
+        closeDrawer()
       }}
       className="mt-4 h-12 w-full flex-row items-center px-3"
     >
