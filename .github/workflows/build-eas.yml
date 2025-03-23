@@ -53,9 +53,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 📦 Setup pnpm
+        if: runner.name != 'self-hosted'
         uses: pnpm/action-setup@v4
 
       - name: 🏗 Setup Node.js
+        if: runner.name != 'self-hosted'
         uses: actions/setup-node@v4
         with:
           node-version: 22
