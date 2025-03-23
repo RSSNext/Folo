@@ -2,12 +2,12 @@ name: Build iOS IPA
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev]
     paths:
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
   pull_request:
-    branches: [dev, main]
+    branches: [dev]
     paths:
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
