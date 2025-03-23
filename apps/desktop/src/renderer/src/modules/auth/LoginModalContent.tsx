@@ -39,6 +39,8 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
 
   const isMobile = useMobile()
 
+  const providers = Object.entries(authProviders || []).filter(([key]) => key !== "credential")
+
   const Inner = (
     <>
       <div className="-mt-8 mb-4 flex items-center justify-center">
@@ -51,45 +53,45 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       </div>
 
       <LoginWithPassword runtime={runtime} />
-      <div className="my-3 w-full space-y-2">
-        <div className="flex items-center justify-center">
-          <Divider className="flex-1" />
-          <p className="text-muted-foreground px-4 text-center text-sm">{t("login.or")}</p>
-          <Divider className="flex-1" />
+      {providers.length > 0 && (
+        <div className="my-3 w-full space-y-2">
+          <div className="flex items-center justify-center">
+            <Divider className="flex-1" />
+            <p className="text-muted-foreground px-4 text-center text-sm">{t("login.or")}</p>
+            <Divider className="flex-1" />
+          </div>
         </div>
-      </div>
+      )}
       <div className="mb-3 flex items-center justify-center gap-4">
-        {Object.entries(authProviders || [])
-          .filter(([key]) => key !== "credential")
-          .map(([key, provider]) => (
-            <Tooltip key={key} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <MotionButtonBase
-                  onClick={() => {
-                    loginHandler(key, "app")
+        {providers.map(([key, provider]) => (
+          <Tooltip key={key} delayDuration={0}>
+            <TooltipTrigger asChild>
+              <MotionButtonBase
+                onClick={() => {
+                  loginHandler(key, "app")
+                }}
+              >
+                <div
+                  className={clsx(
+                    "center hover:bg-muted inline-flex rounded-full border p-2.5 duration-200 [&_svg]:size-6",
+                    overrideAuthProvidersClassName[key],
+                  )}
+                  dangerouslySetInnerHTML={{
+                    __html: provider.icon,
                   }}
-                >
-                  <div
-                    className={clsx(
-                      "center hover:bg-muted inline-flex rounded-full border p-2.5 duration-200 [&_svg]:size-6",
-                      overrideAuthProvidersClassName[key],
-                    )}
-                    dangerouslySetInnerHTML={{
-                      __html: provider.icon,
-                    }}
-                    style={{
-                      color: provider.color,
-                    }}
-                  />
-                </MotionButtonBase>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent>
-                  {t("login.continueWith", { provider: provider.name })}
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          ))}
+                  style={{
+                    color: provider.color,
+                  }}
+                />
+              </MotionButtonBase>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>
+                {t("login.continueWith", { provider: provider.name })}
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        ))}
       </div>
     </>
   )
