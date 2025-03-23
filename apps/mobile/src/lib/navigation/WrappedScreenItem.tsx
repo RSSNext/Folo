@@ -179,13 +179,13 @@ const resolveScreenOptions = (
     if (headerAeras.length > 0) {
       headerConfig.children = (
         <>
-          {headerAeras[0] && (
+          {!!headerAeras[0] && (
             <ScreenStackHeaderLeftView>{headerAeras[0]}</ScreenStackHeaderLeftView>
           )}
-          {headerAeras[1] && (
+          {!!headerAeras[1] && (
             <ScreenStackHeaderCenterView>{headerAeras[1]}</ScreenStackHeaderCenterView>
           )}
-          {headerAeras[2] && (
+          {!!headerAeras[2] && (
             <ScreenStackHeaderRightView>{headerAeras[2]}</ScreenStackHeaderRightView>
           )}
         </>
