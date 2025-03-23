@@ -78,27 +78,9 @@ jobs:
           path: apps/mobile/build.ipa
           retention-days: 90
 
-  check-runner-simulator:
-    runs-on: ubuntu-latest
-    outputs:
-      runner-label: ${{ steps.set-runner.outputs.runner-label }}
-
-    steps:
-      - name: Set runner
-        id: set-runner
-        run: |
-          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.RUNNER_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
-          available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
-          if [ -n "$available" ]; then
-            echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
-          else
-            echo "runner-label=macos-latest" >> $GITHUB_OUTPUT
-          fi
-
   build-simulator:
     name: Build iOS IPA for simulator
-    needs: check-runner-simulator
-    runs-on: ${{ needs.check-runner-simulator.outputs.runner-label }}
+    runs-on: macos-latest
 
     steps:
       - name: 📦 Checkout code
