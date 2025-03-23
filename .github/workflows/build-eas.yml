@@ -73,7 +73,7 @@ jobs:
       - name: 🔨 Build iOS IPA
         run: |
           cd apps/mobile
-          eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
+          eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa --clear-cache
         env:
           CI: true
 
