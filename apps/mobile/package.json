@@ -8,6 +8,7 @@
     "bump": "vv",
     "db:generate": "drizzle-kit generate",
     "dev": "npm run start",
+    "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
     "ios": "expo run:ios",
     "ios:device": "expo run:ios --device",
     "start": "expo start --dev-client",
