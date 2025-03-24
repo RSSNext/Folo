@@ -294,6 +294,7 @@
   "profile.email.unverified": "未验证",
   "profile.email.verification_sent": "验证邮件已发送。",
   "profile.email.verified": "已验证",
+  "profile.email.verify_email": "请认证你的邮箱地址 ({{email_address}}) 以继续。",
   "profile.handle.description": "你的唯一标识。",
   "profile.handle.label": "唯一标识",
   "profile.link_social.authentication": "身份验证",

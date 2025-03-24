@@ -297,6 +297,7 @@
   "profile.email.unverified": "Unverified",
   "profile.email.verification_sent": "Email verification sent",
   "profile.email.verified": "Verified",
+  "profile.email.verify_email": "Please verify your email ({{email_address}}) to continue",
   "profile.handle.description": "Your unique identifier.",
   "profile.handle.label": "Handle",
   "profile.link_social.authentication": "Authentication",
