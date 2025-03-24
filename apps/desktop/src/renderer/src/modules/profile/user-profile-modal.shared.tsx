@@ -175,7 +175,7 @@ const SubscriptionItem: FC<{
               ) : (
                 <>
                   <FollowIcon className="mr-1 size-3" />
-                  {APP_NAME}
+                  {t("feed_form.follow")}
                 </>
               )}
             </Button>
