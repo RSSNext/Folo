@@ -1,3 +1,4 @@
+import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
@@ -5,7 +6,12 @@ import { memo, useContext, useMemo } from "react"
 import { StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ScreenStackHeaderConfigProps, StackPresentationTypes } from "react-native-screens"
-import { ScreenStackItem } from "react-native-screens"
+import {
+  ScreenStackHeaderCenterView,
+  ScreenStackHeaderLeftView,
+  ScreenStackHeaderRightView,
+  ScreenStackItem,
+} from "react-native-screens"
 
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useColor } from "@/src/theme/colors"
@@ -95,10 +101,13 @@ export const WrappedScreenItem: FC<
 
     // Priority: Ctx > Define on Component
 
-    const mergedScreenOptions = {
-      ...screenOptionsProp,
-      ...screenOptionsFromCtx,
-    }
+    const mergedScreenOptions = useMemo(
+      () => ({
+        ...screenOptionsProp,
+        ...resolveScreenOptions(screenOptionsFromCtx),
+      }),
+      [screenOptionsFromCtx, screenOptionsProp],
+    )
     return (
       <ScreenItemContext.Provider value={ctxValue}>
         <ScreenOptionsContext.Provider value={screenOptionsCtxValue}>
@@ -141,3 +150,60 @@ const Header = () => {
 }
 
 WrappedScreenItem.displayName = "WrappedScreenItem"
+
+type ExtractFC<T> = T extends FC<infer P> ? P : never
+const resolveScreenOptions = (
+  options: ScreenOptionsContextType,
+): Partial<ExtractFC<typeof ScreenStackItem>> => {
+  const headerConfig = {
+    ...defaultHeaderConfig,
+  }
+
+  if (options.nativeHeader) {
+    headerConfig.hidden = false
+    headerConfig.translucent = true
+    headerConfig.blurEffect = "systemChromeMaterial"
+    headerConfig.backgroundColor = "rgba(255, 255, 255, 0)"
+
+    const headerAeras = [] as ReactNode[]
+    if (options.headerLeftArea) {
+      headerAeras[0] = options.headerLeftArea
+    }
+    if (options.headerRightArea) {
+      headerAeras[2] = options.headerRightArea
+    }
+    if (options.headerTitleArea) {
+      headerAeras[1] = options.headerTitleArea
+    }
+
+    if (headerAeras.length > 0) {
+      headerConfig.children = (
+        <>
+          {!!headerAeras[0] && (
+            <ScreenStackHeaderLeftView>{headerAeras[0]}</ScreenStackHeaderLeftView>
+          )}
+          {!!headerAeras[1] && (
+            <ScreenStackHeaderCenterView>{headerAeras[1]}</ScreenStackHeaderCenterView>
+          )}
+          {!!headerAeras[2] && (
+            <ScreenStackHeaderRightView>{headerAeras[2]}</ScreenStackHeaderRightView>
+          )}
+        </>
+      )
+    }
+  }
+
+  const finalConfig: Partial<ExtractFC<typeof ScreenStackItem>> = {
+    headerConfig,
+  }
+
+  if (!isUndefined(options.preventNativeDismiss)) {
+    finalConfig.preventNativeDismiss = options.preventNativeDismiss
+  }
+
+  if (!isUndefined(options.gestureEnabled)) {
+    finalConfig.gestureEnabled = options.gestureEnabled
+  }
+
+  return finalConfig
+}

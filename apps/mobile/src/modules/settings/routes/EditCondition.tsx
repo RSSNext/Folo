@@ -42,7 +42,7 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
       : undefined
 
   return (
-    <View className="mt-6">
+    <>
       <GroupedInsetListSectionHeader label="Condition" />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="flex flex-row justify-between">
@@ -108,6 +108,6 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
           <Text className="text-label">{JSON.stringify(item)}</Text>
         </View>
       )}
-    </View>
+    </>
   )
 }

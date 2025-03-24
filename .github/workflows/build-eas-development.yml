@@ -2,13 +2,13 @@ name: Build iOS IPA for development
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev]
     paths:
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
       - "apps/mobile/package.json"
   pull_request:
-    branches: [dev, main]
+    branches: [dev]
     paths:
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
@@ -19,18 +19,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner-label: ${{ steps.set-runner.outputs.runner-label }}
+
+    steps:
+      - name: Set runner
+        id: set-runner
+        run: |
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.RUNNER_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
+          if [ -n "$available" ]; then
+            echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
+          else
+            echo "runner-label=macos-latest" >> $GITHUB_OUTPUT
+          fi
+
   build:
     name: Build iOS IPA for device
-    runs-on: macos-latest
+    needs: check-runner
+    runs-on: ${{ needs.check-runner.outputs.runner-label }}
 
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
 
       - name: 📦 Setup pnpm
+        if: needs.check-runner.outputs.runner-label == 'macos-latest'
         uses: pnpm/action-setup@v4
 
       - name: 🏗 Setup Node.js
+        if: needs.check-runner.outputs.runner-label == 'macos-latest'
         uses: actions/setup-node@v4
         with:
           node-version: 22

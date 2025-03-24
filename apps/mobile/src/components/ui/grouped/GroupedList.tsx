@@ -10,7 +10,13 @@ import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { GROUPED_ICON_TEXT_GAP, GROUPED_LIST_ITEM_PADDING, GROUPED_LIST_MARGIN } from "./constants"
+import {
+  GROUPED_ICON_TEXT_GAP,
+  GROUPED_LIST_ITEM_PADDING,
+  GROUPED_LIST_MARGIN,
+  GROUPED_SECTION_BOTTOM_MARGIN,
+  GROUPED_SECTION_TOP_MARGIN,
+} from "./constants"
 import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
 
 type GroupedInsetListCardProps = {
@@ -74,13 +80,16 @@ export const GroupedInsetListCard: FC<
 
 export const GroupedInsetListSectionHeader: FC<{
   label: string
-}> = ({ label }) => {
+  marginSize?: "normal" | "small"
+}> = ({ label, marginSize = "normal" }) => {
   return (
     <View
-      className="h-[23px]"
       style={{
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
         marginHorizontal: GROUPED_LIST_MARGIN,
+        marginTop:
+          marginSize === "normal" ? GROUPED_SECTION_TOP_MARGIN : GROUPED_SECTION_TOP_MARGIN / 2,
+        marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
       }}
     >
       <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
@@ -90,18 +99,21 @@ export const GroupedInsetListSectionHeader: FC<{
   )
 }
 
-export const GroupedInsetListBaseCell: FC<PropsWithChildren & ViewProps> = ({
-  children,
-  ...props
-}) => {
+export const GroupedInsetListBaseCell: FC<
+  PropsWithChildren &
+    ViewProps & {
+      as?: FC<any>
+    }
+> = ({ children, as, ...props }) => {
+  const Component = as ?? View
   return (
-    <View
+    <Component
       {...props}
       className={cn("flex-row items-center justify-between py-4", props.className)}
       style={[{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }, props.style]}
     >
       {children}
-    </View>
+    </Component>
   )
 }
 
@@ -206,6 +218,32 @@ export const GroupedInsetListActionCellRadio: FC<{
   )
 }
 
+const OverlayInterectionPressable = ({
+  children,
+  ...props
+}: PropsWithChildren & PressableProps) => {
+  return (
+    <Pressable {...props} className={cn("flex-1", props.className)}>
+      {({ pressed }) => {
+        return (
+          <>
+            {/* Pressed Overlay Effect */}
+            {pressed && (
+              <Animated.View
+                className="bg-system-fill absolute inset-0"
+                entering={FadeIn.duration(100)}
+                exiting={FadeOut.duration(100)}
+              />
+            )}
+
+            {children}
+          </>
+        )
+      }}
+    </Pressable>
+  )
+}
+
 export const GroupedInsetListActionCell: FC<{
   label: string
   description?: string
@@ -295,24 +333,8 @@ export const GroupedPlainButtonCell: FC<
   } & PressableProps
 > = ({ label, textClassName, ...props }) => {
   return (
-    <GroupedInsetListBaseCell className="p-0">
-      <Pressable {...props} className="flex-1">
-        {({ pressed }) => {
-          return (
-            <View className="flex-1 px-5 py-4">
-              {/* Pressed Overlay Effect */}
-              {pressed && (
-                <Animated.View
-                  className="bg-system-fill absolute inset-0"
-                  entering={FadeIn.duration(100)}
-                  exiting={FadeOut.duration(100)}
-                />
-              )}
-              <Text className={cn("text-accent text-center", textClassName)}>{label}</Text>
-            </View>
-          )
-        }}
-      </Pressable>
+    <GroupedInsetListBaseCell as={OverlayInterectionPressable} {...(props as any)}>
+      <Text className={cn("text-accent text-center", textClassName)}>{label}</Text>
     </GroupedInsetListBaseCell>
   )
 }

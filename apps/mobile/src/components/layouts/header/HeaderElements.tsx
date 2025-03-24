@@ -1,6 +1,6 @@
 import { withOpacity } from "@follow/utils"
 import { useCallback } from "react"
-import { TouchableOpacity, View } from "react-native"
+import { TouchableOpacity } from "react-native"
 
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
@@ -15,8 +15,9 @@ import { StackScreenHeaderPortal } from "@/src/lib/navigation/StackScreenHeaderP
 import { useColor } from "@/src/theme/colors"
 
 import { RotateableLoading } from "../../common/RotateableLoading"
+import { UINavigationHeaderActionButton } from "./NavigationHeader"
 
-export const HeaderCloseButton = () => {
+const HeaderCloseButton = () => {
   const label = useColor("label")
 
   const navigation = useNavigation()
@@ -56,22 +57,22 @@ export const HeaderSubmitButton = ({
   const label = useColor("label")
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={!isValid || isLoading}>
+    <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
       {isLoading ? (
         <RotateableLoading size={20} color={withOpacity(label, 0.5)} />
       ) : (
         <CheckLineIcon height={20} width={20} color={isValid ? label : withOpacity(label, 0.5)} />
       )}
-    </TouchableOpacity>
+    </UINavigationHeaderActionButton>
   )
 }
 
 export const HeaderCloseOnly = () => {
   return (
     <StackScreenHeaderPortal>
-      <View className="absolute left-4 top-4">
+      <UINavigationHeaderActionButton className="absolute left-4 top-4">
         <HeaderCloseButton />
-      </View>
+      </UINavigationHeaderActionButton>
     </StackScreenHeaderPortal>
   )
 }

@@ -37,7 +37,7 @@ const shortcutConfigs = {
     },
     zenMode: {
       name: "keys.layout.zenMode",
-      key: "Control+Shift+Z",
+      key: "Ctrl+Shift+Z",
     },
   },
   entries: {

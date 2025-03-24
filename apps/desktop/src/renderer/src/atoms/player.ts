@@ -99,8 +99,11 @@ export const AudioPlayer = {
         currentTime: this.audio.currentTime,
       })
     }, 1000)
-    if (Number.isNaN(this.audio.duration) || this.audio.duration === Infinity) {
-      this.audio.currentTime = 0
+
+    this.audio.onloadedmetadata = () => {
+      if (Number.isNaN(this.audio.duration) || this.audio.duration === Infinity) {
+        this.audio.currentTime = 0
+      }
     }
 
     const currentActionId = this.__currentActionId

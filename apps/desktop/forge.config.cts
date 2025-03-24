@@ -6,6 +6,7 @@ import { cp, readdir } from "node:fs/promises"
 import path, { resolve } from "node:path"
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
+import { MakerAppX } from "@electron-forge/maker-appx"
 import { MakerDMG } from "@electron-forge/maker-dmg"
 import { MakerPKG } from "@electron-forge/maker-pkg"
 import { MakerSquirrel } from "@electron-forge/maker-squirrel"
@@ -19,7 +20,7 @@ import { rimraf, rimrafSync } from "rimraf"
 
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
 
-const artifactRegex = /.*\.(?:exe|dmg|AppImage|zip)$/
+const artifactRegex = /.*\.(?:exe|dmg|AppImage|zip|appx)$/
 const platformNamesMap = {
   darwin: "macos",
   linux: "linux",
@@ -197,6 +198,16 @@ const config: ForgeConfig = {
       },
       ["mas"],
     ),
+    new MakerAppX({
+      publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
+      packageDisplayName: "Folo - Follow everything in one place",
+      devCert: "build/dev.pfx",
+      assets: "static/appx",
+      // @ts-ignore
+      publisherDisplayName: "Natural Selection Labs",
+      identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
+      packageBackgroundColor: "#FF5C00",
+    }),
   ],
   plugins: [
     // Fuses are used to enable/disable various Electron functionality

@@ -47,7 +47,7 @@ export const AboutScreen = () => {
   const appVersion = Constants.expoConfig?.version || "0.0.0"
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background mt-6">
+    <SafeNavigationScrollView className="bg-system-grouped-background" contentViewClassName="pt-6">
       <NavigationBlurEffectHeader title="About" />
 
       <GroupedInsetListCard>
@@ -82,23 +82,22 @@ export const AboutScreen = () => {
           </View>
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
-      <View className="mt-10">
-        <GroupedInsetListSectionHeader label="Social Links" />
-        <GroupedInsetListCard>
-          {links.map((link) => (
-            <GroupedInsetListNavigationLink
-              key={link.title}
-              label={link.title}
-              icon={
-                <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
-                  <link.icon color={link.iconColor} height={18} width={18} />
-                </GroupedInsetListNavigationLinkIcon>
-              }
-              onPress={() => Linking.openURL(link.url)}
-            />
-          ))}
-        </GroupedInsetListCard>
-      </View>
+
+      <GroupedInsetListSectionHeader label="Social Links" />
+      <GroupedInsetListCard>
+        {links.map((link) => (
+          <GroupedInsetListNavigationLink
+            key={link.title}
+            label={link.title}
+            icon={
+              <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
+                <link.icon color={link.iconColor} height={18} width={18} />
+              </GroupedInsetListNavigationLinkIcon>
+            }
+            onPress={() => Linking.openURL(link.url)}
+          />
+        ))}
+      </GroupedInsetListCard>
     </SafeNavigationScrollView>
   )
 }

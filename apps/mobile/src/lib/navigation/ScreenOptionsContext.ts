@@ -5,6 +5,11 @@ import { createContext, useCallback, useContext } from "react"
 export interface ScreenOptionsContextType {
   gestureEnabled?: boolean
   preventNativeDismiss?: boolean
+
+  nativeHeader?: boolean
+  headerLeftArea?: React.ReactNode
+  headerRightArea?: React.ReactNode
+  headerTitleArea?: React.ReactNode
 }
 export const ScreenOptionsContext = createContext<PrimitiveAtom<ScreenOptionsContextType>>(null!)
 

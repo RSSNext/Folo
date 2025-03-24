@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
-import { View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { RotateableLoading } from "@/src/components/common/RotateableLoading"
@@ -66,7 +65,7 @@ export const ResetPassword = () => {
           [confirmNewPassword, currentPassword, handleSave, isPending, labelColor, newPassword],
         )}
       />
-      <View className="h-4" />
+
       <GroupedInsetListSectionHeader label="Current Password" />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
@@ -83,8 +82,7 @@ export const ResetPassword = () => {
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
-      <View className="h-4" />
-      <GroupedInsetListSectionHeader label="New Password" />
+      <GroupedInsetListSectionHeader marginSize="small" label="New Password" />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField
@@ -99,8 +97,7 @@ export const ResetPassword = () => {
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
-      <View className="h-4" />
-      <GroupedInsetListSectionHeader label="Confirm New Password" />
+      <GroupedInsetListSectionHeader marginSize="small" label="Confirm New Password" />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">
           <PlainTextField

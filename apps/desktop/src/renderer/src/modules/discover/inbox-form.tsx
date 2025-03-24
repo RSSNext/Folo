@@ -145,55 +145,50 @@ const InboxInnerForm = ({
           </CardHeader>
         </Card>
       )}
-      <>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className={cn("space-y-4")}
-            data-testid="discover-form"
-          >
-            {!inbox && (
-              <FormField
-                control={form.control}
-                name="handle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("discover.inbox_handle")}</FormLabel>
-                    <FormControl>
-                      <div className={cn("flex w-64 items-center gap-2")}>
-                        <Input autoFocus {...field} />
-                        <span className="text-zinc-500">{env.VITE_INBOXES_EMAIL}</span>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={cn("space-y-4")}
+          data-testid="discover-form"
+        >
+          {!inbox && (
             <FormField
               control={form.control}
-              name="title"
+              name="handle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("discover.inbox_title")}</FormLabel>
+                  <FormLabel>{t("discover.inbox_handle")}</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <div className={cn("flex w-64 items-center gap-2")}>
+                      <Input autoFocus {...field} />
+                      <span className="text-zinc-500">{env.VITE_INBOXES_EMAIL}</span>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div
-              className={cn("center flex justify-end gap-4")}
-              data-testid="discover-form-actions"
-            >
-              <Button type="submit" isLoading={mutationCreate.isPending}>
-                {t(inbox ? "discover.inbox_update" : "discover.inbox_create")}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </>
+          )}
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("discover.inbox_title")}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className={cn("center flex justify-end gap-4")} data-testid="discover-form-actions">
+            <Button type="submit" isLoading={mutationCreate.isPending}>
+              {t(inbox ? "discover.inbox_update" : "discover.inbox_create")}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   )
 }

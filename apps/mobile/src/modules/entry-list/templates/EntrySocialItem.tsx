@@ -75,6 +75,7 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
   return (
     <EntryItemContextMenu id={entryId}>
       <ItemPressable
+        touchHighlight={false}
         itemStyle={ItemPressableStyle.Plain}
         className="flex flex-col gap-2 p-4 pl-6"
         onPress={handlePress}

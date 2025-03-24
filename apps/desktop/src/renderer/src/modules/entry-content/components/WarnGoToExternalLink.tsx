@@ -6,7 +6,7 @@ import { parseSafeUrl } from "@follow/utils/utils"
 import { Label } from "@radix-ui/react-label"
 import { PopoverPortal } from "@radix-ui/react-popover"
 import { atomWithStorage } from "jotai/utils"
-import { forwardRef, Fragment, useState } from "react"
+import { forwardRef, useState } from "react"
 
 import { useGeneralSettingKey, useGeneralSettingValue } from "~/atoms/settings/general"
 import { jotaiStore } from "~/lib/jotai"
@@ -87,33 +87,31 @@ const WarnGoToExternalLinkImpl = forwardRef<
     }
   }
   return (
-    <Fragment>
-      <Popover open={open} onOpenChange={(v) => !v && setOpen(false)}>
-        <PopoverTrigger asChild>
-          <a ref={ref} {...rest} onClick={handleOpen} />
-        </PopoverTrigger>
-        <PopoverPortal>
-          <PopoverContent>
-            <p className="max-w-[50ch] text-sm">
-              You are about to leave this site to go to an external page, do you trust this URL and
-              go to it?
-            </p>
-            <p className="mt-2 text-center text-sm underline">{rest.href}</p>
+    <Popover open={open} onOpenChange={(v) => !v && setOpen(false)}>
+      <PopoverTrigger asChild>
+        <a ref={ref} {...rest} onClick={handleOpen} />
+      </PopoverTrigger>
+      <PopoverPortal>
+        <PopoverContent>
+          <p className="max-w-[50ch] text-sm">
+            You are about to leave this site to go to an external page, do you trust this URL and go
+            to it?
+          </p>
+          <p className="mt-2 text-center text-sm underline">{rest.href}</p>
 
-            <div className="mt-3 flex justify-between">
-              <Label className="center flex">
-                <Checkbox checked={checked} onCheckedChange={setChecked} />
-                <span className="ml-2 text-[13px]">Trust this domain</span>
-              </Label>
+          <div className="mt-3 flex justify-between">
+            <Label className="center flex">
+              <Checkbox checked={checked} onCheckedChange={setChecked} />
+              <span className="ml-2 text-[13px]">Trust this domain</span>
+            </Label>
 
-              <IconButton icon={<i className="i-mingcute-arrow-right-line" />} onClick={handleGo}>
-                <span className="duration-200 group-hover:opacity-0">Go</span>
-              </IconButton>
-            </div>
-          </PopoverContent>
-        </PopoverPortal>
-      </Popover>
-    </Fragment>
+            <IconButton icon={<i className="i-mingcute-arrow-right-line" />} onClick={handleGo}>
+              <span className="duration-200 group-hover:opacity-0">Go</span>
+            </IconButton>
+          </div>
+        </PopoverContent>
+      </PopoverPortal>
+    </Popover>
   )
 })
 

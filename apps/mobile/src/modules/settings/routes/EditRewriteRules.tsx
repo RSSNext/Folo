@@ -19,7 +19,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
   return (
     <SafeModalScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Edit Rewrite Rules" />
-      <GroupedInsetListSectionHeader label="Rewrite Rules" />
+      <GroupedInsetListSectionHeader label="Rewrite Rules" marginSize="small" />
       {rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => (
         <GroupedInsetListCard key={rewriteRuleIndex} className="mb-4">
           <GroupedInsetListBaseCell className="flex-row">

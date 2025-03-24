@@ -70,148 +70,146 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   }
 
   return (
-    <>
-      <DropdownMenu onOpenChange={setDropdown}>
-        <DropdownMenuTrigger
-          asChild
-          className="focus-visible:bg-theme-item-hover !outline-none data-[state=open]:bg-transparent"
+    <DropdownMenu onOpenChange={setDropdown}>
+      <DropdownMenuTrigger
+        asChild
+        className="focus-visible:bg-theme-item-hover !outline-none data-[state=open]:bg-transparent"
+      >
+        {props.animatedAvatar ? (
+          <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
+        ) : (
+          <UserAvatar hideName className="size-6 p-0 [&_*]:border-0" />
+        )}
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        className="min-w-[180px] overflow-visible px-1 pt-6"
+        side="bottom"
+        align="center"
+      >
+        <DropdownMenuLabel>
+          <div className="text-center leading-none">
+            <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
+              {user?.name}
+            </EllipsisHorizontalTextWithTooltip>
+            {!!user?.handle && (
+              <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
+                <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
+                  @{user.handle}
+                </EllipsisHorizontalTextWithTooltip>
+              </a>
+            )}
+          </div>
+        </DropdownMenuLabel>
+
+        <DropdownMenuItem
+          onClick={() => {
+            navigate("/power")
+          }}
         >
-          {props.animatedAvatar ? (
-            <TransitionAvatar stage={dropdown ? "zoom-in" : ""} />
-          ) : (
-            <UserAvatar hideName className="size-6 p-0 [&_*]:border-0" />
-          )}
-        </DropdownMenuTrigger>
+          <div className="flex w-full items-center justify-between gap-6 px-1.5 font-semibold">
+            <PowerButton isLoading={isLoadingWallet} myWallet={myWallet} />
+            <Level level={myWallet?.level?.level || 0} isLoading={isLoadingWallet} />
+            <ActivityPoints
+              className="text-sm"
+              points={myWallet?.level?.prevActivityPoints || 0}
+              isLoading={isLoadingWallet}
+            />
+          </div>
+        </DropdownMenuItem>
 
-        <DropdownMenuContent
-          className="min-w-[180px] overflow-visible px-1 pt-6"
-          side="bottom"
-          align="center"
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            presentUserProfile(user?.id)
+          }}
+          icon={<i className="i-mgc-user-3-cute-re" />}
         >
-          <DropdownMenuLabel>
-            <div className="text-center leading-none">
-              <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
-                {user?.name}
-              </EllipsisHorizontalTextWithTooltip>
-              {!!user?.handle && (
-                <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
-                  <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
-                    @{user.handle}
-                  </EllipsisHorizontalTextWithTooltip>
-                </a>
-              )}
-            </div>
-          </DropdownMenuLabel>
+          {t("user_button.profile")}
+        </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={() => {
-              navigate("/power")
-            }}
-          >
-            <div className="flex w-full items-center justify-between gap-6 px-1.5 font-semibold">
-              <PowerButton isLoading={isLoadingWallet} myWallet={myWallet} />
-              <Level level={myWallet?.level?.level || 0} isLoading={isLoadingWallet} />
-              <ActivityPoints
-                className="text-sm"
-                points={myWallet?.level?.prevActivityPoints || 0}
-                isLoading={isLoadingWallet}
-              />
-            </div>
-          </DropdownMenuItem>
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            if (role !== UserRole.Trial) {
+              presentAchievement()
+            } else {
+              presentActivationModal()
+            }
+          }}
+          icon={<i className="i-mgc-trophy-cute-re" />}
+        >
+          {t("user_button.achievement")}
+        </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
+        {!zenModeSetting && (
           <DropdownMenuItem
             className="pl-3"
             onClick={() => {
-              presentUserProfile(user?.id)
+              setZenMode(true)
             }}
-            icon={<i className="i-mgc-user-3-cute-re" />}
+            icon={<MdiMeditation className="size-4" />}
           >
-            {t("user_button.profile")}
+            {t("user_button.zen_mode")}
           </DropdownMenuItem>
+        )}
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            navigate("/action")
+          }}
+          icon={<i className="i-mgc-magic-2-cute-re" />}
+        >
+          {t("words.actions")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            navigate("/rsshub")
+          }}
+          icon={<img src={rsshubLogo} className="size-3 grayscale" />}
+        >
+          {t("words.rsshub")}
+        </DropdownMenuItem>
 
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={() => {
-              if (role !== UserRole.Trial) {
-                presentAchievement()
-              } else {
-                presentActivationModal()
-              }
-            }}
-            icon={<i className="i-mgc-trophy-cute-re" />}
-          >
-            {t("user_button.achievement")}
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {!zenModeSetting && (
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            settingModalPresent()
+          }}
+          icon={<i className="i-mgc-settings-7-cute-re" />}
+        >
+          {t("user_button.preferences")}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {!window.electron && (
+          <>
             <DropdownMenuItem
               className="pl-3"
               onClick={() => {
-                setZenMode(true)
+                window.open(`${repository.url}/releases`)
               }}
-              icon={<MdiMeditation className="size-4" />}
+              icon={<i className="i-mgc-download-2-cute-re" />}
             >
-              {t("user_button.zen_mode")}
+              {t("user_button.download_desktop_app")}
             </DropdownMenuItem>
-          )}
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={() => {
-              navigate("/action")
-            }}
-            icon={<i className="i-mgc-magic-2-cute-re" />}
-          >
-            {t("words.actions")}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={() => {
-              navigate("/rsshub")
-            }}
-            icon={<img src={rsshubLogo} className="size-3 grayscale" />}
-          >
-            {t("words.rsshub")}
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={() => {
-              settingModalPresent()
-            }}
-            icon={<i className="i-mgc-settings-7-cute-re" />}
-          >
-            {t("user_button.preferences")}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          {!window.electron && (
-            <>
-              <DropdownMenuItem
-                className="pl-3"
-                onClick={() => {
-                  window.open(`${repository.url}/releases`)
-                }}
-                icon={<i className="i-mgc-download-2-cute-re" />}
-              >
-                {t("user_button.download_desktop_app")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          <DropdownMenuItem
-            className="pl-3"
-            onClick={signOut}
-            icon={<i className="i-mgc-exit-cute-re" />}
-          >
-            {t("user_button.log_out")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={signOut}
+          icon={<i className="i-mgc-exit-cute-re" />}
+        >
+          {t("user_button.log_out")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 })
 ProfileButton.displayName = "ProfileButton"

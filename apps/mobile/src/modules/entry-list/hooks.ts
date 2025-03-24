@@ -29,10 +29,19 @@ export function useOnViewableItemsChanged({
     changed: ViewToken[]
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
     debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
+    const removed = changed.filter((item) => !item.isViewable)
 
     if (orientation.current === "down") {
       setLastViewableItems(viewableItems)
-      setLastRemovedItems(changed.filter((item) => !item.isViewable))
+      if (removed.length > 0) {
+        setLastRemovedItems((prev) => {
+          if (prev) {
+            return prev.concat(removed)
+          } else {
+            return removed
+          }
+        })
+      }
     } else {
       setLastRemovedItems(null)
       setLastViewableItems(null)
@@ -40,18 +49,26 @@ export function useOnViewableItemsChanged({
   })
 
   useEffect(() => {
-    if (!disabled) {
-      if (markAsReadWhenScrolling && lastRemovedItems) {
-        lastRemovedItems.forEach((item) => {
-          unreadSyncService.markEntryAsRead(stableIdExtractor(item))
-        })
-      }
+    if (disabled) return
 
-      if (markAsReadWhenRendering && lastViewableItems) {
-        lastViewableItems.forEach((item) => {
-          unreadSyncService.markEntryAsRead(stableIdExtractor(item))
+    if (markAsReadWhenScrolling && lastRemovedItems) {
+      lastRemovedItems.forEach((item) => {
+        unreadSyncService.markEntryAsRead(stableIdExtractor(item)).then(() => {
+          setLastRemovedItems((prev) => {
+            if (prev) {
+              return prev.filter((prevItem) => prevItem.key !== item.key)
+            } else {
+              return null
+            }
+          })
         })
-      }
+      })
+    }
+
+    if (markAsReadWhenRendering && lastViewableItems) {
+      lastViewableItems.forEach((item) => {
+        unreadSyncService.markEntryAsRead(stableIdExtractor(item))
+      })
     }
   }, [
     disabled,

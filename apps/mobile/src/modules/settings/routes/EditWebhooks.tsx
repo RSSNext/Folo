@@ -19,7 +19,7 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
   return (
     <SafeModalScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Edit Webhooks" />
-      <GroupedInsetListSectionHeader label="Webhooks" />
+      <GroupedInsetListSectionHeader label="Webhooks" marginSize="small" />
       <GroupedInsetListCard>
         {rule?.result.webhooks?.map((webhook, webhookIndex) => (
           <GroupedInsetListBaseCell className="flex-row" key={webhookIndex}>

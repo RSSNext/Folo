@@ -100,14 +100,12 @@ export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButt
 
 export const AddFeedButton = () => {
   return (
-    <>
-      <UIBarButton
-        label="Add Feed"
-        normalIcon={<AddCuteReIcon color={accentColor} />}
-        onPress={() => {
-          Dialog.show(AddFeedDialog)
-        }}
-      />
-    </>
+    <UIBarButton
+      label="Add Feed"
+      normalIcon={<AddCuteReIcon color={accentColor} />}
+      onPress={() => {
+        Dialog.show(AddFeedDialog)
+      }}
+    />
   )
 }

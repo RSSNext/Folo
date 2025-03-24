@@ -116,12 +116,10 @@ const ProfileForm: FC<{
     [dirtyFields, isPending, label, updateProfile],
   )
 
-  const Header = <NavigationBlurEffectHeader headerRight={headerRight} title="Edit Profile" />
-
   const navigation = useNavigation()
   return (
     <View className="mt-4">
-      {Header}
+      <NavigationBlurEffectHeader headerRight={headerRight} title="Edit Profile" />
 
       <TouchableWithoutFeedback
         onPress={() => {

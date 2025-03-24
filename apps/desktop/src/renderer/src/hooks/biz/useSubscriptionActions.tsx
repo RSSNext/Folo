@@ -96,15 +96,13 @@ const UnfollowInfo = ({ title, undo }: { title: string; undo: () => any }) => {
     preventDefault: true,
   })
   return (
-    <>
-      <Trans
-        ns="app"
-        i18nKey="notify.unfollow_feed"
-        components={{
-          FeedItem: <i className="mr-px font-semibold">{title}</i>,
-        }}
-      />
-    </>
+    <Trans
+      ns="app"
+      i18nKey="notify.unfollow_feed"
+      components={{
+        FeedItem: <i className="mr-px font-semibold">{title}</i>,
+      }}
+    />
   )
 }
 

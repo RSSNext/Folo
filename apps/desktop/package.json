@@ -38,6 +38,7 @@
   "devDependencies": {
     "@clack/prompts": "0.10.0",
     "@electron-forge/cli": "7.7.0",
+    "@electron-forge/maker-appx": "7.7.0",
     "@electron-forge/maker-dmg": "7.7.0",
     "@electron-forge/maker-pkg": "7.7.0",
     "@electron-forge/maker-squirrel": "7.7.0",

@@ -42,6 +42,7 @@ export class Navigation {
       route.id = `${route.id}-${this.viewIdCounter++}`
     }
     jotaiStore.set(this.ctxValue.routesAtom, [...routes, route])
+    this.emit("screenChange", { screenId: route.id, type: "appear", route })
   }
 
   private resolveScreenOptions<T>(
@@ -94,6 +95,7 @@ export class Navigation {
       return
     }
     jotaiStore.set(this.ctxValue.routesAtom, routes.slice(0, -1))
+    this.emit("screenChange", { screenId: lastRoute.id, type: "disappear", route: lastRoute })
   }
 
   /**
@@ -177,4 +179,5 @@ type LifecycleEventPayload = {
 type ScreenChangeEventPayload = {
   screenId: string
   type: "appear" | "disappear"
+  route?: Route
 }

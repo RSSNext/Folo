@@ -90,6 +90,7 @@
     "sonner": "2.0.1",
     "tldts": "6.1.84",
     "use-context-selector": "2.0.0",
+    "use-sync-external-store": "1.4.0",
     "usehooks-ts": "3.1.1",
     "zod": "3.24.2",
     "zustand": "5.0.3"

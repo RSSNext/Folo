@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import * as Haptics from "expo-haptics"
 import { useEffect, useMemo } from "react"
+import type { StyleProp, ViewStyle } from "react-native"
 import { Animated, StyleSheet } from "react-native"
 import PagerView from "react-native-pager-view"
 
@@ -14,8 +15,10 @@ const AnimatedPagerView = Animated.createAnimatedComponent<typeof PagerView>(Pag
 
 export function PagerList({
   renderItem,
+  style,
 }: {
   renderItem: (view: FeedViewType, active: boolean) => React.ReactNode
+  style?: StyleProp<ViewStyle> | undefined
 }) {
   const selectedFeed = useSelectedFeed()
   const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
@@ -38,7 +41,7 @@ export function PagerList({
     <AnimatedPagerView
       testID="pager-view"
       ref={pagerRef}
-      style={styles.PagerView}
+      style={[styles.PagerView, style]}
       initialPage={page}
       layoutDirection="ltr"
       overdrag

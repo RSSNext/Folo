@@ -9,6 +9,8 @@ import {
   GROUPED_ICON_TEXT_GAP,
   GROUPED_LIST_ITEM_PADDING,
   GROUPED_LIST_MARGIN,
+  GROUPED_SECTION_BOTTOM_MARGIN,
+  GROUPED_SECTION_TOP_MARGIN,
 } from "@/src/components/ui/grouped/constants"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
@@ -42,7 +44,13 @@ const keyExtractor = (item: string | { category: string; subscriptionIds: string
   return item.category
 }
 
-export const SubscriptionList = ({ view }: { view: FeedViewType }) => {
+export const SubscriptionList = ({
+  view,
+  active = true,
+}: {
+  view: FeedViewType
+  active?: boolean
+}) => {
   const listIds = useListSubscription(view)
   const sortedListIds = useSortedListSubscription(listIds, "alphabet")
 
@@ -91,7 +99,7 @@ export const SubscriptionList = ({ view }: { view: FeedViewType }) => {
     return subscriptionSyncService.fetch(view)
   })
 
-  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any>>()
+  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any>>(active)
 
   return (
     <TimelineSelectorList
@@ -181,15 +189,16 @@ const ItemRender = ({
   const { category, subscriptionIds } = item
 
   if (!extraData) return null
-  const { groupedIndexRange, feedsIndexRange } = extraData
-  const hasFeedAfterGrouped = groupedIndexRange[1] < feedsIndexRange[1]
+  const { feedsIndexRange } = extraData
+  const isFirst = index === feedsIndexRange[0]
+  const isLast = index === feedsIndexRange[1]
 
   return (
     <CategoryGrouped
       category={category}
       subscriptionIds={subscriptionIds}
-      isFirst={index === groupedIndexRange[0]}
-      isLast={!hasFeedAfterGrouped}
+      isFirst={isFirst}
+      isLast={isLast}
     />
   )
 }
@@ -197,13 +206,14 @@ const ItemRender = ({
 const SectionTitle = ({ title }: { title: string }) => {
   return (
     <View
-      className="mb-1 mt-5 h-[23px]"
       style={{
         marginHorizontal: GROUPED_LIST_MARGIN,
+        marginTop: GROUPED_SECTION_TOP_MARGIN,
+        marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
         paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
       }}
     >
-      <Text className="text-secondary-label uppercase" ellipsizeMode="tail" numberOfLines={1}>
+      <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
         {title}
       </Text>
     </View>

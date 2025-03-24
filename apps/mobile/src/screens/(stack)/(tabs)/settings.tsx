@@ -28,9 +28,12 @@ export function Settings() {
 
   const whoami = useWhoami()
 
+  const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
+
   return (
     <>
       <SafeNavigationScrollView
+        ref={scrollViewRef}
         scrollEventThrottle={16}
         style={{ paddingTop: insets.top }}
         className="bg-system-grouped-background flex-1"

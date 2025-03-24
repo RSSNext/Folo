@@ -36,7 +36,7 @@ const Wrapper: Component<{
 
   const [showActionOverlay, setShowActionOverlay] = useState(false)
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!containerRef.current || !showActions) {
       return
     }
     const $container = containerRef.current
@@ -57,7 +57,7 @@ const Wrapper: Component<{
       $container.removeEventListener("mousemove", handleMouseMove)
       $container.removeEventListener("mouseleave", outOfContainer)
     }
-  }, [sideContent])
+  }, [sideContent, showActions])
 
   return (
     <div

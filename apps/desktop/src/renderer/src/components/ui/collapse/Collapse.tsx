@@ -90,21 +90,19 @@ export const CollapseContent: Component<{
     return v
   }, [])
   return (
-    <>
-      <AnimatePresence initial={false}>
-        {isOpened && (
-          <m.div
-            key="content"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={variants}
-            className={className}
-          >
-            {children}
-          </m.div>
-        )}
-      </AnimatePresence>
-    </>
+    <AnimatePresence initial={false}>
+      {isOpened && (
+        <m.div
+          key="content"
+          initial="collapsed"
+          animate="open"
+          exit="collapsed"
+          variants={variants}
+          className={className}
+        >
+          {children}
+        </m.div>
+      )}
+    </AnimatePresence>
   )
 }

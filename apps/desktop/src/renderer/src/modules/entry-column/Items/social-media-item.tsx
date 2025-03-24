@@ -137,7 +137,12 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
           (item) => item.id !== COMMAND_ID.entry.read && item.id !== COMMAND_ID.entry.openInBrowser,
         )
         .map((item) => (
-          <CommandActionButton commandId={item.id} onClick={item.onClick} key={item.id} />
+          <CommandActionButton
+            commandId={item.id}
+            active={item.active}
+            onClick={item.onClick}
+            key={item.id}
+          />
         ))}
     </div>
   )

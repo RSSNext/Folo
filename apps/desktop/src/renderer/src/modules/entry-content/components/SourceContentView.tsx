@@ -37,30 +37,28 @@ export const SourceContentView = ({ src }: { src: string }) => {
   }, [src, showSourceContent])
 
   return (
-    <>
-      <div className="relative flex size-full flex-col">
-        {loading && (
-          <div className="center mt-16 min-w-0">
-            <EntryContentLoading icon={src} />
-          </div>
-        )}
-        <m.div
+    <div className="relative flex size-full flex-col">
+      {loading && (
+        <div className="center mt-16 min-w-0">
+          <EntryContentLoading icon={src} />
+        </div>
+      )}
+      <m.div
+        className="size-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loading ? 0 : 1 }}
+        transition={softSpringPreset}
+      >
+        <ViewTag
+          ref={webviewRef}
           className="size-full"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: loading ? 0 : 1 }}
-          transition={softSpringPreset}
-        >
-          <ViewTag
-            ref={webviewRef}
-            className="size-full"
-            src={src}
-            sandbox="allow-scripts allow-same-origin"
-            // For iframe
-            onLoad={() => setLoading(false)}
-          />
-        </m.div>
-      </div>
-    </>
+          src={src}
+          sandbox="allow-scripts allow-same-origin"
+          // For iframe
+          onLoad={() => setLoading(false)}
+        />
+      </m.div>
+    </div>
   )
 }
 

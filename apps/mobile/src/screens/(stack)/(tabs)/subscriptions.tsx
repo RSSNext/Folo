@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
 import { View } from "react-native"
+import { useColor } from "react-native-uikit-colors"
 
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { BlackBoard2CuteFiIcon } from "@/src/icons/black_board_2_cute_fi"
@@ -14,11 +15,21 @@ import { useWhoami } from "@/src/store/user/hooks"
 
 export default function Subscriptions() {
   const whoami = useWhoami()
+  const systemGroupedBackground = useColor("systemGroupedBackground")
 
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
       <TimelineSelectorProvider>
-        {whoami ? <PagerList renderItem={renderItem} /> : <NoLoginInfo target="subscriptions" />}
+        {whoami ? (
+          <PagerList
+            renderItem={renderItem}
+            style={{
+              backgroundColor: systemGroupedBackground,
+            }}
+          />
+        ) : (
+          <NoLoginInfo target="subscriptions" />
+        )}
       </TimelineSelectorProvider>
     </EntryListContext.Provider>
   )
@@ -32,8 +43,8 @@ SubscriptionsTabScreen.tabBarIcon = ({ focused, color }) => {
 
 SubscriptionsTabScreen.title = "Subscriptions"
 
-const renderItem = (view: FeedViewType) => (
-  <View key={view} className="bg-system-grouped-background">
-    <SubscriptionList view={view} />
+const renderItem = (view: FeedViewType, active: boolean) => (
+  <View key={view}>
+    <SubscriptionList view={view} active={active} />
   </View>
 )

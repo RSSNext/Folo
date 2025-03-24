@@ -126,13 +126,13 @@ jobs:
           cd apps/desktop
           pnpm update:main-hash
       - name: Build
-        if: matrix.os != 'macos-latest'
+        if: runner.os != 'macOS'
         run: pnpm build:electron
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Build (macOS)
-        if: matrix.os == 'macos-latest' && github.event.inputs.mas != 'true'
+        if: runner.os == 'macOS' && github.event.inputs.mas != 'true'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -146,7 +146,7 @@ jobs:
           command: pnpm build:macos
 
       - name: Build (Mac App Store)
-        if: matrix.os == 'macos-latest' && github.event.inputs.mas == 'true'
+        if: runner.os == 'macOS' && github.event.inputs.mas == 'true'
         env:
           OSX_SIGN_KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY_MAS }}
@@ -155,7 +155,7 @@ jobs:
         run: pnpm build:mas
 
       - name: Build Renderer
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         run: pnpm build:render
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -174,13 +174,14 @@ jobs:
             apps/desktop/out/make/**/*.AppImage
             apps/desktop/out/make/**/*.yml
             apps/desktop/out/make/**/*.pkg
+            apps/desktop/out/make/**/*.appx
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
           retention-days: 90
 
       - name: Upload file (arm64.dmg)
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'macOS'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -191,7 +192,7 @@ jobs:
 
       - name: Upload file (pkg)
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'macOS'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -211,6 +212,7 @@ jobs:
             apps/desktop/out/make/**/*.exe
             apps/desktop/out/make/**/*.AppImage
             apps/desktop/out/make/**/*.yml
+            apps/desktop/out/make/**/*.appx
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
 
@@ -240,5 +242,6 @@ jobs:
             apps/desktop/out/make/**/*.exe
             apps/desktop/out/make/**/*.AppImage
             apps/desktop/out/make/**/*.yml
+            apps/desktop/out/make/**/*.appx
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz

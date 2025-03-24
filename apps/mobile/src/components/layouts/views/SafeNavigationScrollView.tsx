@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useSetAtom, useStore } from "jotai"
-import type { FC, PropsWithChildren } from "react"
-import { useContext, useEffect, useRef, useState } from "react"
+import type { PropsWithChildren } from "react"
+import { forwardRef, useContext, useEffect, useState } from "react"
 import type { ScrollView, ScrollViewProps, StyleProp, ViewStyle } from "react-native"
 import { View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
@@ -10,11 +10,6 @@ import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescri
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
-import {
-  AttachNavigationScrollViewContext,
-  SetAttachNavigationScrollViewContext,
-} from "@/src/lib/navigation/AttachNavigationScrollViewContext"
-import { useScreenIsAppeared } from "@/src/lib/navigation/bottom-tab/hooks"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
@@ -41,88 +36,77 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
   contentViewClassName?: string
 } & PropsWithChildren
 
-export const SafeNavigationScrollView: FC<SafeNavigationScrollViewProps> = ({
-  children,
-
-  onScroll,
-
-  withBottomInset = false,
-  withTopInset = false,
-  reanimatedScrollY,
-
-  contentViewClassName,
-  contentViewStyle,
-
-  ...props
-}) => {
-  const insets = useSafeAreaInsets()
-  const tabBarHeight = useBottomTabBarHeight()
-
-  const scrollViewRef = useRef<ScrollView>(null)
-
-  const setAttachNavigationScrollViewRef = useContext(SetAttachNavigationScrollViewContext)
-  const isFocused = useScreenIsAppeared()
-  useEffect(() => {
-    if (setAttachNavigationScrollViewRef && isFocused) {
-      setAttachNavigationScrollViewRef(scrollViewRef)
-    }
-  }, [setAttachNavigationScrollViewRef, scrollViewRef, isFocused])
-
-  const frame = useSafeAreaFrame()
-  const sheetModal = useScreenIsInSheetModal()
-  const [headerHeight, setHeaderHeight] = useState(() =>
-    getDefaultHeaderHeight(frame, sheetModal, insets.top),
-  )
-  const screenCtxValue = useContext(ScreenItemContext)
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      if (reanimatedScrollY) {
-        reanimatedScrollY.value = event.contentOffset.y
-      }
-
-      screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
+export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScrollViewProps>(
+  (
+    {
+      children,
+      onScroll,
+      withBottomInset = false,
+      withTopInset = false,
+      reanimatedScrollY,
+      contentViewClassName,
+      contentViewStyle,
+      ...props
     },
-  })
+    ref,
+  ) => {
+    const insets = useSafeAreaInsets()
+    const tabBarHeight = useBottomTabBarHeight()
 
-  return (
-    <NavigationHeaderHeightContext.Provider value={headerHeight}>
-      <SetNavigationHeaderHeightContext.Provider value={setHeaderHeight}>
-        <ReAnimatedScrollView
-          ref={scrollViewRef}
-          onScroll={scrollHandler}
-          onContentSizeChange={useTypeScriptHappyCallback(
-            (w, h) => {
-              screenCtxValue.scrollViewContentHeight.value = h
-            },
-            [screenCtxValue.scrollViewContentHeight],
-          )}
-          onLayout={useTypeScriptHappyCallback(
-            (e) => {
-              screenCtxValue.scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight
-            },
-            [screenCtxValue.scrollViewHeight, headerHeight],
-          )}
-          automaticallyAdjustContentInsets={false}
-          automaticallyAdjustsScrollIndicatorInsets={false}
-          scrollIndicatorInsets={{
-            top: headerHeight,
-            bottom: tabBarHeight,
-          }}
-          {...props}
-        >
-          <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
-          <AttachNavigationScrollViewContext.Provider value={scrollViewRef}>
+    const frame = useSafeAreaFrame()
+    const sheetModal = useScreenIsInSheetModal()
+    const [headerHeight, setHeaderHeight] = useState(() =>
+      getDefaultHeaderHeight(frame, sheetModal, insets.top),
+    )
+    const screenCtxValue = useContext(ScreenItemContext)
+
+    const scrollHandler = useAnimatedScrollHandler({
+      onScroll: (event) => {
+        if (reanimatedScrollY) {
+          reanimatedScrollY.value = event.contentOffset.y
+        }
+
+        screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
+      },
+    })
+
+    return (
+      <NavigationHeaderHeightContext.Provider value={headerHeight}>
+        <SetNavigationHeaderHeightContext.Provider value={setHeaderHeight}>
+          <ReAnimatedScrollView
+            ref={ref}
+            onScroll={scrollHandler}
+            onContentSizeChange={useTypeScriptHappyCallback(
+              (w, h) => {
+                screenCtxValue.scrollViewContentHeight.value = h
+              },
+              [screenCtxValue.scrollViewContentHeight],
+            )}
+            onLayout={useTypeScriptHappyCallback(
+              (e) => {
+                screenCtxValue.scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight
+              },
+              [screenCtxValue.scrollViewHeight, headerHeight],
+            )}
+            automaticallyAdjustContentInsets={false}
+            automaticallyAdjustsScrollIndicatorInsets={false}
+            scrollIndicatorInsets={{
+              top: headerHeight,
+              bottom: tabBarHeight,
+            }}
+            {...props}
+          >
+            <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
             <View style={contentViewStyle} className={contentViewClassName}>
               {children}
             </View>
-          </AttachNavigationScrollViewContext.Provider>
-          <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
-        </ReAnimatedScrollView>
-      </SetNavigationHeaderHeightContext.Provider>
-    </NavigationHeaderHeightContext.Provider>
-  )
-}
+            <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
+          </ReAnimatedScrollView>
+        </SetNavigationHeaderHeightContext.Provider>
+      </NavigationHeaderHeightContext.Provider>
+    )
+  },
+)
 
 export const NavigationBlurEffectHeader = ({
   headerHideableBottom,

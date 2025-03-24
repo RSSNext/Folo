@@ -29,101 +29,95 @@ export const AppearanceScreen = () => {
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Appearance" />
-      <View className="mt-6">
-        <GroupedInsetListSectionHeader label="Subscription" />
-        <GroupedInsetListCard>
-          <GroupedInsetListCell
-            label="Show unread count"
-            description="Show unread count in the subscription list"
-          >
-            <Switch
-              size="sm"
-              value={showUnreadCount}
+
+      <GroupedInsetListSectionHeader label="Subscription" />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell
+          label="Show unread count"
+          description="Show unread count in the subscription list"
+        >
+          <Switch
+            size="sm"
+            value={showUnreadCount}
+            onValueChange={(val) => {
+              setUISetting("subscriptionShowUnreadCount", val)
+            }}
+          />
+        </GroupedInsetListCell>
+
+        <GroupedInsetListCell
+          label="Hide special badge"
+          description="Hide the special badge of the feed in the sidebar, e.g. Boost, Claimed"
+        >
+          <Switch
+            size="sm"
+            value={hideExtraBadge}
+            onValueChange={(val) => {
+              setUISetting("hideExtraBadge", val)
+            }}
+          />
+        </GroupedInsetListCell>
+        <GroupedInsetListCell
+          label="Thumbnail ratio"
+          description="The ratio of the thumbnail in the entry list."
+        >
+          <View className="w-[100px]">
+            <Select
+              options={[
+                { label: "Square", value: "square" },
+                { label: "Original", value: "original" },
+              ]}
+              value={thumbnailRatio}
               onValueChange={(val) => {
-                setUISetting("subscriptionShowUnreadCount", val)
+                setUISetting("thumbnailRatio", val as "square" | "original")
               }}
             />
-          </GroupedInsetListCell>
+          </View>
+        </GroupedInsetListCell>
+      </GroupedInsetListCard>
 
-          <GroupedInsetListCell
-            label="Hide special badge"
-            description="Hide the special badge of the feed in the sidebar, e.g. Boost, Claimed"
-          >
-            <Switch
-              size="sm"
-              value={hideExtraBadge}
-              onValueChange={(val) => {
-                setUISetting("hideExtraBadge", val)
-              }}
-            />
-          </GroupedInsetListCell>
-          <GroupedInsetListCell
-            label="Thumbnail ratio"
-            description="The ratio of the thumbnail in the entry list."
-          >
-            <View className="w-[100px]">
-              <Select
-                options={[
-                  { label: "Square", value: "square" },
-                  { label: "Original", value: "original" },
-                ]}
-                value={thumbnailRatio}
-                onValueChange={(val) => {
-                  setUISetting("thumbnailRatio", val as "square" | "original")
-                }}
-              />
-            </View>
-          </GroupedInsetListCell>
-        </GroupedInsetListCard>
+      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell label="Code highlight theme">
+          <Select
+            wrapperClassName="w-[120px]"
+            options={themeNames.map((theme) => ({
+              label: theme,
+              value: theme,
+            }))}
+            value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
+            onValueChange={(val) => {
+              setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
+            }}
+          />
+        </GroupedInsetListCell>
 
-        <View className="mt-6">
-          <GroupedInsetListSectionHeader label="Content" />
-          <GroupedInsetListCard>
-            <GroupedInsetListCell label="Code highlight theme">
-              <Select
-                wrapperClassName="w-[120px]"
-                options={themeNames.map((theme) => ({
-                  label: theme,
-                  value: theme,
-                }))}
-                value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
-                onValueChange={(val) => {
-                  setUISetting(
-                    `codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`,
-                    val,
-                  )
-                }}
-              />
-            </GroupedInsetListCell>
+        <GroupedInsetListCell
+          label="Render inline style"
+          description="Allows rendering of the inline style of the original HTML."
+        >
+          <Switch
+            size="sm"
+            value={readerRenderInlineStyle}
+            onValueChange={(val) => {
+              setUISetting("readerRenderInlineStyle", val)
+            }}
+          />
+        </GroupedInsetListCell>
 
-            <GroupedInsetListCell
-              label="Render inline style"
-              description="Allows rendering of the inline style of the original HTML."
-            >
-              <Switch
-                size="sm"
-                value={readerRenderInlineStyle}
-                onValueChange={(val) => {
-                  setUISetting("readerRenderInlineStyle", val)
-                }}
-              />
-            </GroupedInsetListCell>
-
-            <GroupedInsetListCell
-              label="Hide recent reader"
-              description="Hide the recent reader in the entry header."
-            >
-              <Switch
-                size="sm"
-                value={hideRecentReader}
-                onValueChange={(val) => {
-                  setUISetting("hideRecentReader", val)
-                }}
-              />
-            </GroupedInsetListCell>
-          </GroupedInsetListCard>
-        </View>
-      </View>
+        <GroupedInsetListCell
+          label="Hide recent reader"
+          description="Hide the recent reader in the entry header."
+        >
+          <Switch
+            size="sm"
+            value={hideRecentReader}
+            onValueChange={(val) => {
+              setUISetting("hideRecentReader", val)
+            }}
+          />
+        </GroupedInsetListCell>
+      </GroupedInsetListCard>
     </SafeNavigationScrollView>
   )
 }

@@ -35,11 +35,7 @@ export function Component() {
   useTitle(feed.data?.feed.title)
 
   if (feed.isLoading || !feed.data?.feed || !feedData) {
-    return (
-      <>
-        <LoadingCircle size="large" className="center fixed inset-0" />
-      </>
-    )
+    return <LoadingCircle size="large" className="center fixed inset-0" />
   }
 
   return (

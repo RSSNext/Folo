@@ -133,6 +133,7 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
             {t("login.continueWith", { provider: t("words.email") })}
           </Button>
           <Button
+            type="button"
             variant="outline"
             size="lg"
             onClick={() => {

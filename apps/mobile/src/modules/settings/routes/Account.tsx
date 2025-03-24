@@ -67,37 +67,34 @@ export const AccountScreen = () => {
     <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Account" />
 
-      <View className="mt-6">
-        <AuthenticationSection />
-      </View>
+      <AuthenticationSection />
 
       <SecuritySection />
 
       {/* Danger Zone */}
-      <View className="mt-6">
-        <GroupedInsetListSectionHeader label="Danger Zone" />
-        <GroupedInsetListCard>
-          <GroupedPlainButtonCell
-            label="Delete account"
-            textClassName="text-red text-left"
-            onPress={async () => {
-              Alert.alert("Delete account", "Are you sure you want to delete your account?", [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Delete",
-                  style: "destructive",
-                  onPress: async () => {
-                    await signOut()
-                    const dbPath = getDbPath()
-                    await FileSystem.deleteAsync(dbPath)
-                    await expo.reloadAppAsync("User sign out")
-                  },
+
+      <GroupedInsetListSectionHeader label="Danger Zone" />
+      <GroupedInsetListCard>
+        <GroupedPlainButtonCell
+          label="Delete account"
+          textClassName="text-red text-left"
+          onPress={async () => {
+            Alert.alert("Delete account", "Are you sure you want to delete your account?", [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: async () => {
+                  await signOut()
+                  const dbPath = getDbPath()
+                  await FileSystem.deleteAsync(dbPath)
+                  await expo.reloadAppAsync("User sign out")
                 },
-              ])
-            }}
-          />
-        </GroupedInsetListCard>
-      </View>
+              },
+            ])
+          }}
+        />
+      </GroupedInsetListCard>
     </SafeNavigationScrollView>
   )
 }
@@ -240,7 +237,7 @@ const SecuritySection = () => {
 
   const navigation = useNavigation()
   return (
-    <View className="mt-6">
+    <>
       <GroupedInsetListSectionHeader label="Security" />
       <GroupedInsetListCard>
         <GroupedPlainButtonCell
@@ -306,6 +303,6 @@ const SecuritySection = () => {
           }}
         />
       </GroupedInsetListCard>
-    </View>
+    </>
   )
 }

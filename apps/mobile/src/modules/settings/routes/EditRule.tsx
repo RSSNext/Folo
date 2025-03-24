@@ -86,7 +86,7 @@ const FilterSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
   const hasCustomFilters = rule.condition.length > 0
   return (
     <View>
-      <GroupedInsetListSectionHeader label="When feeds match..." />
+      <GroupedInsetListSectionHeader label="When feeds match..." marginSize="small" />
       <GroupedInsetListCard>
         <GroupedInsetListActionCellRadio
           label="All"
@@ -114,7 +114,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
   if (filter.length === 0) return null
   return (
     <View>
-      <GroupedInsetListSectionHeader label="Conditions" />
+      <GroupedInsetListSectionHeader label="Conditions" marginSize="small" />
 
       {filter.map((group, groupIndex) => {
         if (!Array.isArray(group)) {
@@ -218,7 +218,7 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
 
   return (
     <View>
-      <GroupedInsetListSectionHeader label="Then do..." />
+      <GroupedInsetListSectionHeader label="Then do..." marginSize="small" />
       <GroupedInsetListCard>
         {enabledActions.map((action) => (
           <SwipeableItem
