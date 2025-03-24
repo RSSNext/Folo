@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { cn, formatEstimatedMins } from "@follow/utils"
+import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useCallback, useEffect, useState } from "react"
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import ReAnimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
