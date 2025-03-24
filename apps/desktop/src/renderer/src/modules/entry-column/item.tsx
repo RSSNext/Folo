@@ -63,26 +63,23 @@ const LoadingCircleFallback = (
 export const EntryItemSkeleton: FC<{
   view: FeedViewType
   count?: number
-}> = memo(({ view, count }) => {
+}> = memo(({ view, count = 10 }) => {
   const SkeletonItem = getSkeletonItemComponentByView(view)
+
+  if (!SkeletonItem) {
+    return LoadingCircleFallback
+  }
+
   if (count === 1) {
     return SkeletonItem
   }
 
-  return SkeletonItem ? (
+  return (
     <div className={cn(views[view]!.gridMode ? girdClassNames : "flex flex-col")}>
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
-      {SkeletonItem}
+      {Array.from({ length: count }).map((_, index) => (
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- index is unique
+        <div key={index}>{SkeletonItem}</div>
+      ))}
     </div>
-  ) : (
-    LoadingCircleFallback
   )
 })
