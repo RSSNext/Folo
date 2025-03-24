@@ -1,11 +1,12 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import type { EntryModelSimple, FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
 import { cloneElement, forwardRef } from "react"
 
 import { useI18n } from "~/hooks/common"
 
+import { EntryItemSkeleton } from "../entry-column/item"
 import { EntryItemStateless } from "../entry-column/item-stateless"
 
 export const ViewSelectorRadioGroup = forwardRef<
@@ -50,12 +51,14 @@ export const ViewSelectorRadioGroup = forwardRef<
           </div>
         ))}
       </CardHeader>
-      {!!feed && !!entries && (
+      {!!feed && !!entries ? (
         <CardContent className="space-y-2 p-2">
           {entries.slice(0, 2).map((entry) => (
             <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
           ))}
         </CardContent>
+      ) : (
+        <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />
       )}
     </Card>
   )
