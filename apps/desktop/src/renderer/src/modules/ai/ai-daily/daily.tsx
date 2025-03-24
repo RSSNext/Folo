@@ -267,7 +267,7 @@ const createRelatedEntryLink = (variant: "toast" | "modal") => (props: LinkProps
             autoFocus: false,
             modalClassName:
               "relative mx-auto mt-[10vh] scrollbar-none max-w-full overflow-auto px-2 lg:max-w-[65rem] lg:p-0",
-            // eslint-disable-next-line @eslint-react/no-nested-components
+            // eslint-disable-next-line @eslint-react/no-nested-component-definitions
             CustomModalComponent: ({ children }) => {
               const { feedId } = useEntry(entryId) || {}
               return <PeekModal to={`/timeline/${feedId}/${entryId}`}>{children}</PeekModal>
