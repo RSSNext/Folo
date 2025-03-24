@@ -65,7 +65,11 @@ export function SubviewLayout() {
       >
         <MotionButtonBase
           onClick={() => {
-            navigate(prevLocation)
+            if (prevLocation.pathname === location.pathname) {
+              navigate({ pathname: "" })
+            } else {
+              navigate(prevLocation)
+            }
           }}
           className="no-drag-region hover:text-accent inline-flex items-center gap-1 duration-200"
         >
