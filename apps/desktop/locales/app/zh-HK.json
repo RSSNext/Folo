@@ -108,6 +108,8 @@
   "entry_actions.image_gallery": "圖片庫",
   "entry_actions.copied_notify": "{{which}}已複製到剪貼簿",
   "entry_actions.copy_link": "複製連結",
+  "entry_actions.exported_notify": "文章已匯出為 PDF。",
+  "entry_actions.export_as_pdf": "匯出為 PDF",
   "entry_actions.copy_title": "複製標題",
   "entry_actions.delete": "刪除",
   "entry_actions.deleted": "已刪除",

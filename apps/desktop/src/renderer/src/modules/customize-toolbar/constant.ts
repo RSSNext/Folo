@@ -21,6 +21,7 @@ export const DEFAULT_ACTION_ORDER: ToolbarActionOrder = {
         [
           COMMAND_ID.entry.copyLink,
           COMMAND_ID.entry.openInBrowser,
+          COMMAND_ID.entry.exportAsPDF,
           COMMAND_ID.entry.read,
         ] as string[]
       ).includes(id),

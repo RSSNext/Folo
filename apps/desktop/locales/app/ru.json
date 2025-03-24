@@ -103,6 +103,8 @@
   "discover.target.lists": "Списки",
   "entry_actions.copied_notify": "{{which}} скопировано в буфер обмена.",
   "entry_actions.copy_link": "Копировать ссылку",
+  "entry_actions.exported_notify": "Статья экспортирована в PDF.",
+  "entry_actions.export_as_pdf": "Экспортировать в PDF",
   "entry_actions.copy_title": "Копировать заголовок",
   "entry_actions.delete": "Удалить",
   "entry_actions.deleted": "Удалено.",

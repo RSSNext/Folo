@@ -107,6 +107,8 @@
   "discover.target.lists": "リスト",
   "entry_actions.copied_notify": "{{which}} をクリップボードにコピーしました。",
   "entry_actions.copy_link": "リンクをコピー",
+  "entry_actions.exported_notify": "記事をPDFとしてエクスポートしました。",
+  "entry_actions.export_as_pdf": "PDFとしてエクスポート",
   "entry_actions.copy_title": "タイトルをコピー",
   "entry_actions.delete": "削除",
   "entry_actions.deleted": "削除済み",

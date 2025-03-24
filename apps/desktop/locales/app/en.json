@@ -108,6 +108,8 @@
   "entry_actions.image_gallery": "Image Gallery",
   "entry_actions.copied_notify": "{{which}} copied to clipboard.",
   "entry_actions.copy_link": "Copy Link",
+  "entry_actions.exported_notify": "Exported article as PDF.",
+  "entry_actions.export_as_pdf": "Export as PDF",
   "entry_actions.copy_title": "Copy Title",
   "entry_actions.delete": "Delete",
   "entry_actions.deleted": "Deleted.",
