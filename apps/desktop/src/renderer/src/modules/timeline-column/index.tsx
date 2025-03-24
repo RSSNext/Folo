@@ -55,7 +55,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
     listId: s.listId,
   }))
 
-  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId)
+  const [timelineId, setMemoizedTimelineId] = useState(routeParams.timelineId ?? timelineList[0])
 
   useEffect(() => {
     if (routeParams.timelineId) setMemoizedTimelineId(routeParams.timelineId)
