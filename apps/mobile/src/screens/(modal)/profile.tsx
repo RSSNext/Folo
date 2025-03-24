@@ -1,12 +1,10 @@
 import type { FeedViewType } from "@follow/constants"
-import { cn } from "@follow/utils"
 import { Fragment, useCallback, useEffect, useMemo } from "react"
 import {
   ActivityIndicator,
   FlatList,
   Image,
   Share,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -26,6 +24,15 @@ import {
   UINavigationHeaderActionButton,
 } from "@/src/components/layouts/header/NavigationHeader"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
+import {
+  GROUPED_ICON_TEXT_GAP,
+  GROUPED_LIST_ITEM_PADDING,
+  GROUPED_LIST_MARGIN,
+} from "@/src/components/ui/grouped/constants"
+import {
+  GroupedInsetListCard,
+  GroupedInsetListSectionHeader,
+} from "@/src/components/ui/grouped/GroupedList"
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import type { FeedIconRequiredFeed } from "@/src/components/ui/icon/feed-icon"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
@@ -196,52 +203,52 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
         <Fragment>
           <SectionHeader title="Lists" />
 
-          <FlatList
-            scrollEnabled={false}
-            data={lists}
-            renderItem={renderListItems}
-            ItemSeparatorComponent={ItemSeparator}
-          />
+          <GroupedInsetListCard>
+            <FlatList
+              scrollEnabled={false}
+              data={lists}
+              renderItem={renderListItems}
+              ItemSeparatorComponent={ItemSeparator}
+            />
+          </GroupedInsetListCard>
         </Fragment>
       )}
       {hasFeeds && (
         <View className="mt-4">
           <SectionHeader title="Feeds" />
-          {Object.entries(groupedFeeds).map(([category, feeds], index) => (
+          {Object.entries(groupedFeeds).map(([category, feeds]) => (
             <Fragment key={category}>
-              <Text
-                className={cn(
-                  "text-secondary-label mb-2 ml-3 text-sm font-medium",
-                  index !== 0 ? "mt-6" : "",
-                )}
-              >
-                {category}
-              </Text>
-              <FlatList
-                scrollEnabled={false}
-                data={feeds}
-                renderItem={renderFeedItems}
-                ItemSeparatorComponent={ItemSeparator}
-              />
+              <GroupedInsetListSectionHeader label={category} marginSize="small" />
+              <GroupedInsetListCard>
+                <FlatList
+                  scrollEnabled={false}
+                  data={feeds}
+                  renderItem={renderFeedItems}
+                  ItemSeparatorComponent={ItemSeparator}
+                />
+              </GroupedInsetListCard>
             </Fragment>
           ))}
 
-          <Text className="text-secondary-label mb-2 ml-3 mt-6 text-sm font-medium">
-            Uncategorized Feeds
-          </Text>
-          <FlatList
-            scrollEnabled={false}
-            data={feeds}
-            renderItem={renderFeedItems}
-            ItemSeparatorComponent={ItemSeparator}
-          />
+          <GroupedInsetListSectionHeader label="Uncategorized Feeds" marginSize="small" />
+          <GroupedInsetListCard>
+            <FlatList
+              scrollEnabled={false}
+              data={feeds}
+              renderItem={renderFeedItems}
+              ItemSeparatorComponent={ItemSeparator}
+            />
+          </GroupedInsetListCard>
         </View>
       )}
     </View>
   )
 }
 const renderListItems = ({ item }: { item: PickedListModel }) => (
-  <View className="bg-secondary-system-grouped-background h-12 flex-row items-center px-3">
+  <View
+    className="bg-secondary-system-grouped-background h-12 flex-row items-center"
+    style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+  >
     <View className="overflow-hidden rounded">
       {!!item.image && (
         <Image source={{ uri: item.image, width: 24, height: 24 }} resizeMode="cover" />
@@ -249,12 +256,17 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
       {!item.image && <FallbackIcon title={item.title} size={24} />}
     </View>
 
-    <Text className="text-text ml-2">{item.title}</Text>
+    <Text className="text-text" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
+      {item.title}
+    </Text>
   </View>
 )
 
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
-  <View className="bg-secondary-system-grouped-background h-12 flex-row items-center px-3">
+  <View
+    className="bg-secondary-system-grouped-background h-12 flex-row items-center"
+    style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+  >
     <View className="overflow-hidden rounded">
       <FeedIcon
         feed={
@@ -270,20 +282,19 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
         size={24}
       />
     </View>
-    <Text className="text-text ml-2">{item.title}</Text>
+    <Text className="text-text" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
+      {item.title}
+    </Text>
   </View>
 )
 
 const SectionHeader = ({ title }: { title: string }) => (
-  <View className="my-5 flex-row items-center justify-center gap-4">
-    <View
-      className="bg-secondary-label w-12 rounded-full"
-      style={{ height: StyleSheet.hairlineWidth }}
-    />
-    <Text className="text-secondary-label text-sm font-medium">{title}</Text>
-    <View
-      className="bg-secondary-label w-12 rounded-full"
-      style={{ height: StyleSheet.hairlineWidth }}
-    />
+  <View className="mb-2 mt-5" style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
+    <Text
+      className="text-label text-xl font-medium"
+      style={{ marginLeft: GROUPED_LIST_ITEM_PADDING }}
+    >
+      {title}
+    </Text>
   </View>
 )

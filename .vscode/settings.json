@@ -76,5 +76,8 @@
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{namespaces}/{locale}.json",
   "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
-  "lldb.launch.expressions": "native"
+  "lldb.launch.expressions": "native",
+  "[swift]": {
+    "editor.defaultFormatter": "swiftlang.swift-vscode"
+  }
 }

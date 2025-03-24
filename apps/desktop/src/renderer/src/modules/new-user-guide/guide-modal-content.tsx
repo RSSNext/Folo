@@ -244,7 +244,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
               }}
               variant={"outline"}
             >
-              Back
+              {t.app("new_user_guide.actions.back")}
             </Button>
           )}
           <Button
@@ -276,7 +276,9 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
               }
             }}
           >
-            {step <= totalSteps ? "Next" : "Finish"}
+            {step <= totalSteps
+              ? t.app("new_user_guide.actions.next")
+              : t.app("new_user_guide.actions.finish")}
           </Button>
         </div>
       </div>

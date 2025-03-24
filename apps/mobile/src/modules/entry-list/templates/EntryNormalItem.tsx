@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
-import { cn, formatEstimatedMins } from "@follow/utils"
-import { useCallback, useEffect, useState } from "react"
+import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import ReAnimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
@@ -67,21 +67,28 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
   }, [entry, entry?.read, unreadZoomSharedValue])
 
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
-  if (!entry) return <EntryItemSkeleton />
-  const { title, description, publishedAt, media, attachments } = entry
 
-  const coverImage = media?.[0]
-
+  const coverImage = entry?.media?.[0]
   const image = coverImage?.url
   const blurhash = coverImage?.blurhash
 
-  const audio = attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
+  const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
   const audioState = getAttachmentState(extraData, audio)
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
 
-  const durationInSeconds = attachments ? attachments[0]?.duration_in_seconds : 0
-  const estimatedMins = durationInSeconds ? Math.floor(durationInSeconds / 60) : undefined
+  const estimatedMins = useMemo(() => {
+    let durationInSeconds = audio?.duration_in_seconds
+    // durationInSeconds's format like 00:00:00 or 4000
+    if (durationInSeconds && Number.isNaN(+durationInSeconds)) {
+      // @ts-expect-error durationInSeconds is string
+      durationInSeconds = formatTimeToSeconds(durationInSeconds)
+    }
+
+    return durationInSeconds && Math.floor(durationInSeconds / 60)
+  }, [audio?.duration_in_seconds])
+
+  if (!entry) return <EntryItemSkeleton />
 
   return (
     <EntryItemContextMenu id={entryId}>
@@ -112,19 +119,19 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
               </>
             ) : null}
             <RelativeDateTime
-              date={publishedAt}
+              date={entry.publishedAt}
               className="text-secondary-label text-xs font-medium"
               postfixText="ago"
             />
           </View>
-          {!!title && (
+          {!!entry.title && (
             <Text numberOfLines={2} className="text-label text-lg font-semibold">
-              {title.trim()}
+              {entry.title.trim()}
             </Text>
           )}
-          {view !== FeedViewType.Notifications && !!description && (
+          {view !== FeedViewType.Notifications && !!entry.description && (
             <Text numberOfLines={2} className="text-secondary-label text-sm">
-              {description}
+              {entry.description}
             </Text>
           )}
         </View>

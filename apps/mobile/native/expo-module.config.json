@@ -10,7 +10,8 @@
       "GaleriaAccessoryModule",
       "TabBarModule",
       "TabScreenModule",
-      "TabBarPortalModule"
+      "TabBarPortalModule",
+      "ProfileViewModule"
     ]
   },
   "android": {
