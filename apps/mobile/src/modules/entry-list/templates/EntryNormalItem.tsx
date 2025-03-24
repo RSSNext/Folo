@@ -80,8 +80,14 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
 
-  const durationInSeconds = attachments ? attachments[0]?.duration_in_seconds : 0
-  const estimatedMins = durationInSeconds ? Math.floor(durationInSeconds / 60) : undefined
+  let durationInSeconds = attachments ? attachments[0]?.duration_in_seconds : 0
+  // durationInSeconds's format like 00:00:00 or 4000
+  if (durationInSeconds && Number.isNaN(+durationInSeconds)) {
+    // @ts-expect-error durationInSeconds is string
+    durationInSeconds = formatTimeToSeconds(durationInSeconds)
+  }
+
+  const estimatedMins = durationInSeconds && Math.floor(durationInSeconds / 60)
 
   return (
     <EntryItemContextMenu id={entryId}>
