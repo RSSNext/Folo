@@ -3,9 +3,10 @@ on:
   push:
     branches: [main, dev]
 
+# Do not use secrets or variables to allow for public access
 env:
-  VITE_WEB_URL: ${{ vars.VITE_WEB_URL }}
-  VITE_API_URL: ${{ vars.VITE_API_URL }}
+  VITE_WEB_URL: https://app.follow.is
+  VITE_API_URL: https://api.follow.is
 
 name: CI Format, Typecheck and Lint
 concurrency:

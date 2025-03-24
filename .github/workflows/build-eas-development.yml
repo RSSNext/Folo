@@ -38,6 +38,7 @@ jobs:
 
   build:
     name: Build iOS IPA for device
+    if: ${{ contains(github.head_ref || github.ref, 'refs/heads/') }}
     needs: check-runner
     runs-on: ${{ needs.check-runner.outputs.runner-label }}
 
@@ -82,6 +83,7 @@ jobs:
 
   build-simulator:
     name: Build iOS IPA for simulator
+    if: ${{ contains(github.head_ref || github.ref, 'refs/heads/') }}
     runs-on: macos-latest
 
     steps:

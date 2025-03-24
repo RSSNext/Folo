@@ -45,6 +45,7 @@ jobs:
 
   build:
     name: Build iOS IPA
+    if: ${{ contains(github.head_ref || github.ref, 'refs/heads/') }}
     needs: check-runner
     runs-on: ${{ needs.check-runner.outputs.runner-label }}
 
