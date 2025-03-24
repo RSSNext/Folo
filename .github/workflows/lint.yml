@@ -51,3 +51,7 @@ jobs:
           npm exec turbo run format:check typecheck lint
       - name: Run test
         run: npm exec turbo run test
+      - name: Build web
+        run: pnpm run build:web
+      - name: Build ssr
+        run: pnpm run build:ssr
