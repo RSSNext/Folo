@@ -19,6 +19,7 @@ import { useEntry } from "~/store/entry/hooks"
 
 import { useCommand } from "../command/hooks/use-command"
 import type { FollowCommandId } from "../command/types"
+import { MoreActions } from "./actions/more-actions"
 import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
 import type { EntryHeaderProps } from "./header.shared"
 
@@ -93,6 +94,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
               shortcut={item.shortcut}
             />
           ))}
+          <MoreActions entryId={entryId} />
         </div>
       </div>
     </div>
