@@ -283,7 +283,7 @@ const config: ForgeConfig = {
       })
       yml.releaseDate = new Date().toISOString()
 
-      const ymlPath = `${path.dirname(basePath)}/${ymlMapsMap[makeResults[0]?.platform!]}`
+      const ymlPath = path.join(basePath, ymlMapsMap[makeResults[0]?.platform!])
 
       const ymlStr = yaml.dump(yml, {
         lineWidth: -1,
