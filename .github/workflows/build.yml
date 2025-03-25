@@ -217,7 +217,7 @@ jobs:
           signing-policy-slug: "test-signing"
           artifact-configuration-slug: "github"
           github-artifact-id: "${{ steps.upload-unsigned-windows-x64-exe.outputs.artifact-id }}"
-          output-artifact-directory: "apps/desktop/out/make/squirrel.windows/x64/"
+          output-artifact-directory: "apps/desktop/out/make/"
 
       - name: Update latest.yml
         if: runner.os == 'windows'
