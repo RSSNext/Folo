@@ -195,8 +195,9 @@ jobs:
             apps/desktop/out/make/**/*.pkg
           retention-days: 90
 
-      - name: Upload file (windows-x64-exe)
+      - name: Upload file (windows-x64-exe unsigned)
         uses: actions/upload-artifact@v4
+        id: upload-unsigned-windows-x64-exe
         if: runner.os == 'windows'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -207,6 +208,33 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
+      - uses: signpath/github-action-submit-signing-request@v1.1
+        if: runner.os == 'windows'
+        with:
+          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
+          organization-id: "8c651516-fdaf-40a1-9fea-001dffde850e"
+          project-slug: "Folo"
+          signing-policy-slug: "test-signing"
+          artifact-configuration-slug: "github"
+          github-artifact-id: "${{ steps.upload-unsigned-windows-x64-exe.outputs.artifact-id }}"
+          output-artifact-directory: "apps/desktop/out/make/squirrel.windows/x64/"
+
+      - name: Update latest.yml
+        run: npx tsx apps/desktop/scripts/update-windows-yml.ts
+
+      - name: Upload file (windows-x64-exe signed)
+        uses: actions/upload-artifact@v4
+        if: runner.os == 'windows'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: windows-x64-exe
+          path: |
+            apps/desktop/out/make/**/*x64.exe
+            apps/desktop/out/make/**/latest.yml
+          retention-days: 90
+          overwrite: true
+
       - name: Upload file (windows-x64-appx)
         uses: actions/upload-artifact@v4
         if: runner.os == 'windows'
@@ -216,7 +244,6 @@ jobs:
           name: windows-x64-appx
           path: |
             apps/desktop/out/make/**/*x64.appx
-            apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
       - name: Upload file (linux-x64-appimage)
