@@ -33,12 +33,12 @@
     "@radix-ui/react-popover": "1.1.6",
     "@radix-ui/react-slider": "1.2.3",
     "@radix-ui/react-slot": "1.1.2",
-    "@sentry/react": "9.5.0",
+    "@sentry/react": "9.9.0",
     "@shikijs/transformers": "3.2.1",
-    "@tanstack/query-sync-storage-persister": "5.68.0",
-    "@tanstack/react-query": "5.68.0",
-    "@tanstack/react-query-devtools": "5.68.0",
-    "@tanstack/react-query-persist-client": "5.68.0",
+    "@tanstack/query-sync-storage-persister": "5.69.0",
+    "@tanstack/react-query": "5.69.0",
+    "@tanstack/react-query-devtools": "5.69.0",
+    "@tanstack/react-query-persist-client": "5.69.0",
     "@tanstack/react-virtual": "3.13.4",
     "@use-gesture/react": "10.3.1",
     "@welldone-software/why-did-you-render": "10.0.1",
@@ -54,7 +54,7 @@
     "embla-carousel-react": "8.5.2",
     "embla-carousel-wheel-gestures": "8.0.1",
     "es-toolkit": "1.33.0",
-    "firebase": "11.4.0",
+    "firebase": "11.5.0",
     "foxact": "0.2.44",
     "framer-motion": "12.5.0",
     "franc-min": "6.2.0",
@@ -83,7 +83,7 @@
     "react-ios-pwa-prompt": "2.0.6",
     "react-qr-code": "2.0.15",
     "react-resizable-layout": "npm:@innei/react-resizable-layout@0.7.3-fork.1",
-    "react-router": "7.3.0",
+    "react-router": "7.4.0",
     "react-selecto": "1.26.3",
     "react-shadow": "20.6.0",
     "react-zoom-pan-pinch": "3.7.0",
@@ -109,6 +109,6 @@
     "@vite-pwa/assets-generator": "0.2.6",
     "fake-indexeddb": "6.0.0",
     "happy-dom": "17.4.4",
-    "react-scan": "0.2.14"
+    "react-scan": "0.3.3"
   }
 }
