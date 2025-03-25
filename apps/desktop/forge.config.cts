@@ -247,9 +247,13 @@ const config: ForgeConfig = {
         version: makeResults[0]?.packageJSON?.version,
         files: [],
       }
+      let basePath = ""
       makeResults = makeResults.map((result) => {
         result.artifacts = result.artifacts.map((artifact) => {
           if (artifactRegex.test(artifact)) {
+            if (!basePath) {
+              basePath = path.dirname(artifact)
+            }
             const newArtifact = `${path.dirname(artifact)}/${
               result.packageJSON.productName
             }-${result.packageJSON.version}-${
@@ -279,9 +283,7 @@ const config: ForgeConfig = {
       })
       yml.releaseDate = new Date().toISOString()
 
-      const ymlPath = `${path.dirname(makeResults[0]?.artifacts?.[0]!)}/${
-        ymlMapsMap[makeResults[0]?.platform!]
-      }`
+      const ymlPath = `${path.dirname(basePath)}/${ymlMapsMap[makeResults[0]?.platform!]}`
 
       const ymlStr = yaml.dump(yml, {
         lineWidth: -1,

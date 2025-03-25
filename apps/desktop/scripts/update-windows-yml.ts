@@ -5,8 +5,8 @@ import { fileURLToPath, resolve } from "node:url"
 import yaml from "js-yaml"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
-const basePath = resolve(__dirname, "../out/make/squirrel.windows/x64")
-const ymlPath = resolve(basePath, "latest.yml")
+const basePath = resolve(__dirname, "../out/make/squirrel.windows/x64/")
+const ymlPath = resolve(basePath, "./latest.yml")
 
 const yml = yaml.load(fs.readFileSync(ymlPath, "utf8")) as {
   version?: string
