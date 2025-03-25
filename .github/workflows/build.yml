@@ -160,26 +160,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
-      - name: Upload file
-        uses: actions/upload-artifact@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        with:
-          name: ${{ matrix.os }}
-          path: |
-            apps/desktop/out/make/**/*.dmg
-            apps/desktop/out/make/**/*.zip
-            apps/desktop/out/make/**/*.exe
-            apps/desktop/out/make/**/*.AppImage
-            apps/desktop/out/make/**/*.yml
-            apps/desktop/out/make/**/*.pkg
-            apps/desktop/out/make/**/*.appx
-            apps/desktop/dist/manifest.yml
-            apps/desktop/dist/*.tar.gz
-          retention-days: 90
-
-      - name: Upload file (arm64.dmg)
+      - name: Upload file (macos-arm64-dmg)
         uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
         env:
@@ -188,17 +169,66 @@ jobs:
           name: macos-arm64-dmg
           path: |
             apps/desktop/out/make/**/*arm64.dmg
+            apps/desktop/out/make/**/latest-mac.yml
           retention-days: 90
 
-      - name: Upload file (pkg)
+      - name: Upload file (macos-x64-dmg)
         uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: mas-pkg
+          name: macos-x64-dmg
           path: |
-            out/make/**/*.pkg
+            apps/desktop/out/make/**/*x64.dmg
+            apps/desktop/out/make/**/latest-mac.yml
+          retention-days: 90
+
+      - name: Upload file (macos-mas-pkg)
+        uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: macos-mas-pkg
+          path: |
+            apps/desktop/out/make/**/*.pkg
+          retention-days: 90
+
+      - name: Upload file (windows-x64-exe)
+        uses: actions/upload-artifact@v4
+        if: runner.os == 'windows'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: windows-x64-exe
+          path: |
+            apps/desktop/out/make/**/*x64.exe
+            apps/desktop/out/make/**/latest.yml
+          retention-days: 90
+
+      - name: Upload file (windows-x64-appx)
+        uses: actions/upload-artifact@v4
+        if: runner.os == 'windows'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: windows-x64-appx
+          path: |
+            apps/desktop/out/make/**/*x64.appx
+            apps/desktop/out/make/**/latest.yml
+          retention-days: 90
+
+      - name: Upload file (linux-x64-appimage)
+        uses: actions/upload-artifact@v4
+        if: runner.os == 'linux'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: linux-x64-appimage
+          path: |
+            apps/desktop/out/make/**/*x64.AppImage
+            apps/desktop/out/make/**/latest-linux.yml
           retention-days: 90
 
       - name: Generate artifact attestation
@@ -212,7 +242,6 @@ jobs:
             apps/desktop/out/make/**/*.exe
             apps/desktop/out/make/**/*.AppImage
             apps/desktop/out/make/**/*.yml
-            apps/desktop/out/make/**/*.appx
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
 
@@ -242,6 +271,5 @@ jobs:
             apps/desktop/out/make/**/*.exe
             apps/desktop/out/make/**/*.AppImage
             apps/desktop/out/make/**/*.yml
-            apps/desktop/out/make/**/*.appx
             apps/desktop/dist/manifest.yml
             apps/desktop/dist/*.tar.gz
