@@ -178,7 +178,7 @@ export const useRegisterEntryCommands = () => {
     {
       id: COMMAND_ID.entry.exportAsPDF,
       label: t("entry_actions.export_as_pdf"),
-      icon: <i className="i-mgc-pdf-line-cute-re" />,
+      icon: <i className="i-mgc-pdf-cute-re" />,
       run: ({ entryId }) => {
         const entry = useEntryStore.getState().flatMapEntries[entryId]
 
