@@ -71,7 +71,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
           </AnimatePresence>
         </div>
 
-        <div className="relative flex shrink-0 items-center justify-end gap-3">
+        <div className="relative flex shrink-0 items-center justify-end gap-2">
           {!compact && <ElectronAdditionActions view={view} entry={entry} key={entry.entries.id} />}
 
           <ImageGalleryAction id={entry.entries.id} />
