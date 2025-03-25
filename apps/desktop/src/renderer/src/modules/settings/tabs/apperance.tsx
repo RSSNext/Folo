@@ -30,6 +30,7 @@ import {
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { isElectronBuild } from "~/constants"
 import { useSetTheme } from "~/hooks/common"
+import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
 import { SETTING_MODAL_ID } from "../constants"
 import {
@@ -145,6 +146,7 @@ export const SettingAppearance = () => {
             description: t("appearance.use_pointer_cursor.description"),
             hide: isMobile,
           }),
+          CustomizeToolbar,
         ]}
       />
     </div>
@@ -495,5 +497,26 @@ const DateFormat = () => {
         size="sm"
       />
     </div>
+  )
+}
+
+/**
+ * @description customize the toolbar actions
+ */
+const CustomizeToolbar = () => {
+  const { t } = useTranslation("settings")
+  const showModal = useShowCustomizeToolbarModal()
+
+  return (
+    <SettingItemGroup>
+      <SettingActionItem
+        label={<span className="flex items-center gap-1">{t("customizeToolbar.title")}</span>}
+        action={async () => {
+          showModal()
+        }}
+        buttonText={t("customizeToolbar.title")}
+      />
+      <SettingDescription>{t("customizeToolbar.quick_actions.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
