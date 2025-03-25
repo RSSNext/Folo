@@ -220,6 +220,7 @@ jobs:
           output-artifact-directory: "apps/desktop/out/make/squirrel.windows/x64/"
 
       - name: Update latest.yml
+        if: runner.os == 'windows'
         run: npx tsx apps/desktop/scripts/update-windows-yml.ts
 
       - name: Upload file (windows-x64-exe signed)
