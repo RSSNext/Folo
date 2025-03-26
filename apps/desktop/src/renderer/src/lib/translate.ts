@@ -68,7 +68,7 @@ export async function translate({
     return null
   }
 
-  const { data } = await apiClient.ai.translation.$get({
+  const res = await apiClient.ai.translation.$get({
     query: {
       id: entry.entries.id,
       language,
@@ -76,21 +76,5 @@ export async function translate({
       part,
     },
   })
-  if (!data) {
-    return null
-  }
-
-  // check if the translation is the same as the original content
-  // ignore the whitespace difference
-  const isTranslationSame = fields.every((field) => {
-    const originalContent = entry.entries[field]
-    const translatedContent = data[field]
-    return originalContent.replaceAll(/\s/g, "") === translatedContent.replaceAll(/\s/g, "")
-  })
-
-  if (isTranslationSame) {
-    return null
-  }
-
-  return data
+  return res.data
 }
