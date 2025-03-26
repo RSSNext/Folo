@@ -2,8 +2,10 @@ import { cn } from "@follow/utils"
 import type { PropsWithChildren } from "react"
 import { Pressable, Text, View } from "react-native"
 
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { GroupedInsetListNavigationLinkIcon } from "@/src/components/ui/grouped/GroupedList"
 import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { Grid2CuteReIcon } from "@/src/icons/grid_2_cute_re"
@@ -15,7 +17,7 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
   const { behavior, updateSettings } = useReadingBehavior()
 
   return (
-    <SafeModalScrollView className="bg-system-grouped-background">
+    <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Select Reading Mode" />
 
       <View className="mt-8 flex w-full gap-4">
@@ -65,7 +67,7 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
           <Text className="text-label">Conservative: Mark entries as read only when clicked</Text>
         </Card>
       </View>
-    </SafeModalScrollView>
+    </SafeNavigationScrollView>
   )
 }
 
