@@ -41,7 +41,7 @@ const serverPlugins = [
 ] satisfies BetterAuthClientPlugin[]
 
 const authClient = createAuthClient({
-  baseURL: `${proxyEnv.VITE_API_URL}/better-auth`,
+  baseURL: `${proxyEnv.API_URL}/better-auth`,
   plugins: [
     twoFactorClient(),
     {

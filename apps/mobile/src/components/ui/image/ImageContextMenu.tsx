@@ -1,11 +1,15 @@
 import ImageEditor from "@react-native-community/image-editor"
+import { requireNativeModule } from "expo"
 import { setImageAsync } from "expo-clipboard"
 import * as FileSystem from "expo-file-system"
 import { saveToLibraryAsync } from "expo-media-library"
 import { shareAsync } from "expo-sharing"
 import type { PropsWithChildren } from "react"
-import { Image } from "react-native"
+import { useRef } from "react"
+import type { View } from "react-native"
+import { findNodeHandle, Image, Pressable } from "react-native"
 
+import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
 import { useSelectedView } from "@/src/modules/screen/atoms"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
@@ -19,11 +23,24 @@ type ImageContextMenuProps = PropsWithChildren<{
   entryId?: string
 }>
 
+interface IOSNativeImageActions {
+  saveImageByHandle: (handle: number) => void
+  shareImageByHandle: (handle: number, url: string) => void
+  getBase64FromImageViewByHandle: (handle: number) => Promise<{ base64: string }>
+  copyImageByHandle: (handle: number) => void
+}
+
+const getIOSNativeImageActions = () => {
+  return requireNativeModule<IOSNativeImageActions>("Helper")
+}
+
 export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMenuProps) => {
   const entry = useEntry(entryId!)
   const feedId = entry?.feedId
   const view = useSelectedView()
   const isEntryStarred = useIsEntryStarred(entryId!)
+
+  const contextMenuTriggerRef = useRef<View>(null)
 
   if (!imageUrl || !entry) {
     return children
@@ -57,9 +74,14 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
       cleanup: () => FileSystem.deleteAsync(filePath),
     }
   }
+
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger>
+        {/* Must wrap a NOT <View /> Component, because <View />'s handle can found native view in native. May be this is a react native bug */}
+        <Pressable ref={contextMenuTriggerRef}>{children}</Pressable>
+      </ContextMenu.Trigger>
+
       <ContextMenu.Content>
         {entryId && feedId && view !== undefined && (
           <ContextMenu.Item
@@ -90,8 +112,16 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
         <ContextMenu.Item
           key="Copy"
           onSelect={async () => {
-            const croppedImage = await getImageData()
-            await setImageAsync(croppedImage.base64)
+            if (isIOS) {
+              const handle = findNodeHandle(contextMenuTriggerRef.current)
+              if (!handle) {
+                return
+              }
+              getIOSNativeImageActions().copyImageByHandle(handle)
+            } else {
+              const croppedImage = await getImageData()
+              await setImageAsync(croppedImage.base64)
+            }
           }}
         >
           <ContextMenu.ItemIcon
@@ -104,11 +134,20 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
         <ContextMenu.Item
           key="Save"
           onSelect={async () => {
-            const croppedImage = await getImageData()
-            const { filePath, cleanup } = await createTempFile(croppedImage.base64)
-            await saveToLibraryAsync(filePath)
-            toast.success("Image saved to library")
-            cleanup()
+            if (isIOS) {
+              const handle = findNodeHandle(contextMenuTriggerRef.current)
+
+              if (!handle) {
+                return
+              }
+              getIOSNativeImageActions().saveImageByHandle(handle)
+            } else {
+              const croppedImage = await getImageData()
+              const { filePath, cleanup } = await createTempFile(croppedImage.base64)
+              await saveToLibraryAsync(filePath)
+              toast.success("Image saved to library")
+              cleanup()
+            }
           }}
         >
           <ContextMenu.ItemTitle>Save to Album</ContextMenu.ItemTitle>
@@ -121,13 +160,22 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
         <ContextMenu.Item
           key="Share"
           onSelect={async () => {
-            const croppedImage = await getImageData()
-            const { filePath, cleanup } = await createTempFile(croppedImage.base64)
-            await shareAsync(filePath, {
-              dialogTitle: "Share Image",
-            })
+            if (isIOS) {
+              const handle = findNodeHandle(contextMenuTriggerRef.current)
 
-            cleanup()
+              if (!handle) {
+                return
+              }
+              getIOSNativeImageActions().shareImageByHandle(handle, imageUrl)
+            } else {
+              const croppedImage = await getImageData()
+              const { filePath, cleanup } = await createTempFile(croppedImage.base64)
+              await shareAsync(filePath, {
+                dialogTitle: "Share Image",
+              })
+
+              cleanup()
+            }
           }}
         >
           <ContextMenu.ItemIcon

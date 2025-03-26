@@ -29,7 +29,7 @@
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",
     "@openpanel/web": "1.0.1",
-    "@sentry/electron": "6.1.0",
+    "@sentry/electron": "6.3.0",
     "builder-util-runtime": "9.2.10",
     "cookie-es": "2.0.0",
     "electron-context-menu": "4.0.5",
@@ -55,9 +55,9 @@
     "@follow/models": "workspace:*",
     "@follow/types": "workspace:*",
     "@types/js-yaml": "4.0.9",
-    "@types/node": "22.13.10",
-    "electron": "34.2.0",
+    "@types/node": "22.13.13",
+    "electron": "34.3.4",
     "electron-devtools-installer": "4.0.0",
-    "hono": "4.7.4"
+    "hono": "4.7.5"
   }
 }

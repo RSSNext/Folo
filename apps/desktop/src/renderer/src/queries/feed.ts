@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { formatXml } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
@@ -64,7 +65,7 @@ export const useClaimFeedMutation = (feedId: string) =>
       toastFetchError(err)
     },
     onSuccess() {
-      window.analytics?.capture("feed_claimed", {
+      tracker.feedClaimed({
         feedId,
       })
     },

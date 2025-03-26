@@ -1,69 +1,181 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import type { SupportedLanguages } from "@follow/models"
-import type { GeneralSettings } from "@follow/shared/interface/settings"
+import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
+import { enhancedGeneralSettingKeys } from "@follow/shared/settings/enhanced"
+import type { GeneralSettings } from "@follow/shared/settings/interface"
+import { useCallback, useMemo } from "react"
 
 import { jotaiStore } from "~/lib/jotai"
 
 export const DEFAULT_ACTION_LANGUAGE = "default"
 
-const createDefaultSettings = (): GeneralSettings => ({
-  // App
-  appLaunchOnStartup: false,
-  language: "en",
+const createDefaultSettings = (): GeneralSettings => defaultGeneralSettings
 
-  // Content
-  actionLanguage: DEFAULT_ACTION_LANGUAGE,
-  translation: false,
-  summary: false,
-
-  // mobile app
-  startupScreen: "timeline",
-  // Data control
-  dataPersist: true,
-  sendAnonymousData: true,
-  showQuickTimeline: true,
-
-  autoGroup: true,
-
-  // view
-  unreadOnly: true,
-  // mark unread
-  scrollMarkUnread: true,
-  hoverMarkUnread: true,
-  renderMarkUnread: false,
-  // UX
-  groupByDate: true,
-  autoExpandLongSocialMedia: false,
-
-  // Secure
-  jumpOutLinkWarn: true,
-  // TTS
-  voice: "en-US-AndrewMultilingualNeural",
-})
-
-export const {
-  useSettingKey: useGeneralSettingKey,
-  useSettingSelector: useGeneralSettingSelector,
-  useSettingKeys: useGeneralSettingKeys,
+const {
+  useSettingKey: useGeneralSettingKeyInternal,
+  useSettingSelector: useGeneralSettingSelectorInternal,
+  useSettingKeys: useGeneralSettingKeysInternal,
   setSetting: setGeneralSetting,
   clearSettings: clearGeneralSettings,
   initializeDefaultSettings: initializeDefaultGeneralSettings,
-  getSettings: getGeneralSettings,
-  useSettingValue: useGeneralSettingValue,
+  getSettings: getGeneralSettingsInternal,
+  useSettingValue: useGeneralSettingValueInternal,
 
   settingAtom: __generalSettingAtom,
 } = createSettingAtom("general", createDefaultSettings)
 
+const [
+  useGeneralSettingKey,
+  useGeneralSettingSelector,
+  useGeneralSettingKeys,
+  getGeneralSettings,
+  useGeneralSettingValue,
+] = hookEnhancedSettings(
+  useGeneralSettingKeyInternal,
+  useGeneralSettingSelectorInternal,
+  useGeneralSettingKeysInternal,
+  getGeneralSettingsInternal,
+  useGeneralSettingValueInternal,
+
+  enhancedGeneralSettingKeys,
+  defaultGeneralSettings,
+)
+export {
+  __generalSettingAtom,
+  clearGeneralSettings,
+  getGeneralSettings,
+  initializeDefaultGeneralSettings,
+  setGeneralSetting,
+  useGeneralSettingKey,
+  useGeneralSettingKeys,
+  useGeneralSettingSelector,
+  useGeneralSettingValue,
+}
+export function hookEnhancedSettings<
+  T1 extends (key: any) => any,
+  T2 extends (selector: (s: any) => any) => any,
+  T3 extends (keys: any) => any,
+  T4 extends () => any,
+  T5 extends () => any,
+>(
+  useSettingKey: T1,
+  useSettingSelector: T2,
+  useSettingKeys: T3,
+  getSettings: T4,
+  useSettingValue: T5,
+
+  enhancedSettingKeys: Set<string>,
+  defaultSettings: Record<string, any>,
+): [T1, T2, T3, T4, T5] {
+  const useNextSettingKey = (key: string) => {
+    const enableEnhancedSettings = useGeneralSettingKeyInternal("enhancedSettings")
+    const settingValue = useSettingKey(key)
+    const shouldBackToDefault = enhancedSettingKeys.has(key) && !enableEnhancedSettings
+    if (!shouldBackToDefault) {
+      return settingValue
+    }
+
+    return defaultSettings[key] === undefined ? settingValue : defaultSettings[key]
+  }
+
+  const useNextSettingSelector = (selector: (s: any) => any) => {
+    const enableEnhancedSettings = useGeneralSettingKeyInternal("enhancedSettings")
+    return useSettingSelector(
+      useCallback(
+        (settings) => {
+          if (enableEnhancedSettings) {
+            return selector(settings)
+          }
+
+          const enhancedSettings = { ...settings }
+          for (const key of enhancedSettingKeys) {
+            if (defaultSettings[key] !== undefined) {
+              enhancedSettings[key] = defaultSettings[key]
+            }
+          }
+
+          return selector(enhancedSettings)
+        },
+        [enableEnhancedSettings, selector],
+      ),
+    )
+  }
+
+  const useNextSettingKeys = (keys: string[]) => {
+    const enableEnhancedSettings = useGeneralSettingKeyInternal("enhancedSettings")
+    const rawSettingValues = useSettingKeys(keys)
+    return useMemo(() => {
+      if (enableEnhancedSettings) {
+        return rawSettingValues
+      }
+
+      const result = { ...rawSettingValues }
+      for (const key of keys) {
+        if (enhancedSettingKeys.has(key) && defaultSettings[key] !== undefined) {
+          result[key] = defaultSettings[key]
+        }
+      }
+
+      return result
+    }, [enableEnhancedSettings, keys, rawSettingValues])
+  }
+
+  const getNextSettings = () => {
+    const settings = getSettings()
+    const enableEnhancedSettings = jotaiStore.get(__generalSettingAtom).enhancedSettings
+
+    if (enableEnhancedSettings) {
+      return settings
+    }
+
+    const enhancedSettings = { ...settings }
+    for (const key of enhancedSettingKeys) {
+      if (defaultSettings[key] !== undefined) {
+        enhancedSettings[key] = defaultSettings[key]
+      }
+    }
+
+    return enhancedSettings
+  }
+
+  const useNextSettingValue = () => {
+    const settingValues = useSettingValue()
+    const enableEnhancedSettings = useGeneralSettingKeyInternal("enhancedSettings")
+
+    return useMemo(() => {
+      if (enableEnhancedSettings) {
+        return settingValues
+      }
+
+      const result = { ...settingValues }
+      for (const key of enhancedSettingKeys) {
+        if (defaultSettings[key] !== undefined) {
+          result[key] = defaultSettings[key]
+        }
+      }
+
+      return result
+    }, [enableEnhancedSettings, settingValues])
+  }
+  return [
+    useNextSettingKey as T1,
+    useNextSettingSelector as T2,
+    useNextSettingKeys as T3,
+    getNextSettings as T4,
+    useNextSettingValue as T5,
+  ]
+}
+
 export function useActionLanguage() {
-  const actionLanguage = useGeneralSettingSelector((s) => s.actionLanguage)
-  const language = useGeneralSettingSelector((s) => s.language)
+  const actionLanguage = useGeneralSettingSelectorInternal((s) => s.actionLanguage)
+  const language = useGeneralSettingSelectorInternal((s) => s.language)
   return (
     actionLanguage === DEFAULT_ACTION_LANGUAGE ? language : actionLanguage
   ) as SupportedLanguages
 }
 
 export const subscribeShouldUseIndexedDB = (callback: (value: boolean) => void) =>
-  jotaiStore.sub(__generalSettingAtom, () => callback(getGeneralSettings().dataPersist))
+  jotaiStore.sub(__generalSettingAtom, () => callback(getGeneralSettingsInternal().dataPersist))
 
 export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
   "appLaunchOnStartup",

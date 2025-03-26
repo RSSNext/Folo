@@ -32,7 +32,7 @@ interface BaseCellClassNames {
 export const GroupedOutlineDescription: FC<{
   description: string
 }> = ({ description }) => {
-  return <Text className="text-secondary-label mx-9 mt-1 text-sm">{description}</Text>
+  return <Text className="text-secondary-label mx-9 mt-2 text-sm">{description}</Text>
 }
 
 export const GroupedInsetListCard: FC<

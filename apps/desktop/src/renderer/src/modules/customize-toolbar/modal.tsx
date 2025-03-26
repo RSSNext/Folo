@@ -78,7 +78,10 @@ const CustomizeToolbar = () => {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-[800px] space-y-4">
+    <div
+      className="mx-auto w-full max-w-[800px] space-y-4"
+      onPointerDown={(event) => event.stopPropagation()}
+    >
       <div className="mb-4">
         <h2 className="text-lg font-semibold">{t("customizeToolbar.quick_actions.title")}</h2>
         <p className="text-sm text-gray-500">{t("customizeToolbar.quick_actions.description")}</p>

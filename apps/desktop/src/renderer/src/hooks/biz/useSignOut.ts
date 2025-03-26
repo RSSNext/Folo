@@ -22,7 +22,7 @@ export const useSignOut = () =>
 
     // Clear local storage
     clearStorage()
-    window.analytics?.reset()
+
     // clear local store data
     await Promise.allSettled([
       clearLocalPersistStoreData(),

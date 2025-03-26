@@ -266,7 +266,7 @@ export const useFeedActions = ({
         click: () => {
           present({
             title: t("sidebar.feed_actions.edit_feed"),
-            content: ({ dismiss }) => <FeedForm asWidget id={feedId} onSuccess={dismiss} />,
+            content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
           })
         },
       },
@@ -424,7 +424,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         click: () => {
           present({
             title: t("sidebar.feed_actions.edit_list"),
-            content: ({ dismiss }) => <ListForm asWidget id={listId} onSuccess={dismiss} />,
+            content: ({ dismiss }) => <ListForm id={listId} onSuccess={dismiss} />,
           })
         },
       },

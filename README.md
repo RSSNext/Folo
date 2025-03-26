@@ -109,6 +109,14 @@ This isn’t just another app. Folo is a community — introducing a new era of 
 
 You are welcome to join the open source community to build together, please check our [Contributing Guide](./CONTRIBUTING.md) for more details.
 
+## 🔏 Code signing policy
+
+Folo for Windows uses free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+Folo for macOS and iOS are signed and notarized by [Apple Developer Program](https://developer.apple.com/programs/).
+
+All released files are verified with [GitHub artifact attestations](https://github.com/RSSNext/Folo/attestations) to ensure their provenance and integrity.
+
 ## 📝 License
 
 Folo is licensed under the GNU General Public License version 3 with the addition of the following special exception:

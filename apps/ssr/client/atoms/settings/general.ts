@@ -1,4 +1,4 @@
-import type { GeneralSettings } from "@follow/shared/interface/settings"
+import type { GeneralSettings } from "@follow/shared/settings/interface"
 
 import { createSettingAtom } from "./helper"
 

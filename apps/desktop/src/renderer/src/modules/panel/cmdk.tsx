@@ -11,6 +11,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import type { FeedViewType } from "@follow/constants"
 import { useInputComposition } from "@follow/hooks"
+import { tracker } from "@follow/tracker"
 import { clsx, cn } from "@follow/utils/utils"
 import { Command } from "cmdk"
 import type { FC } from "react"
@@ -46,7 +47,8 @@ export const SearchCmdK: React.FC = () => {
   React.useEffect(() => {
     if (!open) return
 
-    window.analytics?.capture("search_open")
+    tracker.searchOpen()
+
     // Refresh data
     setPage(0)
     setSearchInstance(() => searchActions.createLocalDbSearch())

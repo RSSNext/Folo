@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -37,6 +38,11 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
     const isHorizontalScrolling = getHorizontalScrolling()
     if (entry && !isHorizontalScrolling) {
       preloadWebViewEntry(entry)
+      tracker.navigateEntry({
+        feedId: entry.feedId!,
+        entryId: entry.id,
+      })
+
       navigation.pushControllerView(EntryDetailScreen, {
         entryId,
         view,

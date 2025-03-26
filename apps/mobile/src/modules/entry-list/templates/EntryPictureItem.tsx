@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
@@ -38,6 +39,10 @@ export function EntryPictureItem({ id }: { id: string }) {
           if (!feed) {
             return
           }
+          tracker.navigateEntry({
+            feedId: item.feedId!,
+            entryId: id,
+          })
 
           showEntryGaleriaAccessory({
             author: item.author || "",

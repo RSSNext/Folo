@@ -16,12 +16,12 @@ export const MarkdownP: Component<
   if (parseTimeline && Array.isArray(children)) {
     return (
       <p>
-        {children.map((child) => {
+        {children.map((child, index) => {
           if (typeof child === "string") {
             const renderer = ensureAndRenderTimeStamp(child)
-            if (renderer) return renderer
+            if (renderer) return <React.Fragment key={index}>{renderer}</React.Fragment>
           }
-          return child
+          return <React.Fragment key={index}>{child}</React.Fragment>
         })}
       </p>
     )

@@ -28,9 +28,9 @@ export const usePresentFeedFormModal = () => {
           title: isList ? t("sidebar.feed_actions.edit_list") : t("sidebar.feed_actions.edit_feed"),
           content: ({ dismiss }) =>
             isList ? (
-              <ListForm asWidget id={params.listId} onSuccess={dismiss} />
+              <ListForm id={params.listId} onSuccess={dismiss} />
             ) : (
-              <FeedForm asWidget id={params.feedId} onSuccess={dismiss} />
+              <FeedForm id={params.feedId} onSuccess={dismiss} />
             ),
         })
       } else {

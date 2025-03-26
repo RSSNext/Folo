@@ -1,4 +1,4 @@
-import type { GeneralSettings, UISettings } from "@follow/shared/interface/settings"
+import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { EventBus } from "@follow/utils/event-bus"
 import { getStorageNS } from "@follow/utils/ns"
 import { isEmptyObject, sleep } from "@follow/utils/utils"
@@ -34,7 +34,7 @@ const createInternalSetter =
     jotaiStore.set(atom, { ...current, ...payload })
   }
 
-const localsettingSetterMap = {
+const localSettingSetterMap = {
   appearance: createInternalSetter(__uiSettingAtom),
   general: createInternalSetter(__generalSettingAtom),
 }
@@ -249,7 +249,7 @@ class SettingSyncQueue {
           continue
         }
 
-        const setter = localsettingSetterMap[tab]
+        const setter = localSettingSetterMap[tab]
 
         setter(nextPayload)
       }

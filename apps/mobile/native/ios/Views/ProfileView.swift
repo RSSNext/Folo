@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @Binding var profile: ProfileData
     @Binding var user: UserData
-   let onPress: EventDispatcher
+    let onPress: EventDispatcher
 
     var hasAnyFeeds: Bool {
         !profile.feeds.isEmpty || !profile.groupedFeeds.isEmpty
@@ -113,7 +113,6 @@ struct ProfileView: View {
             }
 
         }.listStyle(.insetGrouped)
-            .listSectionSpacing(0)
 
     }
 }
@@ -132,7 +131,6 @@ private struct ProfileListImage: View {
         }
     }
 }
-
 
 private struct SectionHeaderText: View {
     let text: String

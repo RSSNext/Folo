@@ -417,5 +417,10 @@
   "wallet.withdraw.modalTitle": "Withdraw Power",
   "wallet.withdraw.submitButton": "Submit",
   "wallet.withdraw.success": "Withdrawal successful!",
-  "wallet.withdraw.toRss3Label": "Withdraw as RSS3"
+  "wallet.withdraw.toRss3Label": "Withdraw as RSS3",
+  "general.advanced": "Advanced",
+  "general.enhanced.label": "Enhanced Settings",
+  "general.enhanced.description": "Enabling the enhanced settings offers more customization options, but it may also introduce unforeseen issues.",
+  "general.enhanced.enabled.tip": "Enhanced settings are enabled, you can disable them in the General settings - Advanced.",
+  "general.enhanced.disabled.tip": "Enhanced settings are disabled, you can enable them in the General settings - Advanced."
 }

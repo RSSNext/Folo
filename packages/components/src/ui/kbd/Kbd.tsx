@@ -77,6 +77,7 @@ export const KbdCombined: FC<{
   )
 }
 
+// Key: `[` `1` `Meta+B`
 function simulateKeyPress(key: string) {
   const keyCodes = {
     "0": 48,
@@ -115,15 +116,185 @@ function simulateKeyPress(key: string) {
     x: 88,
     y: 89,
     z: 90,
+    "[": 219,
+    "]": 221,
+    "\\": 220,
+    ";": 186,
+    "'": 222,
+    ",": 188,
+    ".": 190,
+    "/": 191,
+    "`": 192,
+    "-": 189,
+    "=": 187,
+    backspace: 8,
+    tab: 9,
+    enter: 13,
+    shift: 16,
+    ctrl: 17,
+    alt: 18,
+    meta: 91,
+    escape: 27,
+    space: 32,
+    pageup: 33,
+    pagedown: 34,
+    end: 35,
+    home: 36,
+    arrowleft: 37,
+    arrowup: 38,
+    arrowright: 39,
+    arrowdown: 40,
   }
 
-  const code = keyCodes[key as keyof typeof keyCodes] || key.codePointAt(0)
+  // Handle combination keys like "Meta+B"
+  if (key.includes("+")) {
+    const keys = key.split("+")
+    const modifiers = {
+      meta: false,
+      ctrl: false,
+      alt: false,
+      shift: false,
+    }
+
+    let mainKey = ""
+
+    // Process each part of the combination
+    keys.forEach((k) => {
+      const lowerK = k.toLowerCase().trim()
+      switch (lowerK) {
+        case "meta":
+        case "command":
+        case "cmd": {
+          modifiers.meta = true
+
+          break
+        }
+        case "ctrl":
+        case "control": {
+          modifiers.ctrl = true
+
+          break
+        }
+        case "alt":
+        case "option": {
+          modifiers.alt = true
+
+          break
+        }
+        case "shift": {
+          modifiers.shift = true
+
+          break
+        }
+        default: {
+          mainKey = k
+        }
+      }
+    })
+
+    if (mainKey) {
+      const code =
+        keyCodes[mainKey.toLowerCase() as keyof typeof keyCodes] || mainKey.codePointAt(0)
+      const event = new KeyboardEvent("keydown", {
+        key: mainKey.length === 1 ? mainKey : mainKey.toLowerCase(),
+        code: mainKey.length === 1 ? `Key${mainKey.toUpperCase()}` : mainKey,
+        keyCode: code,
+        which: code,
+        metaKey: modifiers.meta,
+        ctrlKey: modifiers.ctrl,
+        altKey: modifiers.alt,
+        shiftKey: modifiers.shift,
+        bubbles: true,
+        cancelable: true,
+      })
+
+      document.dispatchEvent(event)
+    }
+    return
+  }
+
+  // Handle single keys
+  const lowerKey = key.toLowerCase().trim()
+  const code = keyCodes[lowerKey as keyof typeof keyCodes] || key.codePointAt(0)
+
+  const keyCode = code
+  let keyName = key
+  let codeStr = `Key${key.toUpperCase()}`
+
+  // Special handling for non-letter keys
+  if (key.length === 1 && !/[a-z]/i.test(key)) {
+    codeStr = key
+    switch (key) {
+      case "[": {
+        codeStr = "BracketLeft"
+        break
+      }
+      case "]": {
+        codeStr = "BracketRight"
+        break
+      }
+      case "\\": {
+        codeStr = "Backslash"
+        break
+      }
+      case ";": {
+        codeStr = "Semicolon"
+        break
+      }
+      case "'": {
+        codeStr = "Quote"
+        break
+      }
+      case ",": {
+        codeStr = "Comma"
+        break
+      }
+      case ".": {
+        codeStr = "Period"
+        break
+      }
+      case "/": {
+        codeStr = "Slash"
+        break
+      }
+      case "`": {
+        codeStr = "Backquote"
+        break
+      }
+      case "-": {
+        codeStr = "Minus"
+        break
+      }
+      case "=": {
+        codeStr = "Equal"
+        break
+      }
+      case "0":
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9": {
+        codeStr = `Digit${key}`
+        break
+      }
+    }
+  } else if (lowerKey === "space") {
+    keyName = " "
+    codeStr = "Space"
+  } else if (lowerKey.startsWith("arrow")) {
+    codeStr = lowerKey.charAt(0).toUpperCase() + lowerKey.slice(1)
+  }
 
   const event = new KeyboardEvent("keydown", {
-    key,
-    code: `Key${key.toUpperCase()}`,
-    keyCode: code,
-    which: code,
+    key: keyName,
+    code: codeStr,
+    keyCode,
+    which: keyCode,
     bubbles: true,
     cancelable: true,
   })

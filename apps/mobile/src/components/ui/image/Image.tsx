@@ -1,15 +1,8 @@
-import { createBuildSafeHeaders } from "@follow/utils/src/headers"
-import { getImageProxyUrl, IMAGE_PROXY_URL } from "@follow/utils/src/img-proxy"
 import type { ImageErrorEventData, ImageProps as ExpoImageProps } from "expo-image"
 import { Image as ExpoImage } from "expo-image"
 import { forwardRef, useCallback, useMemo, useState } from "react"
 
-import { proxyEnv } from "@/src/lib/proxy-env"
-
-const buildSafeHeaders = createBuildSafeHeaders(proxyEnv.VITE_WEB_URL, [
-  IMAGE_PROXY_URL,
-  proxyEnv.VITE_API_URL,
-])
+import { getAllSources } from "./utils"
 
 export type ImageProps = Omit<ExpoImageProps, "source"> & {
   proxy?: {
@@ -26,33 +19,10 @@ export type ImageProps = Omit<ExpoImageProps, "source"> & {
 
 export const Image = forwardRef<ExpoImage, ImageProps>(
   ({ proxy, source, blurhash, aspectRatio, ...rest }, ref) => {
-    const safeSource: ImageProps["source"] = useMemo(() => {
-      return source?.uri
-        ? {
-            ...source,
-            headers: {
-              ...buildSafeHeaders({ url: source.uri }),
-              ...source.headers,
-            },
-          }
-        : undefined
-    }, [source])
-
-    const proxiesSafeSource = useMemo(() => {
-      if (!proxy?.height && !proxy?.width) {
-        return safeSource
-      }
-      return safeSource
-        ? {
-            ...safeSource,
-            uri: getImageProxyUrl({
-              url: safeSource.uri,
-              width: proxy?.width ? proxy?.width * 3 : undefined,
-              height: proxy?.height ? proxy?.height * 3 : undefined,
-            }),
-          }
-        : undefined
-    }, [proxy?.height, proxy?.width, safeSource])
+    const [safeSource, proxiesSafeSource] = useMemo(
+      () => getAllSources(source, proxy),
+      [source, proxy],
+    )
 
     const [isError, setIsError] = useState(false)
     const onError = useCallback(

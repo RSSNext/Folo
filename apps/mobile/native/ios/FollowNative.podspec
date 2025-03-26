@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '17.0',
-    :tvos => '17.0'
+    :ios => '15.1',
+    :tvos => '15.1'
   }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/RSSNext/follow' }

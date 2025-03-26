@@ -1,5 +1,4 @@
 /* eslint-disable @eslint-react/no-array-index-key */
-import { isNil } from "es-toolkit/compat"
 import type { FC, ReactNode } from "react"
 import * as React from "react"
 import { isValidElement } from "react"
@@ -54,68 +53,79 @@ export const createSettingBuilder =
     const { settings } = props
     const settingObject = useSetting()
 
-    return settings
-      .filter((i) => !isNil(i))
-      .map((setting, index) => {
-        if (isValidElement(setting)) return setting
-        if (typeof setting === "function") {
-          return React.createElement(setting, { key: index })
-        }
-        const assertSetting = setting as SettingItem<T> | SectionSettingItem | ActionSettingItem
+    const filteredSettings = settings.filter((i) => !!i)
+    return filteredSettings.map((setting, index) => {
+      if (isValidElement(setting)) return setting
+      if (typeof setting === "function") {
+        return React.createElement(setting, { key: index })
+      }
+      const assertSetting = setting as SettingItem<T> | SectionSettingItem | ActionSettingItem
 
-        if (!assertSetting) return null
-        if (assertSetting.disabled) return null
+      if (!assertSetting) return null
+      if (assertSetting.disabled) return null
 
-        if ("type" in assertSetting && assertSetting.type === "title" && assertSetting.value) {
-          return <SettingSectionTitle key={index} title={assertSetting.value} />
-        }
-        if ("type" in assertSetting && assertSetting.type === "title") {
-          return null
-        }
+      const nextItem = filteredSettings[index + 1]
+      // If has no next item or next item is also a title, then it is an empty section
+      const isEmptySection =
+        !nextItem ||
+        (typeof nextItem === "object" && "type" in nextItem && nextItem.type === "title")
 
-        let ControlElement: React.ReactNode
+      const isValidTitle =
+        "type" in assertSetting &&
+        assertSetting.type === "title" &&
+        assertSetting.value &&
+        !isEmptySection
 
-        if ("key" in assertSetting) {
-          switch (typeof settingObject[assertSetting.key]) {
-            case "boolean": {
-              ControlElement = (
-                <SettingSwitch
-                  className="mt-4"
-                  checked={settingObject[assertSetting.key] as boolean}
-                  onCheckedChange={(checked) => assertSetting.onChange(checked as T[keyof T])}
-                  label={assertSetting.label}
-                />
-              )
-              break
-            }
-            case "string": {
-              ControlElement = (
-                <SettingInput
-                  vertical={assertSetting.vertical}
-                  labelClassName={assertSetting.componentProps?.labelClassName}
-                  type={assertSetting.type || "text"}
-                  className="mt-4"
-                  value={settingObject[assertSetting.key] as string}
-                  onChange={(event) => assertSetting.onChange(event.target.value as T[keyof T])}
-                  label={assertSetting.label}
-                />
-              )
-              break
-            }
-            default: {
-              return null
-            }
+      if (isValidTitle) {
+        return <SettingSectionTitle key={index} title={assertSetting.value} />
+      }
+      if ("type" in assertSetting && assertSetting.type === "title") {
+        return null
+      }
+
+      let ControlElement: React.ReactNode
+
+      if ("key" in assertSetting) {
+        switch (typeof settingObject[assertSetting.key]) {
+          case "boolean": {
+            ControlElement = (
+              <SettingSwitch
+                className="mt-4"
+                checked={settingObject[assertSetting.key] as boolean}
+                onCheckedChange={(checked) => assertSetting.onChange(checked as T[keyof T])}
+                label={assertSetting.label}
+              />
+            )
+            break
           }
-        } else if ("action" in assertSetting) {
-          ControlElement = <SettingActionItem {...assertSetting} key={index} />
+          case "string": {
+            ControlElement = (
+              <SettingInput
+                vertical={assertSetting.vertical}
+                labelClassName={assertSetting.componentProps?.labelClassName}
+                type={assertSetting.type || "text"}
+                className="mt-4"
+                value={settingObject[assertSetting.key] as string}
+                onChange={(event) => assertSetting.onChange(event.target.value as T[keyof T])}
+                label={assertSetting.label}
+              />
+            )
+            break
+          }
+          default: {
+            return null
+          }
         }
-        return (
-          <SettingItemGroup key={index}>
-            {ControlElement}
-            {!!assertSetting.description && (
-              <SettingDescription>{assertSetting.description}</SettingDescription>
-            )}
-          </SettingItemGroup>
-        )
-      })
+      } else if ("action" in assertSetting) {
+        ControlElement = <SettingActionItem {...assertSetting} key={index} />
+      }
+      return (
+        <SettingItemGroup key={index}>
+          {ControlElement}
+          {!!assertSetting.description && (
+            <SettingDescription>{assertSetting.description}</SettingDescription>
+          )}
+        </SettingItemGroup>
+      )
+    })
   }

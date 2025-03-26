@@ -2,8 +2,10 @@
 import type { AppType } from "@follow/shared"
 import { FetchError, ofetch } from "ofetch"
 
+import { InvitationScreen } from "../screens/(modal)/invitation"
 import { userActions } from "../store/user/store"
 import { getCookie } from "./auth"
+import { Navigation } from "./navigation/Navigation"
 import { proxyEnv } from "./proxy-env"
 
 const { hc } = require("hono/dist/cjs/client/client") as typeof import("hono/client")
@@ -11,7 +13,7 @@ const { hc } = require("hono/dist/cjs/client/client") as typeof import("hono/cli
 export const apiFetch = ofetch.create({
   retry: false,
 
-  baseURL: proxyEnv.VITE_API_URL,
+  baseURL: proxyEnv.API_URL,
   onRequest: async (ctx) => {
     const { options, request } = ctx
     if (__DEV__) {
@@ -42,12 +44,21 @@ export const apiFetch = ofetch.create({
     if (response.status === 401) {
       userActions.removeCurrentUser()
     } else {
-      console.error(error)
+      try {
+        const json = JSON.parse(response._data)
+        console.error(`Request ${request as string} failed with status ${response.status}`, json)
+
+        if (json.code.toString().startsWith("11")) {
+          Navigation.rootNavigation.presentControllerView(InvitationScreen)
+        }
+      } catch {
+        console.error(`Request ${request as string} failed with status ${response.status}`, error)
+      }
     }
   },
 })
 
-export const apiClient = hc<AppType>(proxyEnv.VITE_API_URL, {
+export const apiClient = hc<AppType>(proxyEnv.API_URL, {
   fetch: async (input: any, options = {}) =>
     apiFetch(input.toString(), options).catch((err) => {
       throw err

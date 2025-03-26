@@ -3,7 +3,6 @@ import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated
 import { RootSiblingParent } from "react-native-root-siblings"
 import { useSheet } from "react-native-sheet-transitions"
 
-import { FullWindowOverlay } from "./components/common/FullWindowOverlay"
 import { useIntentHandler } from "./hooks/useIntentHandler"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 import { useOnboarding, usePrefetchSessionUser } from "./store/user/hooks"
@@ -29,9 +28,8 @@ export function App({ children }: { children: React.ReactNode }) {
         <RootSiblingParent>{children}</RootSiblingParent>
       </Animated.View>
       {__DEV__ && <DebugButton />}
-      <FullWindowOverlay>
-        <EnvProfileIndicator />
-      </FullWindowOverlay>
+
+      <EnvProfileIndicator />
     </View>
   )
 }

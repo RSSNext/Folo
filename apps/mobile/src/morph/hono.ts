@@ -6,6 +6,7 @@ import type { EntryModel } from "../store/entry/types"
 import type { FeedModel } from "../store/feed/types"
 import type { ListModel } from "../store/list/store"
 import type { SubscriptionModel } from "../store/subscription/store"
+import type { UserModel } from "../store/user/store"
 import type { HonoApiClient } from "./types"
 
 class Morph {
@@ -198,6 +199,17 @@ class Morph {
       errorAt: data.errorAt!,
       errorMessage: data.errorMessage!,
       siteUrl: data.siteUrl!,
+    }
+  }
+
+  toUser(data: HonoApiClient.User_Get, isMe?: boolean): UserModel {
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      handle: data.handle,
+      image: data.image,
+      isMe: isMe ? 1 : 0,
     }
   }
 }

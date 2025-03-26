@@ -104,7 +104,6 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
         title: t("feed_form.add_feed"),
         content: () => (
           <FeedForm
-            asWidget
             url={values.keyword}
             defaultValues={{
               view: defaultView.toString(),

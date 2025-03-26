@@ -1,5 +1,6 @@
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
 import { useRegisterGlobalContext } from "@follow/shared/bridge"
+import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useLayoutEffect } from "react"
@@ -45,13 +46,15 @@ const CmdNPanel = () => {
 
     const defaultView = getRouteParams().view
 
-    window.analytics?.capture("quick_add_feed", { url, defaultView })
+    tracker.quickAddFeed({
+      type: "url",
+      defaultView: Number(defaultView),
+    })
 
     present({
       title: t("feed_form.add_feed"),
       content: () => (
         <FeedForm
-          asWidget
           url={url}
           defaultValues={{
             view: defaultView.toString(),

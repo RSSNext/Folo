@@ -1,20 +1,27 @@
+import type { TrackerPoints } from "@follow/tracker"
+import { tracker } from "@follow/tracker"
+import type { AllTrackers } from "@follow/tracker/src/points"
 import { memo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 
-type ImpressionProps = {
-  event: string
+type ImpressionProps<T extends AllTrackers> = {
+  event: T
   onTrack?: () => any
-  properties?: Record<string, any>
+  properties?: Parameters<TrackerPoints[T]>
+  children: React.ReactNode
 }
-export const ImpressionView: Component<{ shouldTrack?: boolean } & ImpressionProps> = (props) => {
+
+export function ImpressionView<T extends keyof typeof tracker>(
+  props: ImpressionProps<T> & { shouldTrack?: boolean },
+) {
   const { shouldTrack = true, ...rest } = props
   if (!shouldTrack) {
     return <>{props.children}</>
   }
-  return <ImpressionViewImpl {...rest} />
+  return <MemoImpressionViewImpl {...rest} />
 }
 
-const ImpressionViewImpl: Component<ImpressionProps> = memo((props) => {
+function ImpressionViewImpl<T extends keyof typeof tracker>(props: ImpressionProps<T>) {
   const [impression, setImpression] = useState(false)
 
   const { ref } = useInView({
@@ -26,10 +33,8 @@ const ImpressionViewImpl: Component<ImpressionProps> = memo((props) => {
       }
       setImpression(true)
 
-      window.analytics?.capture(props.event, {
-        impression: 1,
-        ...props.properties,
-      })
+      // @ts-expect-error
+      tracker[props.event]?.apply(null, props.properties)
       props.onTrack?.()
     },
   })
@@ -40,6 +45,6 @@ const ImpressionViewImpl: Component<ImpressionProps> = memo((props) => {
       {!impression && <span ref={ref} />}
     </>
   )
-})
-
-ImpressionViewImpl.displayName = "ImpressionView"
+}
+const MemoImpressionViewImpl = memo(ImpressionViewImpl)
+MemoImpressionViewImpl.displayName = "ImpressionView"

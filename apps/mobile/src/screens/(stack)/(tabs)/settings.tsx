@@ -22,8 +22,6 @@ import { useWhoami } from "@/src/store/user/hooks"
 export function Settings() {
   const insets = useSafeAreaInsets()
 
-  const registerNavigationScrollView = useRegisterNavigationScrollView<ScrollView>()
-
   const screenContext = useContext(ScreenItemContext)
 
   const whoami = useWhoami()
@@ -40,7 +38,7 @@ export function Settings() {
       >
         <UserHeaderBanner scrollY={screenContext.reAnimatedScrollY} userId={whoami?.id} />
 
-        <SettingsList scrollRef={registerNavigationScrollView} />
+        <SettingsList />
       </SafeNavigationScrollView>
       <SettingHeader scrollY={screenContext.reAnimatedScrollY} />
     </>

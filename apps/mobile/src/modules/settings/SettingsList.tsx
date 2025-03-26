@@ -1,7 +1,7 @@
+import { UserRole } from "@follow/constants"
 import * as FileSystem from "expo-file-system"
-import type { FC, RefObject } from "react"
+import type { FC } from "react"
 import { Fragment, useMemo } from "react"
-import type { ScrollView } from "react-native"
 import { Alert, PixelRatio, View } from "react-native"
 
 import {
@@ -24,7 +24,8 @@ import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
-import { useWhoami } from "@/src/store/user/hooks"
+import { InvitationScreen } from "@/src/screens/(modal)/invitation"
+import { useRole, useWhoami } from "@/src/store/user/hooks"
 
 import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
@@ -40,8 +41,9 @@ import { PrivacyScreen } from "./routes/Privacy"
 interface GroupNavigationLink {
   label: string
   icon: React.ElementType
-  onPress: (navigation: Navigation, scrollRef: RefObject<ScrollView>) => void
+  onPress: (data: { navigation: Navigation }) => void
   iconBackgroundColor: string
+  trialNotAllowed?: boolean
 
   anonymous?: boolean
   todo?: boolean
@@ -50,7 +52,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "General",
     icon: Settings1CuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(GeneralScreen)
     },
     iconBackgroundColor: "#F59E0B",
@@ -58,7 +60,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Notifications",
     icon: BellRingingCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(NotificationsScreen)
     },
     iconBackgroundColor: "#FBBF24",
@@ -68,7 +70,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Appearance",
     icon: PaletteCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(AppearanceScreen)
     },
     iconBackgroundColor: "#FCD34D",
@@ -76,7 +78,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Data",
     icon: DatabaseIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(DataScreen)
     },
     iconBackgroundColor: "#CBAD6D",
@@ -85,7 +87,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Account",
     icon: UserSettingCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(AccountScreen)
     },
     iconBackgroundColor: "#d08700",
@@ -97,32 +99,35 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Actions",
     icon: Magic2CuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(ActionsScreen)
     },
     iconBackgroundColor: "#059669",
     anonymous: false,
+    trialNotAllowed: true,
   },
 
   {
     label: "Feeds",
     icon: CertificateCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(FeedsScreen)
     },
     iconBackgroundColor: "#10B981",
     todo: true,
     anonymous: false,
+    trialNotAllowed: true,
   },
   {
     label: "Lists",
     icon: RadaCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(ListsScreen)
     },
     iconBackgroundColor: "#34D399",
     // todo: true,
     anonymous: false,
+    trialNotAllowed: true,
   },
 ]
 
@@ -130,7 +135,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "Privacy",
     icon: SafeLockFilledIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(PrivacyScreen)
     },
     iconBackgroundColor: "#EF4444",
@@ -138,7 +143,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "About",
     icon: StarCuteFiIcon,
-    onPress: (navigation) => {
+    onPress: ({ navigation }) => {
       navigation.pushControllerView(AboutScreen)
     },
     iconBackgroundColor: "#F87181",
@@ -172,9 +177,9 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
 
 const NavigationLinkGroup: FC<{
   links: GroupNavigationLink[]
-  scrollRef: RefObject<ScrollView>
-}> = ({ links, scrollRef }) => {
+}> = ({ links }) => {
   const navigation = useNavigation()
+  const role = useRole()
 
   return (
     <GroupedInsetListCard>
@@ -191,7 +196,11 @@ const NavigationLinkGroup: FC<{
                 </GroupedInsetListNavigationLinkIcon>
               }
               onPress={() => {
-                link.onPress(navigation, scrollRef)
+                if (link.trialNotAllowed && role === UserRole.Trial) {
+                  navigation.presentControllerView(InvitationScreen)
+                } else {
+                  link.onPress({ navigation })
+                }
               }}
             />
           )
@@ -207,7 +216,7 @@ const navigationGroups = [
   ActionGroupNavigationLinks,
 ] as const
 
-export const SettingsList: FC<{ scrollRef: RefObject<ScrollView> }> = ({ scrollRef }) => {
+export const SettingsList: FC = () => {
   const whoami = useWhoami()
 
   const filteredNavigationGroups = useMemo(() => {
@@ -230,7 +239,7 @@ export const SettingsList: FC<{ scrollRef: RefObject<ScrollView> }> = ({ scrollR
     <View className="bg-system-grouped-background flex-1 pb-4" style={{ marginTop }}>
       {filteredNavigationGroups.map((group, index) => (
         <Fragment key={`nav-group-${index}`}>
-          <NavigationLinkGroup key={`nav-group-${index}`} links={group} scrollRef={scrollRef} />
+          <NavigationLinkGroup key={`nav-group-${index}`} links={group} />
           {index < filteredNavigationGroups.length - 1 && <View style={{ height: groupGap }} />}
         </Fragment>
       ))}

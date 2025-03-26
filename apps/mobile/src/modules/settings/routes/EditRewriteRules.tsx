@@ -1,7 +1,9 @@
 import { Text } from "react-native"
 
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetListBaseCell,
@@ -17,7 +19,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
   const rule = useActionRule(index)
 
   return (
-    <SafeModalScrollView className="bg-system-grouped-background">
+    <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Edit Rewrite Rules" />
       <GroupedInsetListSectionHeader label="Rewrite Rules" marginSize="small" />
       {rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => (
@@ -63,6 +65,6 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
         />
       </GroupedInsetListCard>
       {__DEV__ && <Text>{JSON.stringify(rule?.result.rewriteRules, null, 2)}</Text>}
-    </SafeModalScrollView>
+    </SafeNavigationScrollView>
   )
 }

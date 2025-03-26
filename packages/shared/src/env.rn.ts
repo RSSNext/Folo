@@ -3,26 +3,36 @@
  */
 const profile = "prod"
 
-export const envProfileMap = {
+const envProfileMap = {
   prod: {
-    VITE_API_URL: "https://api.follow.is",
-    VITE_WEB_URL: "https://app.follow.is",
-    VITE_INBOXES_EMAIL: "@follow.re",
+    API_URL: "https://api.follow.is",
+    WEB_URL: "https://app.follow.is",
+    INBOXES_EMAIL: "@follow.re",
+    OPENPANEL_CLIENT_ID: "0e477ab4-d92d-4d6e-b889-b09d86ab908e",
+    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
   },
   dev: {
-    VITE_API_URL: "https://api.dev.follow.is",
-    VITE_WEB_URL: "https://dev.follow.is",
-    VITE_INBOXES_EMAIL: "__devdev@follow.re",
+    API_URL: "https://api.dev.follow.is",
+    WEB_URL: "https://dev.follow.is",
+    INBOXES_EMAIL: "__dev@follow.re",
   },
   staging: {
-    VITE_API_URL: "https://api.follow.is",
-    VITE_WEB_URL: "https://staging.follow.is",
-    VITE_INBOXES_EMAIL: "@follow.re",
+    API_URL: "https://api.follow.is",
+    WEB_URL: "https://staging.follow.is",
+    INBOXES_EMAIL: "@follow.re",
+    OPENPANEL_CLIENT_ID: "0e477ab4-d92d-4d6e-b889-b09d86ab908e",
+    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
   },
 }
-
+export const getEnvProfiles__dangerously = () => envProfileMap
+export type { envProfileMap }
+/**
+ * @description this env always use prod env, please use `proxyEnv` to access dynamic env
+ */
 export const env = {
-  VITE_WEB_URL: envProfileMap[profile].VITE_WEB_URL,
-  VITE_API_URL: envProfileMap[profile].VITE_API_URL,
+  WEB_URL: envProfileMap[profile].WEB_URL,
+  API_URL: envProfileMap[profile].API_URL,
   APP_CHECK_DEBUG_TOKEN: process.env.EXPO_PUBLIC_APP_CHECK_DEBUG_TOKEN,
+  OPENPANEL_CLIENT_ID: envProfileMap[profile].OPENPANEL_CLIENT_ID,
+  OPENPANEL_API_URL: envProfileMap[profile].OPENPANEL_API_URL,
 }

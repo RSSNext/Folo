@@ -1,5 +1,5 @@
-import type { env } from "@follow/shared/src/env.rn"
-import { envProfileMap } from "@follow/shared/src/env.rn"
+import type { env, envProfileMap } from "@follow/shared/src/env.rn"
+import { getEnvProfiles__dangerously } from "@follow/shared/src/env.rn"
 import { createAtomHooks } from "@follow/utils"
 import { reloadAppAsync } from "expo"
 import { atomWithStorage } from "jotai/utils"
@@ -21,7 +21,10 @@ export const proxyEnv = new Proxy(
   {
     get(target, prop) {
       const profile = getEnvProfile() as keyof typeof envProfileMap
-      return envProfileMap[profile][prop as keyof (typeof envProfileMap)[typeof profile]]
+      const envProfiles = getEnvProfiles__dangerously()
+      const envMap = envProfiles[profile]
+
+      return envMap[prop as keyof typeof envMap]
     },
   },
 ) as any as typeof env

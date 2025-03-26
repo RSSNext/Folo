@@ -1,5 +1,6 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import type { MediaModel } from "@follow/models"
+import { tracker } from "@follow/tracker"
 import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -15,7 +16,9 @@ export const ImageGalleryAction = ({ id }: { id: string }) => {
     return (
       <ActionButton
         onClick={() => {
-          window.analytics?.capture("entry_content_header_image_gallery_click")
+          tracker.entryContentHeaderImageGalleryClick({
+            feedId: id,
+          })
           present({
             title: t("entry_actions.image_gallery"),
             content: () => <ImageGallery images={images as any as MediaModel[]} />,

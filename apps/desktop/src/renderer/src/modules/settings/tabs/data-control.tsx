@@ -56,9 +56,6 @@ export const SettingDataControl = () => {
               setGeneralSetting("sendAnonymousData", value)
               if (value) {
                 initAnalytics()
-              } else {
-                window.analytics?.reset()
-                delete window.analytics
               }
             },
           }),

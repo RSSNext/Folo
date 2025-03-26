@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { createElement, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -24,7 +25,7 @@ export const useTipModal = () => {
         toast.error("Invalid feed id or entry id")
         return
       }
-      window.analytics?.capture("tip_modal_opened", { entryId })
+      tracker.tipModalOpened({ entryId })
       present({
         title: t("tip_modal.tip_title"),
         content: () => createElement(TipModalContent, { userId, feedId, entryId }),

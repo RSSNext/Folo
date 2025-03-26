@@ -1,4 +1,8 @@
+import { tracker } from "@follow/tracker"
+import { nativeApplicationVersion } from "expo-application"
+
 import { initializeDb } from "../database"
+import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
 import { initializeDayjs } from "./dayjs"
 import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
@@ -11,18 +15,30 @@ export const initializeApp = async () => {
 
   const now = Date.now()
   initializeDb()
+  initAnalytics()
+
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()
 
   await apm("hydrateSettings", hydrateSettings)
+  let dataHydratedTime = Date.now()
   await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
+
+  dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)
   await apm("initializeAppCheck", initializeAppCheck)
 
   const loadingTime = Date.now() - now
-  console.log(`Initialize done,`, `${loadingTime}ms`)
-
+  tracker.appInit({
+    rn: true,
+    loading_time: loadingTime,
+    version: nativeApplicationVersion!,
+    data_hydrated_time: dataHydratedTime,
+    electron: false,
+    using_indexed_db: true,
+  })
   await apm("initializePlayer", initializePlayer)
+  console.log(`Initialize done,`, `${loadingTime}ms`)
 }
 
 const apm = async (label: string, fn: () => Promise<any> | any) => {

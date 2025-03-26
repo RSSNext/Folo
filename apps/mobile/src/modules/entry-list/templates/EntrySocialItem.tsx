@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useMemo } from "react"
 import { Pressable, Text, View } from "react-native"
 import ReAnimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
@@ -33,12 +34,16 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
     const isHorizontalScrolling = getHorizontalScrolling()
     if (!isHorizontalScrolling) {
       unreadSyncService.markEntryAsRead(entryId)
+      tracker.navigateEntry({
+        feedId: entry?.feedId!,
+        entryId,
+      })
       navigation.pushControllerView(EntryDetailScreen, {
         entryId,
         view: FeedViewType.SocialMedia,
       })
     }
-  }, [entryId, navigation])
+  }, [entry?.feedId, entryId, navigation])
 
   const unreadZoomSharedValue = useSharedValue(entry?.read ? 0 : 1)
 

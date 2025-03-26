@@ -1,8 +1,7 @@
+import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import type { BrowserWindow } from "electron"
 import { useEffect, useLayoutEffect, useRef } from "react"
 import type { toast } from "sonner"
-
-import type { GeneralSettings, UISettings } from "./interface/settings"
 
 const PREFIX = "__follow"
 

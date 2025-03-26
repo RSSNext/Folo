@@ -30,9 +30,13 @@ import { setTranslationCache } from "~/modules/entry-content/atoms"
 
 import { SettingDescription, SettingInput, SettingSwitch } from "../control"
 import { createSetting } from "../helper/builder"
+import {
+  useWrapEnhancedSettingItem,
+  WrapEnhancedSettingTab,
+} from "../hooks/useWrapEnhancedSettingItem"
 import { SettingItemGroup } from "../section"
 
-const { defineSettingItem, SettingBuilder } = createSetting(
+const { defineSettingItem: _defineSettingItem, SettingBuilder } = createSetting(
   useGeneralSettingValue,
   setGeneralSetting,
 )
@@ -50,12 +54,20 @@ export const SettingGeneral = () => {
     setGeneralSetting("appLaunchOnStartup", checked)
   }, [])
 
+  const defineSettingItem = useWrapEnhancedSettingItem(
+    _defineSettingItem,
+    WrapEnhancedSettingTab.General,
+  )
+
   const isMobile = useMobile()
   const role = useUserRole()
+
+  const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
   return (
     <div className="mt-4">
       <SettingBuilder
+        key={reRenderKey.toString()}
         settings={[
           {
             type: "title",
@@ -136,12 +148,18 @@ export const SettingGeneral = () => {
             description: t("general.mark_as_read.render.description"),
           }),
 
-          { type: "title", value: "TTS", disabled: !IN_ELECTRON },
+          { type: "title", value: "TTS" },
 
           IN_ELECTRON && VoiceSelector,
 
-          { type: "title", value: t("general.network"), disabled: !IN_ELECTRON },
+          { type: "title", value: t("general.network") },
           IN_ELECTRON && NettingSetting,
+
+          { type: "title", value: t("general.advanced") },
+          defineSettingItem("enhancedSettings", {
+            label: t("general.enhanced.label"),
+            description: t("general.enhanced.description"),
+          }),
         ]}
       />
     </div>

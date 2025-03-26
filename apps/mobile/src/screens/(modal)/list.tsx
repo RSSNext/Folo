@@ -7,8 +7,10 @@ import { View } from "react-native"
 import { z } from "zod"
 
 import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider, useFormContext } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { NumberField, TextField } from "@/src/components/ui/form/TextField"
@@ -66,7 +68,7 @@ export const ListScreen: NavigationControllerView<{
   const navigation = useNavigation()
   return (
     <FormProvider form={form}>
-      <SafeModalScrollView className="bg-system-grouped-background pb-safe flex-1">
+      <SafeNavigationScrollView className="bg-system-grouped-background pb-safe flex-1">
         <ScreenOptions title={list?.title} listId={listId} />
 
         <GroupedInsetListCard showSeparator={false} className="mt-2 px-3 py-6">
@@ -187,7 +189,7 @@ export const ListScreen: NavigationControllerView<{
             />
           </GroupedInsetListCard>
         )}
-      </SafeModalScrollView>
+      </SafeNavigationScrollView>
     </FormProvider>
   )
 }

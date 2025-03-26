@@ -1,5 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { tracker } from "@follow/tracker"
 import { cn, getOS } from "@follow/utils/utils"
 import { useEffect } from "react"
 import { Outlet } from "react-router"
@@ -58,9 +59,7 @@ const AppLayer = () => {
     removeAppSkeleton()
 
     const doneTime = Math.trunc(performance.now())
-    window.analytics?.capture("ui_render_init", {
-      time: doneTime,
-    })
+    tracker.uiRenderInit(doneTime)
     appLog("App is ready", `${doneTime}ms`)
 
     applyAfterReadyCallbacks()

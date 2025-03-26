@@ -4,7 +4,7 @@ import { findElementInShadowDOM } from "@follow/utils/dom"
 import { clsx, cn } from "@follow/utils/utils"
 import { DismissableLayer } from "@radix-ui/react-dismissable-layer"
 import { AnimatePresence, m } from "framer-motion"
-import { memo, useEffect, useMemo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { RemoveScroll } from "react-remove-scroll"
 import { useEventCallback } from "usehooks-ts"
 
@@ -17,25 +17,16 @@ import type { EntryActionItem } from "~/hooks/biz/useEntryActions"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { useEntry } from "~/store/entry/hooks"
 
-import { COMMAND_ID } from "../command/commands/id"
 import { useCommand } from "../command/hooks/use-command"
 import type { FollowCommandId } from "../command/types"
+import { MoreActions } from "./actions/more-actions"
 import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
 import type { EntryHeaderProps } from "./header.shared"
 
 function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
   const entry = useEntry(entryId)
   const sortedActionConfigs = useSortedEntryActions({ entryId, view })
-  const actionConfigs = useMemo(
-    () =>
-      [...sortedActionConfigs.mainAction, ...sortedActionConfigs.moreAction].filter(
-        (item) =>
-          !([COMMAND_ID.entry.copyLink, COMMAND_ID.settings.customizeToolbar] as string[]).includes(
-            item.id,
-          ),
-      ),
-    [sortedActionConfigs.mainAction, sortedActionConfigs.moreAction],
-  )
+  const actionConfigs = sortedActionConfigs.mainAction
 
   const entryTitleMeta = useEntryTitleMeta()
   const isAtTop = useEntryContentScrollToTop()
@@ -90,7 +81,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
 
         <div
           className={clsx(
-            "relative flex shrink-0 items-center justify-end gap-3",
+            "relative flex shrink-0 items-center justify-end gap-2",
             shouldShowMeta && "hidden",
           )}
         >
@@ -103,6 +94,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
               shortcut={item.shortcut}
             />
           ))}
+          <MoreActions entryId={entryId} />
         </div>
       </div>
     </div>

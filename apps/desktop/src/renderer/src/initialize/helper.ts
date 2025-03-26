@@ -1,18 +1,10 @@
 import type { UserModel } from "@follow/models"
+import { identifyUserOpenPanel } from "@follow/tracker"
 
 import { op } from "./op"
 
 export const setIntegrationIdentify = async (user: UserModel) => {
-  op.identify({
-    profileId: user.id,
-    email: user.email,
-    avatar: user.image ?? undefined,
-    lastName: user.name ?? undefined,
-    properties: {
-      handle: user.handle,
-      name: user.name,
-    },
-  })
+  identifyUserOpenPanel(user, op.identify.bind(op))
   op.track("identify", {
     user_id: user.id,
   })

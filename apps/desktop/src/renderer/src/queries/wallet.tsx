@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
@@ -109,7 +110,7 @@ export const useClaimWalletDailyRewardMutation = () => {
     onSuccess() {
       wallet.get().invalidate()
       wallet.claimCheck().invalidate()
-      window.analytics?.capture("daily_reward_claimed")
+      tracker.dailyRewardClaimed()
 
       toast(
         <div className="flex items-center gap-1 text-lg" onClick={() => navigate("/power")}>
@@ -138,7 +139,7 @@ export const useWalletTipMutation = () =>
     onSuccess(_, variables) {
       wallet.get().invalidate()
       wallet.transactions.get().invalidate()
-      window.analytics?.capture("tip_sent", {
+      tracker.tipSent({
         amount: variables.amount,
         entryId: variables.entryId,
       })

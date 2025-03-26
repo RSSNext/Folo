@@ -2,6 +2,7 @@ import { useFocusable } from "@follow/components/common/Focusable.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { FeedViewType } from "@follow/constants"
+import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
@@ -76,7 +77,8 @@ const usePlayerTracker = () => {
   useEffect(() => {
     const handler = () => {
       const playerState = getAudioPlayerAtomValue()
-      window.analytics?.capture("player_open_duration", {
+
+      tracker.playerOpenDuration({
         duration: Date.now() - playerOpenAt,
         status: playerState.status,
         trigger: "beforeunload",
@@ -90,7 +92,7 @@ const usePlayerTracker = () => {
   useEffect(() => {
     if (!show) {
       const playerState = getAudioPlayerAtomValue()
-      window.analytics?.capture("player_open_duration", {
+      tracker.playerOpenDuration({
         duration: Date.now() - playerOpenAt,
         status: playerState.status,
         trigger: "manual",

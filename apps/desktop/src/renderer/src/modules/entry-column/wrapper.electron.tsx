@@ -3,6 +3,7 @@ import { views } from "@follow/constants"
 import { clsx } from "clsx"
 import { forwardRef } from "react"
 
+import { useIsZenMode } from "~/atoms/settings/ui"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import type { EntryColumnWrapperProps } from "./wrapper.shared"
@@ -12,13 +13,19 @@ export const EntryColumnWrapper = forwardRef<HTMLDivElement, EntryColumnWrapperP
   ({ children, onScroll }, ref) => {
     const view = useRouteParamsSelector((state) => state.view)
 
+    const isZenMode = useIsZenMode()
+
     return (
       <div className={clsx(styles, animationStyles, "mt-2")}>
         <ScrollArea
           scrollbarClassName={clsx(!views[view]!.wideMode ? "w-[5px] p-0" : "", "z-[3]")}
           mask={false}
           ref={ref}
-          rootClassName={clsx("h-full", views[view]!.wideMode ? "mt-2" : "")}
+          rootClassName={clsx(
+            "h-full",
+            views[view]!.wideMode ? "mt-2" : "",
+            isZenMode ? "max-w-[80ch] mx-auto" : "",
+          )}
           viewportClassName="[&>div]:grow flex"
           onScroll={onScroll}
         >

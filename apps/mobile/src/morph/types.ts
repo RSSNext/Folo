@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import type { AuthSession } from "@follow/shared"
+
 import type { apiClient } from "../lib/api-fetch"
 
 // Add ExtractData type utility
@@ -14,6 +16,7 @@ export namespace HonoApiClient {
   export type Entry_Inbox_Get = ExtractData<typeof apiClient.entries.inbox.$get>
   export type List_List_Get = ExtractData<typeof apiClient.lists.list.$get>[number]
   export type Feed_Get = ExtractData<typeof apiClient.feeds.$get>
+  export type User_Get = Exclude<AuthSession, null>["user"]
 
   export type ActionRule = Exclude<
     ExtractData<typeof apiClient.actions.$get>["rules"],

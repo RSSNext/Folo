@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { m, useMotionTemplate, useMotionValue } from "framer-motion"
 import { useCallback, useEffect } from "react"
@@ -26,7 +27,7 @@ export const UpdateNotice = () => {
   const handleClick = useCallback(() => {
     const status = getUpdaterStatus()
     if (!status) return
-    window.analytics?.capture("update_restart", {
+    tracker.updateRestart({
       type: status.type,
     })
     switch (status.type) {

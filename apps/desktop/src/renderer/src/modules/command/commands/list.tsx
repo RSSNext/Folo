@@ -28,7 +28,7 @@ export const useRegisterListCommands = () => {
         if (!listId) return
         present({
           title: t("sidebar.feed_actions.edit_list"),
-          content: ({ dismiss }) => <ListForm asWidget id={listId} onSuccess={dismiss} />,
+          content: ({ dismiss }) => <ListForm id={listId} onSuccess={dismiss} />,
         })
       },
     },

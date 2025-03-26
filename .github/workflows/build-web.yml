@@ -6,7 +6,7 @@ on:
 name: CI Build web and SSR server
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-ssr
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
 jobs:
   build:
     name: Build web and SSR server

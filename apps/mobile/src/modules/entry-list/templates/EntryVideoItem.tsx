@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { transformVideoUrl } from "@follow/utils"
 import { Linking } from "react-native"
 
@@ -25,10 +26,15 @@ export function EntryVideoItem({ id }: { id: string }) {
         className="m-1"
         onPress={() => {
           unreadSyncService.markEntryAsRead(id)
+          tracker.navigateEntry({
+            feedId: item.feedId!,
+            entryId: id,
+          })
           if (!item.url) {
             toast.error("No video URL found")
             return
           }
+
           openVideo(item.url)
         }}
       >

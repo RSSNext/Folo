@@ -7,8 +7,10 @@ import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native"
 import { z } from "zod"
 
 import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
@@ -123,9 +125,9 @@ const Impl = (props: { id: string }) => {
     })
   }, [isDirty, setModalOptions])
   return (
-    <SafeModalScrollView
+    <SafeNavigationScrollView
       className="bg-system-grouped-background"
-      contentContainerClassName="gap-y-4 mt-2"
+      contentViewClassName="gap-y-4 mt-2"
     >
       <NavigationBlurEffectHeader
         title={`${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`}
@@ -212,7 +214,7 @@ const Impl = (props: { id: string }) => {
           )}
         </FormProvider>
       </GroupedInsetListCard>
-    </SafeModalScrollView>
+    </SafeNavigationScrollView>
   )
 }
 

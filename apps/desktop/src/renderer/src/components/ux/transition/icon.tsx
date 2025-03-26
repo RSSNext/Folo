@@ -1,8 +1,10 @@
 import { cn } from "@follow/utils/utils"
-import type { Target } from "framer-motion"
+import type { Spring, Target } from "framer-motion"
 import { AnimatePresence, m } from "framer-motion"
 import * as React from "react"
 import { cloneElement, useEffect, useState } from "react"
+
+import { smoothPreset } from "~/components/ui/constants/spring"
 
 type TransitionType = {
   initial: Target | boolean
@@ -80,3 +82,38 @@ export const IconOpacityTransition = createIconTransition({
   animate: { opacity: 1 },
   exit: { opacity: 0 },
 })
+
+const Presets = {
+  fade: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: smoothPreset,
+  },
+}
+export const IconTransition = (
+  props: React.PropsWithChildren<{
+    animatedKey: string
+    initial?: Target
+    animate?: Target
+    exit?: Target
+    transition?: Spring
+
+    preset?: "fade"
+  }>,
+) => {
+  const preset = Presets[props.preset ?? "fade"]
+  return (
+    <AnimatePresence mode="popLayout">
+      <m.span
+        key={props.animatedKey}
+        initial={props.initial ?? preset.initial}
+        animate={props.animate ?? preset.animate}
+        exit={props.exit ?? preset.exit}
+        transition={props.transition ?? preset.transition}
+      >
+        {props.children}
+      </m.span>
+    </AnimatePresence>
+  )
+}

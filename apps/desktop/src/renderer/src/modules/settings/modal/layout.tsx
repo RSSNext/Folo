@@ -17,6 +17,7 @@ import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
 import { useActivationModal } from "~/modules/activation"
 
 import { SETTING_MODAL_ID } from "../constants"
+import { EnhancedSettingsIndicator } from "../helper/EnhancedIndicator"
 import { SettingSyncIndicator } from "../helper/SyncIndicator"
 import { useAvailableSettings, useSettingPageContext } from "../hooks/use-setting-ctx"
 import { SettingsSidebarTitle } from "../title"
@@ -138,7 +139,8 @@ export function SettingModalLayout(
                   <SidebarItems />
                 </nav>
 
-                <div className="relative -mb-5 h-8 shrink-0">
+                <div className="relative -mb-6 flex h-8 shrink-0 items-center justify-end gap-2">
+                  <EnhancedSettingsIndicator />
                   <SettingSyncIndicator />
                 </div>
               </div>

@@ -83,7 +83,7 @@ export const MediaCarousel = ({
                 )
               } else if (m.type === "video") {
                 return (
-                  <ImageContextMenu key={index} entryId={entryId} imageUrl={m.url}>
+                  <ImageContextMenu key={index} entryId={entryId} imageUrl={m.preview_image_url}>
                     <Video
                       source={{ uri: m.url }}
                       style={{ width: containerWidth, height: containerHeight }}

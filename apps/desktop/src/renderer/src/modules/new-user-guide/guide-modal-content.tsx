@@ -1,10 +1,11 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
+import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "framer-motion"
 import type { ComponentProps, FunctionComponentElement } from "react"
-import { createElement, useCallback, useMemo, useState } from "react"
+import { createElement, useCallback, useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -156,6 +157,12 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
     [step, totalSteps],
   )
 
+  useEffect(() => {
+    tracker.onBoarding({
+      step,
+      done: status === "complete",
+    })
+  }, [status, step])
   const title = useMemo(() => guideSteps[step - 1]?.title, [guideSteps, step])
 
   const [isLottieAnimating, setIsLottieAnimating] = useState(false)

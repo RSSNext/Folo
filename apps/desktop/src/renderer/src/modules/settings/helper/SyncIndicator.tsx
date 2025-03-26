@@ -60,7 +60,7 @@ export const SettingSyncIndicator = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="center absolute right-2 size-5">
+        <div className="size-5">
           <metaInfo.icon className="size-4" />
         </div>
       </TooltipTrigger>

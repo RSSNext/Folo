@@ -8,6 +8,7 @@
   "1004": "No permission",
   "1005": "Internal error",
   "1006": "Email not verified",
+  "1007": "Captcha verification failed",
   "1100": "Trial user max feed subscription exceeded",
   "1101": "Trial user max list subscription exceeded",
   "1102": "Trial user max inbox subscription exceeded",

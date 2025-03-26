@@ -11,7 +11,7 @@ env:
 name: CI Format, Typecheck and Lint
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-lint
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
 jobs:
   build:
     name: Format, Lint and Typecheck

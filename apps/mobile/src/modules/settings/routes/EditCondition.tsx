@@ -1,7 +1,9 @@
 import { Text, View } from "react-native"
 
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Select } from "@/src/components/ui/form/Select"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
@@ -24,11 +26,11 @@ export const EditConditionScreen: NavigationControllerView<{
   conditionIndex: number
 }> = (params) => {
   return (
-    <SafeModalScrollView className="bg-system-grouped-background">
+    <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Edit Condition" />
 
       <ConditionForm index={params} />
-    </SafeModalScrollView>
+    </SafeNavigationScrollView>
   )
 }
 

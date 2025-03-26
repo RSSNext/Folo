@@ -203,7 +203,6 @@ export const DiscoverFeedForm = ({
           title: t("feed_form.add_feed"),
           content: () => (
             <FeedForm
-              asWidget
               url={finalUrl}
               defaultValues={{
                 view: defaultView.toString(),

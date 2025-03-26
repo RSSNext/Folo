@@ -1,4 +1,4 @@
-import Constants from "expo-constants"
+import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 import { Linking, Text, View } from "react-native"
 
 import { Link } from "@/src/components/common/Link"
@@ -43,8 +43,8 @@ const links = [
 ]
 
 export const AboutScreen = () => {
-  const buildId = Constants.expoConfig?.extra?.eas?.buildId || "Development"
-  const appVersion = Constants.expoConfig?.version || "0.0.0"
+  const buildId = nativeBuildVersion
+  const appVersion = nativeApplicationVersion
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background" contentViewClassName="pt-6">

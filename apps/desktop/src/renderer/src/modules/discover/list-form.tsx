@@ -1,4 +1,3 @@
-import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardHeader } from "@follow/components/ui/card/index.jsx"
 import {
@@ -15,6 +14,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { ListModel } from "@follow/models/types"
+import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -55,10 +55,8 @@ export const ListForm: Component<{
 
   defaultValues?: ListFormDataValuesType
 
-  asWidget?: boolean
-
   onSuccess?: () => void
-}> = ({ id: _id, defaultValues = defaultValue, asWidget, onSuccess }) => {
+}> = ({ id: _id, defaultValues = defaultValue, onSuccess }) => {
   const queryParams = { id: _id }
 
   const feedQuery = useList(queryParams)
@@ -66,33 +64,21 @@ export const ListForm: Component<{
   const id = feedQuery.data?.list.id || _id
   const list = useListById(id)
 
-  const hasSub = useSubscriptionByFeedId(list?.id || "")
-  const isSubscribed = !!feedQuery.data?.subscription || hasSub
-
   const { t } = useTranslation()
 
   return (
     <div
       className={cn(
         "flex h-full flex-col",
-        asWidget
-          ? "mx-auto min-h-[420px] w-full max-w-[550px] lg:min-w-[550px]"
-          : "px-[18px] pb-[18px] pt-12",
+        "mx-auto min-h-[420px] w-full max-w-[550px] lg:min-w-[550px]",
       )}
     >
-      {!asWidget && (
-        <div className="mb-4 mt-2 flex items-center gap-2 text-[22px] font-bold">
-          <Logo className="size-8" />
-          {isSubscribed ? t("feed_form.update_follow") : t("feed_form.add_follow")}
-        </div>
-      )}
-
       {list ? (
         <ListInnerForm
           {...{
             defaultValues,
             id,
-            asWidget,
+
             onSuccess,
             subscriptionData: feedQuery.data?.subscription,
             list,
@@ -164,14 +150,14 @@ export const ListForm: Component<{
 const ListInnerForm = ({
   defaultValues,
   id,
-  asWidget,
+
   onSuccess,
   subscriptionData,
   list,
 }: {
   defaultValues?: z.infer<typeof formSchema>
   id?: string
-  asWidget?: boolean
+
   onSuccess?: () => void
   subscriptionData?: {
     view?: number
@@ -241,8 +227,8 @@ const ListInnerForm = ({
         duration: 1000,
       })
 
-      if (!asWidget && !isSubscribed) {
-        window.close()
+      if (!isSubscribed) {
+        tracker.subscribe({ listId: list.id, view: Number.parseInt(variables.view) })
       }
 
       onSuccess?.()

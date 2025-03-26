@@ -36,10 +36,10 @@
     "dompurify": "3.2.4",
     "framer-motion": "12.5.0",
     "linkedom": "0.18.9",
-    "nanoid": "5.1.3",
+    "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
     "tailwind-merge": "3.0.2",
-    "tldts": "6.1.84",
+    "tldts": "6.1.85",
     "uniqolor": "1.1.1"
   }
 }

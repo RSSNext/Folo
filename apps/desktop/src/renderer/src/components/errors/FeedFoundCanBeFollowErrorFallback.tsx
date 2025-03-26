@@ -49,7 +49,6 @@ const FeedFoundCanBeFollowErrorFallback: FC<AppErrorFallbackProps> = ({ resetErr
                     title: t("feed_form.add_feed"),
                     content: ({ dismiss }) => (
                       <FeedForm
-                        asWidget
                         url={feed.url}
                         defaultValues={{
                           view: getRouteParams().view.toString(),

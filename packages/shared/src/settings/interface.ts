@@ -24,6 +24,9 @@ export interface GeneralSettings {
    * Auto expand long social media
    */
   autoExpandLongSocialMedia: boolean
+
+  // Pro feature
+  enhancedSettings: boolean
 }
 
 export interface UISettings {

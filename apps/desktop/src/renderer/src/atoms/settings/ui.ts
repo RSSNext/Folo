@@ -1,49 +1,17 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
-import type { UISettings } from "@follow/shared/interface/settings"
+import { defaultUISettings } from "@follow/shared/settings/defaults"
+import { enhancedUISettingKeys } from "@follow/shared/settings/enhanced"
+import type { UISettings } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils/jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useEventCallback } from "usehooks-ts"
 
 import { DEFAULT_ACTION_ORDER } from "~/modules/customize-toolbar/constant"
 
+import { hookEnhancedSettings } from "./general"
+
 export const createDefaultSettings = (): UISettings => ({
-  // Sidebar
-  entryColWidth: 356,
-  feedColWidth: 256,
-  hideExtraBadge: false,
-
-  opaqueSidebar: false,
-  sidebarShowUnreadCount: true,
-  thumbnailRatio: "square",
-
-  // Global UI
-  uiTextSize: 16,
-  // System
-  showDockBadge: true,
-  // Misc
-  modalOverlay: true,
-  modalDraggable: true,
-  modalOpaque: true,
-  reduceMotion: false,
-  usePointerCursor: false,
-
-  // Font
-  uiFontFamily: "SN Pro",
-  readerFontFamily: "inherit",
-  contentFontSize: 16,
-  dateFormat: "default",
-  contentLineHeight: 1.75,
-  // Content
-  readerRenderInlineStyle: false,
-  codeHighlightThemeLight: "github-light",
-  codeHighlightThemeDark: "github-dark",
-  guessCodeLanguage: true,
-  hideRecentReader: false,
-  customCSS: "",
-
-  // View
-  pictureViewMasonry: true,
-  wideMode: false,
+  ...defaultUISettings,
 
   // Action Order
   toolbarOrder: DEFAULT_ACTION_ORDER,
@@ -51,17 +19,40 @@ export const createDefaultSettings = (): UISettings => ({
 
 const zenModeAtom = atom(false)
 
-export const {
-  useSettingKey: useUISettingKey,
-  useSettingSelector: useUISettingSelector,
-  useSettingKeys: useUISettingKeys,
+const {
+  useSettingKey: useUISettingKeyInternal,
+  useSettingSelector: useUISettingSelectorInternal,
+  useSettingKeys: useUISettingKeysInternal,
   setSetting: setUISetting,
   clearSettings: clearUISettings,
   initializeDefaultSettings: initializeDefaultUISettings,
-  getSettings: getUISettings,
-  useSettingValue: useUISettingValue,
+  getSettings: getUISettingsInternal,
+  useSettingValue: useUISettingValueInternal,
   settingAtom: __uiSettingAtom,
 } = createSettingAtom("ui", createDefaultSettings)
+
+const [useUISettingKey, useUISettingSelector, useUISettingKeys, getUISettings, useUISettingValue] =
+  hookEnhancedSettings(
+    useUISettingKeyInternal,
+    useUISettingSelectorInternal,
+    useUISettingKeysInternal,
+    getUISettingsInternal,
+    useUISettingValueInternal,
+
+    enhancedUISettingKeys,
+    defaultUISettings,
+  )
+export {
+  __uiSettingAtom,
+  clearUISettings,
+  getUISettings,
+  initializeDefaultUISettings,
+  setUISetting,
+  useUISettingKey,
+  useUISettingKeys,
+  useUISettingSelector,
+  useUISettingValue,
+}
 
 export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
   "uiFontFamily",

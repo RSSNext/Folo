@@ -1,7 +1,9 @@
 import { Text } from "react-native"
 
-import { SafeModalScrollView } from "@/src/components/layouts/views/SafeModalScrollView"
-import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import {
+  NavigationBlurEffectHeader,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetButtonCell,
@@ -17,7 +19,7 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
   const rule = useActionRule(index)
 
   return (
-    <SafeModalScrollView className="bg-system-grouped-background">
+    <SafeNavigationScrollView className="bg-system-grouped-background">
       <NavigationBlurEffectHeader title="Edit Webhooks" />
       <GroupedInsetListSectionHeader label="Webhooks" marginSize="small" />
       <GroupedInsetListCard>
@@ -41,6 +43,6 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
         />
       </GroupedInsetListCard>
       {__DEV__ && <Text>{JSON.stringify(rule?.result.webhooks, null, 2)}</Text>}
-    </SafeModalScrollView>
+    </SafeNavigationScrollView>
   )
 }

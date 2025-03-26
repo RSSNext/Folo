@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import type { Control } from "react-hook-form"
@@ -49,6 +50,7 @@ async function onSubmit(values: FormValue) {
         toast.error(res.error.message)
       } else {
         toast.success("Sign up successful")
+        tracker.register({ type: "email" })
         Navigation.rootNavigation.back()
       }
     })

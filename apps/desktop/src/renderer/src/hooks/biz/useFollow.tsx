@@ -87,14 +87,12 @@ export const useFollow = () => {
           }
           return options?.isList ? (
             <ListForm
-              asWidget
               id={options?.id}
               defaultValues={options?.defaultValues as ListFormDataValuesType}
               onSuccess={onSuccess}
             />
           ) : (
             <FeedForm
-              asWidget
               id={options?.id}
               url={options?.url}
               defaultValues={options?.defaultValues as FeedFormDataValuesType}

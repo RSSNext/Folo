@@ -14,7 +14,6 @@ import { load } from "js-yaml"
 import { x } from "tar"
 
 import { GITHUB_OWNER, GITHUB_REPO, HOTUPDATE_RENDER_ENTRY_DIR } from "~/constants/app"
-import { hotUpdateDownloadTrack, hotUpdateRenderSuccessTrack } from "~/tracker"
 import { getMainWindow } from "~/window"
 
 import { appUpdaterConfig } from "./configs"
@@ -134,7 +133,6 @@ export const canUpdateRender = async (): Promise<[CanUpdateRenderState, Manifest
   return [CanUpdateRenderState.NEEDED, manifest]
 }
 const downloadRenderAsset = async (manifest: Manifest) => {
-  hotUpdateDownloadTrack(manifest.version)
   const { filename } = manifest
   const url = await getFileDownloadUrl(filename)
 
@@ -181,7 +179,7 @@ export const hotUpdateRender = async (manifest: Manifest) => {
     JSON.stringify(manifest),
   )
   logger.info(`Hot update render success, update to ${manifest.version}`)
-  hotUpdateRenderSuccessTrack(manifest.version)
+
   const mainWindow = getMainWindow()
   if (!mainWindow) return false
   const caller = callWindowExpose(mainWindow)

@@ -11,6 +11,7 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env"
+import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
@@ -67,6 +68,9 @@ function RegisterForm() {
       callbackURL: "/",
       fetchOptions: {
         onSuccess() {
+          tracker.register({
+            type: "email",
+          })
           navigate("/login")
         },
         onError(context) {

@@ -2,6 +2,7 @@ import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/at
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
 import type { FeedViewType } from "@follow/constants"
+import { tracker } from "@follow/tracker"
 import { useCallback } from "react"
 
 import { resetShowSourceContent } from "~/atoms/source-content"
@@ -77,13 +78,11 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
   resetShowSourceContent()
 
-  if (window.analytics) {
-    window.analytics.capture("Navigate Entry", {
-      feedId: finalFeedId,
-      entryId,
-      timelineId: finalTimelineId,
-    })
-  }
+  tracker.navigateEntry({
+    feedId: finalFeedId,
+    entryId: finalEntryId,
+    timelineId: finalTimelineId,
+  })
 
   const path = `/timeline/${finalTimelineId}/${finalFeedId}/${finalEntryId}`
 

@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { tracker } from "@follow/tracker"
 
 import type { SubscriptionSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
@@ -223,6 +224,7 @@ class SubscriptionSyncService {
 
     if (data.feed) {
       feedActions.upsertMany([data.feed])
+      tracker.subscribe({ feedId: data.feed.id, view: subscription.view })
     }
 
     if (data.list) {
@@ -232,8 +234,8 @@ class SubscriptionSyncService {
           userId: data.list.ownerUserId,
         },
       ])
+      tracker.subscribe({ listId: data.list.id, view: subscription.view })
     }
-
     // Insert to subscription
     subscriptionActions.upsertMany([
       {

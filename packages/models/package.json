@@ -24,6 +24,6 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "hono": "4.7.4"
+    "hono": "4.7.5"
   }
 }
