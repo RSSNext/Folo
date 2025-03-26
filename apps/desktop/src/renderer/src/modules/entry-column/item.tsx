@@ -5,7 +5,7 @@ import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
 
-import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import type { FlatEntryModel } from "~/store/entry"
@@ -21,7 +21,7 @@ interface EntryItemProps {
   view?: number
 }
 function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }) {
-  const showTranslation = useGeneralSettingSelector((s) => s.translation)
+  const showTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   const translation = useAuthQuery(
     Queries.ai.translation({

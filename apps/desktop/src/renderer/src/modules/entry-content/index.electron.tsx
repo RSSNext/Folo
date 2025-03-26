@@ -10,7 +10,7 @@ import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -113,7 +113,7 @@ export const EntryContent: Component<EntryContentProps> = ({
     [entry?.entries.media, data?.entries.media],
   )
   const customCSS = useUISettingKey("customCSS")
-  const showAITranslation = useGeneralSettingSelector((s) => s.translation)
+  const showTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
 
   const contentTranslated = useAuthQuery(
@@ -123,7 +123,7 @@ export const EntryContent: Component<EntryContentProps> = ({
       extraFields: ["content"],
     }),
     {
-      enabled: showAITranslation && !!entry,
+      enabled: showTranslation && !!entry,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {
@@ -134,7 +134,9 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   if (!entry) return null
 
-  const content = contentTranslated.data?.content ?? entry?.entries.content ?? data?.entries.content
+  const entryContent = entry?.entries.content ?? data?.entries.content
+  const translatedContent = contentTranslated.data?.content
+  const content = showTranslation && translatedContent ? translatedContent : entryContent
 
   const isInbox = !!inbox
 
