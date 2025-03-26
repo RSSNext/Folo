@@ -1,6 +1,15 @@
 import { cn } from "@follow/utils"
 import type { FC, PropsWithChildren, ReactNode } from "react"
-import { createElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import {
+  createElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import type { LayoutChangeEvent } from "react-native"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
@@ -222,11 +231,27 @@ export const InternalNavigationHeader = ({
   const RightButton = headerRight ?? (Noop as FC<NavigationHeaderButtonProps>)
 
   const animatedRef = useAnimatedRef<Animated.View>()
-  useEffect(() => {
+  useLayoutEffect(() => {
     animatedRef.current?.measure((x, y, width, height) => {
       setHeaderHeight?.(height)
     })
   }, [animatedRef, setHeaderHeight])
+
+  const leftRef = useRef<View>(null)
+  const [leftWidth, setLeftWidth] = useState(0)
+  useLayoutEffect(() => {
+    leftRef.current?.measure((x, y, width) => {
+      setLeftWidth(width)
+    })
+  }, [leftRef])
+
+  const rightRef = useRef<View>(null)
+  const [rightWidth, setRightWidth] = useState(0)
+  useLayoutEffect(() => {
+    rightRef.current?.measure((x, y, width) => {
+      setRightWidth(width)
+    })
+  }, [rightRef])
 
   return (
     <Animated.View
@@ -259,7 +284,8 @@ export const InternalNavigationHeader = ({
       >
         {/* Left */}
         <View
-          className="min-w-6 flex-1 shrink-0 flex-row items-center justify-start"
+          ref={leftRef}
+          className="flex min-w-6 shrink-0 flex-row items-center justify-start"
           pointerEvents={"box-none"}
         >
           {typeof HeaderLeft === "function" ? (
@@ -271,18 +297,21 @@ export const InternalNavigationHeader = ({
         {/* Center */}
 
         <Animated.View
-          className="flex min-w-0 shrink items-center justify-center"
+          className="flex min-w-0 flex-1 shrink flex-row items-center justify-center truncate"
           pointerEvents={"box-none"}
           style={{
             marginHorizontal: titleMarginHorizontal,
           }}
         >
+          <View className="shrink" style={{ flexBasis: rightWidth }} />
           {headerTitleAbsolute ? <View /> : headerTitle}
+          <View className="shrink" style={{ flexBasis: leftWidth }} />
         </Animated.View>
 
         {/* Right */}
         <View
-          className="flex min-w-6 flex-1 shrink-0 flex-row items-center justify-end"
+          ref={rightRef}
+          className="flex min-w-6 shrink-0 flex-row items-center justify-end"
           pointerEvents={"box-none"}
         >
           {typeof RightButton === "function" ? (
