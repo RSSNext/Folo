@@ -2,7 +2,6 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import katexStyle from "katex/dist/katex.min.css?raw"
 import { createElement, Fragment, memo, useEffect, useMemo, useState } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
 import { parseHtml } from "~/lib/parse-html"
 import { useWrappedElementSize } from "~/providers/wrapped-element-provider"
@@ -18,23 +17,12 @@ export type HTMLProps<A extends keyof JSX.IntrinsicElements = "div"> = {
   accessory?: React.ReactNode
   noMedia?: boolean
   mediaInfo?: MediaInfoRecord
-
-  handleTranslate?: (html: HTMLElement | null) => void
 } & JSX.IntrinsicElements[A] &
   Partial<{
     renderInlineStyle: boolean
   }>
 const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProps<A>) => {
-  const {
-    children,
-    renderInlineStyle,
-    as = "div",
-    accessory,
-    noMedia,
-    mediaInfo,
-    handleTranslate: translate,
-    ...rest
-  } = props
+  const { children, renderInlineStyle, as = "div", accessory, noMedia, mediaInfo, ...rest } = props
   const [remarkOptions, setRemarkOptions] = useState({
     renderInlineStyle,
     noMedia,
@@ -53,12 +41,6 @@ const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProp
   }, [renderInlineStyle, noMedia])
 
   const [refElement, setRefElement] = useState<HTMLElement | null>(null)
-
-  const showAITranslation = useShowAITranslation()
-
-  useEffect(() => {
-    translate?.(refElement)
-  }, [refElement, showAITranslation, translate])
 
   const markdownElement = useMemo(
     () =>

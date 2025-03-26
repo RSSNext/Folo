@@ -13,13 +13,13 @@ export const ai = {
     extraFields,
     part,
   }: {
-    entry: FlatEntryModel
+    entry?: FlatEntryModel | null
     view?: number
     language?: SupportedLanguages
     extraFields?: string[]
     part?: string
   }) =>
-    defineQuery(["translation", entry?.entries?.id, language, part], () =>
+    defineQuery(["translation", entry, view, language, extraFields, part], () =>
       translate({ entry, view, language, extraFields, part }),
     ),
   summary: ({ entryId, language }: { entryId: string; language?: SupportedLanguages }) =>
