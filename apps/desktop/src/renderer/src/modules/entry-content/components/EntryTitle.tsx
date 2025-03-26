@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/utils"
+import { cn, formatEstimatedMins } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useMemo } from "react"
 
@@ -74,6 +74,25 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     return dayjs(entry.entries.publishedAt).format(dateFormat)
   }, [dateFormat, entry?.entries.publishedAt])
 
+  const audioAttachment = useMemo(() => {
+    return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
+  }, [entry?.entries?.attachments])
+
+  const estimatedMins = useMemo(() => {
+    if (!audioAttachment?.duration_in_seconds) {
+      return
+    }
+
+    let durationInSeconds = audioAttachment.duration_in_seconds
+
+    if (Number.isNaN(+durationInSeconds)) {
+      // @ts-expect-error durationInSeconds is string
+      durationInSeconds = formatTimeToSeconds(durationInSeconds)
+    }
+
+    return formatEstimatedMins(Math.floor(durationInSeconds / 60))
+  }, [audioAttachment])
+
   if (!entry) return null
 
   return compact ? (
@@ -114,6 +133,13 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       </div>
       <div className="flex select-none items-center gap-2 text-[13px] text-zinc-500">
         {dateRender}
+
+        {estimatedMins && (
+          <div className="flex items-center gap-1">
+            <i className="i-mgc-time-cute-re" />
+            <span>{estimatedMins}</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-1">
           <i className="i-mgc-eye-2-cute-re" />
