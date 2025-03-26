@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { RelativeTime } from "~/components/ui/datetime"
+import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import { useAsRead } from "~/hooks/biz/useAsRead"
@@ -26,7 +27,6 @@ import { useEntry } from "~/store/entry/hooks"
 import { useFeedById } from "~/store/feed"
 
 import { StarIcon } from "../star-icon"
-import { EntryTranslation } from "../translation"
 import type { EntryItemStatelessProps, EntryListItemFC } from "../types"
 
 const socialMediaContentWidthAtom = atom(0)
@@ -103,12 +103,16 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
           </div>
           <div className={cn("relative mt-1 text-base", !!entry.collections && "pr-5")}>
             <EntryContentWrapper entryId={entryId}>
-              <EntryTranslation
-                className="prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed [&_br:last-child]:hidden"
-                source={content}
-                target={translation?.content}
-                isHTML
-              />
+              <HTML
+                as="div"
+                className={cn(
+                  "prose dark:prose-invert align-middle",
+                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed [&_br:last-child]:hidden",
+                )}
+                noMedia
+              >
+                {translation?.content || content}
+              </HTML>
             </EntryContentWrapper>
             {!!entry.collections && <StarIcon className="absolute right-0 top-0" />}
           </div>
