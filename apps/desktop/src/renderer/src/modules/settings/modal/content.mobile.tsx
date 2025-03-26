@@ -48,7 +48,13 @@ const Content = (props: { tab: string }) => {
           ns="settings"
           i18nKey="common.give_star"
           components={{
-            Link: <a href={`${PKG.repository.url}`} className="text-accent" target="_blank" />,
+            Link: (
+              <a
+                href={`${PKG.repository.url}`}
+                className="text-accent font-semibold"
+                target="_blank"
+              />
+            ),
             HeartIcon: <i className="i-mgc-heart-cute-fi" />,
           }}
         />
