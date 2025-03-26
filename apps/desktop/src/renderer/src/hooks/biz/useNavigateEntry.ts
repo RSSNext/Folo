@@ -4,8 +4,6 @@ import { useSheetContext } from "@follow/components/ui/sheet/context.js"
 import type { FeedViewType } from "@follow/constants"
 import { useCallback } from "react"
 
-import { disableShowAISummary } from "~/atoms/ai-summary"
-import { disableShowAITranslation } from "~/atoms/ai-translation"
 import { resetShowSourceContent } from "~/atoms/source-content"
 import {
   ROUTE_ENTRY_PENDING,
@@ -78,8 +76,6 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
   }
 
   resetShowSourceContent()
-  disableShowAISummary()
-  disableShowAITranslation()
 
   if (window.analytics) {
     window.analytics.capture("Navigate Entry", {

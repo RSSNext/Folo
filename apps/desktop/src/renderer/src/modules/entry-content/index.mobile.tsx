@@ -7,9 +7,8 @@ import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useEffect, useMemo, useState } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
-import { useActionLanguage } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -101,7 +100,7 @@ export const EntryContent: Component<{
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   const customCSS = useUISettingKey("customCSS")
-  const showAITranslation = useShowAITranslation()
+  const showAITranslation = useGeneralSettingSelector((s) => s.translation)
   const actionLanguage = useActionLanguage()
   const contentTranslated = useAuthQuery(
     Queries.ai.translation({

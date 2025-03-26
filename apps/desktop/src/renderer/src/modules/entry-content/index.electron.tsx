@@ -9,9 +9,8 @@ import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useActionLanguage } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -114,7 +113,7 @@ export const EntryContent: Component<EntryContentProps> = ({
     [entry?.entries.media, data?.entries.media],
   )
   const customCSS = useUISettingKey("customCSS")
-  const showAITranslation = useShowAITranslation()
+  const showAITranslation = useGeneralSettingSelector((s) => s.translation)
   const actionLanguage = useActionLanguage()
 
   const contentTranslated = useAuthQuery(

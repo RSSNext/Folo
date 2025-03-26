@@ -10,7 +10,11 @@ const createDefaultSettings = (): GeneralSettings => ({
   // App
   appLaunchOnStartup: false,
   language: "en",
+
+  // Content
   actionLanguage: DEFAULT_ACTION_LANGUAGE,
+  translation: false,
+  summary: false,
 
   // mobile app
   startupScreen: "timeline",

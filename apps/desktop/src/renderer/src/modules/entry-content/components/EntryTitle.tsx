@@ -2,8 +2,7 @@ import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useMemo } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
-import { useActionLanguage } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
@@ -47,7 +46,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     return href
   }, [entry?.entries.authorUrl, entry?.entries.url, feed?.siteUrl, feed?.type, inbox])
 
-  const showAITranslation = useShowAITranslation() || !!entry?.settings?.translation
+  const showAITranslation = useGeneralSettingSelector((s) => s.translation)
   const actionLanguage = useActionLanguage()
 
   const translation = useAuthQuery(
