@@ -79,5 +79,6 @@
   "lldb.launch.expressions": "native",
   "[swift]": {
     "editor.defaultFormatter": "swiftlang.swift-vscode"
-  }
+  },
+  "npm.exclude": "**/packages/**"
 }

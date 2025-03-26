@@ -16,6 +16,6 @@ initialize()
 ReactDOM.createRoot($container).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <ClickToComponent editor="cursor" />
+    <ClickToComponent editor={import.meta.env.VITE_EDITOR} />
   </React.StrictMode>,
 )
