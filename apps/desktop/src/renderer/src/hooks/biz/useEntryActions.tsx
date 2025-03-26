@@ -1,10 +1,8 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, UserRole } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCallback, useMemo } from "react"
 
-import { useShowAISummary } from "~/atoms/ai-summary"
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
   ReadabilityStatus,
@@ -12,7 +10,7 @@ import {
   setReadabilityStatus,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
-import { useUserRole, whoami } from "~/atoms/user"
+import { whoami } from "~/atoms/user"
 import { shortcuts } from "~/constants/shortcuts"
 import { tipcClient } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -85,13 +83,9 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
   const isInbox = !!inbox
 
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummary = useShowAISummary()
-  const isShowAITranslation = useShowAITranslation()
 
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
-
-  const userRole = useUserRole()
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -161,28 +155,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         active: isShowSourceContent,
       },
       {
-        id: COMMAND_ID.entry.toggleAISummary,
-        onClick: runCmdFn(COMMAND_ID.entry.toggleAISummary, []),
-        hide:
-          !!entry?.settings?.summary ||
-          ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            entry?.view,
-          ),
-        active: isShowAISummary,
-        disabled: userRole === UserRole.Trial,
-      },
-      {
-        id: COMMAND_ID.entry.toggleAITranslation,
-        onClick: runCmdFn(COMMAND_ID.entry.toggleAITranslation, []),
-        hide:
-          !!entry?.settings?.translation ||
-          ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            entry?.view,
-          ),
-        active: isShowAITranslation,
-        disabled: userRole === UserRole.Trial,
-      },
-      {
         id: COMMAND_ID.entry.share,
         onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
         hide: !entry?.entries.url || !("share" in navigator || IN_ELECTRON),
@@ -204,20 +176,14 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
     entry?.collections,
     entry?.entries.url,
     entry?.read,
-    entry?.settings?.summary,
-    entry?.settings?.translation,
-    entry?.view,
     entryId,
     feed?.id,
     feed?.ownerUserId,
     hasEntry,
     inList,
     isInbox,
-    isShowAISummary,
-    isShowAITranslation,
     isShowSourceContent,
     runCmdFn,
-    userRole,
     view,
   ])
 

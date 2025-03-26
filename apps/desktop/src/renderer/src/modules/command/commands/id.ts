@@ -9,8 +9,6 @@ export const COMMAND_ID = {
     viewSourceContent: "entry:view-source-content",
     share: "entry:share",
     read: "entry:read",
-    toggleAISummary: "entry:toggle-ai-summary",
-    toggleAITranslation: "entry:toggle-ai-translation",
     exportAsPDF: "entry:export-as-pdf",
   },
   integration: {

@@ -55,16 +55,6 @@ export type ReadCommand = Command<{
   fn: ({ entryId }) => void
 }>
 
-export type ToggleAISummaryCommand = Command<{
-  id: typeof COMMAND_ID.entry.toggleAISummary
-  fn: () => void
-}>
-
-export type ToggleAITranslationCommand = Command<{
-  id: typeof COMMAND_ID.entry.toggleAITranslation
-  fn: () => void
-}>
-
 export type EntryCommand =
   | TipCommand
   | StarCommand
@@ -76,8 +66,6 @@ export type EntryCommand =
   | ViewSourceContentCommand
   | ShareCommand
   | ReadCommand
-  | ToggleAISummaryCommand
-  | ToggleAITranslationCommand
 
 // Settings commands
 
