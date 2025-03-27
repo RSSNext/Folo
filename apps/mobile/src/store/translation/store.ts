@@ -5,19 +5,14 @@ import { TranslationService } from "@/src/services/translation"
 
 import { getEntry } from "../entry/getter"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
+import type { EntryTranslation } from "./types"
 
 type TranslationModel = Omit<TranslationSchema, "createdAt">
 
-interface TranslationData {
-  title: string
-  description: string
-  content: string
-}
-
 interface TranslationState {
-  data: Record<string, Partial<Record<SupportedLanguages, TranslationData>>>
+  data: Record<string, Partial<Record<SupportedLanguages, EntryTranslation>>>
 }
-const emptyDataSet: Record<string, TranslationData> = {}
+const emptyDataSet: Record<string, EntryTranslation> = {}
 
 export const useTranslationStore = createZustandStore<TranslationState>("translation")(() => ({
   data: emptyDataSet,

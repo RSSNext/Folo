@@ -6,6 +6,7 @@ import { Pressable, Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
@@ -15,8 +16,9 @@ import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { useEntry, usePrefetchEntryContent } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
-import type { EntryModel } from "@/src/store/entry/types"
+import type { EntryWithTranslation } from "@/src/store/entry/types"
 import { useFeed } from "@/src/store/feed/hooks"
+import { useEntryTranslation } from "@/src/store/translation/hooks"
 import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
@@ -28,6 +30,14 @@ export const EntryDetailScreen: NavigationControllerView<{
   usePrefetchEntryContent(entryId)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
+  const translation = useEntryTranslation(entryId)
+  const entryWithTranslation = useMemo(() => {
+    if (!entry) return entry
+    return {
+      ...entry,
+      translation,
+    } as EntryWithTranslation
+  }, [entry, translation])
 
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(
@@ -73,9 +83,9 @@ export const EntryDetailScreen: NavigationControllerView<{
               )}
             </Pressable>
             <EntryAISummary entryId={entryId as string} />
-            {entry && (
+            {entryWithTranslation && (
               <View className="mt-3">
-                <EntryContentWebViewWithContext entry={entry} />
+                <EntryContentWebViewWithContext entry={entryWithTranslation} />
               </View>
             )}
             {viewType === FeedViewType.SocialMedia && (
@@ -90,10 +100,17 @@ export const EntryDetailScreen: NavigationControllerView<{
   )
 }
 
-const EntryContentWebViewWithContext = ({ entry }: { entry: EntryModel }) => {
+const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation }) => {
   const { showReadabilityAtom } = useEntryContentContext()
   const showReadability = useAtomValue(showReadabilityAtom)
-  return <EntryContentWebView entry={entry} showReadability={showReadability} />
+  const translation = useGeneralSettingKey("translation")
+  return (
+    <EntryContentWebView
+      entry={entry}
+      showReadability={showReadability}
+      showTranslation={translation}
+    />
+  )
 }
 
 const EntryInfo = ({ entryId }: { entryId: string }) => {

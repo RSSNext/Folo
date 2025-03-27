@@ -9,7 +9,7 @@ import { ActivityIndicator, TouchableOpacity, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
-import type { EntryModel } from "@/src/store/entry/types"
+import type { EntryModel, EntryWithTranslation } from "@/src/store/entry/types"
 
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
@@ -23,9 +23,10 @@ const NativeView: React.ComponentType<
 > = requireNativeView("FOSharedWebView")
 
 type EntryContentWebViewProps = {
-  entry: EntryModel
+  entry: EntryWithTranslation
   noMedia?: boolean
   showReadability?: boolean
+  showTranslation?: boolean
 }
 
 const setCodeTheme = (light: string, dark: string) => {
@@ -55,7 +56,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
-  const { entry, noMedia, showReadability } = props
+  const { entry, noMedia, showReadability, showTranslation } = props
 
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
 
@@ -78,8 +79,16 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
         content: entry.readabilityContent,
       }
     }
+
+    if (showTranslation) {
+      return {
+        ...entry,
+        content: entry.translation?.content || entry.content,
+      }
+    }
+
     return entry
-  }, [entry, showReadability])
+  }, [entry, showReadability, showTranslation])
 
   useEffect(() => {
     setWebViewEntry(entryInWebview)
