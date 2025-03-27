@@ -19,5 +19,5 @@ export const useShowAISummaryGlobal = () => {
 export const useShowAISummary = (entry?: FlatEntryModel | null) => {
   const showAISummaryGlobal = useShowAISummaryGlobal()
   const showAISummaryOnce = useShowAISummaryOnce()
-  return showAISummaryGlobal ?? showAISummaryOnce ?? !!entry?.settings?.summary
+  return showAISummaryGlobal || showAISummaryOnce || !!entry?.settings?.summary
 }

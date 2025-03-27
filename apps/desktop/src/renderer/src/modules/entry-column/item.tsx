@@ -5,7 +5,7 @@ import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
+import { useShowAITranslationAuto } from "~/atoms/ai-translation"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
@@ -22,7 +22,7 @@ interface EntryItemProps {
   view?: number
 }
 function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }) {
-  const showAITranslation = useShowAITranslation(entry)
+  const showAITranslation = useShowAITranslationAuto(entry)
   const actionLanguage = useActionLanguage()
   const translation = useAuthQuery(
     Queries.ai.translation({
@@ -44,7 +44,10 @@ function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }
 
   return (
     <EntryItemWrapper itemClassName={Item.wrapperClassName} entry={entry} view={view}>
-      <Item entryId={entry.entries.id} translation={translation.data} />
+      <Item
+        entryId={entry.entries.id}
+        translation={showAITranslation ? translation.data : undefined}
+      />
     </EntryItemWrapper>
   )
 }

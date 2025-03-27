@@ -16,8 +16,12 @@ export const useShowAITranslationGlobal = () => {
   return useGeneralSettingKey("translation")
 }
 
+export const useShowAITranslationAuto = (entry?: FlatEntryModel | null) => {
+  return useGeneralSettingKey("translation") || !!entry?.settings?.translation
+}
+
 export const useShowAITranslation = (entry?: FlatEntryModel | null) => {
-  const showAITranslationGlobal = useShowAITranslationGlobal()
+  const showAITranslationAuto = useShowAITranslationAuto(entry)
   const showAITranslationOnce = useShowAITranslationOnce()
-  return showAITranslationGlobal ?? showAITranslationOnce ?? !!entry?.settings?.translation
+  return showAITranslationAuto || showAITranslationOnce
 }
