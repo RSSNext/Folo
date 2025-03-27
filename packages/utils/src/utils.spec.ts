@@ -52,5 +52,28 @@ describe("utils", () => {
 
     // Edge cases
     expect(toScientificNotation(0n, 3)).toBe("0")
+
+    // Test with locales
+    // English locale (should use 'e+' notation)
+    expect(toScientificNotation(1234567n, 3, "en-US")).toBe("1.23e+6")
+    expect(toScientificNotation(1234567n, 3, "en-GB")).toBe("1.23e+6")
+
+    // Non-English locales (should use '×10^' notation)
+    expect(toScientificNotation(1234567n, 3, "fr-FR")).toBe("1,23×10^6")
+    expect(toScientificNotation(1234567n, 3, "de-DE")).toBe("1,23×10^6")
+
+    // Test different number formatting per locale
+    // Using comma as decimal separator
+    expect(toScientificNotation(1234567n, 3, "fr-FR")).toBe("1,23×10^6")
+    expect(toScientificNotation(1234567n, 3, "de-DE")).toBe("1,23×10^6")
+
+    // Using period as decimal separator
+    expect(toScientificNotation(1234567n, 3, "en-US")).toBe("1.23e+6")
+
+    // Test with integer numbers below threshold with different locales
+    expect(toScientificNotation(1234n, 5, "en-US")).toBe("1,234")
+    expect(toScientificNotation(1234n, 5, "de-DE")).toBe("1.234")
+
+    expect(toScientificNotation(1234n, 5, "fr-FR")).toBe("1 234")
   })
 })
