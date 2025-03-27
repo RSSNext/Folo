@@ -102,7 +102,7 @@ export const availableActionList: Array<{
   },
   {
     value: "translation",
-    label: "Translate into",
+    label: "Translate",
   },
   {
     value: "readability",
