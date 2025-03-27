@@ -135,7 +135,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
                 const nextMode = mode === "debug" ? "normal" : "debug"
                 setMode(nextMode)
                 if (nextMode === "debug") {
-                  SharedWebViewModule.load("http://192.168.31.116:5173/")
+                  SharedWebViewModule.load("http://localhost:5173/")
                 } else {
                   SharedWebViewModule.load(htmlUrl)
                 }

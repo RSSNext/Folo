@@ -45,9 +45,9 @@ export const GeneralScreen: NavigationControllerView = () => {
       </GroupedInsetListCard>
 
       {/* Content Behavior */}
-      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListSectionHeader label="Action" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label="Summary">
+        <GroupedInsetListCell label="AI Summary">
           <Switch
             size="sm"
             value={summary}
@@ -56,7 +56,7 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell label="Translation">
+        <GroupedInsetListCell label="AI Translation">
           <Switch
             size="sm"
             value={translation}
@@ -66,7 +66,7 @@ export const GeneralScreen: NavigationControllerView = () => {
           />
         </GroupedInsetListCell>
         <GroupedInsetListBaseCell>
-          <Text className="text-label">Action Language</Text>
+          <Text className="text-label">Language</Text>
 
           <View className="w-[150px]">
             <Select
@@ -78,15 +78,6 @@ export const GeneralScreen: NavigationControllerView = () => {
             />
           </View>
         </GroupedInsetListBaseCell>
-        <GroupedInsetListCell label="Open Links in app">
-          <Switch
-            size="sm"
-            value={openLinksInApp}
-            onValueChange={(value) => {
-              setGeneralSetting("openLinksInApp", value)
-            }}
-          />
-        </GroupedInsetListCell>
       </GroupedInsetListCard>
 
       {/* Subscriptions */}
@@ -171,6 +162,21 @@ export const GeneralScreen: NavigationControllerView = () => {
             value={markAsReadWhenInView}
             onValueChange={(value) => {
               setGeneralSetting("renderMarkUnread", value)
+            }}
+          />
+        </GroupedInsetListCell>
+      </GroupedInsetListCard>
+
+      {/* Content Behavior */}
+
+      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell label="Open Links in app">
+          <Switch
+            size="sm"
+            value={openLinksInApp}
+            onValueChange={(value) => {
+              setGeneralSetting("openLinksInApp", value)
             }}
           />
         </GroupedInsetListCell>

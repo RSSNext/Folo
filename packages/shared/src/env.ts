@@ -4,8 +4,8 @@
 import { z } from "zod"
 
 export const envSchema = {
-  VITE_WEB_URL: z.string().url().default("http://localhost:2234"),
-  VITE_API_URL: z.string().default("http://localhost:3000"),
+  VITE_WEB_URL: z.string().url().default("https://app.follow.is"),
+  VITE_API_URL: z.string().default("https://api.follow.is"),
   VITE_DEV_PROXY: z.string().optional(),
   VITE_SENTRY_DSN: z.string().optional(),
   VITE_INBOXES_EMAIL: z.string().default("@follow.re"),

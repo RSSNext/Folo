@@ -7,6 +7,11 @@ const createDefaultSettings = (): GeneralSettings => ({
 
   language: "en",
 
+  // Content
+  summary: false,
+  translation: false,
+  actionLanguage: "zh-CN",
+
   // Data control
 
   sendAnonymousData: true,
@@ -28,10 +33,6 @@ const createDefaultSettings = (): GeneralSettings => ({
   // TTS
   voice: "en-US-AndrewMultilingualNeural",
 
-  // Content
-  summary: false,
-  translation: false,
-  actionLanguage: "zh-CN",
   openLinksInApp: true,
 })
 

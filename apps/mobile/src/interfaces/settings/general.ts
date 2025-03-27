@@ -1,6 +1,10 @@
 export interface GeneralSettings {
   language: string
 
+  summary: boolean
+  translation: boolean
+  actionLanguage: string
+
   sendAnonymousData: boolean
   unreadOnly: boolean
   scrollMarkUnread: boolean
@@ -17,8 +21,5 @@ export interface GeneralSettings {
    */
   autoExpandLongSocialMedia: boolean
 
-  summary: boolean
-  translation: boolean
-  actionLanguage: string
   openLinksInApp: boolean
 }
