@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d4cdfce6-0b0a-4565-989b-dbe1e3976dc9",
+  "id": "e32f739c-b3ca-43e0-afb2-767cd6daf30c",
   "prevId": "bfd1be54-8339-4937-8c75-52fe36a25d84",
   "tables": {
     "collections": {
@@ -585,7 +585,13 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "translation-unique-index": {
+          "name": "translation-unique-index",
+          "columns": ["entry_id", "language"],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
