@@ -1,6 +1,7 @@
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 import type { SummarySchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
+import type { SupportedLanguages } from "@/src/lib/language"
 import { summaryService } from "@/src/services/summary"
 
 import { getEntry } from "../entry/getter"
@@ -111,7 +112,7 @@ class SummarySyncService {
       .$get({
         query: {
           id: entryId,
-          language: actionLanguage as any,
+          language: actionLanguage as SupportedLanguages,
         },
       })
       .then((summary) => {

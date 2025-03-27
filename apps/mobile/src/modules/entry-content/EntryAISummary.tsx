@@ -3,7 +3,7 @@ import type { FC } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { SummaryGeneratingStatus } from "@/src/store/summary/enum"
-import { useSummary } from "@/src/store/summary/hooks"
+import { usePrefetchSummary, useSummary } from "@/src/store/summary/hooks"
 import { useSummaryStore } from "@/src/store/summary/store"
 
 import { AISummary } from "../ai/summary"
@@ -16,6 +16,7 @@ export const EntryAISummary: FC<{
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
   const summary = useSummary(entryId)
+  usePrefetchSummary(entryId, { enabled: showAISummary })
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null
