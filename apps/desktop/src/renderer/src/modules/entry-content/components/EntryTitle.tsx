@@ -2,7 +2,8 @@ import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/util
 import dayjs from "dayjs"
 import { useMemo } from "react"
 
-import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useShowAITranslation } from "~/atoms/ai-translation"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
@@ -46,7 +47,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     return href
   }, [entry?.entries.authorUrl, entry?.entries.url, feed?.siteUrl, feed?.type, inbox])
 
-  const showTranslation = useGeneralSettingKey("translation")
+  const showAITranslation = useShowAITranslation(entry)
   const actionLanguage = useActionLanguage()
 
   const translation = useAuthQuery(
@@ -56,7 +57,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       extraFields: ["title"],
     }),
     {
-      enabled: showTranslation,
+      enabled: showAITranslation,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {
@@ -121,6 +122,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     >
       <div className={cn("select-text break-words font-bold", compact ? "text-2xl" : "text-3xl")}>
         <EntryTranslation
+          showTranslation={showAITranslation}
           source={entry.entries.title}
           target={translation.data?.title}
           className="select-text hyphens-auto"

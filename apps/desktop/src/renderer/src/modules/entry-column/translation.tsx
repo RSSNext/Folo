@@ -1,16 +1,14 @@
 import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
 
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { HTML } from "~/components/ui/markdown/HTML"
 
 export const EntryTranslation: Component<{
   source?: string | null
   target?: string
   isHTML?: boolean
-}> = ({ source, target, className, isHTML }) => {
-  const showTranslation = useGeneralSettingKey("translation")
-
+  showTranslation?: boolean
+}> = ({ source, target, showTranslation = true, className, isHTML }) => {
   const nextTarget = useMemo(() => {
     if (!target || !showTranslation || source === target) {
       return ""

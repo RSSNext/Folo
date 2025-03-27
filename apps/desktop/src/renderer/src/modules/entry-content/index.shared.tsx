@@ -14,13 +14,14 @@ import type { FC } from "react"
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useShowAISummary } from "~/atoms/ai-summary"
 import {
   ReadabilityStatus,
   setReadabilityStatus,
   useEntryInReadabilityStatus,
   useEntryReadabilityContent,
 } from "~/atoms/readability"
-import { useActionLanguage, useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { enableShowSourceContent } from "~/atoms/source-content"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Toc } from "~/components/ui/markdown/components/Toc"
@@ -317,7 +318,8 @@ const BackTopIndicator: Component = memo(({ className }) => {
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const showAISummary = useGeneralSettingSelector((s) => s.summary)
+  const entry = useEntry(entryId)
+  const showAISummary = useShowAISummary(entry)
   const actionLanguage = useActionLanguage()
   const summary = useAuthQuery(
     Queries.ai.summary({

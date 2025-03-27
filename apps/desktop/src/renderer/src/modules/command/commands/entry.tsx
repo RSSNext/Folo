@@ -1,18 +1,22 @@
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn, getOS } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
+import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getShowSourceContent,
   toggleShowSourceContent,
   useSourceContentModal,
 } from "~/atoms/source-content"
+import { useUserRole } from "~/atoms/user"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
+import { useActivationModal } from "~/modules/activation"
 import { useTipModal } from "~/modules/wallet/hooks"
 import { entryActions, useEntryStore } from "~/store/entry"
 
@@ -90,6 +94,9 @@ export const useRegisterEntryCommands = () => {
   const openTipModal = useTipModal()
   const read = useRead()
   const unread = useUnread()
+
+  const role = useUserRole()
+  const presentActivationModal = useActivationModal()
 
   useRegisterFollowCommand([
     {
@@ -298,4 +305,36 @@ export const useRegisterEntryCommands = () => {
       },
     },
   ])
+
+  useRegisterFollowCommand(
+    [
+      {
+        id: COMMAND_ID.entry.toggleAISummary,
+        label: t("entry_actions.toggle_ai_summary"),
+        icon: <i className="i-mgc-magic-2-cute-re" />,
+        run: () => {
+          if (role === UserRole.Trial) {
+            presentActivationModal()
+            return
+          }
+          toggleShowAISummaryOnce()
+        },
+      },
+      {
+        id: COMMAND_ID.entry.toggleAITranslation,
+        label: t("entry_actions.toggle_ai_translation"),
+        icon: <i className="i-mgc-translate-2-cute-re" />,
+        run: () => {
+          if (role === UserRole.Trial) {
+            presentActivationModal()
+            return
+          }
+          toggleShowAITranslationOnce()
+        },
+      },
+    ],
+    {
+      deps: [role],
+    },
+  )
 }

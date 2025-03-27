@@ -5,7 +5,8 @@ import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
 
-import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useShowAITranslation } from "~/atoms/ai-translation"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import type { FlatEntryModel } from "~/store/entry"
@@ -21,7 +22,7 @@ interface EntryItemProps {
   view?: number
 }
 function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }) {
-  const showTranslation = useGeneralSettingKey("translation")
+  const showAITranslation = useShowAITranslation(entry)
   const actionLanguage = useActionLanguage()
   const translation = useAuthQuery(
     Queries.ai.translation({
@@ -30,7 +31,7 @@ function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }
       language: actionLanguage,
     }),
     {
-      enabled: showTranslation,
+      enabled: showAITranslation,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {

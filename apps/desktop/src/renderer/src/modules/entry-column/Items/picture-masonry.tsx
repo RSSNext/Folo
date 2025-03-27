@@ -27,6 +27,7 @@ import {
 } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { MediaContainerWidthProvider } from "~/components/ui/media"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
@@ -248,7 +249,7 @@ const MasonryRender: React.ComponentType<
 > = ({ data, index }) => {
   const firstScreenReady = useContext(FirstScreenReadyContext)
   const entry = useEntry(data.entryId)
-  const showTranslation = useGeneralSettingKey("translation")
+  const showAITranslation = useShowAITranslation(entry)
   const actionLanguage = useActionLanguage()
   const translation = useAuthQuery(
     Queries.ai.translation({
@@ -257,7 +258,7 @@ const MasonryRender: React.ComponentType<
       language: actionLanguage,
     }),
     {
-      enabled: showTranslation,
+      enabled: showAITranslation,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {

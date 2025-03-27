@@ -7,8 +7,9 @@ import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useEffect, useMemo, useState } from "react"
 
+import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
-import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -100,7 +101,7 @@ export const EntryContent: Component<{
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   const customCSS = useUISettingKey("customCSS")
-  const showTranslation = useGeneralSettingKey("translation")
+  const showAITranslation = useShowAITranslation(entry)
   const actionLanguage = useActionLanguage()
   const contentTranslated = useAuthQuery(
     Queries.ai.translation({
@@ -109,7 +110,7 @@ export const EntryContent: Component<{
       extraFields: ["content"],
     }),
     {
-      enabled: showTranslation && !!entry,
+      enabled: showAITranslation && !!entry,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {
@@ -138,7 +139,7 @@ export const EntryContent: Component<{
 
   const entryContent = entry?.entries.content ?? data?.entries.content
   const translatedContent = contentTranslated.data?.content
-  const content = showTranslation && translatedContent ? translatedContent : entryContent
+  const content = showAITranslation && translatedContent ? translatedContent : entryContent
 
   const isInbox = !!inbox
 

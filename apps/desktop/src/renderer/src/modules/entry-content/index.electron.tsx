@@ -9,8 +9,9 @@ import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 
+import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -113,7 +114,7 @@ export const EntryContent: Component<EntryContentProps> = ({
     [entry?.entries.media, data?.entries.media],
   )
   const customCSS = useUISettingKey("customCSS")
-  const showTranslation = useGeneralSettingKey("translation")
+  const showAITranslation = useShowAITranslation(entry)
   const actionLanguage = useActionLanguage()
 
   const contentTranslated = useAuthQuery(
@@ -123,7 +124,7 @@ export const EntryContent: Component<EntryContentProps> = ({
       extraFields: ["content"],
     }),
     {
-      enabled: showTranslation && !!entry,
+      enabled: showAITranslation && !!entry,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       meta: {
@@ -136,7 +137,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const entryContent = entry?.entries.content ?? data?.entries.content
   const translatedContent = contentTranslated.data?.content
-  const content = showTranslation && translatedContent ? translatedContent : entryContent
+  const content = showAITranslation && translatedContent ? translatedContent : entryContent
 
   const isInbox = !!inbox
 
