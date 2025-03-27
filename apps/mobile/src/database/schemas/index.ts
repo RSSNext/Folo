@@ -116,17 +116,21 @@ export const summariesTable = sqliteTable(
   }),
 )
 
-export const translationsTable = sqliteTable("translations", (t) => ({
-  entryId: t.text("entry_id").notNull().primaryKey(),
-  language: t.text("language").$type<SupportedLanguages>().notNull(),
-  title: t.text("title").notNull(),
-  description: t.text("description").notNull(),
-  content: t.text("content").notNull(),
-  createdAt: t
-    .text("created_at")
-    .notNull()
-    .$defaultFn(() => new Date().toISOString()),
-}))
+export const translationsTable = sqliteTable(
+  "translations",
+  (t) => ({
+    entryId: t.text("entry_id").notNull().primaryKey(),
+    language: t.text("language").$type<SupportedLanguages>().notNull(),
+    title: t.text("title").notNull(),
+    description: t.text("description").notNull(),
+    content: t.text("content").notNull(),
+    createdAt: t
+      .text("created_at")
+      .notNull()
+      .$defaultFn(() => new Date().toISOString()),
+  }),
+  (t) => [uniqueIndex("translation-unique-index").on(t.entryId, t.language)],
+)
 
 export const imagesTable = sqliteTable("images", (t) => ({
   url: t.text("url").notNull().primaryKey(),

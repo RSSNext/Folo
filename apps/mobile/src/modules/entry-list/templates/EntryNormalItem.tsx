@@ -23,13 +23,17 @@ import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
 import { useEntry } from "@/src/store/entry/hooks"
 import { getInboxFrom } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentArticle"
 import { useEntryListContextView } from "../EntryListContext"
+import { EntryTranslation } from "./EntryTranslation"
 
 export function EntryNormalItem({ entryId, extraData }: { entryId: string; extraData: string }) {
   const entry = useEntry(entryId)
+  usePrefetchEntryTranslation(entryId)
+  const translation = useEntryTranslation(entryId)
   const from = getInboxFrom(entry)
   const feed = useFeed(entry?.feedId as string)
   const view = useEntryListContextView()
@@ -131,14 +135,21 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
             />
           </View>
           {!!entry.title && (
-            <Text numberOfLines={2} className="text-label text-lg font-semibold">
-              {entry.title.trim()}
-            </Text>
+            <EntryTranslation
+              numberOfLines={2}
+              className="text-label text-lg font-semibold"
+              source={entry.title}
+              target={translation?.title}
+              inline
+            />
           )}
           {view !== FeedViewType.Notifications && !!entry.description && (
-            <Text numberOfLines={2} className="text-secondary-label text-sm">
-              {entry.description}
-            </Text>
+            <EntryTranslation
+              numberOfLines={2}
+              className="text-secondary-label text-sm"
+              source={entry.description}
+              target={translation?.description}
+            />
           )}
         </View>
         {view !== FeedViewType.Notifications && (
