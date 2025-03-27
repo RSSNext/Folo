@@ -19,6 +19,8 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
 export const GeneralScreen: NavigationControllerView = () => {
   const locales = useLocales()
+  const translation = useGeneralSettingKey("translation")
+  const summary = useGeneralSettingKey("summary")
   const actionLanguage = useGeneralSettingKey("actionLanguage")
   const autoGroup = useGeneralSettingKey("autoGroup")
   const showUnreadOnLaunch = useGeneralSettingKey("unreadOnly")
@@ -40,7 +42,29 @@ export const GeneralScreen: NavigationControllerView = () => {
 
           <Text className="text-label">{(locales[0]?.languageTag, "English")}</Text>
         </GroupedInsetListBaseCell>
+      </GroupedInsetListCard>
 
+      {/* Content Behavior */}
+      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell label="Summary">
+          <Switch
+            size="sm"
+            value={summary}
+            onValueChange={(value) => {
+              setGeneralSetting("summary", value)
+            }}
+          />
+        </GroupedInsetListCell>
+        <GroupedInsetListCell label="Translation">
+          <Switch
+            size="sm"
+            value={translation}
+            onValueChange={(value) => {
+              setGeneralSetting("translation", value)
+            }}
+          />
+        </GroupedInsetListCell>
         <GroupedInsetListBaseCell>
           <Text className="text-label">Action Language</Text>
 
@@ -54,6 +78,15 @@ export const GeneralScreen: NavigationControllerView = () => {
             />
           </View>
         </GroupedInsetListBaseCell>
+        <GroupedInsetListCell label="Open Links in app">
+          <Switch
+            size="sm"
+            value={openLinksInApp}
+            onValueChange={(value) => {
+              setGeneralSetting("openLinksInApp", value)
+            }}
+          />
+        </GroupedInsetListCell>
       </GroupedInsetListCard>
 
       {/* Subscriptions */}
@@ -138,21 +171,6 @@ export const GeneralScreen: NavigationControllerView = () => {
             value={markAsReadWhenInView}
             onValueChange={(value) => {
               setGeneralSetting("renderMarkUnread", value)
-            }}
-          />
-        </GroupedInsetListCell>
-      </GroupedInsetListCard>
-
-      {/* Content Behavior */}
-
-      <GroupedInsetListSectionHeader label="Content" />
-      <GroupedInsetListCard>
-        <GroupedInsetListCell label="Open Links in app">
-          <Switch
-            size="sm"
-            value={openLinksInApp}
-            onValueChange={(value) => {
-              setGeneralSetting("openLinksInApp", value)
             }}
           />
         </GroupedInsetListCell>

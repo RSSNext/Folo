@@ -6,7 +6,6 @@ const createDefaultSettings = (): GeneralSettings => ({
   // App
 
   language: "en",
-  actionLanguage: "zh-CN",
 
   // Data control
 
@@ -30,6 +29,9 @@ const createDefaultSettings = (): GeneralSettings => ({
   voice: "en-US-AndrewMultilingualNeural",
 
   // Content
+  summary: false,
+  translation: false,
+  actionLanguage: "zh-CN",
   openLinksInApp: true,
 })
 

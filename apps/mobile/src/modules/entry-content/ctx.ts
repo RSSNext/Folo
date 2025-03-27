@@ -2,7 +2,6 @@ import type { PrimitiveAtom } from "jotai"
 import { createContext, useContext } from "react"
 
 interface EntryContentContextType {
-  showAISummaryAtom: PrimitiveAtom<boolean>
   showReadabilityAtom: PrimitiveAtom<boolean>
 }
 export const EntryContentContext = createContext<EntryContentContextType>(null!)
