@@ -6,6 +6,7 @@ import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated
 import { useColor } from "react-native-uikit-colors"
 import type { MenuItemIconProps } from "zeego/lib/typescript/menu"
 
+import { getGeneralSettings, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { ActionBarItem } from "@/src/components/ui/action-bar/ActionBarItem"
 import { DropdownMenu } from "@/src/components/ui/context-menu"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
@@ -14,6 +15,8 @@ import { More1CuteReIcon } from "@/src/icons/more_1_cute_re"
 import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { StarCuteReIcon } from "@/src/icons/star_cute_re"
+import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
+import type { SupportedLanguages } from "@/src/lib/language"
 import { hideIntelligenceGlowEffect, openLink, showIntelligenceGlowEffect } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
@@ -23,6 +26,7 @@ import { entrySyncServices } from "@/src/store/entry/store"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useSubscription } from "@/src/store/subscription/hooks"
 import { summaryActions, summarySyncService } from "@/src/store/summary/store"
+import { translationSyncService } from "@/src/store/translation/store"
 
 import { useEntryContentContext } from "./ctx"
 
@@ -52,11 +56,15 @@ const HeaderRightActionsImpl = ({
   titleOpacityShareValue,
   isHeaderTitleVisible,
 }: HeaderRightActionsProps) => {
+  const { showAISummaryAtom, showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
+  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
+  const [showTranslation, setShowTranslation] = useAtom(showAITranslationAtom)
+  const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
+  const showAISummarySetting = useGeneralSettingKey("summary")
+  const showAITranslationSetting = useGeneralSettingKey("translation")
+
   const labelColor = useColor("label")
   const isStarred = useIsEntryStarred(entryId)
-  const { showAISummaryAtom, showReadabilityAtom } = useEntryContentContext()
-  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
-  const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
   const [extraActionContainerWidth, setExtraActionContainerWidth] = useState(0)
 
   const entry = useEntry(
@@ -89,7 +97,7 @@ const HeaderRightActionsImpl = ({
     Share.share({ title: entry.title, url: entry.url })
   }
 
-  const handleAISummary = () => {
+  const toggleAISummary = () => {
     if (!entry) return
 
     const getCachedOrGenerateSummary = async () => {
@@ -108,7 +116,15 @@ const HeaderRightActionsImpl = ({
     })
   }
 
-  const handleShowReadability = useCallback(() => {
+  const toggleAITranslation = () => {
+    translationSyncService.generateTranslation(
+      entryId,
+      getGeneralSettings().actionLanguage as SupportedLanguages,
+    )
+    setShowTranslation((prev) => !prev)
+  }
+
+  const toggleReadability = useCallback(() => {
     entrySyncServices.fetchEntryReadabilityContent(entryId)
     setShowReadability((prev) => !prev)
   }, [entryId, setShowReadability])
@@ -147,17 +163,26 @@ const HeaderRightActionsImpl = ({
       title: "Show Readability",
       icon: <DocmentCuteReIcon />,
       iconIOS: { name: "doc.text" },
-      onPress: handleShowReadability,
+      onPress: toggleReadability,
       active: showReadability,
       isCheckbox: true,
     },
-    {
+    !showAISummarySetting && {
       key: "GenerateSummary",
       title: "Generate Summary",
       icon: <Magic2CuteReIcon />,
       iconIOS: { name: "sparkles" },
-      onPress: handleAISummary,
+      onPress: toggleAISummary,
       active: showAISummary,
+      isCheckbox: true,
+    },
+    !showAITranslationSetting && {
+      key: "ShowTranslation",
+      title: "Show Translation",
+      icon: <Translate2CuteReIcon />,
+      iconIOS: { name: "globe" },
+      onPress: toggleAITranslation,
+      active: showTranslation,
       isCheckbox: true,
     },
     {

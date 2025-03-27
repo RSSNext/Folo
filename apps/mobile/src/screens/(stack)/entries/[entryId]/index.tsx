@@ -18,7 +18,6 @@ import { useEntry, usePrefetchEntryContent } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
 import { useFeed } from "@/src/store/feed/hooks"
-import { summarySyncService } from "@/src/store/summary/store"
 import { useEntryTranslation } from "@/src/store/translation/hooks"
 import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
@@ -44,7 +43,7 @@ export const EntryDetailScreen: NavigationControllerView<{
   const ctxValue = useMemo(
     () => ({
       showAISummaryAtom: atom(entry?.settings?.summary || false),
-      showTranslationAtom: atom(!!entry?.settings?.translation || false),
+      showAITranslationAtom: atom(!!entry?.settings?.translation || false),
       showReadabilityAtom: atom(entry?.settings?.readability || false),
     }),
     [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
@@ -55,12 +54,6 @@ export const EntryDetailScreen: NavigationControllerView<{
       entrySyncServices.fetchEntryReadabilityContent(entryId)
     }
   }, [entry?.settings?.readability, entryId])
-
-  useEffect(() => {
-    if (entry?.settings?.summary) {
-      summarySyncService.generateSummary(entryId)
-    }
-  }, [entry?.settings?.summary, entryId])
 
   return (
     <EntryContentContext.Provider value={ctxValue}>
@@ -110,14 +103,15 @@ export const EntryDetailScreen: NavigationControllerView<{
 }
 
 const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation }) => {
-  const { showReadabilityAtom } = useEntryContentContext()
+  const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
   const showReadability = useAtomValue(showReadabilityAtom)
-  const translation = useGeneralSettingKey("translation")
+  const translationSetting = useGeneralSettingKey("translation")
+  const showTranslation = useAtomValue(showAITranslationAtom)
   return (
     <EntryContentWebView
       entry={entry}
       showReadability={showReadability}
-      showTranslation={translation}
+      showTranslation={translationSetting || showTranslation}
     />
   )
 }

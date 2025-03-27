@@ -60,6 +60,9 @@ class TranslationSyncService {
     const entry = getEntry(entryId)
     if (!entry) return
 
+    const translationSession = translationActions.getTranslation(entryId, language)
+    if (translationSession) return translationSession
+
     const res = await apiClient.ai.translation.$get({
       query: { id: entryId, language, fields: ["title", "description", "content"].join(",") },
     })
