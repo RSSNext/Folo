@@ -61,6 +61,7 @@ export const SettingGeneral = () => {
 
   const isMobile = useMobile()
   const role = useUserRole()
+  const isTrialUser = role === UserRole.Trial
 
   const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
@@ -87,16 +88,16 @@ export const SettingGeneral = () => {
 
           {
             type: "title",
-            value: "Content",
-            disabled: role === UserRole.Trial,
+            value: t("general.action.title"),
+            disabled: isTrialUser,
           },
           defineSettingItem("summary", {
-            label: "Summary",
-            disabled: role === UserRole.Trial,
+            label: t("general.action.summary"),
+            disabled: isTrialUser,
           }),
           defineSettingItem("translation", {
-            label: "Translation",
-            disabled: role === UserRole.Trial,
+            label: t("general.action.translation"),
+            disabled: isTrialUser,
           }),
           ActionLanguageSelector,
 
@@ -289,12 +290,7 @@ const ActionLanguageSelector = () => {
 
   return (
     <div className="mb-3 mt-4 flex items-center justify-between">
-      <div>
-        <span className="shrink-0 text-sm font-medium">{t("general.action_language.label")}</span>
-        <SettingDescription className="w-auto">
-          {t("general.action_language.description")}
-        </SettingDescription>
-      </div>
+      <span className="shrink-0 text-sm font-medium">{t("general.action_language.label")}</span>
       <ResponsiveSelect
         size="sm"
         triggerClassName="w-48"
