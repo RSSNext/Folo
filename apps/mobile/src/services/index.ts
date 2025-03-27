@@ -6,6 +6,7 @@ import { InboxService } from "./inbox"
 import type { Hydratable } from "./internal/base"
 import { ListService } from "./list"
 import { SubscriptionService } from "./subscription"
+import { TranslationService } from "./translation"
 import { UnreadService } from "./unread"
 import { UserService } from "./user"
 
@@ -19,6 +20,7 @@ const hydrates: Hydratable[] = [
   EntryService,
   CollectionService,
   ImagesService,
+  TranslationService,
 ]
 
 export const hydrateDatabaseToStore = async () => {

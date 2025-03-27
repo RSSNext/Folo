@@ -2,6 +2,8 @@ import type { FeedViewType } from "@follow/constants"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
+import type { SupportedLanguages } from "@/src/lib/language"
+
 import type {
   ActionSettings,
   AttachmentsModel,
@@ -113,6 +115,18 @@ export const summariesTable = sqliteTable(
     unq: uniqueIndex("unq").on(table.entryId, table.language),
   }),
 )
+
+export const translationsTable = sqliteTable("translations", (t) => ({
+  entryId: t.text("entry_id").notNull().primaryKey(),
+  language: t.text("language").$type<SupportedLanguages>().notNull(),
+  title: t.text("title").notNull(),
+  description: t.text("description").notNull(),
+  content: t.text("content").notNull(),
+  createdAt: t
+    .text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+}))
 
 export const imagesTable = sqliteTable("images", (t) => ({
   url: t.text("url").notNull().primaryKey(),

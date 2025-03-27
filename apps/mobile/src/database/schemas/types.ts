@@ -9,6 +9,7 @@ import type {
   listsTable,
   subscriptionsTable,
   summariesTable,
+  translationsTable,
   unreadTable,
   usersTable,
 } from "."
@@ -30,6 +31,8 @@ export type EntrySchema = typeof entriesTable.$inferSelect
 export type CollectionSchema = typeof collectionsTable.$inferSelect
 
 export type SummarySchema = typeof summariesTable.$inferSelect
+
+export type TranslationSchema = typeof translationsTable.$inferSelect
 
 export type ImageSchema = typeof imagesTable.$inferInsert
 

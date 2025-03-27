@@ -25,9 +25,9 @@ export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
-  usePrefetchEntryContent(entryId as string)
-  useAutoMarkAsRead(entryId as string)
-  const entry = useEntry(entryId as string)
+  usePrefetchEntryContent(entryId)
+  useAutoMarkAsRead(entryId)
+  const entry = useEntry(entryId)
 
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(

@@ -18,6 +18,7 @@ import m0014 from "./0014_chemical_shocker.sql"
 import m0015 from "./0015_colorful_warbird.sql"
 import m0016 from "./0016_curious_carnage.sql"
 import m0017 from "./0017_talented_captain_cross.sql"
+import m0018 from "./0018_nice_meggan.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -41,5 +42,6 @@ export default {
     m0015,
     m0016,
     m0017,
+    m0018,
   },
 }
