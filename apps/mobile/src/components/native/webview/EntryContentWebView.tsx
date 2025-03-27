@@ -60,14 +60,6 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
 
   useEffect(() => {
-    if (showReadability) {
-      setWebViewEntry({ ...entry, content: entry.readabilityContent })
-    } else {
-      setWebViewEntry(entry)
-    }
-  }, [entry, showReadability])
-
-  useEffect(() => {
     setNoMedia(!!noMedia)
   }, [noMedia, mode])
 
@@ -79,9 +71,19 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     setCodeTheme(codeThemeLight, codeThemeDark)
   }, [codeThemeLight, codeThemeDark, mode])
 
+  const entryInWebview = React.useMemo(() => {
+    if (showReadability) {
+      return {
+        ...entry,
+        content: entry.readabilityContent,
+      }
+    }
+    return entry
+  }, [entry, showReadability])
+
   useEffect(() => {
-    setWebViewEntry(entry)
-  }, [entry])
+    setWebViewEntry(entryInWebview)
+  }, [entryInWebview])
 
   const onceRef = React.useRef(false)
   if (!onceRef.current) {
@@ -95,7 +97,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
         key={mode}
         style={{ height: contentHeight, transform: [{ translateY: 0 }] }}
         onLayout={() => {
-          setWebViewEntry(entry)
+          setWebViewEntry(entryInWebview)
         }}
       >
         <NativeView
@@ -124,7 +126,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
                 const nextMode = mode === "debug" ? "normal" : "debug"
                 setMode(nextMode)
                 if (nextMode === "debug") {
-                  SharedWebViewModule.load("http://localhost:5173/")
+                  SharedWebViewModule.load("http://192.168.31.116:5173/")
                 } else {
                   SharedWebViewModule.load(htmlUrl)
                 }
