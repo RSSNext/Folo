@@ -32,7 +32,7 @@ export const EntryTranslation = ({
   if (inline) {
     return (
       <Text {...props} className={className}>
-        {`${nextTarget.trim()}${source.trim()}`}
+        {`${nextTarget.trim()} ${source.trim()}`}
       </Text>
     )
   }
