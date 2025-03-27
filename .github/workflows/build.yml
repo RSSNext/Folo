@@ -209,23 +209,23 @@ jobs:
           retention-days: 90
 
       - uses: signpath/github-action-submit-signing-request@v1.1
-        if: runner.os == 'windows'
+        if: runner.os == 'windows' && (github.ref_type == 'tag' || github.event.inputs.tag_version == 'true')
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "8c651516-fdaf-40a1-9fea-001dffde850e"
           project-slug: "Folo"
-          signing-policy-slug: "${{ (github.ref_type == 'tag' || github.event.inputs.tag_version == 'true') && 'release-signing' || 'test-signing' }}"
+          signing-policy-slug: "release-signing"
           artifact-configuration-slug: "github"
           github-artifact-id: "${{ steps.upload-unsigned-windows-x64-exe.outputs.artifact-id }}"
           output-artifact-directory: "apps/desktop/out/make/"
 
       - name: Update latest.yml
-        if: runner.os == 'windows'
+        if: runner.os == 'windows' && (github.ref_type == 'tag' || github.event.inputs.tag_version == 'true')
         run: npx tsx apps/desktop/scripts/update-windows-yml.ts
 
       - name: Upload file (windows-x64-exe signed)
         uses: actions/upload-artifact@v4
-        if: runner.os == 'windows'
+        if: runner.os == 'windows' && (github.ref_type == 'tag' || github.event.inputs.tag_version == 'true')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

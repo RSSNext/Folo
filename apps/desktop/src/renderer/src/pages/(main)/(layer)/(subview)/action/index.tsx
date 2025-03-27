@@ -10,7 +10,7 @@ export function Component() {
 
   return (
     <div className="relative flex w-full flex-col items-center gap-8 px-4 pb-8 lg:pb-4">
-      <div className="pt-12 text-2xl font-bold">{t("words.actions")}</div>
+      <div className="text-2xl font-bold">{t("words.actions")}</div>
       <ActionSetting />
     </div>
   )

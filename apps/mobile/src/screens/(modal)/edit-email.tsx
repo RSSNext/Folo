@@ -11,7 +11,6 @@ import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetListCard,
   GroupedInsetListCell,
-  GroupedInsetListSectionHeader,
   GroupedOutlineDescription,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
@@ -61,8 +60,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
         }
       />
 
-      <View className="mt-8 w-full">
-        <GroupedInsetListSectionHeader label="Email" />
+      <View className="mt-4 w-full">
         <GroupedInsetListCard>
           <GroupedInsetListCell label="Email" rightClassName="flex-1" leftClassName="flex-none">
             <PlainTextField
