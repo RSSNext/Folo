@@ -13,7 +13,7 @@ export const enableShowAISummaryOnce = () => setShowAISummaryOnce(true)
 export const disableShowAISummaryOnce = () => setShowAISummaryOnce(false)
 
 export const useShowAISummaryAuto = (entry: FlatEntryModel | null) => {
-  return useGeneralSettingKey("AISummary") || !!entry?.settings?.summary
+  return useGeneralSettingKey("summary") || !!entry?.settings?.summary
 }
 
 export const useShowAISummary = (entry: FlatEntryModel | null) => {

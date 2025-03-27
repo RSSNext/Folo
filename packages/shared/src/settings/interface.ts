@@ -1,9 +1,8 @@
 export interface GeneralSettings {
   appLaunchOnStartup: boolean
   language: string
-  // Action
-  AITranslation: boolean
-  AISummary: boolean
+  translation: boolean
+  summary: boolean
   actionLanguage: string
   startupScreen: "subscription" | "timeline"
   dataPersist: boolean

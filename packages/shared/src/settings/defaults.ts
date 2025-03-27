@@ -5,8 +5,8 @@ export const defaultGeneralSettings: GeneralSettings = {
   appLaunchOnStartup: false,
   language: "en",
   actionLanguage: "default",
-  AITranslation: false,
-  AISummary: false,
+  translation: false,
+  summary: false,
 
   // mobile app
   startupScreen: "timeline",
