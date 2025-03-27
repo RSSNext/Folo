@@ -22,7 +22,7 @@ export const enableShowAITranslationOnce = () => setShowAITranslationOnce(true)
 export const disableShowAITranslationOnce = () => setShowAITranslationOnce(false)
 
 export const useShowAITranslationAuto = (entry: FlatEntryModel | null) => {
-  return useGeneralSettingKey("translation") || !!entry?.settings?.translation
+  return useGeneralSettingKey("AITranslation") || !!entry?.settings?.translation
 }
 
 export const useShowAITranslation = (entry: FlatEntryModel | null) => {

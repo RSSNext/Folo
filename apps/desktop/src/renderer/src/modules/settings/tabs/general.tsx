@@ -91,11 +91,11 @@ export const SettingGeneral = () => {
             value: t("general.action.title"),
             disabled: isTrialUser,
           },
-          defineSettingItem("summary", {
+          defineSettingItem("AISummary", {
             label: t("general.action.summary"),
             disabled: isTrialUser,
           }),
-          defineSettingItem("translation", {
+          defineSettingItem("AITranslation", {
             label: t("general.action.translation"),
             disabled: isTrialUser,
           }),
