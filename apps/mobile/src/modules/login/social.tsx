@@ -6,6 +6,7 @@ import { AppleCuteFiIcon } from "@/src/icons/apple_cute_fi"
 import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
 import { GoogleCuteFiIcon } from "@/src/icons/google_cute_fi"
 import { signIn, useAuthProviders } from "@/src/lib/auth"
+import { getTokenHeaders } from "@/src/lib/token"
 
 const provider: Record<
   string,
@@ -64,12 +65,17 @@ export function SocialLogin() {
                     })
 
                     if (credential.identityToken) {
-                      await signIn.social({
-                        provider: "apple",
-                        idToken: {
-                          token: credential.identityToken,
+                      await signIn.social(
+                        {
+                          provider: "apple",
+                          idToken: {
+                            token: credential.identityToken,
+                          },
                         },
-                      })
+                        {
+                          headers: await getTokenHeaders(),
+                        },
+                      )
                     } else {
                       throw new Error("No identityToken.")
                     }
@@ -80,10 +86,15 @@ export function SocialLogin() {
                   return
                 }
 
-                signIn.social({
-                  provider: providerInfo.id as any,
-                  callbackURL: "/",
-                })
+                signIn.social(
+                  {
+                    provider: providerInfo.id as any,
+                    callbackURL: "/",
+                  },
+                  {
+                    headers: await getTokenHeaders(),
+                  },
+                )
               }}
               disabled={!data?.[providerInfo.id]}
             >
