@@ -1,18 +1,21 @@
+import { useAtomValue } from "jotai"
 import type { FC } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { SummaryGeneratingStatus } from "@/src/store/summary/enum"
-import { usePrefetchSummary, useSummary } from "@/src/store/summary/hooks"
+import { useSummary } from "@/src/store/summary/hooks"
 import { useSummaryStore } from "@/src/store/summary/store"
 
 import { AISummary } from "../ai/summary"
+import { useEntryContentContext } from "./ctx"
 
 export const EntryAISummary: FC<{
   entryId: string
 }> = ({ entryId }) => {
-  const showAISummary = useGeneralSettingKey("summary")
+  const ctx = useEntryContentContext()
+  const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
+  const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
   const summary = useSummary(entryId)
-  usePrefetchSummary(entryId, { enabled: showAISummary })
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null

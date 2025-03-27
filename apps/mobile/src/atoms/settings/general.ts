@@ -7,7 +7,7 @@ const createDefaultSettings = (): GeneralSettings => ({
 
   language: "en",
 
-  // Content
+  // Action
   summary: false,
   translation: false,
   actionLanguage: "zh-CN",
@@ -33,6 +33,7 @@ const createDefaultSettings = (): GeneralSettings => ({
   // TTS
   voice: "en-US-AndrewMultilingualNeural",
 
+  // Content
   openLinksInApp: true,
 })
 

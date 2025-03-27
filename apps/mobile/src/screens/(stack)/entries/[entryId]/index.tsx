@@ -18,6 +18,7 @@ import { useEntry, usePrefetchEntryContent } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
 import { useFeed } from "@/src/store/feed/hooks"
+import { summarySyncService } from "@/src/store/summary/store"
 import { useEntryTranslation } from "@/src/store/translation/hooks"
 import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
@@ -42,9 +43,11 @@ export const EntryDetailScreen: NavigationControllerView<{
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(
     () => ({
+      showAISummaryAtom: atom(entry?.settings?.summary || false),
+      showTranslationAtom: atom(!!entry?.settings?.translation || false),
       showReadabilityAtom: atom(entry?.settings?.readability || false),
     }),
-    [entry?.settings?.readability],
+    [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
   )
 
   useEffect(() => {
@@ -52,6 +55,12 @@ export const EntryDetailScreen: NavigationControllerView<{
       entrySyncServices.fetchEntryReadabilityContent(entryId)
     }
   }, [entry?.settings?.readability, entryId])
+
+  useEffect(() => {
+    if (entry?.settings?.summary) {
+      summarySyncService.generateSummary(entryId)
+    }
+  }, [entry?.settings?.summary, entryId])
 
   return (
     <EntryContentContext.Provider value={ctxValue}>

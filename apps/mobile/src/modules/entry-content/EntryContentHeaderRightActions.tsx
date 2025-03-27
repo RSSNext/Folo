@@ -9,11 +9,12 @@ import type { MenuItemIconProps } from "zeego/lib/typescript/menu"
 import { ActionBarItem } from "@/src/components/ui/action-bar/ActionBarItem"
 import { DropdownMenu } from "@/src/components/ui/context-menu"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
+import { Magic2CuteReIcon } from "@/src/icons/magic_2_cute_re"
 import { More1CuteReIcon } from "@/src/icons/more_1_cute_re"
 import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { StarCuteReIcon } from "@/src/icons/star_cute_re"
-import { hideIntelligenceGlowEffect, openLink } from "@/src/lib/native"
+import { hideIntelligenceGlowEffect, openLink, showIntelligenceGlowEffect } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
@@ -21,6 +22,7 @@ import { useEntry } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useSubscription } from "@/src/store/subscription/hooks"
+import { summaryActions, summarySyncService } from "@/src/store/summary/store"
 
 import { useEntryContentContext } from "./ctx"
 
@@ -52,7 +54,8 @@ const HeaderRightActionsImpl = ({
 }: HeaderRightActionsProps) => {
   const labelColor = useColor("label")
   const isStarred = useIsEntryStarred(entryId)
-  const { showReadabilityAtom } = useEntryContentContext()
+  const { showAISummaryAtom, showReadabilityAtom } = useEntryContentContext()
+  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
   const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
   const [extraActionContainerWidth, setExtraActionContainerWidth] = useState(0)
 
@@ -84,6 +87,25 @@ const HeaderRightActionsImpl = ({
   const handleShare = () => {
     if (!entry?.title || !entry?.url) return
     Share.share({ title: entry.title, url: entry.url })
+  }
+
+  const handleAISummary = () => {
+    if (!entry) return
+
+    const getCachedOrGenerateSummary = async () => {
+      const hasSummary = summaryActions.getSummary(entryId)
+      if (hasSummary) return
+
+      const hideGlowEffect = showIntelligenceGlowEffect()
+      await summarySyncService.generateSummary(entryId)
+      hideGlowEffect()
+    }
+
+    setShowAISummary((prev) => {
+      const newValue = !prev
+      if (newValue) getCachedOrGenerateSummary()
+      return newValue
+    })
   }
 
   const handleShowReadability = useCallback(() => {
@@ -127,6 +149,15 @@ const HeaderRightActionsImpl = ({
       iconIOS: { name: "doc.text" },
       onPress: handleShowReadability,
       active: showReadability,
+      isCheckbox: true,
+    },
+    {
+      key: "GenerateSummary",
+      title: "Generate Summary",
+      icon: <Magic2CuteReIcon />,
+      iconIOS: { name: "sparkles" },
+      onPress: handleAISummary,
+      active: showAISummary,
       isCheckbox: true,
     },
     {
