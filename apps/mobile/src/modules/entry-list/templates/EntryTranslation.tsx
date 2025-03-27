@@ -16,23 +16,28 @@ export const EntryTranslation = ({
   className?: string
   inline?: boolean
 } & TextProps) => {
-  const showTranslation = useGeneralSettingKey("translation")
-
-  const nextTarget = useMemo(() => {
-    if (!target || !showTranslation || source === target) {
+  const nextSource = useMemo(() => {
+    if (!source) {
       return ""
     }
-    return target
-  }, [source, target, showTranslation])
-
-  if (!source) {
-    return null
-  }
+    return source.trim()
+  }, [source])
+  const showTranslation = useGeneralSettingKey("translation")
+  const nextTarget = useMemo(() => {
+    if (
+      !target ||
+      !showTranslation ||
+      nextSource.replaceAll(/\s/g, "") === target.replaceAll(/\s/g, "")
+    ) {
+      return ""
+    }
+    return target.trim()
+  }, [nextSource, target, showTranslation])
 
   if (inline) {
     return (
       <Text {...props} className={className}>
-        {`${nextTarget.trim()} ${source.trim()}`}
+        {`${nextTarget ? `${nextTarget} ` : ""}${nextSource}`}
       </Text>
     )
   }
@@ -41,11 +46,11 @@ export const EntryTranslation = ({
     <View>
       {nextTarget && (
         <Text {...props} className={className}>
-          {nextTarget.trim()}
+          {nextTarget}
         </Text>
       )}
       <Text {...props} className={className}>
-        {source.trim()}
+        {nextSource}
       </Text>
     </View>
   )
