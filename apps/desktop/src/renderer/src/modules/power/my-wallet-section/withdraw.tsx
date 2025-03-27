@@ -9,6 +9,12 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { Switch } from "@follow/components/ui/switch/index.js"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.jsx"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -167,16 +173,36 @@ const WithdrawModalContent = ({ dismiss }: { dismiss: () => void }) => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-2">
-                  <FormLabel>{t("wallet.withdraw.toRss3Label")}</FormLabel>
+                  <FormLabel className="flex items-center gap-1">
+                    {t("wallet.withdraw.toRss3Label")}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <i className="i-mgc-question-cute-re text-sm" />
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent>
+                          <span className="text-xs text-gray-500">
+                            1 POWER = {powerPrice.data?.rss3 ?? "-"} RSS3
+                          </span>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </FormLabel>
                   <FormControl className="!mt-0">
                     <span className="inline-flex">
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </span>
                   </FormControl>
                 </div>
-                <div className="w-full text-xs text-gray-500">
-                  1 POWER = {powerPrice.data?.rss3 ?? "-"} RSS3
-                </div>
+                {field.value && (
+                  <span className="text-xs text-gray-500">
+                    {t("wallet.withdraw.receiveRSS3", {
+                      amount: ((form.watch("amount") || 0) * (powerPrice.data?.rss3 ?? 0)).toFixed(
+                        4,
+                      ),
+                    })}
+                  </span>
+                )}
                 <FormMessage />
               </FormItem>
             )}

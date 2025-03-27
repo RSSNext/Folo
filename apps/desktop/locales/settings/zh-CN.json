@@ -417,6 +417,7 @@
   "wallet.withdraw.button": "提现",
   "wallet.withdraw.error": "提现失败：{{error}}",
   "wallet.withdraw.modalTitle": "提现 Power",
+  "wallet.withdraw.receiveRSS3": "你将收到 {{amount}} RSS3",
   "wallet.withdraw.submitButton": "提交",
   "wallet.withdraw.success": "提现成功！",
   "wallet.withdraw.toRss3Label": "提现为 RSS3"

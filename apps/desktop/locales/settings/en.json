@@ -417,6 +417,7 @@
   "wallet.withdraw.button": "Withdraw",
   "wallet.withdraw.error": "Withdrawal failed: {{error}}",
   "wallet.withdraw.modalTitle": "Withdraw Power",
+  "wallet.withdraw.receiveRSS3": "You will receive {{amount}} RSS3",
   "wallet.withdraw.submitButton": "Submit",
   "wallet.withdraw.success": "Withdrawal successful!",
   "wallet.withdraw.toRss3Label": "Withdraw as RSS3",
