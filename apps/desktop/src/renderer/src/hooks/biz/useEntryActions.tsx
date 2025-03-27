@@ -3,8 +3,8 @@ import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCallback, useMemo } from "react"
 
-import { useShowAISummaryGlobal, useShowAISummaryOnce } from "~/atoms/ai-summary"
-import { useShowAITranslationGlobal, useShowAITranslationOnce } from "~/atoms/ai-translation"
+import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
+import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
   ReadabilityStatus,
@@ -85,9 +85,9 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
   const isInbox = !!inbox
 
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummaryGlobal = useShowAISummaryGlobal()
+  const isShowAISummaryAuto = useShowAISummaryAuto(entry)
   const isShowAISummaryOnce = useShowAISummaryOnce()
-  const isShowAITranslationGlobal = useShowAITranslationGlobal()
+  const isShowAITranslationAuto = useShowAITranslationAuto(entry)
   const isShowAITranslationOnce = useShowAITranslationOnce()
 
   const runCmdFn = useRunCommandFn()
@@ -166,8 +166,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         id: COMMAND_ID.entry.toggleAISummary,
         onClick: runCmdFn(COMMAND_ID.entry.toggleAISummary, []),
         hide:
-          isShowAISummaryGlobal ||
-          !!entry?.settings?.summary ||
+          isShowAISummaryAuto ||
           ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
             entry?.view,
           ),
@@ -178,8 +177,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         id: COMMAND_ID.entry.toggleAITranslation,
         onClick: runCmdFn(COMMAND_ID.entry.toggleAITranslation, []),
         hide:
-          isShowAITranslationGlobal ||
-          !!entry?.settings?.translation ||
+          isShowAITranslationAuto ||
           ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
             entry?.view,
           ),
@@ -208,8 +206,6 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
     entry?.collections,
     entry?.entries.url,
     entry?.read,
-    entry?.settings?.summary,
-    entry?.settings?.translation,
     entry?.view,
     entryId,
     feed?.id,
@@ -217,9 +213,9 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
     hasEntry,
     inList,
     isInbox,
-    isShowAISummaryGlobal,
+    isShowAISummaryAuto,
     isShowAISummaryOnce,
-    isShowAITranslationGlobal,
+    isShowAITranslationAuto,
     isShowAITranslationOnce,
     isShowSourceContent,
     runCmdFn,

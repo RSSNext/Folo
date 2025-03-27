@@ -12,15 +12,11 @@ export const toggleShowAITranslationOnce = () => setShowAITranslationOnce((prev)
 export const enableShowAITranslationOnce = () => setShowAITranslationOnce(true)
 export const disableShowAITranslationOnce = () => setShowAITranslationOnce(false)
 
-export const useShowAITranslationGlobal = () => {
-  return useGeneralSettingKey("translation")
-}
-
-export const useShowAITranslationAuto = (entry?: FlatEntryModel | null) => {
+export const useShowAITranslationAuto = (entry: FlatEntryModel | null) => {
   return useGeneralSettingKey("translation") || !!entry?.settings?.translation
 }
 
-export const useShowAITranslation = (entry?: FlatEntryModel | null) => {
+export const useShowAITranslation = (entry: FlatEntryModel | null) => {
   const showAITranslationAuto = useShowAITranslationAuto(entry)
   const showAITranslationOnce = useShowAITranslationOnce()
   return showAITranslationAuto || showAITranslationOnce

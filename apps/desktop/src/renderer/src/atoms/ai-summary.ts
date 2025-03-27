@@ -12,12 +12,12 @@ export const toggleShowAISummaryOnce = () => setShowAISummaryOnce((prev) => !pre
 export const enableShowAISummaryOnce = () => setShowAISummaryOnce(true)
 export const disableShowAISummaryOnce = () => setShowAISummaryOnce(false)
 
-export const useShowAISummaryGlobal = () => {
-  return useGeneralSettingKey("summary")
+export const useShowAISummaryAuto = (entry: FlatEntryModel | null) => {
+  return useGeneralSettingKey("summary") || !!entry?.settings?.summary
 }
 
-export const useShowAISummary = (entry?: FlatEntryModel | null) => {
-  const showAISummaryGlobal = useShowAISummaryGlobal()
+export const useShowAISummary = (entry: FlatEntryModel | null) => {
+  const showAISummaryAuto = useShowAISummaryAuto(entry)
   const showAISummaryOnce = useShowAISummaryOnce()
-  return showAISummaryGlobal || showAISummaryOnce || !!entry?.settings?.summary
+  return showAISummaryAuto || showAISummaryOnce || !!entry?.settings?.summary
 }
