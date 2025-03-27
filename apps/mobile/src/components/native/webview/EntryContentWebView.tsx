@@ -49,10 +49,6 @@ const setReaderRenderInlineStyle = (value: boolean) => {
   SharedWebViewModule.evaluateJavaScript(`setReaderRenderInlineStyle(${value})`)
 }
 
-const setShowReadability = (value: boolean) => {
-  SharedWebViewModule.evaluateJavaScript(`setShowReadability(${value})`)
-}
-
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
 
@@ -64,8 +60,12 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
 
   useEffect(() => {
-    setShowReadability(!!showReadability)
-  }, [showReadability])
+    if (showReadability) {
+      setWebViewEntry({ ...entry, content: entry.readabilityContent })
+    } else {
+      setWebViewEntry(entry)
+    }
+  }, [entry, showReadability])
 
   useEffect(() => {
     setNoMedia(!!noMedia)
