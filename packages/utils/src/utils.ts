@@ -231,6 +231,10 @@ export function isKeyForMultiSelectPressed(e: MouseEvent) {
 }
 
 export const toScientificNotation = (num: string, threshold: number) => {
+  // XXX Only handle the case where the decimal separator is a period . and the thousands separator is a comma ,.
+  // For French, Spanish, Italian, Portuguese, Finnish, and other European languages, as well as Turkish, they follow a different convention from English (US/UK). These languages use a comma , as the decimal separator and a period . as the thousands separator.
+  // For example, the number thirteen thousand point five is written as 13.000,5 instead of 13,000.5 in these languages.
+  // See https://github.com/RSSNext/Folo/issues/2754
   const cleanNum = num.replaceAll(",", "")
   const [intPart, decimalPart = ""] = cleanNum.split(".")
   const numLength = intPart!.replace(/^0+/, "").length
