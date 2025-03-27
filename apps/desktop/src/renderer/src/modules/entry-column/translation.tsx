@@ -7,14 +7,13 @@ export const EntryTranslation: Component<{
   source?: string | null
   target?: string
   isHTML?: boolean
-  showTranslation?: boolean
-}> = ({ source, target, showTranslation = true, className, isHTML }) => {
+}> = ({ source, target, className, isHTML }) => {
   const nextTarget = useMemo(() => {
-    if (!target || !showTranslation || source === target) {
+    if (!target || source === target) {
       return ""
     }
     return target
-  }, [source, target, showTranslation])
+  }, [source, target])
 
   if (!source) {
     return null

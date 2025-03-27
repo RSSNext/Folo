@@ -7,9 +7,7 @@ import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useEffect, useMemo, useState } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
-import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -17,6 +15,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery, usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { Queries } from "~/queries"
+import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -101,23 +100,8 @@ export const EntryContent: Component<{
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   const customCSS = useUISettingKey("customCSS")
-  const showAITranslation = useShowAITranslation(entry)
-  const actionLanguage = useActionLanguage()
-  const contentTranslated = useAuthQuery(
-    Queries.ai.translation({
-      entry,
-      language: actionLanguage,
-      extraFields: ["content"],
-    }),
-    {
-      enabled: showAITranslation && !!entry,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
+
+  const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
   const contentLineHeight = useUISettingKey("contentLineHeight")
   const contentFontSize = useUISettingKey("contentFontSize")
@@ -139,7 +123,7 @@ export const EntryContent: Component<{
 
   const entryContent = entry?.entries.content ?? data?.entries.content
   const translatedContent = contentTranslated.data?.content
-  const content = showAITranslation && translatedContent ? translatedContent : entryContent
+  const content = translatedContent || entryContent
 
   const isInbox = !!inbox
 

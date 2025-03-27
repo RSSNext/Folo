@@ -5,6 +5,15 @@ import type { FlatEntryModel } from "~/store/entry/types"
 
 import { useGeneralSettingKey } from "./settings/general"
 
+// NOTE: We have three levels of settings can enable AI translation or Summary:
+// 1. General setting, which is the global settings for all entries.
+// 2. Action setting, which is defined in an action and applied to specific entries.
+// 3. Toolbar control, which is a temporary setting for the current entry.
+//
+// When general setting or action setting is enabled, we should hide the toolbar control, which can save some space.
+//
+// Different from AI summary, AI translation also can show up in the entry list, which should be canceled by the General setting or Action setting.
+
 export const [, , useShowAITranslationOnce, , getShowAITranslationOnce, setShowAITranslationOnce] =
   createAtomHooks(atom<boolean>(false))
 

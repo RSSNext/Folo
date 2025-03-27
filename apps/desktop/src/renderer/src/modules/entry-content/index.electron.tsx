@@ -9,9 +9,7 @@ import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useEntryIsInReadability } from "~/atoms/readability"
-import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -19,6 +17,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { Queries } from "~/queries"
+import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -114,30 +113,14 @@ export const EntryContent: Component<EntryContentProps> = ({
     [entry?.entries.media, data?.entries.media],
   )
   const customCSS = useUISettingKey("customCSS")
-  const showAITranslation = useShowAITranslation(entry)
-  const actionLanguage = useActionLanguage()
 
-  const contentTranslated = useAuthQuery(
-    Queries.ai.translation({
-      entry,
-      language: actionLanguage,
-      extraFields: ["content"],
-    }),
-    {
-      enabled: showAITranslation && !!entry,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
+  const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
   if (!entry) return null
 
   const entryContent = entry?.entries.content ?? data?.entries.content
   const translatedContent = contentTranslated.data?.content
-  const content = showAITranslation && translatedContent ? translatedContent : entryContent
+  const content = translatedContent || entryContent
 
   const isInbox = !!inbox
 

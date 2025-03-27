@@ -2,14 +2,11 @@ import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/util
 import dayjs from "dayjs"
 import { useMemo } from "react"
 
-import { useShowAITranslation } from "~/atoms/ai-translation"
-import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
-import { useAuthQuery } from "~/hooks/common"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { Queries } from "~/queries"
+import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry, useEntryReadHistory } from "~/store/entry"
 import { getPreferredTitle, useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -47,24 +44,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     return href
   }, [entry?.entries.authorUrl, entry?.entries.url, feed?.siteUrl, feed?.type, inbox])
 
-  const showAITranslation = useShowAITranslation(entry)
-  const actionLanguage = useActionLanguage()
-
-  const translation = useAuthQuery(
-    Queries.ai.translation({
-      entry: entry!,
-      language: actionLanguage,
-      extraFields: ["title"],
-    }),
-    {
-      enabled: showAITranslation,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
+  const translation = useEntryTranslation({ entry, extraFields: ["title"] })
 
   const dateFormat = useUISettingKey("dateFormat")
 
@@ -122,7 +102,6 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     >
       <div className={cn("select-text break-words font-bold", compact ? "text-2xl" : "text-3xl")}>
         <EntryTranslation
-          showTranslation={showAITranslation}
           source={entry.entries.title}
           target={translation.data?.title}
           className="select-text hyphens-auto"
