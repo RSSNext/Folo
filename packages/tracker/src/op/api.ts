@@ -25,6 +25,13 @@ export class Api {
     this.initialRetryDelay = config.initialRetryDelay ?? 500
   }
 
+  setHeaders(headers: Record<string, string>) {
+    this.headers = {
+      ...this.headers,
+      ...headers,
+    }
+  }
+
   private async resolveHeaders(): Promise<Record<string, string>> {
     const resolvedHeaders: Record<string, string> = {}
     for (const [key, value] of Object.entries(this.headers)) {

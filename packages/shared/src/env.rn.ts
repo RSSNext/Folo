@@ -8,7 +8,7 @@ const envProfileMap = {
     API_URL: "https://api.follow.is",
     WEB_URL: "https://app.follow.is",
     INBOXES_EMAIL: "@follow.re",
-    OPENPANEL_CLIENT_ID: "0e477ab4-d92d-4d6e-b889-b09d86ab908e",
+    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
     OPENPANEL_API_URL: "https://openpanel.follow.is/api",
   },
   dev: {
@@ -20,7 +20,7 @@ const envProfileMap = {
     API_URL: "https://api.follow.is",
     WEB_URL: "https://staging.follow.is",
     INBOXES_EMAIL: "@follow.re",
-    OPENPANEL_CLIENT_ID: "0e477ab4-d92d-4d6e-b889-b09d86ab908e",
+    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
     OPENPANEL_API_URL: "https://openpanel.follow.is/api",
   },
 }

@@ -47,6 +47,7 @@
   "8001": "List permission denied",
   "8002": "List limit exceeded",
   "8003": "Feed already added to list",
+  "8004": "Cannot delete a list with subscriptions.",
   "9000": "Achievement not completed",
   "9001": "Achievement already received",
   "9002": "Achievement is under audit",

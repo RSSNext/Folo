@@ -1,4 +1,4 @@
-import { cn, formatEstimatedMins } from "@follow/utils/utils"
+import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useMemo } from "react"
 

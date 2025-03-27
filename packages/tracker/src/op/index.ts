@@ -118,6 +118,10 @@ export class OpenPanel {
     return this.api.fetch("/track", payload)
   }
 
+  setHeaders(headers: Record<string, string>) {
+    this.api.setHeaders(headers)
+  }
+
   setGlobalProperties(properties: Record<string, unknown>) {
     this.global = {
       ...this.global,
