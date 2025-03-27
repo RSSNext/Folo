@@ -1,5 +1,5 @@
 import * as React from "react"
-import Svg, { Circle, Path } from "react-native-svg"
+import Svg, { Path } from "react-native-svg"
 
 interface Loading3CuteReIconProps {
   width?: number
@@ -14,12 +14,10 @@ export const Loading3CuteReIcon = ({
 }: Loading3CuteReIconProps) => {
   return (
     <Svg width={width} height={height} fill="none" viewBox="0 0 24 24">
-      <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={2} opacity={0.1} />
       <Path
-        stroke={color}
-        strokeLinecap="round"
-        strokeWidth={2}
-        d="M12 3a8.958 8.958 0 0 0-6.225 2.5"
+        d="M11.3 2.026c-2.227.181-4.178.989-5.849 2.424-.46.395-.587.56-.651.846-.149.674.462 1.307 1.139 1.18.244-.045.399-.132.639-.355a7.99 7.99 0 0 1 3.502-1.879c.552-.137.958-.195 1.687-.238.487-.029.566-.044.728-.139.733-.43.633-1.523-.165-1.808-.139-.05-.62-.064-1.03-.031"
+        fill={color}
+        fillRule="evenodd"
       />
     </Svg>
   )

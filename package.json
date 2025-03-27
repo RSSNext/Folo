@@ -24,6 +24,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hotfix": "vv -c bump.hotfix.config.js",
+    "icons:sync": "tsx scripts/svg-to-rn.ts && prettier --write apps/mobile/src/icons/**/*.tsx && eslint --fix apps/mobile/src/icons/**/*.tsx",
+    "icons:update": "tsx scripts/update-icon.ts",
     "lint": "pnpm run lint:tsl && eslint",
     "lint:fix": "eslint --fix",
     "lint:tsl": "tsslint --project apps/*/tsconfig.json",
@@ -31,7 +33,6 @@
     "polyfill-optimize": "pnpx nolyfill install",
     "prepare": "simple-git-hooks && corepack prepare",
     "reinstall": "rm -rf node_modules && rm -rf apps/**/node_modules && rm -rf packages/**/node_modules && pnpm install",
-    "sync:icons": "tsx scripts/svg-to-rn.ts && prettier --write apps/mobile/src/icons/**/*.tsx && eslint --fix apps/mobile/src/icons/**/*.tsx",
     "test": "cross-env CI=1 pnpm --recursive run test",
     "typecheck": "turbo typecheck"
   },
