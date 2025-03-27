@@ -1,3 +1,4 @@
+import type { SupportedLanguages } from "@/src/lib/language"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { actionActions } from "@/src/store/action/store"
 import type { ActionId, ActionRule } from "@/src/store/action/types"
@@ -96,6 +97,14 @@ export const availableActionList: Array<{
   component?: React.FC<{ rule: ActionRule }>
 }> = [
   {
+    value: "summary",
+    label: "Generate summary using AI",
+  },
+  {
+    value: "translation",
+    label: "Translate into",
+  },
+  {
     value: "readability",
     label: "Enable readability",
   },
@@ -143,5 +152,27 @@ export const availableActionList: Array<{
     onNavigate: (router, index) => {
       router.pushControllerView(EditWebhooksScreen, { index })
     },
+  },
+]
+
+export const translationOptions: {
+  label: string
+  value: SupportedLanguages
+}[] = [
+  {
+    label: "English",
+    value: "en",
+  },
+  {
+    label: "日本語",
+    value: "ja",
+  },
+  {
+    label: "简体中文",
+    value: "zh-CN",
+  },
+  {
+    label: "繁體中文",
+    value: "zh-TW",
   },
 ]

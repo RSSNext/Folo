@@ -54,6 +54,8 @@ const DeleteTableCell = ({ disabled, onClick }: { disabled?: boolean; onClick?: 
 )
 
 export const TargetActionList = ({ index }: { index: number }) => {
+  const summary = useActionByIndex(index, (a) => a.result.summary)
+  const translation = useActionByIndex(index, (a) => a.result.translation)
   const readability = useActionByIndex(index, (a) => a.result.readability)
   const sourceContent = useActionByIndex(index, (a) => a.result.sourceContent)
   const newEntryNotification = useActionByIndex(index, (a) => a.result.newEntryNotification)
@@ -69,6 +71,26 @@ export const TargetActionList = ({ index }: { index: number }) => {
 
   const availableActions: Action[] = useMemo(
     () => [
+      {
+        title: t("actions.action_card.generate_summary"),
+        enabled: !!summary,
+        onInit: (data) => {
+          data.result.summary = true
+        },
+        onRemove: (data) => {
+          delete data.result.summary
+        },
+      },
+      {
+        title: t("actions.action_card.translate_into"),
+        enabled: !!translation,
+        onInit: (data) => {
+          data.result.translation = true
+        },
+        onRemove: (data) => {
+          delete data.result.translation
+        },
+      },
       {
         title: t("actions.action_card.enable_readability"),
         enabled: !!readability,
@@ -266,7 +288,9 @@ export const TargetActionList = ({ index }: { index: number }) => {
       rewriteRules,
       silence,
       sourceContent,
+      summary,
       t,
+      translation,
       webhooks,
     ],
   )
