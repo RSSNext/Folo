@@ -56,13 +56,6 @@ const HeaderRightActionsImpl = ({
   titleOpacityShareValue,
   isHeaderTitleVisible,
 }: HeaderRightActionsProps) => {
-  const { showAISummaryAtom, showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
-  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
-  const [showTranslation, setShowTranslation] = useAtom(showAITranslationAtom)
-  const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
-  const showAISummarySetting = useGeneralSettingKey("summary")
-  const showAITranslationSetting = useGeneralSettingKey("translation")
-
   const labelColor = useColor("label")
   const isStarred = useIsEntryStarred(entryId)
   const [extraActionContainerWidth, setExtraActionContainerWidth] = useState(0)
@@ -74,8 +67,17 @@ const HeaderRightActionsImpl = ({
         url: entry.url,
         feedId: entry.feedId,
         title: entry.title,
+        settings: entry.settings,
       },
   )
+
+  const { showAISummaryAtom, showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
+  const [showAISummary, setShowAISummary] = useAtom(showAISummaryAtom)
+  const [showTranslation, setShowTranslation] = useAtom(showAITranslationAtom)
+  const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
+  const showAISummarySetting = useGeneralSettingKey("summary") || !!entry?.settings?.summary
+  const showAITranslationSetting =
+    useGeneralSettingKey("translation") || !!entry?.settings?.translation
 
   const feed = useFeed(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
   const subscription = useSubscription(feed?.feedId as string)
