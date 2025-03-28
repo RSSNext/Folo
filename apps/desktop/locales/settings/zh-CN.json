@@ -129,7 +129,6 @@
   "feeds.tableHeaders.subscriptionCount": "订阅数",
   "feeds.tableHeaders.tipAmount": "收到的打赏",
   "general.action_language.default": "默认（界面语言）",
-  "general.action_language.description": "用于翻译和总结的语言。",
   "general.action_language.label": "自动化语言",
   "general.app": "应用程序",
   "general.auto_expand_long_social_media.description": "自动展开包含长文本的社交媒体条目。",
