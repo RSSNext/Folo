@@ -1,6 +1,18 @@
+import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics"
+
 import type { OpenPanel } from "./op"
 
-type Tracker = (name: string, properties?: Record<string, unknown>) => Promise<any>
+export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
+
+type IdentifyPayload = {
+  id: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
+  handle?: string | null
+}
+
+type Tracker = (code: number, properties?: Record<string, unknown>) => Promise<any>
 class TrackManager {
   private trackFns: Tracker[] = []
 
@@ -21,8 +33,93 @@ class TrackManager {
     }
   }
 
-  setOpenPanelTracker(tracker: OpenPanel["track"]) {
-    this.trackFns.push((name, properties) => tracker(name, properties))
+  setOpenPanelTracker(op: Optional<OpenPanel, "setHeaders">) {
+    this.trackFns.push((code, properties) => {
+      const name = CodeToTrackerName(code)
+
+      switch (code) {
+        case TrackerMapper.Identify: {
+          const payload = properties as IdentifyPayload
+          return op.identify({
+            profileId: payload.id,
+            email: payload.email ?? undefined,
+            avatar: payload.image ?? undefined,
+            lastName: payload.name ?? undefined,
+            properties: {
+              handle: payload.handle,
+              name: payload.name,
+            },
+          })
+        }
+        default: {
+          return op.track(name, { ...properties, __code: code })
+        }
+      }
+    })
+  }
+
+  setFirebaseTracker(tracker: FirebaseAnalyticsTypes.Module) {
+    this.trackFns.push((code, properties) => {
+      switch (code) {
+        case TrackerMapper.Identify: {
+          const payload = properties as IdentifyPayload
+          tracker?.setUserId(payload.id)
+          tracker?.setUserProperties({
+            email: payload.email ?? null,
+            name: payload.name ?? null,
+            image: payload.image ?? null,
+            handle: payload.handle ?? null,
+          })
+          break
+        }
+        case TrackerMapper.OnBoarding: {
+          if (properties?.step === 0) {
+            tracker?.logTutorialBegin()
+          } else if (properties?.done) {
+            tracker?.logTutorialComplete()
+          }
+          break
+        }
+        case TrackerMapper.NavigateEntry: {
+          tracker?.logSelectContent({
+            content_type: "entry",
+            item_id: `${properties?.feedId}/${properties?.entryId}`,
+          })
+          break
+        }
+        case TrackerMapper.UserLogin: {
+          tracker?.logLogin({
+            method: properties?.type as string,
+          })
+          break
+        }
+        case TrackerMapper.Register: {
+          tracker?.logSignUp({
+            method: properties?.type as string,
+          })
+          break
+        }
+        case TrackerMapper.Subscribe: {
+          let group_id
+          if (properties?.listId) {
+            group_id = `list/${properties.listId}/${properties.view}`
+          } else if (properties?.feedId) {
+            group_id = `feed/${properties.feedId}/${properties.view}`
+          }
+          if (group_id) {
+            tracker?.logJoinGroup({
+              group_id,
+            })
+          }
+          break
+        }
+        default: {
+          const name = CodeToTrackerName(code)
+          tracker?.logEvent(name, properties)
+        }
+      }
+      return Promise.resolve()
+    })
   }
 }
 
@@ -58,14 +155,22 @@ export enum TrackerMapper {
   ViewAction = 3005,
 }
 
-const CodeToTrackerName = Object.fromEntries(
-  Object.entries(TrackerMapper).map(([key, value]) => [value, key]),
-) as Record<number, string>
+export const CodeToTrackerName = (code: number) => {
+  const map = Object.fromEntries(
+    Object.entries(TrackerMapper).map(([key, value]) => [value, key]),
+  ) as Record<number, string>
+  const name = map[code]
+  if (name) {
+    return snakeCase(name)
+  } else {
+    throw new Error(`Tracker name not found for code ${code}`)
+  }
+}
 
 export class TrackerPoints {
   // App
-  identify(userId: string) {
-    this.track(TrackerMapper.Identify, { userId })
+  identify(props: IdentifyPayload) {
+    this.track(TrackerMapper.Identify, props)
   }
 
   appInit(props: {
@@ -79,8 +184,8 @@ export class TrackerPoints {
     this.track(TrackerMapper.AppInit, props)
   }
 
-  userLogin(userId: string) {
-    this.track(TrackerMapper.UserLogin, { userId })
+  userLogin(props: { type: "email" | "social" }) {
+    this.track(TrackerMapper.UserLogin, props)
   }
 
   /**
@@ -93,6 +198,7 @@ export class TrackerPoints {
   navigateEntry(props: { feedId?: string; entryId?: string; timelineId?: string }) {
     this.track(TrackerMapper.NavigateEntry, props)
   }
+
   boostSent(props: { amount: string; feedId: string }) {
     this.track(TrackerMapper.BoostSent, props)
   }
@@ -176,13 +282,7 @@ export class TrackerPoints {
   }
 
   private track(code: TrackerMapper, properties?: Record<string, unknown>) {
-    if (code) {
-      let name = CodeToTrackerName[code]
-      if (name) {
-        name = snakeCase(name)
-        Reflect.apply(trackManager.getTrackFn(), null, [name, { ...properties, __code: code }])
-      }
-    }
+    Reflect.apply(trackManager.getTrackFn(), null, [code, { ...properties }])
   }
 }
 const snakeCase = (string: string) => {

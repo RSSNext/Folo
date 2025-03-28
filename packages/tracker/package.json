@@ -2,5 +2,8 @@
   "name": "@follow/tracker",
   "version": "0.0.1",
   "private": true,
-  "main": "./src/index.ts"
+  "main": "./src/index.ts",
+  "devDependencies": {
+    "@react-native-firebase/analytics": "21.12.0"
+  }
 }

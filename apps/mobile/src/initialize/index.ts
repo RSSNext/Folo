@@ -15,7 +15,6 @@ export const initializeApp = async () => {
 
   const now = Date.now()
   initializeDb()
-  initAnalytics()
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()
@@ -27,7 +26,9 @@ export const initializeApp = async () => {
   dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)
   await apm("initializeAppCheck", initializeAppCheck)
+  await apm("initializePlayer", initializePlayer)
 
+  await initAnalytics()
   const loadingTime = Date.now() - now
   tracker.appInit({
     rn: true,
@@ -37,7 +38,6 @@ export const initializeApp = async () => {
     electron: false,
     using_indexed_db: true,
   })
-  await apm("initializePlayer", initializePlayer)
   console.log(`Initialize done,`, `${loadingTime}ms`)
 }
 

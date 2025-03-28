@@ -1,6 +1,5 @@
 import { OpenPanel } from "@follow/tracker/src/op"
 
-import { getUserAgent } from "./native/user-agent"
 import { proxyEnv } from "./proxy-env"
 
 export const op = new OpenPanel({
@@ -11,10 +10,4 @@ export const op = new OpenPanel({
   },
   sdk: "react-native",
   sdkVersion: "1.0.0",
-})
-
-getUserAgent().then((userAgent) => {
-  op.setHeaders({
-    "User-Agent": userAgent,
-  })
 })

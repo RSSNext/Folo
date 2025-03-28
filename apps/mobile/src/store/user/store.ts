@@ -1,6 +1,5 @@
 import { UserRole } from "@follow/constants"
 import type { AuthSession } from "@follow/shared"
-import { getAnalytics } from "@react-native-firebase/analytics"
 
 import type { UserSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
@@ -46,18 +45,6 @@ class UserSyncService {
       })
       userActions.upsertMany([user])
 
-      try {
-        await Promise.all([
-          getAnalytics().setUserId(res.user.id),
-          getAnalytics().setUserProperties({
-            userId: res.user.id,
-            email: res.user.email,
-            name: res.user.name,
-          }),
-        ])
-      } catch (err: any) {
-        console.warn(`[Error] setUserId: ${err}`)
-      }
       return res.user
     } else {
       return null

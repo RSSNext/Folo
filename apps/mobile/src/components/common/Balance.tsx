@@ -57,7 +57,7 @@ function format(
 
   // For very large or small numbers, use scientific notation
   if (Math.abs(num) > 1e9 || (Math.abs(num) < 1e-9 && num !== 0)) {
-    return toScientificNotation(num.toString(), 10)
+    return toScientificNotation([value, 18], 10)
   }
 
   return new Intl.NumberFormat(locale, {

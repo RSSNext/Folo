@@ -1,5 +1,5 @@
 import { tracker } from "@follow/tracker"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native"
 import { SheetScreen } from "react-native-sheet-transitions"
 
@@ -31,6 +31,9 @@ export const OnboardingScreen: NavigationControllerView = () => {
       })
     }
   }, [currentStep, navigation])
+  useEffect(() => {
+    tracker.onBoarding({ step: 0, done: false })
+  }, [])
 
   return (
     <SheetScreen onClose={() => navigation.dismiss()}>

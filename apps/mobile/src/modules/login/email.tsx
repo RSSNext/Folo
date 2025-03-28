@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useRef } from "react"
 import { Alert, Text, TouchableOpacity, View } from "react-native"
@@ -52,6 +53,10 @@ async function onSubmit(values: FormValue) {
     .catch((error) => {
       Alert.alert(error.message)
     })
+
+  tracker.userLogin({
+    type: "email",
+  })
 }
 
 export function EmailLogin() {

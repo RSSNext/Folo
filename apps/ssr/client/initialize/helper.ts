@@ -1,11 +1,8 @@
 import type { AuthUser } from "@follow/shared/hono"
-import { identifyUserOpenPanel, tracker } from "@follow/tracker"
-
-import { op } from "./op"
+import { tracker } from "@follow/tracker"
 
 export const setIntegrationIdentify = async (user: AuthUser) => {
-  identifyUserOpenPanel(user, op.identify.bind(op))
-  tracker.identify(user.id)
+  tracker.identify(user)
 
   await import("@sentry/react").then(({ setTag }) => {
     setTag("user_id", user.id)

@@ -2,6 +2,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/t
 import { cn, toScientificNotation } from "@follow/utils/utils"
 import { format } from "dnum"
 
+import { useGeneralSettingSelector } from "~/atoms/settings/general"
+
 export const Balance = ({
   children,
   value,
@@ -20,14 +22,22 @@ export const Balance = ({
   withTooltip?: boolean
   scientificThreshold?: number
 }) => {
+  const language = useGeneralSettingSelector((s) => s.language)
+  let locale: Intl.Locale
+  try {
+    locale = new Intl.Locale(language.replace("_", "-"))
+  } catch {
+    locale = new Intl.Locale("en-US")
+  }
+
   const n = [BigInt(children || 0n) || BigInt(value || 0n), 18] as const
-  const formatted = format(n, { digits: precision, trailingZeros: true })
-  const formattedFull = format(n, { digits: 18, trailingZeros: true })
+  const formatted = format(n, { digits: precision, trailingZeros: true, locale })
+  const formattedFull = format(n, { digits: 18, trailingZeros: true, locale })
 
   const Content = (
     <span className={cn("tabular-nums", className)}>
       {withSuffix && <i className="i-mgc-power text-accent mr-1 -translate-y-px align-middle" />}
-      <span>{withTooltip ? toScientificNotation(formatted, scientificThreshold) : formatted}</span>
+      <span>{withTooltip ? toScientificNotation(n, scientificThreshold, locale) : formatted}</span>
     </span>
   )
 

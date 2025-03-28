@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import * as AppleAuthentication from "expo-apple-authentication"
 import { useColorScheme } from "nativewind"
 import { Platform, TouchableOpacity, View } from "react-native"
@@ -70,6 +71,9 @@ export function SocialLogin() {
                           token: credential.identityToken,
                         },
                       })
+                      tracker.userLogin({
+                        type: "social",
+                      })
                     } else {
                       throw new Error("No identityToken.")
                     }
@@ -80,9 +84,12 @@ export function SocialLogin() {
                   return
                 }
 
-                signIn.social({
+                await signIn.social({
                   provider: providerInfo.id as any,
                   callbackURL: "/",
+                })
+                tracker.userLogin({
+                  type: "social",
                 })
               }}
               disabled={!data?.[providerInfo.id]}

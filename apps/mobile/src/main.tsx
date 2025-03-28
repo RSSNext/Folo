@@ -5,7 +5,6 @@ import { Image } from "expo-image"
 import { cssInterop } from "nativewind"
 import { enableFreeze } from "react-native-screens"
 
-import { Analytics } from "./Analytics"
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
@@ -57,7 +56,6 @@ registerRootComponent(() => (
             </TabBarPortal>
           </TabRoot>
         </App>
-        <Analytics />
       </RootStackNavigation>
     </BottomTabProvider>
   </RootProviders>
