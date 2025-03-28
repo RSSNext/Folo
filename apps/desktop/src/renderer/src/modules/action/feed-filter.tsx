@@ -190,9 +190,13 @@ export const FeedFilter = ({ index }: { index: number }) => {
                       </TableRow>
                       {conditionIdx !== orConditions.length - 1 && (
                         <TableRow className="relative flex items-center">
-                          <Button disabled variant="outline">
-                            {t("actions.action_card.and")}
-                          </Button>
+                          <div className="relative">
+                            <Button disabled variant="outline">
+                              {t("actions.action_card.and")}
+                            </Button>
+                            <div className="bg-theme-disabled absolute left-1/2 h-[5px] w-px" />
+                            <div className="bg-theme-disabled absolute left-1/2 top-0 h-[5px] w-px -translate-y-full" />
+                          </div>
                         </TableRow>
                       )}
                     </Fragment>
