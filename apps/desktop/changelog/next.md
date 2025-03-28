@@ -2,11 +2,13 @@
 
 ## New Features
 
+- New global settings for AI summary and translation (#3294)
 - Display estimated audio duration for entry titles (#3292)
 - Simplify settings via an enhanced settings toggle (217e1a8f2acb9826bd53f520e5dd9e7a686bf5b9)
 
 ## Improvements
 
+- Improved translation for entry content
 - Refine toolbar customization (#3284)
 - Sign Windows executable files using SignPath (#3286)
 - Remove email verification toast notifications (9bb723a33b78e481fdeee8d525f41c7406abb643)

@@ -2,6 +2,8 @@
 
 ## New Features
 
+- New global settings for AI summary and translation (#3294)
+- AI translation support
 - Introduce an invite code input field along with a helpful prompt (359093dcf140edcb612c5920183c62184b05b395)
 
 ## Improvements
