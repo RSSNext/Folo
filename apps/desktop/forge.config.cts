@@ -283,19 +283,21 @@ const config: ForgeConfig = {
       })
       yml.releaseDate = new Date().toISOString()
 
-      const ymlPath = path.join(basePath, ymlMapsMap[makeResults[0]?.platform!])
+      if (makeResults[0]?.platform && ymlMapsMap[makeResults[0].platform] && basePath) {
+        const ymlPath = path.join(basePath, ymlMapsMap[makeResults[0].platform])
 
-      const ymlStr = yaml.dump(yml, {
-        lineWidth: -1,
-      })
-      fs.writeFileSync(ymlPath, ymlStr)
+        const ymlStr = yaml.dump(yml, {
+          lineWidth: -1,
+        })
+        fs.writeFileSync(ymlPath, ymlStr)
 
-      makeResults.push({
-        artifacts: [ymlPath],
-        platform: makeResults[0]!.platform,
-        arch: makeResults[0]!.arch,
-        packageJSON: makeResults[0]!.packageJSON,
-      })
+        makeResults.push({
+          artifacts: [ymlPath],
+          platform: makeResults[0]!.platform,
+          arch: makeResults[0]!.arch,
+          packageJSON: makeResults[0]!.packageJSON,
+        })
+      }
 
       return makeResults
     },
