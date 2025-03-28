@@ -13,7 +13,7 @@ export const TimeStamp = (props: { time: string }) => {
   let mediaDuration = entry?.entries.attachments?.[0]?.duration_in_seconds
 
   if (mediaDuration && Number.isNaN(+mediaDuration)) {
-    // @ts-expect-error durationInSeconds is string
+    // @ts-expect-error mediaDuration is string
     mediaDuration = formatTimeToSeconds(mediaDuration)
   }
 
