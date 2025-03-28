@@ -124,7 +124,7 @@
     "babel-plugin-inline-import": "3.0.0",
     "babel-plugin-module-resolver": "5.0.2",
     "drizzle-kit": "0.30.5",
-    "eas-cli": "15.0.15",
+    "eas-cli": "16.1.0",
     "expo-drizzle-studio-plugin": "0.1.2",
     "nbump": "2.0.7",
     "postcss": "8.5.3"
