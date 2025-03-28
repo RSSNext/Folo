@@ -45,7 +45,7 @@ jobs:
 
   build:
     name: Build iOS IPA
-    if: ${{ contains(github.head_ref || github.ref, 'refs/heads/') }}
+    if: github.secret_source != 'None'
     needs: check-runner
     runs-on: ${{ needs.check-runner.outputs.runner-label }}
 
