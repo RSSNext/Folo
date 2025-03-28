@@ -18,6 +18,7 @@ vi.mock("./store", () => ({
   store: {
     set: vi.fn(),
     get: vi.fn(),
+    delete: vi.fn(),
   },
 }))
 
@@ -58,7 +59,7 @@ describe("proxy", () => {
     it("should return false for invalid proxy", () => {
       const proxy = "invalid-proxy"
       const result = setProxyConfig(proxy)
-      expect(store.set).toHaveBeenCalledWith("proxy", undefined)
+      expect(store.delete).toHaveBeenCalledWith("proxy")
       expect(result).toBe(false)
     })
   })
