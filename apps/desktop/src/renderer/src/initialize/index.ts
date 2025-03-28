@@ -103,7 +103,6 @@ export const initializeApp = async () => {
   const { dataPersist: enabledDataPersist } = getGeneralSettings()
 
   initSentry()
-  initAnalytics()
   await apm("i18n", initI18n)
 
   let dataHydratedTime: undefined | number
@@ -112,6 +111,8 @@ export const initializeApp = async () => {
     dataHydratedTime = await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
     CleanerService.cleanOutdatedData()
   }
+
+  await apm("initAnalytics", initAnalytics)
 
   const loadingTime = Date.now() - now
   appLog(`Initialize ${APP_NAME} done,`, `${loadingTime}ms`)

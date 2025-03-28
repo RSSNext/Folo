@@ -1,4 +1,5 @@
 import { nextFrame } from "@follow/utils/dom"
+import { formatTimeToSeconds } from "@follow/utils/utils"
 import { useContext } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
@@ -9,7 +10,13 @@ import { EntryInfoContext } from "../context"
 export const TimeStamp = (props: { time: string }) => {
   const { entryId } = useContext(EntryInfoContext)
   const entry = useEntry(entryId)
-  const mediaDuration = entry?.entries.attachments?.[0]?.duration_in_seconds
+  let mediaDuration = entry?.entries.attachments?.[0]?.duration_in_seconds
+
+  if (mediaDuration && Number.isNaN(+mediaDuration)) {
+    // @ts-expect-error mediaDuration is string
+    mediaDuration = formatTimeToSeconds(mediaDuration)
+  }
+
   const src = entry?.entries?.attachments?.[0]?.url
   if (!src) return <span>{props.time}</span>
 

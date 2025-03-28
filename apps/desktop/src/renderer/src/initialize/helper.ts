@@ -1,17 +1,8 @@
 import type { UserModel } from "@follow/models"
-
-import { op } from "./op"
+import { tracker } from "@follow/tracker"
 
 export const setIntegrationIdentify = async (user: UserModel) => {
-  op.identify({
-    profileId: user.id,
-    email: user.email,
-    lastName: user.name ?? undefined,
-    avatar: user.image ?? undefined,
-    properties: {
-      handle: user.handle,
-    },
-  })
+  tracker.identify(user)
   await import("@sentry/react").then(({ setTag }) => {
     setTag("user_id", user.id)
     setTag("user_name", user.name)

@@ -58,7 +58,9 @@ class TrackManager {
     })
   }
 
-  setFirebaseTracker(tracker: FirebaseAnalyticsTypes.Module) {
+  setFirebaseTracker(
+    tracker: Pick<FirebaseAnalyticsTypes.Module, "logEvent" | "setUserId" | "setUserProperties">,
+  ) {
     this.trackFns.push((code, properties) => {
       switch (code) {
         case TrackerMapper.Identify: {
@@ -74,27 +76,27 @@ class TrackManager {
         }
         case TrackerMapper.OnBoarding: {
           if (properties?.step === 0) {
-            tracker?.logTutorialBegin()
+            tracker?.logEvent("tutorial_begin")
           } else if (properties?.done) {
-            tracker?.logTutorialComplete()
+            tracker?.logEvent("tutorial_complete")
           }
           break
         }
         case TrackerMapper.NavigateEntry: {
-          tracker?.logSelectContent({
+          tracker?.logEvent("select_content", {
             content_type: "entry",
             item_id: `${properties?.feedId}/${properties?.entryId}`,
           })
           break
         }
         case TrackerMapper.UserLogin: {
-          tracker?.logLogin({
+          tracker?.logEvent("login", {
             method: properties?.type as string,
           })
           break
         }
         case TrackerMapper.Register: {
-          tracker?.logSignUp({
+          tracker?.logEvent("sign_up", {
             method: properties?.type as string,
           })
           break
@@ -107,10 +109,34 @@ class TrackManager {
             group_id = `feed/${properties.feedId}/${properties.view}`
           }
           if (group_id) {
-            tracker?.logJoinGroup({
+            tracker?.logEvent("join_group", {
               group_id,
             })
           }
+          break
+        }
+        case TrackerMapper.BoostSent: {
+          tracker?.logEvent("purchase", {
+            currency: "POWER",
+            value: properties?.amount,
+            items: `feed/${properties?.feedId}`,
+            transaction_id: properties?.transactionId,
+          })
+          break
+        }
+        case TrackerMapper.DailyRewardClaimed: {
+          tracker?.logEvent("earn_virtual_currency", {
+            virtual_currency_name: "POWER",
+          })
+          break
+        }
+        case TrackerMapper.TipSent: {
+          tracker?.logEvent("purchase", {
+            currency: "POWER",
+            value: properties?.amount,
+            items: `entry/${properties?.entryId}`,
+            transaction_id: properties?.transactionId,
+          })
           break
         }
         default: {
@@ -199,7 +225,7 @@ export class TrackerPoints {
     this.track(TrackerMapper.NavigateEntry, props)
   }
 
-  boostSent(props: { amount: string; feedId: string }) {
+  boostSent(props: { amount: string; feedId: string; transactionId: string }) {
     this.track(TrackerMapper.BoostSent, props)
   }
 
@@ -253,7 +279,7 @@ export class TrackerPoints {
     this.track(TrackerMapper.DailyRewardClaimed)
   }
 
-  tipSent(props: { amount: string; entryId: string }) {
+  tipSent(props: { amount: string; entryId: string; transactionId: string }) {
     this.track(TrackerMapper.TipSent, props)
   }
 

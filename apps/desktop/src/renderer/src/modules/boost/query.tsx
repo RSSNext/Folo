@@ -45,7 +45,7 @@ export const useBoostFeedMutation = () => {
     onError(err) {
       toastFetchError(err)
     },
-    onSuccess(_, variables) {
+    onSuccess(response, variables) {
       query.getStatus({ feedId: variables.feedId }).invalidate()
       query.getBoosters({ feedId: variables.feedId }).invalidate()
       updateFeedBoostStatus(variables.feedId, true)
@@ -53,6 +53,7 @@ export const useBoostFeedMutation = () => {
       tracker.boostSent({
         amount: variables.amount,
         feedId: variables.feedId,
+        transactionId: response.data.transactionHash,
       })
       toast(t("boost.boost_success"))
     },

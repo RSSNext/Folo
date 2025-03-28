@@ -136,12 +136,13 @@ export const useWalletTipMutation = () =>
     async onError(err) {
       toastFetchError(err)
     },
-    onSuccess(_, variables) {
+    onSuccess(response, variables) {
       wallet.get().invalidate()
       wallet.transactions.get().invalidate()
       tracker.tipSent({
         amount: variables.amount,
         entryId: variables.entryId,
+        transactionId: response.data.transactionHash,
       })
       toast("🎉 Tipped.")
     },
