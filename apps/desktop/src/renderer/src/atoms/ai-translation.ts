@@ -12,7 +12,7 @@ import { useGeneralSettingKey } from "./settings/general"
 //
 // When general setting or action setting is enabled, we should hide the toolbar control, which can save some space.
 //
-// Different from AI summary, AI translation also can show up in the entry list, which should be canceled by the General setting or Action setting.
+// Different from AI summary, AI translation also can show up in the entry list, which should only be controlled by the General setting or Action setting.
 
 export const [, , useShowAITranslationOnce, , getShowAITranslationOnce, setShowAITranslationOnce] =
   createAtomHooks(atom<boolean>(false))
