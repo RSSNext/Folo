@@ -48,6 +48,7 @@ export const ActionsScreen = () => {
           ),
           [isDirty],
         )}
+        promptBeforeLeave={isDirty}
       />
 
       <View className="mt-6">

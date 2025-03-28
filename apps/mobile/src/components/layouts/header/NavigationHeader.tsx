@@ -11,7 +11,7 @@ import {
   useState,
 } from "react"
 import type { LayoutChangeEvent } from "react-native"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native"
 import type { AnimatedProps } from "react-native-reanimated"
 import Animated, {
   useAnimatedReaction,
@@ -44,6 +44,7 @@ interface NavigationHeaderButtonProps {
   canGoBack: boolean
   canDismiss: boolean
   modal?: boolean
+  promptBeforeLeave?: boolean
 }
 export interface NavigationHeaderRawProps {
   headerLeft?: FC<NavigationHeaderButtonProps>
@@ -136,6 +137,7 @@ export interface InternalNavigationHeaderProps
         canGoBack: boolean
       }>
     | ReactNode
+  promptBeforeLeave?: boolean
   headerRight?:
     | FC<{
         canGoBack: boolean
@@ -163,6 +165,8 @@ export const InternalNavigationHeader = ({
   hideableBottom,
   hideableBottomHeight,
   headerTitleAbsolute,
+
+  promptBeforeLeave,
   ...rest
 }: InternalNavigationHeaderProps) => {
   const insets = useSafeAreaInsets()
@@ -289,7 +293,12 @@ export const InternalNavigationHeader = ({
           pointerEvents={"box-none"}
         >
           {typeof HeaderLeft === "function" ? (
-            <HeaderLeft canGoBack={canBack} canDismiss={canDismiss} modal={sheetModal} />
+            <HeaderLeft
+              canGoBack={canBack}
+              canDismiss={canDismiss}
+              modal={sheetModal}
+              promptBeforeLeave={promptBeforeLeave}
+            />
           ) : (
             HeaderLeft
           )}
@@ -337,17 +346,40 @@ export const InternalNavigationHeader = ({
   )
 }
 
-export const DefaultHeaderBackButton = ({ canGoBack, canDismiss }: NavigationHeaderButtonProps) => {
+export const DefaultHeaderBackButton = ({
+  canGoBack,
+  canDismiss,
+  promptBeforeLeave,
+}: NavigationHeaderButtonProps) => {
   const label = useColor("label")
   const navigation = useNavigation()
   if (!canGoBack && !canDismiss) return null
   return (
     <UINavigationHeaderActionButton
       onPress={() => {
-        if (canGoBack) {
-          navigation.back()
-        } else if (canDismiss) {
-          navigation.dismiss()
+        const leave = () => {
+          if (canGoBack) {
+            navigation.back()
+          } else if (canDismiss) {
+            navigation.dismiss()
+          }
+        }
+
+        if (promptBeforeLeave) {
+          Alert.alert("Are you sure you want to exit?", "You have unsaved changes.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Exit",
+              onPress: () => {
+                leave()
+              },
+            },
+          ])
+        } else {
+          leave()
         }
       }}
     >

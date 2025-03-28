@@ -139,6 +139,7 @@ export const NavigationBlurEffectHeader = ({
             hideableBottomHeight={headerHideableBottomHeight}
             headerTitleAbsolute={headerTitleAbsolute}
             headerTitle={props.headerTitle}
+            promptBeforeLeave={props.promptBeforeLeave}
           />
         </SetNavigationHeaderHeightContext.Provider>
       ),
@@ -155,6 +156,7 @@ export const NavigationBlurEffectHeader = ({
     setSlot,
     store,
     props.headerTitle,
+    props.promptBeforeLeave,
   ])
 
   return null
