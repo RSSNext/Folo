@@ -4,7 +4,7 @@ import { useCallback } from "react"
 
 import { tipcClient } from "~/lib/client"
 
-const minimizeToTrayAtom = atom<boolean>(false)
+const minimizeToTrayAtom = atom<boolean>(true)
 
 minimizeToTrayAtom.onMount = (setAtom) => {
   tipcClient?.getMinimizeToTray().then((proxy: boolean) => {
