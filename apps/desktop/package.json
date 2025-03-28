@@ -64,7 +64,7 @@
     "cssnano": "7.0.6",
     "dotenv": "16.4.7",
     "drizzle-orm": "0.41.0",
-    "electron": "34.3.4",
+    "electron": "34.4.1",
     "electron-devtools-installer": "4.0.0",
     "electron-packager-languages": "0.6.0",
     "electron-vite": "3.1.0",
