@@ -14,5 +14,10 @@ export async function revealLogFile() {
 }
 
 app.on("before-quit", () => {
+  logger.info("App is quitting")
   log.transports.console.level = false
+})
+
+app.on("will-quit", () => {
+  logger.info("App will quit")
 })

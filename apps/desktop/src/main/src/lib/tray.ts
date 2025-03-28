@@ -3,7 +3,7 @@ import { app, Menu, nativeImage, Tray } from "electron"
 
 import { isMacOS } from "~/env"
 import { getTrayIconPath } from "~/helper"
-import { revealLogFile } from "~/logger"
+import { logger, revealLogFile } from "~/logger"
 import { checkForAppUpdates } from "~/updater"
 
 import { getMainWindowOrCreate } from "../window"
@@ -63,7 +63,13 @@ export const registerAppTray = () => {
         },
       ],
     },
-    { label: t("menu.quit", { name }), click: () => app.quit() },
+    {
+      label: t("menu.quit", { name }),
+      click: () => {
+        logger.info("Quit app from tray")
+        app.quit()
+      },
+    },
   ])
   tray.setContextMenu(contextMenu)
   tray.setToolTip(app.getName())
