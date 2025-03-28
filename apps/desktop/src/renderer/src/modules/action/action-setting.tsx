@@ -2,6 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
+import { unstable_usePrompt } from "react-router"
 import { toast } from "sonner"
 
 import { toastFetchError } from "~/lib/error-parser"
@@ -33,6 +34,11 @@ function ActionSettingOperations() {
 
   const actionLength = useActions((actions) => actions.length)
   const isDirty = useIsActionDataDirty()
+  unstable_usePrompt({
+    message: t("actions.navigate.prompt"),
+    when: ({ currentLocation, nextLocation }) =>
+      isDirty && currentLocation.pathname !== nextLocation.pathname,
+  })
 
   const mutation = useMutation({
     mutationFn: () => actionActions.updateRemoteActions(),
