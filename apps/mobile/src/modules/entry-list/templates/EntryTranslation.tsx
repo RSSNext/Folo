@@ -9,12 +9,14 @@ export const EntryTranslation = ({
   target,
   className,
   inline,
+  showTranslation,
   ...props
 }: {
   source?: string | null
   target?: string
   className?: string
   inline?: boolean
+  showTranslation?: boolean
 } & TextProps) => {
   const nextSource = useMemo(() => {
     if (!source) {
@@ -22,17 +24,17 @@ export const EntryTranslation = ({
     }
     return source.trim()
   }, [source])
-  const showTranslation = useGeneralSettingKey("translation")
+  const showTranslationFinal = useGeneralSettingKey("translation") || showTranslation
   const nextTarget = useMemo(() => {
     if (
       !target ||
-      !showTranslation ||
+      !showTranslationFinal ||
       nextSource.replaceAll(/\s/g, "") === target.replaceAll(/\s/g, "")
     ) {
       return ""
     }
     return target.trim()
-  }, [nextSource, target, showTranslation])
+  }, [nextSource, target, showTranslationFinal])
 
   if (inline) {
     return (

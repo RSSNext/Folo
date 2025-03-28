@@ -126,6 +126,7 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
             className="text-label ml-12 text-base"
             source={description}
             target={translation?.description}
+            showTranslation={!!entry.settings?.translation}
           />
         </View>
 

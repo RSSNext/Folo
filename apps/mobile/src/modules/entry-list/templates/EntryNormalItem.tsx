@@ -140,6 +140,7 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
               className="text-label text-lg font-semibold"
               source={entry.title}
               target={translation?.title}
+              showTranslation={!!entry.settings?.translation}
               inline
             />
           )}
@@ -149,6 +150,7 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
               className="text-secondary-label text-sm"
               source={entry.description}
               target={translation?.description}
+              showTranslation={!!entry.settings?.translation}
             />
           )}
         </View>
