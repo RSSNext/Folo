@@ -17,10 +17,11 @@ import { store } from "./store"
 
 export const setProxyConfig = (inputProxy: string) => {
   const proxyUri = normalizeProxyUri(inputProxy)
-  store.set("proxy", proxyUri)
   if (!proxyUri) {
+    store.delete("proxy")
     return false
   }
+  store.set("proxy", proxyUri)
   return true
 }
 
@@ -37,7 +38,7 @@ const URL_SCHEME = new Set(["http:", "https:", "ftp:", "socks:", "socks4:", "soc
 
 const normalizeProxyUri = (userProxy: string) => {
   if (!userProxy) {
-    return ""
+    return
   }
   // Only use the first proxy if there are multiple urls
   const firstInput = userProxy.split(",")[0]!
@@ -78,6 +79,14 @@ export const updateProxy = () => {
     proxyRules,
     proxyBypassRules: BYPASS_RULES,
   })
+
+  // https://github.com/nodejs/undici/issues/2224
+  // Error occurred in handler for 'setProxyConfig': InvalidArgumentError: Invalid URL protocol: the URL must start with `http:` or `https:`.
+  if (new URL(proxyUri).protocol === "socks:") {
+    // undici doesn't support socks proxy
+    logger.warn("undici doesn't support socks proxy")
+    return
+  }
   // Currently, Session.setProxy is not working for native fetch, which is used by readability.
   // So we need to set proxy for native fetch manually, refer to https://stackoverflow.com/a/76503362/14676508
   const dispatcher = new ProxyAgent({ uri: new URL(proxyUri).toString() })

@@ -164,7 +164,7 @@ const useRegisterReadwiseCommands = () => {
           },
         }),
     {
-      deps: [isReadwiseAvailable],
+      deps: [isReadwiseAvailable, readwiseToken],
     },
   )
 }
@@ -234,7 +234,7 @@ const useRegisterInstapaperCommands = () => {
           },
         }),
     {
-      deps: [isInstapaperAvailable],
+      deps: [isInstapaperAvailable, instapaperUsername, instapaperPassword],
     },
   )
 }
@@ -316,7 +316,7 @@ const useRegisterObsidianCommands = () => {
           },
         }),
     {
-      deps: [isObsidianAvailable],
+      deps: [isObsidianAvailable, obsidianVaultPath],
     },
   )
 }
@@ -381,7 +381,7 @@ const useRegisterOutlineCommands = () => {
           },
         }),
     {
-      deps: [outlineAvailable],
+      deps: [outlineAvailable, outlineToken, outlineEndpoint, outlineCollection],
     },
   )
 }
@@ -449,7 +449,7 @@ const useRegisterReadeckCommands = () => {
           },
         }),
     {
-      deps: [readeckAvailable],
+      deps: [readeckAvailable, readeckToken, readeckEndpoint],
     },
   )
 }

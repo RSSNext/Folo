@@ -40,6 +40,13 @@ describe("proxy", () => {
       expect(result).toBe(true)
     })
 
+    it("should set sock proxy config", () => {
+      const proxy = "socks://localhost:8080"
+      const result = setProxyConfig(proxy)
+      expect(store.set).toHaveBeenCalledWith("proxy", "socks://localhost:8080")
+      expect(result).toBe(true)
+    })
+
     it("should handle default port", () => {
       // https://github.com/RSSNext/Follow/issues/1197
       const proxy = "http://example.com:80"
