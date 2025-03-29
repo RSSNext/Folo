@@ -48,7 +48,7 @@
     "@tsslint/cli": "1.5.11",
     "@tsslint/config": "1.5.11",
     "@tsslint/eslint": "1.5.11",
-    "@types/node": "22.13.13",
+    "@types/node": "22.13.14",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@vercel/node": "5.1.14",
