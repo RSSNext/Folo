@@ -17,7 +17,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@better-auth/expo": "1.2.4",
+    "@better-auth/expo": "1.2.6-beta.1",
     "@expo/metro-runtime": "4.0.1",
     "@expo/react-native-action-sheet": "4.1.1",
     "@expo/vector-icons": "14.0.4",
@@ -42,7 +42,7 @@
     "@tanstack/react-query": "5.69.0",
     "@tanstack/react-query-persist-client": "5.69.0",
     "@types/qrcode": "1.5.5",
-    "better-auth": "1.2.4",
+    "better-auth": "1.2.6-beta.2",
     "cookie-es": "2.0.0",
     "dayjs": "1.11.13",
     "dnum": "2.14.0",

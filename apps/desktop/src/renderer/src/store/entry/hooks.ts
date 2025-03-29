@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import type { EntryReadHistoriesModel } from "@follow/shared/hono"
+import type { EntryReadHistoriesModel } from "@follow/models/types"
 import { useCallback } from "react"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "~/constants"

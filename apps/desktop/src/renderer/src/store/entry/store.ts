@@ -2,11 +2,11 @@ import type { FeedViewType } from "@follow/constants"
 import type {
   CombinedEntryModel,
   EntryModel,
+  EntryReadHistoriesModel,
   FeedModel,
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
-import type { EntryReadHistoriesModel } from "@follow/shared/hono"
 import { omitObjectUndefinedValue } from "@follow/utils/utils"
 import { isNil, merge, omit } from "es-toolkit/compat"
 import { produce } from "immer"
