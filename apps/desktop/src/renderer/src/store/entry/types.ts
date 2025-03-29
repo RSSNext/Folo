@@ -1,6 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import type { CombinedEntryModel } from "@follow/models/types"
-import type { EntryReadHistoriesModel } from "@follow/shared/hono"
+import type { CombinedEntryModel, EntryReadHistoriesModel } from "@follow/models/types"
 
 type FeedId = string
 type EntryId = string

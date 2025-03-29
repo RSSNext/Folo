@@ -756,8 +756,8 @@ importers:
   apps/mobile:
     dependencies:
       '@better-auth/expo':
-        specifier: 1.2.4
-        version: 1.2.4(better-auth@1.2.4(typescript@5.8.2))
+        specifier: 1.2.6-beta.1
+        version: 1.2.6-beta.1(better-auth@1.2.6-beta.2(typescript@5.8.2))
       '@expo/metro-runtime':
         specifier: 4.0.1
         version: 4.0.1(react-native@0.77.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))
@@ -831,8 +831,8 @@ importers:
         specifier: 1.5.5
         version: 1.5.5
       better-auth:
-        specifier: 1.2.4
-        version: 1.2.4(typescript@5.8.2)
+        specifier: 1.2.6-beta.2
+        version: 1.2.6-beta.2(typescript@5.8.2)
       cookie-es:
         specifier: 2.0.0
         version: 2.0.0
@@ -1536,8 +1536,8 @@ importers:
         specifier: 0.12.0
         version: 0.12.0(typescript@5.8.2)(valibot@1.0.0-beta.15(typescript@5.8.2))(zod@3.24.2)
       better-auth:
-        specifier: 1.2.4
-        version: 1.2.4(typescript@5.8.2)
+        specifier: 1.2.6-beta.2
+        version: 1.2.6-beta.2(typescript@5.8.2)
       drizzle-orm:
         specifier: 0.41.0
         version: 0.41.0(b18806f5ddbb04b5a18feaabaea9088d)
@@ -2372,16 +2372,16 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@better-auth/expo@1.2.4':
-    resolution: {integrity: sha512-mPyFeRHsWP0XiZTcUjXn0+5lxta5JlRkLPxYOJGDis2kBtGeJBiA3Mz3b6BNPdSwZurph9jtk1FcmC850WKmYg==}
+  '@better-auth/expo@1.2.6-beta.1':
+    resolution: {integrity: sha512-h72IzVHxp6xCinkiVIvwFzPWKsSQUVMdZ5KO4THGn5LORhaUyq3SqkFv8wewl6Cr0GOoRCdL51BIeVGOYMyt4A==}
     peerDependencies:
-      better-auth: 1.2.4
+      better-auth: 1.2.6-beta.1
 
-  '@better-auth/utils@0.2.3':
-    resolution: {integrity: sha512-Ap1GaSmo6JYhJhxJOpUB0HobkKPTNzfta+bLV89HfpyCAHN7p8ntCrmNFHNAVD0F6v0mywFVEUg1FUhNCc81Rw==}
+  '@better-auth/utils@0.2.4':
+    resolution: {integrity: sha512-ayiX87Xd5sCHEplAdeMgwkA0FgnXsEZBgDn890XHHwSWNqqRZDYOq3uj2Ei2leTv1I2KbG5HHn60Ah1i2JWZjQ==}
 
-  '@better-fetch/fetch@1.1.17':
-    resolution: {integrity: sha512-MQonMalbmEshb+amuLtCkVjYliyyWrYXZkiMnHLgFjNEBsNBbZSY3+lYsFK1/VxePSupVkUW6xinqhqB3uHE1g==}
+  '@better-fetch/fetch@1.1.18':
+    resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
 
   '@canvas/image-data@1.0.0':
     resolution: {integrity: sha512-BxOqI5LgsIQP1odU5KMwV9yoijleOPzHL18/YvNqF9KFSGF2K/DLlYAbDQsWqd/1nbaFuSkYD/191dpMtNh4vw==}
@@ -6964,8 +6964,8 @@ packages:
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
 
-  better-auth@1.2.4:
-    resolution: {integrity: sha512-/ZK2jbUjm8JwdeCLFrUWUBmexPyI9PkaLVXWLWtN60sMDHTY8B5G72wcHglo1QMFBaw4G0qFkP5ayl9k6XfDaA==}
+  better-auth@1.2.6-beta.2:
+    resolution: {integrity: sha512-ZW410mmYHGK1WsZBB6mgmw5hvtQocdCiDvFChbXQd71IYj9X8xjsTIVn1m6IstvssDAi3vKRbOELnVy1RDVvhw==}
 
   better-call@1.0.5:
     resolution: {integrity: sha512-rAT73GWIJ8LbSP8Y3BdJnY1hwAiQPRRmUJ4R3YVhcVGS927l3eTXG5o5TD6Bv6je6ygjdx6iVq3/BU49eGUCHg==}
@@ -17030,17 +17030,19 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@better-auth/expo@1.2.4(better-auth@1.2.4(typescript@5.8.2))':
+  '@better-auth/expo@1.2.6-beta.1(better-auth@1.2.6-beta.2(typescript@5.8.2))':
     dependencies:
-      better-auth: 1.2.4(typescript@5.8.2)
+      '@better-fetch/fetch': 1.1.18
+      better-auth: 1.2.6-beta.2(typescript@5.8.2)
       better-call: 1.0.5
       zod: 3.24.2
 
-  '@better-auth/utils@0.2.3':
+  '@better-auth/utils@0.2.4':
     dependencies:
+      typescript: 5.8.2
       uncrypto: 0.1.3
 
-  '@better-fetch/fetch@1.1.17': {}
+  '@better-fetch/fetch@1.1.18': {}
 
   '@canvas/image-data@1.0.0': {}
 
@@ -23217,10 +23219,10 @@ snapshots:
 
   before-after-hook@2.2.3: {}
 
-  better-auth@1.2.4(typescript@5.8.2):
+  better-auth@1.2.6-beta.2(typescript@5.8.2):
     dependencies:
-      '@better-auth/utils': 0.2.3
-      '@better-fetch/fetch': 1.1.17
+      '@better-auth/utils': 0.2.4
+      '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 0.6.0
       '@noble/hashes': 1.7.1
       '@simplewebauthn/browser': 13.1.0
@@ -23237,7 +23239,7 @@ snapshots:
 
   better-call@1.0.5:
     dependencies:
-      '@better-fetch/fetch': 1.1.17
+      '@better-fetch/fetch': 1.1.18
       rou3: 0.5.1
       set-cookie-parser: 2.7.1
       uncrypto: 0.1.3

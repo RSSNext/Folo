@@ -161,3 +161,15 @@ export type RSSHubModel = Omit<
   accessKey?: string | null
   userCount?: number
 }
+
+type Optional<T> = {
+  [K in keyof T]?: T[K]
+}
+
+export type EntryReadHistoriesModel = Optional<
+  ExtractBizResponse<
+    (typeof _apiClient.entries)["read-histories"][":id"]["$get"]
+  >["data"]["entryReadHistories"]
+> & {
+  entryId: string
+}
