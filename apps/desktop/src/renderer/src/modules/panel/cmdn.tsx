@@ -34,7 +34,7 @@ const CmdNPanel = () => {
     tipcClient?.readClipboard().then((clipboardText) => {
       if (clipboardText) {
         form.setValue("url", clipboardText)
-        form.control._updateValid()
+        form.control._setValid()
       }
     })
   }, [])
