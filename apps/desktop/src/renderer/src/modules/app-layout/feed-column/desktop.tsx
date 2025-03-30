@@ -4,7 +4,7 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import type { FeedViewType } from "@follow/constants"
-import { DEV, IN_ELECTRON } from "@follow/shared/constants"
+import { DEV, IN_ELECTRON, PROD } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Slot } from "@radix-ui/react-slot"
@@ -31,7 +31,7 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
-import { HotKeyScopeMap, isProd } from "~/constants"
+import { HotKeyScopeMap } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { shortcuts } from "~/constants/shortcuts"
 import { useDailyTask } from "~/hooks/biz/useDailyTask"
@@ -97,7 +97,7 @@ export function MainDestopLayout() {
 
   return (
     <RootContainer ref={containerRef}>
-      {!isProd && <EnvironmentIndicator />}
+      {!PROD && <EnvironmentIndicator />}
 
       <Suspense>
         <AppNotificationContainer />
