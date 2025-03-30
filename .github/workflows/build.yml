@@ -130,7 +130,7 @@ jobs:
       - name: Build - Vite
         run: |
           cd apps/desktop
-          pnpm build:electron-vite ${{ env.PROD == 'false' && '-- --mode staging' || '' }}
+          pnpm build:electron-vite ${{ env.PROD == 'false' && '--mode staging' || '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Build - Windows and Linux
