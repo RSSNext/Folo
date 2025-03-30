@@ -34,9 +34,9 @@
     "react-hotkeys-hook": "4.6.1",
     "react-i18next": "15.4.1",
     "react-photo-view": "1.2.7",
-    "react-router": "7.4.0",
-    "satori": "0.12.1",
-    "sonner": "2.0.1",
+    "react-router": "7.4.1",
+    "satori": "0.12.2",
+    "sonner": "2.0.2",
     "use-context-selector": "2.0.0",
     "xss": "1.0.15",
     "zod": "3.24.2"

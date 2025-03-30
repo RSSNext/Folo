@@ -33,7 +33,7 @@
     "builder-util-runtime": "9.3.1",
     "cookie-es": "2.0.0",
     "electron-context-menu": "4.0.5",
-    "electron-log": "5.3.2",
+    "electron-log": "5.3.3",
     "electron-squirrel-startup": "1.0.1",
     "electron-store": "10.0.1",
     "electron-updater": "6.6.2",
@@ -55,7 +55,7 @@
     "@follow/models": "workspace:*",
     "@follow/types": "workspace:*",
     "@types/js-yaml": "4.0.9",
-    "@types/node": "22.13.13",
+    "@types/node": "22.13.14",
     "electron": "34.4.1",
     "electron-devtools-installer": "4.0.0",
     "hono": "4.7.5"

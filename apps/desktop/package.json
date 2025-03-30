@@ -53,7 +53,7 @@
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",
     "@pengx17/electron-forge-maker-appimage": "1.2.1",
-    "@sentry/vite-plugin": "3.2.2",
+    "@sentry/vite-plugin": "3.2.4",
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/react-google-recaptcha": "2.1.9",
