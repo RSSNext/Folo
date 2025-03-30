@@ -14,11 +14,13 @@ const iconMap = {
 export const getIconPath = () => iconMap[MODE]
 export const getTrayIconPath = () => {
   if (isMacOS) {
-    return path.join(__dirname, "../../resources/tray-icon.png")
+    return path.join(__dirname, "../../resources/icon-tray.png")
   }
   if (isWindows) {
     // https://www.electronjs.org/docs/latest/api/tray#:~:text=Windows,best%20visual%20effects.
-    return path.join(__dirname, "../../resources/icon-no-padding.ico")
+    return MODE === ModeEnum.staging
+      ? path.join(__dirname, "../../resources/icon-tray-staging.ico")
+      : path.join(__dirname, "../../resources/icon-tray.ico")
   }
   return getIconPath()
 }

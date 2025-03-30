@@ -137,7 +137,7 @@ jobs:
         if: runner.os != 'macOS'
         run: |
           cd apps/desktop
-          pnpm build:electron-forge
+          pnpm build:electron-forge ${{ env.PROD == 'false' && '--mode=staging' || '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
@@ -155,7 +155,7 @@ jobs:
           timeout_minutes: 10
           command: |
             cd apps/desktop
-            pnpm build:electron-forge:macos
+            pnpm build:electron-forge:macos ${{ env.PROD == 'false' && '--mode=staging' || '' }}
 
       - name: Build - Mac App Store
         if: runner.os == 'macOS' && github.event.inputs.mas == 'true'
@@ -166,7 +166,7 @@ jobs:
           BUILD_VERSION: ${{ github.event.inputs.build_version }}
         run: |
           cd apps/desktop
-          pnpm build:electron-forge:mas
+          pnpm build:electron-forge:mas ${{ env.PROD == 'false' && '--mode=staging' || '' }}
 
       - name: Build - Renderer
         if: runner.os == 'Linux'

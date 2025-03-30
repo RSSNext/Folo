@@ -19,6 +19,9 @@ import yaml from "js-yaml"
 import { rimraf, rimrafSync } from "rimraf"
 
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
+const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
+
+const isStaging = mode === "staging"
 
 const artifactRegex = /.*\.(?:exe|dmg|AppImage|zip)$/
 const platformNamesMap = {
@@ -96,7 +99,7 @@ const config: ForgeConfig = {
     appCategoryType: "public.app-category.news",
     buildVersion: process.env.BUILD_VERSION || undefined,
     appBundleId: "is.follow",
-    icon: "resources/icon",
+    icon: isStaging ? "resources/icon-staging" : "resources/icon",
     extraResource: ["./resources/app-update.yml"],
     protocols: [
       {
@@ -178,14 +181,14 @@ const config: ForgeConfig = {
     ),
     new MakerSquirrel({
       name: "Folo",
-      setupIcon: "resources/icon.ico",
+      setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
       iconUrl: "https://app.follow.is/favicon.ico",
     }),
     new MakerAppImage({
       config: {
         icons: [
           {
-            file: "resources/icon.png",
+            file: isStaging ? "resources/icon-staging.png" : "resources/icon.png",
             size: 256,
           },
         ],
