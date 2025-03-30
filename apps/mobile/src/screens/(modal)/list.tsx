@@ -42,7 +42,7 @@ const listSchema = z.object({
     .optional()
     .transform((val) => (val === "" ? null : val)),
 
-  fee: z.number().min(0),
+  fee: z.number().min(0).nullable(),
   view: z.number().int(),
 })
 
@@ -59,7 +59,6 @@ export const ListScreen: NavigationControllerView<{
   const list = useList(listId || "")
   const form = useForm({
     defaultValues: list || defaultValues,
-    // @ts-ignore
     resolver: zodResolver(listSchema),
     mode: "all",
   })
