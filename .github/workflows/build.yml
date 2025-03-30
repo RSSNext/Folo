@@ -155,7 +155,9 @@ jobs:
           timeout_minutes: 10
           command: |
             cd apps/desktop
-            pnpm build:electron-forge:macos ${{ env.PROD == 'false' && '--mode=staging' || '' }}
+            npx electron-forge make --arch=x64 --platform=darwin ${{ env.PROD == 'false' && '--mode=staging' || '' }}
+            npx electron-forge make --arch=arm64 --platform=darwin ${{ env.PROD == 'false' && '--mode=staging' || '' }}
+            npx tsx scripts/merge-yml.ts
 
       - name: Build - Mac App Store
         if: runner.os == 'macOS' && github.event.inputs.mas == 'true'
