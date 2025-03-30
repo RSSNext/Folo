@@ -297,7 +297,6 @@
   "profile.handle.description": "你的唯一識別符",
   "profile.handle.label": "識別符",
   "profile.link_social.authentication": "身份驗證",
-  "profile.link_social.description": "目前只能連結使用相同電子郵件的社交帳戶",
   "profile.link_social.link": "連結",
   "profile.link_social.unlink.success": "社交帳戶已解除連結",
   "profile.name.description": "你的公開顯示名稱",

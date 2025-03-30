@@ -309,7 +309,6 @@
   "profile.handle.description": "Your unique identifier.",
   "profile.handle.label": "Handle",
   "profile.link_social.authentication": "Authentication",
-  "profile.link_social.description": "You can currently only connect social accounts with the same email.",
   "profile.link_social.link": "Link",
   "profile.link_social.unlink.success": "Social account unlinked.",
   "profile.name.description": "Your public display name.",

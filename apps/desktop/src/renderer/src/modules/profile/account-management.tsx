@@ -74,7 +74,6 @@ export function AccountManagement() {
             <AuthProviderButton key={provider} provider={provider} />
           ))}
       </div>
-      <p className="text-muted-foreground text-xs">{t("profile.link_social.description")}</p>
     </div>
   )
 }

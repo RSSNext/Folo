@@ -276,7 +276,6 @@
   "profile.handle.description": "Ваш уникальный идентификатор.",
   "profile.handle.label": "Идентификатор",
   "profile.link_social.authentication": "Аутентификация",
-  "profile.link_social.description": "Вы можете подключить социальные аккаунты только с тем же email.",
   "profile.link_social.link": "Подключить",
   "profile.link_social.unlink.success": "Социальный аккаунт отсоединен.",
   "profile.name.description": "Ваше публичное отображаемое имя.",

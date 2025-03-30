@@ -12442,6 +12442,7 @@ declare const auth: {
             accountLinking: {
                 enabled: true;
                 trustedProviders: ("github" | "apple" | "google")[];
+                allowDifferentEmails: true;
             };
         };
         socialProviders: {

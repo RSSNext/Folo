@@ -14,7 +14,6 @@ import {
   GroupedInsetListNavigationLink,
   GroupedInsetListNavigationLinkIcon,
   GroupedInsetListSectionHeader,
-  GroupedOutlineDescription,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
 import { getDbPath } from "@/src/database"
@@ -227,7 +226,6 @@ const AuthenticationSection = () => {
           </View>
         ) : null}
       </GroupedInsetListCard>
-      <GroupedOutlineDescription description="You can currently only connect social accounts with the same email." />
     </>
   )
 }

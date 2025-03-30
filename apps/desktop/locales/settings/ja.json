@@ -277,7 +277,6 @@
   "profile.handle.description": "あなた個人の識別子です",
   "profile.handle.label": "ハンドル",
   "profile.link_social.authentication": "認証",
-  "profile.link_social.description": "現在同じメールを使用しているソーシャルアカウントがか接続できます。",
   "profile.link_social.link": "リンク",
   "profile.link_social.unlink.success": "ソーシャルアカウントのリンクを解除しました。",
   "profile.name.description": "公開表示名",

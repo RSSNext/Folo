@@ -282,7 +282,6 @@
   "profile.handle.description": "你的獨一無二名稱。",
   "profile.handle.label": "名稱",
   "profile.link_social.authentication": "驗證",
-  "profile.link_social.description": "您目前只能連結具有相同電子信箱的社群帳號。",
   "profile.link_social.link": "連結",
   "profile.link_social.unlink.success": "已中斷社群帳號連結。",
   "profile.name.description": "你的公開顯示名稱。",

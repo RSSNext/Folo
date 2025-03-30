@@ -282,7 +282,6 @@
   "profile.handle.description": "고유 식별자.",
   "profile.handle.label": "핸들",
   "profile.link_social.authentication": "인증",
-  "profile.link_social.description": "현재는 동일한 이메일을 가진 소셜 계정만 연결할 수 있습니다.",
   "profile.link_social.link": "연결",
   "profile.link_social.unlink.success": "소셜 계정 연결이 해제되었습니다.",
   "profile.name.description": "공개 표시 이름.",
