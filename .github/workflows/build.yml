@@ -35,7 +35,7 @@ jobs:
   release:
     runs-on: ${{ matrix.os }}
     env:
-      STAGING: ${{ github.event.inputs.tag_version == 'true' || github.ref_type == 'tag' }}
+      PROD: ${{ github.event.inputs.tag_version == 'true' || github.ref_type == 'tag' }}
 
     strategy:
       fail-fast: false
@@ -53,13 +53,13 @@ jobs:
     steps:
       - name: Check out Git repository Fully
         uses: actions/checkout@v4
-        if: env.STAGING == 'true'
+        if: env.PROD == 'true'
         with:
           fetch-depth: 0
           lfs: true
       - name: Check out Git repository
         uses: actions/checkout@v4
-        if: env.STAGING == 'false'
+        if: env.PROD == 'false'
         with:
           fetch-depth: 1
           lfs: true
@@ -130,7 +130,7 @@ jobs:
       - name: Build - Vite
         run: |
           cd apps/desktop
-          pnpm build:electron-vite ${{ env.STAGING == 'true' && '-- --mode staging' }}
+          pnpm build:electron-vite ${{ env.PROD == 'false' && '-- --mode staging' || '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Build - Windows and Linux
@@ -226,7 +226,7 @@ jobs:
 
       - uses: signpath/github-action-submit-signing-request@v1.1
         continue-on-error: true
-        if: runner.os == 'windows' && env.STAGING == 'false'
+        if: runner.os == 'windows' && env.PROD == 'true'
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "8c651516-fdaf-40a1-9fea-001dffde850e"
@@ -237,12 +237,12 @@ jobs:
           output-artifact-directory: "apps/desktop/out/make/"
 
       - name: Update latest.yml
-        if: runner.os == 'windows' && env.STAGING == 'false'
+        if: runner.os == 'windows' && env.PROD == 'true'
         run: npx tsx apps/desktop/scripts/update-windows-yml.ts
 
       - name: Upload file (windows-x64-exe signed)
         uses: actions/upload-artifact@v4
-        if: runner.os == 'windows' && env.STAGING == 'false'
+        if: runner.os == 'windows' && env.PROD == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -277,7 +277,7 @@ jobs:
           retention-days: 90
 
       - name: Generate artifact attestation
-        if: env.STAGING == 'false'
+        if: env.PROD == 'true'
         continue-on-error: true
         uses: actions/attest-build-provenance@v2
         with:
@@ -291,19 +291,20 @@ jobs:
             apps/desktop/dist/*.tar.gz
 
       - run: npx changelogithub
-        if: env.STAGING == 'false'
+        if: env.PROD == 'true'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Version
+        if: env.PROD == 'true'
         id: version
         uses: ./.github/actions/setup-version
         with:
           type: "desktop"
 
       - name: Create Release Draft
-        if: env.STAGING == 'false'
+        if: env.PROD == 'true'
         uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.version.outputs.APP_VERSION }}
