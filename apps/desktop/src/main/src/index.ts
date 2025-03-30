@@ -1,6 +1,6 @@
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { callWindowExpose } from "@follow/shared/bridge"
-import { APP_PROTOCOL } from "@follow/shared/constants"
+import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
@@ -9,7 +9,7 @@ import { app, BrowserWindow, net, protocol, session } from "electron"
 import squirrelStartup from "electron-squirrel-startup"
 
 import { DEVICE_ID } from "./constants/system"
-import { isDev, isMacOS } from "./env"
+import { isMacOS } from "./env"
 import { initializeAppStage0, initializeAppStage1 } from "./init"
 import { updateProxy } from "./lib/proxy"
 import { handleUrlRouting } from "./lib/router"
@@ -26,7 +26,7 @@ import {
   windowStateStoreKey,
 } from "./window"
 
-if (isDev) console.info("[main] env loaded:", env)
+if (DEV) console.info("[main] env loaded:", env)
 
 const apiURL = process.env["VITE_API_URL"] || import.meta.env.VITE_API_URL
 

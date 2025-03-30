@@ -1,3 +1,4 @@
+import { DEV } from "@follow/shared/constants"
 import { Chain } from "@follow/utils/chain"
 import { EventBus } from "@follow/utils/event-bus"
 import { getStorageNS } from "@follow/utils/ns"
@@ -8,7 +9,6 @@ import { initReactI18next } from "react-i18next"
 import { defaultNS, ns } from "./@types/constants"
 import { defaultResources } from "./@types/default-resource"
 import { getGeneralSettings } from "./atoms/settings/general"
-import { isDev } from "./constants"
 import { jotaiStore } from "./lib/jotai"
 
 export const i18nAtom = atom(i18next)
@@ -48,7 +48,7 @@ export const initI18n = async () => {
   }
 
   let cache = null as any
-  if (!isDev) {
+  if (!DEV) {
     cache = LocaleCache.shared.get(lang)
     if (cache) {
       mergedResources[lang] = cache

@@ -25,5 +25,4 @@ export const envSchema = {
   VITE_RECAPTCHA_V3_SITE_KEY: z.string().default("6LdG-asqAAAAAEXr96565MKbRvxGEv31XEykRSHV"),
 }
 
-export const isDev = false
 export const env = z.object(envSchema).parse(process.env || {})

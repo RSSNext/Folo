@@ -1,9 +1,8 @@
 import os from "node:os"
 
-export const mode = process.env.NODE_ENV
-export const isDev = mode === "development"
+import { DEV } from "@follow/shared/constants"
 
-export const channel: "development" | "beta" | "alpha" | "stable" = isDev ? "development" : "stable"
+export const channel: "development" | "beta" | "alpha" | "stable" = DEV ? "development" : "stable"
 
 const { platform } = process
 export const isMacOS = platform === "darwin"

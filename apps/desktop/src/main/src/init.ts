@@ -2,7 +2,7 @@ import path from "node:path"
 
 import { getRendererHandlers, registerIpcMain } from "@egoist/tipc/main"
 import { PushReceiver } from "@eneris/push-receiver"
-import { APP_PROTOCOL } from "@follow/shared/constants"
+import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { MessagingData } from "@follow/shared/hono"
 import { app, nativeTheme, Notification, protocol, shell } from "electron"
@@ -23,13 +23,12 @@ import { createMainWindow, getMainWindow } from "./window"
 if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
   process.env.NODE_ENV = "development"
 }
-const isDev = process.env.NODE_ENV === "development"
 
 /**
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
-  if (isDev) app.setPath("appData", path.join(app.getPath("appData"), "Follow (dev)"))
+  if (DEV) app.setPath("appData", path.join(app.getPath("appData"), "Follow (dev)"))
   initializeSentry()
 }
 export const initializeAppStage1 = () => {
@@ -86,7 +85,7 @@ export const registerMenuAndContextMenu = () => {
     showCopyLink: true,
     showCopyImageAddress: true,
     showCopyImage: true,
-    showInspectElement: isDev,
+    showInspectElement: DEV,
     showSelectAll: true,
     showCopyVideoAddress: true,
     showSaveVideoAs: true,

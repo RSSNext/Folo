@@ -1,3 +1,4 @@
+import { DEV } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
@@ -7,7 +8,6 @@ import { toast } from "sonner"
 
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
-import { isDev } from "~/constants"
 import { DebugRegistry } from "~/modules/debug/registry"
 
 export const getFetchErrorInfo = (
@@ -120,7 +120,7 @@ export const toastFetchError = (
     })
   }
 }
-if (isDev) {
+if (DEV) {
   DebugRegistry.add("Simulate request error", () => {
     createErrorToaster(
       "Simulated request error",

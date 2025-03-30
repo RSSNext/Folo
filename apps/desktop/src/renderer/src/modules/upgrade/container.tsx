@@ -1,4 +1,5 @@
 import { useOnce } from "@follow/hooks"
+import { DEV } from "@follow/shared/constants"
 import { nextFrame } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { repository } from "@pkg"
@@ -11,7 +12,6 @@ import { Markdown } from "~/components/ui/markdown/Markdown"
 import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { Paper } from "~/components/ui/paper"
-import { isDev } from "~/constants"
 import { DebugRegistry } from "~/modules/debug/registry"
 
 const AppNotificationContainer: FC = () => {
@@ -98,7 +98,7 @@ const AppNotificationContainer: FC = () => {
       setTimeout(toaster)
     }
 
-    isDev && DebugRegistry.add("simulate_app_upgraded_toast", toaster)
+    DEV && DebugRegistry.add("simulate_app_upgraded_toast", toaster)
   })
 
   return null

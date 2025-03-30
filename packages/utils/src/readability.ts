@@ -1,10 +1,9 @@
+import { DEV } from "@follow/shared/constants"
 import { Readability } from "@mozilla/readability"
 import chardet from "chardet"
 import DOMPurify from "dompurify"
 import { parseHTML } from "linkedom"
 import { fetch } from "ofetch"
-
-const isDev = process.env.NODE_ENV === "development"
 
 const userAgents =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
@@ -69,7 +68,7 @@ export async function readability(url: string) {
   })
 
   const reader = new Readability(document, {
-    debug: isDev,
+    debug: DEV,
     // keep classes to set the right code language
     // https://github.com/RSSNext/Follow/issues/1058
     keepClasses: true,

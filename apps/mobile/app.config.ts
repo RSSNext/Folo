@@ -4,7 +4,6 @@ import type { ConfigContext, ExpoConfig } from "expo/config"
 
 import PKG from "./package.json"
 
-// const isDev = process.env.NODE_ENV === "development"
 const isCI = process.env.CI === "true"
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
 const iconPath = resolve(__dirname, "./assets/icon.png")

@@ -1,11 +1,10 @@
 import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
-import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
+import { DEV, ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { tracker } from "@follow/tracker"
 import { repository } from "@pkg"
 import { enableMapSet } from "immer"
 
-import { isDev } from "~/constants"
 import { browserDB } from "~/database"
 import { initI18n } from "~/i18n"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
@@ -45,7 +44,7 @@ declare global {
 export const initializeApp = async () => {
   appLog(`${APP_NAME}: Follow everything in one place`, repository.url)
 
-  if (isDev) {
+  if (DEV) {
     const favicon = await import("/favicon-dev.ico?url")
 
     const url = new URL(favicon.default, import.meta.url).href

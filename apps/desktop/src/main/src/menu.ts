@@ -1,10 +1,11 @@
 import { callWindowExpose } from "@follow/shared/bridge"
+import { DEV } from "@follow/shared/constants"
 import { dispatchEventOnWindow } from "@follow/shared/event"
 import { name } from "@pkg"
 import type { BrowserWindow, MenuItem, MenuItemConstructorOptions } from "electron"
 import { Menu } from "electron"
 
-import { isDev, isMacOS } from "./env"
+import { isMacOS } from "./env"
 import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
@@ -202,7 +203,7 @@ export const registerAppMenu = () => {
     },
   ]
 
-  if (isDev) {
+  if (DEV) {
     menus.push({
       label: t("menu.debug"),
       submenu: [

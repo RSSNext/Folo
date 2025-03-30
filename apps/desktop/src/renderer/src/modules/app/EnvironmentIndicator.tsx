@@ -5,11 +5,11 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 
 import { useUserRole } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { isDev } from "~/constants"
 
 import { DebugRegistry } from "../debug/registry"
 
@@ -24,7 +24,7 @@ export const EnvironmentIndicator = () => {
           aria-hidden
           type="button"
           onClick={() => {
-            if (!isDev) return
+            if (!DEV) return
 
             const actionMap = DebugRegistry.getAll()
 
@@ -51,7 +51,7 @@ export const EnvironmentIndicator = () => {
           }}
         >
           <div className="center bg-accent fixed bottom-0 right-0 z-[99999] flex rounded-tl px-1 py-0.5 text-xs text-white">
-            {role}:{isDev && <i className="i-mgc-bug-cute-re size-3" />}
+            {role}:{DEV && <i className="i-mgc-bug-cute-re size-3" />}
             {import.meta.env.MODE}
           </div>
         </button>

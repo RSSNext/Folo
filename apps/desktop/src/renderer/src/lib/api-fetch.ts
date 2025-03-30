@@ -1,3 +1,4 @@
+import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { AppType } from "@follow/shared/hono"
 import PKG from "@pkg"
@@ -8,7 +9,6 @@ import { toast } from "sonner"
 
 import { NetworkStatus, setApiStatus } from "~/atoms/network"
 import { setLoginModalShow } from "~/atoms/user"
-import { isDev } from "~/constants"
 import { NeedActivationToast } from "~/modules/activation/NeedActivationToast"
 import { DebugRegistry } from "~/modules/debug/registry"
 
@@ -22,7 +22,7 @@ export const apiFetch = ofetch.create({
     const header = new Headers(options.headers)
 
     header.set("x-app-version", PKG.version)
-    if (isDev) {
+    if (DEV) {
       header.set("X-App-Dev", "1")
     }
     header.set("X-App-Name", "Folo Web")
@@ -95,7 +95,7 @@ export const apiClient = hc<AppType>(env.VITE_API_URL, {
   },
 })
 
-if (isDev) {
+if (DEV) {
   DebugRegistry.add("Activation Toast", () => {
     setTimeout(() => {
       const toastId = toast.error(

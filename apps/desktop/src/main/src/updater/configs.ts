@@ -1,11 +1,11 @@
-import { isDev } from "~/env"
+import { DEV } from "@follow/shared/constants"
 
 export const appUpdaterConfig = {
   // Disable renderer hot update will trigger app update when available
-  enableRenderHotUpdate: !isDev,
+  enableRenderHotUpdate: !DEV,
   enableCoreUpdate: !process.mas && !process.windowsStore,
   // Disable app update will also disable renderer hot update and core update
-  enableAppUpdate: !isDev,
+  enableAppUpdate: !DEV,
 
   app: {
     autoCheckUpdate: true,

@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url"
 
 import { getRendererHandlers } from "@egoist/tipc/main"
 import { callWindowExpose } from "@follow/shared/bridge"
+import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
 
@@ -17,7 +18,6 @@ import { registerAppTray } from "~/lib/tray"
 import { logger, revealLogFile } from "~/logger"
 import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
-import { isDev } from "../env"
 import { downloadFile } from "../lib/download"
 import { i18n } from "../lib/i18n"
 import { cleanBetterAuthSessionCookie, cleanUser } from "../lib/user"
@@ -279,7 +279,7 @@ ${content}
 
     for (const window of allWindows) {
       if (window === mainWindow) {
-        if (isDev) {
+        if (DEV) {
           logger.verbose("[rendererUpdateReload]: skip reload in dev")
           break
         }

@@ -6,8 +6,6 @@ import { defineConfig } from "vite"
 import { viteRenderBaseConfig } from "../../../desktop/configs/vite.render.config"
 import { astPlugin } from "../../../desktop/plugins/vite/ast"
 
-// const isDev = process.env.NODE_ENV === "development"
-
 const isCI = process.env.CI === "true"
 export default defineConfig({
   ...viteRenderBaseConfig,
