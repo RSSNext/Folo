@@ -34,7 +34,7 @@
     "chardet": "2.1.0",
     "clsx": "2.1.1",
     "dompurify": "3.2.4",
-    "framer-motion": "12.5.0",
+    "framer-motion": "12.6.2",
     "linkedom": "0.18.9",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
