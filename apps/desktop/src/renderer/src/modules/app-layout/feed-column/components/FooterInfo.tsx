@@ -1,8 +1,7 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
+import { WEB_BUILD } from "@follow/shared/constants"
 import { repository } from "@pkg"
 import { useTranslation } from "react-i18next"
-
-import { isWebBuild } from "~/constants"
 
 export const FooterInfo = () => {
   const { t } = useTranslation()
@@ -16,7 +15,7 @@ export const FooterInfo = () => {
         </div>
       )}
 
-      {isWebBuild && !isMobile && (
+      {WEB_BUILD && !isMobile && (
         <div className="center absolute inset-y-0 right-2">
           <button
             type="button"

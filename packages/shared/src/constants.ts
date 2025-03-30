@@ -8,8 +8,20 @@ declare const globalThis: {
   electron?: ElectronAPI
 }
 
-const isDev = "process" in globalThis ? process.env.NODE_ENV === "development" : import.meta.env.DEV
-export const APP_PROTOCOL = isDev ? "follow-dev" : "follow"
+export enum ModeEnum {
+  development = "development",
+  staging = "staging",
+  production = "production",
+}
+
+export const MODE = import.meta.env.MODE as ModeEnum
+
+export const { PROD } = import.meta.env
+
+export const DEV =
+  "process" in globalThis ? process.env.NODE_ENV === "development" : import.meta.env.DEV
+
+export const APP_PROTOCOL = DEV ? "follow-dev" : "follow"
 export const DEEPLINK_SCHEME = `${APP_PROTOCOL}://` as const
 
 export const SYSTEM_CAN_UNDER_BLUR_WINDOW = globalThis?.window?.electron
@@ -23,3 +35,4 @@ declare const ELECTRON: boolean
  * Current build type for electron
  */
 export const ELECTRON_BUILD = !!ELECTRON
+export const WEB_BUILD = !ELECTRON

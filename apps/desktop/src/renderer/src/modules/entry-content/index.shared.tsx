@@ -5,7 +5,7 @@ import { Button, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
 import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
@@ -25,7 +25,6 @@ import { useActionLanguage } from "~/atoms/settings/general"
 import { enableShowSourceContent } from "~/atoms/source-content"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { isWebBuild } from "~/constants"
 import { useEntryReadabilityToggle } from "~/hooks/biz/useEntryActions"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
@@ -138,10 +137,10 @@ export const NoContent: FC<{
   return (
     <div className="center">
       <div className="space-y-2 text-balance text-center text-sm text-zinc-400">
-        {(isWebBuild || status === ReadabilityStatus.FAILURE) && (
+        {(WEB_BUILD || status === ReadabilityStatus.FAILURE) && (
           <span>{t("entry_content.no_content")}</span>
         )}
-        {isWebBuild && (
+        {WEB_BUILD && (
           <div>
             <span>{t("entry_content.web_app_notice")}</span>
           </div>
