@@ -1,11 +1,11 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { captureException } from "@sentry/react"
 import { useEffect } from "react"
 import type { Location } from "react-router"
 import { Navigate, useLocation, useNavigate } from "react-router"
 
-import { isElectronBuild } from "~/constants"
 import { removeAppSkeleton } from "~/lib/app"
 
 import { PoweredByFooter } from "./PoweredByFooter"
@@ -27,7 +27,7 @@ class AccessNotFoundError extends Error {
 export const NotFound = () => {
   const location = useLocation()
   useEffect(() => {
-    if (!isElectronBuild) {
+    if (!ELECTRON_BUILD) {
       return
     }
     captureException(

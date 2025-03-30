@@ -1,11 +1,11 @@
 import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { tracker } from "@follow/tracker"
 import { repository } from "@pkg"
 import { enableMapSet } from "immer"
 
-import { isDev, isElectronBuild } from "~/constants"
+import { isDev } from "~/constants"
 import { browserDB } from "~/database"
 import { initI18n } from "~/i18n"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
@@ -70,7 +70,7 @@ export const initializeApp = async () => {
   registerHistoryStack()
 
   // Set Environment
-  document.documentElement.dataset.buildType = isElectronBuild ? "electron" : "web"
+  document.documentElement.dataset.buildType = ELECTRON_BUILD ? "electron" : "web"
 
   // Register global context for electron
   registerGlobalContext({

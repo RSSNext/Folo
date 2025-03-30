@@ -1,11 +1,10 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Outlet, useLocation } from "react-router"
 
 import { WindowUnderBlur } from "~/components/ui/background"
-import { isElectronBuild } from "~/constants"
 import { useActivationModal } from "~/modules/activation"
 import { IsInSettingIndependentWindowContext } from "~/modules/settings/context"
 import {
@@ -46,7 +45,7 @@ function Layout() {
   )
 }
 // NOTE: we disable directly nav to setting routes on the web app
-export const Component = isElectronBuild ? Layout : () => null
+export const Component = ELECTRON_BUILD ? Layout : () => null
 
 const SettingItemButton = (props: { tab: string; item: SettingPageConfig; path: string }) => {
   const { tab, item, path } = props

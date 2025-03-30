@@ -3,6 +3,7 @@ import { RootPortalProvider } from "@follow/components/ui/portal/provider.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { ZIndexProvider } from "@follow/components/ui/z-index/index.js"
 import { useRefValue } from "@follow/hooks"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { nextFrame, preventDefault, stopPropagation } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
 import * as Dialog from "@radix-ui/react-dialog"
@@ -31,7 +32,7 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { SafeFragment } from "~/components/common/Fragment"
 import { m } from "~/components/common/Motion"
 import { ErrorComponentType } from "~/components/errors/enum"
-import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT, isElectronBuild } from "~/constants"
+import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
 import { useSwitchHotKeyScope } from "~/hooks/common"
 
 import { modalStackAtom } from "./atom"
@@ -45,7 +46,7 @@ import { useModalSubscriber } from "./internal/use-subscriber"
 import { ModalOverlay } from "./overlay"
 import type { ModalOverlayOptions, ModalProps } from "./types"
 
-const DragBar = isElectronBuild ? (
+const DragBar = ELECTRON_BUILD ? (
   <span className="drag-region fixed left-0 right-36 top-0 h-8" />
 ) : null
 export const ModalInternal = memo(

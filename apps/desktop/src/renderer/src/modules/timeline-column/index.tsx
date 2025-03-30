@@ -3,6 +3,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Routes } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useRegisterGlobalContext } from "@follow/shared/bridge"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { AnimatePresence, m } from "framer-motion"
@@ -14,7 +15,7 @@ import { isHotkeyPressed, useHotkeys } from "react-hotkeys-hook"
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
-import { HotKeyScopeMap, isElectronBuild } from "~/constants"
+import { HotKeyScopeMap } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
@@ -134,7 +135,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
       className={cn(
         "relative flex h-full flex-col pt-2.5",
 
-        !feedColumnShow && isElectronBuild && "bg-zinc-200 dark:bg-neutral-800",
+        !feedColumnShow && ELECTRON_BUILD && "bg-zinc-200 dark:bg-neutral-800",
         className,
       )}
       onClick={useCallback(() => navigateBackHome(), [navigateBackHome])}

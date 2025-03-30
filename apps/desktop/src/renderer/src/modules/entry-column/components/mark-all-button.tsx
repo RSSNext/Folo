@@ -3,6 +3,7 @@ import { ActionButton, Button, IconButton } from "@follow/components/ui/button/i
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useCountdown } from "@follow/hooks"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { cn, getOS } from "@follow/utils/utils"
 import { AnimatePresence, m } from "framer-motion"
 import type { FC, ReactNode } from "react"
@@ -12,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useOnClickOutside } from "usehooks-ts"
 
-import { HotKeyScopeMap, isElectronBuild } from "~/constants"
+import { HotKeyScopeMap } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
 import { useI18n } from "~/hooks/common"
 
@@ -136,7 +137,7 @@ const Popup = ({ which, containerRef, setPopoverRef, setShow, handleMarkAllAsRea
   useViewport((v) => v.w)
 
   // electron window has pt-[calc(var(--fo-window-padding-top)_-10px)]
-  const isElectronWindows = isElectronBuild && getOS() === "Windows"
+  const isElectronWindows = ELECTRON_BUILD && getOS() === "Windows"
   return (
     <RootPortal to={$parent}>
       <m.div

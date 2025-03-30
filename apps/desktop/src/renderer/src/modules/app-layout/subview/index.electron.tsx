@@ -2,6 +2,7 @@ import { getReadonlyRoute } from "@follow/components/atoms/route.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Routes } from "@follow/constants"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn, getOS } from "@follow/utils/utils"
 import { useEffect, useRef, useState } from "react"
@@ -9,7 +10,6 @@ import { useTranslation } from "react-i18next"
 import { NavigationType, Outlet, useLocation, useNavigate, useNavigationType } from "react-router"
 
 import { FABContainer, FABPortable } from "~/components/ui/fab"
-import { isElectronBuild } from "~/constants"
 
 import { useSubViewTitleValue } from "./hooks"
 
@@ -51,7 +51,7 @@ export function SubviewLayout() {
   const { t } = useTranslation()
 
   // electron window has pt-[calc(var(--fo-window-padding-top)_-10px)]
-  const isElectronWindows = isElectronBuild && getOS() === "Windows"
+  const isElectronWindows = ELECTRON_BUILD && getOS() === "Windows"
 
   return (
     <div className="relative flex size-full">

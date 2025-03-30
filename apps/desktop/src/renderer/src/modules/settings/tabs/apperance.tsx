@@ -10,7 +10,7 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useIsDark, useThemeAtomValue } from "@follow/hooks"
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { capitalizeFirstLetter, getOS } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useForceUpdate } from "framer-motion"
@@ -28,7 +28,6 @@ import {
   useUISettingValue,
 } from "~/atoms/settings/ui"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { isElectronBuild } from "~/constants"
 import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
@@ -117,7 +116,7 @@ export const SettingAppearance = () => {
 
           defineItem("guessCodeLanguage", {
             label: t("appearance.guess_code_language.label"),
-            hide: !isElectronBuild,
+            hide: !ELECTRON_BUILD,
             description: t("appearance.guess_code_language.description"),
           }),
 

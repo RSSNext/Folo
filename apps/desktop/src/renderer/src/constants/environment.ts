@@ -1,4 +1,3 @@
-export const isElectronBuild = ELECTRON
 export const isWebBuild = !ELECTRON
 
 export const isDev = import.meta.env.DEV

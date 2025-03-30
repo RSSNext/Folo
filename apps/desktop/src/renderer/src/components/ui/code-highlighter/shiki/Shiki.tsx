@@ -1,4 +1,5 @@
 import { useIsDark } from "@follow/hooks"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
 import type { FC } from "react"
@@ -11,7 +12,6 @@ import type {
 } from "shiki"
 
 import { useUISettingKey, useUISettingSelector } from "~/atoms/settings/ui"
-import { isElectronBuild } from "~/constants"
 import { tipcClient } from "~/lib/client"
 
 import { CopyButton } from "../../button/CopyButton"
@@ -42,7 +42,7 @@ export const ShikiHighLighter: FC<ShikiProps> = (props) => {
   const guessCodeLanguage = useUISettingKey("guessCodeLanguage")
   useInsertionEffect(() => {
     if (!guessCodeLanguage) return
-    if (language || !isElectronBuild) return
+    if (language || !ELECTRON_BUILD) return
 
     if (!bundledLanguagesKeysSet) {
       import("shiki/langs")

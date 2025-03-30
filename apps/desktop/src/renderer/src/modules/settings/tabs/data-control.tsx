@@ -13,6 +13,7 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { Radio, RadioGroup } from "@follow/components/ui/radio-group/index.js"
 import { Slider } from "@follow/components/ui/slider/index.js"
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
@@ -22,7 +23,6 @@ import { z } from "zod"
 
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { isElectronBuild } from "~/constants"
 import { exportDB } from "~/database"
 import { initAnalytics } from "~/initialize/analytics"
 import { tipcClient } from "~/lib/client"
@@ -118,17 +118,17 @@ export const SettingDataControl = () => {
             },
           },
 
-          isElectronBuild && {
+          ELECTRON_BUILD && {
             type: "title",
             value: t("general.cache"),
           },
-          isElectronBuild && AppCacheLimit,
-          isElectronBuild ? CleanElectronCache : CleanCacheStorage,
-          isElectronBuild && {
+          ELECTRON_BUILD && AppCacheLimit,
+          ELECTRON_BUILD ? CleanElectronCache : CleanCacheStorage,
+          ELECTRON_BUILD && {
             type: "title",
             value: t("general.data_file.label"),
           },
-          isElectronBuild && {
+          ELECTRON_BUILD && {
             label: t("general.log_file.label"),
             description: t("general.log_file.description"),
             buttonText: t("general.log_file.button"),

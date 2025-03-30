@@ -1,3 +1,4 @@
+import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { appSessionTraceId } from "@follow/utils/environment"
 import { version } from "@pkg"
@@ -6,7 +7,6 @@ import { useEffect } from "react"
 import { createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from "react-router"
 
 import { whoami } from "~/atoms/user"
-import { isElectronBuild } from "~/constants"
 
 import { SentryConfig } from "./sentry.config"
 
@@ -50,5 +50,5 @@ export const initSentry = async () => {
 
   Sentry.setTag("session_trace_id", appSessionTraceId)
   Sentry.setTag("app_version", version)
-  Sentry.setTag("build", isElectronBuild ? "electron" : "web")
+  Sentry.setTag("build", ELECTRON_BUILD ? "electron" : "web")
 }
