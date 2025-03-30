@@ -1,14 +1,17 @@
 import path from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
+import { MODE, ModeEnum } from "@follow/shared/constants"
+
 import { isMacOS, isWindows } from "./env"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 const iconMap = {
-  prod: path.join(__dirname, "../../resources/icon.png"),
-  dev: path.join(__dirname, "../../static/icon-dev.png"),
+  [ModeEnum.production]: path.join(__dirname, "../../resources/icon.png"),
+  [ModeEnum.development]: path.join(__dirname, "../../resources/icon-dev.png"),
+  [ModeEnum.staging]: path.join(__dirname, "../../resources/icon-staging.png"),
 }
-export const getIconPath = () => iconMap[process.env.NODE_ENV === "development" ? "dev" : "prod"]
+export const getIconPath = () => iconMap[MODE]
 export const getTrayIconPath = () => {
   if (isMacOS) {
     return path.join(__dirname, "../../resources/tray-icon.png")

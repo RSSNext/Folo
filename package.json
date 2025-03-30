@@ -12,12 +12,6 @@
     "type": "git"
   },
   "scripts": {
-    "build:all": "turbo run Folo#build @follow/ssr#build",
-    "build:electron": "turbo run Folo#build",
-    "build:macos": "turbo run Folo#build:macos",
-    "build:mas": "turbo run Folo#build:mas",
-    "build:render": "turbo run Folo#build:render",
-    "build:ssr": "turbo run @follow/ssr#build",
     "build:web": "turbo run Folo#build:web",
     "dedupe:locales": "eslint --fix apps/desktop/locales/**/*.json",
     "depcheck": "npx depcheck --quiet",

@@ -2,19 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "envMode": "loose",
   "tasks": {
-    "Folo#build": {
-      "outputs": ["dist/**", "out/**"]
-    },
     "Folo#build:web": {
-      "outputs": ["out/**"]
-    },
-    "Folo#build:macos": {
-      "outputs": ["dist/**", "out/**"]
-    },
-    "Folo#build:mas": {
-      "outputs": ["dist/**", "out/**"]
-    },
-    "Folo#build:render": {
       "outputs": ["out/**"]
     },
     "//#format:check": {},
