@@ -38,7 +38,8 @@ export function getDeviceLanguage() {
   ].filter((i) => i !== null)
 
   return (
-    possibleDeviceLanguage.find((lang) => currentSupportedLanguages.includes(lang)) ||
-    fallbackLanguage
+    possibleDeviceLanguage.find((lang) =>
+      (currentSupportedLanguages as readonly string[]).includes(lang),
+    ) || fallbackLanguage
   )
 }
