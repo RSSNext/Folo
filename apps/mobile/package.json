@@ -38,6 +38,7 @@
     "@react-native-firebase/app": "21.12.3",
     "@react-native-firebase/app-check": "21.12.3",
     "@react-native-firebase/crashlytics": "21.12.3",
+    "@react-native-menu/menu": "1.2.3",
     "@react-native-picker/picker": "2.11.0",
     "@shopify/flash-list": "1.7.3",
     "@tanstack/query-sync-storage-persister": "5.70.0",
