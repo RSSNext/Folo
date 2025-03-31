@@ -10,7 +10,7 @@ const iconPathMap = {
   production: resolve(__dirname, "./assets/icon.png"),
   development: resolve(__dirname, "./assets/icon-dev.png"),
   "ios-simulator": resolve(__dirname, "./assets/icon-dev.png"),
-  preview: resolve(__dirname, "./assets/icon-dev.png"),
+  preview: resolve(__dirname, "./assets/icon-staging.png"),
 } as Record<string, string>
 const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap.production
 
