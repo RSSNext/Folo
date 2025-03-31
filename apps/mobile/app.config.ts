@@ -6,8 +6,16 @@ import PKG from "./package.json"
 
 const isCI = process.env.CI === "true"
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
-const iconPath = resolve(__dirname, "./assets/icon.png")
+const iconPathMap = {
+  production: resolve(__dirname, "./assets/icon.png"),
+  development: resolve(__dirname, "./assets/icon-dev.png"),
+  "ios-simulator": resolve(__dirname, "./assets/icon-dev.png"),
+  preview: resolve(__dirname, "./assets/icon-staging.png"),
+} as Record<string, string>
+const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap.production
+
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
 

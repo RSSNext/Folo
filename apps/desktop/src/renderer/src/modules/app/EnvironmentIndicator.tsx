@@ -5,7 +5,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
-import { DEV } from "@follow/shared/constants"
+import { DEV, MODE } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 
 import { useUserRole } from "~/atoms/user"
@@ -52,7 +52,7 @@ export const EnvironmentIndicator = () => {
         >
           <div className="center bg-accent fixed bottom-0 right-0 z-[99999] flex rounded-tl px-1 py-0.5 text-xs text-white">
             {role}:{DEV && <i className="i-mgc-bug-cute-re size-3" />}
-            {import.meta.env.MODE}
+            {MODE}
           </div>
         </button>
       </TooltipTrigger>
