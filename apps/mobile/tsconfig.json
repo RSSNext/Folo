@@ -4,8 +4,11 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "module": "commonjs",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@locales/*": ["../../locales/*"]
     },
     "jsx": "preserve"
   },

@@ -3,12 +3,14 @@ import "./global.css"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { cssInterop } from "nativewind"
+import { useTranslation } from "react-i18next"
 import { enableFreeze } from "react-native-screens"
 
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
 import { initializeApp } from "./initialize"
+import { initializeI18n } from "./initialize/i18n"
 import { TabBarPortal } from "./lib/navigation/bottom-tab/TabBarPortal"
 import { TabRoot } from "./lib/navigation/bottom-tab/TabRoot"
 import { TabScreen } from "./lib/navigation/bottom-tab/TabScreen"
@@ -26,37 +28,44 @@ cssInterop(Image, { className: "style" })
 initializeApp()
 
 registerSitemap()
-registerRootComponent(() => (
-  <RootProviders>
-    <BottomTabProvider>
-      <RootStackNavigation
-        headerConfig={{
-          hidden: true,
-        }}
-      >
-        <App>
-          <TabRoot>
-            <TabScreen title="Home">
-              <IndexTabScreen />
-            </TabScreen>
+initializeI18n().then(() => {
+  registerRootComponent(RootComponent)
+})
 
-            <TabScreen title="Subscriptions">
-              <SubscriptionsTabScreen />
-            </TabScreen>
+function RootComponent() {
+  const { t } = useTranslation()
+  return (
+    <RootProviders>
+      <BottomTabProvider>
+        <RootStackNavigation
+          headerConfig={{
+            hidden: true,
+          }}
+        >
+          <App>
+            <TabRoot>
+              <TabScreen title="Home">
+                <IndexTabScreen />
+              </TabScreen>
 
-            <TabScreen title="Discover">
-              <DiscoverTabScreen />
-            </TabScreen>
-            <TabScreen title="Settings">
-              <SettingsTabScreen />
-            </TabScreen>
+              <TabScreen title="Subscriptions">
+                <SubscriptionsTabScreen />
+              </TabScreen>
 
-            <TabBarPortal>
-              <BottomTabs />
-            </TabBarPortal>
-          </TabRoot>
-        </App>
-      </RootStackNavigation>
-    </BottomTabProvider>
-  </RootProviders>
-))
+              <TabScreen title={t("words.discover")}>
+                <DiscoverTabScreen />
+              </TabScreen>
+              <TabScreen title="Settings">
+                <SettingsTabScreen />
+              </TabScreen>
+
+              <TabBarPortal>
+                <BottomTabs />
+              </TabBarPortal>
+            </TabRoot>
+          </App>
+        </RootStackNavigation>
+      </BottomTabProvider>
+    </RootProviders>
+  )
+}

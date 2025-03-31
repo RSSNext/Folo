@@ -1,5 +1,6 @@
 import { LANGUAGE_MAP } from "@follow/shared"
-import { useLocales } from "expo-localization"
+import i18next from "i18next"
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -17,8 +18,34 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
+function LanguageSelect() {
+  const { t } = useTranslation("lang")
+  const languageMapWithTranslation = Object.entries(LANGUAGE_MAP).map(([key, { label }]) => ({
+    label: `${t(`langs.${key}` as any)} (${label})`,
+    value: key,
+  }))
+  const language = useGeneralSettingKey("language")
+
+  return (
+    <GroupedInsetListBaseCell>
+      <Text className="text-label">Language</Text>
+
+      <View className="w-[150px]">
+        <Select
+          value={language}
+          onValueChange={(value) => {
+            setGeneralSetting("language", value)
+            i18next.changeLanguage(value)
+          }}
+          displayValue={t(`langs.${language}` as any)}
+          options={languageMapWithTranslation}
+        />
+      </View>
+    </GroupedInsetListBaseCell>
+  )
+}
+
 export const GeneralScreen: NavigationControllerView = () => {
-  const locales = useLocales()
   const translation = useGeneralSettingKey("translation")
   const summary = useGeneralSettingKey("summary")
   const actionLanguage = useGeneralSettingKey("actionLanguage")
@@ -37,11 +64,7 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label="Language" />
       <GroupedInsetListCard>
-        <GroupedInsetListBaseCell>
-          <Text className="text-label">Language</Text>
-
-          <Text className="text-label">{(locales[0]?.languageTag, "English")}</Text>
-        </GroupedInsetListBaseCell>
+        <LanguageSelect />
       </GroupedInsetListCard>
 
       {/* Content Behavior */}

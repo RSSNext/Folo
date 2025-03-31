@@ -18,6 +18,13 @@ config.resolver.nodeModulesPaths = [
   path.resolve(__dirname, "../../node_modules"),
 ]
 
+config.resolver.extraNodeModules = {
+  ...config.resolver.extraNodeModules,
+  "@locales": path.resolve(__dirname, "../../locales"),
+}
+
+config.watchFolders = [...config.watchFolders, path.resolve(__dirname, "../../locales")]
+
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const result = context.resolveRequest(context, moduleName, platform)
   if (result.type === "sourceFile") {
