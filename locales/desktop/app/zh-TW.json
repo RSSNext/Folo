@@ -170,6 +170,7 @@
   "entry_list_header.switch_to_normalmode": "切換到正常模式",
   "entry_list_header.switch_to_widemode": "切換到寬螢幕模式",
   "entry_list_header.unread": "未讀",
+  "feed.actions.followed": "已跟隨",
   "feed.follower_one": "跟隨者",
   "feed.follower_other": "跟隨者",
   "feed.followsAndFeeds": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}} 和 {{feedsCount}} 個 {{feedsNoun}}",

@@ -173,6 +173,7 @@
   "entry_list_header.switch_to_normalmode": "Switch to Double Column Mode",
   "entry_list_header.switch_to_widemode": "Switch to Wide Mode",
   "entry_list_header.unread": "읽지 않음",
+  "feed.actions.followed": "팔로우됨",
   "feed.follower_one": "follower",
   "feed.follower_other": "followers",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} and {{feedsCount}} {{feedsNoun}} on {{appName}}",

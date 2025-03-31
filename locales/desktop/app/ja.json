@@ -173,6 +173,7 @@
   "entry_list_header.switch_to_normalmode": "2 列モードに切り替え",
   "entry_list_header.switch_to_widemode": "ワイドモードに切り替え",
   "entry_list_header.unread": "未読",
+  "feed.actions.followed": "フォロー済み",
   "feed.follower_one": "フォロワー",
   "feed.follower_other": "フォロワー",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} と {{feedsCount}} {{feedsNoun}} on {{appName}}",

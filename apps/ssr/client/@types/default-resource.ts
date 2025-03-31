@@ -21,7 +21,6 @@ import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhHK from "@locales/common/zh-HK.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
-import external_en from "@locales/external/en.json"
 import lang_ardz from "@locales/lang/ar-DZ.json"
 import lang_ariq from "@locales/lang/ar-IQ.json"
 import lang_arkw from "@locales/lang/ar-KW.json"
@@ -42,6 +41,7 @@ import lang_tr from "@locales/lang/tr.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhHK from "@locales/lang/zh-HK.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
+import external_en from "@locales/ssr/external/en.json"
 /**
  * This file is the language resource that is loaded in full when the app is initialized.
  * When switching languages, the app will automatically download the required language resources,

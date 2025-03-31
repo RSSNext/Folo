@@ -169,6 +169,7 @@
   "entry_list_header.switch_to_normalmode": "Переключиться в нормальный режим",
   "entry_list_header.switch_to_widemode": "Переключиться в широкий режим",
   "entry_list_header.unread": "непрочитано",
+  "feed.actions.followed": "Подписка оформлена",
   "feed.follower_one": "подписчик",
   "feed.follower_other": "подписчики",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} и {{feedsCount}} {{feedsNoun}} на {{appName}}",

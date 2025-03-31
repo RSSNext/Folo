@@ -1,8 +1,8 @@
-import en from "@locales/native/en.json"
-import ja from "@locales/native/ja.json"
-import zhCn from "@locales/native/zh-CN.json"
-import zhHk from "@locales/native/zh-HK.json"
-import zhTw from "@locales/native/zh-TW.json"
+import en from "@locales/desktop/native/en.json"
+import ja from "@locales/desktop/native/ja.json"
+import zhCn from "@locales/desktop/native/zh-CN.json"
+import zhHk from "@locales/desktop/native/zh-HK.json"
+import zhTw from "@locales/desktop/native/zh-TW.json"
 
 export const resources = {
   en: {
