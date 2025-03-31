@@ -1,16 +1,16 @@
 import type { GeneralSettings } from "@/src/interfaces/settings/general"
+import { getDeviceLanguage } from "@/src/lib/i18n"
 
 import { createSettingAtom } from "./internal/helper"
 
 const createDefaultSettings = (): GeneralSettings => ({
   // App
-
-  language: "en",
+  language: getDeviceLanguage(),
 
   // Action
   summary: false,
   translation: false,
-  actionLanguage: "zh-CN",
+  actionLanguage: getDeviceLanguage(),
 
   // Data control
 

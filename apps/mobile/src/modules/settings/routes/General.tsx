@@ -18,13 +18,13 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
-function LanguageSelect() {
+function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
   const { t } = useTranslation("lang")
   const languageMapWithTranslation = Object.entries(LANGUAGE_MAP).map(([key, { label }]) => ({
     label: `${t(`langs.${key}` as any)} (${label})`,
     value: key,
   }))
-  const language = useGeneralSettingKey("language")
+  const language = useGeneralSettingKey(settingKey)
 
   return (
     <GroupedInsetListBaseCell>
@@ -34,8 +34,10 @@ function LanguageSelect() {
         <Select
           value={language}
           onValueChange={(value) => {
-            setGeneralSetting("language", value)
-            i18next.changeLanguage(value)
+            setGeneralSetting(settingKey, value)
+            if (settingKey === "language") {
+              i18next.changeLanguage(value)
+            }
           }}
           displayValue={t(`langs.${language}` as any)}
           options={languageMapWithTranslation}
@@ -48,7 +50,6 @@ function LanguageSelect() {
 export const GeneralScreen: NavigationControllerView = () => {
   const translation = useGeneralSettingKey("translation")
   const summary = useGeneralSettingKey("summary")
-  const actionLanguage = useGeneralSettingKey("actionLanguage")
   const autoGroup = useGeneralSettingKey("autoGroup")
   const showUnreadOnLaunch = useGeneralSettingKey("unreadOnly")
   // const groupByDate = useGeneralSettingKey("groupByDate")
@@ -64,7 +65,7 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label="Language" />
       <GroupedInsetListCard>
-        <LanguageSelect />
+        <LanguageSelect settingKey="language" />
       </GroupedInsetListCard>
 
       {/* Content Behavior */}
@@ -88,19 +89,7 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListBaseCell>
-          <Text className="text-label">Language</Text>
-
-          <View className="w-[150px]">
-            <Select
-              value={actionLanguage}
-              onValueChange={(value) => {
-                setGeneralSetting("actionLanguage", value)
-              }}
-              options={Object.values(LANGUAGE_MAP)}
-            />
-          </View>
-        </GroupedInsetListBaseCell>
+        <LanguageSelect settingKey="actionLanguage" />
       </GroupedInsetListCard>
 
       {/* Subscriptions */}
