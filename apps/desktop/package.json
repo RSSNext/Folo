@@ -28,7 +28,6 @@
     "dev:electron": "electron-vite dev",
     "dev:server": "pnpm run --filter=ssr dev",
     "dev:web": "cross-env WEB_BUILD=1 vite",
-    "generator:i18n-template": "tsx scripts/generate-i18n-locale.ts",
     "publish": "electron-vite build && electron-forge publish",
     "start": "electron-vite preview",
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"

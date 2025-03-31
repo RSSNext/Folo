@@ -179,7 +179,7 @@ async function selectLocale(): Promise<string> {
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const LOCALE_DIR = path.resolve(__dirname, "../locales")
-const CONFIG_DIR = path.resolve(__dirname, "../src/renderer/src/@types")
+const CONFIG_DIR = path.resolve(__dirname, "../apps/desktop/src/renderer/src/@types")
 
 async function main() {
   const selectedLocale = await selectLocale()
@@ -253,11 +253,11 @@ function updateDefaultResourceFile(sourceFile: ts.SourceFile, locale: string): s
           const newImports = [
             createImportDeclaration(
               `lang_${locale.replace("-", "")}`,
-              `../../../../locales/lang/${locale}.json`,
+              `@locales/lang/${locale}.json`,
             ),
             createImportDeclaration(
               `common_${locale.replace("-", "")}`,
-              `../../../../locales/common/${locale}.json`,
+              `@locales/common/${locale}.json`,
             ),
           ]
           importsAdded = true
