@@ -3,6 +3,7 @@ import { resolve } from "node:path"
 import type { ConfigContext, ExpoConfig } from "expo/config"
 
 import PKG from "./package.json"
+import { currentSupportedLanguages } from "./src/@types/constants"
 
 const isCI = process.env.CI === "true"
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
@@ -41,6 +42,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       ITSAppUsesNonExemptEncryption: false,
       UIBackgroundModes: ["audio"],
       LSApplicationQueriesSchemes: ["bilibili", "youtube"],
+      CFBundleAllowMixedLocalizations: true,
+      CFBundleLocalizations: currentSupportedLanguages,
+      CFBundleDevelopmentRegion: "en",
     },
     googleServicesFile: "./build/GoogleService-Info.plist",
   },
