@@ -89,7 +89,7 @@ export default defineConfig(
   },
   // @ts-expect-error
   {
-    files: ["apps/desktop/locales/**/*.json"],
+    files: ["locales/**/*.json"],
     plugins: {
       "recursive-sort": recursiveSort,
       "check-i18n-json": checkI18nJson,
