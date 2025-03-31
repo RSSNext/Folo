@@ -78,6 +78,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     googleServicesFile: "./build/GoogleService-Info.plist",
   },
   android: {
+    // Workaround for https://github.com/doublesymmetry/react-native-track-player/issues/2293
+    newArchEnabled: false,
     package: "is.follow",
     adaptiveIcon: {
       foregroundImage: adaptiveIconPath,
@@ -103,6 +105,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-splash-screen",
       {
         backgroundColor: "#ffffff",
+        image: iconPath,
+        imageWidth: 200,
         dark: {
           backgroundColor: "#000000",
         },
