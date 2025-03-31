@@ -52,7 +52,7 @@ export const loadLanguageAndApply = async (lang: string) => {
 
     const res = await Promise.allSettled(
       namespaces.map(async (ns) => {
-        const loader = nsGlobbyMap[`../../locales/${ns}/${lang}.json`]
+        const loader = nsGlobbyMap[`../../../../locales/${ns}/${lang}.json`]
 
         if (!loader) return
         const nsResources = await loader().then((m: any) => m.default)

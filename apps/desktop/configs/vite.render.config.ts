@@ -35,7 +35,7 @@ export const viteRenderBaseConfig = {
     alias: {
       "~": resolve("src/renderer/src"),
       "@pkg": resolve("package.json"),
-      "@locales": resolve("locales"),
+      "@locales": resolve("../../locales"),
       "@follow/electron-main": resolve("src/main/src"),
     },
   },

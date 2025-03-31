@@ -9,5 +9,5 @@
       "@pkg": ["../../package.json"]
     }
   },
-  "include": ["src/**/*", "../../locales/**/*.json"]
+  "include": ["src/**/*", "../../../../locales/**/*.json"]
 }

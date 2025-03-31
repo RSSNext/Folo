@@ -12,7 +12,7 @@ export function localesPlugin(): Plugin {
     generateBundle(_options, bundle) {
       const __dirname = dirname(fileURLToPath(import.meta.url))
 
-      const localesDir = path.resolve(__dirname, "../../locales")
+      const localesDir = path.resolve(__dirname, "../../../../locales")
 
       const namespaces = fs.readdirSync(localesDir).filter((dir) => dir !== ".DS_Store")
       const languageResources = {} as any

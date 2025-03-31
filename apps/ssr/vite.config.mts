@@ -12,6 +12,7 @@ export default () => {
       alias: {
         "@pkg": resolve(__dirname, "../../package.json"),
         "@client": resolve(__dirname, "./client"),
+        "@locales": resolve(__dirname, "../../locales"),
       },
     },
     define: {

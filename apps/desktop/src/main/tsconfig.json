@@ -13,7 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@pkg": ["../../package.json"],
-      "@locales/*": ["../../locales/*"],
+      "@locales/*": ["../../../../locales/*"],
       "~/*": ["./src/*"]
     }
   }

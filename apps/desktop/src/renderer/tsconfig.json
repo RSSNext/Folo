@@ -22,7 +22,7 @@
     "paths": {
       "~/*": ["src/*"],
       "@pkg": ["../../package.json"],
-      "@locales/*": ["../../locales/*"]
+      "@locales/*": ["../../../../locales/*"]
     }
   },
   "references": [{ "path": "../main" }]

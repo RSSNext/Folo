@@ -19,7 +19,7 @@ export default defineConfig({
       alias: {
         "@shared": resolve("packages/shared/src"),
         "@pkg": resolve("./package.json"),
-        "@locales": resolve("./locales"),
+        "@locales": resolve("../../locales"),
         "~": resolve("./src/main/src"),
       },
     },
@@ -38,7 +38,7 @@ export default defineConfig({
     resolve: {
       alias: {
         "@pkg": resolve("./package.json"),
-        "@locales": resolve("./locales"),
+        "@locales": resolve("../../locales"),
       },
     },
   },

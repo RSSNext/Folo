@@ -23,7 +23,8 @@
     ],
     "paths": {
       "~/*": ["./src/*"],
-      "@client/*": ["./client/*"]
+      "@client/*": ["./client/*"],
+      "@locales/*": ["../../locales/*"]
     }
   },
   "include": [

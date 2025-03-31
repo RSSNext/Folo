@@ -58,5 +58,5 @@ function calculateCompleteness(localesDir: string): LanguageCompletion {
 }
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const i18n = calculateCompleteness(path.resolve(__dirname, "../../../locales"))
+const i18n = calculateCompleteness(path.resolve(__dirname, "../../../../../locales"))
 export default i18n
