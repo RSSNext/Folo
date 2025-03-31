@@ -10,7 +10,7 @@ import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
 import { initializeApp } from "./initialize"
-import { initializeI18n } from "./initialize/i18n"
+import { initializeI18n } from "./lib/i18n"
 import { TabBarPortal } from "./lib/navigation/bottom-tab/TabBarPortal"
 import { TabRoot } from "./lib/navigation/bottom-tab/TabRoot"
 import { TabScreen } from "./lib/navigation/bottom-tab/TabScreen"
@@ -44,18 +44,18 @@ function RootComponent() {
         >
           <App>
             <TabRoot>
-              <TabScreen title="Home">
+              <TabScreen title={t("tabs.home")}>
                 <IndexTabScreen />
               </TabScreen>
 
-              <TabScreen title="Subscriptions">
+              <TabScreen title={t("tabs.subscriptions")}>
                 <SubscriptionsTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("words.discover")}>
+              <TabScreen title={t("tabs.discover")}>
                 <DiscoverTabScreen />
               </TabScreen>
-              <TabScreen title="Settings">
+              <TabScreen title={t("tabs.settings")}>
                 <SettingsTabScreen />
               </TabScreen>
 
