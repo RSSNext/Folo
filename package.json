@@ -77,7 +77,7 @@
     "vite": "6.2.3",
     "vite-bundle-analyzer": "0.18.1",
     "vite-plugin-mkcert": "1.17.8",
-    "vite-plugin-pwa": "0.21.2",
+    "vite-plugin-pwa": "1.0.0",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.0.9"
   },
