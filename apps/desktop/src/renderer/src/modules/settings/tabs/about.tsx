@@ -2,7 +2,7 @@ import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { styledButtonVariant } from "@follow/components/ui/button/variants.js"
 import { Divider } from "@follow/components/ui/divider/index.js"
-import { PROD } from "@follow/shared/constants"
+import { MODE, ModeEnum } from "@follow/shared/constants"
 import { getCurrentEnvironment } from "@follow/utils/environment"
 import PKG, { repository } from "@pkg"
 import { useQuery } from "@tanstack/react-query"
@@ -31,7 +31,7 @@ export const SettingAbout = () => {
 
           <div className="flex grow flex-col">
             <div className="text-lg font-bold">
-              {APP_NAME} {!PROD ? `(${import.meta.env.MODE})` : ""}
+              {APP_NAME} {MODE !== ModeEnum.production ? `(${MODE})` : ""}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {appVersion && (

@@ -1,4 +1,4 @@
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { IN_ELECTRON, MODE } from "@follow/shared/constants"
 import { nanoid } from "nanoid"
 
 import { detectBrowser, getOS } from "./utils"
@@ -22,5 +22,6 @@ export const getCurrentEnvironment = () => {
     `**Env**: ${env}`,
     `**Browser**: ${browser}`,
     `**Session Trace Id**: \`${appSessionTraceId}\``,
+    `**Mode**: ${MODE}`,
   ]
 }
