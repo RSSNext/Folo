@@ -1,7 +1,9 @@
 import { UserRole } from "@follow/constants"
 import * as FileSystem from "expo-file-system"
+import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Alert, PixelRatio, View } from "react-native"
 
 import {
@@ -42,7 +44,7 @@ import { NotificationsScreen } from "./routes/Notifications"
 import { PrivacyScreen } from "./routes/Privacy"
 
 interface GroupNavigationLink {
-  label: string
+  label: ParseKeys<"settings">
   icon: React.ElementType
   onPress: (data: { navigation: Navigation }) => void
   iconBackgroundColor: string
@@ -53,7 +55,7 @@ interface GroupNavigationLink {
 }
 const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "General",
+    label: "titles.general",
     icon: Settings1CuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(GeneralScreen)
@@ -61,7 +63,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#F59E0B",
   },
   {
-    label: "Notifications",
+    label: "titles.notifications",
     icon: BellRingingCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(NotificationsScreen)
@@ -71,7 +73,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     anonymous: false,
   },
   {
-    label: "Appearance",
+    label: "titles.appearance",
     icon: PaletteCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AppearanceScreen)
@@ -79,7 +81,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#FCD34D",
   },
   {
-    label: "Data",
+    label: "titles.data_control",
     icon: DatabaseIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(DataScreen)
@@ -88,7 +90,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     anonymous: false,
   },
   {
-    label: "Account",
+    label: "titles.account",
     icon: UserSettingCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AccountScreen)
@@ -100,7 +102,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
 
 const BetaGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "Invitation",
+    label: "titles.invitations",
     icon: LoveCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(InvitationsScreen)
@@ -113,7 +115,7 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
 
 const DataGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "Actions",
+    label: "titles.actions",
     icon: Magic2CuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(ActionsScreen)
@@ -124,7 +126,7 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
   },
 
   {
-    label: "Feeds",
+    label: "titles.feeds",
     icon: CertificateCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(FeedsScreen)
@@ -135,7 +137,7 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
     trialNotAllowed: true,
   },
   {
-    label: "Lists",
+    label: "titles.lists",
     icon: RadaCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(ListsScreen)
@@ -149,7 +151,7 @@ const DataGroupNavigationLinks: GroupNavigationLink[] = [
 
 const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "Privacy",
+    label: "titles.privacy",
     icon: SafeLockFilledIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(PrivacyScreen)
@@ -157,7 +159,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#EF4444",
   },
   {
-    label: "About",
+    label: "titles.about",
     icon: StarCuteFiIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(AboutScreen)
@@ -168,7 +170,7 @@ const PrivacyGroupNavigationLinks: GroupNavigationLink[] = [
 
 const ActionGroupNavigationLinks: GroupNavigationLink[] = [
   {
-    label: "Sign out",
+    label: "titles.sign_out",
     icon: ExitCuteFiIcon,
     onPress: () => {
       Alert.alert("Sign out", "Are you sure you want to sign out?", [
@@ -196,6 +198,7 @@ const NavigationLinkGroup: FC<{
 }> = ({ links }) => {
   const navigation = useNavigation()
   const role = useRole()
+  const { t } = useTranslation("settings")
 
   return (
     <GroupedInsetListCard>
@@ -205,7 +208,7 @@ const NavigationLinkGroup: FC<{
           return (
             <GroupedInsetListNavigationLink
               key={link.label}
-              label={link.label}
+              label={t(link.label)}
               icon={
                 <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
                   <link.icon height={18} width={18} color="#fff" />

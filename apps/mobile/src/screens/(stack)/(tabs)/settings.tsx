@@ -1,4 +1,5 @@
 import { useContext } from "react"
+import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import { Text, TouchableOpacity, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
@@ -73,6 +74,7 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
 }
 
 const EditProfileButton = () => {
+  const { t } = useTranslation("common")
   const navigation = useNavigation()
   return (
     <TouchableOpacity
@@ -81,7 +83,7 @@ const EditProfileButton = () => {
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-label text-sm font-medium">Edit</Text>
+      <Text className="text-label text-sm font-medium">{t("words.edit")}</Text>
     </TouchableOpacity>
   )
 }
