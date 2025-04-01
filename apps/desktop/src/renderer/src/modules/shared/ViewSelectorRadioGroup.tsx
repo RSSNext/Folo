@@ -46,7 +46,9 @@ export const ViewSelectorRadioGroup = forwardRef<
               {cloneElement(view.icon, {
                 className: `text-lg ${view.icon?.props?.className ?? ""}`,
               })}
-              <span className="mt-1 hidden text-xs lg:inline">{t(view.name)}</span>
+              <span className="mt-1 hidden text-xs lg:inline">
+                {t(view.name, { ns: "common" })}
+              </span>
             </label>
           </div>
         ))}
