@@ -1136,6 +1136,9 @@ importers:
       i18next:
         specifier: 24.2.3
         version: 24.2.3(typescript@5.8.2)
+      i18next-browser-languagedetector:
+        specifier: 8.0.4
+        version: 8.0.4
       jotai:
         specifier: 2.12.2
         version: 2.12.2(@types/react@18.3.12)(react@18.3.1)
