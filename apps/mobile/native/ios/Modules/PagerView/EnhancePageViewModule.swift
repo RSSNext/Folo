@@ -16,10 +16,28 @@ public class EnhancePageViewModule: Module {
     }
 }
 
-class EnhancePageView: ExpoView {
+class EnhancePageView: ExpoView, UIGestureRecognizerDelegate {
     var isScrolling: Bool = false
+  
+   
+ 
+  
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+
+    return false
+  
+  }
+  
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive press: UIPress) -> Bool {
+    return false
+  }
+  
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    return false
+  }
+  
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-      debugPrint("hitTest",isScrolling)
+      
         if isScrolling {
             return nil
         }

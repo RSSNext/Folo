@@ -1,7 +1,7 @@
 require 'json'
-new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+#https://github.com/lodev09/react-native-true-sheet/blob/main/TrueSheet.podspec
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
   s.name           = 'FollowNative'
@@ -22,12 +22,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'SnapKit', '~> 5.7.0'
   s.dependency 'SDWebImage', '~> 5.0'
- 
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES',
-    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? '-DRCT_NEW_ARCH_ENABLED' : ''}",
-  }
+  s.dependency "React-Core"
 
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp,js}"
 
@@ -35,5 +30,18 @@ Pod::Spec.new do |s|
     'js' => ['Modules/SharedWebView/injected/**/*'],
     'FollowNative' => ['Media.xcassets'],
   }
+
+
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+    
+    s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+    s.pod_target_xcconfig =  {
+      "OTHER_SWIFT_FLAGS" => "-DRCT_NEW_ARCH_ENABLED",
+      "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+      "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+    }
+    s.dependency "React-RCTFabric"
+  end
 
 end

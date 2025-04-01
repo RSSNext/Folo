@@ -103,7 +103,6 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
   return (
     <EntryItemContextMenu id={entryId}>
       <ItemPressable
-        // touchHighlight={false}
         itemStyle={ItemPressableStyle.Plain}
         className="flex flex-row items-center p-4 pl-6"
         onPress={handlePress}

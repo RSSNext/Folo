@@ -39,7 +39,7 @@ private class PagerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let contentView = contentView, let pageView = pageView {
-            contentView.removeFromSuperview()  // Ensure it's not in another view hierarchy
+            contentView.removeFromSuperview() // Ensure it's not in another view hierarchy
             pageView.addSubview(contentView)
             contentView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
@@ -73,7 +73,6 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
         willSet {
             // Recursively find all subviews of type EnhancePageView
             findEnhancePageViews(in: view).forEach { enhancePageView in
-              debugPrint("set")
                 enhancePageView.isScrolling = newValue
             }
         }
@@ -112,6 +111,8 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
                 scrollView.delegate = self
             }
         }
+
+//        surfaceTouchHandler.attach(to: view)
     }
 
     var startOffset: CGFloat = 0
@@ -212,8 +213,7 @@ extension EnhancePagerController: UIPageViewControllerDataSource, UIPageViewCont
         if completed {
             isTransitioning = false
             if let currentVC = pageViewController.viewControllers?.first as? PagerViewController,
-                let newIndex = pageControllers.firstIndex(of: currentVC)
-            {
+               let newIndex = pageControllers.firstIndex(of: currentVC) {
                 currentPageIndex = newIndex
             }
         }

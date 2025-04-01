@@ -69,6 +69,10 @@ enum TransitionStyle: String, Enumerable {
 private class EnhancePagerView: ExpoView {
     fileprivate var pageController: EnhancePagerController?
 
+    #if RCT_NEW_ARCH_ENABLED
+        private var surfaceTouchHandler = RCTSurfaceTouchHandler()
+    #endif
+
     private let onScroll = EventDispatcher()
     private let onScrollBegin = EventDispatcher()
     private let onScrollEnd = EventDispatcher()
@@ -134,12 +138,14 @@ private class EnhancePagerView: ExpoView {
         override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
             if childComponentView is EnhancePageView {
                 insertSubview(childComponentView, at: index)
+//                surfaceTouchHandler.attach(to: childComponentView)
             }
         }
 
         override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
             if childComponentView is EnhancePageView {
                 willRemoveSubview(childComponentView, at: index)
+//                surfaceTouchHandler.detach(from: childComponentView)
             }
         }
     #endif

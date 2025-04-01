@@ -10,7 +10,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import type { NativeSyntheticEvent, ViewProps, ViewStyle } from "react-native"
 
 const EnhancePagerView = requireNativeView<ViewProps & PagerProps>("EnhancePagerView")
-const EnhancePageView = requireNativeView("EnhancePageView")
+const EnhancePageView = requireNativeView<ViewProps>("EnhancePageView")
 
 interface PagerProps {
   onPageChange?: (e: NativeSyntheticEvent<{ index: number }>) => void

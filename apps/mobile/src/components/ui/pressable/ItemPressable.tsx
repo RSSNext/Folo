@@ -1,8 +1,8 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { cn, composeEventHandlers } from "@follow/utils"
 import type { FC } from "react"
-import { Fragment, memo, useEffect, useState } from "react"
-import type { PressableProps } from "react-native"
+import { Fragment, memo, useContext, useEffect, useRef, useState } from "react"
+import type { GestureResponderEvent, NativeTouchEvent, PressableProps } from "react-native"
 import { StyleSheet } from "react-native"
 import Animated, {
   cancelAnimation,
@@ -16,6 +16,7 @@ import { gentleSpringPreset } from "@/src/constants/spring"
 import { useColor } from "@/src/theme/colors"
 
 import { ReAnimatedPressable } from "../../common/AnimatedComponents"
+import { ItemPressableEnabledContext } from "./context"
 import { ItemPressableStyle } from "./enum"
 
 interface ItemPressableProps extends PressableProps {
@@ -51,13 +52,30 @@ export const ItemPressable: FC<ItemPressableProps> = memo(
         backgroundColor: interpolateColor(pressed.value, [0, 1], [itemNormalColor, systemFill]),
       }
     })
+
+    const globalEnabled = useContext(ItemPressableEnabledContext)
+    const nextDisabled = props.disabled || !globalEnabled
+
+    const touchStartEventRef = useRef<GestureResponderEvent>()
     return (
       <ReAnimatedPressable
         {...props}
-        onPressIn={composeEventHandlers(props.onPressIn, () => setIsPressing(true))}
+        disabled={nextDisabled}
+        onPressIn={composeEventHandlers(props.onPressIn, () => {
+          if (nextDisabled) return
+          setIsPressing(true)
+        })}
         onPressOut={composeEventHandlers(props.onPressOut, () => setIsPressing(false))}
-        onHoverIn={composeEventHandlers(props.onHoverIn, () => setIsPressing(true))}
-        onHoverOut={composeEventHandlers(props.onHoverOut, () => setIsPressing(false))}
+        onTouchStart={composeEventHandlers(props.onTouchStart, (e) => {
+          touchStartEventRef.current = e
+        })}
+        onPress={(e) => {
+          // Asynchronous trigger, if already in the disable state, return directly
+          if (nextDisabled) {
+            return
+          }
+          props.onPress?.(e)
+        }}
         // This is a workaround to prevent context menu crash when release too quickly
         // https://github.com/nandorojo/zeego/issues/61
         onLongPress={composeEventHandlers(props.onLongPress, () => {})}

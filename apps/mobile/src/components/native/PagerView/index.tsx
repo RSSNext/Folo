@@ -10,6 +10,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import type { ViewStyle } from "react-native"
 import { StyleSheet } from "react-native"
 
+import { ItemPressableEnabledContext } from "../../ui/pressable/context"
 import type { PagerRef } from "./specs"
 import { EnhancePagerView, EnhancePageView } from "./specs"
 
@@ -64,7 +65,10 @@ const PagerViewImpl: FC<PagerViewProps> = (
 
   const [isScrolling, setIsScrolling] = useState(false)
 
-  console.log(isScrolling, "isScrolling")
+  useEffect(() => {
+    console.log(isScrolling, "isScrolling")
+  }, [isScrolling])
+
   return (
     <EnhancePagerView
       transitionStyle={transitionStyle}
@@ -96,14 +100,14 @@ const PagerViewImpl: FC<PagerViewProps> = (
       ref={nativeRef}
     >
       {Array.from({ length: pageTotal }).map((_, index) => (
-        <EnhancePageView
-          key={index}
-          isScrolling={isScrolling}
-          className={cn("flex-1", pageContainerClassName)}
-          style={{ ...StyleSheet.absoluteFillObject, ...pageContainerStyle }}
-        >
-          {renderPage?.(index)}
-        </EnhancePageView>
+        <ItemPressableEnabledContext.Provider key={index} value={!isScrolling}>
+          <EnhancePageView
+            className={cn("flex-1", pageContainerClassName)}
+            style={{ ...StyleSheet.absoluteFillObject, ...pageContainerStyle }}
+          >
+            {renderPage?.(index)}
+          </EnhancePageView>
+        </ItemPressableEnabledContext.Provider>
       ))}
     </EnhancePagerView>
   )
