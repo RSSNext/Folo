@@ -11,6 +11,9 @@ const keysToCopy: string[] = [
   "feed_view_type.social_media",
   "feed_view_type.videos",
   "words.starred",
+  "words.inbox",
+  "words.feeds",
+  "words.lists",
 ]
 
 const copyTranslations = (sourceDir: string, targetDir: string) => {

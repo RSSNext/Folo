@@ -66,12 +66,12 @@ export const SubscriptionList = ({
 
   const data = useMemo(
     () => [
-      "Starred",
-      "Lists",
+      "words.starred",
+      "words.lists",
       ...sortedListIds,
-      "Inbox",
+      "words.inbox",
       ...inboxes,
-      "Feeds",
+      "words.feeds",
       ...sortedGrouped,
       ...sortedUnGrouped,
     ],
@@ -139,26 +139,26 @@ const ItemRender = ({
 }) => {
   if (typeof item === "string") {
     switch (item) {
-      case "Starred": {
+      case "words.starred": {
         return <StarItem />
       }
-      case "Inbox": {
+      case "words.inbox": {
         if (!extraData) return null
         const { inboxIndexRange } = extraData
         if (inboxIndexRange[0] > inboxIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
-      case "Lists": {
+      case "words.lists": {
         if (!extraData) return null
         const { listsIndexRange } = extraData
         if (listsIndexRange[0] > listsIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
-      case "Feeds": {
+      case "words.feeds": {
         if (!extraData) return null
         const { feedsIndexRange } = extraData
         if (feedsIndexRange[0] > feedsIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
       default: {
         if (!extraData) return null
@@ -204,7 +204,8 @@ const ItemRender = ({
   )
 }
 
-const SectionTitle = ({ title }: { title: string }) => {
+const SectionTitle = ({ transKey }: { transKey: string }) => {
+  const { t } = useTranslation("common")
   return (
     <View
       style={{
@@ -215,7 +216,7 @@ const SectionTitle = ({ title }: { title: string }) => {
       }}
     >
       <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
-        {title}
+        {t(transKey as any)}
       </Text>
     </View>
   )

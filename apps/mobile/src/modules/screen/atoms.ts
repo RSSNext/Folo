@@ -212,7 +212,7 @@ export const useSelectedFeedTitle = () => {
       return list?.title
     }
     case "inbox": {
-      return inbox?.title ?? "Inbox"
+      return inbox?.title ?? t("words.inbox")
     }
   }
 }
