@@ -42,6 +42,9 @@ import lang_tr from "@locales/lang/tr.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhHK from "@locales/lang/zh-HK.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
+
+import type { ns, SupportedSSRUILanguages } from "./constants"
+
 /**
  * This file is the language resource that is loaded in full when the app is initialized.
  * When switching languages, the app will automatically download the required language resources,
@@ -85,4 +88,7 @@ export const defaultResources = {
   de: { lang: lang_de, common: common_de },
   ko: { lang: lang_ko, common: common_ko },
   tr: { lang: lang_tr, common: common_tr },
-}
+} satisfies Record<
+  SupportedSSRUILanguages,
+  Partial<Record<(typeof ns)[number], Record<string, string>>>
+>

@@ -4,6 +4,8 @@ import zhCn from "@locales/native/zh-CN.json"
 import zhHk from "@locales/native/zh-HK.json"
 import zhTw from "@locales/native/zh-TW.json"
 
+import type { ns, SupportedMainUILanguages } from "./constants"
+
 export const resources = {
   en: {
     native: en,
@@ -20,4 +22,4 @@ export const resources = {
   ja: {
     native: ja,
   },
-}
+} satisfies Record<SupportedMainUILanguages, Record<(typeof ns)[number], Record<string, string>>>
