@@ -125,7 +125,7 @@ function ViewItem({ view }: { view: ViewDefinition }) {
               className="text-sm font-semibold text-white"
               numberOfLines={1}
             >
-              {t(view.name as any)}
+              {t(view.name)}
             </Animated.Text>
             {!!unreadCount && (
               <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />

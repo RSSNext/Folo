@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import type { ParseKeys } from "i18next"
 import type * as React from "react"
 import colors from "tailwindcss/colors"
 
@@ -11,7 +12,7 @@ import { VideoCuteFiIcon } from "../icons/video_cute_fi"
 import { accentColor } from "../theme/colors"
 
 export interface ViewDefinition {
-  name: string
+  name: Extract<ParseKeys<"common">, `feed_view_type.${string}`>
   icon: React.FC<{ color?: string; height?: number; width?: number }>
   activeColor: string
   translation: string

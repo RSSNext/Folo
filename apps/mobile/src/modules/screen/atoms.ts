@@ -200,7 +200,7 @@ export const useSelectedFeedTitle = () => {
 
   switch (selectedFeed.type) {
     case "view": {
-      return viewDef?.name ? t(viewDef.name as any) : ""
+      return viewDef?.name ? t(viewDef.name) : ""
     }
     case "feed": {
       return selectedFeed.feedId === FEED_COLLECTION_LIST ? "Collections" : (feed?.title ?? "")
