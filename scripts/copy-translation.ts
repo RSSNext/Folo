@@ -3,7 +3,6 @@ import path from "node:path"
 
 const sourceDir = "./locales/app"
 const targetDir = "./locales/common"
-// TODO: we can consider remove these keys in locales/app
 const keysToCopy: string[] = [
   "feed_view_type.articles",
   "feed_view_type.audios",
@@ -11,6 +10,7 @@ const keysToCopy: string[] = [
   "feed_view_type.pictures",
   "feed_view_type.social_media",
   "feed_view_type.videos",
+  // kept the duplicate keys in locales/app
   "words.starred",
   "words.inbox",
   "words.feeds",
