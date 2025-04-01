@@ -6,7 +6,7 @@ import type {
   ReactNode,
   RefAttributes,
 } from "react"
-import { forwardRef, useEffect, useRef, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { ViewStyle } from "react-native"
 import { StyleSheet } from "react-native"
 
@@ -29,22 +29,25 @@ interface PagerViewProps {
   containerStyle?: ViewStyle
   containerClassName?: string
 }
-const PagerViewImpl: FC<PagerViewProps> = ({
-  pageContainerStyle,
-  pageContainerClassName,
-  renderPage,
-  pageTotal,
-  pageGap,
-  transitionStyle,
-  containerStyle,
-  containerClassName,
-  page,
-  onPageChange,
-  onScroll,
-  onScrollBegin,
-  onScrollEnd,
-  onPageWillAppear,
-}) => {
+const PagerViewImpl: FC<PagerViewProps> = (
+  {
+    pageContainerStyle,
+    pageContainerClassName,
+    renderPage,
+    pageTotal,
+    pageGap,
+    transitionStyle,
+    containerStyle,
+    containerClassName,
+    page,
+    onPageChange,
+    onScroll,
+    onScrollBegin,
+    onScrollEnd,
+    onPageWillAppear,
+  },
+  ref: any,
+) => {
   const [currentPage, setCurrentPage] = useState(page ?? 0)
 
   const nativeRef = useRef<PagerRef>(null)
@@ -56,6 +59,12 @@ const PagerViewImpl: FC<PagerViewProps> = ({
       }
     }
   }, [currentPage])
+
+  useImperativeHandle(ref, () => nativeRef.current)
+
+  const [isScrolling, setIsScrolling] = useState(false)
+
+  console.log(isScrolling, "isScrolling")
   return (
     <EnhancePagerView
       transitionStyle={transitionStyle}
@@ -68,22 +77,28 @@ const PagerViewImpl: FC<PagerViewProps> = ({
         onScroll?.(e.nativeEvent.percent, e.nativeEvent.direction)
       }}
       onScrollBegin={() => {
+        setIsScrolling(true)
         onScrollBegin?.()
       }}
       onScrollEnd={() => {
+        setIsScrolling(false)
         onScrollEnd?.()
       }}
       onPageWillAppear={(e) => {
         onPageWillAppear?.(e.nativeEvent.index)
       }}
       className={cn("flex-1", containerClassName)}
-      style={containerStyle}
+      style={{
+        ...containerStyle,
+        ...StyleSheet.absoluteFillObject,
+      }}
       // @ts-expect-error
       ref={nativeRef}
     >
       {Array.from({ length: pageTotal }).map((_, index) => (
         <EnhancePageView
           key={index}
+          isScrolling={isScrolling}
           className={cn("flex-1", pageContainerClassName)}
           style={{ ...StyleSheet.absoluteFillObject, ...pageContainerStyle }}
         >

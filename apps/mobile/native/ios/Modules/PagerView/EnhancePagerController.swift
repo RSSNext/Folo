@@ -23,15 +23,28 @@ enum PagerState: String {
 private class PagerViewController: UIViewController {
     private var pageIndex = 0
     private var pageView: UIView?
+    private var contentView: UIView?
 
     convenience init(index: Int, view: UIView) {
         self.init()
         pageIndex = index
-        pageView = view
+        contentView = view
     }
 
     override func loadView() {
+        pageView = UIView()
         view = pageView
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let contentView = contentView, let pageView = pageView {
+            contentView.removeFromSuperview()  // Ensure it's not in another view hierarchy
+            pageView.addSubview(contentView)
+            contentView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
     }
 
     public func getPageIndex() -> Int { pageIndex }
@@ -56,7 +69,15 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
     var onPageWillAppear: ((Int) -> Void)?
 
     var isTransitioning: Bool = false
-    var isDragging: Bool = false
+    var isDragging: Bool = false {
+        willSet {
+            // Recursively find all subviews of type EnhancePageView
+            findEnhancePageViews(in: view).forEach { enhancePageView in
+              debugPrint("set")
+                enhancePageView.isScrolling = newValue
+            }
+        }
+    }
 
     convenience init(
         pageViews: [UIView], initialPageIndex: Int = 0,
@@ -114,8 +135,13 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
         let positionFromStartOfCurrentPage = abs(startOffset - scrollView.contentOffset.x)
         let percent = positionFromStartOfCurrentPage / view.frame.width
 
-        debugPrint(percent, direction)
+//        debugPrint(percent, direction)
         onScroll?(percent, direction)
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isDragging = false
+        onScrollEnd?(currentPageIndex)
     }
 
     public func scrollViewDidEndDragging(
@@ -125,6 +151,23 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
             isDragging = false
             onScrollEnd?(currentPageIndex)
         }
+    }
+
+    // Helper method to recursively find EnhancePageView instances
+    private func findEnhancePageViews(in view: UIView) -> [EnhancePageView] {
+        var result = [EnhancePageView]()
+
+        // Check if current view is an EnhancePageView
+        if let enhancePageView = view as? EnhancePageView {
+            result.append(enhancePageView)
+        }
+
+        // Recursively check all subviews
+        for subview in view.subviews {
+            result.append(contentsOf: findEnhancePageViews(in: subview))
+        }
+
+        return result
     }
 }
 
@@ -180,7 +223,6 @@ extension EnhancePagerController: UIPageViewControllerDataSource, UIPageViewCont
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]
     ) {
-        debugPrint("willTransitionTo")
         isTransitioning = true
     }
 }
@@ -195,7 +237,6 @@ extension EnhancePagerController {
         let hasPageControllerBefore = pageControllers.count > 0
 
         pageControllers.append(vc)
-        debugPrint("inset \(index) \(pageControllers.count)")
 
         if !hasPageControllerBefore {
             setViewControllers([vc], direction: .forward, animated: animated)

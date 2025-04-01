@@ -2,9 +2,10 @@ import type { FeedViewType } from "@follow/constants"
 import * as Haptics from "expo-haptics"
 import { useEffect, useMemo } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { Animated, StyleSheet } from "react-native"
-import PagerView from "react-native-pager-view"
+import { Animated, StyleSheet, View } from "react-native"
 
+import { PagerView } from "@/src/components/native/PagerView"
+// import PagerView from "react-native-pager-view"
 import { selectTimeline, useSelectedFeed } from "@/src/modules/screen/atoms"
 import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 
@@ -38,30 +39,38 @@ export function PagerList({
   }, [page, pagerRef, viewIdIndex])
 
   return (
-    <AnimatedPagerView
-      testID="pager-view"
-      ref={pagerRef}
-      style={[styles.PagerView, style]}
-      initialPage={page}
-      layoutDirection="ltr"
-      overdrag
-      onPageScroll={rest.onPageScroll}
-      onPageSelected={rest.onPageSelected}
-      onPageScrollStateChanged={(e) => {
-        rest.onPageScrollStateChanged(e)
-        setHorizontalScrolling(e.nativeEvent.pageScrollState !== "idle")
-        if (e.nativeEvent.pageScrollState === "settling") {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        }
+    // <AnimatedPagerView
+    //   testID="pager-view"
+    //   ref={pagerRef}
+    //   style={[styles.PagerView, style]}
+    //   initialPage={page}
+    //   layoutDirection="ltr"
+    //   overdrag
+    //   onPageScroll={rest.onPageScroll}
+    //   onPageSelected={rest.onPageSelected}
+    //   onPageScrollStateChanged={(e) => {
+    //     rest.onPageScrollStateChanged(e)
+    //     setHorizontalScrolling(e.nativeEvent.pageScrollState !== "idle")
+    //     if (e.nativeEvent.pageScrollState === "settling") {
+    //       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    //     }
+    //   }}
+    //   pageMargin={10}
+    //   orientation="horizontal"
+    // >
+    //   {useMemo(
+    //     () => activeViews.map((view, index) => renderItem(view.view, page === index)),
+    //     [activeViews, page, renderItem],
+    //   )}
+    // </AnimatedPagerView>
+    <PagerView
+      pageGap={100}
+      pageTotal={activeViews.length}
+      renderPage={(index) => {
+        const view = activeViews[index]!
+        return renderItem(view.view, page === index)
       }}
-      pageMargin={10}
-      orientation="horizontal"
-    >
-      {useMemo(
-        () => activeViews.map((view, index) => renderItem(view.view, page === index)),
-        [activeViews, page, renderItem],
-      )}
-    </AnimatedPagerView>
+    ></PagerView>
   )
 }
 

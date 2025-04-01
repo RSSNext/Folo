@@ -40,7 +40,6 @@ class TabBarRootView: ExpoView {
     override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
       self.willRemoveSubview(childComponentView)
       //      gestureRecognizers?.removeAll()
-
     }
   #endif
 

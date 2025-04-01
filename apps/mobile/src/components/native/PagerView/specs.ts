@@ -2,7 +2,7 @@ import { requireNativeView } from "expo"
 import type { NativeSyntheticEvent, ViewProps } from "react-native"
 
 export const EnhancePagerView = requireNativeView<ViewProps & PagerProps>("EnhancePagerView")
-export const EnhancePageView = requireNativeView("EnhancePageView")
+export const EnhancePageView = requireNativeView<ViewProps>("EnhancePageView")
 
 export interface PagerProps {
   onPageChange?: (e: NativeSyntheticEvent<{ index: number }>) => void

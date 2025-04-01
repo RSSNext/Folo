@@ -140,29 +140,13 @@ public class HelperModule: Module {
   }
 
   private func findUIScrollView(view: UIView?) -> UIScrollView? {
-    return findUIViewOfType(view: view)
+    return Utils.findUIViewOfType(view: view)
   }
 
   private func findUIImageView(view: UIView?) -> UIImageView? {
-    return findUIViewOfType(view: view)
+    return Utils.findUIViewOfType(view: view)
   }
 
-  private func findUIViewOfType<T: UIView>(view: UIView?) -> T? {
-    guard let view = view else {
-      return nil
-    }
-    if let view = view as? T {
-      return view
-    }
-
-    let subviews = view.subviews
-    for subview in subviews {
-      if let targetView = findUIViewOfType(view: subview) as T? {
-        return targetView
-      }
-    }
-    return nil
-  }
 }
 
 extension UIScrollView {
