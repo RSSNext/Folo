@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FlashList } from "@shopify/flash-list"
 import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
@@ -222,6 +223,7 @@ const SectionTitle = ({ title }: { title: string }) => {
 
 const StarItem = () => {
   const navigation = useNavigation()
+  const { t } = useTranslation("common")
 
   return (
     <GroupedInsetListCard showSeparator={false} className="mt-4">
@@ -242,7 +244,7 @@ const StarItem = () => {
       >
         <StarCuteFiIcon color="rgb(245, 158, 11)" height={20} width={20} />
         <Text className="text-text ml-2 font-medium" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
-          Starred
+          {t("words.starred")}
         </Text>
       </ItemPressable>
     </GroupedInsetListCard>
