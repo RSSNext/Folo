@@ -1,8 +1,10 @@
 import { LANGUAGE_MAP } from "@follow/shared"
 import i18next from "i18next"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
+import { currentSupportedLanguages } from "@/src/@types/constants"
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import {
   NavigationBlurEffectHeader,
@@ -20,10 +22,18 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
 function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
   const { t } = useTranslation("lang")
-  const languageMapWithTranslation = Object.entries(LANGUAGE_MAP).map(([key, { label }]) => ({
-    label: `${t(`langs.${key}` as any)} (${label})`,
-    value: key,
-  }))
+  const languageMapWithTranslation = useMemo(() => {
+    const data = Object.entries(LANGUAGE_MAP).map(([key, { label }]) => ({
+      label: `${t(`langs.${key}` as any)} (${label})`,
+      value: key,
+    }))
+
+    return settingKey === "language"
+      ? data.filter((item) => {
+          return currentSupportedLanguages.includes(item.value)
+        })
+      : data
+  }, [settingKey, t])
   const language = useGeneralSettingKey(settingKey)
 
   return (
