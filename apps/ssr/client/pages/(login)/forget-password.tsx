@@ -32,7 +32,7 @@ const forgetPasswordFormSchema = z.object({
 })
 
 export function Component() {
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
   const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
     resolver: zodResolver(forgetPasswordFormSchema),
     defaultValues: {

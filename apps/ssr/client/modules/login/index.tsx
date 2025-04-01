@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
-import { Trans, useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next"
 import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -43,7 +43,7 @@ export function Login() {
 
   const isAuthenticated = status === "authenticated"
 
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (provider && !isCredentialProvider && status === "unauthenticated") {
@@ -214,7 +214,7 @@ const formSchema = z.object({
 })
 
 function LoginWithPassword() {
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -327,7 +327,7 @@ function LoginWithPassword() {
           }}
           size="lg"
         >
-          <Trans ns="external" i18nKey="login.signUp" />
+          {t("login.signUp")}
         </Button>
       </form>
     </Form>

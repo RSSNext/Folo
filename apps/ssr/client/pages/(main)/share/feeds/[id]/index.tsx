@@ -20,7 +20,7 @@ export function Component() {
   const [search] = useSearchParams()
   const view = Number.parseInt(search.get("view") || "0")
 
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
 
   const feed = useFeed({
     id: id!,
