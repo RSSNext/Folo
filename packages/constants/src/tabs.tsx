@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { FeedViewType } from "./enums"
 
-interface ViewDefinition {
+export interface ViewDefinition {
   name:
     | "feed_view_type.articles"
     | "feed_view_type.audios"
