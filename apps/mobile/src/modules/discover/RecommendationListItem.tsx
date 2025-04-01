@@ -34,7 +34,7 @@ export const RecommendationListItem: FC<{
     categories.delete("popular")
     return {
       maintainers: Array.from(maintainers),
-      categories: Array.from(categories) as typeof RSSHubCategories | string[],
+      categories: Array.from(categories) as unknown as typeof RSSHubCategories,
     }
   }, [data])
 
@@ -56,7 +56,7 @@ export const RecommendationListItem: FC<{
                 key={c}
               >
                 <Text className="text-text/60 text-xs" numberOfLines={1}>
-                  {t(`discover.category.${c}` as any)}
+                  {t(`discover.category.${c}`)}
                 </Text>
               </View>
             ))}

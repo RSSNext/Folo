@@ -39,7 +39,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
       categories.delete("popular")
       return {
         maintainers: Array.from(maintainers),
-        categories: Array.from(categories) as typeof RSSHubCategories | string[],
+        categories: Array.from(categories) as unknown as typeof RSSHubCategories,
       }
     }, [data])
 
@@ -146,7 +146,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
                     )}
                   >
                     {RSSHubCategories.includes(c)
-                      ? t(`discover.category.${c as (typeof RSSHubCategories)[number]}`)
+                      ? t(`discover.category.${c}`, { ns: "common" })
                       : upperFirst(c)}
                   </button>
                 ))}
