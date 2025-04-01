@@ -113,6 +113,7 @@ const DiscoverHeaderImpl = () => {
 
 const PlaceholerSearchBar = () => {
   const labelColor = useColor("secondaryLabel")
+  const { t } = useTranslation("common")
   return (
     <Pressable
       style={styles.searchbar}
@@ -127,7 +128,7 @@ const PlaceholerSearchBar = () => {
       >
         <Search2CuteReIcon color={labelColor} height={18} width={18} />
         <Text className="text-secondary-label ml-1" style={styles.searchPlaceholderText}>
-          Search
+          {t("words.search")}
         </Text>
       </View>
     </Pressable>
@@ -160,6 +161,7 @@ const ComposeSearchBar = () => {
 }
 
 const SearchInput = () => {
+  const { t } = useTranslation("common")
   const { searchFocusedAtom, searchValueAtom } = useSearchPageContext()
   const [isFocused, setIsFocused] = useAtom(searchFocusedAtom)
   const placeholderTextColor = useColor("secondaryLabel")
@@ -233,7 +235,7 @@ const SearchInput = () => {
           <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
           {!searchValue && !tempSearchValue && (
             <Text className="text-secondary-label ml-2" style={styles.searchPlaceholderText}>
-              Search
+              {t("words.search")}
             </Text>
           )}
         </Animated.View>
@@ -261,7 +263,7 @@ const SearchInput = () => {
       <Animated.View style={skeletonAnimatedStyle} pointerEvents="none">
         <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
         <Text className="text-secondary-label ml-1" style={styles.searchPlaceholderText}>
-          Search
+          {t("words.search")}
         </Text>
       </Animated.View>
     </View>

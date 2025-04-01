@@ -14,6 +14,7 @@ const keysToCopy: string[] = [
   "words.inbox",
   "words.feeds",
   "words.lists",
+  "words.search",
   "discover.category.all",
   "discover.category.anime",
   "discover.category.bbs",
