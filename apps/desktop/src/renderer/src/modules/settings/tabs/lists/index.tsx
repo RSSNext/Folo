@@ -162,7 +162,7 @@ export const SettingLists = () => {
                               </span>
                             </TooltipTrigger>
                             <TooltipPortal>
-                              <TooltipContent>{t(views[row.view]!.name as any)}</TooltipContent>
+                              <TooltipContent>{t(views[row.view]!.name)}</TooltipContent>
                             </TooltipPortal>
                           </Tooltip>
                         </TableCell>
