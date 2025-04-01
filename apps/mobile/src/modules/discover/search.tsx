@@ -2,6 +2,7 @@ import { RSSHubCategories } from "@follow/constants"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import type { FC } from "react"
 import { useContext, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { Animated as RnAnimated, LayoutChangeEvent } from "react-native"
 import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Animated, {
@@ -22,7 +23,6 @@ import SearchScreen from "@/src/screens/(headless)/search"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { AddFeedButton } from "../screen/action"
-import { RSSHubCategoryCopyMap } from "./copy"
 import { useSearchPageContext } from "./ctx"
 import { DiscoverContext } from "./DiscoverContext"
 import { SearchTabBar } from "./SearchTabBar"
@@ -68,6 +68,7 @@ export const DiscoverHeader = () => {
   return <DiscoverHeaderImpl />
 }
 const DiscoverHeaderImpl = () => {
+  const { t } = useTranslation("common")
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const sheetModal = useScreenIsInSheetModal()
@@ -97,7 +98,7 @@ const DiscoverHeaderImpl = () => {
 
       <TabBar
         tabs={RSSHubCategories.map((category) => ({
-          name: RSSHubCategoryCopyMap[category],
+          name: t(`discover.category.${category}`),
           value: category,
         }))}
         tabScrollContainerAnimatedX={animatedX}
