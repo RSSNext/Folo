@@ -18,6 +18,7 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
+import { updateDayjsLocale } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
 function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
@@ -47,6 +48,7 @@ function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLangua
             setGeneralSetting(settingKey, value)
             if (settingKey === "language") {
               i18next.changeLanguage(value)
+              updateDayjsLocale(value)
             }
           }}
           displayValue={t(`langs.${language}` as any)}

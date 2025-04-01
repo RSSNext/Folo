@@ -1,27 +1,46 @@
+import dayjs from "dayjs"
 import { getLocales } from "expo-localization"
 import i18n from "i18next"
 import { initReactI18next } from "react-i18next"
 
-import { currentSupportedLanguages, defaultNS, ns } from "@/src/@types/constants"
+import {
+  currentSupportedLanguages,
+  dayjsLocaleImportMap,
+  defaultNS,
+  ns,
+} from "@/src/@types/constants"
 import { defaultResources } from "@/src/@types/default-resource"
 
 import { getGeneralSettings } from "../atoms/settings/general"
 
 const fallbackLanguage = "en"
 
+export const updateDayjsLocale = async (lang: string) => {
+  if (!(lang in dayjsLocaleImportMap)) return
+  const dayjsImport = dayjsLocaleImportMap[lang as keyof typeof dayjsLocaleImportMap]
+  const [locale, loader] = dayjsImport
+  await loader()
+  dayjs.locale(locale)
+}
+
 export async function initializeI18n() {
-  return i18n.use(initReactI18next).init({
-    ns,
-    defaultNS,
-    resources: defaultResources,
+  const { language } = getGeneralSettings()
 
-    lng: getGeneralSettings().language,
-    fallbackLng: fallbackLanguage,
+  return Promise.all([
+    updateDayjsLocale(language),
+    i18n.use(initReactI18next).init({
+      ns,
+      defaultNS,
+      resources: defaultResources,
 
-    interpolation: {
-      escapeValue: false,
-    },
-  })
+      lng: language,
+      fallbackLng: fallbackLanguage,
+
+      interpolation: {
+        escapeValue: false,
+      },
+    }),
+  ])
 }
 
 export function getDeviceLanguage() {
