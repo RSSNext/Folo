@@ -44,7 +44,7 @@ import { NotificationsScreen } from "./routes/Notifications"
 import { PrivacyScreen } from "./routes/Privacy"
 
 interface GroupNavigationLink {
-  label: ParseKeys<"settings">
+  label: Extract<ParseKeys<"settings">, `titles.${string}`>
   icon: React.ElementType
   onPress: (data: { navigation: Navigation }) => void
   iconBackgroundColor: string
