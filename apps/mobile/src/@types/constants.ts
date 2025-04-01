@@ -1,5 +1,6 @@
-export const currentSupportedLanguages = ["en", "zh-CN"] as const
-export type SupportedUILanguages = (typeof currentSupportedLanguages)[number]
+const langs = ["en", "zh-CN"] as const
+export const currentSupportedLanguages = langs as readonly string[]
+export type MobileSupportedLanguages = (typeof langs)[number]
 
 export const ns = ["default", "common", "lang", "errors"] as const
 export type MobileNamespaces = (typeof ns)[number]

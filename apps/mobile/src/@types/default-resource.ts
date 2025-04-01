@@ -7,7 +7,7 @@ import lang_zhCN from "@locales/lang/zh-CN.json"
 import en from "@locales/mobile/default/en.json"
 import zhCN from "@locales/mobile/default/zh-CN.json"
 
-import type { MobileNamespaces, SupportedUILanguages } from "./constants"
+import type { MobileNamespaces, MobileSupportedLanguages } from "./constants"
 
 // @keep-sorted
 export const defaultResources = {
@@ -23,4 +23,4 @@ export const defaultResources = {
     errors: errors_en,
     lang: lang_en,
   },
-} satisfies Record<SupportedUILanguages, Record<MobileNamespaces, any>>
+} satisfies Record<MobileSupportedLanguages, Record<MobileNamespaces, any>>
