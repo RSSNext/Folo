@@ -30,6 +30,7 @@ export function PagerList({
   const { page, pagerRef, ...rest } = usePagerView({
     initialPage: viewIdIndex,
     onIndexChange: (index) => {
+      if (index === undefined) return
       selectTimeline({ type: "view", viewId: activeViews[index]!.view }, false)
     },
   })
