@@ -23,7 +23,8 @@ const langs = [
   "tr",
 ] as const
 export const currentSupportedLanguages = langs as readonly string[]
-export type SupportedRendererLanguages = (typeof langs)[number]
+export type SupportedLanguages = (typeof langs)[number]
+
 export const dayjsLocaleImportMap = {
   en: ["en", () => import("dayjs/locale/en")],
   ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],

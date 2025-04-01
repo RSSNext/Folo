@@ -45,7 +45,7 @@ import lang_zhTW from "@locales/lang/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
 import shortcuts_en from "@locales/shortcuts/en.json"
 
-import type { ns, SupportedRendererLanguages } from "./constants"
+import type { ns, SupportedLanguages } from "./constants"
 
 /**
  * This file is the language resource that is loaded in full when the app is initialized.
@@ -92,7 +92,4 @@ export const defaultResources = {
   de: { lang: lang_de, common: common_de },
   ko: { lang: lang_ko, common: common_ko },
   tr: { lang: lang_tr, common: common_tr },
-} satisfies Record<
-  SupportedRendererLanguages,
-  Partial<Record<(typeof ns)[number], Record<string, string>>>
->
+} satisfies Record<SupportedLanguages, Partial<Record<(typeof ns)[number], Record<string, string>>>>
