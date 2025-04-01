@@ -68,6 +68,26 @@ import tr from "@locales/mobile/default/tr.json"
 import zhCN from "@locales/mobile/default/zh-CN.json"
 import zhHK from "@locales/mobile/default/zh-HK.json"
 import zhTW from "@locales/mobile/default/zh-TW.json"
+import settings_ardz from "@locales/settings/ar-DZ.json"
+import settings_ariq from "@locales/settings/ar-IQ.json"
+import settings_arkw from "@locales/settings/ar-KW.json"
+import settings_arma from "@locales/settings/ar-MA.json"
+import settings_arsa from "@locales/settings/ar-SA.json"
+import settings_artn from "@locales/settings/ar-TN.json"
+import settings_de from "@locales/settings/de.json"
+import settings_en from "@locales/settings/en.json"
+import settings_es from "@locales/settings/es.json"
+import settings_fi from "@locales/settings/fi.json"
+import settings_fr from "@locales/settings/fr.json"
+import settings_it from "@locales/settings/it.json"
+import settings_ja from "@locales/settings/ja.json"
+import settings_ko from "@locales/settings/ko.json"
+import settings_pt from "@locales/settings/pt.json"
+import settings_ru from "@locales/settings/ru.json"
+import settings_tr from "@locales/settings/tr.json"
+import settings_zhCN from "@locales/settings/zh-CN.json"
+import settings_zhHK from "@locales/settings/zh-HK.json"
+import settings_zhTW from "@locales/settings/zh-TW.json"
 
 import type { MobileSupportedLanguages, ns } from "./constants"
 
@@ -78,36 +98,42 @@ export const defaultResources = {
     common: common_ardz,
     default: arDZ,
     lang: lang_ardz,
+    settings: settings_ardz,
   },
   // @keep-sorted
   "ar-IQ": {
     common: common_ariq,
     default: arIQ,
     lang: lang_ariq,
+    settings: settings_ariq,
   },
   // @keep-sorted
   "ar-KW": {
     common: common_arkw,
     default: arKW,
     lang: lang_arkw,
+    settings: settings_arkw,
   },
   // @keep-sorted
   "ar-MA": {
     common: common_arma,
     default: arMA,
     lang: lang_arma,
+    settings: settings_arma,
   },
   // @keep-sorted
   "ar-SA": {
     common: common_arsa,
     default: arSA,
     lang: lang_arsa,
+    settings: settings_arsa,
   },
   // @keep-sorted
   "ar-TN": {
     common: common_artn,
     default: arTN,
     lang: lang_artn,
+    settings: settings_artn,
   },
   // @keep-sorted
   "zh-CN": {
@@ -115,6 +141,7 @@ export const defaultResources = {
     default: zhCN,
     errors: errors_zhCN,
     lang: lang_zhCN,
+    settings: settings_zhCN,
   },
   // @keep-sorted
   "zh-HK": {
@@ -122,6 +149,7 @@ export const defaultResources = {
     default: zhHK,
     errors: errors_zhHK,
     lang: lang_zhHK,
+    settings: settings_zhHK,
   },
   // @keep-sorted
   "zh-TW": {
@@ -129,6 +157,7 @@ export const defaultResources = {
     default: zhTW,
     errors: errors_zhTW,
     lang: lang_zhTW,
+    settings: settings_zhTW,
   },
   // @keep-sorted
   de: {
@@ -136,6 +165,7 @@ export const defaultResources = {
     default: de,
     errors: errors_de,
     lang: lang_de,
+    settings: settings_de,
   },
   // @keep-sorted
   en: {
@@ -143,18 +173,21 @@ export const defaultResources = {
     default: en,
     errors: errors_en,
     lang: lang_en,
+    settings: settings_en,
   },
   // @keep-sorted
   es: {
     common: common_es,
     default: es,
     lang: lang_es,
+    settings: settings_es,
   },
   // @keep-sorted
   fi: {
     common: common_fi,
     default: fi,
     lang: lang_fi,
+    settings: settings_fi,
   },
   // @keep-sorted
   fr: {
@@ -162,12 +195,14 @@ export const defaultResources = {
     default: fr,
     errors: errors_fr,
     lang: lang_fr,
+    settings: settings_fr,
   },
   // @keep-sorted
   it: {
     common: common_it,
     default: it,
     lang: lang_it,
+    settings: settings_it,
   },
   // @keep-sorted
   ja: {
@@ -175,6 +210,7 @@ export const defaultResources = {
     default: ja,
     errors: errors_ja,
     lang: lang_ja,
+    settings: settings_ja,
   },
   // @keep-sorted
   ko: {
@@ -182,12 +218,14 @@ export const defaultResources = {
     default: ko,
     errors: errors_ko,
     lang: lang_ko,
+    settings: settings_ko,
   },
   // @keep-sorted
   pt: {
     common: common_pt,
     default: pt,
     lang: lang_pt,
+    settings: settings_pt,
   },
   // @keep-sorted
   ru: {
@@ -195,6 +233,7 @@ export const defaultResources = {
     default: ru,
     errors: errors_ru,
     lang: lang_ru,
+    settings: settings_ru,
   },
   // @keep-sorted
   tr: {
@@ -202,6 +241,7 @@ export const defaultResources = {
     default: tr,
     errors: errors_tr,
     lang: lang_tr,
+    settings: settings_tr,
   },
 } satisfies Record<
   MobileSupportedLanguages,
