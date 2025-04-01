@@ -1,4 +1,6 @@
 {
+  "profile.title": "{{name}}'s Profile",
+  "profile.uncategorized_feeds": "Uncategorized feeds",
   "tabs.discover": "Discover",
   "tabs.home": "Home",
   "tabs.settings": "Settings",

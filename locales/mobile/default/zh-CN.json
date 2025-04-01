@@ -1,4 +1,6 @@
 {
+  "profile.title": "{{name}}的个人资料",
+  "profile.uncategorized_feeds": "未分类的订阅源",
   "tabs.discover": "发现",
   "tabs.home": "首页",
   "tabs.settings": "设置",
