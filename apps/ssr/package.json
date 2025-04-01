@@ -23,7 +23,6 @@
     "fastify": "5.2.2",
     "framer-motion": "12.6.2",
     "i18next": "24.2.3",
-    "i18next-browser-languagedetector": "8.0.4",
     "jotai": "2.12.2",
     "kose-font": "1.0.0",
     "linkedom": "0.18.9",
