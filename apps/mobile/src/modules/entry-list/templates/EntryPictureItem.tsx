@@ -23,7 +23,7 @@ export function EntryPictureItem({ id }: { id: string }) {
 
   if (!hasMedia) {
     return (
-      <View className="aspect-video w-full items-center justify-center">
+      <View className="w-full items-center justify-center" style={{ aspectRatio: 16 / 9 }}>
         <Text className="text-label text-center">No media available</Text>
       </View>
     )
