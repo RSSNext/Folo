@@ -1,4 +1,4 @@
-import type { AppType, languageSchema, users } from "@follow/shared/hono"
+import type { AppType, languageSchema, users } from "@follow/shared"
 import type { hc } from "hono/client"
 import type { z } from "zod"
 

@@ -785,6 +785,9 @@ importers:
       '@follow/tracker':
         specifier: workspace:*
         version: link:../../packages/tracker
+      '@follow/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@follow/utils':
         specifier: workspace:*
         version: link:../../packages/utils

@@ -14,6 +14,7 @@ import { BellRingingCuteFiIcon } from "@/src/icons/bell_ringing_cute_fi"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
+import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { PaletteCuteFiIcon } from "@/src/icons/palette_cute_fi"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
@@ -26,6 +27,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { InvitationScreen } from "@/src/screens/(modal)/invitation"
 import { useRole, useWhoami } from "@/src/store/user/hooks"
+import { accentColor } from "@/src/theme/colors"
 
 import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
@@ -34,6 +36,7 @@ import { AppearanceScreen } from "./routes/Appearance"
 import { DataScreen } from "./routes/Data"
 import { FeedsScreen } from "./routes/Feeds"
 import { GeneralScreen } from "./routes/General"
+import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
 import { PrivacyScreen } from "./routes/Privacy"
@@ -91,6 +94,19 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
       navigation.pushControllerView(AccountScreen)
     },
     iconBackgroundColor: "#d08700",
+    anonymous: false,
+  },
+]
+
+const BetaGroupNavigationLinks: GroupNavigationLink[] = [
+  {
+    label: "Invitation",
+    icon: LoveCuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(InvitationsScreen)
+    },
+
+    iconBackgroundColor: accentColor,
     anonymous: false,
   },
 ]
@@ -212,6 +228,7 @@ const NavigationLinkGroup: FC<{
 const navigationGroups = [
   DataGroupNavigationLinks,
   SettingGroupNavigationLinks,
+  BetaGroupNavigationLinks,
   PrivacyGroupNavigationLinks,
   ActionGroupNavigationLinks,
 ] as const

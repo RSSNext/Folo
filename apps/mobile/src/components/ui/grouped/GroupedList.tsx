@@ -305,7 +305,8 @@ export const GroupedInformationCell: FC<{
   description?: string
   icon?: React.ReactNode
   iconBackgroundColor?: string
-}> = ({ title, description, icon, iconBackgroundColor }) => {
+  children?: React.ReactNode
+}> = ({ title, description, icon, iconBackgroundColor, children }) => {
   return (
     <GroupedInsetListBaseCell className="flex-1 flex-col items-center justify-center rounded-[16px] p-6">
       {!!icon && (
@@ -322,6 +323,7 @@ export const GroupedInformationCell: FC<{
           {description}
         </Text>
       )}
+      {children}
     </GroupedInsetListBaseCell>
   )
 }
