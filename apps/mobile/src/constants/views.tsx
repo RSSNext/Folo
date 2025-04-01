@@ -21,42 +21,42 @@ export interface ViewDefinition {
 }
 export const views: ViewDefinition[] = [
   {
-    name: "Articles",
+    name: "feed_view_type.articles",
     icon: PaperCuteFiIcon,
     activeColor: accentColor,
     translation: "title,description",
     view: FeedViewType.Articles,
   },
   {
-    name: "Social Media",
+    name: "feed_view_type.social_media",
     icon: TwitterCuteFiIcon,
     activeColor: colors.sky[500],
     translation: "content",
     view: FeedViewType.SocialMedia,
   },
   {
-    name: "Pictures",
+    name: "feed_view_type.pictures",
     icon: PicCuteFiIcon,
     activeColor: colors.green[500],
     translation: "title",
     view: FeedViewType.Pictures,
   },
   {
-    name: "Videos",
+    name: "feed_view_type.videos",
     icon: VideoCuteFiIcon,
     activeColor: colors.red[500],
     translation: "title",
     view: FeedViewType.Videos,
   },
   {
-    name: "Audios",
+    name: "feed_view_type.audios",
     icon: MicCuteFiIcon,
     activeColor: colors.purple[500],
     translation: "title",
     view: FeedViewType.Audios,
   },
   {
-    name: "Notifications",
+    name: "feed_view_type.notifications",
     icon: AnnouncementCuteFiIcon,
     activeColor: colors.yellow[500],
     translation: "title",
