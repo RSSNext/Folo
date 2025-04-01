@@ -3,6 +3,7 @@ import path from "node:path"
 
 const sourceDir = "./locales/app"
 const targetDir = "./locales/common"
+// TODO: we can consider remove these keys in locales/app
 const keysToCopy: string[] = [
   "feed_view_type.articles",
   "feed_view_type.audios",
