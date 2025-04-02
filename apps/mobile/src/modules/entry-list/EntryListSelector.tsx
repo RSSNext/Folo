@@ -3,7 +3,7 @@ import type { FlashList } from "@shopify/flash-list"
 
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
-import type { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
+import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { useWhoami } from "@/src/store/user/hooks"
 
 import { EntryListContentArticle } from "./EntryListContentArticle"
@@ -34,7 +34,7 @@ export function EntryListSelector({
       break
     }
     case FeedViewType.Pictures: {
-      // ContentComponent = EntryListContentPicture
+      ContentComponent = EntryListContentPicture
       break
     }
     case FeedViewType.Videos: {
