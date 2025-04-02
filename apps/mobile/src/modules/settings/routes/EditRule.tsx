@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
 
@@ -63,9 +64,14 @@ const RuleImpl: React.FC<{ index: number }> = ({ index }) => {
 }
 
 const NameSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+  const { t } = useTranslation("settings")
   return (
     <GroupedInsetListCard>
-      <GroupedInsetListCell label="Name" leftClassName="flex-none" rightClassName="flex-1">
+      <GroupedInsetListCell
+        label={t("actions.action_card.name")}
+        leftClassName="flex-none"
+        rightClassName="flex-1"
+      >
         <View className="flex-1">
           <PlainTextField
             className="text-secondary-label w-full flex-1 text-right"
@@ -83,20 +89,24 @@ const NameSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
 }
 
 const FilterSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+  const { t } = useTranslation("settings")
   const hasCustomFilters = rule.condition.length > 0
   return (
     <View>
-      <GroupedInsetListSectionHeader label="When feeds match..." marginSize="small" />
+      <GroupedInsetListSectionHeader
+        label={t("actions.action_card.when_feeds_match")}
+        marginSize="small"
+      />
       <GroupedInsetListCard>
         <GroupedInsetListActionCellRadio
-          label="All"
+          label={t("actions.action_card.all")}
           selected={!hasCustomFilters}
           onPress={() => {
             actionActions.toggleRuleFilter(rule.index)
           }}
         />
         <GroupedInsetListActionCellRadio
-          label="Custom filters"
+          label={t("actions.action_card.custom_filters")}
           selected={hasCustomFilters}
           onPress={() => {
             actionActions.toggleRuleFilter(rule.index)
@@ -108,13 +118,15 @@ const FilterSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
 }
 
 const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ filter, index }) => {
+  const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
   const navigation = useNavigation()
   const colors = useColors()
 
   if (filter.length === 0) return null
   return (
     <View>
-      <GroupedInsetListSectionHeader label="Conditions" marginSize="small" />
+      <GroupedInsetListSectionHeader label={t("actions.conditions")} marginSize="small" />
 
       {filter.map((group, groupIndex) => {
         if (!Array.isArray(group)) {
@@ -129,7 +141,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
               )
               const currentValue =
                 currentField?.type === "view"
-                  ? views.find((view) => view.view === Number(item.value))?.name
+                  ? tCommon(views.find((view) => view.view === Number(item.value))?.name!)
                   : item.value
               return (
                 <SwipeableItem
@@ -162,7 +174,11 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
                 >
                   <GroupedInsetListActionCell
                     label={
-                      [currentField?.label, currentOperator?.label, currentValue]
+                      [
+                        currentField?.label ? t(currentField.label) : "",
+                        currentOperator?.label ? t(currentOperator.label) : "",
+                        currentValue,
+                      ]
                         .filter(Boolean)
                         .join(" ") || "Unknown"
                     }
@@ -178,7 +194,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
               )
             })}
             <GroupedPlainButtonCell
-              label="And"
+              label={t("actions.action_card.and")}
               onPress={() => {
                 actionActions.addConditionItem({ ruleIndex: index, groupIndex })
                 setTimeout(() => {
@@ -206,6 +222,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
 }
 
 const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+  const { t } = useTranslation("settings")
   const enabledActions = availableActionList.filter(
     (action) => rule.result[action.value] !== undefined,
   )
@@ -218,7 +235,7 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
 
   return (
     <View>
-      <GroupedInsetListSectionHeader label="Then do..." marginSize="small" />
+      <GroupedInsetListSectionHeader label={t("actions.action_card.then_do")} marginSize="small" />
       <GroupedInsetListCard>
         {enabledActions.map((action) => (
           <SwipeableItem
@@ -237,12 +254,12 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
               <action.component rule={rule} />
             ) : action.onNavigate ? (
               <GroupedInsetListActionCell
-                label={action.label}
+                label={t(action.label)}
                 onPress={() => action.onNavigate?.(navigation, rule.index)}
               />
             ) : (
               <GroupedInsetListCell
-                label={action.label}
+                label={t(action.label)}
                 leftClassName="flex-none"
                 rightClassName="flex-1 flex-row justify-end"
               />
@@ -252,7 +269,7 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
         {notEnabledActions.length > 0 && (
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
-              <GroupedPlainButtonCell label="Add" />
+              <GroupedPlainButtonCell label={t("actions.action_card.add")} />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
               {notEnabledActions.map((action) => (
@@ -266,7 +283,7 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
                     }
                   }}
                 >
-                  <DropdownMenu.ItemTitle>{action.label}</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemTitle>{t(action.label)}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.Content>

@@ -1,5 +1,6 @@
 import { withOpacity } from "@follow/utils"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
 import { ActivityIndicator, Text, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
@@ -34,6 +35,7 @@ import type { ActionRule } from "@/src/store/action/types"
 import { EditRuleScreen } from "./EditRule"
 
 export const ActionsScreen = () => {
+  const { t } = useTranslation("settings")
   const { isLoading } = usePrefetchActions()
   const rules = useActionRules()
   const isDirty = useIsActionDataDirty()
@@ -41,7 +43,7 @@ export const ActionsScreen = () => {
   return (
     <SafeNavigationScrollView nestedScrollEnabled className="bg-system-grouped-background">
       <NavigationBlurEffectHeader
-        title="Actions"
+        title={t("titles.actions")}
         headerRight={useCallback(
           () => (
             <SaveRuleButton disabled={!isDirty} />
@@ -54,8 +56,8 @@ export const ActionsScreen = () => {
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell
-            title="Actions"
-            description="Action are collections of rules that you can automate to perform tasks on server or client side."
+            title={t("titles.actions")}
+            description={t("actions.info")}
             icon={<Magic2CuteFiIcon height={40} width={40} color="#fff" />}
             iconBackgroundColor="#059669"
           />
@@ -88,10 +90,11 @@ export const ActionsScreen = () => {
 }
 
 const NewRuleButton = () => {
+  const { t } = useTranslation("settings")
   return (
     <GroupedInsetListCard className="mt-6">
       <GroupedPlainButtonCell
-        label="New Rule"
+        label={t("actions.newRule")}
         onPress={() => {
           actionActions.addRule()
         }}
