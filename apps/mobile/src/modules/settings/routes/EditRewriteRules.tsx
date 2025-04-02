@@ -22,7 +22,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Edit Rewrite Rules" />
+      <NavigationBlurEffectHeader title={t("actions.edit_rewrite_rule")} />
       <GroupedInsetListSectionHeader
         label={t("actions.action_card.rewrite_rules")}
         marginSize="small"

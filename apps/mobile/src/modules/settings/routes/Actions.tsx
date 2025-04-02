@@ -132,6 +132,7 @@ const ListItemCell: ListRenderItem<ActionRule> = (props) => {
   return <ListItemCellImpl {...props} />
 }
 const ListItemCellImpl: ListRenderItem<ActionRule> = ({ item: rule }) => {
+  const { t } = useTranslation("common")
   const navigation = useNavigation()
   const colors = useColors()
 
@@ -140,14 +141,14 @@ const ListItemCellImpl: ListRenderItem<ActionRule> = ({ item: rule }) => {
       swipeRightToCallAction
       rightActions={[
         {
-          label: "Delete",
+          label: t("words.delete"),
           onPress: () => {
             actionActions.deleteRule(rule.index)
           },
           backgroundColor: colors.red,
         },
         {
-          label: "Edit",
+          label: t("words.edit"),
           onPress: () => {
             navigation.pushControllerView(EditRuleScreen, {
               index: rule.index,
@@ -159,7 +160,7 @@ const ListItemCellImpl: ListRenderItem<ActionRule> = ({ item: rule }) => {
     >
       <ItemPressable
         className="flex-row justify-between p-4"
-        onPress={() => navigation.presentControllerView(EditRuleScreen, { index: rule.index })}
+        onPress={() => navigation.pushControllerView(EditRuleScreen, { index: rule.index })}
       >
         <Text className="text-label text-base">{rule.name}</Text>
         <Switch

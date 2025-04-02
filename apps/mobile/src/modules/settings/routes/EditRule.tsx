@@ -28,6 +28,7 @@ import { availableActionList, filterFieldOptions, filterOperatorOptions } from "
 import { EditConditionScreen } from "./EditCondition"
 
 export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+  const { t } = useTranslation("settings")
   const rule = useActionRule(index)
 
   return (
@@ -35,7 +36,9 @@ export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ in
       className="bg-system-grouped-background"
       contentContainerClassName="mt-6"
     >
-      <NavigationBlurEffectHeader title={`Edit Rule - ${rule?.name}`} />
+      <NavigationBlurEffectHeader
+        title={`${t("actions.edit_rule")}${rule?.name ? ` - ${rule.name}` : ""}`}
+      />
       <RuleImpl index={index} />
     </SafeNavigationScrollView>
   )
@@ -149,7 +152,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
                   swipeRightToCallAction
                   rightActions={[
                     {
-                      label: "Delete",
+                      label: tCommon("words.delete"),
                       onPress: () => {
                         actionActions.deleteConditionItem({
                           ruleIndex: index,
@@ -160,7 +163,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
                       backgroundColor: colors.red,
                     },
                     {
-                      label: "Edit",
+                      label: tCommon("words.edit"),
                       onPress: () => {
                         navigation.pushControllerView(EditConditionScreen, {
                           ruleIndex: index,
@@ -211,7 +214,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
       })}
       <GroupedInsetListCard>
         <GroupedPlainButtonCell
-          label="Or"
+          label={t("actions.action_card.or")}
           onPress={() => {
             actionActions.addConditionGroup({ ruleIndex: index })
           }}
@@ -242,7 +245,7 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
             key={action.value}
             rightActions={[
               {
-                label: "Delete",
+                label: t("words.delete", { ns: "common" }),
                 onPress: () => {
                   actionActions.deleteRuleAction(rule.index, action.value)
                 },
