@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Copiado al portapapeles",
-  "cancel": "Cancelar",
-  "close": "Cerrar",
-  "confirm": "Confirmar",
   "feed_view_type.articles": "Artículos",
   "feed_view_type.audios": "Audios",
   "feed_view_type.notifications": "Notificaciones",
@@ -18,6 +15,9 @@
   "time.yesterday": "Ayer",
   "tips.load-lng-error": "Error al cargar el paquete de idioma",
   "words.back": "Atrás",
+  "words.cancel": "Cancelar",
+  "words.close": "Cerrar",
+  "words.confirm": "Confirmar",
   "words.copy": "Copiar",
   "words.edit": "Editar",
   "words.entry": "Entrada",

@@ -377,7 +377,7 @@ const FeedInnerForm = ({
                   dismiss()
                 }}
               >
-                {t.common("cancel")}
+                {t.common("words.cancel")}
               </Button>
             )}
             <Button ref={buttonRef} type="submit" isLoading={followMutation.isPending}>

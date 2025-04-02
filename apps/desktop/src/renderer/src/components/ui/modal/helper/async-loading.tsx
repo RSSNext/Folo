@@ -90,7 +90,7 @@ export function AsyncModalContent<T>({
                     <i className="i-mgc-close-cute-re" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{t("close")}</TooltipContent>
+                <TooltipContent>{t("words.close")}</TooltipContent>
               </Tooltip>
             )}
           </m.div>

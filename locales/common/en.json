@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Copied to clipboard",
-  "cancel": "Cancel",
-  "close": "Close",
-  "confirm": "Confirm",
   "discover.category.all": "All",
   "discover.category.anime": "ACG",
   "discover.category.bbs": "BBS",
@@ -45,6 +42,9 @@
   "words.ago": "ago",
   "words.all": "All",
   "words.back": "Back",
+  "words.cancel": "Cancel",
+  "words.close": "Close",
+  "words.confirm": "Confirm",
   "words.copy": "Copy",
   "words.create": "Create",
   "words.default": "Default",

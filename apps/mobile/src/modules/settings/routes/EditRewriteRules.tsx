@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 
 import {
@@ -16,16 +17,20 @@ import { useActionRule } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
 
 export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+  const { t } = useTranslation("settings")
   const rule = useActionRule(index)
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Edit Rewrite Rules" />
-      <GroupedInsetListSectionHeader label="Rewrite Rules" marginSize="small" />
+      <NavigationBlurEffectHeader title={t("actions.edit_rewrite_rule")} />
+      <GroupedInsetListSectionHeader
+        label={t("actions.action_card.rewrite_rules")}
+        marginSize="small"
+      />
       {rule?.result.rewriteRules?.map((rewriteRule, rewriteRuleIndex) => (
         <GroupedInsetListCard key={rewriteRuleIndex} className="mb-4">
           <GroupedInsetListBaseCell className="flex-row">
-            <Text>From</Text>
+            <Text className="text-label">{t("actions.action_card.from")}</Text>
             <PlainTextField
               className="w-full flex-1 text-right"
               value={rewriteRule.from}
@@ -40,7 +45,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
             />
           </GroupedInsetListBaseCell>
           <GroupedInsetListBaseCell className="flex-row">
-            <Text>To</Text>
+            <Text className="text-label">{t("actions.action_card.to")}</Text>
             <PlainTextField
               className="w-full flex-1 text-right"
               value={rewriteRule.to}
@@ -58,7 +63,7 @@ export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }>
       ))}
       <GroupedInsetListCard>
         <GroupedPlainButtonCell
-          label="Add"
+          label={t("actions.action_card.add")}
           onPress={() => {
             actionActions.addRewriteRule(index)
           }}

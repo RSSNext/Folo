@@ -1,4 +1,5 @@
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
+import { Trans, useTranslation } from "react-i18next"
 import { Linking, Text, View } from "react-native"
 
 import { Link } from "@/src/components/common/Link"
@@ -43,12 +44,13 @@ const links = [
 ]
 
 export const AboutScreen = () => {
+  const { t } = useTranslation("settings")
   const buildId = nativeBuildVersion
   const appVersion = nativeApplicationVersion
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background" contentViewClassName="pt-6">
-      <NavigationBlurEffectHeader title="About" />
+      <NavigationBlurEffectHeader title={t("titles.about")} />
 
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="flex-col py-6">
@@ -60,30 +62,57 @@ export const AboutScreen = () => {
             </Text>
           </View>
           <View className="mt-6 flex-1">
-            <Text className="text-label text-[15px]">
-              Folo is in the early stages of development. If you have any feedback or suggestions,
-              please feel free to open an issue on the{" "}
-              <Link className="text-accent" href="https://github.com/RSSNext/follow">
-                GitHub repository
-              </Link>
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.feedbackInfo"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label text-[15px]">{children}</Text>
+              )}
+              values={{
+                appName: "Folo",
+                // TODO: add commitSha
+                commitSha: "",
+              }}
+              components={{
+                OpenIssueLink: (
+                  <Link className="text-accent" href="https://github.com/RSSNext/follow" />
+                ),
+                ExternalLinkIcon: <View />,
+              }}
+            />
 
-            <Text className="text-label mt-4 text-[15px]">
-              The icon library used is copyrighted by{" "}
-              <Link className="text-accent" href="https://mgc.mingcute.com/">
-                https://mgc.mingcute.com/
-              </Link>{" "}
-              and cannot be redistributed.
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.iconLibrary"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+              )}
+              components={{
+                IconLibraryLink: (
+                  <Link className="text-accent" href="https://mgc.mingcute.com/">
+                    https://mgc.mingcute.com/
+                  </Link>
+                ),
+                ExternalLinkIcon: <View />,
+              }}
+            />
 
-            <Text className="text-label mt-4 text-[15px]">
-              Copyright © 2025 Folo. All rights reserved.
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.licenseInfo"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+              )}
+              values={{
+                currentYear: new Date().getFullYear(),
+                appName: "Folo",
+              }}
+            />
           </View>
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
-      <GroupedInsetListSectionHeader label="Social Links" />
+      <GroupedInsetListSectionHeader label={t("about.socialMedia")} />
       <GroupedInsetListCard>
         {links.map((link) => (
           <GroupedInsetListNavigationLink

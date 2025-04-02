@@ -2,6 +2,7 @@ import { cn } from "@follow/utils"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
+import { Trans, useTranslation } from "react-i18next"
 import { Pressable, Text, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
@@ -50,6 +51,7 @@ const useInvitationsLimitationQuery = () => {
 
 const numberFormatter = new Intl.NumberFormat("en-US")
 export const InvitationsScreen: NavigationControllerView = () => {
+  const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
 
   const { data: invitations, isLoading } = useInvitationsQuery()
@@ -60,32 +62,57 @@ export const InvitationsScreen: NavigationControllerView = () => {
   }
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Invitations" headerRight={<GenerateButton />} />
+      <NavigationBlurEffectHeader
+        title={t("titles.invitations")}
+        headerRight={<GenerateButton />}
+      />
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell
-            title="Invitations"
+            title={t("titles.invitations")}
             icon={<LoveCuteFiIcon height={40} width={40} color="#fff" />}
             iconBackgroundColor={accentColor}
           >
-            <Text className="text-label mt-3 text-base leading-tight">
-              Follow is currently in <Text className="font-bold">early access</Text> and requires an
-              invitation code to use. You can spend {serverConfigs?.INVITATION_PRICE}{" "}
-              <View style={{ transform: [{ translateY: 6 }, { translateX: -2 }] }}>
-                <PowerIcon color={accentColor} height={16} width={16} />
-              </View>
-              Power to generate an invitation code for your friends.
-            </Text>
-
-            <Text className="text-label mt-3 text-base leading-tight">
-              Based on your usage time, you can generate up to{" "}
-              {numberFormatter.format(limitation ?? 0)} invitation codes.
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="invitation.earlyAccess"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+              )}
+              components={{ strong: <Text className="font-bold" /> }}
+            />
+            <Trans
+              ns="settings"
+              i18nKey="invitation.generateCost"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+              )}
+              values={{
+                INVITATION_PRICE: serverConfigs?.INVITATION_PRICE,
+              }}
+              components={{
+                PowerIcon: (
+                  <View style={{ transform: [{ translateY: 6 }, { translateX: -2 }] }}>
+                    <PowerIcon color={accentColor} height={16} width={16} />
+                  </View>
+                ),
+              }}
+            />
+            <Trans
+              ns="settings"
+              i18nKey="invitation.limitationMessage"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+              )}
+              values={{
+                limitation: numberFormatter.format(limitation ?? 0),
+              }}
+            />
           </GroupedInformationCell>
         </GroupedInsetListCard>
       </View>
 
-      <GroupedInsetListSectionHeader label="Invitations" />
+      <GroupedInsetListSectionHeader label={t("titles.invitations")} />
       <GroupedInsetListCard>
         {isLoading && <GroupedInsetActivityIndicatorCell />}
         {invitations?.data?.map((invitation) => (
@@ -99,10 +126,11 @@ export const InvitationsScreen: NavigationControllerView = () => {
                       className={cn("text-label", !invitation.users && "text-secondary-label")}
                       numberOfLines={1}
                     >
-                      {invitation.users?.name || (!invitation.users ? "Not used" : "")}
+                      {invitation.users?.name || (!invitation.users ? t("invitation.notUsed") : "")}
                     </Text>
                     <Text className="text-secondary-label text-sm">
-                      Created at {dayjs(invitation.createdAt).format("YYYY/MM/DD")}
+                      {t("invitation.created_at")}{" "}
+                      {dayjs(invitation.createdAt).format("YYYY/MM/DD")}
                     </Text>
                   </View>
                 </View>
@@ -129,6 +157,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
 }
 
 const GenerateButton = () => {
+  const { t } = useTranslation("settings")
   const limitation = useInvitationsLimitationQuery()
   const { data: invitations } = useInvitationsQuery()
   const disabled = !limitation || (invitations && invitations?.data?.length >= limitation)
@@ -145,7 +174,7 @@ const GenerateButton = () => {
           !disabled ? "text-accent" : "text-secondary-label",
         )}
       >
-        Generate
+        {t("invitation.generate")}
       </Text>
     </UINavigationHeaderActionButton>
   )

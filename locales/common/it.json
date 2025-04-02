@@ -1,7 +1,5 @@
 {
   "app.copied_to_clipboard": "Copiato negli appunti",
-  "cancel": "Annulla",
-  "confirm": "Conferma",
   "feed_view_type.articles": "Articoli",
   "feed_view_type.audios": "Audio",
   "feed_view_type.notifications": "Notifiche",
@@ -17,6 +15,8 @@
   "time.yesterday": "Ieri",
   "tips.load-lng-error": "Errore nel caricamento del pacchetto linguistico",
   "words.back": "Indietro",
+  "words.cancel": "Annulla",
+  "words.confirm": "Conferma",
   "words.copy": "Copia",
   "words.edit": "Modifica",
   "words.entry": "Voce",

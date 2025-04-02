@@ -46,6 +46,7 @@ export function Settings() {
   )
 }
 const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
+  const { t } = useTranslation()
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
@@ -66,7 +67,9 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
         style={styles}
       >
         <BlurEffect />
-        <Text className="text-label flex-1 text-center text-[17px] font-semibold">Settings</Text>
+        <Text className="text-label flex-1 text-center text-[17px] font-semibold">
+          {t("tabs.settings")}
+        </Text>
       </Animated.View>
       {!!whoami?.id && <EditProfileButton />}
     </View>

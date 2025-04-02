@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "In die Zwischenablage kopiert",
-  "cancel": "Abbrechen",
-  "close": "Schließen",
-  "confirm": "Bestätigen",
   "feed_view_type.articles": "Artikel",
   "feed_view_type.audios": "Audios",
   "feed_view_type.notifications": "Benachrichtigungen",
@@ -18,6 +15,9 @@
   "time.yesterday": "Gestern",
   "tips.load-lng-error": "Fehler beim Laden des Sprachpakets",
   "words.back": "Zurück",
+  "words.cancel": "Abbrechen",
+  "words.close": "Schließen",
+  "words.confirm": "Bestätigen",
   "words.copy": "Kopieren",
   "words.edit": "Bearbeiten",
   "words.entry": "Eintrag",

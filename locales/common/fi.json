@@ -1,7 +1,5 @@
 {
   "app.copied_to_clipboard": "Kopioitu leikepöydälle",
-  "cancel": "Peruuta",
-  "confirm": "Vahvista",
   "feed_view_type.articles": "Artikkelit",
   "feed_view_type.audios": "Äänitteet",
   "feed_view_type.notifications": "Ilmoitukset",
@@ -17,6 +15,8 @@
   "time.yesterday": "Eilen",
   "tips.load-lng-error": "Kielipaketin lataaminen epäonnistui",
   "words.back": "Takaisin",
+  "words.cancel": "Peruuta",
+  "words.confirm": "Vahvista",
   "words.copy": "Kopioi",
   "words.edit": "Muokkaa",
   "words.entry": "Merkintä",
