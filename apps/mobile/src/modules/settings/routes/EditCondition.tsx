@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
 import {
@@ -42,6 +43,7 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
     currentField?.type === "view"
       ? views.find((view) => view.view === Number(item.value))
       : undefined
+  const { t } = useTranslation("common")
 
   return (
     <>
@@ -82,7 +84,7 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
           {currentField?.type === "view" ? (
             <Select
               options={views.map((field) => ({
-                label: field.name,
+                label: t(field.name),
                 value: String(field.view),
               }))}
               value={currentView?.view ? String(currentView.view) : undefined}
