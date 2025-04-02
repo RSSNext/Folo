@@ -15,6 +15,15 @@ on:
       - "apps/mobile/native/**"
       - "apps/mobile/package.json"
       - "apps/mobile/app.config.ts"
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+        description: "Build profile"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -59,7 +68,7 @@ jobs:
 
       - name: 🔨 Build Android app
         working-directory: apps/mobile
-        run: eas build --platform android --profile development --local --output=${{ github.workspace }}/build.apk
+        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.apk
 
       - name: 📤 Upload apk Artifact
         uses: actions/upload-artifact@v4
