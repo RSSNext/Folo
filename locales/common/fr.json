@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Copié dans le presse-papier",
-  "cancel": "Annuler",
-  "close": "Fermer",
-  "confirm": "Confirmer",
   "feed_view_type.articles": "Articles",
   "feed_view_type.audios": "Audios",
   "feed_view_type.notifications": "Notifications",
@@ -18,6 +15,9 @@
   "time.yesterday": "Hier",
   "tips.load-lng-error": "Échec du chargement du pack de langue",
   "words.back": "Retour",
+  "words.cancel": "Annuler",
+  "words.close": "Fermer",
+  "words.confirm": "Confirmer",
   "words.copy": "Copier",
   "words.edit": "Éditer",
   "words.entry": "Entrée",

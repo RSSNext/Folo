@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Скопировано в буфер обмена",
-  "cancel": "Отменить",
-  "close": "Закрыть",
-  "confirm": "Подтвердить",
   "discover.category.all": "Все",
   "discover.category.anime": "Аниме",
   "discover.category.bbs": "BBS",
@@ -45,6 +42,9 @@
   "words.ago": "назад",
   "words.all": "Все",
   "words.back": "Назад",
+  "words.cancel": "Отменить",
+  "words.close": "Закрыть",
+  "words.confirm": "Подтвердить",
   "words.copy": "Копировать",
   "words.create": "Создать",
   "words.delete": "Удалить",

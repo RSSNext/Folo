@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "已复制到剪贴板",
-  "cancel": "取消",
-  "close": "关闭",
-  "confirm": "确认",
   "discover.category.all": "全部",
   "discover.category.anime": "二次元",
   "discover.category.bbs": "论坛",
@@ -45,6 +42,9 @@
   "words.ago": "前",
   "words.all": "全部",
   "words.back": "返回",
+  "words.cancel": "取消",
+  "words.close": "关闭",
+  "words.confirm": "确认",
   "words.copy": "复制",
   "words.create": "创建",
   "words.default": "默认",

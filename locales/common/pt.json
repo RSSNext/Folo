@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Copiado para a área de transferência",
-  "cancel": "Cancelar",
-  "close": "Fechar",
-  "confirm": "Confirmar",
   "feed_view_type.articles": "記事",
   "feed_view_type.audios": "オーディオ",
   "feed_view_type.notifications": "通知",
@@ -18,6 +15,9 @@
   "time.yesterday": "Ontem",
   "tips.load-lng-error": "Falha ao carregar o pacote de idioma",
   "words.back": "Voltar",
+  "words.cancel": "Cancelar",
+  "words.close": "Fechar",
+  "words.confirm": "Confirmar",
   "words.copy": "Copiar",
   "words.edit": "Editar",
   "words.entry": "Entrada",

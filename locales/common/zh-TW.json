@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "已複製到剪貼簿",
-  "cancel": "取消",
-  "close": "關閉",
-  "confirm": "確認",
   "discover.category.all": "全部",
   "discover.category.anime": "動漫",
   "discover.category.bbs": "論壇",
@@ -45,6 +42,9 @@
   "words.ago": "前",
   "words.all": "全部",
   "words.back": "返回",
+  "words.cancel": "取消",
+  "words.close": "關閉",
+  "words.confirm": "確認",
   "words.copy": "複製",
   "words.create": "創建",
   "words.delete": "刪除",

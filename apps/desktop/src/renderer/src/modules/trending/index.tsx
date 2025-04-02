@@ -81,7 +81,7 @@ const TrendContent: FC<TrendingProps> = ({ language }) => {
       <ActionButton
         className="absolute right-4 top-4"
         onClick={dismiss}
-        tooltip={t("close", { ns: "common" })}
+        tooltip={t("words.close", { ns: "common" })}
       >
         <i className="i-mgc-close-cute-re" />
       </ActionButton>

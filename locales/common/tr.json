@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "Panoya kopyalandı",
-  "cancel": "İptal",
-  "close": "Kapat",
-  "confirm": "Onayla",
   "feed_view_type.articles": "Makaleler",
   "feed_view_type.audios": "Sesler",
   "feed_view_type.notifications": "Bildirimler",
@@ -19,6 +16,9 @@
   "tips.load-lng-error": "Dil paketi yüklenemedi",
   "words.actions": "İşlemler",
   "words.back": "Geri",
+  "words.cancel": "İptal",
+  "words.close": "Kapat",
+  "words.confirm": "Onayla",
   "words.copy": "Kopyala",
   "words.create": "Oluştur",
   "words.edit": "Düzenle",

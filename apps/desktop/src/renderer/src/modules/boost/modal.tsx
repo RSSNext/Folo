@@ -88,7 +88,7 @@ export const BoostModalContent = ({ feedId }: { feedId: string }) => {
             {t("boost.boost_success_thanks")}
           </m.p>
           <Button variant="primary" onClick={() => dismiss()}>
-            {t.common("close")}
+            {t.common("words.close")}
           </Button>
         </>
       ) : (

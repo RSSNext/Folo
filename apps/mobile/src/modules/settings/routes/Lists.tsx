@@ -142,14 +142,14 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
       swipeRightToCallAction
       rightActions={[
         {
-          label: "Manage",
+          label: t("words.manage"),
           onPress: () => {
             navigation.pushControllerView(ManageListScreen, { id: list.id })
           },
           backgroundColor: accentColor,
         },
         {
-          label: "Edit",
+          label: t("words.edit"),
           onPress: () => {
             navigation.presentControllerView(ListScreen, { listId: list.id })
           },

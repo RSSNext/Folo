@@ -1,7 +1,5 @@
 {
   "app.copied_to_clipboard": "تم النسخ إلى الحافظة",
-  "cancel": "إلغاء",
-  "confirm": "تأكيد",
   "feed_view_type.articles": "مقالات",
   "feed_view_type.audios": "مقاطع صوتية",
   "feed_view_type.notifications": "إشعارات",
@@ -17,6 +15,8 @@
   "time.yesterday": "الأمس",
   "tips.load-lng-error": "فشل في تحميل حزمة اللغة",
   "words.back": "رجوع",
+  "words.cancel": "إلغاء",
+  "words.confirm": "تأكيد",
   "words.copy": "نسخ",
   "words.edit": "تحرير",
   "words.entry": "إدخال",

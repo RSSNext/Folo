@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "클립보드에 복사됨",
-  "cancel": "취소",
-  "close": "닫기",
-  "confirm": "확인",
   "discover.category.all": "전체",
   "discover.category.anime": "ACG",
   "discover.category.bbs": "BBS",
@@ -45,6 +42,9 @@
   "words.ago": "전",
   "words.all": "전체",
   "words.back": "뒤로",
+  "words.cancel": "취소",
+  "words.close": "닫기",
+  "words.confirm": "확인",
   "words.copy": "복사",
   "words.create": "생성",
   "words.delete": "삭제",

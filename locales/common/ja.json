@@ -1,8 +1,5 @@
 {
   "app.copied_to_clipboard": "クリップボードにコピーしました",
-  "cancel": "キャンセル",
-  "close": "閉じる",
-  "confirm": "確認",
   "discover.category.all": "すべて",
   "discover.category.anime": "ACG",
   "discover.category.bbs": "BBS",
@@ -45,6 +42,9 @@
   "words.ago": "前",
   "words.all": "すべて",
   "words.back": "戻る",
+  "words.cancel": "キャンセル",
+  "words.close": "閉じる",
+  "words.confirm": "確認",
   "words.copy": "コピー",
   "words.create": "作成",
   "words.delete": "削除",

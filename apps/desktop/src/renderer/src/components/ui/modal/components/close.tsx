@@ -18,9 +18,9 @@ export const FixedModalCloseButton: Component<{
         onClick={onClick}
       >
         <i className="i-mgc-close-cute-re text-lg" />
-        <span className="sr-only">{t("close")}</span>
+        <span className="sr-only">{t("words.close")}</span>
       </TooltipTrigger>
-      <TooltipContent>{t("close")}</TooltipContent>
+      <TooltipContent>{t("words.close")}</TooltipContent>
     </Tooltip>
   )
 }
