@@ -38,7 +38,12 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     const href = entry?.entries.url
     if (!href) return "#"
 
-    if (href.startsWith("http")) return href
+    if (href.startsWith("http")) {
+      const domain = new URL(href).hostname
+      if (domain === "localhost") return "#"
+
+      return href
+    }
     const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
     if (href.startsWith("/") && feedSiteUrl) return safeUrl(href, feedSiteUrl)
     return href
