@@ -52,7 +52,7 @@ patchedDependencies:
     hash: 8a10ea43dd4d194a581d3d765a1eb3e864441b968d5d5729382a9986f710ef32
     path: patches/react-native-sheet-transitions.patch
   react-native-track-player:
-    hash: debcf90daeaf7d38c744ecb11cded73b5bfc671b8d0937865ec21307414761b3
+    hash: 24a9527477cf307020abf337d3f5db78cdc015636e7ab47d085a1eb5792a5ff0
     path: patches/react-native-track-player.patch
   workbox-precaching:
     hash: 51e57c78af317e292b43fca4b72f57b247b7b1a1faa8b03c8881ddb798c7c52f
@@ -1030,7 +1030,7 @@ importers:
         version: 15.11.2(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
       react-native-track-player:
         specifier: 4.1.1
-        version: 4.1.1(patch_hash=debcf90daeaf7d38c744ecb11cded73b5bfc671b8d0937865ec21307414761b3)(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
+        version: 4.1.1(patch_hash=24a9527477cf307020abf337d3f5db78cdc015636e7ab47d085a1eb5792a5ff0)(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
       react-native-uikit-colors:
         specifier: 0.3.10
         version: 0.3.10(0d6f50eaea763e7ce5838e09437a33ba)
@@ -29367,7 +29367,7 @@ snapshots:
       react-native: 0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5)
       warn-once: 0.1.1
 
-  react-native-track-player@4.1.1(patch_hash=debcf90daeaf7d38c744ecb11cded73b5bfc671b8d0937865ec21307414761b3)(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1):
+  react-native-track-player@4.1.1(patch_hash=24a9527477cf307020abf337d3f5db78cdc015636e7ab47d085a1eb5792a5ff0)(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-native: 0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5)
