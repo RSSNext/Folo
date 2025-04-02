@@ -66,9 +66,12 @@ function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLangua
 }
 
 export const GeneralScreen: NavigationControllerView = () => {
+  const { t } = useTranslation("settings")
+
   const translation = useGeneralSettingKey("translation")
   const summary = useGeneralSettingKey("summary")
-  const autoGroup = useGeneralSettingKey("autoGroup")
+  // TODO: support autoGroup
+  // const autoGroup = useGeneralSettingKey("autoGroup")
   const showUnreadOnLaunch = useGeneralSettingKey("unreadOnly")
   // const groupByDate = useGeneralSettingKey("groupByDate")
   const expandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
@@ -78,18 +81,18 @@ export const GeneralScreen: NavigationControllerView = () => {
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="General" />
+      <NavigationBlurEffectHeader title={t("titles.general")} />
       {/* Language */}
 
-      <GroupedInsetListSectionHeader label="Language" />
+      <GroupedInsetListSectionHeader label={t("general.language")} />
       <GroupedInsetListCard>
         <LanguageSelect settingKey="language" />
       </GroupedInsetListCard>
 
       {/* Content Behavior */}
-      <GroupedInsetListSectionHeader label="Action" />
+      <GroupedInsetListSectionHeader label={t("general.action.title")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label="AI Summary">
+        <GroupedInsetListCell label={t("general.action.summary")}>
           <Switch
             size="sm"
             value={summary}
@@ -98,7 +101,7 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell label="AI Translation">
+        <GroupedInsetListCell label={t("general.action.translation")}>
           <Switch
             size="sm"
             value={translation}
@@ -112,11 +115,11 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       {/* Subscriptions */}
 
-      <GroupedInsetListSectionHeader label="Subscriptions" />
+      {/* <GroupedInsetListSectionHeader label={t("general.subscriptions")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label="Auto Group"
-          description="Automatically group feeds by site domain."
+          label={t("general.auto_group.label")}
+          description={t("general.auto_group.description")}
         >
           <Switch
             size="sm"
@@ -126,13 +129,13 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-      </GroupedInsetListCard>
+      </GroupedInsetListCard> */}
 
       {/* Timeline */}
 
-      <GroupedInsetListSectionHeader label="Timeline" />
+      <GroupedInsetListSectionHeader label={t("general.timeline")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label="Show unread content on launch">
+        <GroupedInsetListCell label={t("general.show_unread_on_launch.label")}>
           <Switch
             size="sm"
             value={showUnreadOnLaunch}
@@ -153,8 +156,8 @@ export const GeneralScreen: NavigationControllerView = () => {
             </GroupedInsetListCell> */}
 
         <GroupedInsetListCell
-          label="Expand long social media"
-          description="Automatically expand social media entries containing long text."
+          label={t("general.auto_expand_long_social_media.label")}
+          description={t("general.auto_expand_long_social_media.description")}
         >
           <Switch
             size="sm"
@@ -168,11 +171,11 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       {/* Unread */}
 
-      <GroupedInsetListSectionHeader label="Unread" />
+      <GroupedInsetListSectionHeader label={t("general.unread")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label="Mark as read when scrolling"
-          description="Automatically mark entries as read when scrolled out of the view."
+          label={t("general.mark_as_read.scroll.label")}
+          description={t("general.mark_as_read.scroll.description")}
         >
           <Switch
             size="sm"
@@ -184,8 +187,8 @@ export const GeneralScreen: NavigationControllerView = () => {
         </GroupedInsetListCell>
 
         <GroupedInsetListCell
-          label="Mark as read when in the view"
-          description="Automatically mark single-level entries (e.g. social media posts, pictures, video views) as read when they enter the view."
+          label={t("general.mark_as_read.render.label")}
+          description={t("general.mark_as_read.render.description")}
         >
           <Switch
             size="sm"
@@ -199,9 +202,9 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       {/* Content Behavior */}
 
-      <GroupedInsetListSectionHeader label="Content" />
+      <GroupedInsetListSectionHeader label={t("general.content")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label="Open Links in app">
+        <GroupedInsetListCell label={t("general.open_links_in_app.label")}>
           <Switch
             size="sm"
             value={openLinksInApp}
