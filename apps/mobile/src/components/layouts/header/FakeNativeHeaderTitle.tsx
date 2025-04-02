@@ -13,7 +13,7 @@ export function FakeNativeHeaderTitle({ style, ...rest }: Props) {
       accessibilityRole="header"
       aria-level="1"
       numberOfLines={1}
-      className={"text-label font-bold"}
+      className={"text-label font-semibold"}
       {...rest}
       style={[styles.title, style]}
     />

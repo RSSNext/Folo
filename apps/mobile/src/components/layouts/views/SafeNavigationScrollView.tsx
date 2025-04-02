@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useSetAtom, useStore } from "jotai"
 import type { PropsWithChildren } from "react"
-import { forwardRef, useContext, useEffect, useState } from "react"
+import { forwardRef, useContext, useLayoutEffect, useState } from "react"
 import type { ScrollView, ScrollViewProps, StyleProp, ViewStyle } from "react-native"
 import { View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
@@ -126,7 +126,7 @@ export const NavigationBlurEffectHeader = ({
 
   const setSlot = useSetAtom(screenCtxValue.Slot)
   const store = useStore()
-  useEffect(() => {
+  useLayoutEffect(() => {
     setSlot({
       ...store.get(screenCtxValue.Slot),
       header: (

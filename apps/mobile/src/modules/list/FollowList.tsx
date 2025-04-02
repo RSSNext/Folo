@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form"
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native"
 import { z } from "zod"
 
-import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -132,10 +132,11 @@ const Impl = (props: { id: string }) => {
       <NavigationBlurEffectHeader
         title={`${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`}
         headerRight={
-          <HeaderSubmitButton
+          <HeaderSubmitTextButton
             isValid={isValid}
             onPress={form.handleSubmit(submit)}
             isLoading={isLoading}
+            label={isSubscribed ? "Save" : "Follow"}
           />
         }
       />

@@ -2,6 +2,7 @@ import type { RSSHubCategories } from "@follow/constants"
 import type { RSSHubRouteDeclaration } from "@follow/models/src/rsshub"
 import type { FC } from "react"
 import { memo, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Clipboard, Text, TouchableOpacity, View } from "react-native"
 import WebView from "react-native-webview"
 import * as ContextMenu from "zeego/context-menu"
@@ -13,12 +14,11 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { RsshubFormScreen } from "@/src/screens/(modal)/rsshub-form"
 
-import { RSSHubCategoryCopyMap } from "./copy"
-
 export const RecommendationListItem: FC<{
   data: RSSHubRouteDeclaration
   routePrefix: string
 }> = memo(({ data, routePrefix }) => {
+  const { t } = useTranslation("common")
   const { maintainers, categories } = useMemo(() => {
     const maintainers = new Set<string>()
     const categories = new Set<string>()
@@ -34,7 +34,7 @@ export const RecommendationListItem: FC<{
     categories.delete("popular")
     return {
       maintainers: Array.from(maintainers),
-      categories: Array.from(categories) as typeof RSSHubCategories | string[],
+      categories: Array.from(categories) as unknown as typeof RSSHubCategories,
     }
   }, [data])
 
@@ -56,7 +56,7 @@ export const RecommendationListItem: FC<{
                 key={c}
               >
                 <Text className="text-text/60 text-xs" numberOfLines={1}>
-                  {RSSHubCategoryCopyMap[c as keyof typeof RSSHubCategoryCopyMap]}
+                  {t(`discover.category.${c}`)}
                 </Text>
               </View>
             ))}

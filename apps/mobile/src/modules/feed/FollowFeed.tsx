@@ -6,7 +6,7 @@ import { ActivityIndicator, Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
-import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -131,10 +131,11 @@ function FollowImpl(props: { feedId: string }) {
       <NavigationBlurEffectHeader
         title={`${isSubscribed ? "Edit" : "Follow"} - ${feed?.title}`}
         headerRight={
-          <HeaderSubmitButton
+          <HeaderSubmitTextButton
             isValid={isValid}
             onPress={form.handleSubmit(submit)}
             isLoading={isLoading}
+            label={isSubscribed ? "Save" : "Follow"}
           />
         }
       />

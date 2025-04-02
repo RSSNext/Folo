@@ -31,6 +31,7 @@ import { usePresentUserProfileModal, useTOTPModalWrapper } from "~/modules/profi
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { Queries } from "~/queries"
 
+const numberFormatter = new Intl.NumberFormat("en-US")
 export const SettingInvitations = () => {
   const { t } = useTranslation("settings")
   const invitations = useAuthQuery(Queries.invitations.list())
@@ -66,7 +67,7 @@ export const SettingInvitations = () => {
           <Trans
             ns="settings"
             values={{
-              limitation: limitation.data,
+              limitation: numberFormatter.format(limitation.data ?? 0),
             }}
             i18nKey="invitation.limitationMessage"
           />

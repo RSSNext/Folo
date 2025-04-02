@@ -186,7 +186,7 @@ export const useDialog = (): DialogInstance => {
                     dismiss()
                   }}
                 >
-                  {options.cancelText ?? t("cancel", { ns: "common" })}
+                  {options.cancelText ?? t("words.cancel", { ns: "common" })}
                 </Button>
                 <Button
                   onClick={() => {
@@ -195,7 +195,7 @@ export const useDialog = (): DialogInstance => {
                     dismiss()
                   }}
                 >
-                  {options.confirmText ?? t("confirm", { ns: "common" })}
+                  {options.confirmText ?? t("words.confirm", { ns: "common" })}
                 </Button>
               </div>
             </div>

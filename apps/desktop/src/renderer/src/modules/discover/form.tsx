@@ -284,7 +284,7 @@ const SearchCard: FC<{
   onUnSubscribed?: (item: DiscoverSearchData[number]) => void
 }> = memo(({ item, onSuccess }) => {
   const follow = useFollow()
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
 
   return (
     <Card data-feed-id={item.feed?.id || item.list?.id} className="select-text">

@@ -22,7 +22,6 @@ import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhHK from "@locales/common/zh-HK.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
-import external_en from "@locales/external/en.json"
 import lang_ardz from "@locales/lang/ar-DZ.json"
 import lang_ariq from "@locales/lang/ar-IQ.json"
 import lang_arkw from "@locales/lang/ar-KW.json"
@@ -45,6 +44,9 @@ import lang_zhHK from "@locales/lang/zh-HK.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
 import shortcuts_en from "@locales/shortcuts/en.json"
+
+import type { ns, RendererSupportedLanguages } from "./constants"
+
 /**
  * This file is the language resource that is loaded in full when the app is initialized.
  * When switching languages, the app will automatically download the required language resources,
@@ -57,7 +59,6 @@ export const defaultResources = {
     app: en,
     lang: lang_en,
     common: common_en,
-    external: external_en,
     settings: settings_en,
     shortcuts: shortcuts_en,
     errors: errors_en,
@@ -91,4 +92,7 @@ export const defaultResources = {
   de: { lang: lang_de, common: common_de },
   ko: { lang: lang_ko, common: common_ko },
   tr: { lang: lang_tr, common: common_tr },
-}
+} satisfies Record<
+  RendererSupportedLanguages,
+  Partial<Record<(typeof ns)[number], Record<string, string>>>
+>

@@ -8,7 +8,7 @@
  * License: MIT
  */
 import { useCallback, useMemo, useRef, useState } from "react"
-import { Animated, Platform } from "react-native"
+import { Animated, Platform, useAnimatedValue } from "react-native"
 import type {
   default as PagerView,
   PagerViewOnPageScrollEventData,
@@ -36,8 +36,8 @@ export function usePagerView({
     setActivePage(page)
   }, [])
 
-  const offset = useRef(new Animated.Value(0)).current
-  const position = useRef(new Animated.Value(initialPage)).current
+  const offset = useAnimatedValue(0)
+  const position = useAnimatedValue(initialPage)
 
   const onPageScroll = useMemo(
     () =>

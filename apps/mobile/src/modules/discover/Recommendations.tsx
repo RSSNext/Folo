@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import {
   ActivityIndicator,
@@ -26,11 +27,11 @@ import {
 import type { TabComponent } from "@/src/components/ui/tabview/TabView"
 import { apiClient } from "@/src/lib/api-fetch"
 
-import { RSSHubCategoryCopyMap } from "./copy"
 import { DiscoverContext } from "./DiscoverContext"
 import { RecommendationListItem } from "./RecommendationListItem"
 
 export const Recommendations = () => {
+  const { t } = useTranslation("common")
   const { animatedX, currentTabAtom } = useContext(DiscoverContext)
   const currentTab = useAtomValue(currentTabAtom)
 
@@ -65,7 +66,7 @@ export const Recommendations = () => {
           {loadedTabIndex.has(index) && (
             <Tab
               key={category}
-              tab={{ name: RSSHubCategoryCopyMap[category], value: category }}
+              tab={{ name: t(`discover.category.${category}`), value: category }}
               isSelected={currentTab === index}
             />
           )}

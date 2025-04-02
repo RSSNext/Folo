@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils/src/utils"
 import { Text, View } from "react-native"
 
-import { User4CuteReIcon } from "@/src/icons/user_4_cute_re"
+import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"
 
 import { Galeria } from "../image/galeria"
 import { Image } from "../image/Image"
@@ -43,7 +43,7 @@ export const UserAvatar = ({
             {name.slice(0, 2)}
           </Text>
         ) : (
-          <User4CuteReIcon width={size} height={size} color={color} />
+          <User4CuteFiIcon width={size} height={size} color={color} />
         )}
       </View>
     )

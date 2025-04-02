@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { Fragment, useCallback, useEffect, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import {
   ActivityIndicator,
   FlatList,
@@ -62,6 +63,7 @@ export const ProfileScreen: NavigationControllerView<{
 }
 
 function ProfileScreenImpl(props: { userId: string }) {
+  const { t } = useTranslation()
   const scrollY = useSharedValue(0)
   const {
     data: subscriptions,
@@ -107,7 +109,9 @@ function ProfileScreenImpl(props: { userId: string }) {
       >
         <BlurEffect />
         <InternalNavigationHeader
-          title={`${user?.name}'s Profile`}
+          title={t("profile.title", {
+            name: user?.name,
+          })}
           headerRight={
             <UINavigationHeaderActionButton onPress={openShareUrl}>
               <Share3CuteReIcon color={textLabelColor} />
@@ -152,6 +156,8 @@ type PickedFeedModel = Pick<
   view: FeedViewType
 }
 const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) => {
+  const { t: tCommon } = useTranslation("common")
+  const { t } = useTranslation()
   const { lists, feeds, groupedFeeds } = useMemo(() => {
     const lists = [] as PickedListModel[]
     const feeds = [] as PickedFeedModel[]
@@ -201,7 +207,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
     <View>
       {lists.length > 0 && (
         <Fragment>
-          <SectionHeader title="Lists" />
+          <SectionHeader title={tCommon("words.lists")} />
 
           <GroupedInsetListCard>
             <FlatList
@@ -215,7 +221,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
       )}
       {hasFeeds && (
         <View className="mt-4">
-          <SectionHeader title="Feeds" />
+          <SectionHeader title={tCommon("words.feeds")} />
           {Object.entries(groupedFeeds).map(([category, feeds]) => (
             <Fragment key={category}>
               <GroupedInsetListSectionHeader label={category} marginSize="small" />
@@ -230,7 +236,10 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
             </Fragment>
           ))}
 
-          <GroupedInsetListSectionHeader label="Uncategorized Feeds" marginSize="small" />
+          <GroupedInsetListSectionHeader
+            label={t("profile.uncategorized_feeds")}
+            marginSize="small"
+          />
           <GroupedInsetListCard>
             <FlatList
               scrollEnabled={false}

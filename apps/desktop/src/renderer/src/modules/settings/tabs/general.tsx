@@ -2,7 +2,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { UserRole } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { LANGUAGE_MAP } from "@follow/shared"
+import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
@@ -302,7 +302,7 @@ const ActionLanguageSelector = () => {
         }}
         items={[
           { label: t("general.action_language.default"), value: DEFAULT_ACTION_LANGUAGE },
-          ...Object.values(LANGUAGE_MAP),
+          ...Object.values(ACTION_LANGUAGE_MAP),
         ]}
       />
     </div>

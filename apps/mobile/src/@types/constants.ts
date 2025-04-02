@@ -1,48 +1,50 @@
-export const currentSupportedLanguages = [
+const langs = [
+  "en",
+  "de",
+  "ja",
+  "zh-CN",
+  "zh-TW",
+  "zh-HK",
+  "pt",
+  "fr",
   "ar-DZ",
+  "ar-SA",
+  "ar-MA",
   "ar-IQ",
   "ar-KW",
-  "ar-MA",
-  "ar-SA",
   "ar-TN",
-  "de",
-  "en",
-  "es",
   "fi",
-  "fr",
   "it",
-  "ja",
-  "ko",
-  "pt",
   "ru",
+  "es",
+  "ko",
   "tr",
-  "zh-CN",
-  "zh-HK",
-  "zh-TW",
-]
+] as const
+export const currentSupportedLanguages = langs as readonly string[]
+export type MobileSupportedLanguages = (typeof langs)[number]
+
+export const ns = ["default", "common", "lang", "errors", "settings"] as const
+export const defaultNS = "default" as const
 
 export const dayjsLocaleImportMap = {
+  en: ["en", () => import("dayjs/locale/en")],
+  ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],
+  ["ja"]: ["ja", () => import("dayjs/locale/ja")],
+  ["ru"]: ["ru", () => import("dayjs/locale/ru")],
+  ["fi"]: ["fi", () => import("dayjs/locale/fi")],
+  ["it"]: ["it", () => import("dayjs/locale/it")],
   ["ar-DZ"]: ["ar-dz", () => import("dayjs/locale/ar-dz")],
+  ["ar-SA"]: ["ar-sa", () => import("dayjs/locale/ar-sa")],
+  ["ar-MA"]: ["ar-ma", () => import("dayjs/locale/ar-ma")],
+  ["es"]: ["es", () => import("dayjs/locale/es")],
+  ["fr"]: ["fr", () => import("dayjs/locale/fr")],
+  ["pt"]: ["pt", () => import("dayjs/locale/pt")],
+  ["zh-TW"]: ["zh-tw", () => import("dayjs/locale/zh-tw")],
   ["ar-IQ"]: ["ar-iq", () => import("dayjs/locale/ar-iq")],
   ["ar-KW"]: ["ar-kw", () => import("dayjs/locale/ar-kw")],
-  ["ar-MA"]: ["ar-ma", () => import("dayjs/locale/ar-ma")],
-  ["ar-SA"]: ["ar-sa", () => import("dayjs/locale/ar-sa")],
   ["ar-TN"]: ["ar-tn", () => import("dayjs/locale/ar-tn")],
-  ["de"]: ["de", () => import("dayjs/locale/de")],
-  ["es"]: ["es", () => import("dayjs/locale/es")],
-  ["fi"]: ["fi", () => import("dayjs/locale/fi")],
-  ["fr"]: ["fr", () => import("dayjs/locale/fr")],
-  ["it"]: ["it", () => import("dayjs/locale/it")],
-  ["ja"]: ["ja", () => import("dayjs/locale/ja")],
-  ["ko"]: ["ko", () => import("dayjs/locale/ko")],
-  ["pt"]: ["pt", () => import("dayjs/locale/pt")],
-  ["ru"]: ["ru", () => import("dayjs/locale/ru")],
-  ["tr"]: ["tr", () => import("dayjs/locale/tr")],
-  ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],
   ["zh-HK"]: ["zh-hk", () => import("dayjs/locale/zh-hk")],
-  ["zh-TW"]: ["zh-tw", () => import("dayjs/locale/zh-tw")],
-  en: ["en", () => import("dayjs/locale/en")],
-}
-
-export const ns = ["app", "common", "lang", "settings", "shortcuts", "errors"] as const
-export const defaultNS = "app" as const
+  ["de"]: ["de", () => import("dayjs/locale/de")],
+  ["ko"]: ["ko", () => import("dayjs/locale/ko")],
+  ["tr"]: ["tr", () => import("dayjs/locale/tr")],
+} as const

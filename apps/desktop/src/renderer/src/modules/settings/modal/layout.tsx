@@ -4,15 +4,14 @@ import { IN_ELECTRON } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
 import type { BoundingBox } from "framer-motion"
-import { useDragControls } from "framer-motion"
 import { Resizable } from "re-resizable"
-import type { PointerEventHandler, PropsWithChildren } from "react"
+import type { PropsWithChildren } from "react"
 import { memo, Suspense, useCallback, useEffect, useRef } from "react"
 
 import { useUISettingSelector } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
 import { resizableOnly } from "~/components/ui/modal"
-import { useResizeableModal } from "~/components/ui/modal/stacked/hooks"
+import { useModalResizeAndDrag } from "~/components/ui/modal/stacked/internal/use-drag"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
 import { useActivationModal } from "~/modules/activation"
 
@@ -36,17 +35,18 @@ export function SettingModalLayout(
   const tab = useSettingTab()
   const elementRef = useRef<HTMLDivElement>(null)
   const edgeElementRef = useRef<HTMLDivElement>(null)
-  const dragController = useDragControls()
   const {
+    handleDrag,
     handleResizeStart,
     handleResizeStop,
     preferDragDir,
-    relocateModal,
     isResizeable,
     resizeableStyle,
-  } = useResizeableModal(elementRef, {
-    enableResizeable: true,
-    dragControls: dragController,
+
+    dragController,
+  } = useModalResizeAndDrag(elementRef, {
+    resizeable: true,
+    draggable: true,
   })
 
   const availableSettings = useAvailableSettings()
@@ -64,15 +64,7 @@ export function SettingModalLayout(
     draggable: state.modalDraggable,
     overlay: state.modalOverlay,
   }))
-  const handleDrag: PointerEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (draggable) {
-        dragController.start(e)
-        relocateModal()
-      }
-    },
-    [dragController, draggable, relocateModal],
-  )
+
   const measureDragConstraints = useCallback((constraints: BoundingBox) => {
     if (getOS() === "Windows") {
       return {

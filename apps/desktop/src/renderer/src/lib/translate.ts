@@ -1,7 +1,7 @@
 import { parseHtml } from "@follow/components/ui/markdown/parse-html.js"
 import { views } from "@follow/constants"
 import type { SupportedLanguages } from "@follow/models/types"
-import { LANGUAGE_MAP } from "@follow/shared"
+import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { franc } from "franc-min"
 
 import type { FlatEntryModel } from "~/store/entry"
@@ -23,7 +23,7 @@ export const checkLanguage = ({
   const pureContent = parseHtml(content)
     .toText()
     .replaceAll(/https?:\/\/\S+|www\.\S+/g, " ")
-  const { code } = LANGUAGE_MAP[language]
+  const { code } = ACTION_LANGUAGE_MAP[language]
   if (!code) {
     return false
   }

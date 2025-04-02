@@ -98,3 +98,9 @@ export const useAuthProviders = () => {
     queryFn: async () => (await getProviders()).data,
   })
 }
+
+export function isAuthCodeValid(authCode: string) {
+  return (
+    authCode.length === 6 && !Array.from(authCode).some((c) => Number.isNaN(Number.parseInt(c)))
+  )
+}

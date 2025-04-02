@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import type { MutableRefObject } from "react"
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { PixelRatio, StyleSheet, Text, View } from "react-native"
 
 import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
@@ -50,6 +51,7 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
 }
 
 const ListImpl: React.FC<{ id: string }> = ({ id }) => {
+  const { t } = useTranslation("settings")
   const list = useList(id)!
   usePrefetchSubscription(list.view)
 
@@ -80,7 +82,7 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   return (
     <ManageListContext.Provider value={ctxValue}>
       <NavigationBlurEffectHeader
-        title={`Manage List - ${list?.title}`}
+        title={`${t("lists.manage_list")} - ${list?.title}`}
         headerRight={() => (
           <UINavigationHeaderActionButton>
             <HeaderSubmitButton
@@ -101,7 +103,7 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
           </UINavigationHeaderActionButton>
         )}
       />
-      <GroupedInsetListSectionHeader label="Select feeds to add to the current list" />
+      <GroupedInsetListSectionHeader label={t("lists.select_feeds")} />
       <GroupedInsetListCard SeparatorComponent={SeparatorComponent}>
         {sortedSubscriptionIds.map((id) => (
           <FeedCell key={id} feedId={id} isSelected={list.feedIds.includes(id)} />

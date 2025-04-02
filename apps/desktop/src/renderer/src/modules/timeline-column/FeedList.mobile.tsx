@@ -96,7 +96,7 @@ const FeedListImpl = ({ className, view }: { className?: string; view: number })
                 <span className="ml-2">
                   {t("words.all", { ns: "common" })}
                   {t("space", { ns: "common" })}
-                  {t(views[view]!.name as any)}
+                  {t(views[view]!.name, { ns: "common" })}
                 </span>
               </button>
               <SortableFeedList

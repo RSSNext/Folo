@@ -10,7 +10,8 @@
       "@/*": ["./*"],
       "@locales/*": ["../../locales/*"]
     },
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "types": ["@follow/types/global"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"],
   "exclude": ["./native", "./web-app"]

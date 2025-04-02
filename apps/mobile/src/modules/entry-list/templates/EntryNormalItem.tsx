@@ -131,7 +131,6 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
             <RelativeDateTime
               date={entry.publishedAt}
               className="text-secondary-label text-xs font-medium"
-              postfixText="ago"
             />
           </View>
           {!!entry.title && (

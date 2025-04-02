@@ -42,7 +42,7 @@ const formSchema = z
   })
 
 function RegisterForm() {
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -90,7 +90,6 @@ function RegisterForm() {
       </h1>
       <div className="text-muted-foreground mt-2 text-center">
         <Trans
-          ns="external"
           i18nKey="register.note"
           components={{
             LoginLink: (

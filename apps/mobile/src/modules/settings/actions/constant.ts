@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next"
+
 import type { SupportedLanguages } from "@/src/lib/language"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { actionActions } from "@/src/store/action/store"
@@ -6,84 +8,92 @@ import type { ActionId, ActionRule } from "@/src/store/action/types"
 import { EditRewriteRulesScreen } from "../routes/EditRewriteRules"
 import { EditWebhooksScreen } from "../routes/EditWebhooks"
 
-export const filterFieldOptions = [
+export const filterFieldOptions: Array<{
+  label: Extract<ParseKeys<"settings">, `actions.action_card.feed_options.${string}`>
+  value: string
+  type?: "text" | "number" | "view"
+}> = [
   {
-    label: "Subscription View",
+    label: "actions.action_card.feed_options.subscription_view",
     value: "view",
     type: "view",
   },
   {
-    label: "Feed Title",
+    label: "actions.action_card.feed_options.feed_title",
     value: "title",
   },
   {
-    label: "Feed Category",
+    label: "actions.action_card.feed_options.feed_category",
     value: "category",
   },
   {
-    label: "Site URL",
+    label: "actions.action_card.feed_options.site_url",
     value: "site_url",
   },
   {
-    label: "Feed URL",
+    label: "actions.action_card.feed_options.feed_url",
     value: "feed_url",
   },
   {
-    label: "Entry Title",
+    label: "actions.action_card.feed_options.entry_title",
     value: "entry_title",
   },
   {
-    label: "Entry Content",
+    label: "actions.action_card.feed_options.entry_content",
     value: "entry_content",
   },
   {
-    label: "Entry URL",
+    label: "actions.action_card.feed_options.entry_url",
     value: "entry_url",
   },
   {
-    label: "Entry Author",
+    label: "actions.action_card.feed_options.entry_author",
     value: "entry_author",
   },
   {
-    label: "Entry Media Length",
+    label: "actions.action_card.feed_options.entry_media_length",
     value: "entry_media_length",
     type: "number",
   },
 ]
 
-export const filterOperatorOptions = [
+export const filterOperatorOptions: Array<{
+  label: Extract<ParseKeys<"settings">, `actions.action_card.operation_options.${string}`>
+  value: string
+  types: Array<"text" | "number" | "view">
+}> = [
   {
-    label: "contains",
+    label: "actions.action_card.operation_options.contains",
     value: "contains",
     types: ["text"],
   },
   {
-    label: "does not contain",
+    label: "actions.action_card.operation_options.does_not_contain",
     value: "not_contains",
     types: ["text"],
   },
   {
-    label: "is equal to",
+    label: "actions.action_card.operation_options.is_equal_to",
     value: "eq",
     types: ["number", "text", "view"],
   },
   {
-    label: "is not equal to",
+    label: "actions.action_card.operation_options.is_not_equal_to",
     value: "not_eq",
     types: ["number", "text", "view"],
   },
   {
-    label: "is greater than",
+    label: "actions.action_card.operation_options.is_greater_than",
     value: "gt",
     types: ["number"],
   },
   {
-    label: "is less than",
+    label: "actions.action_card.operation_options.is_less_than",
     value: "lt",
     types: ["number"],
   },
   {
-    label: "matches regex",
+    label: "actions.action_card.operation_options.matches_regex",
     value: "regex",
     types: ["text"],
   },
@@ -91,42 +101,42 @@ export const filterOperatorOptions = [
 
 export const availableActionList: Array<{
   value: ActionId
-  label: string
+  label: Extract<ParseKeys<"settings">, `actions.action_card.${string}`>
   onEnable?: (index: number) => void
   onNavigate?: (router: Navigation, index: number) => void
   component?: React.FC<{ rule: ActionRule }>
 }> = [
   {
     value: "summary",
-    label: "Generate summary using AI",
+    label: "actions.action_card.generate_summary",
   },
   {
     value: "translation",
-    label: "Translate",
+    label: "actions.action_card.translate_into",
   },
   {
     value: "readability",
-    label: "Enable readability",
+    label: "actions.action_card.enable_readability",
   },
   {
     value: "sourceContent",
-    label: "View source content",
+    label: "actions.action_card.source_content",
   },
   {
     value: "newEntryNotification",
-    label: "Notification of new entry",
+    label: "actions.action_card.new_entry_notification",
   },
   {
     value: "silence",
-    label: "Silence",
+    label: "actions.action_card.silence",
   },
   {
     value: "block",
-    label: "Block",
+    label: "actions.action_card.block",
   },
   {
     value: "rewriteRules",
-    label: "Rewrite Rules",
+    label: "actions.action_card.rewrite_rules",
     onEnable: (index: number) => {
       actionActions.patchRule(index, {
         result: {
@@ -145,7 +155,7 @@ export const availableActionList: Array<{
   },
   {
     value: "webhooks",
-    label: "Webhooks",
+    label: "actions.action_card.webhooks",
     onEnable: (index) => {
       actionActions.patchRule(index, { result: { webhooks: [""] } })
     },

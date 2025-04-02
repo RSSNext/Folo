@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import { EventBus } from "@follow/utils/src/event-bus"
 import * as Haptics from "expo-haptics"
 import { useEffect, useMemo } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
@@ -24,18 +25,23 @@ export function PagerList({
   const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
   const activeViews = useViewWithSubscription()
+
   const viewIdIndex = activeViews.findIndex((view) => view.view === viewId)
   const { page, pagerRef, ...rest } = usePagerView({
     initialPage: viewIdIndex,
     onIndexChange: (index) => {
-      selectTimeline({ type: "view", viewId: activeViews[index]!.view })
+      if (index === undefined) return
+      selectTimeline({ type: "view", viewId: activeViews[index]!.view }, false)
     },
   })
 
   useEffect(() => {
-    if (page === viewIdIndex) return
-    pagerRef.current?.setPage(viewIdIndex)
-  }, [page, pagerRef, viewIdIndex])
+    return EventBus.subscribe("SELECT_TIMELINE", (data) => {
+      if (data.manual) {
+        pagerRef.current?.setPage(data.view.viewId)
+      }
+    })
+  }, [pagerRef])
 
   return (
     <AnimatedPagerView

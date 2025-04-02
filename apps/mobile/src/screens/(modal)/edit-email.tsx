@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { View } from "react-native"
 
-import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -50,7 +50,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
       <NavigationBlurEffectHeader
         title="Edit Email"
         headerRight={
-          <HeaderSubmitButton
+          <HeaderSubmitTextButton
             isLoading={isPending}
             isValid={!!(email && newEmailIsValid && isDirty)}
             onPress={() => {

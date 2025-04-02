@@ -1,5 +1,6 @@
-const langs = ["en", "zh-CN", "ja"]
-export const currentSupportedLanguages = langs.sort()
+const langs = ["en", "zh-CN", "zh-HK", "zh-TW", "ja"] as const
+export const currentSupportedLanguages = [...langs].sort() as string[]
+export type MainSupportedLanguages = (typeof langs)[number]
 
 export const ns = ["native"] as const
 export const defaultNS = "native" as const

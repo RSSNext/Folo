@@ -62,7 +62,10 @@ export function EntryItemSkeleton() {
   return (
     <View className="m-1 overflow-hidden rounded-md">
       {/* Video thumbnail */}
-      <View className="bg-system-fill aspect-video h-32 w-full animate-pulse rounded-md" />
+      <View
+        className="bg-system-fill h-32 w-full animate-pulse rounded-md"
+        style={{ aspectRatio: 16 / 9 }}
+      />
 
       {/* Description and footer */}
       <View className="my-2 px-2">

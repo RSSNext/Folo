@@ -1,4 +1,5 @@
 import { useContext } from "react"
+import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import { Text, TouchableOpacity, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
@@ -45,6 +46,7 @@ export function Settings() {
   )
 }
 const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
+  const { t } = useTranslation()
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
@@ -65,7 +67,9 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
         style={styles}
       >
         <BlurEffect />
-        <Text className="text-label flex-1 text-center text-[17px] font-semibold">Settings</Text>
+        <Text className="text-label flex-1 text-center text-[17px] font-semibold">
+          {t("tabs.settings")}
+        </Text>
       </Animated.View>
       {!!whoami?.id && <EditProfileButton />}
     </View>
@@ -73,6 +77,7 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
 }
 
 const EditProfileButton = () => {
+  const { t } = useTranslation("common")
   const navigation = useNavigation()
   return (
     <TouchableOpacity
@@ -81,7 +86,7 @@ const EditProfileButton = () => {
       onPress={() => navigation.pushControllerView(EditProfileScreen)}
     >
       <BlurEffect />
-      <Text className="text-label text-sm font-medium">Edit</Text>
+      <Text className="text-label text-sm font-medium">{t("words.edit")}</Text>
     </TouchableOpacity>
   )
 }

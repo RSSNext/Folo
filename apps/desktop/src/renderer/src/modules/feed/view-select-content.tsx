@@ -12,7 +12,7 @@ export const ViewSelectContent = () => {
         <SelectItem key={view.name} value={`${index}`}>
           <div className="flex items-center gap-2">
             <span className={cn(view.className, "flex")}>{view.icon}</span>
-            <span>{t(view.name as any)}</span>
+            <span>{t(view.name, { ns: "common" })}</span>
           </div>
         </SelectItem>
       ))}

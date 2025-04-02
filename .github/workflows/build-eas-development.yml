@@ -7,12 +7,14 @@ on:
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
       - "apps/mobile/package.json"
+      - "apps/mobile/app.config.ts"
   pull_request:
     branches: [dev]
     paths:
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
       - "apps/mobile/package.json"
+      - "apps/mobile/app.config.ts"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

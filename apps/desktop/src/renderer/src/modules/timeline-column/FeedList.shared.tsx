@@ -64,7 +64,7 @@ export const ListHeader = ({ view }: { view: number }) => {
           }
         }}
       >
-        {view !== undefined && t(views[view]!.name as any)}
+        {view !== undefined && t(views[view]!.name, { ns: "common" })}
       </div>
       <div className="lg:!text-theme-vibrancyFg ml-2 flex items-center gap-3 text-base text-zinc-400 lg:text-sm dark:text-zinc-600">
         <SortButton />

@@ -2,8 +2,14 @@ import * as React from "react"
 
 import { FeedViewType } from "./enums"
 
-interface ViewDefinition {
-  name: string
+export interface ViewDefinition {
+  name:
+    | "feed_view_type.articles"
+    | "feed_view_type.audios"
+    | "feed_view_type.notifications"
+    | "feed_view_type.pictures"
+    | "feed_view_type.social_media"
+    | "feed_view_type.videos"
   icon: React.JSX.Element
   className: string
   peerClassName: string

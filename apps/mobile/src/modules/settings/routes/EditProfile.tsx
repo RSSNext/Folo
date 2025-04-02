@@ -1,7 +1,6 @@
-import { withOpacity } from "@follow/utils/src/color"
 import { useMutation } from "@tanstack/react-query"
 import type { FC } from "react"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import {
   ActivityIndicator,
   Text,
@@ -11,13 +10,12 @@ import {
 } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 
-import { RotateableLoading } from "@/src/components/common/RotateableLoading"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
-import { UIBarButton } from "@/src/components/ui/button/UIBarButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import {
   GroupedInsetListCard,
@@ -26,7 +24,6 @@ import {
   GroupedOutlineDescription,
 } from "@/src/components/ui/grouped/GroupedList"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
-import { CheckLineIcon } from "@/src/icons/check_line"
 import { CloseCircleFillIcon } from "@/src/icons/close_circle_fill"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
@@ -35,7 +32,7 @@ import { useWhoami } from "@/src/store/user/hooks"
 import type { MeModel } from "@/src/store/user/store"
 import { userSyncService } from "@/src/store/user/store"
 import type { UserProfileEditable } from "@/src/store/user/types"
-import { accentColor, useColor } from "@/src/theme/colors"
+import { accentColor } from "@/src/theme/colors"
 
 import { setAvatar } from "../utils"
 
@@ -95,31 +92,21 @@ const ProfileForm: FC<{
     },
   })
 
-  const label = useColor("label")
-  const headerRight = useCallback(
-    () => (
-      <UIBarButton
-        label="Save"
-        disabled={isPending || Object.keys(dirtyFields).length === 0}
-        normalIcon={
-          isPending ? (
-            <RotateableLoading size={20} color={withOpacity(label, 0.5)} />
-          ) : (
-            <CheckLineIcon height={20} width={20} />
-          )
-        }
-        onPress={() => {
-          updateProfile()
-        }}
-      />
-    ),
-    [dirtyFields, isPending, label, updateProfile],
-  )
-
   const navigation = useNavigation()
   return (
     <View className="mt-4">
-      <NavigationBlurEffectHeader headerRight={headerRight} title="Edit Profile" />
+      <NavigationBlurEffectHeader
+        headerRight={
+          <HeaderSubmitTextButton
+            label="Save"
+            isValid={isPending || Object.keys(dirtyFields).length === 0}
+            onPress={() => {
+              updateProfile()
+            }}
+          />
+        }
+        title="Edit Profile"
+      />
 
       <TouchableWithoutFeedback
         onPress={() => {

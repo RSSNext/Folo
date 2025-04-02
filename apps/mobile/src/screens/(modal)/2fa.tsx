@@ -7,19 +7,13 @@ import { OtpInput } from "react-native-otp-entry"
 import { useColor } from "react-native-uikit-colors"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
-import { twoFactor } from "@/src/lib/auth"
+import { isAuthCodeValid, twoFactor } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
 import { whoamiQueryKey } from "@/src/store/user/hooks"
 import { accentColor } from "@/src/theme/colors"
-
-function isAuthCodeValid(authCode: string) {
-  return (
-    authCode.length === 6 && !Array.from(authCode).some((c) => Number.isNaN(Number.parseInt(c)))
-  )
-}
 
 export const TwoFactorAuthScreen: NavigationControllerView = () => {
   const label = useColor("label")

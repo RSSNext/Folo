@@ -15,6 +15,7 @@ import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { sqlite } from "../database"
 import { queryClient } from "../lib/query-client"
 import { MigrationProvider } from "./migration"
+import { ServerConfigsProvider } from "./ServerConfigsProvider"
 
 export const RootProviders = ({ children }: { children: ReactNode }) => {
   useDrizzleStudio(sqlite)
@@ -33,6 +34,7 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
                     <ActionSheetProvider>
                       <PortalProvider>{children}</PortalProvider>
                     </ActionSheetProvider>
+                    <ServerConfigsProvider />
                   </SheetProvider>
                 </GestureHandlerRootView>
               </QueryClientProvider>

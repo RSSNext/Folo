@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 
 import {
@@ -16,12 +17,13 @@ import { useActionRule } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
 
 export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+  const { t } = useTranslation("settings")
   const rule = useActionRule(index)
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Edit Webhooks" />
-      <GroupedInsetListSectionHeader label="Webhooks" marginSize="small" />
+      <NavigationBlurEffectHeader title={t("actions.edit_webhook")} />
+      <GroupedInsetListSectionHeader label={t("actions.action_card.webhooks")} marginSize="small" />
       <GroupedInsetListCard>
         {rule?.result.webhooks?.map((webhook, webhookIndex) => (
           <GroupedInsetListBaseCell className="flex-row" key={webhookIndex}>
@@ -36,7 +38,7 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
           </GroupedInsetListBaseCell>
         ))}
         <GroupedInsetButtonCell
-          label="Add"
+          label={t("actions.action_card.add")}
           onPress={() => {
             actionActions.addWebhook(index)
           }}

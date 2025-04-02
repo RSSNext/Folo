@@ -78,7 +78,7 @@ export const useFeedHeaderTitle = () => {
 
   switch (currentFeedId) {
     case ROUTE_FEED_PENDING: {
-      return t(views[view]!.name as any)
+      return t(views[view]!.name, { ns: "common" })
     }
     case FEED_COLLECTION_LIST: {
       return t("words.starred")

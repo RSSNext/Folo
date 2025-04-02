@@ -23,15 +23,28 @@ enum PagerState: String {
 private class PagerViewController: UIViewController {
     private var pageIndex = 0
     private var pageView: UIView?
+    private var contentView: UIView?
 
     convenience init(index: Int, view: UIView) {
         self.init()
         pageIndex = index
-        pageView = view
+        contentView = view
     }
 
     override func loadView() {
+        pageView = UIView()
         view = pageView
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let contentView = contentView, let pageView = pageView {
+            contentView.removeFromSuperview() // Ensure it's not in another view hierarchy
+            pageView.addSubview(contentView)
+            contentView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
     }
 
     public func getPageIndex() -> Int { pageIndex }
@@ -57,6 +70,8 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
 
     var isTransitioning: Bool = false
     var isDragging: Bool = false
+
+    public var scrollView: UIScrollView?
 
     convenience init(
         pageViews: [UIView], initialPageIndex: Int = 0,
@@ -89,6 +104,8 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
         view.subviews.forEach {
             if let scrollView = $0 as? UIScrollView {
                 scrollView.delegate = self
+                scrollView.delaysContentTouches = false
+                self.scrollView = scrollView
             }
         }
     }
@@ -169,8 +186,7 @@ extension EnhancePagerController: UIPageViewControllerDataSource, UIPageViewCont
         if completed {
             isTransitioning = false
             if let currentVC = pageViewController.viewControllers?.first as? PagerViewController,
-                let newIndex = pageControllers.firstIndex(of: currentVC)
-            {
+               let newIndex = pageControllers.firstIndex(of: currentVC) {
                 currentPageIndex = newIndex
             }
         }
@@ -180,7 +196,6 @@ extension EnhancePagerController: UIPageViewControllerDataSource, UIPageViewCont
         _ pageViewController: UIPageViewController,
         willTransitionTo pendingViewControllers: [UIViewController]
     ) {
-        debugPrint("willTransitionTo")
         isTransitioning = true
     }
 }
@@ -195,7 +210,6 @@ extension EnhancePagerController {
         let hasPageControllerBefore = pageControllers.count > 0
 
         pageControllers.append(vc)
-        debugPrint("inset \(index) \(pageControllers.count)")
 
         if !hasPageControllerBefore {
             setViewControllers([vc], direction: .forward, animated: animated)

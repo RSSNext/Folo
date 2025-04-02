@@ -1,8 +1,11 @@
 {
   "app.copied_to_clipboard": "In die Zwischenablage kopiert",
-  "cancel": "Abbrechen",
-  "close": "Schließen",
-  "confirm": "Bestätigen",
+  "feed_view_type.articles": "Artikel",
+  "feed_view_type.audios": "Audios",
+  "feed_view_type.notifications": "Benachrichtigungen",
+  "feed_view_type.pictures": "Bilder",
+  "feed_view_type.social_media": "Soziale Medien",
+  "feed_view_type.videos": "Videos",
   "ok": "OK",
   "quantifier.piece": "",
   "space": " ",
@@ -12,6 +15,9 @@
   "time.yesterday": "Gestern",
   "tips.load-lng-error": "Fehler beim Laden des Sprachpakets",
   "words.back": "Zurück",
+  "words.cancel": "Abbrechen",
+  "words.close": "Schließen",
+  "words.confirm": "Bestätigen",
   "words.copy": "Kopieren",
   "words.edit": "Bearbeiten",
   "words.entry": "Eintrag",
@@ -25,5 +31,7 @@
   "words.result": "Ergebnis",
   "words.result_one": "Ergebnis",
   "words.result_other": "Ergebnisse",
+  "words.search": "Suche",
+  "words.starred": "Favorisiert",
   "words.which.all": "Alle"
 }

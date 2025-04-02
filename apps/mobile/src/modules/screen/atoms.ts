@@ -1,7 +1,9 @@
 import { FeedViewType } from "@follow/constants"
 import { jotaiStore } from "@follow/utils"
+import { EventBus } from "@follow/utils/src/event-bus"
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 import { createContext, useCallback, useContext, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { views } from "@/src/constants/views"
 import { usePrefetchEntries } from "@/src/store/entry/hooks"
@@ -12,7 +14,6 @@ import { useInbox } from "@/src/store/inbox/hooks"
 import { useList } from "@/src/store/list/hooks"
 import { getSubscriptionByCategory } from "@/src/store/subscription/getter"
 import { useSubscription } from "@/src/store/subscription/hooks"
-
 // drawer open state
 
 const drawerOpenAtom = atom<boolean>(false)
@@ -191,6 +192,7 @@ export const useSelectedFeedTitle = () => {
   const feed = useFeed(selectedFeed && selectedFeed.type === "feed" ? selectedFeed.feedId : "")
   const list = useList(selectedFeed && selectedFeed.type === "list" ? selectedFeed.listId : "")
   const inbox = useInbox(selectedFeed && selectedFeed.type === "inbox" ? selectedFeed.inboxId : "")
+  const { t } = useTranslation("common")
 
   if (!selectedFeed) {
     return ""
@@ -198,7 +200,7 @@ export const useSelectedFeedTitle = () => {
 
   switch (selectedFeed.type) {
     case "view": {
-      return viewDef?.name
+      return viewDef?.name ? t(viewDef.name) : ""
     }
     case "feed": {
       return selectedFeed.feedId === FEED_COLLECTION_LIST ? "Collections" : (feed?.title ?? "")
@@ -210,13 +212,26 @@ export const useSelectedFeedTitle = () => {
       return list?.title
     }
     case "inbox": {
-      return inbox?.title ?? "Inbox"
+      return inbox?.title ?? t("words.inbox")
     }
   }
 }
 
-export const selectTimeline = (state: SelectedTimeline) => {
+declare module "@follow/utils/src/event-bus" {
+  export interface CustomEvent {
+    SELECT_TIMELINE: {
+      view: SelectedTimeline
+      manual: boolean
+    }
+  }
+}
+
+export const selectTimeline = (state: SelectedTimeline, manual = true) => {
   jotaiStore.set(selectedTimelineAtom, state)
+  EventBus.dispatch("SELECT_TIMELINE", {
+    view: state,
+    manual,
+  })
 }
 
 export const selectFeed = (state: SelectedFeed) => {

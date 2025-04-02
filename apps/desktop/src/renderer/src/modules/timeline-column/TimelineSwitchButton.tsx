@@ -56,7 +56,7 @@ const ViewSwitchButton: FC<{
     <ActionButton
       ref={setNodeRef}
       key={item.name}
-      tooltip={t(item.name as any)}
+      tooltip={t(item.name, { ns: "common" })}
       shortcut={`${view + 1}`}
       className={cn(
         isActive && item.className,

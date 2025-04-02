@@ -1,6 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FlashList } from "@shopify/flash-list"
+import type { ParseKeys } from "i18next"
 import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
@@ -65,12 +67,12 @@ export const SubscriptionList = ({
 
   const data = useMemo(
     () => [
-      "Starred",
-      "Lists",
+      "words.starred",
+      "words.lists",
       ...sortedListIds,
-      "Inbox",
+      "words.inbox",
       ...inboxes,
-      "Feeds",
+      "words.feeds",
       ...sortedGrouped,
       ...sortedUnGrouped,
     ],
@@ -138,26 +140,26 @@ const ItemRender = ({
 }) => {
   if (typeof item === "string") {
     switch (item) {
-      case "Starred": {
+      case "words.starred": {
         return <StarItem />
       }
-      case "Inbox": {
+      case "words.inbox": {
         if (!extraData) return null
         const { inboxIndexRange } = extraData
         if (inboxIndexRange[0] > inboxIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
-      case "Lists": {
+      case "words.lists": {
         if (!extraData) return null
         const { listsIndexRange } = extraData
         if (listsIndexRange[0] > listsIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
-      case "Feeds": {
+      case "words.feeds": {
         if (!extraData) return null
         const { feedsIndexRange } = extraData
         if (feedsIndexRange[0] > feedsIndexRange[1]) return null
-        return <SectionTitle title={item} />
+        return <SectionTitle transKey={item} />
       }
       default: {
         if (!extraData) return null
@@ -203,7 +205,8 @@ const ItemRender = ({
   )
 }
 
-const SectionTitle = ({ title }: { title: string }) => {
+const SectionTitle = ({ transKey }: { transKey: ParseKeys<"common"> }) => {
+  const { t } = useTranslation("common")
   return (
     <View
       style={{
@@ -214,7 +217,7 @@ const SectionTitle = ({ title }: { title: string }) => {
       }}
     >
       <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
-        {title}
+        {t(transKey)}
       </Text>
     </View>
   )
@@ -222,6 +225,7 @@ const SectionTitle = ({ title }: { title: string }) => {
 
 const StarItem = () => {
   const navigation = useNavigation()
+  const { t } = useTranslation("common")
 
   return (
     <GroupedInsetListCard showSeparator={false} className="mt-4">
@@ -242,7 +246,7 @@ const StarItem = () => {
       >
         <StarCuteFiIcon color="rgb(245, 158, 11)" height={20} width={20} />
         <Text className="text-text ml-2 font-medium" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
-          Starred
+          {t("words.starred")}
         </Text>
       </ItemPressable>
     </GroupedInsetListCard>

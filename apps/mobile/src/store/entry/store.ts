@@ -484,6 +484,10 @@ class EntrySyncServices {
           ids: nextIds,
         }),
       })
+      if (!response.ok) {
+        console.error("Failed to fetch stream:", response.statusText, await response.text())
+        return
+      }
 
       const reader = response.body?.getReader()
       if (!reader) return

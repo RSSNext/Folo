@@ -1,7 +1,11 @@
 {
   "app.copied_to_clipboard": "Kopioitu leikepöydälle",
-  "cancel": "Peruuta",
-  "confirm": "Vahvista",
+  "feed_view_type.articles": "Artikkelit",
+  "feed_view_type.audios": "Äänitteet",
+  "feed_view_type.notifications": "Ilmoitukset",
+  "feed_view_type.pictures": "Kuvat",
+  "feed_view_type.social_media": "Sosiaalinen media",
+  "feed_view_type.videos": "Videot",
   "ok": "OK",
   "quantifier.piece": "",
   "space": " ",
@@ -11,6 +15,8 @@
   "time.yesterday": "Eilen",
   "tips.load-lng-error": "Kielipaketin lataaminen epäonnistui",
   "words.back": "Takaisin",
+  "words.cancel": "Peruuta",
+  "words.confirm": "Vahvista",
   "words.copy": "Kopioi",
   "words.edit": "Muokkaa",
   "words.entry": "Merkintä",
@@ -24,5 +30,7 @@
   "words.result": "tulos",
   "words.result_one": "tulos",
   "words.result_other": "tulokset",
+  "words.search": "Hae",
+  "words.starred": "Tähdät",
   "words.which.all": "Kaikki"
 }

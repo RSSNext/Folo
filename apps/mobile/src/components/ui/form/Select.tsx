@@ -10,7 +10,7 @@ import { accentColor } from "@/src/theme/colors"
 import { FormLabel } from "./Label"
 
 interface SelectProps<T> {
-  options: { label: string; value: T }[]
+  options: { label: string; value: T; subLabel?: string }[]
 
   value: T
   onValueChange: (value: T) => void
@@ -86,6 +86,9 @@ export function Select<T>({
               onSelect={handleSelect}
             >
               <DropdownMenu.ItemTitle>{option.label}</DropdownMenu.ItemTitle>
+              {!!option.subLabel && (
+                <DropdownMenu.ItemSubtitle>{option.subLabel}</DropdownMenu.ItemSubtitle>
+              )}
             </DropdownMenu.CheckboxItem>
           )
         })}

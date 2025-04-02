@@ -25,7 +25,7 @@ export function Component() {
   const listData = list.data?.list
   const isSubscribed = !!list.data?.subscription
 
-  const { t } = useTranslation("external")
+  const { t } = useTranslation()
 
   const feedMap =
     list.data?.list.feeds?.reduce(

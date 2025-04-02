@@ -1,4 +1,5 @@
 import { themeNames } from "@shikijs/themes"
+import { useTranslation } from "react-i18next"
 import { useColorScheme, View } from "react-native"
 
 import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
@@ -15,6 +16,7 @@ import {
 import { Switch } from "@/src/components/ui/switch/Switch"
 
 export const AppearanceScreen = () => {
+  const { t } = useTranslation("settings")
   const showUnreadCount = useUISettingKey("subscriptionShowUnreadCount")
   const hideExtraBadge = useUISettingKey("hideExtraBadge")
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
@@ -28,13 +30,13 @@ export const AppearanceScreen = () => {
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Appearance" />
+      <NavigationBlurEffectHeader title={t("appearance.title")} />
 
-      <GroupedInsetListSectionHeader label="Subscription" />
+      <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label="Show unread count"
-          description="Show unread count in the subscription list"
+          label={t("appearance.show_unread_count.label")}
+          description={t("appearance.show_unread_count.description")}
         >
           <Switch
             size="sm"
@@ -46,8 +48,8 @@ export const AppearanceScreen = () => {
         </GroupedInsetListCell>
 
         <GroupedInsetListCell
-          label="Hide special badge"
-          description="Hide the special badge of the feed in the sidebar, e.g. Boost, Claimed"
+          label={t("appearance.hide_extra_badge.label")}
+          description={t("appearance.hide_extra_badge.description")}
         >
           <Switch
             size="sm"
@@ -58,8 +60,8 @@ export const AppearanceScreen = () => {
           />
         </GroupedInsetListCell>
         <GroupedInsetListCell
-          label="Thumbnail ratio"
-          description="The ratio of the thumbnail in the entry list."
+          label={t("appearance.thumbnail_ratio.title")}
+          description={t("appearance.thumbnail_ratio.description")}
         >
           <View className="w-[100px]">
             <Select
@@ -78,7 +80,7 @@ export const AppearanceScreen = () => {
 
       <GroupedInsetListSectionHeader label="Content" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label="Code highlight theme">
+        <GroupedInsetListCell label={t("appearance.code_highlight_theme")}>
           <Select
             wrapperClassName="w-[120px]"
             options={themeNames.map((theme) => ({
@@ -93,8 +95,8 @@ export const AppearanceScreen = () => {
         </GroupedInsetListCell>
 
         <GroupedInsetListCell
-          label="Render inline style"
-          description="Allows rendering of the inline style of the original HTML."
+          label={t("appearance.reader_render_inline_style.label")}
+          description={t("appearance.reader_render_inline_style.description")}
         >
           <Switch
             size="sm"
@@ -106,8 +108,8 @@ export const AppearanceScreen = () => {
         </GroupedInsetListCell>
 
         <GroupedInsetListCell
-          label="Hide recent reader"
-          description="Hide the recent reader in the entry header."
+          label={t("appearance.hide_recent_reader.label")}
+          description={t("appearance.hide_recent_reader.description")}
         >
           <Switch
             size="sm"

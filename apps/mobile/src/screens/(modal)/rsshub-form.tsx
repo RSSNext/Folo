@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form"
 import { KeyboardAvoidingView, Linking, Text, TouchableOpacity, View } from "react-native"
 import { z } from "zod"
 
-import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -339,5 +339,7 @@ const ModalHeaderSubmitButtonImpl = ({
     }
   })
 
-  return <HeaderSubmitButton isLoading={isLoading} isValid={isValid} onPress={submit} />
+  return (
+    <HeaderSubmitTextButton isLoading={isLoading} isValid={isValid} onPress={submit} label="Next" />
+  )
 }

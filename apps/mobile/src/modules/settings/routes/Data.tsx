@@ -1,4 +1,5 @@
 import * as FileSystem from "expo-file-system"
+import { useTranslation } from "react-i18next"
 import { Alert } from "react-native"
 
 import { setDataSetting, useDataSettingKey } from "@/src/atoms/settings/data"
@@ -19,17 +20,18 @@ import { toast } from "@/src/lib/toast"
 import { exportLocalDatabase, importOpml } from "../utils"
 
 export const DataScreen = () => {
+  const { t } = useTranslation("settings")
   const sendAnonymousData = useDataSettingKey("sendAnonymousData")
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Data" />
+      <NavigationBlurEffectHeader title={t("titles.data_control")} />
 
-      <GroupedInsetListSectionHeader label="Privacy" />
+      <GroupedInsetListSectionHeader label={t("general.privacy")} />
 
       <GroupedInsetListCard>
         <GroupedInsetListCell
-          label="Send anonymous data"
-          description="By opting to send anonymized telemetry data, you contribute to improving the overall user experience of Folo."
+          label={t("general.send_anonymous_data.label")}
+          description={t("general.send_anonymous_data.description")}
         >
           <Switch
             size="sm"
@@ -43,30 +45,36 @@ export const DataScreen = () => {
 
       {/* Data Sources */}
 
-      <GroupedInsetListSectionHeader label="Data Sources" />
+      <GroupedInsetListSectionHeader label={t("data_control.data_sources")} />
       <GroupedInsetListCard>
-        <GroupedInsetListActionCell onPress={importOpml} label="Import subscriptions from OPML" />
+        <GroupedInsetListActionCell
+          onPress={importOpml}
+          label={t("data_control.import_opml.label")}
+        />
 
-        <GroupedInsetListActionCell onPress={exportLocalDatabase} label="Export local database" />
+        <GroupedInsetListActionCell
+          onPress={exportLocalDatabase}
+          label={t("data_control.export_local_database.label")}
+        />
       </GroupedInsetListCard>
 
       {/* Utils */}
 
-      <GroupedInsetListSectionHeader label="Utils" />
+      <GroupedInsetListSectionHeader label={t("data_control.utils")} />
 
       <GroupedInsetListCard>
         <GroupedInsetListActionCell
           onPress={() => {
             Alert.alert(
-              "Rebuild database?",
-              "This will delete all your offline cached data and rebuild the database, and after that the app will reload.",
+              t("general.rebuild_database.title"),
+              t("general.rebuild_database.warning.line1"),
               [
                 {
-                  text: "Cancel",
+                  text: t("general.rebuild_database.cancel"),
                   style: "cancel",
                 },
                 {
-                  text: "Rebuild",
+                  text: t("general.rebuild_database.button"),
                   style: "destructive",
                   onPress: async () => {
                     const dbPath = getDbPath()
@@ -77,33 +85,36 @@ export const DataScreen = () => {
               ],
             )
           }}
-          label="Rebuild database"
-          description="If you are experiencing rendering issues, rebuilding the database may solve them."
+          label={t("general.rebuild_database.label")}
+          description={t("general.rebuild_database.description")}
         />
 
         <GroupedInsetListActionCell
           onPress={() => {
-            Alert.alert("Clear cache?", "This will clear all temporary files and cached data.", [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
-              {
-                text: "Clear",
-
-                isPreferred: true,
-                onPress: async () => {
-                  const cacheDir = FileSystem.cacheDirectory
-                  if (cacheDir) {
-                    await FileSystem.deleteAsync(cacheDir, { idempotent: true })
-                  }
-                  toast.success("Cache cleared")
+            Alert.alert(
+              t("data_control.clean_cache.button"),
+              t("data_control.clean_cache.description"),
+              [
+                {
+                  text: t("data_control.clean_cache.cancel"),
+                  style: "cancel",
                 },
-              },
-            ])
+                {
+                  text: t("data_control.clean_cache.clear"),
+                  isPreferred: true,
+                  onPress: async () => {
+                    const cacheDir = FileSystem.cacheDirectory
+                    if (cacheDir) {
+                      await FileSystem.deleteAsync(cacheDir, { idempotent: true })
+                    }
+                    toast.success("Cache cleared")
+                  },
+                },
+              ],
+            )
           }}
-          label="Clear cache"
-          description="Clear temporary files and cached data to free up storage space."
+          label={t("data_control.clean_cache.button")}
+          description={t("data_control.clean_cache.description")}
         />
       </GroupedInsetListCard>
     </SafeNavigationScrollView>

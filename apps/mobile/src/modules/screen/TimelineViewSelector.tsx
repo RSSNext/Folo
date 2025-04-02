@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
 import { ScrollView, useWindowDimensions, View } from "react-native"
 import Animated, {
@@ -106,6 +107,7 @@ function ViewItem({ view }: { view: ViewDefinition }) {
   const isActive = selectedFeed?.type === "view" && selectedFeed.viewId === view.view
   const unreadCount = useUnreadCountByView(view.view)
   const borderColor = useColor("gray5")
+  const { t } = useTranslation("common")
 
   return (
     <TimelineViewSelectorContextMenu type="view" viewId={view.view}>
@@ -123,7 +125,7 @@ function ViewItem({ view }: { view: ViewDefinition }) {
               className="text-sm font-semibold text-white"
               numberOfLines={1}
             >
-              {view.name}
+              {t(view.name)}
             </Animated.Text>
             {!!unreadCount && (
               <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />

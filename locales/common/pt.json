@@ -1,8 +1,11 @@
 {
   "app.copied_to_clipboard": "Copiado para a área de transferência",
-  "cancel": "Cancelar",
-  "close": "Fechar",
-  "confirm": "Confirmar",
+  "feed_view_type.articles": "記事",
+  "feed_view_type.audios": "オーディオ",
+  "feed_view_type.notifications": "通知",
+  "feed_view_type.pictures": "画像",
+  "feed_view_type.social_media": "ソーシャルメディア",
+  "feed_view_type.videos": "動画",
   "ok": "OK",
   "quantifier.piece": "",
   "space": " ",
@@ -12,6 +15,9 @@
   "time.yesterday": "Ontem",
   "tips.load-lng-error": "Falha ao carregar o pacote de idioma",
   "words.back": "Voltar",
+  "words.cancel": "Cancelar",
+  "words.close": "Fechar",
+  "words.confirm": "Confirmar",
   "words.copy": "Copiar",
   "words.edit": "Editar",
   "words.entry": "Entrada",
@@ -25,5 +31,7 @@
   "words.result": "resultado",
   "words.result_one": "resultado",
   "words.result_other": "resultados",
+  "words.search": "検索",
+  "words.starred": "スター付き",
   "words.which.all": "Todos"
 }

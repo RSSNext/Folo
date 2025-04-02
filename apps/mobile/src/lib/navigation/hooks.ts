@@ -72,3 +72,15 @@ export const useIsSingleRouteInGroup = () => {
   if (!routeGroup || routeGroup.length === 0) return false
   return routeGroup.length === 1
 }
+
+export const useIsTopRouteInGroup = () => {
+  const { screenId } = useContext(ScreenItemContext)
+
+  const routeGroups = useContext(GroupedNavigationRouteContext)
+  if (!routeGroups) return false
+  const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
+
+  if (!routeGroup || routeGroup.length === 0) return false
+
+  return routeGroup.at(0)?.screenOptions?.id === screenId
+}

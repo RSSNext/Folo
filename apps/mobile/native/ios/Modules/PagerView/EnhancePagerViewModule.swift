@@ -66,7 +66,7 @@ enum TransitionStyle: String, Enumerable {
     }
 }
 
-private class EnhancePagerView: ExpoView {
+private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
     fileprivate var pageController: EnhancePagerController?
 
     private let onScroll = EventDispatcher()
@@ -100,8 +100,13 @@ private class EnhancePagerView: ExpoView {
 
     var pageGap = 20
     var transitionStyle: TransitionStyle = .scroll
-
+    var panGestureRecognizer: UIGestureRecognizer?
     func initizlize() {
+        let panGestureRecognizer = UIPanGestureRecognizer()
+        panGestureRecognizer.delegate = self
+        self.panGestureRecognizer = panGestureRecognizer
+        addGestureRecognizer(panGestureRecognizer)
+
         pageController = EnhancePagerController(pageViews: pageViews, initialPageIndex: page,
                                                 transitionStyle: transitionStyle.toUIPageViewControllerTransitionStyle(),
                                                 options: [
@@ -143,4 +148,25 @@ private class EnhancePagerView: ExpoView {
             }
         }
     #endif
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pageController = pageController else { return false }
+        let currentIndex = pageController.getCurrentPageIndex()
+        guard let scrollView = pageController.scrollView else { return false }
+        if gestureRecognizer == panGestureRecognizer,
+           NSStringFromClass(type(of: otherGestureRecognizer)) == "RNSPanGestureRecognizer" {
+            if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+                let velocity = panGestureRecognizer.velocity(in: self)
+                let isLTR = true
+                let isBackGesture = (isLTR && velocity.x > 0) || (!isLTR && velocity.x < 0)
+
+                if currentIndex == 0 && isBackGesture {
+                    scrollView.panGestureRecognizer.isEnabled = false
+                }
+            }
+            return true
+        }
+
+        return false
+    }
 }
