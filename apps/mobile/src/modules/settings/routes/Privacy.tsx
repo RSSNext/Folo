@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next"
+
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -10,13 +12,14 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { TermsScreen } from "@/src/screens/(headless)/terms"
 
 export const PrivacyScreen = () => {
+  const { t } = useTranslation("settings")
   const { pushControllerView } = useNavigation()
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Privacy" />
+      <NavigationBlurEffectHeader title={t("titles.privacy")} />
       <GroupedInsetListCard className="mt-4">
         <GroupedInsetListNavigationLink
-          label="Terms"
+          label={t("privacy.terms")}
           onPress={() => {
             pushControllerView(TermsScreen)
           }}
