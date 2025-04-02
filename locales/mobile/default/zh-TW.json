@@ -1,8 +1,8 @@
 {
-  "profile.title": "{{name}}的個人資料",
-  "profile.uncategorized_feeds": "未分類的訂閱源",
+  "profile.title": "{{name}} 的個人資料",
+  "profile.uncategorized_feeds": "未分類的 RSS 摘要",
   "tabs.discover": "探索",
   "tabs.home": "首頁",
   "tabs.settings": "設定",
-  "tabs.subscriptions": "訂閱"
+  "tabs.subscriptions": "跟隨"
 }
