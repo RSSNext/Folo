@@ -16,7 +16,6 @@
   "discover.select_placeholder": "اختر",
   "entry_actions.copy_link": "نسخ الرابط",
   "entry_actions.export_as_pdf": "تصدير كملف PDF",
-  "entry_actions.exported_notify": "تم تصدير المقال كملف PDF.",
   "entry_actions.failed_to_save_to_eagle": "فشل الحفظ إلى Eagle.",
   "entry_actions.failed_to_save_to_instapaper": "فشل الحفظ إلى Instapaper.",
   "entry_actions.failed_to_save_to_obsidian": "فشل الحفظ في Obsidian",

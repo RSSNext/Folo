@@ -29,7 +29,6 @@
   "discover.target.lists": "Listeler",
   "entry_actions.copy_link": "Bağlantıyı kopyala",
   "entry_actions.export_as_pdf": "PDF olarak dışa aktar",
-  "entry_actions.exported_notify": "Makale PDF olarak dışa aktarıldı.",
   "entry_actions.failed_to_save_to_eagle": "Eagle'a kaydetme başarısız oldu.",
   "entry_actions.failed_to_save_to_instapaper": "Instapaper'a kaydetme başarısız oldu.",
   "entry_actions.failed_to_save_to_readwise": "Readwise'a kaydetme başarısız oldu.",

@@ -188,10 +188,6 @@ export const useRegisterEntryCommands = () => {
         }
 
         window.print()
-
-        toast(t("entry_actions.exported_notify"), {
-          duration: 1000,
-        })
       },
     },
     {

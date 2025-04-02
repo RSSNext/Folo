@@ -88,7 +88,6 @@
   "entry_actions.delete": "Delete",
   "entry_actions.deleted": "Deleted.",
   "entry_actions.export_as_pdf": "Export as PDF",
-  "entry_actions.exported_notify": "Exported article as PDF.",
   "entry_actions.failed_to_delete": "Failed to delete.",
   "entry_actions.failed_to_save_to_eagle": "Failed to save to Eagle.",
   "entry_actions.failed_to_save_to_instapaper": "Failed to save to Instapaper.",

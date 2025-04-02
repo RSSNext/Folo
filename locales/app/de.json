@@ -16,7 +16,6 @@
   "discover.select_placeholder": "Auswählen",
   "entry_actions.copy_link": "Link kopieren",
   "entry_actions.export_as_pdf": "Als PDF exportieren",
-  "entry_actions.exported_notify": "Artikel als PDF exportiert.",
   "entry_actions.failed_to_save_to_eagle": "Speichern in Eagle fehlgeschlagen.",
   "entry_actions.failed_to_save_to_instapaper": "Speichern in Instapaper fehlgeschlagen.",
   "entry_actions.failed_to_save_to_obsidian": "Speichern in Obsidian fehlgeschlagen",

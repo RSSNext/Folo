@@ -84,7 +84,6 @@
   "entry_actions.delete": "Удалить",
   "entry_actions.deleted": "Удалено.",
   "entry_actions.export_as_pdf": "Экспортировать в PDF",
-  "entry_actions.exported_notify": "Статья экспортирована в PDF.",
   "entry_actions.failed_to_delete": "Не удалось удалить.",
   "entry_actions.failed_to_save_to_eagle": "Не удалось сохранить в Eagle.",
   "entry_actions.failed_to_save_to_instapaper": "Не удалось сохранить в Instapaper.",
