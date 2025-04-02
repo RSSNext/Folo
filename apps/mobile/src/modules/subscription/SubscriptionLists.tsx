@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FlashList } from "@shopify/flash-list"
+import type { ParseKeys } from "i18next"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
@@ -204,7 +205,7 @@ const ItemRender = ({
   )
 }
 
-const SectionTitle = ({ transKey }: { transKey: string }) => {
+const SectionTitle = ({ transKey }: { transKey: ParseKeys<"common"> }) => {
   const { t } = useTranslation("common")
   return (
     <View
@@ -216,7 +217,7 @@ const SectionTitle = ({ transKey }: { transKey: string }) => {
       }}
     >
       <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
-        {t(transKey as any)}
+        {t(transKey)}
       </Text>
     </View>
   )
