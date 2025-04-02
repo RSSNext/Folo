@@ -133,7 +133,7 @@
   "general.action.title": "Action",
   "general.action.translation": "AI Translation",
   "general.action_language.default": "Default (UI Language)",
-  "general.action_language.label": "Language",
+  "general.action_language.label": "Action Language",
   "general.advanced": "Advanced",
   "general.app": "App",
   "general.auto_expand_long_social_media.description": "Automatically expand social media entries containing long text.",

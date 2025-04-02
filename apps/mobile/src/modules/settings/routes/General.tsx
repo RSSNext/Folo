@@ -23,7 +23,8 @@ import { updateDayjsLocale } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
 function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
-  const { t } = useTranslation("lang")
+  const { t } = useTranslation("settings")
+  const { t: tLang } = useTranslation("lang")
   const languageMapWithTranslation = useMemo(() => {
     const languageKeys =
       settingKey === "language"
@@ -33,16 +34,18 @@ function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLangua
           )
 
     return languageKeys.map((key) => ({
-      subLabel: settingKey === "language" ? t(`langs.${key}`, { lng: key }) : undefined,
-      label: t(`langs.${key}`),
+      subLabel: settingKey === "language" ? tLang(`langs.${key}`, { lng: key }) : undefined,
+      label: tLang(`langs.${key}`),
       value: key,
     }))
-  }, [settingKey, t])
+  }, [settingKey, tLang])
   const language = useGeneralSettingKey(settingKey)
 
   return (
     <GroupedInsetListBaseCell>
-      <Text className="text-label">Language</Text>
+      <Text className="text-label">
+        {settingKey === "language" ? t("general.language") : t("general.action_language.label")}
+      </Text>
 
       <View className="w-[150px]">
         <Select
@@ -54,7 +57,7 @@ function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLangua
               updateDayjsLocale(value)
             }
           }}
-          displayValue={t(`langs.${language}` as any)}
+          displayValue={tLang(`langs.${language}` as any)}
           options={languageMapWithTranslation}
         />
       </View>
