@@ -1,7 +1,6 @@
 import { cn } from "@follow/utils"
 import { useEffect } from "react"
 import type { PressableProps } from "react-native"
-import { ActivityIndicator } from "react-native"
 import Animated, {
   cancelAnimation,
   interpolateColor,
@@ -13,6 +12,7 @@ import { useColor } from "react-native-uikit-colors"
 
 import { accentColor } from "@/src/theme/colors"
 
+import { PlatformActivityIndicator } from "../ui/loading/PlatformActivityIndicator"
 import { ReAnimatedPressable } from "./AnimatedComponents"
 
 export function SubmitButton({
@@ -43,10 +43,13 @@ export function SubmitButton({
       {...props}
       disabled={disabled}
       style={[buttonStyle, props.style]}
-      className={cn("h-[48] flex-row items-center justify-center rounded-2xl", props.className)}
+      className={cn(
+        "flex h-[48] flex-row items-center justify-center rounded-2xl",
+        props.className,
+      )}
     >
       {isLoading ? (
-        <ActivityIndicator className="text-white" />
+        <PlatformActivityIndicator color="white" />
       ) : (
         <Animated.Text className="text-center text-xl font-semibold" style={textStyle}>
           {title}

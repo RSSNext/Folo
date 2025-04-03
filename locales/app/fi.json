@@ -16,7 +16,6 @@
   "discover.select_placeholder": "Valitse",
   "entry_actions.copy_link": "Kopioi linkki",
   "entry_actions.export_as_pdf": "Vie PDF:nä",
-  "entry_actions.exported_notify": "Artikkeli vietiin PDF-muodossa.",
   "entry_actions.failed_to_save_to_eagle": "Tallennus Eagleen epäonnistui.",
   "entry_actions.failed_to_save_to_instapaper": "Tallennus Instapaperiin epäonnistui.",
   "entry_actions.failed_to_save_to_readwise": "Tallennus Readwiseen epäonnistui.",

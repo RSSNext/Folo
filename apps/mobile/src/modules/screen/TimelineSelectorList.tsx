@@ -19,6 +19,8 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { usePrefetchSubscription } from "@/src/store/subscription/hooks"
 import { usePrefetchUnread } from "@/src/store/unread/hooks"
 
+import { EntryListEmpty } from "../entry-list/EntryListEmpty"
+
 type Props = {
   onRefresh: () => void
   isRefetching: boolean
@@ -48,23 +50,31 @@ export const TimelineSelectorList = forwardRef<
 
   const systemFill = useColor("secondaryLabel")
 
+  const onLayout = useTypeScriptHappyCallback(
+    (e) => {
+      scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight - tabBarHeight
+    },
+    [scrollViewHeight],
+  ) as FlashListProps<any>["onLayout"]
+
+  const onContentSizeChange = useTypeScriptHappyCallback(
+    (w, h) => {
+      scrollViewContentHeight.value = h
+    },
+    [scrollViewContentHeight],
+  ) as FlashListProps<any>["onContentSizeChange"]
+
+  if (props.data?.length === 0) {
+    return <EntryListEmpty />
+  }
+
   return (
     <FlashList
       automaticallyAdjustsScrollIndicatorInsets={false}
       automaticallyAdjustContentInsets={false}
       ref={ref}
-      onLayout={useTypeScriptHappyCallback(
-        (e) => {
-          scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight - tabBarHeight
-        },
-        [scrollViewHeight],
-      )}
-      onContentSizeChange={useTypeScriptHappyCallback(
-        (w, h) => {
-          scrollViewContentHeight.value = h
-        },
-        [scrollViewContentHeight],
-      )}
+      onLayout={onLayout}
+      onContentSizeChange={onContentSizeChange}
       refreshControl={
         <RefreshControl
           progressViewOffset={headerHeight}
@@ -117,6 +127,10 @@ export const TimelineSelectorMasonryList = forwardRef<
   const tabBarHeight = useBottomTabBarHeight()
 
   const systemFill = useColor("secondaryLabel")
+
+  if (props.data?.length === 0) {
+    return <EntryListEmpty />
+  }
 
   return (
     <MasonryFlashList

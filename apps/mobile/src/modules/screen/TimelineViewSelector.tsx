@@ -1,3 +1,4 @@
+import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
@@ -25,6 +26,8 @@ const INACTIVE_WIDTH = 48
 
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
+  const scrollViewRef = React.useRef<ScrollView>(null)
+  const selectedFeed = useSelectedFeed()
 
   return (
     <View
@@ -32,13 +35,19 @@ export function TimelineViewSelector() {
       style={{ height: TIMELINE_VIEW_SELECTOR_HEIGHT }}
     >
       <ScrollView
+        ref={scrollViewRef}
         horizontal
         scrollsToTop={false}
         contentContainerClassName="flex-row gap-3 items-center px-3"
         showsHorizontalScrollIndicator={false}
       >
         {activeViews.map((view) => (
-          <ViewItem key={view.name} view={view} />
+          <ViewItem
+            key={view.name}
+            view={view}
+            scrollViewRef={scrollViewRef}
+            isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
+          />
         ))}
       </ScrollView>
     </View>
@@ -101,46 +110,75 @@ function ItemWrapper({
   )
 }
 
-function ViewItem({ view }: { view: ViewDefinition }) {
+function ViewItem({
+  view,
+  scrollViewRef,
+  isActive,
+}: {
+  view: ViewDefinition
+  scrollViewRef: React.RefObject<ScrollView>
+  isActive: boolean
+}) {
   const textColor = useColor("gray")
-  const selectedFeed = useSelectedFeed()
-  const isActive = selectedFeed?.type === "view" && selectedFeed.viewId === view.view
   const unreadCount = useUnreadCountByView(view.view)
   const borderColor = useColor("gray5")
   const { t } = useTranslation("common")
+  const itemRef = React.useRef<View>(null)
+  const { width: windowWidth } = useWindowDimensions()
+
+  // Scroll to center the active item when it becomes active
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null
+    if (isActive && scrollViewRef.current && itemRef.current) {
+      // Give time for animation to start
+      timeout = setTimeout(() => {
+        itemRef.current?.measureInWindow((x, y, width) => {
+          const scrollX = x - windowWidth / 2 + width / 2
+          scrollViewRef.current?.scrollTo({ x: Math.max(0, scrollX), animated: true })
+        })
+      }, 50)
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+    }
+  }, [isActive, scrollViewRef, windowWidth])
 
   return (
     <TimelineViewSelectorContextMenu type="view" viewId={view.view}>
-      <ItemWrapper
-        isActive={isActive}
-        onPress={() => selectTimeline({ type: "view", viewId: view.view })}
-        style={isActive ? { backgroundColor: view.activeColor } : undefined}
-      >
-        <view.icon color={isActive ? "#fff" : textColor} height={21} width={21} />
-        {isActive ? (
-          <>
-            <Animated.Text
-              key={view.name}
-              exiting={FadeOut}
-              className="text-sm font-semibold text-white"
-              numberOfLines={1}
-            >
-              {t(view.name)}
-            </Animated.Text>
-            {!!unreadCount && (
-              <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />
-            )}
-          </>
-        ) : (
-          !!unreadCount &&
-          !isActive && (
-            <View
-              className="absolute -right-0.5 -top-0.5 size-2 rounded-full border"
-              style={{ backgroundColor: textColor, borderColor }}
-            />
-          )
-        )}
-      </ItemWrapper>
+      <View ref={itemRef}>
+        <ItemWrapper
+          isActive={isActive}
+          onPress={() => selectTimeline({ type: "view", viewId: view.view })}
+          style={isActive ? { backgroundColor: view.activeColor } : undefined}
+        >
+          <view.icon color={isActive ? "#fff" : textColor} height={21} width={21} />
+          {isActive ? (
+            <>
+              <Animated.Text
+                key={view.name}
+                exiting={FadeOut}
+                className="text-sm font-semibold text-white"
+                numberOfLines={1}
+              >
+                {t(view.name)}
+              </Animated.Text>
+              {!!unreadCount && (
+                <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />
+              )}
+            </>
+          ) : (
+            !!unreadCount &&
+            !isActive && (
+              <View
+                className="absolute -right-0.5 -top-0.5 size-2 rounded-full border"
+                style={{ backgroundColor: textColor, borderColor }}
+              />
+            )
+          )}
+        </ItemWrapper>
+      </View>
     </TimelineViewSelectorContextMenu>
   )
 }

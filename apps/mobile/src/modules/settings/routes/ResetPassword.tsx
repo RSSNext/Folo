@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
 import { useColor } from "react-native-uikit-colors"
 
-import { RotateableLoading } from "@/src/components/common/RotateableLoading"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -14,6 +13,7 @@ import {
   GroupedInsetListCard,
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { changePassword } from "@/src/lib/auth"
 
@@ -48,7 +48,7 @@ export const ResetPassword = () => {
               label="Save"
               normalIcon={
                 isPending ? (
-                  <RotateableLoading color={labelColor} />
+                  <PlatformActivityIndicator size="small" color={labelColor} />
                 ) : (
                   <CheckLineIcon height={18} width={18} color={labelColor} />
                 )

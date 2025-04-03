@@ -2,11 +2,13 @@ import { useTypeScriptHappyCallback } from "@follow/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { forwardRef } from "react"
-import { ActivityIndicator, View } from "react-native"
+import { View } from "react-native"
 
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
+import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
@@ -41,9 +43,11 @@ export const EntryListContentPicture = forwardRef<
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
-            <ActivityIndicator />
+            <PlatformActivityIndicator />
           </View>
-        ) : null
+        ) : (
+          <GridEntryListFooter />
+        )
       }
       {...rest}
       onRefresh={refetch}

@@ -6,6 +6,7 @@ import { saveToLibraryAsync } from "expo-media-library"
 import { shareAsync } from "expo-sharing"
 import type { PropsWithChildren } from "react"
 import { useRef } from "react"
+import { useTranslation } from "react-i18next"
 import type { View } from "react-native"
 import { findNodeHandle, Image, Pressable } from "react-native"
 
@@ -35,6 +36,7 @@ const getIOSNativeImageActions = () => {
 }
 
 export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMenuProps) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId!)
   const feedId = entry?.feedId
   const view = useSelectedView()
@@ -105,7 +107,9 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
                 name: isEntryStarred ? "star.slash" : "star",
               }}
             />
-            <ContextMenu.ItemTitle>{isEntryStarred ? "Unstar" : "Star"}</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>
+              {isEntryStarred ? t("operation.unstar") : t("operation.star")}
+            </ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
 
@@ -183,7 +187,7 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
               name: "square.and.arrow.up",
             }}
           />
-          <ContextMenu.ItemTitle>Share</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.share")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

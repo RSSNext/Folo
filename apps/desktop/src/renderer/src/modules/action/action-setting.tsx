@@ -65,17 +65,15 @@ function ActionSettingOperations() {
         <i className="i-mgc-add-cute-re mr-1" />
         <span>{t("actions.newRule")}</span>
       </Button>
-      {actionLength > 0 && (
-        <Button
-          variant="primary"
-          disabled={!isDirty}
-          isLoading={mutation.isPending}
-          onClick={() => mutation.mutate()}
-        >
-          <i className="i-mgc-check-circle-cute-re mr-1" />
-          {t("actions.save")}
-        </Button>
-      )}
+      <Button
+        variant="primary"
+        disabled={!isDirty}
+        isLoading={mutation.isPending}
+        onClick={() => mutation.mutate()}
+      >
+        <i className="i-mgc-check-circle-cute-re mr-1" />
+        {t("actions.save")}
+      </Button>
     </div>
   )
 }

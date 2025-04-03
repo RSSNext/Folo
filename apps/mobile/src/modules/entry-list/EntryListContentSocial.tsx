@@ -5,6 +5,7 @@ import { View } from "react-native"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
+import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
@@ -13,7 +14,8 @@ export const EntryListContentSocial = forwardRef<
   ElementRef<typeof TimelineSelectorList>,
   { entryIds: string[]; active?: boolean }
 >(({ entryIds, active }, ref) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching } = useFetchEntriesControls()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
+    useFetchEntriesControls()
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => <EntrySocialItem key={id} entryId={id} />,
@@ -21,8 +23,8 @@ export const EntryListContentSocial = forwardRef<
   )
 
   const ListFooterComponent = useMemo(
-    () => (isFetching ? <EntryItemSkeleton /> : null),
-    [isFetching],
+    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
+    [hasNextPage],
   )
 
   const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({

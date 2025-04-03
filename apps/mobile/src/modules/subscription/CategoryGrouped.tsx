@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils"
 import { memo, useState } from "react"
-import { Text, TouchableOpacity } from "react-native"
+import { Text, TouchableOpacity, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
 import { GROUPED_LIST_MARGIN } from "@/src/components/ui/grouped/constants"
@@ -54,51 +54,53 @@ export const CategoryGrouped = memo(
 
     return (
       <>
-        <SubscriptionFeedCategoryContextMenu
-          category={category}
-          feedIds={subscriptionIds}
-          view={view}
-        >
-          <ItemPressable
-            itemStyle={ItemPressableStyle.Grouped}
-            onPress={() => {
-              const isHorizontalScrolling = getHorizontalScrolling()
-              if (isHorizontalScrolling) {
-                return
-              }
-              selectFeed({
-                type: "category",
-                categoryName: category,
-              })
-              closeDrawer()
-              navigation.pushControllerView(FeedScreen, {
-                feedId: category,
-              })
-            }}
-            className={cn("h-12 flex-row items-center px-3", {
-              "rounded-t-[10px]": isFirst,
-              "rounded-b-[10px]": isLast,
-            })}
-            style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
+        <View style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
+          <SubscriptionFeedCategoryContextMenu
+            category={category}
+            feedIds={subscriptionIds}
+            view={view}
+            asChild
           >
-            <TouchableOpacity
-              hitSlop={10}
+            <ItemPressable
+              itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {
-                rotateSharedValue.value = withSpring(expanded ? 0 : 90, {})
-                setExpanded(!expanded)
+                const isHorizontalScrolling = getHorizontalScrolling()
+                if (isHorizontalScrolling) {
+                  return
+                }
+                selectFeed({
+                  type: "category",
+                  categoryName: category,
+                })
+                closeDrawer()
+                navigation.pushControllerView(FeedScreen, {
+                  feedId: category,
+                })
               }}
-              className="size-5 flex-row items-center justify-center"
+              className={cn("h-12 flex-row items-center px-3", {
+                "rounded-t-[10px]": isFirst,
+                "rounded-b-[10px]": isLast,
+              })}
             >
-              <Animated.View style={rotateStyle} className="ml-2">
-                <RightCuteFiIcon color={secondaryLabelColor} height={14} width={14} />
-              </Animated.View>
-            </TouchableOpacity>
-            <Text className="text-text ml-4 font-medium">{category}</Text>
-            {!!unreadCounts && (
-              <Text className="text-secondary-label ml-auto text-xs">{unreadCounts}</Text>
-            )}
-          </ItemPressable>
-        </SubscriptionFeedCategoryContextMenu>
+              <TouchableOpacity
+                hitSlop={10}
+                onPress={() => {
+                  rotateSharedValue.value = withSpring(expanded ? 0 : 90, {})
+                  setExpanded(!expanded)
+                }}
+                className="size-5 flex-row items-center justify-center"
+              >
+                <Animated.View style={rotateStyle} className="ml-2">
+                  <RightCuteFiIcon color={secondaryLabelColor} height={14} width={14} />
+                </Animated.View>
+              </TouchableOpacity>
+              <Text className="text-text ml-4 font-medium">{category}</Text>
+              {!!unreadCounts && (
+                <Text className="text-secondary-label ml-auto text-xs">{unreadCounts}</Text>
+              )}
+            </ItemPressable>
+          </SubscriptionFeedCategoryContextMenu>
+        </View>
 
         {!isLast && <ItemSeparator />}
         {expanded && (

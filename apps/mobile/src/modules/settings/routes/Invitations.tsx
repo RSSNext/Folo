@@ -38,7 +38,7 @@ const invitationQueryKey = ["invitations"]
 const useInvitationsQuery = () => {
   return useQuery({
     queryKey: invitationQueryKey,
-    queryFn: () => apiClient.invitations.$get(),
+    queryFn: () => apiClient.invitations.$get().then((res) => res.data),
   })
 }
 const useInvitationsLimitationQuery = () => {
@@ -115,7 +115,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
       <GroupedInsetListSectionHeader label={t("titles.invitations")} />
       <GroupedInsetListCard>
         {isLoading && <GroupedInsetActivityIndicatorCell />}
-        {invitations?.data?.map((invitation) => (
+        {invitations?.map((invitation) => (
           <ContextMenu.Root key={invitation.code}>
             <ContextMenu.Trigger>
               <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
@@ -160,7 +160,7 @@ const GenerateButton = () => {
   const { t } = useTranslation("settings")
   const limitation = useInvitationsLimitationQuery()
   const { data: invitations } = useInvitationsQuery()
-  const disabled = !limitation || (invitations && invitations?.data?.length >= limitation)
+  const disabled = !limitation || (invitations && invitations?.length >= limitation)
   return (
     <UINavigationHeaderActionButton
       disabled={disabled}
@@ -190,10 +190,12 @@ const ConfirmGenerateDialog: DialogComponent = () => {
       apiClient.invitations.new.$post({ json: values }),
     onError(err) {
       toastFetchError(err)
+      console.error(err)
+    },
+    onMutate() {
+      dismiss()
     },
     onSuccess(data) {
-      dismiss()
-
       toast.success("Generate successfully, code is copied to clipboard")
 
       type Invitation = {
@@ -201,6 +203,7 @@ const ConfirmGenerateDialog: DialogComponent = () => {
         createdAt: string | null
       }
       const old = queryClient.getQueryData<Invitation[]>(invitationQueryKey)
+      setStringAsync(data.data)
 
       queryClient.setQueryData<Invitation[]>(invitationQueryKey, () => {
         return [
@@ -211,11 +214,10 @@ const ConfirmGenerateDialog: DialogComponent = () => {
           ...(old ?? []),
         ]
       })
-      setStringAsync(data.data)
     },
   })
 
-  const confirm = useTOTPModalWrapper(() => newInvitation.mutateAsync({}), {
+  const confirm = useTOTPModalWrapper(newInvitation.mutateAsync, {
     dismiss,
   })
 

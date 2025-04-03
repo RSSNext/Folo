@@ -321,7 +321,11 @@ export function transformShortcut(shortcut: string, platform: OS = getOS()): str
 }
 
 // time like 1:30:00
-export const formatTimeToSeconds = (time: string) => {
+export const formatTimeToSeconds = (time?: string | number) => {
+  if (typeof time === "number" || time === undefined) {
+    return time
+  }
+
   const formats = ["h:mm:ss", "mm:ss", "m:ss"]
 
   for (const format of formats) {

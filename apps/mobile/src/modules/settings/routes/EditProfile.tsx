@@ -1,13 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import type { FC } from "react"
 import { useState } from "react"
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native"
+import { Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
@@ -23,6 +17,7 @@ import {
   GroupedInsetListNavigationLink,
   GroupedOutlineDescription,
 } from "@/src/components/ui/grouped/GroupedList"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { CloseCircleFillIcon } from "@/src/icons/close_circle_fill"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -42,7 +37,7 @@ export const EditProfileScreen = () => {
   if (!whoami) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
+        <PlatformActivityIndicator />
       </View>
     )
   }

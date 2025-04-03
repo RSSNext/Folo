@@ -5,12 +5,13 @@ import { useAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
 import type { ViewProps } from "react-native"
-import { ActivityIndicator, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 import type { EntryModel, EntryWithTranslation } from "@/src/store/entry/types"
 
+import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
 import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
@@ -119,7 +120,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
       <Portal>
         {(showReadability ? !entry.readabilityContent : !entry.content) && (
           <View className="absolute inset-0 items-center justify-center">
-            <ActivityIndicator />
+            <PlatformActivityIndicator />
           </View>
         )}
       </Portal>

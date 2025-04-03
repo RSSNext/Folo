@@ -3,13 +3,14 @@ import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
 import type { PressableProps, ViewProps } from "react-native"
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
 import { accentColor, useColor } from "@/src/theme/colors"
 
+import { PlatformActivityIndicator } from "../loading/PlatformActivityIndicator"
 import {
   GROUPED_ICON_TEXT_GAP,
   GROUPED_LIST_ITEM_PADDING,
@@ -344,7 +345,7 @@ export const GroupedPlainButtonCell: FC<
 export const GroupedInsetActivityIndicatorCell: FC = () => {
   return (
     <GroupedInsetListBaseCell className="flex-1 items-center justify-center py-4">
-      <ActivityIndicator />
+      <PlatformActivityIndicator />
     </GroupedInsetListBaseCell>
   )
 }

@@ -7,6 +7,7 @@ import { View } from "react-native"
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
+import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
@@ -17,20 +18,23 @@ export const EntryListContentVideo = forwardRef<
     "data" | "renderItem"
   >
 >(({ entryIds, active, ...rest }, ref) => {
-  const { fetchNextPage, refetch, isRefetching, isFetching } = useFetchEntriesControls()
+  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage } =
+    useFetchEntriesControls()
   const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
 
   const ListFooterComponent = useMemo(
     () =>
-      isFetching ? (
+      hasNextPage ? (
         <View className="flex flex-row justify-between">
           <EntryItemSkeleton />
           <EntryItemSkeleton />
         </View>
-      ) : null,
-    [isFetching],
+      ) : (
+        <GridEntryListFooter />
+      ),
+    [hasNextPage],
   )
 
   return (

@@ -38,10 +38,10 @@ export function PagerList({
   useEffect(() => {
     return EventBus.subscribe("SELECT_TIMELINE", (data) => {
       if (data.manual) {
-        pagerRef.current?.setPage(data.view.viewId)
+        pagerRef.current?.setPage(activeViews.findIndex((view) => view.view === data.view.viewId))
       }
     })
-  }, [pagerRef])
+  }, [activeViews, pagerRef])
 
   return (
     <AnimatedPagerView

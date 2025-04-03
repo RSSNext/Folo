@@ -49,7 +49,7 @@ export type MediaModel = {
 
 export type AttachmentsModel = {
   url: string
-  duration_in_seconds?: number
+  duration_in_seconds?: number | string
   mime_type?: string
   size_in_bytes?: number
   title?: string

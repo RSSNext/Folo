@@ -1,4 +1,4 @@
-# What's new in vNEXT_VERSION
+# What's New in vNEXT_VERSION
 
 ## New Features
 

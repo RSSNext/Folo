@@ -1,14 +1,12 @@
-import { withOpacity } from "@follow/utils"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { ActivityIndicator, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
-import { useColor, useColors } from "react-native-uikit-colors"
+import { useColors } from "react-native-uikit-colors"
 
-import { RotateableLoading } from "@/src/components/common/RotateableLoading"
 import { SwipeableGroupProvider, SwipeableItem } from "@/src/components/common/SwipeableItem"
-import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
   SafeNavigationScrollView,
@@ -18,9 +16,9 @@ import {
   GroupedInsetListCard,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Switch } from "@/src/components/ui/switch/Switch"
-import { CheckLineIcon } from "@/src/icons/check_line"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import {
@@ -79,7 +77,7 @@ export const ActionsScreen = () => {
             </SwipeableGroupProvider>
           ) : isLoading && rules.length === 0 ? (
             <View className="my-4">
-              <ActivityIndicator />
+              <PlatformActivityIndicator />
             </View>
           ) : null}
         </GroupedInsetListCard>
@@ -105,15 +103,14 @@ const NewRuleButton = () => {
 
 const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
   const { mutate, isPending } = useUpdateActionsMutation()
-  const label = useColor("label")
+
   return (
-    <UINavigationHeaderActionButton onPress={mutate} disabled={disabled || isPending}>
-      {isPending ? (
-        <RotateableLoading size={20} color={withOpacity(label, 0.5)} />
-      ) : (
-        <CheckLineIcon height={20} width={20} color={disabled ? withOpacity(label, 0.5) : label} />
-      )}
-    </UINavigationHeaderActionButton>
+    <HeaderSubmitTextButton
+      label="Save"
+      isValid={!disabled}
+      onPress={mutate}
+      isLoading={isPending}
+    />
   )
 }
 
@@ -159,7 +156,7 @@ const ListItemCellImpl: ListRenderItem<ActionRule> = ({ item: rule }) => {
       ]}
     >
       <ItemPressable
-        className="flex-row justify-between p-4"
+        className="flex flex-row justify-between p-4"
         onPress={() => navigation.pushControllerView(EditRuleScreen, { index: rule.index })}
       >
         <Text className="text-label text-base">{rule.name}</Text>

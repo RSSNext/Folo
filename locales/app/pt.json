@@ -16,7 +16,6 @@
   "discover.select_placeholder": "選択",
   "entry_actions.copy_link": "リンクをコピー",
   "entry_actions.export_as_pdf": "Exportar como PDF",
-  "entry_actions.exported_notify": "Artigo exportado como PDF.",
   "entry_actions.failed_to_save_to_eagle": "Eagle への保存に失敗しました。",
   "entry_actions.failed_to_save_to_instapaper": "Instapaper への保存に失敗しました。",
   "entry_actions.failed_to_save_to_readwise": "Readwise への保存に失敗しました。",

@@ -16,7 +16,6 @@
   "discover.select_placeholder": "Sélectionner",
   "entry_actions.copy_link": "Copier le lien",
   "entry_actions.export_as_pdf": "Exporter en PDF",
-  "entry_actions.exported_notify": "Article exporté en PDF.",
   "entry_actions.failed_to_save_to_eagle": "Échec de l'enregistrement sur Eagle.",
   "entry_actions.failed_to_save_to_instapaper": "Échec de l'enregistrement sur Instapaper.",
   "entry_actions.failed_to_save_to_readwise": "Échec de l'enregistrement sur Readwise.",

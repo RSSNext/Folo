@@ -1,18 +1,12 @@
 import { BlurView } from "expo-blur"
 import type { FC } from "react"
 import { useEffect, useRef, useState } from "react"
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { Platform, Pressable, StyleSheet, TouchableOpacity, View } from "react-native"
 import RootSiblings from "react-native-root-siblings"
 
 import { FullWindowOverlay } from "../components/common/FullWindowOverlay"
 import { RotateableLoading } from "../components/common/RotateableLoading"
+import { PlatformActivityIndicator } from "../components/ui/loading/PlatformActivityIndicator"
 import { CloseCuteReIcon } from "../icons/close_cute_re"
 
 class LoadingStatic {
@@ -60,7 +54,7 @@ const LoadingContainer: FC<{
         <View className="border-non-opaque-separator relative overflow-hidden rounded-2xl border p-12">
           <BlurView style={StyleSheet.absoluteFillObject} tint="systemChromeMaterialDark" />
           {Platform.OS === "ios" ? (
-            <ActivityIndicator size={"large"} color="white" />
+            <PlatformActivityIndicator size={"large"} color="white" />
           ) : (
             <RotateableLoading />
           )}

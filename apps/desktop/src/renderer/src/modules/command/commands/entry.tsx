@@ -188,10 +188,6 @@ export const useRegisterEntryCommands = () => {
         }
 
         window.print()
-
-        toast(t("entry_actions.exported_notify"), {
-          duration: 1000,
-        })
       },
     },
     {
@@ -229,7 +225,7 @@ export const useRegisterEntryCommands = () => {
     {
       id: COMMAND_ID.entry.viewSourceContent,
       label: t("entry_actions.view_source_content"),
-      icon: <i className="i-mgc-world-2-cute-re" />,
+      icon: <i className="i-mgc-web-cute-re" />,
       run: ({ entryId }) => {
         if (!getShowSourceContent()) {
           const entry = useEntryStore.getState().flatMapEntries[entryId]

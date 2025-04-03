@@ -7,6 +7,7 @@ import { usePlayingUrl } from "@/src/lib/player"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
+import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparator } from "./ItemSeparator"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
@@ -17,7 +18,8 @@ export const EntryListContentArticle = forwardRef<
 >(({ entryIds, active }, ref) => {
   const playingAudioUrl = usePlayingUrl()
 
-  const { fetchNextPage, isFetching, refetch, isRefetching } = useFetchEntriesControls()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
+    useFetchEntriesControls()
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
@@ -27,8 +29,8 @@ export const EntryListContentArticle = forwardRef<
   )
 
   const ListFooterComponent = useMemo(
-    () => (isFetching ? <EntryItemSkeleton /> : null),
-    [isFetching],
+    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
+    [hasNextPage],
   )
 
   const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({

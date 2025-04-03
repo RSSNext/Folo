@@ -15,7 +15,7 @@ class NavigationSitemapRegistryStatic {
     props?: T,
     options?: Partial<RegisterOptions>,
   ) {
-    const title = controllerView.name || controllerView.displayName
+    const title = controllerView.id || controllerView.displayName || controllerView.name
     if (!title) {
       if (__DEV__) {
         console.error("registerByComponent: no name, ignore")

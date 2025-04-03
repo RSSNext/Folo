@@ -1574,7 +1574,7 @@ type MediaModel = {
 };
 type AttachmentsModel = {
     url: string;
-    duration_in_seconds?: number;
+    duration_in_seconds?: number | string;
     mime_type?: string;
     size_in_bytes?: number;
     title?: string;
@@ -2027,20 +2027,20 @@ declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
 }>;
 declare const attachmentsZodSchema: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
     url: z.ZodString;
-    duration_in_seconds: z.ZodOptional<z.ZodNumber>;
+    duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
     mime_type: z.ZodOptional<z.ZodString>;
     size_in_bytes: z.ZodOptional<z.ZodNumber>;
     title: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     url: string;
     title?: string | undefined;
-    duration_in_seconds?: number | undefined;
+    duration_in_seconds?: string | number | undefined;
     mime_type?: string | undefined;
     size_in_bytes?: number | undefined;
 }, {
     url: string;
     title?: string | undefined;
-    duration_in_seconds?: number | undefined;
+    duration_in_seconds?: string | number | undefined;
     mime_type?: string | undefined;
     size_in_bytes?: number | undefined;
 }>, "many">>>;
@@ -2258,20 +2258,20 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
 }, "media" | "attachments" | "extra">, {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
-        duration_in_seconds: z.ZodOptional<z.ZodNumber>;
+        duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
         mime_type: z.ZodOptional<z.ZodString>;
         size_in_bytes: z.ZodOptional<z.ZodNumber>;
         title: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }>, "many">>>;
@@ -2350,7 +2350,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -2387,7 +2387,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -3495,20 +3495,20 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
 }, "media" | "attachments" | "extra">, {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
-        duration_in_seconds: z.ZodOptional<z.ZodNumber>;
+        duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
         mime_type: z.ZodOptional<z.ZodString>;
         size_in_bytes: z.ZodOptional<z.ZodNumber>;
         title: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }>, "many">>>;
@@ -3588,7 +3588,7 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -3626,7 +3626,7 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -3804,20 +3804,20 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extend
 }, "id" | "media" | "attachments" | "extra" | "insertedAt" | "publishedAt" | "inboxHandle">, {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
-        duration_in_seconds: z.ZodOptional<z.ZodNumber>;
+        duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
         mime_type: z.ZodOptional<z.ZodString>;
         size_in_bytes: z.ZodOptional<z.ZodNumber>;
         title: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }, {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }>, "many">>>;
@@ -3892,7 +3892,7 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extend
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -3927,7 +3927,7 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extend
     attachments?: {
         url: string;
         title?: string | undefined;
-        duration_in_seconds?: number | undefined;
+        duration_in_seconds?: string | number | undefined;
         mime_type?: string | undefined;
         size_in_bytes?: number | undefined;
     }[] | null | undefined;
@@ -14987,7 +14987,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -15197,7 +15197,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -15292,7 +15292,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -15449,7 +15449,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -15556,7 +15556,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -15655,7 +15655,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     attachments?: {
                         url: string;
                         title?: string | undefined;
-                        duration_in_seconds?: number | undefined;
+                        duration_in_seconds?: string | number | undefined;
                         mime_type?: string | undefined;
                         size_in_bytes?: number | undefined;
                     }[] | null | undefined;
@@ -15789,7 +15789,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -16817,7 +16817,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         attachments?: {
                             url: string;
                             title?: string | undefined;
-                            duration_in_seconds?: number | undefined;
+                            duration_in_seconds?: string | number | undefined;
                             mime_type?: string | undefined;
                             size_in_bytes?: number | undefined;
                         }[] | null | undefined;
@@ -17291,7 +17291,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     attachments?: {
                         url: string;
                         title?: string | undefined;
-                        duration_in_seconds?: number | undefined;
+                        duration_in_seconds?: string | number | undefined;
                         mime_type?: string | undefined;
                         size_in_bytes?: number | undefined;
                     }[] | null | undefined;

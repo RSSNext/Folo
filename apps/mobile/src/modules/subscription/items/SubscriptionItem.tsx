@@ -1,10 +1,11 @@
 import { cn } from "@follow/utils"
 import { memo, useContext } from "react"
-import { ActivityIndicator, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 
 import { GROUPED_ICON_TEXT_GAP, GROUPED_LIST_MARGIN } from "@/src/components/ui/grouped/constants"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -40,7 +41,7 @@ export const SubscriptionItem = memo(
     if (isLoading) {
       return (
         <View className="mt-24 flex-1 flex-row items-start justify-center">
-          <ActivityIndicator />
+          <PlatformActivityIndicator />
         </View>
       )
     }

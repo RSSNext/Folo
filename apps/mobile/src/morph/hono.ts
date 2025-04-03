@@ -6,7 +6,7 @@ import type { EntryModel } from "../store/entry/types"
 import type { FeedModel } from "../store/feed/types"
 import type { ListModel } from "../store/list/store"
 import type { SubscriptionModel } from "../store/subscription/store"
-import type { UserModel } from "../store/user/store"
+import type { MeModel } from "../store/user/store"
 import type { HonoApiClient } from "./types"
 
 class Morph {
@@ -202,7 +202,7 @@ class Morph {
     }
   }
 
-  toUser(data: HonoApiClient.User_Get, isMe?: boolean): UserModel {
+  toUser(data: HonoApiClient.User_Get, isMe?: boolean): MeModel {
     return {
       id: data.id,
       name: data.name,
@@ -211,6 +211,7 @@ class Morph {
       image: data.image,
       isMe: isMe ? 1 : 0,
       emailVerified: data.emailVerified,
+      twoFactorEnabled: data.twoFactorEnabled,
     }
   }
 }

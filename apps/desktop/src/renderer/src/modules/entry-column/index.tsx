@@ -17,6 +17,7 @@ import { entryActions, useEntry } from "~/store/entry"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
 
+import { FooterMarkItem } from "./components/FooterMarkItem"
 import { EntryColumnGrid } from "./grid"
 import { useEntriesByView } from "./hooks/useEntriesByView"
 import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
@@ -161,6 +162,7 @@ function EntryColumnImpl() {
             fetchNextPage={fetchNextPage}
             refetch={entries.refetch}
             groupCounts={groupedCounts}
+            Footer={<FooterMarkItem view={view} />}
           />
         )}
       </EntryColumnWrapper>

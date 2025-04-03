@@ -1,7 +1,7 @@
 import { createContext, createElement, useCallback, useContext, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColor, useColors } from "react-native-uikit-colors"
 
@@ -16,6 +16,7 @@ import {
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { views } from "@/src/constants/views"
 import { AddCuteReIcon } from "@/src/icons/add_cute_re"
@@ -90,7 +91,7 @@ export const ListsScreen = () => {
             )}
             {isLoading && lists.length === 0 && (
               <View className="mt-1">
-                <ActivityIndicator />
+                <PlatformActivityIndicator />
               </View>
             )}
           </GroupedInsetListCard>

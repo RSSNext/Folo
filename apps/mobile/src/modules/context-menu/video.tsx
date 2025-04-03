@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from "react"
+import { useTranslation } from "react-i18next"
 import { Clipboard, Share } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
@@ -14,6 +15,7 @@ type VideoContextMenuProps = PropsWithChildren<{
 }>
 
 export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) => {
+  const { t } = useTranslation()
   const entry = useEntry(entryId)
   const feedId = entry?.feedId
   const view = useSelectedView()
@@ -50,7 +52,9 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
                 name: isEntryStarred ? "star.slash" : "star",
               }}
             />
-            <ContextMenu.ItemTitle>{isEntryStarred ? "Unstar" : "Star"}</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>
+              {isEntryStarred ? t("operation.unstar") : t("operation.star")}
+            </ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
 
@@ -66,7 +70,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
               name: "link",
             }}
           />
-          <ContextMenu.ItemTitle>Open Link</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.open_link")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
 
         <ContextMenu.Item
@@ -82,7 +86,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
               name: "document.on.document",
             }}
           />
-          <ContextMenu.ItemTitle>Copy Link</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.copy_link")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
         <ContextMenu.Item
           key="Share"
@@ -101,7 +105,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
               name: "square.and.arrow.up",
             }}
           />
-          <ContextMenu.ItemTitle>Share</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.share")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

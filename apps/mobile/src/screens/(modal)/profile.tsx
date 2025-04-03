@@ -1,15 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { Fragment, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Share,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { FlatList, Image, Share, Text, TouchableOpacity, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -37,6 +29,7 @@ import {
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import type { FeedIconRequiredFeed } from "@/src/components/ui/icon/feed-icon"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
 import type { apiClient } from "@/src/lib/api-fetch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -126,7 +119,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       >
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
 
-        {isLoading && <ActivityIndicator className="mt-24" size={28} />}
+        {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
         {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
       </ReAnimatedScrollView>
 
@@ -134,7 +127,7 @@ function ProfileScreenImpl(props: { userId: string }) {
         style={useAnimatedStyle(() => ({
           opacity: interpolate(headerOpacity.value, [0, 1], [1, 0]),
         }))}
-        className="absolute top-5 w-full flex-row items-center justify-between px-4"
+        className="absolute top-5 flex w-full flex-row items-center justify-between px-4"
       >
         <View />
         <TouchableOpacity onPress={openShareUrl}>
@@ -255,7 +248,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
 }
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <View
-    className="bg-secondary-system-grouped-background h-12 flex-row items-center"
+    className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
     style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
   >
     <View className="overflow-hidden rounded">
@@ -273,7 +266,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
 
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
   <View
-    className="bg-secondary-system-grouped-background h-12 flex-row items-center"
+    className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
     style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
   >
     <View className="overflow-hidden rounded">

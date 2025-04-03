@@ -15,7 +15,7 @@ import {
 import { StackScreenHeaderPortal } from "@/src/lib/navigation/StackScreenHeaderPortal"
 import { useColor } from "@/src/theme/colors"
 
-import { RotateableLoading } from "../../common/RotateableLoading"
+import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { UINavigationHeaderActionButton } from "./NavigationHeader"
 
 const HeaderCloseButton = () => {
@@ -61,7 +61,7 @@ export const HeaderSubmitButton = ({
   return (
     <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
       {isLoading ? (
-        <RotateableLoading size={20} color={withOpacity(label, 0.5)} />
+        <PlatformActivityIndicator size="small" color={withOpacity(label, 0.5)} />
       ) : (
         <CheckLineIcon height={20} width={20} color={isValid ? label : withOpacity(label, 0.5)} />
       )}
@@ -82,7 +82,7 @@ export const HeaderSubmitTextButton = ({
     <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
       {isLoading && (
         <View className="absolute inset-y-0 right-2 items-center justify-center">
-          <RotateableLoading size={20} color={withOpacity(labelColor, 0.5)} />
+          <PlatformActivityIndicator size="small" color={withOpacity(labelColor, 0.5)} />
         </View>
       )}
       <Text

@@ -1,6 +1,7 @@
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { Share, Text, View } from "react-native"
 
 import {
@@ -19,6 +20,7 @@ import { useEntry } from "@/src/store/entry/hooks"
 import { unreadSyncService } from "@/src/store/unread/store"
 
 export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: string }>) => {
+  const { t } = useTranslation()
   const entry = useEntry(id)
   const feedId = entry?.feedId
   const view = useSelectedView()
@@ -62,7 +64,7 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
             unreadSyncService.markEntryAsRead(id)
           }}
         >
-          <ContextMenu.ItemTitle>Mark as Read</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.mark_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "checkmark",
@@ -92,7 +94,9 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
                 name: isEntryStarred ? "star.slash" : "star",
               }}
             />
-            <ContextMenu.ItemTitle>{isEntryStarred ? "Unstar" : "Star"}</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>
+              {isEntryStarred ? t("operation.unstar") : t("operation.star")}
+            </ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
 
@@ -109,7 +113,7 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
                 name: "link",
               }}
             />
-            <ContextMenu.ItemTitle>Open Link</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t("operation.open_link")}</ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
 
@@ -130,7 +134,7 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
                 name: "square.and.arrow.up",
               }}
             />
-            <ContextMenu.ItemTitle>Share</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t("operation.share")}</ContextMenu.ItemTitle>
           </ContextMenu.Item>
         )}
       </ContextMenu.Content>

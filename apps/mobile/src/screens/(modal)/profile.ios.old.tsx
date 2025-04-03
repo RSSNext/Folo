@@ -1,8 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
 import { requireNativeView } from "expo"
 import { useEffect, useMemo } from "react"
-import { ActivityIndicator, View } from "react-native"
+import { View } from "react-native"
 
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import type { apiClient } from "@/src/lib/api-fetch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -42,7 +43,7 @@ function ProfileScreenImpl(props: { userId: string }) {
 
   return (
     <View className="bg-system-grouped-background flex-1">
-      {isLoading && <ActivityIndicator className="mt-24" size={28} />}
+      {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
       {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
     </View>
   )

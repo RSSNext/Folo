@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system"
 import type { FC } from "react"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { ActivityIndicator, Alert, Text, View } from "react-native"
+import { Alert, Text, View } from "react-native"
 
 import {
   NavigationBlurEffectHeader,
@@ -17,6 +17,7 @@ import {
   GroupedInsetListSectionHeader,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { getDbPath } from "@/src/database"
 import { AppleCuteFiIcon } from "@/src/icons/apple_cute_fi"
 import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
@@ -225,7 +226,7 @@ const AuthenticationSection = () => {
           ))
         ) : isLoading ? (
           <View className="flex h-12 flex-1 items-center justify-center">
-            <ActivityIndicator />
+            <PlatformActivityIndicator />
           </View>
         ) : null}
       </GroupedInsetListCard>

@@ -88,7 +88,6 @@
   "entry_actions.delete": "刪除",
   "entry_actions.deleted": "已刪除",
   "entry_actions.export_as_pdf": "匯出為 PDF",
-  "entry_actions.exported_notify": "文章已匯出為 PDF。",
   "entry_actions.failed_to_delete": "無法刪除",
   "entry_actions.failed_to_save_to_eagle": "無法儲存至 Eagle",
   "entry_actions.failed_to_save_to_instapaper": "無法儲存至 Instapaper",

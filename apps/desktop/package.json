@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -83,7 +83,7 @@
     "utf-8-validate": "6.0.5"
   },
   "productName": "Folo",
-  "mainHash": "2c7aa5b45904e0ed7b096a18828311b13397f3c7f62d83f6e6ae2d586a70d5b4",
+  "mainHash": "039327ef2c09e66d8f5c4e021f33d78d4497794b222114fee795ed70c2045000",
   "bump": {
     "before": [
       "git pull --rebase",

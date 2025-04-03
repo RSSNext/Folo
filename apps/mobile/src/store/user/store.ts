@@ -15,7 +15,7 @@ export type UserModel = UserSchema
 
 export type MeModel = UserModel & {
   emailVerified?: boolean
-  twoFactorEnabled?: boolean
+  twoFactorEnabled?: boolean | null
 }
 type UserStore = {
   users: Record<string, UserModel>

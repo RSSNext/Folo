@@ -21,7 +21,6 @@ import type { MarkAllFilter } from "../hooks/useMarkAll"
 import { useMarkAllByRoute } from "../hooks/useMarkAll"
 
 interface MarkAllButtonProps {
-  filter?: MarkAllFilter
   className?: string
   which?: ReactNode
   shortcut?: boolean
@@ -32,13 +31,13 @@ export const MarkAllReadWithOverlay = forwardRef<
   MarkAllButtonProps & {
     containerRef: React.RefObject<HTMLDivElement>
   }
->(({ filter, className, which = "all", shortcut, containerRef }, ref) => {
+>(({ className, which = "all", shortcut, containerRef }, ref) => {
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
 
   const [show, setShow] = useState(false)
 
-  const handleMarkAllAsRead = useMarkAllByRoute(filter)
+  const handleMarkAllAsRead = useMarkAllByRoute()
 
   const [popoverRef, setPopoverRef] = useState<HTMLDivElement | null>(null)
   useOnClickOutside({ current: popoverRef }, () => {
@@ -207,10 +206,17 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   )
 }
 
-export const FlatMarkAllReadButton: FC<MarkAllButtonProps> = (props) => {
+export const FlatMarkAllReadButton: FC<
+  MarkAllButtonProps & {
+    filter?: MarkAllFilter
+    buttonClassName?: string
+    iconClassName?: string
+    text?: string
+  }
+> = (props) => {
   const t = useI18n()
 
-  const { className, filter, which } = props
+  const { className, filter, which, buttonClassName, iconClassName } = props
   const [status, setStatus] = useState<"initial" | "confirm" | "done">("initial")
   const handleMarkAll = useMarkAllByRoute(filter)
 
@@ -223,6 +229,7 @@ export const FlatMarkAllReadButton: FC<MarkAllButtonProps> = (props) => {
     <Button
       variant="ghost"
       disabled={status === "done"}
+      buttonClassName={buttonClassName}
       className={cn(
         "center relative flex h-auto gap-1",
 
@@ -246,9 +253,9 @@ export const FlatMarkAllReadButton: FC<MarkAllButtonProps> = (props) => {
     >
       <AnimatePresence mode="wait">
         {status === "confirm" ? (
-          <m.i key={1} {...animate} className="i-mgc-question-cute-re" />
+          <m.i key={1} {...animate} className={cn("i-mgc-question-cute-re", iconClassName)} />
         ) : (
-          <m.i key={2} {...animate} className="i-mgc-check-circle-cute-re" />
+          <m.i key={2} {...animate} className={cn("i-mgc-check-circle-cute-re", iconClassName)} />
         )}
       </AnimatePresence>
       <span className={cn(status === "confirm" ? "opacity-0" : "opacity-100", "duration-200")}>

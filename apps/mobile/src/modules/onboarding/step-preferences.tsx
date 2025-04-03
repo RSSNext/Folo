@@ -1,10 +1,11 @@
 import type { PropsWithChildren } from "react"
-import { ActivityIndicator, Pressable, Text, TouchableOpacity, View } from "react-native"
+import { Pressable, Text, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native-gesture-handler"
 import { useColor } from "react-native-uikit-colors"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { GroupedInsetListNavigationLinkIcon } from "@/src/components/ui/grouped/GroupedList"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
 import { FileImportCuteReIcon } from "@/src/icons/file_import_cute_re"
 import { ListCheck2CuteReIcon } from "@/src/icons/list_check_2_cute_re"
@@ -110,7 +111,7 @@ export const EditProfileSection = () => {
   if (!whoami) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
+        <PlatformActivityIndicator />
       </View>
     )
   }

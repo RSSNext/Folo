@@ -1,7 +1,8 @@
 import { withOpacity } from "@follow/utils"
 import { useMemo } from "react"
-import { ActivityIndicator, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { SadCuteReIcon } from "@/src/icons/sad_cute_re"
 import { useColor } from "@/src/theme/colors"
 
@@ -15,7 +16,7 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
         <BaseSearchPageRootView className="items-center justify-center">
           <View className="-mt-72" />
 
-          <ActivityIndicator />
+          <PlatformActivityIndicator />
         </BaseSearchPageRootView>
       )
     }
