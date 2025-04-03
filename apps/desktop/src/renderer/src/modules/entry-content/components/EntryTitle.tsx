@@ -68,11 +68,9 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       return
     }
 
-    let durationInSeconds = audioAttachment.duration_in_seconds
-
-    if (Number.isNaN(+durationInSeconds)) {
-      // @ts-expect-error durationInSeconds is string
-      durationInSeconds = formatTimeToSeconds(durationInSeconds)
+    const durationInSeconds = formatTimeToSeconds(audioAttachment.duration_in_seconds)
+    if (!durationInSeconds) {
+      return
     }
 
     return formatEstimatedMins(Math.floor(durationInSeconds / 60))

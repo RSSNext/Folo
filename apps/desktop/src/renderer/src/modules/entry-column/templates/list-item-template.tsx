@@ -246,7 +246,7 @@ function AudioCover({
 }: {
   entryId: string
   src: string
-  durationInSeconds?: number
+  durationInSeconds?: number | string
   feedIcon: React.ReactNode
 }) {
   const isMobile = useMobile()
@@ -254,13 +254,8 @@ function AudioCover({
     playerValue.src === src && playerValue.show ? playerValue.status : false,
   )
 
-  // durationInSeconds's format like 00:00:00 or 4000
-  if (durationInSeconds && Number.isNaN(+durationInSeconds)) {
-    // @ts-expect-error durationInSeconds is string
-    durationInSeconds = formatTimeToSeconds(durationInSeconds)
-  }
-
-  const estimatedMins = durationInSeconds && Math.floor(durationInSeconds / 60)
+  const seconds = formatTimeToSeconds(durationInSeconds)
+  const estimatedMins = seconds && Math.floor(seconds / 60)
 
   const handleClickPlay = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) e.stopPropagation()

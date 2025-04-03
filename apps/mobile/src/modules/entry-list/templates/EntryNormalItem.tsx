@@ -89,13 +89,7 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
   const isLoading = audioState === "loading"
 
   const estimatedMins = useMemo(() => {
-    let durationInSeconds = audio?.duration_in_seconds
-    // durationInSeconds's format like 00:00:00 or 4000
-    if (durationInSeconds && Number.isNaN(+durationInSeconds)) {
-      // @ts-expect-error durationInSeconds is string
-      durationInSeconds = formatTimeToSeconds(durationInSeconds)
-    }
-
+    const durationInSeconds = formatTimeToSeconds(audio?.duration_in_seconds)
     return durationInSeconds && Math.floor(durationInSeconds / 60)
   }, [audio?.duration_in_seconds])
 
