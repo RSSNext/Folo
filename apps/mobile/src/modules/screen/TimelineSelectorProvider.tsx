@@ -1,5 +1,6 @@
 import { env } from "@follow/shared/src/env"
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Share, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
@@ -76,12 +77,13 @@ export function TimelineSelectorProvider({
 }
 
 function FeedShareAction({ feedId }: { feedId?: string }) {
+  const { t } = useTranslation()
   const label = useColor("label")
 
   if (!feedId) return null
   return (
     <UIBarButton
-      label="Share"
+      label={t("operation.share")}
       normalIcon={<Share3CuteReIcon height={24} width={24} color={label} />}
       onPress={() => {
         const feed = getFeed(feedId)

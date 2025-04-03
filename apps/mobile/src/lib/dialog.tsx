@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils"
+import { t } from "i18next"
 import type { Dispatch, FC, ReactElement, ReactNode, SetStateAction } from "react"
 import {
   cloneElement,
@@ -213,14 +214,14 @@ class DialogStatic {
                   <View className="flex-row gap-4 px-6 pb-4">
                     <DialogDynamicButtonAction
                       fallbackCaller={handleClose}
-                      text={override?.cancelText ?? props.cancelText ?? "Cancel"}
+                      text={override?.cancelText ?? props.cancelText ?? t("common:words.cancel")}
                       type="cancel"
                       textClassName={cn(props.variant === "destructive" && "font-bold")}
                     />
 
                     <DialogDynamicButtonAction
                       fallbackCaller={handleConfirm}
-                      text={override?.confirmText ?? props.confirmText ?? "Confirm"}
+                      text={override?.confirmText ?? props.confirmText ?? t("common:words.confirm")}
                       type="confirm"
                       className={props.variant === "destructive" ? "bg-red" : "bg-accent"}
                       textClassName={cn(

@@ -1,6 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
 import { Alert, Clipboard, FlatList, View } from "react-native"
 
@@ -25,6 +26,7 @@ export const SubscriptionFeedItemContextMenu: FC<
     view?: FeedViewType
   }
 > = ({ id, children, view }) => {
+  const { t } = useTranslation()
   const allCategories = useSubscriptionCategory(view)
   const navigation = useNavigation()
   return (
@@ -50,7 +52,7 @@ export const SubscriptionFeedItemContextMenu: FC<
             unreadSyncService.markFeedAsRead(id)
           }, [id])}
         >
-          <ContextMenu.ItemTitle>Mark All As Read</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.mark_all_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "checklist.checked",
@@ -78,7 +80,7 @@ export const SubscriptionFeedItemContextMenu: FC<
 
         <ContextMenu.Sub key="AddToCategory">
           <ContextMenu.SubTrigger key="SubTrigger/AddToCategory">
-            <ContextMenu.ItemTitle>Add To Category</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t("operation.add_feeds_to_category")}</ContextMenu.ItemTitle>
           </ContextMenu.SubTrigger>
 
           <ContextMenu.SubContent>
@@ -126,7 +128,7 @@ export const SubscriptionFeedItemContextMenu: FC<
         </ContextMenu.Sub>
 
         <ContextMenu.Item key="Edit">
-          <ContextMenu.ItemTitle>Edit</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.edit")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "square.and.pencil",
@@ -152,7 +154,7 @@ export const SubscriptionFeedItemContextMenu: FC<
             }
           }, [id])}
         >
-          <ContextMenu.ItemTitle>Copy Link</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.copy_link")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "link",
@@ -171,16 +173,16 @@ export const SubscriptionFeedItemContextMenu: FC<
                 style: "cancel",
               },
               {
-                text: "Unsubscribe",
+                text: t("operation.unfollow"),
                 style: "destructive",
                 onPress: () => {
                   subscriptionSyncService.unsubscribe(id)
                 },
               },
             ])
-          }, [id])}
+          }, [id, t])}
         >
-          <ContextMenu.ItemTitle>Unsubscribe</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.unfollow")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "xmark",
@@ -202,6 +204,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
   feedIds: string[]
   view: FeedViewType
 }>) => {
+  const { t } = useTranslation()
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
@@ -213,7 +216,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
             unreadSyncService.markFeedAsRead(feedIds)
           }, [feedIds])}
         >
-          <ContextMenu.ItemTitle>Mark All As Read</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.mark_all_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "checklist.checked",
@@ -223,7 +226,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
 
         <ContextMenu.Sub key="ChangeToOtherView">
           <ContextMenu.SubTrigger key="SubTrigger/ChangeToOtherView">
-            <ContextMenu.ItemTitle>Change To Other View</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t("operation.change_to_other_view")}</ContextMenu.ItemTitle>
           </ContextMenu.SubTrigger>
 
           <ContextMenu.SubContent>
@@ -243,7 +246,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
         </ContextMenu.Sub>
 
         <ContextMenu.Item key="EditCategory">
-          <ContextMenu.ItemTitle>Edit Category</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.rename_category")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "square.and.pencil",
@@ -251,7 +254,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
           />
         </ContextMenu.Item>
         <ContextMenu.Item key="DeleteCategory" destructive>
-          <ContextMenu.ItemTitle>Delete Category</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t("operation.delete_category")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               name: "trash",

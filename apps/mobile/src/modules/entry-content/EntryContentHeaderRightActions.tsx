@@ -1,5 +1,6 @@
 import { useAtom } from "jotai"
 import { useCallback, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Clipboard, Share, TouchableOpacity, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
@@ -56,6 +57,7 @@ const HeaderRightActionsImpl = ({
   titleOpacityShareValue,
   isHeaderTitleVisible,
 }: HeaderRightActionsProps) => {
+  const { t } = useTranslation()
   const labelColor = useColor("label")
   const isStarred = useIsEntryStarred(entryId)
   const [extraActionContainerWidth, setExtraActionContainerWidth] = useState(0)
@@ -150,7 +152,7 @@ const HeaderRightActionsImpl = ({
   const actionItems = [
     subscription && {
       key: "Star",
-      title: isStarred ? "Unstar" : "Star",
+      title: isStarred ? t("operation.unstar") : t("operation.star"),
       icon: isStarred ? <StarCuteFiIcon /> : <StarCuteReIcon />,
       iconIOS: {
         name: isStarred ? "star.fill" : "star",
@@ -189,7 +191,7 @@ const HeaderRightActionsImpl = ({
     },
     {
       key: "Share",
-      title: "Share",
+      title: t("operation.share"),
       icon: <Share3CuteReIcon />,
       iconIOS: { name: "square.and.arrow.up" },
       onPress: handleShare,
@@ -257,7 +259,7 @@ const HeaderRightActionsImpl = ({
             </DropdownMenu.Group>
           )}
           <DropdownMenu.Item key="CopyLink" onSelect={handleCopyLink}>
-            <DropdownMenu.ItemTitle>Copy Link</DropdownMenu.ItemTitle>
+            <DropdownMenu.ItemTitle>{t("operation.copy_link")}</DropdownMenu.ItemTitle>
             <DropdownMenu.ItemIcon ios={{ name: "link" }} />
           </DropdownMenu.Item>
           <DropdownMenu.Item key="OpenInBrowser" onSelect={handleOpenInBrowser}>

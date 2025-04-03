@@ -2,6 +2,7 @@ import { cn } from "@follow/utils"
 import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { TouchableOpacity, View } from "react-native"
 
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -54,12 +55,13 @@ export function HomeLeftAction() {
 }
 
 export function HomeSharedRightAction(props: PropsWithChildren) {
+  const { t } = useTranslation()
   return (
     <ActionGroup>
       {props.children}
 
       <UIBarButton
-        label="Mark All as Read"
+        label={t("operation.mark_all_as_read")}
         normalIcon={<CheckCircleCuteReIcon height={24} width={24} color={accentColor} />}
         onPress={() => {
           Dialog.show(MarkAllAsReadDialog)
@@ -80,17 +82,27 @@ const useButtonVariant = ({ variant = "primary" }: HeaderActionButtonProps) => {
   return { size, color }
 }
 export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+  const { t } = useTranslation()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { size, color } = useButtonVariant({ variant })
   return (
     <UIBarButton
-      label={unreadOnly ? "Show All" : "Show Unread Only"}
+      label={
+        unreadOnly
+          ? t("operation.toggle_unread_only.show_all.label")
+          : t("operation.toggle_unread_only.show_unread_only.label")
+      }
       normalIcon={<RoundCuteReIcon height={size} width={size} color={color} />}
       selectedIcon={<RoundCuteFiIcon height={size} width={size} color={color} />}
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         setGeneralSetting("unreadOnly", !unreadOnly)
-        toast.success(`Showing ${unreadOnly ? "all" : "unread"} entries`, { position: "bottom" })
+        toast.success(
+          unreadOnly
+            ? t("operation.toggle_unread_only.show_all.success")
+            : t("operation.toggle_unread_only.show_unread_only.success"),
+          { position: "bottom" },
+        )
       }}
       selected={unreadOnly}
       overlay={false}

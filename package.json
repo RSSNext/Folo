@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build:web": "turbo run Folo#build:web",
-    "dedupe:locales": "eslint --fix locales/**/*.json",
+    "dedupe:locales": "eslint --fix locales/**",
     "depcheck": "npx depcheck --quiet",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
