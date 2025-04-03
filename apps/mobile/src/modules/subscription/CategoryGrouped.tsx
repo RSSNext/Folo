@@ -59,6 +59,7 @@ export const CategoryGrouped = memo(
             category={category}
             feedIds={subscriptionIds}
             view={view}
+            asChild
           >
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}

@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import type { FC, PropsWithChildren } from "react"
+import type { CSSProperties, FC, PropsWithChildren } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
@@ -31,7 +31,7 @@ export const SubscriptionFeedItemContextMenu: FC<
   const navigation = useNavigation()
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
 
       <ContextMenu.Content>
         {view === FeedViewType.Articles && (
@@ -199,15 +199,21 @@ export const SubscriptionFeedCategoryContextMenu = ({
   feedIds,
   view: currentView,
   children,
+  asChild,
+  style,
 }: PropsWithChildren<{
   category: string
   feedIds: string[]
   view: FeedViewType
+  asChild?: boolean
+  style?: CSSProperties
 }>) => {
   const { t } = useTranslation()
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger asChild={asChild} style={style}>
+        {children}
+      </ContextMenu.Trigger>
 
       <ContextMenu.Content>
         <ContextMenu.Item
