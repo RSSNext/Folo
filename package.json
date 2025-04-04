@@ -43,7 +43,7 @@
     "@tsslint/cli": "1.5.11",
     "@tsslint/config": "1.5.11",
     "@tsslint/eslint": "1.5.11",
-    "@types/node": "22.13.14",
+    "@types/node": "22.14.0",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@vercel/node": "5.1.14",
@@ -73,14 +73,14 @@
     "tailwindcss-safe-area": "0.6.0",
     "tar": "7.4.3",
     "tsx": "4.19.3",
-    "turbo": "2.4.4",
+    "turbo": "2.5.0",
     "typescript": "5.8.2",
     "vite": "6.2.3",
     "vite-bundle-analyzer": "0.18.1",
     "vite-plugin-mkcert": "1.17.8",
     "vite-plugin-pwa": "1.0.0",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.0.9"
+    "vitest": "3.1.1"
   },
   "pnpm": {
     "patchedDependencies": {
