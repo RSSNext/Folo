@@ -755,17 +755,14 @@ importers:
   apps/mobile:
     dependencies:
       '@better-auth/expo':
-        specifier: 1.2.6-beta.1
-        version: 1.2.6-beta.1(better-auth@1.2.6-beta.2(typescript@5.8.2))
+        specifier: 1.2.6-beta.5
+        version: 1.2.6-beta.5(better-auth@1.2.6-beta.2(typescript@5.8.2))
       '@expo/metro-runtime':
         specifier: 4.0.1
         version: 4.0.1(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))
       '@expo/react-native-action-sheet':
         specifier: 4.1.1
         version: 4.1.1(react@18.3.1)
-      '@expo/vector-icons':
-        specifier: 14.0.4
-        version: 14.0.4
       '@follow/components':
         specifier: workspace:*
         version: link:../../packages/components
@@ -2357,10 +2354,10 @@ packages:
     resolution: {integrity: sha512-H45s8fVLYjbhFH62dIJ3WtmJ6RSPt/3DRO0ZcT2SUiYiQyz3BLVb9ADEnLl91m74aQPS3AzzeajZHYOalWe3bg==}
     engines: {node: '>=6.9.0'}
 
-  '@better-auth/expo@1.2.6-beta.1':
-    resolution: {integrity: sha512-h72IzVHxp6xCinkiVIvwFzPWKsSQUVMdZ5KO4THGn5LORhaUyq3SqkFv8wewl6Cr0GOoRCdL51BIeVGOYMyt4A==}
+  '@better-auth/expo@1.2.6-beta.5':
+    resolution: {integrity: sha512-i4AKSyCoNWxfsjpobvdhsjkSSjM1QWE9AZKobdnKpnp0xDh8l0lY2JQhamddT+m9a9k2Pxuu5/l4PQSAAqkUzw==}
     peerDependencies:
-      better-auth: 1.2.6-beta.1
+      better-auth: 1.2.6-beta.5
 
   '@better-auth/utils@0.2.4':
     resolution: {integrity: sha512-ayiX87Xd5sCHEplAdeMgwkA0FgnXsEZBgDn890XHHwSWNqqRZDYOq3uj2Ei2leTv1I2KbG5HHn60Ah1i2JWZjQ==}
@@ -16312,7 +16309,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@better-auth/expo@1.2.6-beta.1(better-auth@1.2.6-beta.2(typescript@5.8.2))':
+  '@better-auth/expo@1.2.6-beta.5(better-auth@1.2.6-beta.2(typescript@5.8.2))':
     dependencies:
       '@better-fetch/fetch': 1.1.18
       better-auth: 1.2.6-beta.2(typescript@5.8.2)

@@ -18,7 +18,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@better-auth/expo": "1.2.6-beta.1",
+    "@better-auth/expo": "1.2.6-beta.5",
     "@expo/metro-runtime": "4.0.1",
     "@expo/react-native-action-sheet": "4.1.1",
     "@follow/components": "workspace:*",
