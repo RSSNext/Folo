@@ -105,16 +105,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        ios: {
-          backgroundColor: "#ffffff",
-          dark: {
-            backgroundColor: "#000000",
-          },
+        backgroundColor: "#ffffff",
+        dark: {
+          backgroundColor: "#000000",
         },
         android: {
           image: iconPath,
           imageWidth: 200,
-          backgroundColor: "#00000000",
         },
       },
     ],
