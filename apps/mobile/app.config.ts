@@ -85,6 +85,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     googleServicesFile: "./build/google-services.json",
   },
+  androidStatusBar: {
+    translucent: true,
+  },
   // web: {
   //   bundler: "metro",
   //   output: "static",
@@ -102,13 +105,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        backgroundColor: "#ffffff",
-        dark: {
-          backgroundColor: "#000000",
+        ios: {
+          backgroundColor: "#ffffff",
+          dark: {
+            backgroundColor: "#000000",
+          },
         },
         android: {
           image: iconPath,
           imageWidth: 200,
+          backgroundColor: "#00000000",
         },
       },
     ],
