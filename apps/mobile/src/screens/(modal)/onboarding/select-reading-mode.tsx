@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils"
 import type { PropsWithChildren } from "react"
+import { useTranslation } from "react-i18next"
 import { Pressable, Text, View } from "react-native"
 
 import {
@@ -14,11 +15,12 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { useReadingBehavior } from "@/src/modules/onboarding/hooks/use-reading-behavior"
 
 export const SelectReadingModeScreen: NavigationControllerView = () => {
+  const { t } = useTranslation()
   const { behavior, updateSettings } = useReadingBehavior()
 
   return (
     <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="Select Reading Mode" />
+      <NavigationBlurEffectHeader title={t("onboarding.reading_preferences")} />
 
       <View className="mt-8 flex w-full gap-4">
         <Card
@@ -32,9 +34,7 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
             updateSettings("radical")
           }}
         >
-          <Text className="text-label">
-            Radical: Automatically mark entries as read when displayed
-          </Text>
+          <Text className="text-label">{t("onboarding.reading_radical")}</Text>
         </Card>
 
         <Card
@@ -48,9 +48,7 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
             updateSettings("balanced")
           }}
         >
-          <Text className="text-label">
-            Balanced: Automatically mark entries as read when scrolled out of view
-          </Text>
+          <Text className="text-label">{t("onboarding.reading_balanced")}</Text>
         </Card>
 
         <Card
@@ -64,7 +62,7 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
             updateSettings("conservative")
           }}
         >
-          <Text className="text-label">Conservative: Mark entries as read only when clicked</Text>
+          <Text className="text-label">{t("onboarding.reading_conservative")}</Text>
         </Card>
       </View>
     </SafeNavigationScrollView>
