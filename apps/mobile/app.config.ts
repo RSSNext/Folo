@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       LSApplicationCategoryType: "public.app-category.news",
       ITSAppUsesNonExemptEncryption: false,
-      UIBackgroundModes: ["audio", "remote-notification"],
+      UIBackgroundModes: ["audio"],
       LSApplicationQueriesSchemes: ["bilibili", "youtube"],
       CFBundleAllowMixedLocalizations: true,
       // apps/mobile/src/@types/constants.ts currentSupportedLanguages
@@ -154,6 +154,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "react-native-video",
+    [
+      "expo-notifications",
+      {
+        enableBackgroundRemoteNotifications: true,
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,
