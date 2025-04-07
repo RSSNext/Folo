@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       LSApplicationCategoryType: "public.app-category.news",
       ITSAppUsesNonExemptEncryption: false,
-      UIBackgroundModes: ["audio"],
+      UIBackgroundModes: ["audio", "remote-notification"],
       LSApplicationQueriesSchemes: ["bilibili", "youtube"],
       CFBundleAllowMixedLocalizations: true,
       // apps/mobile/src/@types/constants.ts currentSupportedLanguages
