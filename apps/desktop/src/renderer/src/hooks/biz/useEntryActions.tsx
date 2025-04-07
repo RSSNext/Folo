@@ -123,6 +123,10 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         onClick: runCmdFn(COMMAND_ID.integration.saveToReadeck, [{ entryId }]),
       },
       {
+        id: COMMAND_ID.integration.saveToCubox,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToCubox, [{ entryId }]),
+      },
+      {
         id: COMMAND_ID.entry.tip,
         onClick: runCmdFn(COMMAND_ID.entry.tip, [
           { entryId, feedId: feed?.id, userId: feed?.ownerUserId },

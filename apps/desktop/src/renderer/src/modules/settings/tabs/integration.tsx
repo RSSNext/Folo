@@ -1,5 +1,6 @@
 import { Divider } from "@follow/components/ui/divider/index.js"
 import {
+  SimpleIconsCubox,
   SimpleIconsEagle,
   SimpleIconsInstapaper,
   SimpleIconsObsidian,
@@ -173,6 +174,41 @@ export const SettingIntegration = () => {
             vertical: true,
             type: "password",
             description: t("integration.readeck.token.description"),
+          }),
+          {
+            type: "title",
+            value: (
+              <span className="flex items-center gap-2 font-bold">
+                <SimpleIconsCubox />
+                {t("integration.cubox.title")}
+              </span>
+            ),
+          },
+          defineSettingItem("enableCubox", {
+            label: t("integration.cubox.enable.label"),
+            description: t("integration.cubox.enable.description"),
+          }),
+          defineSettingItem("cuboxToken", {
+            label: t("integration.cubox.token.label"),
+            vertical: true,
+            type: "password",
+            description: (
+              <>
+                {t("integration.cubox.token.description")}{" "}
+                <a
+                  target="_blank"
+                  className="underline"
+                  rel="noreferrer noopener"
+                  href="https://cubox.pro/my/settings/extensions"
+                >
+                  https://cubox.pro/my/settings/extensions
+                </a>
+              </>
+            ),
+          }),
+          defineSettingItem("enableCuboxAutoMemo", {
+            label: t("integration.cubox.autoMemo.label"),
+            description: t("integration.cubox.autoMemo.description"),
           }),
           BottomTip,
         ]}

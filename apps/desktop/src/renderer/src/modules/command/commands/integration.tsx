@@ -1,4 +1,5 @@
 import {
+  SimpleIconsCubox,
   SimpleIconsEagle,
   SimpleIconsInstapaper,
   SimpleIconsObsidian,
@@ -33,6 +34,7 @@ export const useRegisterIntegrationCommands = () => {
   useRegisterObsidianCommands()
   useRegisterOutlineCommands()
   useRegisterReadeckCommands()
+  useRegisterCuboxCommands()
 }
 
 const useRegisterEagleCommands = () => {
@@ -450,6 +452,90 @@ const useRegisterReadeckCommands = () => {
         }),
     {
       deps: [readeckAvailable, readeckToken, readeckEndpoint],
+    },
+  )
+}
+
+const useRegisterCuboxCommands = () => {
+  const { t } = useTranslation()
+
+  const enableCubox = useIntegrationSettingKey("enableCubox")
+  const cuboxToken = useIntegrationSettingKey("cuboxToken")
+  const enableCuboxAutoMemo = useIntegrationSettingKey("enableCuboxAutoMemo")
+  const cuboxAvailable = enableCubox && !!cuboxToken
+
+  const buildUrlRequestBody = (entry: FlatEntryModel) => {
+    return {
+      type: "url",
+      content: entry.entries.url || "",
+      title: entry.entries.title || "",
+      description: entry.entries.description || "",
+      tags: [],
+      folder: "",
+    }
+  }
+
+  const buildMemoRequestBody = (entry: FlatEntryModel, selectedText: string) => {
+    return {
+      type: "memo",
+      content: selectedText,
+      title: entry.entries.title || "",
+      description: entry.entries.description || "",
+      tags: [],
+      folder: "",
+      source_url: entry.entries.url,
+    }
+  }
+
+  useRegisterCommandEffect(
+    !cuboxAvailable
+      ? []
+      : defineFollowCommand({
+          id: COMMAND_ID.integration.saveToCubox,
+          label: t("entry_actions.save_to_cubox"),
+          icon: <SimpleIconsCubox />,
+          run: async ({ entryId }) => {
+            const entry = useEntryStore.getState().flatMapEntries[entryId]
+            if (!entry) {
+              toast.error("Failed to save to Cubox: entry is not available", { duration: 3000 })
+              return
+            }
+            try {
+              tracker.integration({
+                type: "cubox",
+                event: "save",
+              })
+
+              const selectedText = window.getSelection()?.toString() || ""
+
+              const requestBody =
+                selectedText && enableCuboxAutoMemo
+                  ? buildMemoRequestBody(entry, selectedText)
+                  : buildUrlRequestBody(entry)
+
+              await ofetch(cuboxToken, {
+                method: "POST",
+                body: requestBody,
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+
+              toast.success(t("entry_actions.saved_to_cubox"), {
+                duration: 3000,
+              })
+            } catch (error) {
+              toast.error(
+                `${t("entry_actions.failed_to_save_to_cubox")}: ${(error as FetchError)?.message || ""}`,
+                {
+                  duration: 3000,
+                },
+              )
+            }
+          },
+        }),
+    {
+      deps: [cuboxAvailable, cuboxToken, enableCuboxAutoMemo],
     },
   )
 }
