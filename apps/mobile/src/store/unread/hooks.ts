@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import * as Notifications from "expo-notifications"
 import { useCallback, useEffect } from "react"
 
 import { useListFeedIds } from "../list/hooks"
@@ -23,6 +24,13 @@ export const useAutoMarkAsRead = (entryId: string) => {
   }, [entryId, mutate])
 }
 
+export function useUnreadCountBadge() {
+  const unreadCount = useUnreadCounts()
+  useEffect(() => {
+    Notifications.setBadgeCountAsync(unreadCount)
+  }, [unreadCount])
+}
+
 export const useUnreadCount = (subscriptionId: string) => {
   return useUnreadStore((state) => state.data[subscriptionId])
 }
@@ -32,10 +40,13 @@ export const useListUnreadCount = (listId: string) => {
   return useUnreadCounts(feedIds ?? [])
 }
 
-export const useUnreadCounts = (subscriptionIds: string[]): number => {
+export const useUnreadCounts = (subscriptionIds?: string[]): number => {
   return useUnreadStore(
     useCallback(
       (state) => {
+        if (!subscriptionIds)
+          return Object.values(state.data).reduce((acc, unread) => acc + unread, 0)
+
         let count = 0
         for (const subscriptionId of subscriptionIds) {
           count += state.data[subscriptionId] ?? 0

@@ -6,11 +6,13 @@ import { useSheet } from "react-native-sheet-transitions"
 
 import { useIntentHandler } from "./hooks/useIntentHandler"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
+import { useUnreadCountBadge } from "./store/unread/hooks"
 import { useOnboarding, usePrefetchSessionUser } from "./store/user/hooks"
 
 export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()
   useOnboarding()
+  useUnreadCountBadge()
   const { scale } = useSheet()
 
   const style = useAnimatedStyle(() => ({
