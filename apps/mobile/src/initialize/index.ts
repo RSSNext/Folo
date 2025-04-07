@@ -8,6 +8,7 @@ import { initBackgroundFetch } from "./background"
 import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
+import { initMessaging } from "./messaging"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
 
@@ -41,6 +42,7 @@ export const initializeApp = async () => {
     using_indexed_db: true,
   })
   initCrashlytics()
+  initMessaging()
   initBackgroundFetch()
   console.log(`Initialize done,`, `${loadingTime}ms`)
 }

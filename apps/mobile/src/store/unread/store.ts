@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications"
 
 import type { UnreadSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
+import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
 import { EntryService } from "@/src/services/entry"
 import { UnreadService } from "@/src/services/unread"
 
@@ -39,7 +40,7 @@ class UnreadSyncService {
     if (allUnreadCount === currentBadgeCount) {
       return false
     }
-    await Notifications.setBadgeCountAsync(allUnreadCount)
+    setBadgeCountAsyncWithPermission(allUnreadCount)
     return true
   }
 

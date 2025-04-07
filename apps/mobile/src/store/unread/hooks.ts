@@ -1,7 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import * as Notifications from "expo-notifications"
 import { useCallback, useEffect } from "react"
+
+import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
 
 import { useListFeedIds } from "../list/hooks"
 import { useSubscriptionByView } from "../subscription/hooks"
@@ -27,7 +28,7 @@ export const useAutoMarkAsRead = (entryId: string) => {
 export function useUnreadCountBadge() {
   const unreadCount = useUnreadCounts()
   useEffect(() => {
-    Notifications.setBadgeCountAsync(unreadCount)
+    setBadgeCountAsyncWithPermission(unreadCount)
   }, [unreadCount])
 }
 
