@@ -24,7 +24,7 @@ import { useReadingBehavior } from "./hooks/use-reading-behavior"
 import { OnboardingSectionScreenContainer } from "./shared"
 
 export const StepPreferences = () => {
-  const { t } = useTranslation("settings")
+  const { t } = useTranslation()
   const { behavior } = useReadingBehavior()
 
   const navigation = useNavigation()
@@ -51,7 +51,9 @@ export const StepPreferences = () => {
           }
         >
           <View className="flex flex-row items-center justify-between">
-            <Text className="text-text text-base font-medium">{t("general.language")}</Text>
+            <Text className="text-text text-base font-medium">
+              {t("general.language", { ns: "settings" })}
+            </Text>
             <View className="w-[150px]">
               <LanguageSelect settingKey="language" />
             </View>

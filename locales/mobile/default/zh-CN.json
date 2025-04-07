@@ -1,4 +1,6 @@
 {
+  "onboarding.welcome_guide": "让我们帮你快速了解如何使用这款应用",
+  "onboarding.welcome_title": "欢迎使用 Folo！",
   "operation.add_feeds_to_category": "移动至分类",
   "operation.change_to_other_view": "更改为其他视图",
   "operation.copy_link": "复制链接",
