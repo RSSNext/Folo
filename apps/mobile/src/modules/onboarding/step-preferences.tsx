@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react"
+import { useTranslation } from "react-i18next"
 import { Pressable, Text, TouchableOpacity, View } from "react-native"
-import { ScrollView } from "react-native-gesture-handler"
 import { useColor } from "react-native-uikit-colors"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -11,17 +11,20 @@ import { FileImportCuteReIcon } from "@/src/icons/file_import_cute_re"
 import { ListCheck2CuteReIcon } from "@/src/icons/list_check_2_cute_re"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
 import { Settings1CuteReIcon } from "@/src/icons/settings_1_cute_re"
+import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { SelectReadingModeScreen } from "@/src/screens/(modal)/onboarding/select-reading-mode"
 import { useWhoami } from "@/src/store/user/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 import { EditProfileScreen } from "../settings/routes/EditProfile"
+import { LanguageSelect } from "../settings/routes/General"
 import { importOpml, setAvatar } from "../settings/utils"
 import { useReadingBehavior } from "./hooks/use-reading-behavior"
 import { OnboardingSectionScreenContainer } from "./shared"
 
 export const StepPreferences = () => {
+  const { t } = useTranslation("settings")
   const { behavior } = useReadingBehavior()
 
   const navigation = useNavigation()
@@ -38,7 +41,26 @@ export const StepPreferences = () => {
         </Text>
       </View>
 
-      <ScrollView className="mb-6 w-full flex-1" contentContainerClassName="gap-4">
+      <View className="mb-6 w-full flex-1 gap-4">
+        <PreferenceCard
+          showRightArrow={false}
+          icon={
+            <GroupedInsetListNavigationLinkIcon backgroundColor="#FCA5A5">
+              <Translate2CuteReIcon color="#fff" width={40} height={40} />
+            </GroupedInsetListNavigationLinkIcon>
+          }
+        >
+          <View className="flex flex-row items-center justify-between">
+            <Text className="text-text text-base font-medium">{t("general.language")}</Text>
+            <View className="w-[150px]">
+              <LanguageSelect settingKey="language" />
+            </View>
+          </View>
+          <Text className="text-secondary-label text-sm">
+            Choose the language you want to use in Folo
+          </Text>
+        </PreferenceCard>
+
         <PreferenceCard
           title="Edit Profile"
           icon={
@@ -100,7 +122,7 @@ export const StepPreferences = () => {
             </Text>
           </View>
         </PreferenceCard>
-      </ScrollView>
+      </View>
     </OnboardingSectionScreenContainer>
   )
 }
@@ -133,12 +155,19 @@ export const EditProfileSection = () => {
 }
 
 type PreferenceCardProps = PropsWithChildren<{
-  title: string
+  title?: string
   icon?: React.ReactNode
+  showRightArrow?: boolean
   onPress?: () => void
 }>
 
-const PreferenceCard = ({ title, children, onPress, icon }: PreferenceCardProps) => {
+const PreferenceCard = ({
+  title,
+  children,
+  onPress,
+  icon,
+  showRightArrow = true,
+}: PreferenceCardProps) => {
   const rightIconColor = useColor("tertiaryLabel")
 
   return (
@@ -148,10 +177,10 @@ const PreferenceCard = ({ title, children, onPress, icon }: PreferenceCardProps)
     >
       {icon}
       <View className="flex flex-1 flex-col gap-2">
-        <Text className="text-text text-base font-medium">{title}</Text>
+        {title && <Text className="text-text text-base font-medium">{title}</Text>}
         {children}
       </View>
-      <MingcuteRightLine height={18} width={18} color={rightIconColor} />
+      {showRightArrow && <MingcuteRightLine height={18} width={18} color={rightIconColor} />}
     </Pressable>
   )
 }
