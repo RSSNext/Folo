@@ -5,13 +5,14 @@ import { requestNotificationPermission } from "../lib/permission"
 import { whoami } from "../store/user/getters"
 
 export const initMessaging = () => {
+  const user = whoami()
+  if (!user) {
+    return
+  }
+
   messaging()
     .getToken()
     .then((token) => {
-      const user = whoami()
-      if (!user) {
-        return
-      }
       apiClient.messaging.$post({
         json: {
           token,
@@ -19,6 +20,5 @@ export const initMessaging = () => {
         },
       })
     })
-
   requestNotificationPermission()
 }

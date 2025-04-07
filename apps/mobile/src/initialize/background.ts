@@ -2,10 +2,16 @@ import * as BackgroundFetch from "expo-background-fetch"
 import * as TaskManager from "expo-task-manager"
 
 import { unreadSyncService } from "../store/unread/store"
+import { whoami } from "../store/user/getters"
 
 const BACKGROUND_FETCH_TASK = "background-fetch"
 
 export async function initBackgroundFetch() {
+  const user = whoami()
+  if (!user) {
+    return
+  }
+
   TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     // const now = Date.now()
     // console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`)
