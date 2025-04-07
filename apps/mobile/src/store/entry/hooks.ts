@@ -22,10 +22,10 @@ export const usePrefetchEntries = (props: Omit<FetchEntriesProps, "pageParam" | 
     enabled: !!props,
   })
 }
-export const usePrefetchEntryContent = (entryId: string) => {
+export const usePrefetchEntryDetail = (entryId: string) => {
   return useQuery({
     queryKey: ["entry", entryId],
-    queryFn: () => entrySyncServices.fetchEntryContent(entryId),
+    queryFn: () => entrySyncServices.fetchEntryDetail(entryId),
   })
 }
 
