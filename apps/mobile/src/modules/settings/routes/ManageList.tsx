@@ -4,9 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { useTranslation } from "react-i18next"
 import { PixelRatio, StyleSheet, Text, View } from "react-native"
 
-import {
-  HeaderSubmitTextButton,
-} from "@/src/components/layouts/header/HeaderElements"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
