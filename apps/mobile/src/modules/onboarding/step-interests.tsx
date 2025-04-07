@@ -11,17 +11,22 @@ import { subscriptionSyncService } from "@/src/store/subscription/store"
 import { accentColor } from "@/src/theme/colors"
 
 import type { PresetFeedConfig } from "./preset"
-import { presetFeeds } from "./preset"
+import { getPresetFeeds } from "./preset"
 import { OnboardingSectionScreenContainer } from "./shared"
 
 export const StepInterests = () => {
-  const { t } = useTranslation()
-  const [displayFeeds, setDisplayFeeds] = useState<PresetFeedConfig[]>(presetFeeds.slice(0, 7))
+  const { t, i18n } = useTranslation()
+  const isEnglishUser = i18n.language === "en"
+  const [displayFeeds, setDisplayFeeds] = useState<PresetFeedConfig[]>(
+    getPresetFeeds(isEnglishUser).slice(0, 7),
+  )
 
   const shuffleFeeds = useCallback(() => {
+    const presetFeeds = getPresetFeeds(isEnglishUser)
     const shuffled = [...presetFeeds].sort(() => Math.random() - 0.5).slice(0, 7)
     setDisplayFeeds(shuffled)
-  }, [])
+  }, [isEnglishUser])
+
   return (
     <OnboardingSectionScreenContainer>
       <View className="mb-10 flex items-center gap-4">
