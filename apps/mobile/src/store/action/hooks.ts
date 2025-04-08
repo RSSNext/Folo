@@ -67,6 +67,6 @@ export const useIsActionDataDirty = () => {
 
 export const useHasNotificationActions = () => {
   return useActionStore((state) => {
-    return state.rules.some((rule) => !!rule.result.newEntryNotification)
+    return state.rules.some((rule) => !!rule.result.newEntryNotification && !rule.result.disabled)
   })
 }

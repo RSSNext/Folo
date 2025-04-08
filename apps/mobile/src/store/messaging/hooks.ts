@@ -40,9 +40,9 @@ export function useMessagingToken() {
   })
 
   useEffect(() => {
-    if (!whoami || !hasNotificationActions) return
+    if (!whoami?.id || !hasNotificationActions) return
     mutate()
-  }, [hasNotificationActions, mutate, whoami])
+  }, [hasNotificationActions, mutate, whoami?.id])
 }
 
 export function useMessaging() {
