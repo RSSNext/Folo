@@ -7,14 +7,13 @@ import { whoami } from "../store/user/getters"
 const BACKGROUND_FETCH_TASK = "background-fetch"
 
 export async function initBackgroundFetch() {
-  const user = whoami()
-  if (!user) {
-    return
-  }
-
   TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     // const now = Date.now()
     // console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`)
+    const user = whoami()
+    if (!user) {
+      return BackgroundFetch.BackgroundFetchResult.NoData
+    }
 
     try {
       const res = await unreadSyncService.updateBadgeAtBackground()
