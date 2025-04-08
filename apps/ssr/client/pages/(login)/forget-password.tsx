@@ -19,7 +19,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -27,53 +27,125 @@ import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
-const forgetPasswordFormSchema = z.object({
-  email: z.string().email(),
-})
-
 export function Component() {
   const { t } = useTranslation()
-  const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
-    resolver: zodResolver(forgetPasswordFormSchema),
-    defaultValues: {
-      email: "",
-    },
-  })
-
+  const navigate = useNavigate()
   const recaptchaRef = useRef<ReCAPTCHA>(null)
 
-  const { isValid } = form.formState
+  const [captchaVerified, setCaptchaVerified] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [isExecutingCaptcha, setIsExecutingCaptcha] = useState(false)
+  const emailSchema = z
+    .string()
+    .min(1, { message: t("login.forget_password.email_required") })
+    .email({ message: t("login.forget_password.email_invalid") })
+    .refine(
+      (email) => {
+        const validDomainRegex = /^[^@]+@[^@]+\.[a-z]{2,}$/i
+        const noMultipleAtSymbols = (email.match(/@/g) || []).length === 1
+        const noInvalidCharsInDomain = !/[,\s]/.test(email.split("@")[1] || "")
+        const validTLD = /\.[a-z]{2,}$/i.test(email)
+
+        return (
+          validDomainRegex.test(email) && noMultipleAtSymbols && noInvalidCharsInDomain && validTLD
+        )
+      },
+      { message: t("login.forget_password.email_format_invalid") },
+    )
+
+  const forgetPasswordFormSchema = z.object({ email: emailSchema })
+  const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
+    resolver: zodResolver(forgetPasswordFormSchema),
+    defaultValues: { email: "" },
+    mode: "onChange",
+    delayError: 500,
+  })
+
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (
+        e.target instanceof Element &&
+        !e.target.closest(".g-recaptcha") &&
+        !e.target.closest("iframe") &&
+        !e.target.closest('[style*="z-index: 2000000000"]')
+      ) {
+        const captchaPopup = document.querySelector('div[style*="z-index: 2000000000"]')
+        if (captchaPopup && !captchaToken) {
+          recaptchaRef.current?.reset()
+          setCaptchaVerified(false)
+        }
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+    return () => document.removeEventListener("click", handleDocumentClick)
+  }, [captchaToken])
+
   const updateMutation = useMutation({
     mutationFn: async (values: z.infer<typeof forgetPasswordFormSchema>) => {
-      const token = await recaptchaRef.current?.executeAsync()
-      const res = await forgetPassword(
-        {
-          email: values.email,
-          redirectTo: `${env.VITE_WEB_URL}/reset-password`,
-        },
-        {
-          headers: {
-            "x-token": `r2:${token}`,
+      if (isExecutingCaptcha) return null
+
+      setIsExecutingCaptcha(true)
+      try {
+        let token = captchaToken
+
+        if (!token && captchaVerified) {
+          token = recaptchaRef.current?.getValue() || null
+        }
+
+        if (!token && !captchaVerified && recaptchaRef.current?.props.size !== "normal") {
+          token = (await recaptchaRef.current?.executeAsync()) || null
+        }
+
+        if (!token) {
+          throw new Error(t("login.forget_password.recaptcha_required"))
+        }
+
+        const res = await forgetPassword(
+          {
+            email: values.email,
+            redirectTo: `${env.VITE_WEB_URL}/reset-password`,
           },
-        },
-      )
-      if (res.error) {
-        throw new Error(res.error.message)
+          {
+            headers: {
+              "x-token": `r2:${token}`,
+            },
+          },
+        )
+
+        if (res.error) {
+          throw new Error(res.error.message)
+        }
+
+        return res
+      } catch (error) {
+        throw error instanceof Error ? error : new Error("Unknown error occurred")
+      } finally {
+        setIsExecutingCaptcha(false)
       }
     },
     onError: (error) => {
-      toast.error(error.message)
+      toast.error(error instanceof Error ? error.message : String(error))
+      setCaptchaToken(null)
+      setCaptchaVerified(false)
+      recaptchaRef.current?.reset()
     },
     onSuccess: () => {
       toast.success(t("login.forget_password.success"))
+      setCaptchaToken(null)
     },
   })
 
   function onSubmit(values: z.infer<typeof forgetPasswordFormSchema>) {
+    if (recaptchaRef.current?.props.size === "normal" && (!captchaVerified || !captchaToken)) {
+      toast.error(t("login.forget_password.recaptcha_required"))
+      return
+    }
+
+    if (updateMutation.isPending || isExecutingCaptcha) return
+
     updateMutation.mutate(values)
   }
-
-  const navigate = useNavigate()
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -104,19 +176,31 @@ export function Component() {
                   <FormItem>
                     <FormLabel>{t("login.email")}</FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input type="email" placeholder="username@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY}
-                size="invisible"
-              />
+
+              <div className="my-4 flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY}
+                  size="normal"
+                />
+              </div>
+
               <div className="text-right">
-                <Button disabled={!isValid} type="submit" isLoading={updateMutation.isPending}>
+                <Button
+                  disabled={
+                    !form.formState.isValid ||
+                    (recaptchaRef.current?.props.size === "normal" && !captchaToken) ||
+                    isExecutingCaptcha
+                  }
+                  type="submit"
+                  isLoading={updateMutation.isPending || isExecutingCaptcha}
+                >
                   {t("login.submit")}
                 </Button>
               </div>
@@ -124,6 +208,25 @@ export function Component() {
           </Form>
         </CardContent>
       </Card>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        div[style*="z-index: 2000000000"] {
+          position: fixed !important;
+          top: 50% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) !important;
+        }
+        .g-recaptcha-bubble-arrow {
+          display: none !important;
+        }
+        div[style*="z-index: 2000000000"] > div[style*="opacity"] {
+          cursor: pointer !important;
+        }
+      `,
+        }}
+      />
     </div>
   )
 }
