@@ -30,7 +30,7 @@ async function saveMessagingToken() {
   kv.set(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY, token)
 }
 
-export function useMessagingToken() {
+export function useUpdateMessagingToken() {
   const whoami = useWhoami()
   const hasNotificationActions = useHasNotificationActions()
   const { mutate } = useMutation({
