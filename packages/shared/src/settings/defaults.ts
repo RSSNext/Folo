@@ -34,6 +34,9 @@ export const defaultGeneralSettings: GeneralSettings = {
 
   // Pro feature
   enhancedSettings: false,
+
+  // @mobile
+  openLinksInApp: true,
 }
 
 export const defaultUISettings: UISettings = {
@@ -80,6 +83,8 @@ export const defaultUISettings: UISettings = {
     main: [],
     more: [],
   },
+
+  subscriptionShowUnreadCount: true,
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {

@@ -1,4 +1,4 @@
-name: Build iOS IPA for development
+name: Build iOS for development
 
 on:
   push:

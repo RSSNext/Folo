@@ -3,7 +3,7 @@ import { useCallback, useState } from "react"
 import { useColor } from "react-native-uikit-colors"
 
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UIBarButton } from "@/src/components/ui/button/UIBarButton"
@@ -39,33 +39,36 @@ export const ResetPassword = () => {
   }, [changePasswordAsync])
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background flex-1">
-      <NavigationBlurEffectHeader
-        title="Reset Password"
-        headerRight={useCallback(
-          () => (
-            <UIBarButton
-              label="Save"
-              normalIcon={
-                isPending ? (
-                  <PlatformActivityIndicator size="small" color={labelColor} />
-                ) : (
-                  <CheckLineIcon height={18} width={18} color={labelColor} />
-                )
-              }
-              disabled={
-                !currentPassword ||
-                !newPassword ||
-                !confirmNewPassword ||
-                newPassword !== confirmNewPassword
-              }
-              onPress={handleSave}
-            />
-          ),
-          [confirmNewPassword, currentPassword, handleSave, isPending, labelColor, newPassword],
-        )}
-      />
-
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background flex-1"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title="Reset Password"
+          headerRight={useCallback(
+            () => (
+              <UIBarButton
+                label="Save"
+                normalIcon={
+                  isPending ? (
+                    <PlatformActivityIndicator size="small" color={labelColor} />
+                  ) : (
+                    <CheckLineIcon height={18} width={18} color={labelColor} />
+                  )
+                }
+                disabled={
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmNewPassword ||
+                  newPassword !== confirmNewPassword
+                }
+                onPress={handleSave}
+              />
+            ),
+            [confirmNewPassword, currentPassword, handleSave, isPending, labelColor, newPassword],
+          )}
+        />
+      }
+    >
       <GroupedInsetListSectionHeader label="Current Password" />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="py-3">

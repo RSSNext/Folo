@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Select } from "@/src/components/ui/form/Select"
@@ -28,9 +28,10 @@ export const EditConditionScreen: NavigationControllerView<{
 }> = (params) => {
   const { t } = useTranslation("settings")
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("actions.edit_condition")} />
-
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("actions.edit_condition")} />}
+    >
       <ConditionForm index={params} />
     </SafeNavigationScrollView>
   )

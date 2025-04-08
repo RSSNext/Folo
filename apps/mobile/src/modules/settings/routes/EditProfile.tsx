@@ -8,6 +8,7 @@ import { KeyboardController } from "react-native-keyboard-controller"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
   NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -35,6 +36,19 @@ import { setAvatar } from "../utils"
 export const EditProfileScreen = () => {
   const whoami = useWhoami()
   const { t } = useTranslation("settings")
+  const [dirtyFields, setDirtyFields] = useState<Partial<UserProfileEditable>>({})
+
+  const { mutateAsync: updateProfile, isPending } = useMutation({
+    mutationFn: async () => {
+      await userSyncService.updateProfile(dirtyFields)
+    },
+    onSuccess: () => {
+      toast.success("Profile updated")
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
   if (!whoami) {
     return (
@@ -45,10 +59,26 @@ export const EditProfileScreen = () => {
   }
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
+    <SafeNavigationScrollView
+      Header={
+        <NavigationBlurEffectHeaderView
+          headerRight={
+            <HeaderSubmitTextButton
+              label={t("words.save", { ns: "common" })}
+              isValid={isPending || Object.keys(dirtyFields).length === 0}
+              onPress={() => {
+                updateProfile()
+              }}
+            />
+          }
+          title={t("profile.edit_profile")}
+        />
+      }
+      className="bg-system-grouped-background"
+    >
       <NavigationBlurEffectHeader title={t("profile.edit_profile")} />
       <AvatarSection whoami={whoami} />
-      <ProfileForm whoami={whoami} />
+      <ProfileForm whoami={whoami} dirtyFields={dirtyFields} setDirtyFields={setDirtyFields} />
     </SafeNavigationScrollView>
   )
 }
@@ -75,39 +105,14 @@ const AvatarSection: FC<{
 
 const ProfileForm: FC<{
   whoami: MeModel
-}> = ({ whoami }) => {
+  dirtyFields: Partial<UserProfileEditable>
+  setDirtyFields: (dirtyFields: Partial<UserProfileEditable>) => void
+}> = ({ whoami, dirtyFields, setDirtyFields }) => {
   const { t } = useTranslation("settings")
-
-  const [dirtyFields, setDirtyFields] = useState<Partial<UserProfileEditable>>({})
-
-  const { mutateAsync: updateProfile, isPending } = useMutation({
-    mutationFn: async () => {
-      await userSyncService.updateProfile(dirtyFields)
-    },
-    onSuccess: () => {
-      toast.success("Profile updated")
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
 
   const navigation = useNavigation()
   return (
     <View className="mt-4">
-      <NavigationBlurEffectHeader
-        headerRight={
-          <HeaderSubmitTextButton
-            label={t("words.save", { ns: "common" })}
-            isValid={isPending || Object.keys(dirtyFields).length === 0}
-            onPress={() => {
-              updateProfile()
-            }}
-          />
-        }
-        title={t("profile.edit_profile")}
-      />
-
       <TouchableWithoutFeedback
         onPress={() => {
           KeyboardController.dismiss()

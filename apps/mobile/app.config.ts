@@ -154,6 +154,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "react-native-video",
+    [
+      "expo-notifications",
+      {
+        enableBackgroundRemoteNotifications: true,
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

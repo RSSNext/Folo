@@ -4,7 +4,7 @@ import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
@@ -35,10 +35,12 @@ export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ in
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
       contentContainerClassName="mt-6"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={`${t("actions.edit_rule")}${rule?.name ? ` - ${rule.name}` : ""}`}
+        />
+      }
     >
-      <NavigationBlurEffectHeader
-        title={`${t("actions.edit_rule")}${rule?.name ? ` - ${rule.name}` : ""}`}
-      />
       <RuleImpl index={index} />
     </SafeNavigationScrollView>
   )

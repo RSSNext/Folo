@@ -64,3 +64,9 @@ export function useActionRuleCondition({
 export const useIsActionDataDirty = () => {
   return useActionStore((state) => state.isDirty)
 }
+
+export const useHasNotificationActions = () => {
+  return useActionStore((state) => {
+    return state.rules.some((rule) => !!rule.result.newEntryNotification && !rule.result.disabled)
+  })
+}

@@ -14,3 +14,7 @@ export const showIntelligenceGlowEffect = () => {
 }
 
 export const hideIntelligenceGlowEffect = () => {}
+
+export const isScrollToEnd = async (_reactTag: number) => {
+  return false
+}

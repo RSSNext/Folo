@@ -4,10 +4,9 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { useTranslation } from "react-i18next"
 import { PixelRatio, StyleSheet, Text, View } from "react-native"
 
-import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
-import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -39,25 +38,7 @@ const ManageListContext = createContext<{
 export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id }) => {
   usePrefetchOwnedLists()
   const list = useList(id)
-
-  return (
-    <SafeNavigationScrollView
-      className="bg-system-grouped-background"
-      contentContainerClassName="mt-6"
-    >
-      {!!list && <ListImpl id={list.id} />}
-    </SafeNavigationScrollView>
-  )
-}
-
-const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   const { t } = useTranslation("settings")
-  const list = useList(id)!
-  usePrefetchSubscription(list.view)
-
-  const subscriptionIds = useFeedSubscriptionByView(list.view)
-
-  const sortedSubscriptionIds = useSortedFeedSubscriptionByAlphabet(subscriptionIds)
 
   const nextSelectedFeedIdRef = useRef(new Set<string>())
   const ctxValue = useMemo(() => ({ nextSelectedFeedIdRef }), [nextSelectedFeedIdRef])
@@ -68,8 +49,8 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
     if (initOnceRef.current) return
     initOnceRef.current = true
 
-    nextSelectedFeedIdRef.current = new Set(list.feedIds)
-  }, [list.feedIds])
+    nextSelectedFeedIdRef.current = new Set(list?.feedIds ?? [])
+  }, [list?.feedIds])
 
   const addFeedsToFeedListMutation = useMutation({
     mutationFn: () =>
@@ -80,12 +61,14 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   })
   const navigation = useNavigation()
   return (
-    <ManageListContext.Provider value={ctxValue}>
-      <NavigationBlurEffectHeader
-        title={`${t("lists.manage_list")} - ${list?.title}`}
-        headerRight={() => (
-          <UINavigationHeaderActionButton>
-            <HeaderSubmitButton
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={`${t("lists.manage_list")} - ${list?.title}`}
+          headerRight={() => (
+            <HeaderSubmitTextButton
+              label={t("words.save", { ns: "common" })}
               isLoading={addFeedsToFeedListMutation.isPending}
               isValid
               onPress={() => {
@@ -100,16 +83,37 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
                   })
               }}
             />
-          </UINavigationHeaderActionButton>
-        )}
-      />
+          )}
+        />
+      }
+    >
+      {!!list && (
+        <ManageListContext.Provider value={ctxValue}>
+          <ListImpl id={list.id} />
+        </ManageListContext.Provider>
+      )}
+    </SafeNavigationScrollView>
+  )
+}
+
+const ListImpl: React.FC<{ id: string }> = ({ id }) => {
+  const { t } = useTranslation("settings")
+  const list = useList(id)!
+  usePrefetchSubscription(list.view)
+
+  const subscriptionIds = useFeedSubscriptionByView(list.view)
+
+  const sortedSubscriptionIds = useSortedFeedSubscriptionByAlphabet(subscriptionIds)
+
+  return (
+    <>
       <GroupedInsetListSectionHeader label={t("lists.select_feeds")} />
       <GroupedInsetListCard SeparatorComponent={SeparatorComponent}>
         {sortedSubscriptionIds.map((id) => (
           <FeedCell key={id} feedId={id} isSelected={list.feedIds.includes(id)} />
         ))}
       </GroupedInsetListCard>
-    </ManageListContext.Provider>
+    </>
   )
 }
 

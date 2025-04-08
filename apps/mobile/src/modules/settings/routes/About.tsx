@@ -4,7 +4,7 @@ import { Linking, Text, View } from "react-native"
 
 import { Link } from "@/src/components/common/Link"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -49,9 +49,11 @@ export const AboutScreen = () => {
   const appVersion = nativeApplicationVersion
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background" contentViewClassName="pt-6">
-      <NavigationBlurEffectHeader title={t("titles.about")} />
-
+    <SafeNavigationScrollView
+      Header={<NavigationBlurEffectHeaderView title={t("titles.about")} />}
+      className="bg-system-grouped-background"
+      contentViewClassName="pt-6"
+    >
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="flex-col py-6">
           <View className="flex-1 items-center justify-center">

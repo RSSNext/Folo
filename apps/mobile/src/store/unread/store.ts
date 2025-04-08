@@ -1,7 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
+import * as Notifications from "expo-notifications"
 
 import type { UnreadSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
+import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
 import { EntryService } from "@/src/services/entry"
 import { UnreadService } from "@/src/services/unread"
 
@@ -9,6 +11,7 @@ import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import { createTransaction, createZustandStore } from "../internal/helper"
 import { getSubscriptionByView } from "../subscription/getter"
+import { getAllUnreadCount } from "./getter"
 
 type SubscriptionId = string
 interface UnreadStore {
@@ -28,6 +31,17 @@ class UnreadSyncService {
     await unreadActions.reset()
     await unreadActions.upsertMany(res.data)
     return res.data
+  }
+
+  async updateBadgeAtBackground() {
+    await this.fetch()
+    const allUnreadCount = getAllUnreadCount()
+    const currentBadgeCount = await Notifications.getBadgeCountAsync()
+    if (allUnreadCount === currentBadgeCount) {
+      return false
+    }
+    setBadgeCountAsyncWithPermission(allUnreadCount)
+    return true
   }
 
   private async updateUnreadStatus(feedIds: string[]) {

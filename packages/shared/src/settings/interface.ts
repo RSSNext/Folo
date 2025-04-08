@@ -27,6 +27,9 @@ export interface GeneralSettings {
 
   // Pro feature
   enhancedSettings: boolean
+
+  // @mobile
+  openLinksInApp: boolean
 }
 
 export interface UISettings {
@@ -65,6 +68,9 @@ export interface UISettings {
     main: (string | number)[]
     more: (string | number)[]
   }
+
+  // @mobile
+  subscriptionShowUnreadCount: boolean
 }
 
 export interface IntegrationSettings {

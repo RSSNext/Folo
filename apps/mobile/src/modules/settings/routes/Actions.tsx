@@ -8,7 +8,7 @@ import { useColors } from "react-native-uikit-colors"
 import { SwipeableGroupProvider, SwipeableItem } from "@/src/components/common/SwipeableItem"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -39,18 +39,22 @@ export const ActionsScreen = () => {
   const isDirty = useIsActionDataDirty()
 
   return (
-    <SafeNavigationScrollView nestedScrollEnabled className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("titles.actions")}
-        headerRight={useCallback(
-          () => (
-            <SaveRuleButton disabled={!isDirty} />
-          ),
-          [isDirty],
-        )}
-        promptBeforeLeave={isDirty}
-      />
-
+    <SafeNavigationScrollView
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.actions")}
+          headerRight={useCallback(
+            () => (
+              <SaveRuleButton disabled={!isDirty} />
+            ),
+            [isDirty],
+          )}
+          promptBeforeLeave={isDirty}
+        />
+      }
+      nestedScrollEnabled
+      className="bg-system-grouped-background"
+    >
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell

@@ -8,7 +8,7 @@ import { Pressable, Text, View } from "react-native"
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -61,11 +61,15 @@ export const InvitationsScreen: NavigationControllerView = () => {
     toast.success("Copied to clipboard")
   }
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("titles.invitations")}
-        headerRight={<GenerateButton />}
-      />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.invitations")}
+          headerRight={<GenerateButton />}
+        />
+      }
+    >
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell

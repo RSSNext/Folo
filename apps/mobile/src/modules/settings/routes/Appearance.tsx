@@ -4,7 +4,7 @@ import { useColorScheme, View } from "react-native"
 
 import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Select } from "@/src/components/ui/form/Select"
@@ -29,10 +29,11 @@ export const AppearanceScreen = () => {
   const hideRecentReader = useUISettingKey("hideRecentReader")
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("appearance.title")} />
-
-      <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("appearance.title")} />}
+    >
+      <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} marginSize="small" />
       <GroupedInsetListCard>
         <GroupedInsetListCell
           label={t("appearance.show_unread_count.label")}

@@ -116,6 +116,8 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
+  const isInPeekModal = useInPeekModal()
+
   if (!entry) return null
 
   const entryContent = entry?.entries.content ?? data?.entries.content
@@ -126,12 +128,14 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   return (
     <>
-      <EntryHeader
-        entryId={entry.entries.id}
-        view={view}
-        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
-        compact={compact}
-      />
+      {!isInPeekModal && (
+        <EntryHeader
+          entryId={entry.entries.id}
+          view={view}
+          className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+          compact={compact}
+        />
+      )}
 
       <div className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible">
         <EntryTimelineSidebar entryId={entry.entries.id} />

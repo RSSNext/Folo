@@ -19,7 +19,7 @@ import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useEntry } from "@/src/store/entry/hooks"
 import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { useEntryTranslation } from "@/src/store/translation/hooks"
 import { unreadSyncService } from "@/src/store/unread/store"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -28,7 +28,6 @@ import { EntryTranslation } from "./EntryTranslation"
 
 export function EntrySocialItem({ entryId }: { entryId: string }) {
   const entry = useEntry(entryId)
-  usePrefetchEntryTranslation(entryId)
   const translation = useEntryTranslation(entryId)
 
   const feed = useFeed(entry?.feedId || "")

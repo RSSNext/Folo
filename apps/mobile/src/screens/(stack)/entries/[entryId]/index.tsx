@@ -14,7 +14,7 @@ import { openLink } from "@/src/lib/native"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
-import { useEntry, usePrefetchEntryContent } from "@/src/store/entry/hooks"
+import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
 import { useFeed } from "@/src/store/feed/hooks"
@@ -27,7 +27,7 @@ export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
-  usePrefetchEntryContent(entryId)
+  usePrefetchEntryDetail(entryId)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)

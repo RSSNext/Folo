@@ -4,17 +4,13 @@ on:
   push:
     branches: [dev]
     paths:
-      - "apps/mobile/web-app/**"
-      - "apps/mobile/native/**"
-      - "apps/mobile/package.json"
-      - "apps/mobile/app.config.ts"
+      - "apps/mobile/**"
+      - "pnpm-lock.yaml"
   pull_request:
     branches: [dev]
     paths:
-      - "apps/mobile/web-app/**"
-      - "apps/mobile/native/**"
-      - "apps/mobile/package.json"
-      - "apps/mobile/app.config.ts"
+      - "apps/mobile/**"
+      - "pnpm-lock.yaml"
   workflow_dispatch:
     inputs:
       profile:
@@ -68,11 +64,20 @@ jobs:
 
       - name: 🔨 Build Android app
         working-directory: apps/mobile
-        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.apk
+        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output=${{ github.workspace }}/build.${{ github.event.inputs.profile == 'production' && 'aab' || 'apk' }}
 
       - name: 📤 Upload apk Artifact
+        if: github.event.inputs.profile != 'production'
         uses: actions/upload-artifact@v4
         with:
           name: app-android
           path: ${{ github.workspace }}/build.apk
+          retention-days: 90
+
+      - name: 📤 Upload aab Artifact
+        if: github.event.inputs.profile == 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: aab-android
+          path: ${{ github.workspace }}/build.aab
           retention-days: 90

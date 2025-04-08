@@ -90,7 +90,7 @@ export const HeaderSubmitTextButton = ({
       )}
       <Text
         className={cn(
-          "text-accent text-base font-semibold",
+          "text-accent text-base font-bold",
           !isValid && "text-secondary-label",
           isLoading && "opacity-0",
         )}

@@ -6,11 +6,20 @@ import { useSheet } from "react-native-sheet-transitions"
 
 import { useIntentHandler } from "./hooks/useIntentHandler"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
+import { usePrefetchActions } from "./store/action/hooks"
+import { useMessaging, useUpdateMessagingToken } from "./store/messaging/hooks"
+import { useUnreadCountBadge } from "./store/unread/hooks"
 import { useOnboarding, usePrefetchSessionUser } from "./store/user/hooks"
 
 export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()
   useOnboarding()
+  useUnreadCountBadge()
+
+  // prefetch actions to detect if the user has any actions contains notifications
+  usePrefetchActions()
+  useUpdateMessagingToken()
+  useMessaging()
   const { scale } = useSheet()
 
   const style = useAnimatedStyle(() => ({

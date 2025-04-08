@@ -5,7 +5,7 @@ import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
 
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { QRCode } from "@/src/components/ui/qrcode/QRCode"
@@ -45,9 +45,7 @@ export const TwoFASetting: NavigationControllerView<{ totpURI: string }> = ({ to
 
   return (
     <KeyboardAvoidingView behavior="padding">
-      <SafeNavigationScrollView>
-        <NavigationBlurEffectHeader title="Setting 2FA" />
-
+      <SafeNavigationScrollView Header={<NavigationBlurEffectHeaderView title="Setting 2FA" />}>
         <View className="my-8 items-center justify-center">
           <QRCode
             data={totpURI}

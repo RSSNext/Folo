@@ -107,7 +107,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
                 as="div"
                 className={cn(
                   "prose dark:prose-invert align-middle",
-                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed [&_br:last-child]:hidden",
+                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed",
                 )}
                 noMedia
               >
