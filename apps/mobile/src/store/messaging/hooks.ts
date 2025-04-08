@@ -1,14 +1,17 @@
 import type { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
 import messaging from "@react-native-firebase/messaging"
+import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Platform } from "react-native"
 
-import { apiClient } from "../lib/api-fetch"
-import { kv } from "../lib/kv"
-import { useNavigation } from "../lib/navigation/hooks"
-import { requestNotificationPermission } from "../lib/permission"
-import { EntryDetailScreen } from "../screens/(stack)/entries/[entryId]"
-import { whoami } from "../store/user/getters"
+import { apiClient } from "@/src/lib/api-fetch"
+import { kv } from "@/src/lib/kv"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { requestNotificationPermission } from "@/src/lib/permission"
+import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
+
+import { useHasNotificationActions } from "../action/hooks"
+import { useWhoami } from "../user/hooks"
 
 const FIREBASE_MESSAGING_TOKEN_STORAGE_KEY = "firebase_messaging_token"
 
@@ -27,14 +30,19 @@ async function saveMessagingToken() {
   kv.set(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY, token)
 }
 
-export const initMessaging = () => {
-  const user = whoami()
-  if (!user) {
-    return
-  }
+export function useMessagingToken() {
+  const whoami = useWhoami()
+  const hasNotificationActions = useHasNotificationActions()
+  const { mutate } = useMutation({
+    mutationFn: async () => {
+      return Promise.all([saveMessagingToken(), requestNotificationPermission()])
+    },
+  })
 
-  saveMessagingToken()
-  requestNotificationPermission()
+  useEffect(() => {
+    if (!whoami || !hasNotificationActions) return
+    mutate()
+  }, [hasNotificationActions, mutate, whoami])
 }
 
 export function useMessaging() {
