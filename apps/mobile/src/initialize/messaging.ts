@@ -1,6 +1,7 @@
 import type { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
 import messaging from "@react-native-firebase/messaging"
 import { useEffect } from "react"
+import { Platform } from "react-native"
 
 import { apiClient } from "../lib/api-fetch"
 import { kv } from "../lib/kv"
@@ -20,7 +21,7 @@ async function saveMessagingToken() {
   await apiClient.messaging.$post({
     json: {
       token,
-      channel: "mobile",
+      channel: Platform.OS,
     },
   })
   kv.set(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY, token)
