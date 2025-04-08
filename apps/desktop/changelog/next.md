@@ -2,6 +2,8 @@
 
 ## New Features
 
+- Cubox integration (#3385)
+
 ## Improvements
 
 ## Bug Fixes
