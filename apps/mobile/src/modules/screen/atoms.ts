@@ -129,6 +129,8 @@ export function useSelectedFeed() {
 
   const selectedTimeline = useAtomValue(selectedTimelineAtom)
   const selectedFeed = useAtomValue(selectedFeedAtom)
+  // console.log("selectedFeed", entryListContext, selectedTimeline, selectedFeed)
+
   return entryListContext.type === "feed" ? selectedFeed : selectedTimeline
 }
 

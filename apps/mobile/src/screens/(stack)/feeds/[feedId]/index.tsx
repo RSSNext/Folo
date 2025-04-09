@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
+import { RootSiblingParent } from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
@@ -43,11 +44,13 @@ export const FeedScreen: NavigationControllerView<{
 
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "feed" }), [])}>
-      <BottomTabBarHeightContext.Provider value={insets.bottom}>
-        <TimelineSelectorProvider feedId={feed?.id}>
-          <EntryListSelector entryIds={entryIds} viewId={view} />
-        </TimelineSelectorProvider>
-      </BottomTabBarHeightContext.Provider>
+      <RootSiblingParent>
+        <BottomTabBarHeightContext.Provider value={insets.bottom}>
+          <TimelineSelectorProvider feedId={feed?.id}>
+            <EntryListSelector entryIds={entryIds} viewId={view} />
+          </TimelineSelectorProvider>
+        </BottomTabBarHeightContext.Provider>
+      </RootSiblingParent>
     </EntryListContext.Provider>
   )
 }

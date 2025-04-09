@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
+import { RootSiblingParent } from "react-native-root-siblings"
 import { useColor } from "react-native-uikit-colors"
 
 import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
@@ -20,18 +21,20 @@ export default function Subscriptions() {
 
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
-      <TimelineSelectorProvider>
-        {whoami ? (
-          <PagerList
-            renderItem={renderItem}
-            style={{
-              backgroundColor: systemGroupedBackground,
-            }}
-          />
-        ) : (
-          <NoLoginInfo target="subscriptions" />
-        )}
-      </TimelineSelectorProvider>
+      <RootSiblingParent>
+        <TimelineSelectorProvider>
+          {whoami ? (
+            <PagerList
+              renderItem={renderItem}
+              style={{
+                backgroundColor: systemGroupedBackground,
+              }}
+            />
+          ) : (
+            <NoLoginInfo target="subscriptions" />
+          )}
+        </TimelineSelectorProvider>
+      </RootSiblingParent>
     </EntryListContext.Provider>
   )
 }
