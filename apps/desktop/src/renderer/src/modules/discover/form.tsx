@@ -345,7 +345,7 @@ const SearchCard: FC<{
               </div>
             )}
           </CardContent>
-          <CardFooter className="mt-4 flex flex-col gap-4 border-t border-zinc-100/80 pt-4 dark:border-zinc-800/80">
+          <CardFooter className="mt-4 flex justify-between gap-4 border-t border-zinc-100/80 py-3 dark:border-zinc-800/80">
             <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-user-3-cute-re" />
@@ -357,17 +357,7 @@ const SearchCard: FC<{
               </div>
             </div>
 
-            <div className="flex w-full items-center justify-between">
-              <Button
-                variant="ghost"
-                buttonClassName="rounded-full px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
-                onClick={() => {
-                  if (!item.feed?.id) return
-                  window.open(UrlBuilder.shareFeed(item.feed.id, 0), "_blank")
-                }}
-              >
-                Preview
-              </Button>
+            <div className="flex items-center justify-between gap-2">
               <Button
                 variant={item.isSubscribed ? "outline" : undefined}
                 disabled={item.isSubscribed}
@@ -391,6 +381,16 @@ const SearchCard: FC<{
                 }`}
               >
                 {item.isSubscribed ? t("feed.actions.followed") : t("feed.actions.follow")}
+              </Button>
+              <Button
+                variant="ghost"
+                buttonClassName="rounded-full px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
+                onClick={() => {
+                  if (!item.feed?.id) return
+                  window.open(UrlBuilder.shareFeed(item.feed.id, 0), "_blank")
+                }}
+              >
+                {t("discover.preview")}
               </Button>
             </div>
           </CardFooter>
