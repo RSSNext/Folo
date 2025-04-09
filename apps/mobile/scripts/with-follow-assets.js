@@ -46,10 +46,10 @@ function addAndroidResources(config, { assetsPath }) {
       const { projectRoot } = config.modRequest
 
       // Get the path to the Android resources directory
-      const resDir = path.join(projectRoot, "android", "app", "src", "main", "res")
+      const resDir = path.join(projectRoot, "android", "app", "src", "main")
 
-      // Create the 'raw' directory if it doesn't exist
-      const rawDir = path.join(resDir, "raw")
+      // Create the 'assets' directory if it doesn't exist
+      const rawDir = path.join(resDir, "assets")
       fs.mkdirSync(rawDir, { recursive: true })
 
       // Retrieve all files in the assets directory
@@ -65,6 +65,7 @@ function addAndroidResources(config, { assetsPath }) {
       //   fs.copyFileSync(srcAssetPath, destAssetPath)
       // }
 
+      // Access the resources directory by using `file:///android_asset/FILENAME`
       return config
     },
   ])
