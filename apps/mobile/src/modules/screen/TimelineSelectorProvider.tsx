@@ -1,4 +1,3 @@
-import { env } from "@follow/shared/src/env"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Share, View } from "react-native"
@@ -9,6 +8,7 @@ import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeN
 import { UIBarButton } from "@/src/components/ui/button/UIBarButton"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
 import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
+import { proxyEnv } from "@/src/lib/proxy-env"
 import {
   ActionGroup,
   HomeLeftAction,
@@ -91,7 +91,7 @@ function FeedShareAction({ feedId }: { feedId?: string }) {
       onPress={() => {
         const feed = getFeed(feedId)
         if (!feed) return
-        const url = `${env.VITE_WEB_URL}/share/feeds/${feedId}`
+        const url = `${proxyEnv.WEB_URL}/share/feeds/${feedId}`
         Share.share({
           message: `Check out ${feed.title} on Folo: ${url}`,
           title: feed.title!,

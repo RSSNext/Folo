@@ -55,7 +55,7 @@ export const useEntryIdsByView = (view: FeedViewType) => {
     useCallback(
       (state) => {
         const ids = state.entryIdByView[view]
-        if (!ids) return []
+        if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [view],
@@ -68,7 +68,7 @@ export const useEntryIdsByFeedId = (feedId: string) => {
     useCallback(
       (state) => {
         const ids = state.entryIdByFeed[feedId]
-        if (!ids) return []
+        if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [feedId],
@@ -81,7 +81,7 @@ export const useEntryIdsByInboxId = (inboxId: string) => {
     useCallback(
       (state) => {
         const ids = state.entryIdByInbox[inboxId]
-        if (!ids) return []
+        if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [inboxId],
@@ -94,7 +94,7 @@ export const useEntryIdsByCategory = (category: string) => {
     useCallback(
       (state) => {
         const ids = state.entryIdByCategory[category]
-        if (!ids) return []
+        if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [category],
@@ -107,7 +107,7 @@ export const useEntryIdsByListId = (listId: string) => {
     useCallback(
       (state) => {
         const ids = state.entryIdByList[listId]
-        if (!ids) return []
+        if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [listId],
