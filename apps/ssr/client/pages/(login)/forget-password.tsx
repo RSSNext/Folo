@@ -27,15 +27,8 @@ import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
-export function Component() {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
-
-  const [captchaVerified, setCaptchaVerified] = useState(false)
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const [isExecutingCaptcha, setIsExecutingCaptcha] = useState(false)
-  const emailSchema = z
+const createEmailSchema = (t: any) =>
+  z
     .string()
     .min(1, { message: t("login.forget_password.email_required") })
     .email({ message: t("login.forget_password.email_invalid") })
@@ -45,7 +38,6 @@ export function Component() {
         const noMultipleAtSymbols = (email.match(/@/g) || []).length === 1
         const noInvalidCharsInDomain = !/[,\s]/.test(email.split("@")[1] || "")
         const validTLD = /\.[a-z]{2,}$/i.test(email)
-
         return (
           validDomainRegex.test(email) && noMultipleAtSymbols && noInvalidCharsInDomain && validTLD
         )
@@ -53,13 +45,11 @@ export function Component() {
       { message: t("login.forget_password.email_format_invalid") },
     )
 
-  const forgetPasswordFormSchema = z.object({ email: emailSchema })
-  const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
-    resolver: zodResolver(forgetPasswordFormSchema),
-    defaultValues: { email: "" },
-    mode: "onChange",
-    delayError: 500,
-  })
+const useCaptcha = () => {
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const [captchaVerified, setCaptchaVerified] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [isExecutingCaptcha, setIsExecutingCaptcha] = useState(false)
 
   useEffect(() => {
     const handleDocumentClick = (e: MouseEvent) => {
@@ -81,21 +71,58 @@ export function Component() {
     return () => document.removeEventListener("click", handleDocumentClick)
   }, [captchaToken])
 
+  const executeCaptcha = async (): Promise<string | null> => {
+    setIsExecutingCaptcha(true)
+    try {
+      let token = captchaToken
+
+      if (!token && captchaVerified) {
+        token = recaptchaRef.current?.getValue() || null
+      }
+
+      if (!token && !captchaVerified && recaptchaRef.current?.props.size !== "normal") {
+        token = (await recaptchaRef.current?.executeAsync()) || null
+      }
+
+      return token
+    } finally {
+      setIsExecutingCaptcha(false)
+    }
+  }
+
+  return {
+    recaptchaRef,
+    captchaVerified,
+    setCaptchaVerified,
+    captchaToken,
+    setCaptchaToken,
+    isExecutingCaptcha,
+    executeCaptcha,
+  }
+}
+
+export function Component() {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const captcha = useCaptcha()
+
+  const forgetPasswordFormSchema = z.object({
+    email: createEmailSchema(t),
+  })
+
+  const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
+    resolver: zodResolver(forgetPasswordFormSchema),
+    defaultValues: { email: "" },
+    mode: "onChange",
+    delayError: 500,
+  })
+
   const updateMutation = useMutation({
     mutationFn: async (values: z.infer<typeof forgetPasswordFormSchema>) => {
-      if (isExecutingCaptcha) return null
+      if (captcha.isExecutingCaptcha) return null
 
-      setIsExecutingCaptcha(true)
       try {
-        let token = captchaToken
-
-        if (!token && captchaVerified) {
-          token = recaptchaRef.current?.getValue() || null
-        }
-
-        if (!token && !captchaVerified && recaptchaRef.current?.props.size !== "normal") {
-          token = (await recaptchaRef.current?.executeAsync()) || null
-        }
+        const token = await captcha.executeCaptcha()
 
         if (!token) {
           throw new Error(t("login.forget_password.recaptcha_required"))
@@ -120,29 +147,30 @@ export function Component() {
         return res
       } catch (error) {
         throw error instanceof Error ? error : new Error("Unknown error occurred")
-      } finally {
-        setIsExecutingCaptcha(false)
       }
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : String(error))
-      setCaptchaToken(null)
-      setCaptchaVerified(false)
-      recaptchaRef.current?.reset()
+      captcha.setCaptchaToken(null)
+      captcha.setCaptchaVerified(false)
+      captcha.recaptchaRef.current?.reset()
     },
     onSuccess: () => {
       toast.success(t("login.forget_password.success"))
-      setCaptchaToken(null)
+      captcha.setCaptchaToken(null)
     },
   })
 
   function onSubmit(values: z.infer<typeof forgetPasswordFormSchema>) {
-    if (recaptchaRef.current?.props.size === "normal" && (!captchaVerified || !captchaToken)) {
+    if (
+      captcha.recaptchaRef.current?.props.size === "normal" &&
+      (!captcha.captchaVerified || !captcha.captchaToken)
+    ) {
       toast.error(t("login.forget_password.recaptcha_required"))
       return
     }
 
-    if (updateMutation.isPending || isExecutingCaptcha) return
+    if (updateMutation.isPending || captcha.isExecutingCaptcha) return
 
     updateMutation.mutate(values)
   }
@@ -185,9 +213,13 @@ export function Component() {
 
               <div className="my-4 flex justify-center">
                 <ReCAPTCHA
-                  ref={recaptchaRef}
+                  ref={captcha.recaptchaRef}
                   sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY}
                   size="normal"
+                  onChange={(token) => {
+                    captcha.setCaptchaToken(token)
+                    captcha.setCaptchaVerified(!!token)
+                  }}
                 />
               </div>
 
@@ -195,11 +227,12 @@ export function Component() {
                 <Button
                   disabled={
                     !form.formState.isValid ||
-                    (recaptchaRef.current?.props.size === "normal" && !captchaToken) ||
-                    isExecutingCaptcha
+                    (captcha.recaptchaRef.current?.props.size === "normal" &&
+                      !captcha.captchaToken) ||
+                    captcha.isExecutingCaptcha
                   }
                   type="submit"
-                  isLoading={updateMutation.isPending || isExecutingCaptcha}
+                  isLoading={updateMutation.isPending || captcha.isExecutingCaptcha}
                 >
                   {t("login.submit")}
                 </Button>
@@ -208,25 +241,6 @@ export function Component() {
           </Form>
         </CardContent>
       </Card>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        div[style*="z-index: 2000000000"] {
-          position: fixed !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;
-        }
-        .g-recaptcha-bubble-arrow {
-          display: none !important;
-        }
-        div[style*="z-index: 2000000000"] > div[style*="opacity"] {
-          cursor: pointer !important;
-        }
-      `,
-        }}
-      />
     </div>
   )
 }
