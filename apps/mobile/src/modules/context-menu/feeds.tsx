@@ -286,7 +286,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
     <View className="bg-system-background size-full flex-1">
       <FlatList
         scrollEnabled={false}
-        data={useMemo(() => entryIds.slice(0, 5), [entryIds])}
+        data={useMemo(() => entryIds?.slice(0, 5), [entryIds])}
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSeparator}
       />

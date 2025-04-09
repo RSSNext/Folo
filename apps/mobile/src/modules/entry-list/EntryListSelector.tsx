@@ -21,7 +21,7 @@ function EntryListSelectorImpl({
   viewId,
   active = true,
 }: {
-  entryIds: string[]
+  entryIds: string[] | null
   viewId: FeedViewType
   active?: boolean
 }) {
