@@ -1,10 +1,12 @@
 import { jotaiStore } from "@follow/utils"
 import { atom } from "jotai"
 import type * as React from "react"
+import { useCallback } from "react"
 import type { ViewProps } from "react-native"
 import WebView from "react-native-webview"
 
 import { htmlUrl } from "./constants"
+import { atEnd, atStart } from "./injected-js"
 
 const webviewAtom = atom<WebView | null>(null)
 
@@ -14,43 +16,12 @@ const setWebview = (webview: WebView | null) => {
 
 export const injectJavaScript = (js: string) => {
   const webview = jotaiStore.get(webviewAtom)
-  if (webview) {
-    return webview.injectJavaScript(js)
+  if (!webview) {
+    console.warn("WebView not ready, injecting JavaScript failed", js)
+    return
   }
+  return webview.injectJavaScript(js)
 }
-
-const injectedJavaScript = `
-const rootElement = document.querySelector("#root");
-
-// Initial height reporting
-window.ReactNativeWebView.postMessage(
-  JSON.stringify({
-    type: "content-height-changed",
-    height: rootElement.scrollHeight,
-  }),
-)
-
-// Set up mutation observer to detect DOM changes
-if (rootElement) {
-  const observer = new MutationObserver(function(mutations) {
-    // Post message when mutations are detected
-    window.ReactNativeWebView.postMessage(
-      JSON.stringify({
-        type: "content-height-changed",
-        height: document.querySelector("#root").scrollHeight,
-      }),
-    )
-  });
-
-  // Configure and start the observer
-  observer.observe(rootElement, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    characterData: true
-  });
-}
-`
 
 export const NativeWebView: React.ComponentType<
   ViewProps & {
@@ -72,13 +43,16 @@ export const NativeWebView: React.ComponentType<
       allowUniversalAccessFromFileURLs
       startInLoadingState
       allowsBackForwardNavigationGestures
-      injectedJavaScriptBeforeContentLoaded={injectedJavaScript}
+      injectedJavaScriptBeforeContentLoaded={atStart}
+      onLoadEnd={useCallback(() => {
+        injectJavaScript(atEnd)
+      }, [])}
       onMessage={(e) => {
         const message = e.nativeEvent.data
         const parsed = JSON.parse(message)
-        if (parsed.type === "content-height-changed") {
+        if (parsed.type === "setContentHeight") {
           onContentHeightChange?.({
-            nativeEvent: { height: parsed.height + 16 },
+            nativeEvent: { height: parsed.payload },
           })
           return
         }
