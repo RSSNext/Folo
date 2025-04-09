@@ -19,9 +19,8 @@ import { useFeed } from "@/src/store/feed/hooks"
 
 export const FeedScreen: NavigationControllerView<{
   feedId: string
-}> = ({ feedId }) => {
+}> = ({ feedId: feedIdentifier }) => {
   const insets = useSafeAreaInsets()
-  const feedIdentifier = feedId
   const feed = useFeed(feedIdentifier)
 
   const isCollection = feedIdentifier === FEED_COLLECTION_LIST
