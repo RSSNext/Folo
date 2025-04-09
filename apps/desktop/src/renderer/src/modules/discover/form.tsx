@@ -10,12 +10,11 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
-import { Radio } from "@follow/components/ui/radio-group/index.js"
-import { RadioGroup } from "@follow/components/ui/radio-group/RadioGroup.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { m } from "framer-motion"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent, FC } from "react"
@@ -24,6 +23,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
+import { smoothPreset } from "~/components/ui/constants/spring"
 import { Media } from "~/components/ui/media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -237,14 +237,39 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                           ]}
                         />
                       ) : (
-                        <RadioGroup
-                          className="flex items-center"
-                          value={field.value}
-                          onValueChange={handleTargetChange}
-                        >
-                          <Radio label={t("discover.target.feeds")} value="feeds" />
-                          <Radio label={t("discover.target.lists")} value="lists" />
-                        </RadioGroup>
+                        <div className="relative flex h-7 items-stretch overflow-hidden rounded-lg bg-zinc-100/80 p-0.5 shadow-inner dark:bg-zinc-800/80">
+                          <m.div
+                            className="absolute left-0.5 top-0.5 z-0 h-6 rounded-md bg-white shadow-sm dark:bg-zinc-700"
+                            initial={false}
+                            animate={{
+                              x: field.value === "lists" ? "calc(100% + 2px)" : 0,
+                              width: "calc(50% - 4px)",
+                            }}
+                            transition={smoothPreset}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleTargetChange("feeds")}
+                            className={`relative z-10 min-w-[80px] rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
+                              field.value === "feeds"
+                                ? "text-zinc-900 dark:text-white"
+                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                            }`}
+                          >
+                            {t("discover.target.feeds")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTargetChange("lists")}
+                            className={`relative z-10 min-w-[80px] rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
+                              field.value === "lists"
+                                ? "text-zinc-900 dark:text-white"
+                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                            }`}
+                          >
+                            {t("discover.target.lists")}
+                          </button>
+                        </div>
                       )}
                     </div>
                   </FormControl>
@@ -359,6 +384,16 @@ const SearchCard: FC<{
 
             <div className="flex items-center justify-between gap-2">
               <Button
+                variant="ghost"
+                buttonClassName="rounded-full px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
+                onClick={() => {
+                  if (!item.feed?.id) return
+                  window.open(UrlBuilder.shareFeed(item.feed.id, 0), "_blank")
+                }}
+              >
+                {t("discover.preview")}
+              </Button>
+              <Button
                 variant={item.isSubscribed ? "outline" : undefined}
                 disabled={item.isSubscribed}
                 onClick={() => {
@@ -374,23 +409,13 @@ const SearchCard: FC<{
                     },
                   })
                 }}
-                buttonClassName={`relative overflow-hidden rounded-full px-8 py-2 text-sm font-medium transition-all duration-300 ${
+                buttonClassName={`relative overflow-hidden rounded-lg text-sm font-medium transition-all duration-300 ${
                   item.isSubscribed
                     ? "border-zinc-200/80 text-zinc-400 dark:border-zinc-700/80"
-                    : "from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 bg-gradient-to-r text-white"
+                    : ""
                 }`}
               >
                 {item.isSubscribed ? t("feed.actions.followed") : t("feed.actions.follow")}
-              </Button>
-              <Button
-                variant="ghost"
-                buttonClassName="rounded-full px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
-                onClick={() => {
-                  if (!item.feed?.id) return
-                  window.open(UrlBuilder.shareFeed(item.feed.id, 0), "_blank")
-                }}
-              >
-                {t("discover.preview")}
               </Button>
             </div>
           </CardFooter>
