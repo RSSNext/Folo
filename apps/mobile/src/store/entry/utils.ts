@@ -19,11 +19,13 @@ export function getEntriesParams({
   inboxId,
   listId,
   view,
+  feedIdList,
 }: {
   feedId?: number | string
   inboxId?: number | string
   listId?: number | string
   view?: number
+  feedIdList?: string[]
 }) {
   const params: {
     feedId?: string
@@ -37,6 +39,8 @@ export function getEntriesParams({
     params.inboxId = `${inboxId}`
   } else if (listId) {
     params.listId = `${listId}`
+  } else if (feedIdList) {
+    params.feedIdList = feedIdList
   } else if (feedId) {
     if (feedId === FEED_COLLECTION_LIST) {
       params.isCollection = true

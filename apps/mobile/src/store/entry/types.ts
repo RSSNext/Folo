@@ -5,9 +5,10 @@ import type { EntryTranslation } from "../translation/types"
 export type EntryModel = EntrySchema
 export type EntryWithTranslation = EntryModel & { translation?: EntryTranslation }
 export type FetchEntriesProps = {
-  feedId?: number | string
-  inboxId?: number | string
-  listId?: number | string
+  feedId?: string
+  feedIdList?: string[]
+  inboxId?: string
+  listId?: string
   view?: number
   read?: boolean
   limit?: number

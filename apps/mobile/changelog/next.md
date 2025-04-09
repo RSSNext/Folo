@@ -7,3 +7,6 @@
 ## Improvements
 
 ## Bug Fixes
+
+- Can not share feed URL (#3424)
+- Share button always exists when it is not a feed (#3424)

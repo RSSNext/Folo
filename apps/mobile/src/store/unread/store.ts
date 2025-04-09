@@ -10,6 +10,7 @@ import { UnreadService } from "@/src/services/unread"
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import { createTransaction, createZustandStore } from "../internal/helper"
+import { getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
 import { getAllUnreadCount } from "./getter"
 
@@ -53,15 +54,36 @@ class UnreadSyncService {
     })
   }
 
-  async markViewAsRead(view: FeedViewType) {
+  async markViewAsRead(
+    view: FeedViewType,
+    filter?: {
+      feedId?: string
+      listId?: string
+      feedIdList?: string[]
+      inboxId?: string
+    } | null,
+  ) {
     await apiClient.reads.all.$post({
       json: {
         view,
+        ...filter,
       },
     })
-
-    const subscriptionIds = getSubscriptionByView(view)
-    this.updateUnreadStatus(subscriptionIds)
+    if (filter?.feedIdList) {
+      this.updateUnreadStatus(filter.feedIdList)
+    } else if (filter?.feedId) {
+      this.updateUnreadStatus([filter.feedId])
+    } else if (filter?.listId) {
+      const feedIds = getListFeedIds(filter.listId)
+      if (feedIds) {
+        this.updateUnreadStatus(feedIds)
+      }
+    } else if (filter?.inboxId) {
+      this.updateUnreadStatus([filter.inboxId])
+    } else {
+      const subscriptionIds = getSubscriptionByView(view)
+      this.updateUnreadStatus(subscriptionIds)
+    }
   }
 
   async markFeedAsRead(feedId: string | string[]) {

@@ -14,7 +14,7 @@ import { EntryNormalItem } from "./templates/EntryNormalItem"
 
 export const EntryListContentArticle = forwardRef<
   ElementRef<typeof TimelineSelectorList>,
-  { entryIds: string[]; active?: boolean }
+  { entryIds: string[] | null; active?: boolean }
 >(({ entryIds, active }, ref) => {
   const playingAudioUrl = usePlayingUrl()
 

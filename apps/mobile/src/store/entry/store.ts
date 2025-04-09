@@ -342,12 +342,14 @@ class EntryActions {
 
 class EntrySyncServices {
   async fetchEntries(props: FetchEntriesProps) {
-    const { feedId, inboxId, listId, view, read, limit, pageParam, isCollection } = props
+    const { feedId, inboxId, listId, view, read, limit, pageParam, isCollection, feedIdList } =
+      props
     const params = getEntriesParams({
       feedId,
       inboxId,
       listId,
       view,
+      feedIdList,
     })
     const res = params.inboxId
       ? await apiClient.entries.inbox.$post({

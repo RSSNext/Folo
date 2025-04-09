@@ -1,17 +1,15 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { FeedViewType } from "@follow/constants"
 import { jotaiStore } from "@follow/utils"
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 import { createContext, useCallback, useContext, useMemo } from "react"
 
 import { views } from "@/src/constants/views"
+import { getFetchEntryPayload } from "@/src/store/entry/getter"
 import { usePrefetchEntries } from "@/src/store/entry/hooks"
-import type { FetchEntriesProps } from "@/src/store/entry/types"
 import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useInbox } from "@/src/store/inbox/hooks"
 import { useList } from "@/src/store/list/hooks"
-import { getSubscriptionByCategory } from "@/src/store/subscription/getter"
 import { useSubscription } from "@/src/store/subscription/hooks"
 
 // drawer open state
@@ -128,49 +126,16 @@ function useSelectedView() {
   return view
 }
 
-function getFetchEntryPayload(
-  selectedFeed: SelectedTimeline | SelectedFeed,
-): FetchEntriesProps | null {
-  if (!selectedFeed) {
-    return null
-  }
-
-  let payload: FetchEntriesProps = {}
-  switch (selectedFeed.type) {
-    case "view": {
-      payload = { view: selectedFeed.viewId }
-      break
-    }
-    case "feed": {
-      payload = { feedId: selectedFeed.feedId }
-      break
-    }
-    case "category": {
-      payload = { feedId: getSubscriptionByCategory(selectedFeed.categoryName).join(",") }
-      break
-    }
-    case "list": {
-      payload = { listId: selectedFeed.listId }
-      break
-    }
-    case "inbox": {
-      payload = { inboxId: selectedFeed.inboxId }
-      break
-    }
-    // No default
-  }
-
-  return payload
-}
-
 export function useSelectedFeed() {
   const entryListContext = useEntryListContext()
 
   const selectedTimeline = useAtomValue(selectedTimelineAtom)
   const selectedFeed = useAtomValue(selectedFeedAtom)
+  const view = useSelectedView()
 
   const payload = getFetchEntryPayload(
     entryListContext.type === "feed" ? selectedFeed : selectedTimeline,
+    view,
   )
   usePrefetchEntries(payload)
 
@@ -179,8 +144,9 @@ export function useSelectedFeed() {
 
 export function useFetchEntriesControls() {
   const selectedFeed = useSelectedFeed()
+  const view = useSelectedView()
 
-  const payload = getFetchEntryPayload(selectedFeed)
+  const payload = getFetchEntryPayload(selectedFeed, view)
   return usePrefetchEntries(payload)
 }
 

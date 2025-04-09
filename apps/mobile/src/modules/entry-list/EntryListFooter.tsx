@@ -2,14 +2,16 @@ import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity } from "react-native"
 
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
+import { getFetchEntryPayload } from "@/src/store/entry/getter"
 import { unreadSyncService } from "@/src/store/unread/store"
 
-import { useSelectedView } from "../screen/atoms"
+import { useSelectedFeed, useSelectedView } from "../screen/atoms"
 import { ItemSeparator } from "./ItemSeparator"
 
 export const EntryListFooter = () => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
+  const selectedFeed = useSelectedFeed()
 
   return (
     <>
@@ -18,7 +20,8 @@ export const EntryListFooter = () => {
         className="flex-row items-center gap-1.5 py-6 pl-6"
         onPress={() => {
           if (typeof selectedView === "number") {
-            unreadSyncService.markViewAsRead(selectedView)
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            unreadSyncService.markViewAsRead(selectedView, payload)
           }
         }}
       >
@@ -36,13 +39,15 @@ export const EntryListFooter = () => {
 export const GridEntryListFooter = () => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
+  const selectedFeed = useSelectedFeed()
 
   return (
     <TouchableOpacity
       className="flex-row items-center justify-center gap-1.5 py-6"
       onPress={() => {
         if (typeof selectedView === "number") {
-          unreadSyncService.markViewAsRead(selectedView)
+          const payload = getFetchEntryPayload(selectedFeed, selectedView)
+          unreadSyncService.markViewAsRead(selectedView, payload)
         }
       }}
     >

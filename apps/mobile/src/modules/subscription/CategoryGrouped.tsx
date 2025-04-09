@@ -79,7 +79,7 @@ export const CategoryGrouped = memo(
               }}
               className={cn("h-12 flex-row items-center px-3", {
                 "rounded-t-[10px]": isFirst,
-                "rounded-b-[10px]": isLast,
+                "rounded-b-[10px]": isLast && !expanded,
               })}
             >
               <TouchableOpacity
@@ -105,7 +105,7 @@ export const CategoryGrouped = memo(
         {!isLast && <ItemSeparator />}
         {expanded && (
           <GroupedContext.Provider value={category}>
-            <UnGroupedList subscriptionIds={subscriptionIds} />
+            <UnGroupedList subscriptionIds={subscriptionIds} isGroupLast={isLast} />
           </GroupedContext.Provider>
         )}
       </>

@@ -62,7 +62,7 @@ export const SubscriptionList = ({
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedGrouped = useSortedGroupedSubscription(grouped, sortBy, sortOrder)
+  const sortedGrouped = useSortedGroupedSubscription(view, grouped, sortBy, sortOrder)
   const sortedUnGrouped = useSortedUngroupedSubscription(unGrouped, sortBy, sortOrder)
 
   const data = useMemo(

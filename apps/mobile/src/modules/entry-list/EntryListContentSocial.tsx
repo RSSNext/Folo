@@ -12,7 +12,7 @@ import { EntrySocialItem } from "./templates/EntrySocialItem"
 
 export const EntryListContentSocial = forwardRef<
   ElementRef<typeof TimelineSelectorList>,
-  { entryIds: string[]; active?: boolean }
+  { entryIds: string[] | null; active?: boolean }
 >(({ entryIds, active }, ref) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()

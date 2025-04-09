@@ -70,7 +70,7 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
           </ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
-              name: entry.read ? "circle.fill" : "circle",
+              name: entry.read ? "circle.fill" : "checkmark.circle",
             }}
           />
         </ContextMenu.Item>

@@ -22,12 +22,18 @@ export const getFeedSubscriptionByView = (view: FeedViewType): string[] => {
   return Array.from(state.feedIdByView[view])
 }
 
-export const getSubscriptionByCategory = (category: string): string[] => {
+export const getSubscriptionByCategory = ({
+  category,
+  view,
+}: {
+  category: string
+  view: FeedViewType
+}): string[] => {
   const state = get()
 
   const ids = [] as string[]
   for (const id of Object.keys(state.data)) {
-    if (state.data[id]!.category === category) {
+    if (state.data[id]!.category === category && state.data[id]!.view === view) {
       ids.push(id)
     }
   }

@@ -6,13 +6,12 @@ import { createContext, useCallback, useContext, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { views } from "@/src/constants/views"
+import { getFetchEntryPayload } from "@/src/store/entry/getter"
 import { usePrefetchEntries } from "@/src/store/entry/hooks"
-import type { FetchEntriesProps } from "@/src/store/entry/types"
 import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useInbox } from "@/src/store/inbox/hooks"
 import { useList } from "@/src/store/list/hooks"
-import { getSubscriptionByCategory } from "@/src/store/subscription/getter"
 import { useSubscription } from "@/src/store/subscription/hooks"
 // drawer open state
 
@@ -123,48 +122,6 @@ export function useSelectedView() {
   if (selectedFeed?.type === "feed") {
     return subscription?.view
   }
-}
-
-function getFetchEntryPayload(
-  selectedFeed: SelectedTimeline | SelectedFeed,
-  view: FeedViewType = FeedViewType.Articles,
-): FetchEntriesProps | null {
-  if (!selectedFeed) {
-    return null
-  }
-
-  let payload: FetchEntriesProps = {}
-  switch (selectedFeed.type) {
-    case "view": {
-      payload = { view: selectedFeed.viewId }
-      break
-    }
-    case "feed": {
-      payload = { feedId: selectedFeed.feedId }
-      break
-    }
-    case "category": {
-      payload = { feedId: getSubscriptionByCategory(selectedFeed.categoryName).join(",") }
-      break
-    }
-    case "list": {
-      payload = { listId: selectedFeed.listId }
-      break
-    }
-    case "inbox": {
-      payload = { inboxId: selectedFeed.inboxId }
-      break
-    }
-    // No default
-  }
-  const isCollection =
-    selectedFeed && selectedFeed.type === "feed" && selectedFeed?.feedId === FEED_COLLECTION_LIST
-  if (isCollection) {
-    payload.view = view
-    payload.isCollection = true
-  }
-
-  return payload
 }
 
 export function useSelectedFeed() {

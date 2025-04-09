@@ -15,12 +15,13 @@ import {
   useEntryIdsByListId,
 } from "@/src/store/entry/hooks"
 import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
+import { useFeed } from "@/src/store/feed/hooks"
 
 export const FeedScreen: NavigationControllerView<{
   feedId: string
-}> = ({ feedId }) => {
+}> = ({ feedId: feedIdentifier }) => {
   const insets = useSafeAreaInsets()
-  const feedIdentifier = feedId as string
+  const feed = useFeed(feedIdentifier)
 
   const isCollection = feedIdentifier === FEED_COLLECTION_LIST
   const view = useSelectedView() ?? FeedViewType.Articles
@@ -43,7 +44,7 @@ export const FeedScreen: NavigationControllerView<{
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "feed" }), [])}>
       <BottomTabBarHeightContext.Provider value={insets.bottom}>
-        <TimelineSelectorProvider feedId={feedId}>
+        <TimelineSelectorProvider feedId={feed?.id}>
           <EntryListSelector entryIds={entryIds} viewId={view} />
         </TimelineSelectorProvider>
       </BottomTabBarHeightContext.Provider>
@@ -51,6 +52,6 @@ export const FeedScreen: NavigationControllerView<{
   )
 }
 
-function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined>) {
+function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | null>) {
   return entryIds.find((ids) => ids?.length) ?? []
 }

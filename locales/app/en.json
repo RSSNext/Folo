@@ -220,6 +220,7 @@
   "mark_all_read_button.confirm": "Confirm",
   "mark_all_read_button.confirm_mark_all": "Mark <which /> as read?",
   "mark_all_read_button.confirm_mark_all_info": "Confirm mark all as read?",
+  "mark_all_read_button.done": "Marked",
   "mark_all_read_button.mark_all_as_read": "Mark all as read",
   "mark_all_read_button.mark_as_read": "Mark <which /> as read",
   "mark_all_read_button.undo": "Undo",

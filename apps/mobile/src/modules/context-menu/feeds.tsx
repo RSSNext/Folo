@@ -55,7 +55,7 @@ export const SubscriptionFeedItemContextMenu: FC<
           <ContextMenu.ItemTitle>{t("operation.mark_all_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
-              name: "checklist.checked",
+              name: "checkmark.circle",
             }}
           />
         </ContextMenu.Item>
@@ -225,7 +225,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
           <ContextMenu.ItemTitle>{t("operation.mark_all_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
-              name: "checklist.checked",
+              name: "checkmark.circle",
             }}
           />
         </ContextMenu.Item>
@@ -286,7 +286,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
     <View className="bg-system-background size-full flex-1">
       <FlatList
         scrollEnabled={false}
-        data={useMemo(() => entryIds.slice(0, 5), [entryIds])}
+        data={useMemo(() => entryIds?.slice(0, 5), [entryIds])}
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSeparator}
       />

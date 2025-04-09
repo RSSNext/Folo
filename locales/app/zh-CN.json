@@ -141,7 +141,7 @@
   "entry_list_header.daily_report": "每日总结",
   "entry_list_header.grid": "网格布局",
   "entry_list_header.items": "内容",
-  "entry_list_header.masonry": "砌体布局",
+  "entry_list_header.masonry": "瀑布流布局",
   "entry_list_header.masonry_column": "布局列数",
   "entry_list_header.new_entries_available": "有新内容",
   "entry_list_header.preview_mode": "预览模式",

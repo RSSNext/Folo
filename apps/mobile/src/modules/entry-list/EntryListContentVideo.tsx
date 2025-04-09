@@ -13,7 +13,7 @@ import { EntryVideoItem } from "./templates/EntryVideoItem"
 
 export const EntryListContentVideo = forwardRef<
   ElementRef<typeof TimelineSelectorMasonryList>,
-  { entryIds: string[]; active?: boolean } & Omit<
+  { entryIds: string[] | null; active?: boolean } & Omit<
     MasonryFlashListProps<string>,
     "data" | "renderItem"
   >

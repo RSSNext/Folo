@@ -15,7 +15,7 @@ import { EntryPictureItem } from "./templates/EntryPictureItem"
 
 export const EntryListContentPicture = forwardRef<
   ElementRef<typeof TimelineSelectorMasonryList>,
-  { entryIds: string[]; active?: boolean } & Omit<
+  { entryIds: string[] | null; active?: boolean } & Omit<
     MasonryFlashListProps<string>,
     "data" | "renderItem"
   >

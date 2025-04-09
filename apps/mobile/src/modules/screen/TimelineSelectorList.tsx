@@ -1,4 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { nextFrame } from "@follow/utils"
 import type {
   FlashListProps,
   MasonryFlashListProps,
@@ -113,6 +114,11 @@ export const TimelineSelectorList = forwardRef<
       }}
       {...props}
       onScroll={onScroll}
+      onEndReached={() => {
+        nextFrame(() => {
+          props.onEndReached?.()
+        })
+      }}
     />
   )
 })

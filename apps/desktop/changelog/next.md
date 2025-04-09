@@ -11,3 +11,4 @@
 ## Bug Fixes
 
 - Incorrect translation result and format (55524b) (#3421)
+- No entry list header for inbox

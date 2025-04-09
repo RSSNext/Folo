@@ -1,17 +1,12 @@
-import { useViewport } from "@follow/components/hooks/useViewport.js"
-import { ActionButton, Button, IconButton } from "@follow/components/ui/button/index.js"
+import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
-import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useCountdown } from "@follow/hooks"
-import { ELECTRON_BUILD } from "@follow/shared/constants"
-import { cn, getOS } from "@follow/utils/utils"
-import { AnimatePresence, m } from "framer-motion"
+import { cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
-import { forwardRef, Fragment, useState } from "react"
+import { forwardRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useOnClickOutside } from "usehooks-ts"
 
 import { HotKeyScopeMap } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
@@ -26,63 +21,49 @@ interface MarkAllButtonProps {
   shortcut?: boolean
 }
 
-export const MarkAllReadWithOverlay = forwardRef<
-  HTMLButtonElement,
-  MarkAllButtonProps & {
-    containerRef: React.RefObject<HTMLDivElement>
-  }
->(({ className, which = "all", shortcut, containerRef }, ref) => {
-  const { t } = useTranslation()
-  const { t: commonT } = useTranslation("common")
+export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProps>(
+  ({ className, which = "all", shortcut }, ref) => {
+    const { t } = useTranslation()
+    const { t: commonT } = useTranslation("common")
 
-  const [show, setShow] = useState(false)
+    const handleMarkAllAsRead = useMarkAllByRoute()
 
-  const handleMarkAllAsRead = useMarkAllByRoute()
-
-  const [popoverRef, setPopoverRef] = useState<HTMLDivElement | null>(null)
-  useOnClickOutside({ current: popoverRef }, () => {
-    setShow(false)
-  })
-
-  useHotkeys(
-    shortcuts.entries.markAllAsRead.key,
-    () => {
-      setShow(false)
-
-      let cancel = false
-      const undo = () => {
-        toast.dismiss(id)
-        if (cancel) return
-        cancel = true
-      }
-      const id = toast("", {
-        description: <ConfirmMarkAllReadInfo undo={undo} />,
-        duration: 3000,
-        onAutoClose() {
+    useHotkeys(
+      shortcuts.entries.markAllAsRead.key,
+      () => {
+        let cancel = false
+        const undo = () => {
+          toast.dismiss(id)
           if (cancel) return
-          handleMarkAllAsRead()
-        },
-        action: {
-          label: (
-            <span className="flex items-center gap-1">
-              {t("mark_all_read_button.undo")}
-              <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
-                Meta+Z
-              </Kbd>
-            </span>
-          ),
-          onClick: undo,
-        },
-      })
-    },
-    {
-      preventDefault: true,
-      scopes: HotKeyScopeMap.Home,
-    },
-  )
+          cancel = true
+        }
+        const id = toast("", {
+          description: <ConfirmMarkAllReadInfo undo={undo} />,
+          duration: 3000,
+          onAutoClose() {
+            if (cancel) return
+            handleMarkAllAsRead()
+          },
+          action: {
+            label: (
+              <span className="flex items-center gap-1">
+                {t("mark_all_read_button.undo")}
+                <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
+                  Meta+Z
+                </Kbd>
+              </span>
+            ),
+            onClick: undo,
+          },
+        })
+      },
+      {
+        preventDefault: true,
+        scopes: HotKeyScopeMap.Home,
+      },
+    )
 
-  return (
-    <Fragment>
+    return (
       <ActionButton
         tooltip={
           <>
@@ -104,88 +85,14 @@ export const MarkAllReadWithOverlay = forwardRef<
         className={className}
         ref={ref}
         onClick={() => {
-          setShow(true)
+          handleMarkAllAsRead()
         }}
       >
         <i className="i-mgc-check-circle-cute-re" />
       </ActionButton>
-
-      <AnimatePresence>
-        {show && (
-          <Popup
-            which={which}
-            containerRef={containerRef}
-            setPopoverRef={setPopoverRef}
-            setShow={setShow}
-            handleMarkAllAsRead={handleMarkAllAsRead}
-          />
-        )}
-      </AnimatePresence>
-    </Fragment>
-  )
-})
-
-const Popup = ({ which, containerRef, setPopoverRef, setShow, handleMarkAllAsRead }) => {
-  const { t } = useTranslation()
-  const { t: commonT } = useTranslation("common")
-  const $parent = containerRef.current!
-  const rect = $parent.getBoundingClientRect()
-  const paddingLeft = $parent.offsetLeft
-
-  // change popup's width when viewport changes.
-  useViewport((v) => v.w)
-
-  // electron window has pt-[calc(var(--fo-window-padding-top)_-10px)]
-  const isElectronWindows = ELECTRON_BUILD && getOS() === "Windows"
-  return (
-    <RootPortal to={$parent}>
-      <m.div
-        ref={setPopoverRef}
-        initial={{
-          transform: `translateY(${isElectronWindows ? "-95px" : "-70px"})`,
-        }}
-        animate={{
-          transform: `translateY(${isElectronWindows ? "-10px" : "0px"})`,
-        }}
-        exit={{
-          transform: `translateY(${isElectronWindows ? "-95px" : "-70px"})`,
-        }}
-        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-        className="shadow-modal bg-background lg:bg-theme-modal-background-opaque absolute z-50 shadow"
-        style={{
-          left: -paddingLeft,
-          top: rect.top,
-          width: rect.width,
-        }}
-      >
-        <div className="flex w-full translate-x-[-2px] items-center justify-between gap-3 !py-3 pl-6 pr-3 [&_button]:text-xs">
-          <span className="center gap-[calc(0.5rem+2px)]">
-            <i className="i-mgc-check-circle-cute-re" />
-            <span className="text-sm font-bold">
-              <Trans
-                i18nKey="mark_all_read_button.confirm_mark_all"
-                components={{
-                  which: <>{commonT(`words.which.${which}` as any)}</>,
-                }}
-              />
-            </span>
-          </span>
-          <div className="space-x-4">
-            <IconButton
-              icon={<i className="i-mgc-check-filled" />}
-              onClick={() => {
-                handleMarkAllAsRead()
-                setShow(false)
-              }}
-            >
-              {t("words.confirm")}
-            </IconButton>
-          </div>
-        </div>
-      </m.div>
-    </RootPortal>
-  )
-}
+    )
+  },
+)
 
 const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const { t } = useTranslation()
@@ -235,47 +142,26 @@ export const FlatMarkAllReadButton: FC<
 
         className,
       )}
-      onMouseLeave={() => {
-        if (status === "confirm") {
-          setStatus("initial")
-        }
-      }}
       onClick={() => {
-        if (status === "confirm") {
-          handleMarkAll()
-            .then(() => setStatus("done"))
-            .catch(() => setStatus("initial"))
-          return
-        }
-
-        setStatus("confirm")
+        handleMarkAll()
+          .then(() => setStatus("done"))
+          .catch(() => setStatus("initial"))
       }}
     >
-      <AnimatePresence mode="wait">
-        {status === "confirm" ? (
-          <m.i key={1} {...animate} className={cn("i-mgc-question-cute-re", iconClassName)} />
+      <i key={2} {...animate} className={cn("i-mgc-check-circle-cute-re", iconClassName)} />
+      <span className="duration-200">
+        {status === "done" ? (
+          t("mark_all_read_button.done")
         ) : (
-          <m.i key={2} {...animate} className={cn("i-mgc-check-circle-cute-re", iconClassName)} />
+          <Trans
+            i18nKey="mark_all_read_button.mark_as_read"
+            components={{
+              which: (
+                <>{typeof which === "string" ? t.common(`words.which.${which}` as any) : which}</>
+              ),
+            }}
+          />
         )}
-      </AnimatePresence>
-      <span className={cn(status === "confirm" ? "opacity-0" : "opacity-100", "duration-200")}>
-        <Trans
-          i18nKey="mark_all_read_button.mark_as_read"
-          components={{
-            which: (
-              <>{typeof which === "string" ? t.common(`words.which.${which}` as any) : which}</>
-            ),
-          }}
-        />
-      </span>
-      <span
-        className={cn(
-          "center absolute inset-y-0 left-5 right-0 flex",
-          status === "confirm" ? "opacity-100" : "opacity-0",
-          "duration-200",
-        )}
-      >
-        {t("mark_all_read_button.confirm")}
       </span>
     </Button>
   )
