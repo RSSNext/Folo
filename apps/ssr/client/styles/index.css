@@ -30,3 +30,19 @@ button {
 [data-theme="dark"] {
   --bg-opacity: rgba(29, 29, 31, 0.72);
 }
+
+/* fix ReCAPTCHA layout */
+div[style*="z-index: 2000000000"] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.g-recaptcha-bubble-arrow {
+  display: none !important;
+}
+
+div[style*="z-index: 2000000000"] > div[style*="opacity"] {
+  cursor: pointer !important;
+}
