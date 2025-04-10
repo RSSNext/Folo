@@ -32,17 +32,25 @@ button {
 }
 
 /* fix ReCAPTCHA layout */
-div[style*="z-index: 2000000000"] {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-}
-
 .g-recaptcha-bubble-arrow {
   display: none !important;
 }
 
+div[style*="z-index: 2000000000"] {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 div[style*="z-index: 2000000000"] > div[style*="opacity"] {
-  cursor: pointer !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  -webkit-transform: none !important;
 }
