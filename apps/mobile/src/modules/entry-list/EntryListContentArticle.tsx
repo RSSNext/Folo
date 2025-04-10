@@ -4,6 +4,7 @@ import { forwardRef, useCallback, useMemo } from "react"
 import { View } from "react-native"
 
 import { usePlayingUrl } from "@/src/lib/player"
+import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -33,9 +34,11 @@ export const EntryListContentArticle = forwardRef<
     [hasNextPage],
   )
 
-  const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
+  const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
+
+  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
 
   return (
     <TimelineSelectorList

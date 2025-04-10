@@ -123,10 +123,11 @@ const HeaderRightActionsImpl = ({
   }
 
   const toggleAITranslation = () => {
-    translationSyncService.generateTranslation(
+    translationSyncService.generateTranslation({
       entryId,
-      getGeneralSettings().actionLanguage as SupportedLanguages,
-    )
+      language: getGeneralSettings().actionLanguage as SupportedLanguages,
+      withContent: true,
+    })
     setShowTranslation((prev) => !prev)
   }
 

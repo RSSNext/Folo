@@ -3,6 +3,8 @@ import type { ElementRef } from "react"
 import { forwardRef, useCallback, useMemo } from "react"
 import { View } from "react-native"
 
+import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
@@ -27,9 +29,11 @@ export const EntryListContentSocial = forwardRef<
     [hasNextPage],
   )
 
-  const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
+  const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
+
+  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
 
   return (
     <TimelineSelectorList

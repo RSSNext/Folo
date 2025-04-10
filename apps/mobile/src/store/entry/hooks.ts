@@ -43,6 +43,23 @@ export function useEntry(
   })
 }
 
+export function useEntryList(ids: string[]): EntryModel[] | undefined
+export function useEntryList<T>(ids: string[], selector: (state: EntryModel) => T): T[] | undefined
+export function useEntryList(
+  ids: string[],
+  selector: (state: EntryModel) => EntryModel = defaultSelector,
+) {
+  return useEntryStore((state) => {
+    return ids
+      .map((id) => {
+        const entry = state.data[id]
+        if (!entry) return null
+        return selector(entry)
+      })
+      .filter((entry) => entry !== null)
+  })
+}
+
 function sortEntryIdsByPublishDate(a: string, b: string) {
   const entryA = getEntry(a)
   const entryB = getEntry(b)
