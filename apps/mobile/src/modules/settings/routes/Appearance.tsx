@@ -14,6 +14,8 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
+import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
+import { getAllUnreadCount } from "@/src/store/unread/getter"
 
 export const AppearanceScreen = () => {
   const { t } = useTranslation("settings")
@@ -47,6 +49,7 @@ export const AppearanceScreen = () => {
             value={showUnreadCountBadgeMobile}
             onValueChange={(val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
+              setBadgeCountAsyncWithPermission(val ? getAllUnreadCount() : 0, true)
             }}
           />
         </GroupedInsetListCell>
