@@ -53,7 +53,7 @@ const NormalList: FC<{
     <>
       {entries?.map((entry) => (
         <a className="relative" href={entry.url || void 0} target="_blank" key={entry.id}>
-          <div className="hover:bg-theme-item-hover rounded-xl pl-3 duration-300">
+          <div className="rounded-xl pl-3 duration-300">
             <NormalListItem
               withDetails
               entryId={entry.id}

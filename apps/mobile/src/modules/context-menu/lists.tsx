@@ -32,7 +32,7 @@ export const SubscriptionListItemContextMenu: FC<
         onSelect: () => {
           const list = getList(id)
           if (!list) return
-          toast.info("Link copied to clipboard")
+          toast.success("Link copied to clipboard")
           Clipboard.setString(`${env.VITE_WEB_URL}/share/lists/${list.id}`)
         },
       },

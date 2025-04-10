@@ -81,14 +81,14 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
             onSelect={() => {
               if (isEntryStarred) {
                 collectionSyncService.unstarEntry(id)
-                toast.info("Unstarred")
+                toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
                   feedId,
                   entryId: id,
                   view,
                 })
-                toast.info("Starred")
+                toast.success("Starred")
               }
             }}
           >

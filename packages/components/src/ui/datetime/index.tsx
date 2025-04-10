@@ -46,15 +46,17 @@ export const RelativeTime: FC<{
   dateFormatTemplate?: string
 }> = (props) => {
   const { displayAbsoluteTimeAfterDay = 29, dateFormatTemplate = formatTemplateString } = props
+  const nextDateFormatTemplate =
+    dateFormatTemplate === "default" ? formatTemplateString : dateFormatTemplate
   const [relative, setRelative] = useState<string>(() =>
-    formatTime(props.date, displayAbsoluteTimeAfterDay, dateFormatTemplate),
+    formatTime(props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate),
   )
 
   const timerRef = useRef<any>(null)
 
   useEffect(() => {
     const updateRelativeTime = () => {
-      setRelative(formatTime(props.date, displayAbsoluteTimeAfterDay, dateFormatTemplate))
+      setRelative(formatTime(props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate))
       const updateInterval = getUpdateInterval(props.date, displayAbsoluteTimeAfterDay)
 
       if (updateInterval !== null) {
@@ -67,8 +69,8 @@ export const RelativeTime: FC<{
     return () => {
       clearTimeout(timerRef.current)
     }
-  }, [props.date, displayAbsoluteTimeAfterDay, dateFormatTemplate])
-  const formated = dayjs(props.date).format(dateFormatTemplate)
+  }, [props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate])
+  const formated = dayjs(props.date).format(nextDateFormatTemplate)
 
   const { t } = useTranslation("common")
   if (formated === relative) {

@@ -77,7 +77,7 @@ export const InvitationsScreen: NavigationControllerView = () => {
           <GroupedInformationCell
             title={t("titles.invitations")}
             icon={<LoveCuteFiIcon height={40} width={40} color="#fff" />}
-            iconBackgroundColor={"#F9A8D4"}
+            iconBackgroundColor={"#EC4899"}
           >
             <Trans
               ns="settings"

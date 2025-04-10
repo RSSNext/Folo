@@ -106,12 +106,15 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
         onPress={handlePress}
       >
         <ReAnimated.View
-          className="bg-red absolute left-2 top-[43] size-2 rounded-full"
+          className={cn(
+            "bg-red absolute left-2 size-2 rounded-full",
+            view === FeedViewType.Notifications ? "top-[35]" : "top-[43]",
+          )}
           style={unreadIndicatorStyle}
         />
 
-        <View className="flex-1 space-y-2">
-          <View className="mb-1 flex-1 flex-row items-center gap-1.5 pr-2">
+        <View className="flex-1 space-y-2 self-start">
+          <View className="mb-1 flex-row items-center gap-1.5 pr-2">
             <FeedIcon fallback feed={feed} size={view === FeedViewType.Notifications ? 14 : 16} />
             <Text numberOfLines={1} className="text-secondary-label shrink text-sm font-medium">
               {feed?.title || from || "Unknown feed"}

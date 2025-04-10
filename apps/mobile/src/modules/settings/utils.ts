@@ -86,7 +86,7 @@ export const importOpml = async () => {
     })
 
     const { successfulItems, conflictItems, parsedErrorItems } = data
-    toast.info(
+    toast.success(
       `Import successful, ${successfulItems.length} feeds were imported, ${conflictItems.length} feeds were already subscribed, and ${parsedErrorItems.length} feeds failed to import.`,
     )
   } catch (error) {

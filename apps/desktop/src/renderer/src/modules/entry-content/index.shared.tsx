@@ -1,6 +1,5 @@
 import { getViewport } from "@follow/components/hooks/useViewport.js"
 import { CircleProgress } from "@follow/components/icons/Progress.js"
-import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Button, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
@@ -14,27 +13,22 @@ import type { FC } from "react"
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useShowAISummary } from "~/atoms/ai-summary"
 import {
   ReadabilityStatus,
   setReadabilityStatus,
   useEntryInReadabilityStatus,
   useEntryReadabilityContent,
 } from "~/atoms/readability"
-import { useActionLanguage } from "~/atoms/settings/general"
 import { enableShowSourceContent } from "~/atoms/source-content"
-import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useEntryReadabilityToggle } from "~/hooks/biz/useEntryActions"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
-import { Queries } from "~/queries"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -314,48 +308,3 @@ const BackTopIndicator: Component = memo(({ className }) => {
     </span>
   )
 })
-
-export function AISummary({ entryId }: { entryId: string }) {
-  const { t } = useTranslation()
-  const entry = useEntry(entryId)
-  const showAISummary = useShowAISummary(entry)
-  const actionLanguage = useActionLanguage()
-  const summary = useAuthQuery(
-    Queries.ai.summary({
-      entryId,
-      language: actionLanguage,
-    }),
-    {
-      enabled: showAISummary,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
-
-  if (!showAISummary || (!summary.isLoading && !summary.data)) {
-    return null
-  }
-
-  return (
-    <div className="group my-8 space-y-1 rounded-lg border px-4 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-medium text-zinc-800 dark:text-neutral-400">
-          <i className="i-mgc-magic-2-cute-re align-middle" />
-          <span>{t("entry_content.ai_summary")}</span>
-        </div>
-        {summary.data && (
-          <CopyButton
-            value={summary.data}
-            className="sm:opacity-0 sm:duration-200 sm:group-hover:opacity-100"
-          />
-        )}
-      </div>
-      <AutoResizeHeight spring className="text-sm leading-relaxed">
-        {summary.isLoading ? SummaryLoadingSkeleton : summary.data}
-      </AutoResizeHeight>
-    </div>
-  )
-}

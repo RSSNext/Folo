@@ -1,10 +1,10 @@
-import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
-import dayjs from "dayjs"
+import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry, useEntryReadHistory } from "~/store/entry"
@@ -53,12 +53,6 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
   const dateFormat = useUISettingKey("dateFormat")
 
-  const dateRender = useMemo(() => {
-    if (!entry?.entries.publishedAt) return null
-    if (dateFormat === "default") return new Date(entry.entries.publishedAt).toLocaleString()
-    return dayjs(entry.entries.publishedAt).format(dateFormat)
-  }, [dateFormat, entry?.entries.publishedAt])
-
   const audioAttachment = useMemo(() => {
     return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
   }, [entry?.entries?.attachments])
@@ -76,6 +70,8 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     return formatEstimatedMins(Math.floor(durationInSeconds / 60))
   }, [audioAttachment])
 
+  const navigateEntry = useNavigateEntry()
+
   if (!entry) return null
 
   return compact ? (
@@ -91,49 +87,66 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       </div>
     </div>
   ) : (
-    <a
-      href={populatedFullHref || void 0}
-      target="_blank"
-      draggable="false"
-      className="cursor-button hover:bg-theme-item-hover focus-visible:bg-theme-item-hover @sm:-mx-3 @sm:p-3 block min-w-0 rounded-lg transition-colors focus-visible:!outline-none lg:-mx-6 lg:p-6"
-      rel="noreferrer"
-      onClick={(e) => {
-        if (window.getSelection()?.toString()) {
-          e.preventDefault()
-        }
-      }}
-    >
-      <div className={cn("select-text break-words font-bold", compact ? "text-2xl" : "text-3xl")}>
-        <EntryTranslation
-          source={entry.entries.title}
-          target={translation.data?.title}
-          className="select-text hyphens-auto"
-        />
-      </div>
-      <div className="mt-2 text-[13px] font-medium text-zinc-500">
-        {getPreferredTitle(feed || inbox, entry.entries)}
-      </div>
-      <div className="flex select-none items-center gap-2 text-[13px] text-zinc-500">
-        {dateRender}
+    <div className="group relative block min-w-0 rounded-lg">
+      <div className="flex flex-col gap-3">
+        <div>
+          <a
+            href={populatedFullHref ?? "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-link select-text break-words text-[1.7rem] font-bold leading-normal hover:opacity-80"
+          >
+            <EntryTranslation
+              source={entry.entries.title}
+              target={translation.data?.title}
+              className="inline-block select-text hyphens-auto duration-200"
+            />
+          </a>
+        </div>
 
-        {estimatedMins && (
-          <div className="flex items-center gap-1">
-            <i className="i-mgc-time-cute-re" />
-            <span>{estimatedMins}</span>
+        {/* Meta Information with improved layout */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+          <div className="flex flex-wrap items-center gap-4 text-gray-500 dark:text-gray-400">
+            <div
+              className="flex items-center text-xs font-medium text-zinc-800/90 duration-200 hover:text-zinc-900 dark:text-zinc-300/90 dark:hover:text-zinc-100"
+              onClick={() =>
+                navigateEntry({
+                  feedId: feed?.id,
+                })
+              }
+            >
+              <FeedIcon fallback feed={feed || inbox} entry={entry.entries} size={16} />
+              {getPreferredTitle(feed || inbox, entry.entries)}
+            </div>
+            <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+              <i className="i-mgc-calendar-time-add-cute-re text-base" />
+              <span className="text-xs tabular-nums">
+                <RelativeTime date={entry.entries.publishedAt} dateFormatTemplate={dateFormat} />
+              </span>
+            </div>
+
+            {estimatedMins && (
+              <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+                <i className="i-mgc-time-cute-re text-base" />
+                <span className="text-xs tabular-nums">{estimatedMins}</span>
+              </div>
+            )}
+
+            {(() => {
+              const readCount =
+                (entryHistory?.readCount ?? 0) +
+                (entryHistory?.userIds?.every((id) => id !== user?.id) ? 1 : 0)
+
+              return readCount > 0 ? (
+                <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+                  <i className="i-mgc-eye-2-cute-re text-base" />
+                  <span className="text-xs tabular-nums">{readCount.toLocaleString()}</span>
+                </div>
+              ) : null
+            })()}
           </div>
-        )}
-
-        <div className="flex items-center gap-1">
-          <i className="i-mgc-eye-2-cute-re" />
-          <span>
-            {(
-              (entryHistory?.readCount ?? 0) +
-              (entryHistory?.userIds?.every((id) => id !== user?.id) ? 1 : 0)
-            ) // if no me, +1
-              .toLocaleString()}
-          </span>
         </div>
       </div>
-    </a>
+    </div>
   )
 }

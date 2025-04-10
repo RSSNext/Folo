@@ -19,6 +19,7 @@ import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 import { useUnreadCountByView } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
+import { UnreadCount } from "../subscription/items/UnreadCount"
 import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMenu"
 
 const ACTIVE_WIDTH = 180
@@ -164,9 +165,13 @@ function ViewItem({
               >
                 {t(view.name)}
               </Animated.Text>
-              {!!unreadCount && (
-                <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />
-              )}
+              <UnreadCount
+                max={99}
+                unread={unreadCount}
+                exiting={FadeOut}
+                dotClassName="size-1.5 rounded-full bg-white"
+                textClassName="text-white font-bold"
+              />
             </>
           ) : (
             !!unreadCount &&

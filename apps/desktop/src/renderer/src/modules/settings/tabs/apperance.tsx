@@ -71,16 +71,16 @@ export const SettingAppearance = () => {
 
           {
             type: "title",
-            value: t("appearance.unread_count"),
+            value: t("appearance.unread_count.label"),
           },
 
           defineItem("showDockBadge", {
-            label: t("appearance.show_dock_badge.label"),
+            label: t("appearance.unread_count.badge.label"),
             hide: !IN_ELECTRON || !["macOS", "Linux"].includes(getOS()) || isMobile,
           }),
 
           defineItem("sidebarShowUnreadCount", {
-            label: t("appearance.sidebar_show_unread_count.label"),
+            label: t("appearance.unread_count.view_and_subscription.label"),
           }),
 
           {

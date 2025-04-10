@@ -15,6 +15,7 @@ import { useListUnreadCount } from "@/src/store/unread/hooks"
 
 import { SubscriptionListItemContextMenu } from "../../context-menu/lists"
 import { getHorizontalScrolling, selectFeed } from "../../screen/atoms"
+import { ItemSeparator } from "../ItemSeparator"
 import type { SubscriptionItemBaseProps } from "./types"
 import { UnreadCount } from "./UnreadCount"
 
@@ -72,6 +73,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
           <UnreadCount unread={unreadCount} className="ml-auto" />
         </ItemPressable>
       </SubscriptionListItemContextMenu>
+      {!isLast && <ItemSeparator />}
     </Animated.View>
   )
 })

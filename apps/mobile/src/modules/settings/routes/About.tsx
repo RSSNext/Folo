@@ -21,9 +21,9 @@ import { SocialXCuteReIcon } from "@/src/icons/social_x_cute_re"
 
 const links = [
   {
-    title: "Github",
+    title: "GitHub",
     icon: GithubCuteFiIcon,
-    url: "https://github.com/RSSNext/follow",
+    url: "https://github.com/RSSNext/Folo",
     iconBackgroundColor: "#000000",
     iconColor: "#FFFFFF",
   },

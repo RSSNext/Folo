@@ -5,7 +5,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   appLaunchOnStartup: false,
   language: "en",
   translation: false,
-  summary: false,
+  summary: true,
   actionLanguage: "default",
 
   // mobile app
@@ -84,7 +84,8 @@ export const defaultUISettings: UISettings = {
     more: [],
   },
 
-  subscriptionShowUnreadCount: true,
+  showUnreadCountViewAndSubscriptionMobile: false,
+  showUnreadCountBadgeMobile: false,
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {

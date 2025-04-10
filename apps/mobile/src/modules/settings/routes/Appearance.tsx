@@ -14,10 +14,15 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
+import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
+import { getAllUnreadCount } from "@/src/store/unread/getter"
 
 export const AppearanceScreen = () => {
   const { t } = useTranslation("settings")
-  const showUnreadCount = useUISettingKey("subscriptionShowUnreadCount")
+  const showUnreadCountViewAndSubscriptionMobile = useUISettingKey(
+    "showUnreadCountViewAndSubscriptionMobile",
+  )
+  const showUnreadCountBadgeMobile = useUISettingKey("showUnreadCountBadgeMobile")
   const hideExtraBadge = useUISettingKey("hideExtraBadge")
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
@@ -33,21 +38,34 @@ export const AppearanceScreen = () => {
       className="bg-system-grouped-background"
       Header={<NavigationBlurEffectHeaderView title={t("appearance.title")} />}
     >
-      <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} marginSize="small" />
+      <GroupedInsetListSectionHeader
+        label={t("appearance.unread_count.label")}
+        marginSize="small"
+      />
       <GroupedInsetListCard>
-        <GroupedInsetListCell
-          label={t("appearance.show_unread_count.label")}
-          description={t("appearance.show_unread_count.description")}
-        >
+        <GroupedInsetListCell label={t("appearance.unread_count.badge.label")}>
           <Switch
             size="sm"
-            value={showUnreadCount}
+            value={showUnreadCountBadgeMobile}
             onValueChange={(val) => {
-              setUISetting("subscriptionShowUnreadCount", val)
+              setUISetting("showUnreadCountBadgeMobile", val)
+              setBadgeCountAsyncWithPermission(val ? getAllUnreadCount() : 0, true)
             }}
           />
         </GroupedInsetListCell>
+        <GroupedInsetListCell label={t("appearance.unread_count.view_and_subscription.label")}>
+          <Switch
+            size="sm"
+            value={showUnreadCountViewAndSubscriptionMobile}
+            onValueChange={(val) => {
+              setUISetting("showUnreadCountViewAndSubscriptionMobile", val)
+            }}
+          />
+        </GroupedInsetListCell>
+      </GroupedInsetListCard>
 
+      <GroupedInsetListSectionHeader label={t("appearance.subscriptions")} marginSize="small" />
+      <GroupedInsetListCard>
         <GroupedInsetListCell
           label={t("appearance.hide_extra_badge.label")}
           description={t("appearance.hide_extra_badge.description")}

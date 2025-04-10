@@ -19,6 +19,7 @@ import type { FC } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
+import { useGeneralSettingSelector } from "~/atoms/settings/general"
 import { Collapse } from "~/components/ui/collapse"
 import { RelativeTime } from "~/components/ui/datetime"
 import {
@@ -79,6 +80,15 @@ export const DailyReportTitle = ({
   endDate: number
 }) => {
   const { t } = useTranslation()
+  const language = useGeneralSettingSelector((s) => s.language)
+  const locale = useMemo(() => {
+    try {
+      return new Intl.Locale(language)
+    } catch {
+      return new Intl.Locale("en-US")
+    }
+  }, [language])
+
   return (
     <m.div
       className="flex items-center justify-center gap-2 text-base"
@@ -99,7 +109,7 @@ export const DailyReportTitle = ({
                   components={{
                     From: (
                       <span>
-                        {new Date(startDate).toLocaleTimeString("en-US", {
+                        {new Date(startDate).toLocaleTimeString(locale, {
                           weekday: "short",
                           hour: "numeric",
                           minute: "numeric",
@@ -108,7 +118,7 @@ export const DailyReportTitle = ({
                     ),
                     To: (
                       <span>
-                        {new Date(endDate + 1).toLocaleTimeString("en-US", {
+                        {new Date(endDate + 1).toLocaleTimeString(locale, {
                           weekday: "short",
                           hour: "numeric",
                           minute: "numeric",

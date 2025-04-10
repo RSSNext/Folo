@@ -21,7 +21,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
 
   const hideRecentReader = useUISettingKey("hideRecentReader")
 
-  const shouldShowMeta = (hideRecentReader || !isAtTop) && !!entryTitleMeta?.title
+  const shouldShowMeta = !isAtTop && !!entryTitleMeta?.title
 
   if (!entry?.entries) return null
 
@@ -30,7 +30,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
       data-hide-in-print
       className={cn(
         "zen-mode-macos:ml-margin-macos-traffic-light-x relative flex min-w-0 items-center justify-between gap-3 overflow-hidden text-lg text-zinc-500 duration-200",
-        shouldShowMeta && "border-border",
+        shouldShowMeta && "border-border border-b",
         className,
       )}
     >

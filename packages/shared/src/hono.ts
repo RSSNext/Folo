@@ -15088,6 +15088,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     docs?: string | undefined;
                     isSubscribed?: boolean | undefined;
                     subscriptionCount?: number | undefined;
+                    updatesPerWeek?: number | undefined;
                 }[];
             };
             outputFormat: "json";

@@ -71,7 +71,7 @@ public class HelperModule: Module {
                     }
                     guard let image = imageView.image else { return }
                     UIImageWriteToSavedPhotosAlbum(image, self, #selector(HelperModule.image), nil)
-                    SPIndicator.present(title: "Saved to photos", preset: .done, haptic: .success)
+                    Toast.show(options: .init(type: .success, title: "Saved to photos"))
                 }
             }
         }
@@ -132,7 +132,8 @@ public class HelperModule: Module {
                     guard let image = imageView.image else { return }
                     guard let imageData = image.pngData() else { return }
                     UIPasteboard.general.setData(imageData, forPasteboardType: "public.png")
-                    SPIndicator.present(title: "Image copied to clipboard", preset: .done, haptic: .success)
+
+                    Toast.show(options: .init(type: .success, title: "Image copied to clipboard"))
                 }
             }
         }
@@ -150,9 +151,9 @@ public class HelperModule: Module {
         _ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer?
     ) {
         if let error = error {
-            SPIndicator.present(title: "Save image failed", preset: .error, haptic: .error)
+            Toast.show(options: .init(type: .error, title: "Save image failed"))
         } else {
-            SPIndicator.present(title: "Save image success", preset: .done, haptic: .success)
+            Toast.show(options: .init(type: .success, title: "Saved to photos"))
         }
     }
 

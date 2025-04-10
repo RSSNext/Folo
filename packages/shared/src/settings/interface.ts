@@ -70,7 +70,8 @@ export interface UISettings {
   }
 
   // @mobile
-  subscriptionShowUnreadCount: boolean
+  showUnreadCountViewAndSubscriptionMobile: boolean
+  showUnreadCountBadgeMobile: boolean
 }
 
 export interface IntegrationSettings {

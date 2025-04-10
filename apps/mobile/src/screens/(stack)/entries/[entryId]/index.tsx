@@ -18,7 +18,7 @@ import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
 import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation } from "@/src/store/translation/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
@@ -28,6 +28,7 @@ export const EntryDetailScreen: NavigationControllerView<{
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
   usePrefetchEntryDetail(entryId)
+  usePrefetchEntryTranslation([entryId], true)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)

@@ -3,6 +3,7 @@
   "operation.copy_link": "Kopioi linkki",
   "operation.delete_category": "Poista kategoria",
   "operation.edit": "Muokkaa",
+  "operation.error_since": "Virhe alkaen",
   "operation.mark_all_as_read": "Merkitse kaikki luetuiksi",
   "operation.mark_all_as_read_confirm": "Vahvista kaikki merkinnät luetuiksi?",
   "operation.mark_all_as_read_which": "Merkitäänkö {{which}} luetuksi",

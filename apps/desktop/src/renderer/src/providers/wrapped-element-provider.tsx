@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { cn } from "@follow/utils/utils"
 import { createContextState } from "foxact/create-context-state"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
@@ -112,6 +113,7 @@ const BoundingDetection: Component<{
   const endSetter = useSetIsEOfElement()
   const startSetter = useSetIsSOfElement()
   const ref = useRef<HTMLDivElement>(null)
+  const $scrollArea = useScrollViewElement()
   useEffect(() => {
     if (!ref.current) return
     const $el = ref.current
@@ -124,6 +126,7 @@ const BoundingDetection: Component<{
       },
       {
         rootMargin: "0px 0px 0px 0px",
+        root: $scrollArea,
       },
     )
 
@@ -132,7 +135,7 @@ const BoundingDetection: Component<{
       observer.unobserve($el)
       observer.disconnect()
     }
-  }, [])
+  }, [$scrollArea, bounding, endSetter, startSetter])
 
   return <div ref={ref} />
 }

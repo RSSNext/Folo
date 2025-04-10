@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
+import { getUISettings } from "../atoms/settings/ui"
 import { toast } from "./toast"
 
 export async function requestNotificationPermission() {
@@ -26,10 +27,24 @@ export async function requestNotificationPermission() {
   return true
 }
 
-export async function setBadgeCountAsyncWithPermission(badgeCount: number) {
+export async function setBadgeCountAsyncWithPermission(
+  badgeCount: number,
+  skipSettingCheck = false,
+) {
+  const { showUnreadCountBadgeMobile } = getUISettings()
+  if (!showUnreadCountBadgeMobile && !skipSettingCheck) {
+    return false
+  }
+
   const permissionGranted = await requestNotificationPermission()
   if (!permissionGranted) {
     return false
   }
+
+  const currentBadgeCount = await Notifications.getBadgeCountAsync()
+  if (badgeCount === currentBadgeCount) {
+    return false
+  }
+
   return await Notifications.setBadgeCountAsync(badgeCount)
 }

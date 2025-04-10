@@ -109,14 +109,14 @@ export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMe
               onSelect={() => {
                 if (isEntryStarred) {
                   collectionSyncService.unstarEntry(entryId)
-                  toast.info("Unstarred")
+                  toast.success("Unstarred")
                 } else {
                   collectionSyncService.starEntry({
                     feedId,
                     entryId,
                     view,
                   })
-                  toast.info("Starred")
+                  toast.success("Starred")
                 }
               }}
             >

@@ -26,6 +26,7 @@
   "operation.copy_link": "复制链接",
   "operation.delete_category": "删除分类",
   "operation.edit": "编辑",
+  "operation.error_since": "源失效：",
   "operation.mark_all_as_read": "全部标记为已读",
   "operation.mark_all_as_read_confirm": "确认将全部标记为已读？",
   "operation.mark_all_as_read_which": "将{{which}}标记为已读",

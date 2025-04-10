@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'SnapKit', '~> 5.7.0'
   s.dependency 'SDWebImage', '~> 5.0'
- 
+  s.dependency "ToastViewSwift", "~> 2.1.3"
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',

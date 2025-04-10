@@ -23,6 +23,7 @@ import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
 import { EntryContentHTMLRenderer } from "../renderer/html"
+import { AISummary } from "./AISummary"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
 import { EntryTitle } from "./components/EntryTitle"
 import { SourceContentPanel } from "./components/SourceContentView"
@@ -31,7 +32,6 @@ import { EntryHeader } from "./header"
 import { useFocusEntryContainerSubscriptions } from "./hooks"
 import type { EntryContentProps } from "./index.shared"
 import {
-  AISummary,
   ContainerToc,
   NoContent,
   ReadabilityAutoToggleEffect,

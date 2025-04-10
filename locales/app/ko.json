@@ -56,7 +56,7 @@
   "discover.inbox.handle": "핸들",
   "discover.inbox.secret": "비밀",
   "discover.inbox.title": "제목",
-  "discover.inbox.webhooks_docs": "Webhooks 문서.",
+  "discover.inbox.webhooks_docs": "Webhooks 문서",
   "discover.inbox_create": "새로운 받은편지함",
   "discover.inbox_create_description": "받은편지함이 아직 생성되지 않았습니다. 받은편지함을 생성하여 이메일 및 Webhook 메시지를 받을 수 있습니다.",
   "discover.inbox_create_error": "받은편지함 생성 실패.",
