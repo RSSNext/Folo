@@ -11,8 +11,8 @@ export const usePrefetchEntryTranslation = (entryIds: string[], withContent?: bo
   const translation = useGeneralSettingKey("translation")
   const entryList =
     useEntryList(entryIds)
-      ?.filter((entry) => translation || !!entry?.settings?.translation)
-      .map((entry) => entry.id) || []
+      ?.filter((entry) => entry !== null && (translation || !!entry?.settings?.translation))
+      .map((entry) => entry!.id) || []
 
   const actionLanguage = useGeneralSettingKey("actionLanguage") as SupportedLanguages
 

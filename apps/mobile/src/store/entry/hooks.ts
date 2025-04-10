@@ -43,20 +43,18 @@ export function useEntry(
   })
 }
 
-export function useEntryList(ids: string[]): EntryModel[] | undefined
+export function useEntryList(ids: string[]): Array<EntryModel | null>
 export function useEntryList<T>(ids: string[], selector: (state: EntryModel) => T): T[] | undefined
 export function useEntryList(
   ids: string[],
   selector: (state: EntryModel) => EntryModel = defaultSelector,
 ) {
   return useEntryStore((state) => {
-    return ids
-      .map((id) => {
-        const entry = state.data[id]
-        if (!entry) return null
-        return selector(entry)
-      })
-      .filter((entry) => entry !== null)
+    return ids.map((id) => {
+      const entry = state.data[id]
+      if (!entry) return null
+      return selector(entry)
+    })
   })
 }
 
