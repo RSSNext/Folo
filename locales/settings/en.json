@@ -95,8 +95,6 @@
   "appearance.reduce_motion.description": "Reducing the motion of elements to improve performance and reduce energy consumption",
   "appearance.reduce_motion.label": "Reduce motion",
   "appearance.save": "Save",
-  "appearance.show_unread_count.description": "Show unread count in the subscription list",
-  "appearance.show_unread_count.label": "Show unread count",
   "appearance.sidebar": "Sidebar",
   "appearance.sidebar_title": "Appearance",
   "appearance.subscriptions": "Subscriptions",

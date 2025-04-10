@@ -20,6 +20,7 @@ import { useColor } from "@/src/theme/colors"
 
 import { SubscriptionFeedCategoryContextMenu } from "../context-menu/feeds"
 import { GroupedContext } from "./ctx"
+import { UnreadCount } from "./items/UnreadCount"
 import { ItemSeparator } from "./ItemSeparator"
 import { UnGroupedList } from "./UnGroupedList"
 
@@ -95,9 +96,7 @@ export const CategoryGrouped = memo(
                 </Animated.View>
               </TouchableOpacity>
               <Text className="text-text ml-4 font-medium">{category}</Text>
-              {!!unreadCounts && (
-                <Text className="text-secondary-label ml-auto text-xs">{unreadCounts}</Text>
-              )}
+              <UnreadCount unread={unreadCounts} className="text-secondary-label ml-auto text-xs" />
             </ItemPressable>
           </SubscriptionFeedCategoryContextMenu>
         </View>

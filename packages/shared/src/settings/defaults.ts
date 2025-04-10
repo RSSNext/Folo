@@ -84,7 +84,8 @@ export const defaultUISettings: UISettings = {
     more: [],
   },
 
-  subscriptionShowUnreadCount: true,
+  showUnreadCountViewAndSubscriptionMobile: false,
+  showUnreadCountBadgeMobile: false,
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {

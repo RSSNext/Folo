@@ -4,7 +4,7 @@ import { Text, View } from "react-native"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 
 export function UnreadCount({ unread, className }: { unread?: number; className?: string }) {
-  const showUnreadCount = useUISettingKey("subscriptionShowUnreadCount")
+  const showUnreadCount = useUISettingKey("showUnreadCountViewAndSubscriptionMobile")
 
   if (!unread) return null
   return showUnreadCount ? (
