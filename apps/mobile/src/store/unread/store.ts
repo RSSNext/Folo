@@ -1,5 +1,4 @@
 import type { FeedViewType } from "@follow/constants"
-import * as Notifications from "expo-notifications"
 
 import type { UnreadSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
@@ -37,10 +36,6 @@ class UnreadSyncService {
   async updateBadgeAtBackground() {
     await this.fetch()
     const allUnreadCount = getAllUnreadCount()
-    const currentBadgeCount = await Notifications.getBadgeCountAsync()
-    if (allUnreadCount === currentBadgeCount) {
-      return false
-    }
     setBadgeCountAsyncWithPermission(allUnreadCount)
     return true
   }

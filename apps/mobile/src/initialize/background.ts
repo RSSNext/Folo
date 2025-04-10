@@ -1,6 +1,7 @@
 import * as BackgroundFetch from "expo-background-fetch"
 import * as TaskManager from "expo-task-manager"
 
+import { getUISettings } from "../atoms/settings/ui"
 import { unreadSyncService } from "../store/unread/store"
 import { whoami } from "../store/user/getters"
 
@@ -11,7 +12,8 @@ export async function initBackgroundFetch() {
     // const now = Date.now()
     // console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`)
     const user = whoami()
-    if (!user) {
+    const { showUnreadCountBadgeMobile } = getUISettings()
+    if (!user || !showUnreadCountBadgeMobile) {
       return BackgroundFetch.BackgroundFetchResult.NoData
     }
 
