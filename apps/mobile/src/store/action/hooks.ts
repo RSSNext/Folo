@@ -11,7 +11,6 @@ export const usePrefetchActions = () => {
   return useQuery({
     queryKey: ["action", "rules"],
     queryFn: () => actionSyncService.fetchRules(),
-    staleTime: Infinity,
   })
 }
 
