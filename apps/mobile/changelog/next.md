@@ -6,6 +6,8 @@
 
 ## Improvements
 
+- Display error message when feed request fails (#3455)
+
 ## Bug Fixes
 
 - Can not share feed URL (#3424)
