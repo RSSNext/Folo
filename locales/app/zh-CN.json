@@ -160,6 +160,7 @@
   "feed.followsAndReads": "在 {{appName}} 上有 {{subscriptionCount}} 个{{subscriptionNoun}}，{{readCount}} 次近期{{readNoun}}",
   "feed.read_one": "阅读",
   "feed.read_other": "阅读",
+  "feed.updated_at": "更新于",
   "feed_claim_modal.choose_verification_method": "有三种认证方式，可任选其中一种进行认证。",
   "feed_claim_modal.claim_button": "认证",
   "feed_claim_modal.content_instructions": "复制以下内容，发布到需要认证的订阅源。",

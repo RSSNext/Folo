@@ -2,7 +2,6 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardContent, CardFooter, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { RelativeTime } from "@follow/components/ui/datetime/index.js"
-import { Divider } from "@follow/components/ui/divider/Divider.js"
 import {
   Form,
   FormControl,
@@ -377,9 +376,8 @@ const SearchCard: FC<{
                   })}
               </div>
             )}
-            <Divider className="mb-0" />
           </CardContent>
-          <CardFooter className="flex justify-between gap-4 border-t border-zinc-100/80 py-3 dark:border-zinc-800/80">
+          <CardFooter className="mt-4 flex justify-between gap-4 border-t border-zinc-100/80 py-3 dark:border-zinc-800/80">
             <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-user-3-cute-re" />
@@ -409,7 +407,7 @@ const SearchCard: FC<{
             <div className="flex items-center justify-between gap-2">
               <Button
                 variant="ghost"
-                buttonClassName="rounded-full px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
+                buttonClassName="rounded-lg px-3 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
                 onClick={() => {
                   if (!item.feed?.id) return
                   window.open(UrlBuilder.shareFeed(item.feed.id, 0), "_blank")
