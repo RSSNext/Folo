@@ -88,7 +88,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
           if (iframeSrc) {
             modalStack.present({
               title: "",
-              content: (props) => <PreviewVideoModalContent src={iframeSrc} {...props} />,
+              content: (props) => (
+                <PreviewVideoModalContent src={iframeSrc} entry={entry} {...props} />
+              ),
               clickOutsideToDismiss: true,
               CustomModalComponent: PlainModal,
               overlay: true,
@@ -142,7 +144,13 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
 const PreviewVideoModalContent: ModalContentComponent<{
   src: string
-}> = ({ dismiss, src }) => {
+  entry: any
+}> = ({ dismiss, src, entry }) => {
+  const sanitizeHtml = (html) => {
+    // Removes all html tags except for br for safety and formatting
+    return html.replaceAll(/<(?!br\s*\/?)[^>]+>/g, "")
+  }
+
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
   useEffect(() => {
     const currentValue = currentAudioPlayerIsPlay.current
@@ -169,6 +177,9 @@ const PreviewVideoModalContent: ModalContentComponent<{
       </m.div>
 
       <ViewTag src={src} className="size-full" />
+      {entry.entries && (
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.entries.content) }} />
+      )}
     </m.div>
   )
 }
