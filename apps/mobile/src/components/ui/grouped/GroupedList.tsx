@@ -182,7 +182,7 @@ export const GroupedInsetListCell: FC<
 > = ({ label, description, children, leftClassName, rightClassName }) => {
   return (
     <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
-      <View className={cn("flex-1", leftClassName)}>
+      <View className={cn("flex-1 gap-1", leftClassName)}>
         <Text className="text-label">{label}</Text>
         {!!description && (
           <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
