@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import dayjs from "dayjs"
 import type { CSSProperties, FC, PropsWithChildren } from "react"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -12,6 +13,7 @@ import { toast } from "@/src/lib/toast"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useEntryIdsByFeedId } from "@/src/store/entry/hooks"
 import { getFeed } from "@/src/store/feed/getter"
+import { useFeed } from "@/src/store/feed/hooks"
 import { getSubscription } from "@/src/store/subscription/getter"
 import { useSubscriptionCategory } from "@/src/store/subscription/hooks"
 import { subscriptionSyncService } from "@/src/store/subscription/store"
@@ -26,6 +28,7 @@ export const SubscriptionFeedItemContextMenu: FC<
     view?: FeedViewType
   }
 > = ({ id, children, view }) => {
+  const feed = useFeed(id)
   const { t } = useTranslation()
   const allCategories = useSubscriptionCategory(view)
   const navigation = useNavigation()
@@ -45,6 +48,27 @@ export const SubscriptionFeedItemContextMenu: FC<
           >
             {() => <PreviewFeeds id={id} view={view!} />}
           </ContextMenu.Preview>
+        )}
+
+        {!!feed?.errorAt && (
+          <ContextMenu.Item
+            key="ShowErrorMessage"
+            onSelect={() => {
+              Alert.alert(
+                `${t("operation.error_since")} ${dayjs
+                  .duration(dayjs(feed.errorAt).diff(dayjs(), "minute"), "minute")
+                  .humanize(true)}`,
+                feed.errorMessage ?? undefined,
+              )
+            }}
+          >
+            <ContextMenu.ItemTitle>{t("operation.show_error_message")}</ContextMenu.ItemTitle>
+            <ContextMenu.ItemIcon
+              ios={{
+                name: "exclamationmark.triangle",
+              }}
+            />
+          </ContextMenu.Item>
         )}
         <ContextMenu.Item
           key="MarkAllAsRead"

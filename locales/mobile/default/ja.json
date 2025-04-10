@@ -26,6 +26,7 @@
   "operation.copy_link": "リンクをコピー",
   "operation.delete_category": "カテゴリーを削除",
   "operation.edit": "編集",
+  "operation.error_since": "エラー発生時刻",
   "operation.mark_all_as_read": "すべてを既読にする",
   "operation.mark_all_as_read_confirm": "すべてを既読にしますか？",
   "operation.mark_all_as_read_which": "{{which}}を既読にしますか",

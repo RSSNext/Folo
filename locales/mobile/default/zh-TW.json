@@ -26,6 +26,7 @@
   "operation.copy_link": "複製連結",
   "operation.delete_category": "刪除類別",
   "operation.edit": "編輯",
+  "operation.error_since": "RSS 摘要失效：",
   "operation.mark_all_as_read": "全部標記為已讀",
   "operation.mark_all_as_read_confirm": "確認將全部標記為已讀？",
   "operation.mark_all_as_read_which": "將 {{which}} 標記為已讀",
