@@ -166,6 +166,7 @@ function ViewItem({
                 {t(view.name)}
               </Animated.Text>
               <UnreadCount
+                max={99}
                 unread={unreadCount}
                 exiting={FadeOut}
                 dotClassName="size-1.5 rounded-full bg-white"

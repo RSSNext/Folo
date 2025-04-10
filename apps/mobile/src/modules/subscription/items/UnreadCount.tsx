@@ -9,12 +9,15 @@ export function UnreadCount({
   className,
   textClassName,
   dotClassName,
+  max = Infinity,
   ...rest
-}: { unread?: number } & AnimatedProps<{
+}: {
+  unread?: number
   className?: string
   textClassName?: string
   dotClassName?: string
-}>) {
+  max?: number
+} & AnimatedProps<object>) {
   const showUnreadCount = useUISettingKey("showUnreadCountViewAndSubscriptionMobile")
 
   if (!unread) return null
@@ -23,7 +26,7 @@ export function UnreadCount({
       className={cn("text-tertiary-label text-xs", className, textClassName)}
       {...rest}
     >
-      {unread}
+      {unread > max ? `${max}+` : unread}
     </Animated.Text>
   ) : (
     <Animated.View
