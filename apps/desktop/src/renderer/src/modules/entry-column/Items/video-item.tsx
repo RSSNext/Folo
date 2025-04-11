@@ -1,5 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
+import { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
@@ -21,6 +22,7 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { useEntry } from "~/store/entry/hooks"
 
+import { EntryContentHTMLRenderer } from "../../renderer/html"
 import { GridItem } from "../templates/grid-item-template"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
@@ -156,11 +158,6 @@ const PreviewVideoModalContent: ModalContentComponent<{
   src: string
   entry: Entry
 }> = ({ dismiss, src, entry }) => {
-  const sanitizeHtml = (html) => {
-    // Removes all html tags except for br for safety and formatting
-    return html.replaceAll(/<(?!br\s*\/?)[^>]+>/g, "")
-  }
-
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
   useEffect(() => {
     const currentValue = currentAudioPlayerIsPlay.current
@@ -188,10 +185,17 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
       <ViewTag src={src} className="size-full" />
       {entry.entries && (
-        <div
-          className="bg-white/70 p-10 pt-5 backdrop-blur-sm"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.entries.content) }}
-        />
+        <div className="bg-white/70 p-10 pt-5 backdrop-blur-sm">
+          <EntryContentHTMLRenderer
+            view={FeedViewType.Videos}
+            feedId=""
+            entryId={entry.entries?.id}
+            as="article"
+            className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+          >
+            {entry.entries?.content}
+          </EntryContentHTMLRenderer>
+        </div>
       )}
     </m.div>
   )
