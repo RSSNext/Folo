@@ -26,6 +26,16 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
+type Entry = {
+  entries?: {
+    id: string
+    title: string | null
+    description: string | null
+    author: string | null
+    content?: string | null
+  }
+}
+
 export function VideoItem({ entryId, entryPreview, translation }: UniversalItemProps) {
   const entry = useEntry(entryId) || entryPreview
 
@@ -144,7 +154,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
 const PreviewVideoModalContent: ModalContentComponent<{
   src: string
-  entry: any
+  entry: Entry
 }> = ({ dismiss, src, entry }) => {
   const sanitizeHtml = (html) => {
     // Removes all html tags except for br for safety and formatting
@@ -176,9 +186,14 @@ const PreviewVideoModalContent: ModalContentComponent<{
         <FixedModalCloseButton onClick={dismiss} />
       </m.div>
 
+      <p>hello</p>
+
       <ViewTag src={src} className="size-full" />
       {entry.entries && (
-        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.entries.content) }} />
+        <div
+          className="bg-white/70 p-10 pt-5 backdrop-blur-sm"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.entries.content) }}
+        />
       )}
     </m.div>
   )
