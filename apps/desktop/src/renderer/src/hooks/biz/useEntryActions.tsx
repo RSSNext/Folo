@@ -159,7 +159,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
       },
       {
         id: COMMAND_ID.entry.imageGallery,
-        hide: imageLength === 0,
+        hide: imageLength <= 5,
         onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
       },
       {
