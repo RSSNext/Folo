@@ -1,3 +1,4 @@
+import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
 import { createElement, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -31,6 +32,9 @@ export const useGalleryModal = () => {
         toast.error("Invalid feed id")
         return
       }
+      tracker.entryContentHeaderImageGalleryClick({
+        feedId: entryId,
+      })
       present({
         title: t("entry_actions.image_gallery"),
         content: () => createElement(ImageGalleryContent, { entryId }),
