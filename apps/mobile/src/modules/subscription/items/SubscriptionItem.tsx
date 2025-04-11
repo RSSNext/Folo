@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils"
 import { memo, useContext } from "react"
 import { Text, View } from "react-native"
@@ -37,8 +38,9 @@ export const SubscriptionItem = memo(
     const inGrouped = !!useContext(GroupedContext)
     const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
 
-    const selectedFeed = useSelectedFeed()
-    const view = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
+    const view = useSelectedFeed((r) => (r && r.type === "view" ? r.viewId : undefined)) as
+      | FeedViewType
+      | undefined
 
     const navigation = useNavigation()
     if (isLoading) {

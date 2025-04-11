@@ -97,7 +97,6 @@ export function EntryNormalItem({ entryId, extraData }: { entryId: string; extra
   return (
     <EntryItemContextMenu id={entryId}>
       <ItemPressable
-        touchHighlight={false}
         itemStyle={ItemPressableStyle.Plain}
         className={cn(
           view === FeedViewType.Notifications ? "p-2" : "p-4",

@@ -38,6 +38,7 @@
     "@react-native-firebase/app-check": "21.13.0",
     "@react-native-firebase/crashlytics": "21.13.0",
     "@react-native-firebase/messaging": "21.13.0",
+    "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-menu/menu": "1.2.3",
     "@react-native-picker/picker": "2.11.0",
     "@shopify/flash-list": "1.7.3",

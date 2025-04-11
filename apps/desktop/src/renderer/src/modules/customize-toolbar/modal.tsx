@@ -17,15 +17,16 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setUISetting, useUISettingSelector } from "~/atoms/settings/ui"
+import { setUISetting } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { DEFAULT_ACTION_ORDER } from "./constant"
 import { DroppableContainer, SortableActionButton } from "./dnd"
+import { useActionOrder } from "./hooks"
 
 const CustomizeToolbar = () => {
   const { t } = useTranslation("settings")
-  const actionOrder = useUISettingSelector((s) => s.toolbarOrder)
+  const actionOrder = useActionOrder()
 
   const sensors = useSensors(
     useSensor(PointerSensor),

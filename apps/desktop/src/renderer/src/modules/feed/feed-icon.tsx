@@ -112,10 +112,6 @@ export function FeedIcon({
       ? entry?.media?.find((i) => i.type === "photo")?.url || entry?.authorAvatar
       : entry?.authorAvatar) || feed?.image
 
-  if (!feed && !siteUrl) {
-    throw new Error("You must provide either a feed or a siteUrl")
-  }
-
   const colors = useMemo(
     () => getBackgroundGradient(feed?.title || (feed as FeedModel)?.url || siteUrl || ""),
     [feed?.title, (feed as FeedModel)?.url, siteUrl],

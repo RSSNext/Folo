@@ -26,7 +26,7 @@ import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentSocial"
 import { EntryTranslation } from "./EntryTranslation"
 
-export function EntrySocialItem({ entryId }: { entryId: string }) {
+export const EntrySocialItem = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)
 
@@ -83,7 +83,6 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
   return (
     <EntryItemContextMenu id={entryId}>
       <ItemPressable
-        touchHighlight={false}
         itemStyle={ItemPressableStyle.Plain}
         className="flex flex-col gap-2 p-4 pl-6"
         onPress={handlePress}

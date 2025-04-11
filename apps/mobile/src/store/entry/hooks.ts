@@ -20,6 +20,8 @@ export const usePrefetchEntries = (props: Omit<FetchEntriesProps, "pageParam" | 
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: !!props,
+    // 30 min
+    staleTime: 1000 * 60 * 30,
   })
 }
 export const usePrefetchEntryDetail = (entryId: string) => {

@@ -24,7 +24,7 @@ export const EntryListContentArticle = forwardRef<
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem key={id} entryId={id} extraData={extraData} />
+      <EntryNormalItem entryId={id} extraData={extraData} />
     ),
     [],
   )

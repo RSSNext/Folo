@@ -11,7 +11,7 @@ import { BlackBoard2CuteReIcon } from "@/src/icons/black_board_2_cute_re"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { EntryListContext } from "@/src/modules/screen/atoms"
 import { PagerList } from "@/src/modules/screen/PageList"
-import { TimelineSelectorProvider } from "@/src/modules/screen/TimelineSelectorProvider"
+import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { SubscriptionList } from "@/src/modules/subscription/SubscriptionLists"
 import { useWhoami } from "@/src/store/user/hooks"
 
@@ -22,18 +22,17 @@ export default function Subscriptions() {
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
       <RootSiblingParent>
-        <TimelineSelectorProvider>
-          {whoami ? (
-            <PagerList
-              renderItem={renderItem}
-              style={{
-                backgroundColor: systemGroupedBackground,
-              }}
-            />
-          ) : (
-            <NoLoginInfo target="subscriptions" />
-          )}
-        </TimelineSelectorProvider>
+        <TimelineHeader />
+        {whoami ? (
+          <PagerList
+            renderItem={renderItem}
+            style={{
+              backgroundColor: systemGroupedBackground,
+            }}
+          />
+        ) : (
+          <NoLoginInfo target="subscriptions" />
+        )}
       </RootSiblingParent>
     </EntryListContext.Provider>
   )
