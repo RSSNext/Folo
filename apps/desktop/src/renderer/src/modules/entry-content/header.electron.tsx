@@ -8,7 +8,6 @@ import { useEntry } from "~/store/entry/hooks"
 
 import { ElectronAdditionActions } from "./actions/electron-actions"
 import { EntryHeaderActions } from "./actions/header-actions"
-import { ImageGalleryAction } from "./actions/image-gallery-actions"
 import { MoreActions } from "./actions/more-actions"
 import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
 import { EntryReadHistory } from "./components/EntryReadHistory"
@@ -74,7 +73,6 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
         <div className="relative flex shrink-0 items-center justify-end gap-2">
           {!compact && <ElectronAdditionActions view={view} entry={entry} key={entry.entries.id} />}
 
-          <ImageGalleryAction id={entry.entries.id} />
           <EntryHeaderActions entryId={entry.entries.id} view={view} />
           <MoreActions entryId={entry.entries.id} />
         </div>

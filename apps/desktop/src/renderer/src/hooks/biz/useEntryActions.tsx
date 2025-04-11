@@ -157,6 +157,10 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         onClick: runCmdFn(COMMAND_ID.entry.exportAsPDF, [{ entryId }]),
       },
       {
+        id: COMMAND_ID.entry.imageGallery,
+        onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
+      },
+      {
         id: COMMAND_ID.entry.openInBrowser,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
       },
