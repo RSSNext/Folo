@@ -1,7 +1,11 @@
 import { useIsDark } from "@follow/hooks"
 
-export const useShikiDefaultTheme = () => {
-  const isDark = useIsDark()
+import { useUISettingSelector } from "~/atoms/settings/ui"
 
-  return isDark ? "github-dark" : "github-light"
+export const useShikiDefaultTheme = (overrideTheme?: string) => {
+  const isDark = useIsDark()
+  const codeThemeLight = useUISettingSelector((s) => overrideTheme || s.codeHighlightThemeLight)
+  const codeThemeDark = useUISettingSelector((s) => overrideTheme || s.codeHighlightThemeDark)
+
+  return isDark ? codeThemeDark : codeThemeLight
 }
