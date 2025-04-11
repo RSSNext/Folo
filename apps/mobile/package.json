@@ -153,21 +153,5 @@
     "autolinking": {
       "nativeModulesDir": "./native"
     }
-  },
-  "bump": {
-    "before": [
-      "git pull --rebase",
-      "tsx scripts/apply-changelog.ts ${NEW_VERSION}",
-      "git add changelog",
-      "pnpm eslint --fix package.json",
-      "pnpm prettier --ignore-unknown --write package.json",
-      "git add package.json"
-    ],
-    "commit_message": "release(mobile): release v${NEW_VERSION}",
-    "tag": false,
-    "changelog": false,
-    "allowed_branches": [
-      "dev"
-    ]
   }
 }

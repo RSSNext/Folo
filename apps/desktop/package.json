@@ -83,25 +83,5 @@
     "utf-8-validate": "6.0.5"
   },
   "productName": "Folo",
-  "mainHash": "274b8ef4d0671d642c1350e1e4463fce6d677f81f77f59a666d6aa83f5866a22",
-  "bump": {
-    "before": [
-      "git pull --rebase",
-      "tsx scripts/apply-changelog.ts ${NEW_VERSION}",
-      "git add changelog",
-      "tsx plugins/vite/generate-main-hash.ts",
-      "pnpm eslint --fix package.json",
-      "pnpm prettier --ignore-unknown --write package.json",
-      "git add package.json"
-    ],
-    "after": [
-      "gh pr create --title 'release(desktop): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head dev"
-    ],
-    "commit_message": "release(desktop): release v${NEW_VERSION}",
-    "tag": false,
-    "changelog": false,
-    "allowed_branches": [
-      "dev"
-    ]
-  }
+  "mainHash": "274b8ef4d0671d642c1350e1e4463fce6d677f81f77f59a666d6aa83f5866a22"
 }
