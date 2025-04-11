@@ -20,7 +20,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import type { FlatEntryModel } from "~/store/entry"
+import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry/hooks"
 
 import { GridItem } from "../templates/grid-item-template"
@@ -91,7 +91,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
             modalStack.present({
               title: "",
               content: (props) => (
-                <PreviewVideoModalContent src={iframeSrc} entry={entry} {...props} />
+                <PreviewVideoModalContent src={iframeSrc} entryId={entryId} {...props} />
               ),
               clickOutsideToDismiss: true,
               CustomModalComponent: PlainModal,
@@ -146,8 +146,11 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
 const PreviewVideoModalContent: ModalContentComponent<{
   src: string
-  entry: FlatEntryModel
-}> = ({ dismiss, src, entry }) => {
+  entryId: string
+}> = ({ dismiss, src, entryId }) => {
+  const entry = useEntry(entryId)
+  const translation = useEntryTranslation({ entry, extraFields: ["content"] })
+  const content = translation.data?.content || entry?.entries.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
   useEffect(() => {
     const currentValue = currentAudioPlayerIsPlay.current
@@ -174,10 +177,10 @@ const PreviewVideoModalContent: ModalContentComponent<{
       </m.div>
 
       <ViewTag src={src} className="size-full" />
-      {entry.entries && (
+      {!!content && (
         <div className="bg-background p-10 pt-5 backdrop-blur-sm">
           <HTML as="div" className="prose dark:prose-invert !max-w-full" noMedia>
-            {entry.entries?.content}
+            {content}
           </HTML>
         </div>
       )}
