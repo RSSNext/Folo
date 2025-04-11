@@ -2,8 +2,11 @@ import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
 import { initializeDb } from "../database"
+import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
+import { initBackgroundFetch } from "./background"
+import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
@@ -28,6 +31,11 @@ export const initializeApp = async () => {
   await apm("initializeAppCheck", initializeAppCheck)
   await apm("initializePlayer", initializePlayer)
 
+  apm("setting sync", () => {
+    settingSyncQueue.init()
+    settingSyncQueue.syncLocal()
+  })
+
   await initAnalytics()
   const loadingTime = Date.now() - now
   tracker.appInit({
@@ -38,6 +46,8 @@ export const initializeApp = async () => {
     electron: false,
     using_indexed_db: true,
   })
+  initCrashlytics()
+  initBackgroundFetch()
   console.log(`Initialize done,`, `${loadingTime}ms`)
 }
 

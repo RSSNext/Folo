@@ -96,7 +96,6 @@ export const ModalInternal = memo(
       if (!CustomModalComponent) {
         dismissing().then(() => {
           setStack((p) => p.filter((modal) => modal.id !== item.id))
-          setCurrentIsClosing(false)
         })
       } else {
         nextFrame(() => {

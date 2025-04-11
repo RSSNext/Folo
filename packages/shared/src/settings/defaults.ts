@@ -5,7 +5,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   appLaunchOnStartup: false,
   language: "en",
   translation: false,
-  summary: false,
+  summary: true,
   actionLanguage: "default",
 
   // mobile app
@@ -34,6 +34,9 @@ export const defaultGeneralSettings: GeneralSettings = {
 
   // Pro feature
   enhancedSettings: false,
+
+  // @mobile
+  openLinksInApp: true,
 }
 
 export const defaultUISettings: UISettings = {
@@ -80,6 +83,9 @@ export const defaultUISettings: UISettings = {
     main: [],
     more: [],
   },
+
+  showUnreadCountViewAndSubscriptionMobile: false,
+  showUnreadCountBadgeMobile: false,
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {
@@ -109,6 +115,11 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   enableReadeck: false,
   readeckEndpoint: "",
   readeckToken: "",
+
+  // cubox
+  enableCubox: false,
+  cuboxToken: "",
+  enableCuboxAutoMemo: false,
 }
 
 export const defaultSettings = {

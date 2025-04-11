@@ -3,7 +3,6 @@ import UIKit
 class ImageViewerController: UIViewController,
     UIGestureRecognizerDelegate
 {
-
     var imageView: UIImageView = UIImageView(frame: .zero)
     let imageLoader: ImageLoader
     private var activityIndicator: UIActivityIndicatorView!
@@ -24,6 +23,7 @@ class ImageViewerController: UIViewController,
     }
 
     // MARK: Layout Constraints
+
     private var top: NSLayoutConstraint!
     private var leading: NSLayoutConstraint!
     private var trailing: NSLayoutConstraint!
@@ -35,9 +35,9 @@ class ImageViewerController: UIViewController,
     private var isAnimating: Bool = false
     private var maxZoomScale: CGFloat = 1.0
 
-    private var sourceView: UIImageView? = nil
+    private var sourceView: UIImageView?
 
-    private var _error: Error? = nil
+    private var _error: Error?
 
     init(
         index: Int,
@@ -45,7 +45,6 @@ class ImageViewerController: UIViewController,
         imageLoader: ImageLoader,
         sourceView: UIImageView? = nil
     ) {
-
         self.index = index
         self.imageItem = imageItem
         self.imageLoader = imageLoader
@@ -94,19 +93,18 @@ class ImageViewerController: UIViewController,
         leading.isActive = true
         trailing.isActive = true
         bottom.isActive = true
-
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         switch imageItem {
-        case .image(let img):
+        case let .image(img):
             imageView.image = img
             imageView.layoutIfNeeded()
-        case .url(let url, let placeholder):
+        case let .url(url, placeholder):
             activityIndicator.startAnimating()
-            if let sourceView = self.sourceView {
+            if let sourceView = sourceView {
                 imageView.image = sourceView.image
             }
 
@@ -114,11 +112,11 @@ class ImageViewerController: UIViewController,
                 imageView.image = UIImage(systemName: "photo")?.withTintColor(
                     .gray, renderingMode: .alwaysOriginal)
                 imageView.frame = .init(origin: .zero, size: .init(width: 100, height: 100))
-                self.layout()
+                layout()
             }
-            self.layout()
+            layout()
             imageLoader.loadImage(url, placeholder: placeholder, imageView: imageView) {
-                [weak self] (image) in
+                [weak self] _ in
                 self?.layout()
                 self?.activityIndicator.stopAnimating()
             } onError: { [weak self] error in
@@ -126,8 +124,14 @@ class ImageViewerController: UIViewController,
                     .withTintColor(.red, renderingMode: .alwaysOriginal)
                 self?.imageView.frame = .init(origin: .zero, size: .init(width: 30, height: 30))
                 self?.layout()
-                SPIndicator.present(
-                    title: "Image Load Error", message: error.localizedDescription, preset: .error)
+
+                Toast.show(
+                    options: .init(
+                        message: error.localizedDescription,
+                        type: .error,
+                        title: "Image Load Error"
+                    ))
+
                 self?.activityIndicator.stopAnimating()
                 self?._error = error
             }
@@ -136,17 +140,16 @@ class ImageViewerController: UIViewController,
         }
 
         addGestureRecognizers()
-
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navBar?.alpha = 1.0
+        navBar?.alpha = 1.0
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.navBar?.alpha = 0.0
+        navBar?.alpha = 0.0
     }
 
     override func viewWillLayoutSubviews() {
@@ -160,8 +163,8 @@ class ImageViewerController: UIViewController,
     }
 
     // MARK: Add Gesture Recognizers
-    func addGestureRecognizers() {
 
+    func addGestureRecognizers() {
         let panGesture = UIPanGestureRecognizer(
             target: self, action: #selector(didPan(_:)))
         panGesture.cancelsTouchesInView = false
@@ -230,8 +233,7 @@ class ImageViewerController: UIViewController,
 
     @objc
     func didSingleTap(_ recognizer: UITapGestureRecognizer) {
-
-        let currentNavAlpha = self.navBar?.alpha ?? 0.0
+        let currentNavAlpha = navBar?.alpha ?? 0.0
         UIView.animate(withDuration: 0.235) {
             self.navBar?.alpha = currentNavAlpha > 0.5 ? 0.0 : 1.0
         }
@@ -247,11 +249,19 @@ class ImageViewerController: UIViewController,
         _ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer
     ) {
         if let error = error {
-            SPIndicator.present(
-                title: "Save Error", message: error.localizedDescription, preset: .error,
-                haptic: .error)
+            Toast.show(
+                options: .init(
+                    message: error.localizedDescription,
+                    type: .error,
+                    title: "Save Error"
+                ))
         } else {
-            SPIndicator.present(title: "Saved", preset: .done, haptic: .success)
+            Toast.show(
+                options: .init(
+                    message: "Saved",
+                    type: .success,
+                    title: "Save Success"
+                ))
         }
     }
 
@@ -265,14 +275,12 @@ class ImageViewerController: UIViewController,
         let velocity = panGesture.velocity(in: scrollView)
         return abs(velocity.y) > abs(velocity.x)
     }
-
 }
 
 // MARK: Adjusting the dimensions
+
 extension ImageViewerController {
-
     func updateMinMaxZoomScaleForSize(_ size: CGSize) {
-
         let targetSize = imageView.bounds.size
         if targetSize.width == 0 || targetSize.height == 0 {
             return
@@ -314,14 +322,13 @@ extension ImageViewerController {
         trailing.constant = xOffset
         view.layoutIfNeeded()
     }
-
 }
 
 // MARK: Animation Related stuff
-extension ImageViewerController {
 
+extension ImageViewerController {
     private func executeCancelAnimation() {
-        self.isAnimating = true
+        isAnimating = true
         UIView.animate(
             withDuration: 0.237,
             animations: {
@@ -335,7 +342,6 @@ extension ImageViewerController {
 }
 
 extension ImageViewerController: UIScrollViewDelegate {
-
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
@@ -346,9 +352,8 @@ extension ImageViewerController: UIScrollViewDelegate {
 }
 
 extension ImageViewerController: ImageCarouselViewControllerProtocol {
-
     public func isLoadError() -> Bool {
-        guard let error = _error else { return false }
+        guard _error != nil else { return false }
         return true
     }
 
@@ -363,7 +368,13 @@ extension ImageViewerController: ImageCarouselViewControllerProtocol {
         guard let image = imageView.image else { return }
 
         UIPasteboard.general.image = image
-        SPIndicator.present(title: "Copied", preset: .done, haptic: .success)
+
+        Toast.show(
+            options: .init(
+                message: "Copied",
+                type: .success,
+                title: "Copy Success"
+            ))
     }
 
     public func shareImage() {
@@ -383,5 +394,4 @@ extension ImageViewerController: ImageCarouselViewControllerProtocol {
 
         present(activityViewController, animated: true)
     }
-
 }

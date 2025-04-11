@@ -5,13 +5,16 @@ import { Text, View } from "react-native"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
+import { getFetchEntryPayload } from "@/src/store/entry/getter"
 import { unreadSyncService } from "@/src/store/unread/store"
 
-import { useSelectedView } from "../screen/atoms"
+import { useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const MarkAllAsReadDialog: DialogComponent = () => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
+  const selectedFeed = useSelectedFeed()
+
   const ctx = Dialog.useDialogContext()
   return (
     <View>
@@ -21,7 +24,8 @@ export const MarkAllAsReadDialog: DialogComponent = () => {
           ctx?.dismiss()
 
           if (typeof selectedView === "number") {
-            unreadSyncService.markViewAsRead(selectedView)
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            unreadSyncService.markViewAsRead(selectedView, payload)
           }
         }}
       />

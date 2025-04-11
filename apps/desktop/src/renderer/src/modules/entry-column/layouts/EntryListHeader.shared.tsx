@@ -13,6 +13,7 @@ import {
   HoverCardPortal,
   HoverCardTrigger,
 } from "@radix-ui/react-hover-card"
+import { debounce } from "es-toolkit/compat"
 import type { FC } from "react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
@@ -125,9 +126,9 @@ export const SwitchToMasonryButton = () => {
                     max={6}
                     step={1}
                     defaultValue={[masonryColumnValue]}
-                    onValueCommit={(value) => {
+                    onValueChange={debounce((value) => {
                       setMasonryColumnValue(value[0]!)
-                    }}
+                    }, 300)}
                   />
                 </div>
               )}

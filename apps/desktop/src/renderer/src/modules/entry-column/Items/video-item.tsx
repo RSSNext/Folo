@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { AudioPlayer } from "~/atoms/player"
 import { m } from "~/components/common/Motion"
 import { RelativeTime } from "~/components/ui/datetime"
+import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import type { ModalContentComponent } from "~/components/ui/modal"
@@ -19,6 +20,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
+import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry/hooks"
 
 import { GridItem } from "../templates/grid-item-template"
@@ -45,7 +47,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
         attachments: entry?.entries.attachments,
       }),
     ],
-    [entry?.entries.url],
+    [entry?.entries.attachments, entry?.entries.url],
   )
   const modalStack = useModalStack()
   const previewMedia = usePreviewMedia()
@@ -88,7 +90,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
           if (iframeSrc) {
             modalStack.present({
               title: "",
-              content: (props) => <PreviewVideoModalContent src={iframeSrc} {...props} />,
+              content: (props) => (
+                <PreviewVideoModalContent src={iframeSrc} entryId={entryId} {...props} />
+              ),
               clickOutsideToDismiss: true,
               CustomModalComponent: PlainModal,
               overlay: true,
@@ -111,12 +115,12 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
                 isActive && "rounded-b-none",
               )}
             />
-          ) : entry.entries.media ? (
+          ) : entry.entries.media?.[0] ? (
             <Media
-              key={entry.entries.media?.[0]!.url}
-              src={entry.entries.media?.[0]!.url}
-              type={entry.entries.media?.[0]!.type}
-              previewImageUrl={entry.entries.media?.[0]!.preview_image_url}
+              key={entry.entries.media[0].url}
+              src={entry.entries.media[0].url}
+              type={entry.entries.media[0].type}
+              previewImageUrl={entry.entries.media[0].preview_image_url}
               className={cn(
                 "aspect-video w-full shrink-0 rounded-md object-cover",
                 isActive && "rounded-b-none",
@@ -142,7 +146,11 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
 const PreviewVideoModalContent: ModalContentComponent<{
   src: string
-}> = ({ dismiss, src }) => {
+  entryId: string
+}> = ({ dismiss, src, entryId }) => {
+  const entry = useEntry(entryId)
+  const translation = useEntryTranslation({ entry, extraFields: ["content"] })
+  const content = translation.data?.content || entry?.entries.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
   useEffect(() => {
     const currentValue = currentAudioPlayerIsPlay.current
@@ -169,6 +177,13 @@ const PreviewVideoModalContent: ModalContentComponent<{
       </m.div>
 
       <ViewTag src={src} className="size-full" />
+      {!!content && (
+        <div className="bg-background p-10 pt-5 backdrop-blur-sm">
+          <HTML as="div" className="prose dark:prose-invert !max-w-full" noMedia>
+            {content}
+          </HTML>
+        </div>
+      )}
     </m.div>
   )
 }

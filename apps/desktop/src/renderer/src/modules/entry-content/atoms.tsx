@@ -22,15 +22,6 @@ export const [
   setEntryContentScrollToTop,
 ] = createAtomHooks(atom(false))
 
-export const [
-  ,
-  ,
-  useEntryContentPlaceholderLogoShow,
-  ,
-  getEntryContentPlaceholderLogoShow,
-  setEntryContentPlaceholderLogoShow,
-] = createAtomHooks(atom(true))
-
 export const [, , , , getTranslationCache, setTranslationCache] = createAtomHooks(
   atomWithStorage(getStorageNS("translation-cache"), {} as Record<string, string>),
 )

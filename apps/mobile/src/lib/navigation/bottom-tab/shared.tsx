@@ -20,6 +20,19 @@ export const ScreenNameRegister = () => {
   return null
 }
 
+export const TabScreenIdentifierRegister = () => {
+  const { identifierAtom } = useContext(TabScreenContext)
+  const identifier = useAtomValue(identifierAtom)
+  const store = useStore()
+  const isFocused = useTabScreenIsFocused()
+  useEffect(() => {
+    if (isFocused) {
+      store.set(identifierAtom, identifier)
+    }
+  }, [identifier, identifierAtom, store, isFocused])
+  return null
+}
+
 export const LifecycleEvents = ({ isSelected }: { isSelected: boolean }) => {
   const { isFocusedAtom, isAppearedAtom, isDisappearedAtom } = useContext(ScreenItemContext)
   const setIsFocused = useSetAtom(isFocusedAtom)

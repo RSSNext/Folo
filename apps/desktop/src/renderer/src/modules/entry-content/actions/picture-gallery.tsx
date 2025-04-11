@@ -52,7 +52,7 @@ const Render: React.ComponentType<
     </MasonryItemFixedDimensionWrapper>
   )
 }
-export const ImageGallery = ({ images }: { images: MediaModel[] }) => {
+export const ImageGallery = ({ images }: { images: MediaModel }) => {
   const { containerRef, currentColumn, currentItemWidth } = useMasonryColumn(gutter)
 
   const [masonryItemsRadio, setMasonryItemsRadio] = useState<Record<string, number>>({})
@@ -62,13 +62,13 @@ export const ImageGallery = ({ images }: { images: MediaModel[] }) => {
         <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
           <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
             <MediaContainerWidthProvider width={currentItemWidth}>
-              <Masonry<(typeof images)[number]>
-                items={images}
+              <Masonry
+                items={images ?? []}
                 columnGutter={gutter}
                 columnWidth={currentItemWidth}
                 columnCount={currentColumn}
                 overscanBy={2}
-                render={Render as any}
+                render={Render}
               />
             </MediaContainerWidthProvider>
           </MasonryItemsAspectRatioSetterContext.Provider>

@@ -81,7 +81,7 @@ export const RecommendationListItem: FC<{
                   key="copyMaintainerName"
                   onSelect={() => {
                     Clipboard.setString(m)
-                    toast.info("Name copied to clipboard")
+                    toast.success("Name copied to clipboard")
                   }}
                 >
                   <ContextMenu.ItemTitle>Copy Maintainer Name</ContextMenu.ItemTitle>

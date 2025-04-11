@@ -85,6 +85,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     googleServicesFile: "./build/google-services.json",
   },
+  androidStatusBar: {
+    translucent: true,
+  },
   // web: {
   //   bundler: "metro",
   //   output: "static",
@@ -139,6 +142,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [require("./scripts/with-follow-app-delegate.js")],
+    [require("./scripts/with-gradle-jvm-heap-size-increase.js")],
     "expo-secure-store",
     "@react-native-firebase/app",
     "@react-native-firebase/crashlytics",
@@ -150,6 +154,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "react-native-video",
+    [
+      "expo-notifications",
+      {
+        enableBackgroundRemoteNotifications: true,
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

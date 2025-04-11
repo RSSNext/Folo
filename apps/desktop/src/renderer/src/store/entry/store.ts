@@ -579,8 +579,12 @@ class EntryActions {
     })
 
     tx.optimistic((entry, ctx) => {
-      const { inboxId } = entry
+      const { inboxId, read } = entry
       const fullInboxId = `inbox-${inboxId}`
+
+      if (!read) {
+        feedUnreadActions.incrementByFeedId(inboxId, -1)
+      }
 
       set((state) => {
         const nextFlatMapEntries = { ...state.flatMapEntries }
@@ -618,6 +622,11 @@ class EntryActions {
     })
 
     tx.rollback((entry, ctx) => {
+      const { inboxId, read } = entry
+      if (!read) {
+        feedUnreadActions.incrementByFeedId(inboxId, 1)
+      }
+
       set((state) => ({
         ...state,
         entries: {

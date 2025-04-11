@@ -1,40 +1,69 @@
+import { jotaiStore } from "@follow/utils/jotai"
 import { cn } from "@follow/utils/utils"
 import type { Variants } from "framer-motion"
 import { AnimatePresence, m } from "framer-motion"
+import { atom, useAtom, useStore } from "jotai"
 import * as React from "react"
+import { useEffect } from "react"
 
-import {
-  CollapseGroupItemStateProvider,
-  CollapseStateProvider,
-  useCurrentCollapseId,
-  useSetCollapseGroupItemState,
-  useSetCurrentCollapseId,
-} from "./hooks"
+import type { CollapseContextValue } from "./hooks"
+import { CollaspeContext, useCollapseContext } from "./hooks"
 
 interface CollapseProps {
   title: React.ReactNode
   hideArrow?: boolean
+  defaultOpen?: boolean
+  collapseId?: string
+  onOpenChange?: (isOpened: boolean) => void
 }
 
-export const CollapseGroup: Component = ({ children }) => (
-  <CollapseStateProvider>
-    <CollapseGroupItemStateProvider>{children}</CollapseGroupItemStateProvider>
-  </CollapseStateProvider>
-)
-export const Collapse: Component<CollapseProps> = (props) => {
-  const [isOpened, setIsOpened] = React.useState(false)
-  const id = React.useId()
-  const setCurrentId = useSetCurrentCollapseId()
-  const currentId = useCurrentCollapseId()
-  const setItemStatus = useSetCollapseGroupItemState()
+export const CollapseGroup: Component<{
+  defaultOpenId?: string
+  onOpenChange?: (state: Record<string, boolean>) => void
+}> = ({ children, defaultOpenId, onOpenChange }) => {
+  const ctxValue = React.useMemo<CollapseContextValue>(
+    () => ({
+      currentOpenCollapseIdAtom: atom<string | null>(defaultOpenId ?? null),
+      collapseGroupItemStateAtom: atom<Record<string, boolean>>({}),
+    }),
+    [defaultOpenId],
+  )
+
+  const store = useStore()
+  useEffect(() => {
+    return store.sub(ctxValue.collapseGroupItemStateAtom, () => {
+      const state = store.get(ctxValue.collapseGroupItemStateAtom)
+
+      onOpenChange?.(state)
+    })
+  }, [defaultOpenId])
+  return <CollaspeContext.Provider value={ctxValue}>{children}</CollaspeContext.Provider>
+}
+
+export const Collapse: Component<CollapseProps> = ({ onOpenChange, ...props }) => {
+  const [isOpened, setIsOpened] = React.useState(props.defaultOpen ?? false)
+  const reactId = React.useId()
+  const id = props.collapseId ?? reactId
+  const { currentOpenCollapseIdAtom, collapseGroupItemStateAtom } = useCollapseContext()
+  const [currentId, setCurrentId] = useAtom(currentOpenCollapseIdAtom)
+
   React.useEffect(() => {
     if (isOpened) {
       setCurrentId(id)
     }
-    setItemStatus((prev) => ({ ...prev, [id]: isOpened }))
-  }, [id, isOpened, setCurrentId, setItemStatus])
+    const prevState = jotaiStore.get(collapseGroupItemStateAtom)
+    jotaiStore.set(collapseGroupItemStateAtom, { ...prevState, [id]: isOpened })
+
+    return () => {
+      const prevState = jotaiStore.get(collapseGroupItemStateAtom)
+      delete prevState[id]
+      jotaiStore.set(collapseGroupItemStateAtom, prevState)
+    }
+  }, [collapseGroupItemStateAtom, id, isOpened, setCurrentId])
   React.useEffect(() => {
-    setIsOpened(currentId === id)
+    const isOpened = currentId === id
+    setIsOpened(isOpened)
+    onOpenChange?.(isOpened)
   }, [currentId, id])
   return <CollapseControlled isOpened={isOpened} onOpenChange={setIsOpened} {...props} />
 }

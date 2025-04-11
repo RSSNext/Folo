@@ -56,7 +56,7 @@
   "discover.inbox.handle": "Обработчик",
   "discover.inbox.secret": "Секрет",
   "discover.inbox.title": "Заголовок",
-  "discover.inbox.webhooks_docs": "Документация вебхуков.",
+  "discover.inbox.webhooks_docs": "Документация вебхуков",
   "discover.inbox_create": "Создать новый почтовый ящик",
   "discover.inbox_create_description": "У вас ещё нет почтового ящика. Создайте почтовый ящик, чтобы получать информацию.",
   "discover.inbox_create_error": "Не удалось создать почтовый ящик.",

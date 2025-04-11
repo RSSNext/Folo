@@ -1,5 +1,6 @@
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
 
@@ -14,6 +15,8 @@ import { StepWelcome } from "../modules/onboarding/step-welcome"
 import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "../store/user/constants"
 
 export const OnboardingScreen: NavigationControllerView = () => {
+  const { t } = useTranslation("common")
+
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
 
@@ -65,10 +68,10 @@ export const OnboardingScreen: NavigationControllerView = () => {
           >
             <Text className="text-lg font-bold text-white">
               {currentStep < totalSteps - 1
-                ? "Next"
+                ? t("words.next")
                 : currentStep === totalSteps - 1
-                  ? "Finish Setup"
-                  : "Let's Go!"}
+                  ? t("words.finishSetup")
+                  : t("words.letsGo")}
             </Text>
           </TouchableOpacity>
         </View>

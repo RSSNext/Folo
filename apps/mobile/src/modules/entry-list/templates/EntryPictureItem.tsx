@@ -1,3 +1,4 @@
+import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import { useMemo } from "react"
@@ -57,6 +58,8 @@ export function EntryPictureItem({ id }: { id: string }) {
   )
 }
 
+EntryPictureItem.displayName = "EntryPictureItem"
+
 const MediaItems = ({
   media,
   entryId,
@@ -84,6 +87,7 @@ const MediaItems = ({
 
   return (
     <MediaCarousel
+      view={FeedViewType.Pictures}
       entryId={entryId}
       media={uniqMedia}
       onPreview={onPreview}

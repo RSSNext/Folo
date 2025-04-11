@@ -8,18 +8,14 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import {
-  closeDrawer,
-  getHorizontalScrolling,
-  selectFeed,
-  useSelectedFeed,
-} from "@/src/modules/screen/atoms"
+import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { SubscriptionFeedCategoryContextMenu } from "../context-menu/feeds"
 import { GroupedContext } from "./ctx"
+import { UnreadCount } from "./items/UnreadCount"
 import { ItemSeparator } from "./ItemSeparator"
 import { UnGroupedList } from "./UnGroupedList"
 
@@ -45,22 +41,12 @@ export const CategoryGrouped = memo(
     }, [rotateSharedValue])
 
     const secondaryLabelColor = useColor("label")
-    const selectedFeed = useSelectedFeed()
     const navigation = useNavigation()
-    if (selectedFeed?.type !== "view") {
-      return null
-    }
-    const view = selectedFeed.viewId
 
     return (
       <>
         <View style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
-          <SubscriptionFeedCategoryContextMenu
-            category={category}
-            feedIds={subscriptionIds}
-            view={view}
-            asChild
-          >
+          <SubscriptionFeedCategoryContextMenu feedIds={subscriptionIds} asChild>
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {
@@ -79,7 +65,7 @@ export const CategoryGrouped = memo(
               }}
               className={cn("h-12 flex-row items-center px-3", {
                 "rounded-t-[10px]": isFirst,
-                "rounded-b-[10px]": isLast,
+                "rounded-b-[10px]": isLast && !expanded,
               })}
             >
               <TouchableOpacity
@@ -95,9 +81,7 @@ export const CategoryGrouped = memo(
                 </Animated.View>
               </TouchableOpacity>
               <Text className="text-text ml-4 font-medium">{category}</Text>
-              {!!unreadCounts && (
-                <Text className="text-secondary-label ml-auto text-xs">{unreadCounts}</Text>
-              )}
+              <UnreadCount unread={unreadCounts} className="text-secondary-label ml-auto text-xs" />
             </ItemPressable>
           </SubscriptionFeedCategoryContextMenu>
         </View>
@@ -105,10 +89,12 @@ export const CategoryGrouped = memo(
         {!isLast && <ItemSeparator />}
         {expanded && (
           <GroupedContext.Provider value={category}>
-            <UnGroupedList subscriptionIds={subscriptionIds} />
+            <UnGroupedList subscriptionIds={subscriptionIds} isGroupLast={isLast} />
           </GroupedContext.Provider>
         )}
       </>
     )
   },
 )
+
+CategoryGrouped.displayName = "CategoryGrouped"

@@ -72,7 +72,7 @@ function List({ data }: { data?: RSSHubModel[] }) {
       <TableHeader>
         <TableRow>
           <TableHead className="font-bold" size="sm" />
-          <TableHead className="w-[150px] font-bold" size="sm">
+          <TableHead className="w-[190px] font-bold" size="sm">
             {t("rsshub.table.owner")}
           </TableHead>
           <TableHead className="font-bold" size="sm">
@@ -118,86 +118,119 @@ function List({ data }: { data?: RSSHubModel[] }) {
             )}
           </TableCell>
         </TableRow>
-        {data?.map((instance) => {
-          return (
-            <TableRow key={instance.id}>
-              <TableCell className="text-nowrap">
-                {(() => {
-                  const flag: string[] = []
-                  if (status?.data?.usage?.rsshubId === instance.id) {
-                    flag.push(t("rsshub.table.inuse"))
-                  }
-                  if (instance.ownerUserId === me?.id) {
-                    flag.push(t("rsshub.table.yours"))
-                  }
-                  return flag.join(" / ")
-                })()}
-              </TableCell>
-              <TableCell>
-                <UserAvatar
-                  userId={instance.ownerUserId}
-                  className="h-auto justify-start p-0"
-                  avatarClassName="size-6"
-                />
-              </TableCell>
-              <TableCell>
-                <EllipsisTextWithTooltip className="line-clamp-2">
-                  {instance.description}
-                </EllipsisTextWithTooltip>
-              </TableCell>
-              <TableCell>
-                <span className="flex items-center justify-end gap-1">
-                  {instance.price} <i className="i-mgc-power text-accent" />
-                </span>
-              </TableCell>
-              <TableCell className="text-right">{instance.userCount}</TableCell>
-              <TableCell className="text-right">
-                {instance.userLimit === null
-                  ? t("rsshub.table.unlimited")
-                  : instance.userLimit > 1
-                    ? instance.userLimit
-                    : t("rsshub.table.private")}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex w-max items-center gap-2">
-                  <Button
-                    className="shrink-0"
-                    variant={status?.data?.usage?.rsshubId === instance.id ? "outline" : "primary"}
-                    onClick={() => {
-                      present({
-                        title: t("rsshub.useModal.title"),
-                        content: ({ dismiss }) => (
-                          <SetModalContent dismiss={dismiss} instance={instance} />
-                        ),
-                      })
-                    }}
-                  >
-                    {t(
-                      status?.data?.usage?.rsshubId === instance.id
-                        ? "rsshub.table.inuse"
-                        : "rsshub.table.use",
-                    )}
-                  </Button>
-                  {me?.id === instance.ownerUserId && (
+        {data
+          ?.sort((a, b) => {
+            // in use first
+            if (status?.data?.usage?.rsshubId === a.id) {
+              return -1
+            }
+            if (status?.data?.usage?.rsshubId === b.id) {
+              return 1
+            }
+
+            const loadA = Math.min((a.userCount ?? 0) / (a.userLimit ?? Infinity), 1)
+            const loadB = Math.min((b.userCount ?? 0) / (b.userLimit ?? Infinity), 1)
+
+            // full load last
+            if (loadA === 1 && loadB === 1) {
+              return a.price - b.price
+            }
+            if (loadA === 1) {
+              return 1
+            }
+            if (loadB === 1) {
+              return -1
+            }
+
+            return a.price - b.price || loadA - loadB
+          })
+          .map((instance) => {
+            return (
+              <TableRow key={instance.id}>
+                <TableCell className="text-nowrap">
+                  {(() => {
+                    const flag: string[] = []
+                    if (status?.data?.usage?.rsshubId === instance.id) {
+                      flag.push(t("rsshub.table.inuse"))
+                    }
+                    if (instance.ownerUserId === me?.id) {
+                      flag.push(t("rsshub.table.yours"))
+                    }
+                    return flag.join(" / ")
+                  })()}
+                </TableCell>
+                <TableCell>
+                  <UserAvatar
+                    userId={instance.ownerUserId}
+                    className="h-auto justify-start p-0"
+                    avatarClassName="size-6"
+                  />
+                </TableCell>
+                <TableCell>
+                  <EllipsisTextWithTooltip className="line-clamp-2">
+                    {instance.description}
+                  </EllipsisTextWithTooltip>
+                </TableCell>
+                <TableCell>
+                  <span className="flex items-center justify-end gap-1">
+                    {instance.price} <i className="i-mgc-power text-accent" />
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">{instance.userCount}</TableCell>
+                <TableCell className="text-right">
+                  {instance.userLimit === null
+                    ? t("rsshub.table.unlimited")
+                    : instance.userLimit > 1
+                      ? instance.userLimit
+                      : t("rsshub.table.private")}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex w-max items-center gap-2">
                     <Button
-                      variant="outline"
-                      onClick={() =>
+                      className="shrink-0"
+                      disabled={
+                        instance.userCount && instance.userLimit
+                          ? instance.userCount >= instance.userLimit
+                          : false
+                      }
+                      variant={
+                        status?.data?.usage?.rsshubId === instance.id ? "outline" : "primary"
+                      }
+                      onClick={() => {
                         present({
-                          title: t("rsshub.table.edit"),
+                          title: t("rsshub.useModal.title"),
                           content: ({ dismiss }) => (
-                            <AddModalContent dismiss={dismiss} instance={instance} />
+                            <SetModalContent dismiss={dismiss} instance={instance} />
                           ),
                         })
-                      }
+                      }}
                     >
-                      {t("rsshub.table.edit")}
+                      {t(
+                        status?.data?.usage?.rsshubId === instance.id
+                          ? "rsshub.table.inuse"
+                          : "rsshub.table.use",
+                      )}
                     </Button>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          )
-        })}
+                    {me?.id === instance.ownerUserId && (
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          present({
+                            title: t("rsshub.table.edit"),
+                            content: ({ dismiss }) => (
+                              <AddModalContent dismiss={dismiss} instance={instance} />
+                            ),
+                          })
+                        }
+                      >
+                        {t("rsshub.table.edit")}
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )
+          })}
       </TableBody>
     </Table>
   )

@@ -14,5 +14,3 @@ IndexTabScreen.tabBarIcon = ({ focused, color }) => {
   const Icon = !focused ? Home5CuteReIcon : Home5CuteFiIcon
   return <Icon color={color} width={24} height={24} />
 }
-
-IndexTabScreen.title = "Home"

@@ -2,19 +2,16 @@ import { cn } from "@follow/utils"
 import { memo, useContext } from "react"
 import { Text, View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
+import { useColor } from "react-native-uikit-colors"
 
 import { GROUPED_ICON_TEXT_GAP, GROUPED_LIST_MARGIN } from "@/src/components/ui/grouped/constants"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { WifiOffCuteReIcon } from "@/src/icons/wifi_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import {
-  closeDrawer,
-  getHorizontalScrolling,
-  selectFeed,
-  useSelectedFeed,
-} from "@/src/modules/screen/atoms"
+import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useFeed, usePrefetchFeed } from "@/src/store/feed/hooks"
 import { useSubscription } from "@/src/store/subscription/hooks"
@@ -28,14 +25,12 @@ import { UnreadCount } from "./UnreadCount"
 
 export const SubscriptionItem = memo(
   ({ id, isFirst, isLast, className }: SubscriptionItemBaseProps) => {
+    const red = useColor("red")
     const subscription = useSubscription(id)
     const unreadCount = useUnreadCount(id)
     const feed = useFeed(id)!
     const inGrouped = !!useContext(GroupedContext)
     const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
-
-    const selectedFeed = useSelectedFeed()
-    const view = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
     const navigation = useNavigation()
     if (isLoading) {
@@ -58,7 +53,7 @@ export const SubscriptionItem = memo(
             "rounded-b-[10px]": isLast,
           })}
         >
-          <SubscriptionFeedItemContextMenu id={id} view={view}>
+          <SubscriptionFeedItemContextMenu id={id}>
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               className={cn(
@@ -85,13 +80,16 @@ export const SubscriptionItem = memo(
               <View className="dark:border-tertiary-system-background size-5 items-center justify-center overflow-hidden rounded border border-transparent dark:bg-[#222]">
                 <FeedIcon feed={feed} />
               </View>
-              <Text
-                numberOfLines={1}
-                className="text-text flex-1 font-medium"
-                style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
-              >
-                {subscription?.title || feed.title}
-              </Text>
+              <View className="flex-1 flex-row items-center gap-2">
+                <Text
+                  numberOfLines={1}
+                  className={cn("text-text font-medium", feed.errorAt && "text-red")}
+                  style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+                >
+                  {subscription?.title || feed.title}
+                </Text>
+                {!!feed.errorAt && <WifiOffCuteReIcon color={red} height={18} width={18} />}
+              </View>
               <UnreadCount unread={unreadCount} className="ml-auto" />
             </ItemPressable>
           </SubscriptionFeedItemContextMenu>
@@ -101,3 +99,4 @@ export const SubscriptionItem = memo(
     )
   },
 )
+SubscriptionItem.displayName = "SubscriptionItem"

@@ -1,4 +1,4 @@
 export enum DayOf {
-  Today,
+  Today = 1,
   Yesterday,
 }

@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FlashList } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
-import { useMemo, useState } from "react"
+import { memo, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
@@ -46,7 +46,7 @@ const keyExtractor = (item: string | { category: string; subscriptionIds: string
   return item.category
 }
 
-export const SubscriptionList = ({
+const SubscriptionListImpl = ({
   view,
   active = true,
 }: {
@@ -62,7 +62,7 @@ export const SubscriptionList = ({
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedGrouped = useSortedGroupedSubscription(grouped, sortBy, sortOrder)
+  const sortedGrouped = useSortedGroupedSubscription(view, grouped, sortBy, sortOrder)
   const sortedUnGrouped = useSortedUngroupedSubscription(unGrouped, sortBy, sortOrder)
 
   const data = useMemo(
@@ -252,3 +252,5 @@ const StarItem = () => {
     </GroupedInsetListCard>
   )
 }
+
+export const SubscriptionList = memo(SubscriptionListImpl)

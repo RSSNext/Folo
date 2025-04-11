@@ -3,6 +3,7 @@
   "operation.copy_link": "Copia link",
   "operation.delete_category": "Elimina categoria",
   "operation.edit": "Modifica",
+  "operation.error_since": "Errore da",
   "operation.mark_all_as_read": "Segna tutto come letto",
   "operation.mark_all_as_read_confirm": "Confermi di segnare tutto come letto?",
   "operation.mark_all_as_read_which": "Segna {{which}} come letto",

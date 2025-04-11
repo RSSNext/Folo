@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
-import { useCallback, useEffect, useMemo } from "react"
+import { memo, useCallback, useEffect, useMemo } from "react"
 import { Pressable, Text, View } from "react-native"
 import ReAnimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
@@ -19,16 +19,15 @@ import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useEntry } from "@/src/store/entry/hooks"
 import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { useEntryTranslation } from "@/src/store/translation/hooks"
 import { unreadSyncService } from "@/src/store/unread/store"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentSocial"
 import { EntryTranslation } from "./EntryTranslation"
 
-export function EntrySocialItem({ entryId }: { entryId: string }) {
+export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId)
-  usePrefetchEntryTranslation(entryId)
   const translation = useEntryTranslation(entryId)
 
   const feed = useFeed(entry?.feedId || "")
@@ -82,9 +81,8 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
   const { description, publishedAt, media } = entry
 
   return (
-    <EntryItemContextMenu id={entryId}>
+    <EntryItemContextMenu id={entryId} view={FeedViewType.SocialMedia}>
       <ItemPressable
-        touchHighlight={false}
         itemStyle={ItemPressableStyle.Plain}
         className="flex flex-col gap-2 p-4 pl-6"
         onPress={handlePress}
@@ -162,4 +160,6 @@ export function EntrySocialItem({ entryId }: { entryId: string }) {
       </ItemPressable>
     </EntryItemContextMenu>
   )
-}
+})
+
+EntrySocialItem.displayName = "EntrySocialItem"

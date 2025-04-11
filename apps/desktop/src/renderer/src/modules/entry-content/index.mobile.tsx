@@ -22,11 +22,12 @@ import { useInboxById } from "~/store/inbox"
 
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
+import { AISummary } from "./AISummary"
 import { EntryReadHistory } from "./components/EntryReadHistory"
 import { EntryTitle } from "./components/EntryTitle"
 import { SupportCreator } from "./components/SupportCreator"
 import { EntryHeader } from "./header"
-import { AISummary, NoContent, RenderError, TitleMetaHandler } from "./index.shared"
+import { NoContent, RenderError, TitleMetaHandler } from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
 export interface EntryContentClassNames {

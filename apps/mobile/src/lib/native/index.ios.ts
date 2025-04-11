@@ -9,6 +9,7 @@ interface NativeModule {
   }>
   previewImage: (images: string[]) => void
   scrollToTop: (reactTag: number) => void
+  isScrollToEnd: (reactTag: number) => Promise<boolean>
 }
 const nativeModule = requireNativeModule("Helper") as NativeModule
 export const openLink = (url: string, onDismiss?: () => void) => {
@@ -36,4 +37,8 @@ export const showIntelligenceGlowEffect = () => {
 
 export const hideIntelligenceGlowEffect = () => {
   requireNativeModule("AppleIntelligenceGlowEffect").hide()
+}
+
+export const isScrollToEnd = async (tag: number) => {
+  return nativeModule.isScrollToEnd(tag)
 }

@@ -8,7 +8,7 @@ import { z } from "zod"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
@@ -129,19 +129,20 @@ const Impl = (props: { id: string }) => {
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
       contentViewClassName="gap-y-4 mt-2"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={`${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`}
+          headerRight={
+            <HeaderSubmitTextButton
+              isValid={isValid}
+              onPress={form.handleSubmit(submit)}
+              isLoading={isLoading}
+              label={isSubscribed ? "Save" : "Follow"}
+            />
+          }
+        />
+      }
     >
-      <NavigationBlurEffectHeader
-        title={`${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`}
-        headerRight={
-          <HeaderSubmitTextButton
-            isValid={isValid}
-            onPress={form.handleSubmit(submit)}
-            isLoading={isLoading}
-            label={isSubscribed ? "Save" : "Follow"}
-          />
-        }
-      />
-
       <GroupedInsetListCard className="px-5 py-4">
         <View className="flex flex-row gap-4">
           <View className="size-[50px] overflow-hidden rounded-lg">

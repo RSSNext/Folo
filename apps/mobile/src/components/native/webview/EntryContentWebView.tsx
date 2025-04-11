@@ -1,10 +1,8 @@
 import { clsx } from "@follow/utils"
 import { Portal } from "@gorhom/portal"
-import { requireNativeView } from "expo"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
-import type { ViewProps } from "react-native"
 import { TouchableOpacity, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
@@ -15,13 +13,7 @@ import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndi
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
 import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
-
-const NativeView: React.ComponentType<
-  ViewProps & {
-    onContentHeightChange?: (e: { nativeEvent: { height: number } }) => void
-    url?: string
-  }
-> = requireNativeView("FOSharedWebView")
+import { NativeWebView } from "./native-webview"
 
 type EntryContentWebViewProps = {
   entry: EntryWithTranslation
@@ -110,7 +102,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
           setWebViewEntry(entryInWebview)
         }}
       >
-        <NativeView
+        <NativeWebView
           onContentHeightChange={(e) => {
             setContentHeight(e.nativeEvent.height)
           }}

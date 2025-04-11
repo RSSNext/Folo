@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils"
-import { useEffect } from "react"
+import { useAtomValue } from "jotai"
+import { useContext, useEffect } from "react"
 import { Pressable, Text, View } from "react-native"
 import Animated, {
   interpolate,
@@ -9,21 +10,25 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { Image } from "@/src/components/ui/image/Image"
+import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { useScreenName } from "@/src/lib/navigation/ScreenNameContext"
 import { useActiveTrack } from "@/src/lib/player"
 import { PlayerScreen } from "@/src/screens/player"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton } from "./control"
 
-const allowedScreenNames = new Set(["Home", "Subscriptions", "Player"])
+const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen"])
 
 export function PlayerTabBar({ className }: { className?: string }) {
   const activeTrack = useActiveTrack()
-  const screenName = useScreenName()
+  const tabRootCtx = useContext(BottomTabContext)
+  const tabScreens = useAtomValue(tabRootCtx.tabScreensAtom)
+  const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
+  const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)
+  const identifier = currentTabProps?.identifier
 
-  const isVisible = !!activeTrack && allowedScreenNames.has(screenName)
+  const isVisible = !!activeTrack && identifier && allowedTabIdentifiers.has(identifier)
   const isVisibleSV = useSharedValue(isVisible ? 1 : 0)
   useEffect(() => {
     isVisibleSV.value = withTiming(isVisible ? 1 : 0)
@@ -47,7 +52,6 @@ export function PlayerTabBar({ className }: { className?: string }) {
       <Pressable
         onPress={() => {
           navigation.presentControllerView(PlayerScreen, void 0, "transparentModal")
-          // TODO
         }}
       >
         <View className="flex flex-row items-center gap-4 overflow-hidden rounded-2xl p-2">

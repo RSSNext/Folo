@@ -3,6 +3,7 @@
   "operation.copy_link": "نسخ الرابط",
   "operation.delete_category": "حذف الفئة",
   "operation.edit": "تحرير",
+  "operation.error_since": "خطأ منذ",
   "operation.mark_all_as_read": "تمييز الكل كمقروء",
   "operation.mark_all_as_read_confirm": "هل ترغب في تأكيد تمييز الكل كمقروء؟",
   "operation.mark_all_as_read_which": "تمييز {{which}} كمقروء؟",

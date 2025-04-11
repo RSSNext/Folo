@@ -1,13 +1,13 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
   "homepage": "https://github.com/RSSNext",
   "repository": {
-    "url": "https://github.com/RSSNext/follow",
+    "url": "https://github.com/RSSNext/Folo",
     "type": "git"
   },
   "main": "./dist/main/index.js",
@@ -54,7 +54,7 @@
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",
     "@pengx17/electron-forge-maker-appimage": "1.2.1",
-    "@sentry/vite-plugin": "3.2.4",
+    "@sentry/vite-plugin": "3.3.1",
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/react-google-recaptcha": "2.1.9",
@@ -65,7 +65,7 @@
     "cssnano": "7.0.6",
     "dotenv": "16.4.7",
     "drizzle-orm": "0.41.0",
-    "electron": "34.4.1",
+    "electron": "34.5.0",
     "electron-devtools-installer": "4.0.0",
     "electron-packager-languages": "0.6.0",
     "electron-vite": "3.1.0",
@@ -83,7 +83,7 @@
     "utf-8-validate": "6.0.5"
   },
   "productName": "Folo",
-  "mainHash": "039327ef2c09e66d8f5c4e021f33d78d4497794b222114fee795ed70c2045000",
+  "mainHash": "274b8ef4d0671d642c1350e1e4463fce6d677f81f77f59a666d6aa83f5866a22",
   "bump": {
     "before": [
       "git pull --rebase",

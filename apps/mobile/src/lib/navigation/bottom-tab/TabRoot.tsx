@@ -6,8 +6,8 @@ import { StyleSheet, View } from "react-native"
 
 import type { BottomTabContextType } from "./BottomTabContext"
 import { BottomTabContext } from "./BottomTabContext"
-import type { TabScreenProps } from "./TabScreen"
 import { TabScreen } from "./TabScreen"
+import type { TabScreenProps } from "./types"
 
 interface TabRootProps {
   initialTabIndex?: number

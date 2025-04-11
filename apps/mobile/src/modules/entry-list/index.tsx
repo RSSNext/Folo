@@ -1,9 +1,9 @@
 import { FeedViewType } from "@follow/constants"
-import { useMemo } from "react"
+import { memo, useMemo } from "react"
 
 import { useSelectedFeed, useSelectedView } from "@/src/modules/screen/atoms"
 import { PagerList } from "@/src/modules/screen/PageList"
-import { TimelineSelectorProvider } from "@/src/modules/screen/TimelineSelectorProvider"
+import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import {
   useEntryIdsByCategory,
   useEntryIdsByFeedId,
@@ -14,6 +14,9 @@ import {
 
 import { EntryListSelector } from "./EntryListSelector"
 
+const renderViewItem = (view: FeedViewType, active: boolean) => (
+  <ViewEntryList key={view} viewId={view} active={active} />
+)
 export function EntryList() {
   const selectedFeed = useSelectedFeed()
 
@@ -21,13 +24,7 @@ export function EntryList() {
     if (!selectedFeed) return null
     switch (selectedFeed.type) {
       case "view": {
-        return (
-          <PagerList
-            renderItem={(view, active) => (
-              <ViewEntryList key={view} viewId={view} active={active} />
-            )}
-          />
-        )
+        return <PagerList renderItem={renderViewItem} />
       }
       case "feed": {
         return <FeedEntryList feedId={selectedFeed.feedId} />
@@ -45,35 +42,41 @@ export function EntryList() {
   }, [selectedFeed])
   if (!Content) return null
 
-  return <TimelineSelectorProvider>{Content}</TimelineSelectorProvider>
+  return (
+    <>
+      <TimelineHeader />
+      {Content}
+    </>
+  )
 }
 
-function ViewEntryList({ viewId, active }: { viewId: FeedViewType; active: boolean }) {
+const ViewEntryList = memo(({ viewId, active }: { viewId: FeedViewType; active: boolean }) => {
   const entryIds = useEntryIdsByView(viewId)
-  return <EntryListSelector entryIds={entryIds} viewId={viewId} active={active} />
-}
 
-function FeedEntryList({ feedId }: { feedId: string }) {
+  return <EntryListSelector entryIds={entryIds} viewId={viewId} active={active} />
+})
+
+const FeedEntryList = memo(({ feedId }: { feedId: string }) => {
   const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByFeedId(feedId)
   return <EntryListSelector entryIds={entryIds} viewId={view} />
-}
+})
 
-function CategoryEntryList({ categoryName }: { categoryName: string }) {
+const CategoryEntryList = memo(({ categoryName }: { categoryName: string }) => {
   const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByCategory(categoryName)
   return <EntryListSelector entryIds={entryIds} viewId={view} />
-}
+})
 
-function ListEntryList({ listId }: { listId: string }) {
+const ListEntryList = memo(({ listId }: { listId: string }) => {
   const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByListId(listId)
   if (!entryIds) return null
   return <EntryListSelector entryIds={entryIds} viewId={view} />
-}
+})
 
-function InboxEntryList({ inboxId }: { inboxId: string }) {
+const InboxEntryList = memo(({ inboxId }: { inboxId: string }) => {
   const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByInboxId(inboxId)
   return <EntryListSelector entryIds={entryIds} viewId={view} />
-}
+})

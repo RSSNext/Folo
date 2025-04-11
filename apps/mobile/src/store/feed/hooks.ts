@@ -5,16 +5,17 @@ import { feedSyncServices, useFeedStore } from "./store"
 import type { FeedModel } from "./types"
 
 const defaultSelector = (feed: FeedModel) => feed
-export function useFeed(id: string): FeedModel | undefined
+export function useFeed(id?: string | null): FeedModel | undefined
 export function useFeed<T>(id: string, selector: (feed: FeedModel) => T): T | undefined
 export function useFeed<T>(
-  id: string,
+  id: string | undefined | null,
   // @ts-expect-error
   selector: (feed: FeedModel) => T = defaultSelector,
 ): T | undefined {
   return useFeedStore(
     useCallback(
       (state) => {
+        if (!id) return
         const feed = state.feeds[id]
         if (!feed) return
         return selector(feed)

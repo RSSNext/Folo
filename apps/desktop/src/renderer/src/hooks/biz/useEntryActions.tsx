@@ -72,6 +72,7 @@ export type EntryActionItem = {
 
 export const useEntryActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
   const entry = useEntry(entryId)
+  const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
   const feed = useFeedById(entry?.feedId, (feed) => {
     return {
       type: feed.type,
@@ -123,6 +124,10 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         onClick: runCmdFn(COMMAND_ID.integration.saveToReadeck, [{ entryId }]),
       },
       {
+        id: COMMAND_ID.integration.saveToCubox,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToCubox, [{ entryId }]),
+      },
+      {
         id: COMMAND_ID.entry.tip,
         onClick: runCmdFn(COMMAND_ID.entry.tip, [
           { entryId, feedId: feed?.id, userId: feed?.ownerUserId },
@@ -153,7 +158,13 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         onClick: runCmdFn(COMMAND_ID.entry.exportAsPDF, [{ entryId }]),
       },
       {
+        id: COMMAND_ID.entry.imageGallery,
+        hide: imageLength <= 5,
+        onClick: runCmdFn(COMMAND_ID.entry.imageGallery, [{ entryId }]),
+      },
+      {
         id: COMMAND_ID.entry.openInBrowser,
+        hide: !entry?.entries.url,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
       },
       {
@@ -211,6 +222,7 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
     feed?.id,
     feed?.ownerUserId,
     hasEntry,
+    imageLength,
     inList,
     isInbox,
     isShowAISummaryAuto,

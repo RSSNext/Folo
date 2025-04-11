@@ -342,12 +342,14 @@ class EntryActions {
 
 class EntrySyncServices {
   async fetchEntries(props: FetchEntriesProps) {
-    const { feedId, inboxId, listId, view, read, limit, pageParam, isCollection } = props
+    const { feedId, inboxId, listId, view, read, limit, pageParam, isCollection, feedIdList } =
+      props
     const params = getEntriesParams({
       feedId,
       inboxId,
       listId,
       view,
+      feedIdList,
     })
     const res = params.inboxId
       ? await apiClient.entries.inbox.$post({
@@ -426,13 +428,15 @@ class EntrySyncServices {
     return res
   }
 
-  async fetchEntryContent(entryId: EntryId) {
+  async fetchEntryDetail(entryId: EntryId) {
     const currentEntry = getEntry(entryId)
     const res = currentEntry?.inboxHandle
       ? await apiClient.entries.inbox.$get({ query: { id: entryId } })
       : await apiClient.entries.$get({ query: { id: entryId } })
     const entry = honoMorph.toEntry(res.data)
-    if (entry?.content && currentEntry?.content !== entry.content) {
+    if (!currentEntry && entry) {
+      await entryActions.upsertMany([entry])
+    } else if (entry?.content && currentEntry?.content !== entry.content) {
       await entryActions.updateEntryContent({ entryId, content: entry.content })
     }
     return entry

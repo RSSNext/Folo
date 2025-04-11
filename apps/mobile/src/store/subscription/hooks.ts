@@ -97,9 +97,13 @@ const sortByUnread = (_leftSubscriptionId: string, _rightSubscriptionId: string)
   return getUnreadCount(rightSubscriptionId) - getUnreadCount(leftSubscriptionId)
 }
 
-const sortGroupedSubscriptionByUnread = (leftCategory: string, rightCategory: string) => {
-  const leftFeedIds = getSubscriptionByCategory(leftCategory)
-  const rightFeedIds = getSubscriptionByCategory(rightCategory)
+const sortGroupedSubscriptionByUnread = (
+  leftCategory: string,
+  rightCategory: string,
+  view: FeedViewType,
+) => {
+  const leftFeedIds = getSubscriptionByCategory({ category: leftCategory, view })
+  const rightFeedIds = getSubscriptionByCategory({ category: rightCategory, view })
 
   const leftUnreadCount = leftFeedIds.reduce((acc, feedId) => {
     return acc + getUnreadCount(feedId)
@@ -111,6 +115,7 @@ const sortGroupedSubscriptionByUnread = (leftCategory: string, rightCategory: st
 }
 
 export const useSortedGroupedSubscription = (
+  view: FeedViewType,
   grouped: Record<string, string[]>,
   sortBy: "alphabet" | "count",
   sortOrder: "asc" | "desc",
@@ -120,7 +125,7 @@ export const useSortedGroupedSubscription = (
       const categories = Object.keys(grouped)
       const sortedCategories = categories.sort((a, b) => {
         const sortMethod = sortBy === "alphabet" ? sortByAlphabet : sortGroupedSubscriptionByUnread
-        const result = sortMethod(a, b)
+        const result = sortMethod(a, b, view)
         return sortOrder === "asc" ? result : -result
       })
       const sortedList = [] as { category: string; subscriptionIds: string[] }[]
@@ -128,7 +133,7 @@ export const useSortedGroupedSubscription = (
         sortedList.push({ category, subscriptionIds: grouped[category]! })
       }
       return sortedList
-    }, [grouped, sortBy, sortOrder]),
+    }, [grouped, sortBy, sortOrder, view]),
   )
 }
 
@@ -145,7 +150,7 @@ export const useSortedUngroupedSubscription = (
         const result = sortMethod(a, b)
         return sortOrder === "asc" ? result : -result
       })
-    }, [ids, sortBy, sortOrder]),
+    }, [ids.toString(), sortBy, sortOrder]),
   )
 }
 
@@ -221,6 +226,11 @@ export const useSubscriptionCategory = (view?: FeedViewType) => {
       [view],
     ),
   )
+}
+
+export const getSubscriptionCategory = (view?: FeedViewType) => {
+  const state = useSubscriptionStore.getState()
+  return view === undefined ? [] : Array.from(state.categories[view])
 }
 
 export const useSubscriptionByFeedId = (feedId: string) =>

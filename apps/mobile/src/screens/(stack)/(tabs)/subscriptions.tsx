@@ -1,15 +1,17 @@
 import type { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
-import { View } from "react-native"
+import { RootSiblingParent } from "react-native-root-siblings"
 import { useColor } from "react-native-uikit-colors"
 
+import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
+import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { BlackBoard2CuteFiIcon } from "@/src/icons/black_board_2_cute_fi"
 import { BlackBoard2CuteReIcon } from "@/src/icons/black_board_2_cute_re"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { EntryListContext } from "@/src/modules/screen/atoms"
 import { PagerList } from "@/src/modules/screen/PageList"
-import { TimelineSelectorProvider } from "@/src/modules/screen/TimelineSelectorProvider"
+import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { SubscriptionList } from "@/src/modules/subscription/SubscriptionLists"
 import { useWhoami } from "@/src/store/user/hooks"
 
@@ -19,7 +21,8 @@ export default function Subscriptions() {
 
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
-      <TimelineSelectorProvider>
+      <RootSiblingParent>
+        <TimelineHeader />
         {whoami ? (
           <PagerList
             renderItem={renderItem}
@@ -30,7 +33,7 @@ export default function Subscriptions() {
         ) : (
           <NoLoginInfo target="subscriptions" />
         )}
-      </TimelineSelectorProvider>
+      </RootSiblingParent>
     </EntryListContext.Provider>
   )
 }
@@ -41,10 +44,8 @@ SubscriptionsTabScreen.tabBarIcon = ({ focused, color }) => {
   return <Icon color={color} width={24} height={24} />
 }
 
-SubscriptionsTabScreen.title = "Subscriptions"
-
 const renderItem = (view: FeedViewType, active: boolean) => (
-  <View key={view}>
+  <ErrorBoundary fallbackRender={ListErrorView} key={view}>
     <SubscriptionList view={view} active={active} />
-  </View>
+  </ErrorBoundary>
 )

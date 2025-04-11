@@ -107,7 +107,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
                 as="div"
                 className={cn(
                   "prose dark:prose-invert align-middle",
-                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed [&_br:last-child]:hidden",
+                  "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed",
                 )}
                 noMedia
               >
@@ -120,11 +120,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
         {!!media?.length && <SocialMediaGallery media={media} />}
       </div>
 
-      {showAction && !isMobile && (
-        <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
-          <ActionBar entryId={entryId} />
-        </div>
-      )}
+      {showAction && !isMobile && <ActionBar entryId={entryId} />}
     </div>
   )
 }
@@ -134,20 +130,25 @@ SocialMediaItem.wrapperClassName = tw`w-[645px] max-w-full m-auto`
 const ActionBar = ({ entryId }: { entryId: string }) => {
   const { mainAction: entryActions } = useSortedEntryActions({ entryId })
 
+  if (entryActions.length === 0) return null
+
   return (
-    <div className="flex items-center gap-1">
-      {entryActions
-        .filter(
-          (item) => item.id !== COMMAND_ID.entry.read && item.id !== COMMAND_ID.entry.openInBrowser,
-        )
-        .map((item) => (
-          <CommandActionButton
-            commandId={item.id}
-            active={item.active}
-            onClick={item.onClick}
-            key={item.id}
-          />
-        ))}
+    <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
+      <div className="flex items-center gap-1">
+        {entryActions
+          .filter(
+            (item) =>
+              item.id !== COMMAND_ID.entry.read && item.id !== COMMAND_ID.entry.openInBrowser,
+          )
+          .map((item) => (
+            <CommandActionButton
+              commandId={item.id}
+              active={item.active}
+              onClick={item.onClick}
+              key={item.id}
+            />
+          ))}
+      </div>
     </div>
   )
 }

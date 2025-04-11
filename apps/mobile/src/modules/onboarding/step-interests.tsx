@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils"
 import { useCallback, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
@@ -10,35 +11,41 @@ import { subscriptionSyncService } from "@/src/store/subscription/store"
 import { accentColor } from "@/src/theme/colors"
 
 import type { PresetFeedConfig } from "./preset"
-import { presetFeeds } from "./preset"
+import { getPresetFeeds } from "./preset"
 import { OnboardingSectionScreenContainer } from "./shared"
 
 export const StepInterests = () => {
-  const [displayFeeds, setDisplayFeeds] = useState<PresetFeedConfig[]>(presetFeeds.slice(0, 7))
+  const { t, i18n } = useTranslation()
+  const isEnglishUser = i18n.language === "en"
+  const [displayFeeds, setDisplayFeeds] = useState<PresetFeedConfig[]>(
+    getPresetFeeds(isEnglishUser).slice(0, 7),
+  )
 
   const shuffleFeeds = useCallback(() => {
+    const presetFeeds = getPresetFeeds(isEnglishUser)
     const shuffled = [...presetFeeds].sort(() => Math.random() - 0.5).slice(0, 7)
     setDisplayFeeds(shuffled)
-  }, [])
+  }, [isEnglishUser])
+
   return (
     <OnboardingSectionScreenContainer>
       <View className="mb-10 flex items-center gap-4">
         <Search3CuteReIcon height={80} width={80} color={accentColor} />
-        <Text className="text-text mt-2 text-2xl font-bold">Discover Interests</Text>
+        <Text className="text-text mt-2 text-2xl font-bold">{t("onboarding.interests_title")}</Text>
         <Text className="text-label mb-8 px-6 text-center text-lg">
-          Subscribe to feeds that match your interests.
+          {t("onboarding.interests_description")}
         </Text>
       </View>
 
       <View className="w-full items-center gap-4">
         <View className="flex flex-row">
-          <Text className="mr-2 text-base">Suggestions feed</Text>
+          <Text className="mr-2 text-base">{t("onboarding.suggestions_feed")}</Text>
           <TouchableOpacity
             onPress={shuffleFeeds}
             className="bg-accent/10 flex-row items-center rounded-full px-3 py-1"
           >
             <Shuffle2CuteReIcon height={16} width={16} color={accentColor} />
-            <Text className="text-accent ml-1 text-sm">Shuffle</Text>
+            <Text className="text-accent ml-1 text-sm">{t("onboarding.shuffle")}</Text>
           </TouchableOpacity>
         </View>
 

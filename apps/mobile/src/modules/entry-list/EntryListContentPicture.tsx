@@ -6,6 +6,7 @@ import { View } from "react-native"
 
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
+import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
@@ -15,16 +16,18 @@ import { EntryPictureItem } from "./templates/EntryPictureItem"
 
 export const EntryListContentPicture = forwardRef<
   ElementRef<typeof TimelineSelectorMasonryList>,
-  { entryIds: string[]; active?: boolean } & Omit<
+  { entryIds: string[] | null; active?: boolean } & Omit<
     MasonryFlashListProps<string>,
     "data" | "renderItem"
   >
 >(({ entryIds, active, ...rest }, ref) => {
   const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching } =
     useFetchEntriesControls()
-  const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
+  const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
+
+  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
 
   return (
     <TimelineSelectorMasonryList

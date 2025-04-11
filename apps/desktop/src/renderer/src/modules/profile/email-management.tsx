@@ -64,7 +64,8 @@ export function EmailManagement() {
 
         <AnimatedCommandButton
           icon={<m.i className="i-mgc-edit-cute-re size-4" />}
-          className="bg-theme-item-active size-5 p-1"
+          className="size-5 p-1"
+          variant="ghost"
           onClick={() => {
             present({
               title: t("profile.email.change"),

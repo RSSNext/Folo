@@ -6,4 +6,6 @@ export type DailyView = Extract<FeedViewType, FeedViewType.Articles | FeedViewTy
 export interface DailyItemProps {
   view: DailyView
   day: DayOf
+
+  className?: string
 }

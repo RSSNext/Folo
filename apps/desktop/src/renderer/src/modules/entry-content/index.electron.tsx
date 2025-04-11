@@ -23,6 +23,7 @@ import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
 import { EntryContentHTMLRenderer } from "../renderer/html"
+import { AISummary } from "./AISummary"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
 import { EntryTitle } from "./components/EntryTitle"
 import { SourceContentPanel } from "./components/SourceContentView"
@@ -31,7 +32,6 @@ import { EntryHeader } from "./header"
 import { useFocusEntryContainerSubscriptions } from "./hooks"
 import type { EntryContentProps } from "./index.shared"
 import {
-  AISummary,
   ContainerToc,
   NoContent,
   ReadabilityAutoToggleEffect,
@@ -116,6 +116,8 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
+  const isInPeekModal = useInPeekModal()
+
   if (!entry) return null
 
   const entryContent = entry?.entries.content ?? data?.entries.content
@@ -126,12 +128,14 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   return (
     <>
-      <EntryHeader
-        entryId={entry.entries.id}
-        view={view}
-        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
-        compact={compact}
-      />
+      {!isInPeekModal && (
+        <EntryHeader
+          entryId={entry.entries.id}
+          view={view}
+          className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+          compact={compact}
+        />
+      )}
 
       <div className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible">
         <EntryTimelineSidebar entryId={entry.entries.id} />

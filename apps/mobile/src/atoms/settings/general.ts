@@ -1,41 +1,18 @@
-import type { GeneralSettings } from "@/src/interfaces/settings/general"
+import { defaultGeneralSettings } from "@follow/shared/src/settings/defaults"
+import type { GeneralSettings } from "@follow/shared/src/settings/interface"
+
 import { getDeviceLanguage } from "@/src/lib/i18n"
 
 import { createSettingAtom } from "./internal/helper"
 
-const createDefaultSettings = (): GeneralSettings => ({
-  // App
-  language: getDeviceLanguage(),
-
-  // Action
-  summary: false,
-  translation: false,
-  actionLanguage: getDeviceLanguage(),
-
-  // Data control
-
-  sendAnonymousData: true,
-
-  autoGroup: true,
-
-  // view
-  unreadOnly: true,
-  // mark unread
-  scrollMarkUnread: true,
-
-  renderMarkUnread: false,
-  // UX
-  groupByDate: true,
-  autoExpandLongSocialMedia: false,
-
-  // Secure
-  jumpOutLinkWarn: true,
-  // TTS
-  voice: "en-US-AndrewMultilingualNeural",
-
-  // Content
-  openLinksInApp: true,
-})
+const createDefaultSettings = (): GeneralSettings => {
+  const deviceLanguage = getDeviceLanguage()
+  return {
+    ...defaultGeneralSettings,
+    actionLanguage: deviceLanguage,
+    language: deviceLanguage,
+  }
+}
 
 export const {
   useSettingKey: useGeneralSettingKey,
@@ -49,3 +26,11 @@ export const {
 
   settingAtom: __generalSettingAtom,
 } = createSettingAtom("general", createDefaultSettings)
+
+export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
+  "sendAnonymousData",
+  "language",
+  "appLaunchOnStartup",
+  "dataPersist",
+  "voice",
+]

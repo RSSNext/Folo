@@ -2,7 +2,7 @@ import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
-import { memo, useCallback, useContext, useMemo } from "react"
+import { memo, useCallback, useContext, useMemo, useRef } from "react"
 import type { NativeSyntheticEvent } from "react-native"
 import { StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
@@ -124,6 +124,9 @@ export const WrappedScreenItem: FC<
       },
       [navigation, screenId],
     )
+
+    const ref = useRef<View>(null)
+
     return (
       <ScreenItemContext.Provider value={ctxValue}>
         <ScreenOptionsContext.Provider value={screenOptionsCtxValue}>
@@ -135,6 +138,7 @@ export const WrappedScreenItem: FC<
             }}
             key={screenId}
             screenId={screenId}
+            ref={ref}
             stackPresentation={stackPresentation}
             style={[
               StyleSheet.absoluteFill,

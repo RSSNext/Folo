@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 
 import { setFeedUnreadDirty } from "~/atoms/feed"
+import { INBOX_PREFIX_ID } from "~/constants"
 import { apiClient } from "~/lib/api-fetch"
 import { FeedUnreadService } from "~/services"
 
@@ -74,17 +75,25 @@ class FeedUnreadActions {
    * @returns previous value
    */
   incrementByFeedId(feedId: string, inc: number) {
+    const finalFeedId = feedId.startsWith(INBOX_PREFIX_ID)
+      ? feedId.slice(INBOX_PREFIX_ID.length)
+      : feedId
+
     const state = get()
-    const cur = state.data[feedId]
+    const cur = state.data[finalFeedId]
     const nextValue = Math.max(0, (cur || 0) + inc)
 
-    this.internal_setValue([[feedId, nextValue]])
-    setFeedUnreadDirty(feedId)
+    this.internal_setValue([[finalFeedId, nextValue]])
+    setFeedUnreadDirty(finalFeedId)
     return cur
   }
 
   updateByFeedId(feedId: string, unread: number) {
-    this.internal_setValue([[feedId, unread]])
+    const finalFeedId = feedId.startsWith(INBOX_PREFIX_ID)
+      ? feedId.slice(INBOX_PREFIX_ID.length)
+      : feedId
+
+    this.internal_setValue([[finalFeedId, unread]])
   }
 
   subscribeUnreadCount(fn: (count: number) => void, immediately?: boolean) {

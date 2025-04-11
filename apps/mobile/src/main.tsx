@@ -44,18 +44,18 @@ function RootComponent() {
         >
           <App>
             <TabRoot>
-              <TabScreen title={t("tabs.home")}>
+              <TabScreen title={t("tabs.home")} identifier="IndexTabScreen">
                 <IndexTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.subscriptions")}>
+              <TabScreen title={t("tabs.subscriptions")} identifier="SubscriptionsTabScreen">
                 <SubscriptionsTabScreen />
               </TabScreen>
 
-              <TabScreen title={t("tabs.discover")}>
+              <TabScreen title={t("tabs.discover")} identifier="DiscoverTabScreen">
                 <DiscoverTabScreen />
               </TabScreen>
-              <TabScreen title={t("tabs.settings")}>
+              <TabScreen title={t("tabs.settings")} identifier="SettingsTabScreen">
                 <SettingsTabScreen />
               </TabScreen>
 

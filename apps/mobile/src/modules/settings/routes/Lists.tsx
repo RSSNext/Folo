@@ -8,7 +8,7 @@ import { useColor, useColors } from "react-native-uikit-colors"
 import { Balance } from "@/src/components/common/Balance"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -41,24 +41,28 @@ export const ListsScreen = () => {
   const lists = useOwnedLists()
 
   return (
-    <SafeNavigationScrollView nestedScrollEnabled className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("titles.lists")}
-        headerRight={useCallback(
-          () => (
-            <AddListButton />
-          ),
-          [],
-        )}
-      />
-
+    <SafeNavigationScrollView
+      nestedScrollEnabled
+      className="bg-system-grouped-background"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.lists")}
+          headerRight={useCallback(
+            () => (
+              <AddListButton />
+            ),
+            [],
+          )}
+        />
+      }
+    >
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell
             title={t("titles.lists")}
             description={t("lists.info")}
             icon={<RadaCuteFiIcon height={40} width={40} color="#fff" />}
-            iconBackgroundColor="#34D399"
+            iconBackgroundColor="#7DD3FC"
           />
         </GroupedInsetListCard>
       </View>

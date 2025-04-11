@@ -1,5 +1,4 @@
 import type { FC } from "react"
-import { View } from "react-native"
 
 import { useSortedUngroupedSubscription } from "@/src/store/subscription/hooks"
 
@@ -8,18 +7,18 @@ import { SubscriptionItem } from "./items/SubscriptionItem"
 
 export const UnGroupedList: FC<{
   subscriptionIds: string[]
-}> = ({ subscriptionIds }) => {
+  isGroupLast?: boolean
+}> = ({ subscriptionIds, isGroupLast }) => {
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
   const sortedSubscriptionIds = useSortedUngroupedSubscription(subscriptionIds, sortBy, sortOrder)
 
-  return (
-    <>
-      {sortedSubscriptionIds.map((id) => (
-        <View key={id}>
-          <SubscriptionItem key={id} id={id} isFirst={false} isLast={false} />
-        </View>
-      ))}
-    </>
-  )
+  return sortedSubscriptionIds.map((id, index) => (
+    <SubscriptionItem
+      key={id}
+      id={id}
+      isFirst={false}
+      isLast={!!isGroupLast && index === sortedSubscriptionIds.length - 1}
+    />
+  ))
 }

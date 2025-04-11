@@ -2,15 +2,10 @@ import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
-import { ScrollView, useWindowDimensions, View } from "react-native"
-import Animated, {
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated"
+import { ScrollView, Text, useWindowDimensions, View } from "react-native"
+import { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
-import { ReAnimatedTouchableOpacity } from "@/src/components/common/AnimatedComponents"
+import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
 import type { ViewDefinition } from "@/src/constants/views"
@@ -19,6 +14,7 @@ import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 import { useUnreadCountByView } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
+import { UnreadCount } from "../subscription/items/UnreadCount"
 import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMenu"
 
 const ACTIVE_WIDTH = 180
@@ -87,7 +83,7 @@ function ItemWrapper({
   }, [isActive, width, textWidth, activeWidth])
 
   return (
-    <ReAnimatedTouchableOpacity
+    <ReAnimatedPressable
       className="relative flex h-12 flex-row items-center justify-center gap-2 overflow-hidden rounded-[1.2rem]"
       onPress={onPress}
       style={useAnimatedStyle(() => ({
@@ -106,7 +102,7 @@ function ItemWrapper({
       >
         {children}
       </View>
-    </ReAnimatedTouchableOpacity>
+    </ReAnimatedPressable>
   )
 }
 
@@ -156,17 +152,15 @@ function ViewItem({
           <view.icon color={isActive ? "#fff" : textColor} height={21} width={21} />
           {isActive ? (
             <>
-              <Animated.Text
-                key={view.name}
-                exiting={FadeOut}
-                className="text-sm font-semibold text-white"
-                numberOfLines={1}
-              >
+              <Text key={view.name} className="text-sm font-semibold text-white" numberOfLines={1}>
                 {t(view.name)}
-              </Animated.Text>
-              {!!unreadCount && (
-                <Animated.View exiting={FadeOut} className="size-1.5 rounded-full bg-white" />
-              )}
+              </Text>
+              <UnreadCount
+                max={99}
+                unread={unreadCount}
+                dotClassName="size-1.5 rounded-full bg-white"
+                textClassName="text-white font-bold"
+              />
             </>
           ) : (
             !!unreadCount &&

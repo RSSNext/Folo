@@ -1,5 +1,5 @@
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Markdown } from "@/src/components/ui/typography/Markdown"
@@ -97,9 +97,8 @@ export const TermsScreen: NavigationControllerView = () => {
     <SafeNavigationScrollView
       className="bg-system-background"
       contentInsetAdjustmentBehavior="never"
+      Header={<NavigationBlurEffectHeaderView title="Terms of Service" />}
     >
-      <NavigationBlurEffectHeader title="Terms of Service" />
-
       <TermsMarkdown />
     </SafeNavigationScrollView>
   )

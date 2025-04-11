@@ -27,6 +27,9 @@ export interface GeneralSettings {
 
   // Pro feature
   enhancedSettings: boolean
+
+  // @mobile
+  openLinksInApp: boolean
 }
 
 export interface UISettings {
@@ -65,6 +68,10 @@ export interface UISettings {
     main: (string | number)[]
     more: (string | number)[]
   }
+
+  // @mobile
+  showUnreadCountViewAndSubscriptionMobile: boolean
+  showUnreadCountBadgeMobile: boolean
 }
 
 export interface IntegrationSettings {
@@ -94,4 +101,9 @@ export interface IntegrationSettings {
   enableReadeck: boolean
   readeckEndpoint: string
   readeckToken: string
+
+  // cubox
+  enableCubox: boolean
+  cuboxToken: string
+  enableCuboxAutoMemo: boolean
 }

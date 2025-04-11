@@ -325,12 +325,24 @@ export const InternalNavigationHeader = ({
           }}
         >
           <View className="shrink" style={{ flexBasis: rightWidth }} />
-          {isLoading && (
-            <View className="mr-2">
-              <PlatformActivityIndicator size="small" />
+
+          {headerTitleAbsolute ? (
+            <View />
+          ) : (
+            <View>
+              {headerTitle}
+
+              {/* Only show loading indicator when headerTitle is not absolute */}
+              {!headerTitleAbsolute && isLoading && (
+                <View
+                  className="absolute right-0"
+                  style={{ transform: [{ translateX: "100%" }, { scale: 0.74 }] }}
+                >
+                  <PlatformActivityIndicator size="small" />
+                </View>
+              )}
             </View>
           )}
-          {headerTitleAbsolute ? <View /> : headerTitle}
           <View className="shrink" style={{ flexBasis: leftWidth }} />
         </Animated.View>
 

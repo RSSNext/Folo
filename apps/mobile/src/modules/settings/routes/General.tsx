@@ -8,7 +8,7 @@ import type { MobileSupportedLanguages } from "@/src/@types/constants"
 import { currentSupportedLanguages } from "@/src/@types/constants"
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Select } from "@/src/components/ui/form/Select"
@@ -22,8 +22,7 @@ import { Switch } from "@/src/components/ui/switch/Switch"
 import { updateDayjsLocale } from "@/src/lib/i18n"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
-function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
-  const { t } = useTranslation("settings")
+export function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
   const { t: tLang } = useTranslation("lang")
   const languageMapWithTranslation = useMemo(() => {
     const languageKeys =
@@ -42,24 +41,32 @@ function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLangua
   const language = useGeneralSettingKey(settingKey)
 
   return (
+    <Select
+      value={language}
+      onValueChange={(value) => {
+        setGeneralSetting(settingKey, value)
+        if (settingKey === "language") {
+          i18next.changeLanguage(value)
+          updateDayjsLocale(value)
+        }
+      }}
+      displayValue={tLang(`langs.${language}` as any)}
+      options={languageMapWithTranslation}
+    />
+  )
+}
+
+function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
+  const { t } = useTranslation("settings")
+
+  return (
     <GroupedInsetListBaseCell>
       <Text className="text-label">
         {settingKey === "language" ? t("general.language") : t("general.action_language.label")}
       </Text>
 
       <View className="w-[150px]">
-        <Select
-          value={language}
-          onValueChange={(value) => {
-            setGeneralSetting(settingKey, value)
-            if (settingKey === "language") {
-              i18next.changeLanguage(value)
-              updateDayjsLocale(value)
-            }
-          }}
-          displayValue={tLang(`langs.${language}` as any)}
-          options={languageMapWithTranslation}
-        />
+        <LanguageSelect settingKey={settingKey} />
       </View>
     </GroupedInsetListBaseCell>
   )
@@ -80,13 +87,15 @@ export const GeneralScreen: NavigationControllerView = () => {
   const openLinksInApp = useGeneralSettingKey("openLinksInApp")
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("titles.general")} />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("titles.general")} />}
+    >
       {/* Language */}
 
-      <GroupedInsetListSectionHeader label={t("general.language")} />
+      <GroupedInsetListSectionHeader label={t("general.language")} marginSize="small" />
       <GroupedInsetListCard>
-        <LanguageSelect settingKey="language" />
+        <LanguageSetting settingKey="language" />
       </GroupedInsetListCard>
 
       {/* Content Behavior */}
@@ -110,7 +119,7 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <LanguageSelect settingKey="actionLanguage" />
+        <LanguageSetting settingKey="actionLanguage" />
       </GroupedInsetListCard>
 
       {/* Subscriptions */}

@@ -14,6 +14,10 @@ export async function initializeAppCheck() {
       provider: __DEV__ ? "debug" : "appAttest",
       debugToken: env.APP_CHECK_DEBUG_TOKEN,
     },
+    android: {
+      provider: __DEV__ ? "debug" : "playIntegrity",
+      debugToken: env.APP_CHECK_DEBUG_TOKEN,
+    },
     isTokenAutoRefreshEnabled: true,
   })
 

@@ -4,6 +4,7 @@
   "operation.copy_link": "Копировать ссылку",
   "operation.delete_category": "Удалить категорию",
   "operation.edit": "Редактировать",
+  "operation.error_since": "Ошибка с",
   "operation.mark_all_as_read": "Отметить все как прочитанное",
   "operation.mark_all_as_read_confirm": "Подтвердить отметку всего как прочитанное?",
   "operation.mark_all_as_read_which": "Отметить {{which}} как прочитанное",

@@ -1,4 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { nextFrame } from "@follow/utils"
 import type {
   FlashListProps,
   MasonryFlashListProps,
@@ -7,13 +8,15 @@ import type {
 import { FlashList, MasonryFlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
 import type { ElementRef, RefObject } from "react"
-import { forwardRef, useCallback, useContext } from "react"
+import { forwardRef, useCallback, useContext, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
-import { RefreshControl } from "react-native"
+import { findNodeHandle, RefreshControl } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
+import { BottomTabBarBackgroundContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarBackgroundContext"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { isScrollToEnd } from "@/src/lib/native"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { usePrefetchSubscription } from "@/src/store/subscription/hooks"
@@ -29,21 +32,33 @@ type Props = {
 export const TimelineSelectorList = forwardRef<
   FlashList<any>,
   Props & Omit<FlashListProps<any>, "onRefresh">
->(({ onRefresh, isRefetching, ...props }, ref) => {
+>(({ onRefresh, isRefetching, ...props }, forwardedRef) => {
+  const ref = useRef<FlashList<any>>(null)
+  useImperativeHandle(forwardedRef, () => ref.current!)
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
 
   const headerHeight = useHeaderHeight()
   const { reAnimatedScrollY, scrollViewHeight, scrollViewContentHeight } =
     useContext(ScreenItemContext)!
-
+  const { opacity } = useContext(BottomTabBarBackgroundContext)
+  const checkScrollToBottom = useCallback(() => {
+    const handle = findNodeHandle(ref.current!)
+    if (!handle) {
+      return
+    }
+    isScrollToEnd(handle).then((isEnd) => {
+      opacity.value = isEnd ? 0 : 1
+    })
+  }, [opacity])
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       props.onScroll?.(e)
 
       reAnimatedScrollY.value = e.nativeEvent.contentOffset.y
+      checkScrollToBottom()
     },
-    [props, reAnimatedScrollY],
+    [props, reAnimatedScrollY, checkScrollToBottom],
   )
 
   const tabBarHeight = useBottomTabBarHeight()
@@ -99,6 +114,11 @@ export const TimelineSelectorList = forwardRef<
       }}
       {...props}
       onScroll={onScroll}
+      onEndReached={() => {
+        nextFrame(() => {
+          props.onEndReached?.()
+        })
+      }}
     />
   )
 })

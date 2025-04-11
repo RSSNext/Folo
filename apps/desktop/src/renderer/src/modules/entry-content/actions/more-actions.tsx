@@ -1,4 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
 
@@ -41,30 +42,32 @@ export const MoreActions = ({ entryId, view }: { entryId: string; view?: FeedVie
       <DropdownMenuTrigger asChild>
         <ActionButton icon={<i className="i-mgc-more-1-cute-re" />} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {availableActions.map((config) => (
-          <CommandDropdownMenuItem
-            key={config.id}
-            commandId={config.id}
-            onClick={config.onClick}
-            active={config.active}
-          />
-        ))}
-        {availableActions.length > 0 && <DropdownMenuSeparator />}
-        {extraAction.map((config) => (
-          <CommandDropdownMenuItem
-            key={config.id}
-            commandId={config.id}
-            onClick={config.onClick}
-            active={config.active}
-          />
-        ))}
-      </DropdownMenuContent>
+      <RootPortal>
+        <DropdownMenuContent>
+          {availableActions.map((config) => (
+            <CommandDropdownMenuItem
+              key={config.id}
+              commandId={config.id}
+              onClick={config.onClick}
+              active={config.active}
+            />
+          ))}
+          {availableActions.length > 0 && <DropdownMenuSeparator />}
+          {extraAction.map((config) => (
+            <CommandDropdownMenuItem
+              key={config.id}
+              commandId={config.id}
+              onClick={config.onClick}
+              active={config.active}
+            />
+          ))}
+        </DropdownMenuContent>
+      </RootPortal>
     </DropdownMenu>
   )
 }
 
-const CommandDropdownMenuItem = ({
+export const CommandDropdownMenuItem = ({
   commandId,
   onClick,
   active,

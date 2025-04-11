@@ -1,6 +1,7 @@
 import type { Credentials } from "@eneris/push-receiver/dist/types"
 import type { UserModel } from "@follow/models"
 
+import { isLinux, isMacOS, isWindows } from "~/env"
 import { logger } from "~/logger"
 
 import { apiClient } from "./api-client"
@@ -30,7 +31,7 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
       await apiClient.messaging.$post({
         json: {
           token: credentials.fcm.token,
-          channel: "desktop",
+          channel: isMacOS ? "macos" : isWindows ? "windows" : isLinux ? "linux" : "desktop",
         },
       })
     } catch (error) {

@@ -3,7 +3,12 @@ import type { FeedModel, FeedOrListRespModel, InboxModel, ListModel } from "@fol
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER, ROUTE_FEED_PENDING } from "~/constants"
+import {
+  FEED_COLLECTION_LIST,
+  ROUTE_FEED_IN_FOLDER,
+  ROUTE_FEED_IN_INBOX,
+  ROUTE_FEED_PENDING,
+} from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { useInboxStore } from "../inbox"
@@ -86,6 +91,9 @@ export const useFeedHeaderTitle = () => {
     default: {
       if (currentFeedId?.startsWith(ROUTE_FEED_IN_FOLDER)) {
         return currentFeedId.replace(ROUTE_FEED_IN_FOLDER, "")
+      }
+      if (currentFeedId?.startsWith(ROUTE_FEED_IN_INBOX)) {
+        return currentFeedId.replace(ROUTE_FEED_IN_INBOX, "")
       }
       return feedTitle || listTitle
     }

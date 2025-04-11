@@ -8,7 +8,7 @@ import { Pressable, Text, View } from "react-native"
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -30,7 +30,7 @@ import { toastFetchError } from "@/src/lib/error-parser"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
-import { accentColor } from "@/src/theme/colors"
+import { accentColor, useColor } from "@/src/theme/colors"
 
 import { useTOTPModalWrapper } from "../hooks/useTOTPModalWrapper"
 
@@ -60,24 +60,32 @@ export const InvitationsScreen: NavigationControllerView = () => {
     setStringAsync(code)
     toast.success("Copied to clipboard")
   }
+
+  const secondaryLabelColor = useColor("secondaryLabel")
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("titles.invitations")}
-        headerRight={<GenerateButton />}
-      />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.invitations")}
+          headerRight={<GenerateButton />}
+        />
+      }
+    >
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell
             title={t("titles.invitations")}
             icon={<LoveCuteFiIcon height={40} width={40} color="#fff" />}
-            iconBackgroundColor={accentColor}
+            iconBackgroundColor={"#EC4899"}
           >
             <Trans
               ns="settings"
               i18nKey="invitation.earlyAccess"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+                <Text className="text-label mt-3 text-left text-base leading-tight">
+                  {children}
+                </Text>
               )}
               components={{ strong: <Text className="font-bold" /> }}
             />
@@ -85,7 +93,9 @@ export const InvitationsScreen: NavigationControllerView = () => {
               ns="settings"
               i18nKey="invitation.generateCost"
               parent={({ children }: { children: React.ReactNode }) => (
-                <Text className="text-label mt-3 text-base leading-tight">{children}</Text>
+                <Text className="text-label mt-3 text-left text-base leading-tight">
+                  {children}
+                </Text>
               )}
               values={{
                 INVITATION_PRICE: serverConfigs?.INVITATION_PRICE,
@@ -120,7 +130,12 @@ export const InvitationsScreen: NavigationControllerView = () => {
             <ContextMenu.Trigger>
               <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
                 <View className="mr-2 shrink flex-row items-center gap-4">
-                  <UserAvatar size={26} image={invitation.users?.image} preview={false} />
+                  <UserAvatar
+                    size={26}
+                    image={invitation.users?.image}
+                    preview={false}
+                    color={secondaryLabelColor}
+                  />
                   <View className="min-w-0 shrink">
                     <Text
                       className={cn("text-label", !invitation.users && "text-secondary-label")}

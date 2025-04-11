@@ -5,10 +5,11 @@ import { Text, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColors } from "react-native-uikit-colors"
 
+import { Link } from "@/src/components/common/Link"
 import { SwipeableGroupProvider, SwipeableItem } from "@/src/components/common/SwipeableItem"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -19,6 +20,7 @@ import {
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Switch } from "@/src/components/ui/switch/Switch"
+import { Book6CuteReIcon } from "@/src/icons/book_6_cute_re"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import {
@@ -29,36 +31,52 @@ import {
 } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
 import type { ActionRule } from "@/src/store/action/types"
+import { accentColor } from "@/src/theme/colors"
 
 import { EditRuleScreen } from "./EditRule"
 
 export const ActionsScreen = () => {
   const { t } = useTranslation("settings")
+  const { t: tCommon } = useTranslation("common")
   const { isLoading } = usePrefetchActions()
   const rules = useActionRules()
   const isDirty = useIsActionDataDirty()
 
   return (
-    <SafeNavigationScrollView nestedScrollEnabled className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("titles.actions")}
-        headerRight={useCallback(
-          () => (
-            <SaveRuleButton disabled={!isDirty} />
-          ),
-          [isDirty],
-        )}
-        promptBeforeLeave={isDirty}
-      />
-
+    <SafeNavigationScrollView
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("titles.actions")}
+          headerRight={useCallback(
+            () => (
+              <SaveRuleButton disabled={!isDirty} />
+            ),
+            [isDirty],
+          )}
+          promptBeforeLeave={isDirty}
+        />
+      }
+      nestedScrollEnabled
+      className="bg-system-grouped-background"
+    >
       <View className="mt-6">
         <GroupedInsetListCard>
           <GroupedInformationCell
             title={t("titles.actions")}
             description={t("actions.info")}
             icon={<Magic2CuteFiIcon height={40} width={40} color="#fff" />}
-            iconBackgroundColor="#059669"
-          />
+            iconBackgroundColor="#9333EA"
+          >
+            <Link
+              className="text-accent border-accent center mt-4 w-44 rounded-full border py-0.5"
+              href="https://github.com/RSSNext/Folo/wiki/Actions"
+            >
+              <View className="flex w-full flex-row items-center justify-center gap-1">
+                <Book6CuteReIcon color={accentColor} width={16} height={16} />
+                <Text className="text-accent">{tCommon("words.documentation")}</Text>
+              </View>
+            </Link>
+          </GroupedInformationCell>
         </GroupedInsetListCard>
       </View>
 

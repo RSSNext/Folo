@@ -1,4 +1,4 @@
-import { FeedViewType, views } from "@follow/constants"
+import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { easeOut } from "framer-motion"
@@ -11,17 +11,17 @@ import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
-import { HotKeyScopeMap, ROUTE_ENTRY_PENDING, ROUTE_FEED_PENDING } from "~/constants"
+import { HotKeyScopeMap, ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { EntryPlaceholderDaily } from "~/modules/ai/ai-daily/EntryPlaceholderDaily"
 import { EntryContent } from "~/modules/entry-content"
-import { EntryPlaceholderLogo } from "~/modules/entry-content/components/EntryPlaceholderLogo"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
+
+import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
 
 export const RightContentDesktop = () => {
   const { entryId } = useParams()
-  const { feedId, view } = useRouteParams()
+  const { view } = useRouteParams()
   const navigate = useNavigateEntry()
 
   const settingWideMode = useRealInWideMode()
@@ -69,16 +69,7 @@ export const RightContentDesktop = () => {
             }}
           />
         ) : !settingWideMode ? (
-          <m.div
-            className="center size-full flex-col"
-            initial={{ opacity: 0.01, y: 300 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <EntryPlaceholderLogo />
-            {feedId === ROUTE_FEED_PENDING && view === FeedViewType.Articles && (
-              <EntryPlaceholderDaily view={view} />
-            )}
-          </m.div>
+          <EntryContentPlaceholder />
         ) : null}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>

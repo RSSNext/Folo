@@ -196,9 +196,10 @@ const ShikiCode: FC<
     >
       <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
       <CopyButton
+        variant="outline"
         value={code}
         style={{
-          backgroundColor: getLanguageColor(language),
+          color: getLanguageColor(language),
         }}
         className={"absolute right-2 top-2 opacity-0 duration-200 group-hover:opacity-100"}
       />

@@ -5,7 +5,7 @@ import { View } from "react-native"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
@@ -49,20 +49,23 @@ export const EditEmailScreen: NavigationControllerView = () => {
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false)
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title={t("profile.edit_email")}
-        headerRight={
-          <HeaderSubmitTextButton
-            isLoading={isPending}
-            isValid={!!(email && newEmailIsValid && isDirty)}
-            onPress={() => {
-              updateEmail()
-            }}
-          />
-        }
-      />
-
+    <SafeNavigationScrollView
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={t("profile.edit_email")}
+          headerRight={
+            <HeaderSubmitTextButton
+              isLoading={isPending}
+              isValid={!!(email && newEmailIsValid && isDirty)}
+              onPress={() => {
+                updateEmail()
+              }}
+            />
+          }
+        />
+      }
+      className="bg-system-grouped-background"
+    >
       <View className="mt-4 w-full">
         <GroupedInsetListCard>
           <GroupedInsetListCell

@@ -14,8 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { SetBottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { gentleSpringPreset, quickSpringPreset, softSpringPreset } from "@/src/constants/spring"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
-import type { TabScreenProps } from "@/src/lib/navigation/bottom-tab/TabScreen"
-import type { TabbarIconProps } from "@/src/lib/navigation/bottom-tab/types"
+import type { TabbarIconProps, TabScreenProps } from "@/src/lib/navigation/bottom-tab/types"
 import { PlayerTabBar } from "@/src/modules/player/PlayerTabBar"
 import { accentColor } from "@/src/theme/colors"
 
@@ -46,7 +45,14 @@ export const Tabbar: FC<{
   }, [tabBarVisible, translateY])
 
   const placeholderTabScreens = useMemo<TabScreenProps[]>(() => {
-    return [{ tabScreenIndex: 0, title: "", renderIcon: () => <View className="size-5" /> }]
+    return [
+      {
+        tabScreenIndex: 0,
+        title: "",
+        renderIcon: () => <View className="size-5" />,
+        identifier: "placeholder",
+      },
+    ]
   }, [])
 
   const renderTabScreens = tabScreens.length > 0 ? tabScreens : placeholderTabScreens

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
@@ -21,8 +21,10 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
   const rule = useActionRule(index)
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("actions.edit_webhook")} />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("actions.edit_webhook")} />}
+    >
       <GroupedInsetListSectionHeader label={t("actions.action_card.webhooks")} marginSize="small" />
       <GroupedInsetListCard>
         {rule?.result.webhooks?.map((webhook, webhookIndex) => (

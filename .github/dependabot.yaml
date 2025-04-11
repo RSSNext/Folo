@@ -45,13 +45,10 @@ updates:
         versions: [">0.1.2"]
     open-pull-requests-limit: 100
     groups:
-      minor:
+      minor-and-patch:
         applies-to: version-updates
         update-types:
           - "minor"
-      patch:
-        applies-to: version-updates
-        update-types:
           - "patch"
       pathed:
         patterns:

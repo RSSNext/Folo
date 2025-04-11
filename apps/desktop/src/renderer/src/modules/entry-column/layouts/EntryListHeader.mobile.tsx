@@ -8,7 +8,6 @@ import { useIsOnline } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
 import type { FC } from "react"
-import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 import { setGeneralSetting, useGeneralSettingKey } from "~/atoms/settings/general"
@@ -22,7 +21,7 @@ import { FeedColumnMobile } from "~/modules/app-layout/feed-column/mobile"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 
-import { MarkAllReadWithOverlay } from "../components/mark-all-button"
+import { MarkAllReadButton } from "../components/mark-all-button"
 import type { EntryListHeaderProps } from "./EntryListHeader.shared"
 import {
   AppendTaildingDivider,
@@ -61,11 +60,9 @@ export const EntryListHeader: FC<EntryListHeaderProps> = ({ refetch, isRefreshin
   const isList = !!listId
 
   const showQuickTimeline = useGeneralSettingKey("showQuickTimeline")
-  const containerRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <div
-      ref={containerRef}
       className={cn(
         "flex w-full flex-col pb-2 pr-4 transition-[padding] duration-300 ease-in-out",
         "pt-safe-offset-2.5 pl-6",
@@ -142,7 +139,7 @@ export const EntryListHeader: FC<EntryListHeaderProps> = ({ refetch, isRefreshin
                   <i className="i-mgc-round-cute-re" />
                 )}
               </ActionButton>
-              <MarkAllReadWithOverlay containerRef={containerRef} shortcut />
+              <MarkAllReadButton shortcut />
             </>
           )}
         </div>

@@ -39,5 +39,4 @@ DiscoverTabScreen.tabBarIcon = ({ focused, color }) => {
   return <Icon color={color} width={24} height={24} />
 }
 
-DiscoverTabScreen.title = "Discover"
 DiscoverTabScreen.lazy = true

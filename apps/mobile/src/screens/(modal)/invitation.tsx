@@ -4,7 +4,7 @@ import { View } from "react-native"
 
 import { HeaderSubmitButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
@@ -36,20 +36,23 @@ export const InvitationScreen: NavigationControllerView = () => {
   })
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader
-        title="Enter Invitation Code"
-        headerRight={
-          <HeaderSubmitButton
-            isLoading={isPending}
-            isValid={!!code}
-            onPress={() => {
-              applyInvitationCode()
-            }}
-          />
-        }
-      />
-
+    <SafeNavigationScrollView
+      Header={
+        <NavigationBlurEffectHeaderView
+          title="Enter Invitation Code"
+          headerRight={
+            <HeaderSubmitButton
+              isLoading={isPending}
+              isValid={!!code}
+              onPress={() => {
+                applyInvitationCode()
+              }}
+            />
+          }
+        />
+      }
+      className="bg-system-grouped-background"
+    >
       <View className="mt-8 w-full">
         <GroupedInsetListCard>
           <GroupedInsetListCell

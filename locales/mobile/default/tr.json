@@ -3,6 +3,7 @@
   "operation.copy_link": "Bağlantıyı kopyala",
   "operation.delete_category": "Kategoriyi sil",
   "operation.edit": "Düzenle",
+  "operation.error_since": "Hata başlangıcı",
   "operation.mark_all_as_read": "Tümünü okundu olarak işaretle",
   "operation.mark_all_as_read_confirm": "Tümünü okundu olarak işaretlemeyi onaylıyor musunuz?",
   "operation.mark_all_as_read_which": "{{which}} okundu olarak işaretlensin mi",

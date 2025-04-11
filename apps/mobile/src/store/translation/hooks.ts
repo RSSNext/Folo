@@ -1,20 +1,31 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQueries } from "@tanstack/react-query"
 import { useCallback } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import type { SupportedLanguages } from "@/src/lib/language"
 
-import { useEntry } from "../entry/hooks"
+import { useEntryList } from "../entry/hooks"
 import { translationSyncService, useTranslationStore } from "./store"
 
-export const usePrefetchEntryTranslation = (entryId: string) => {
-  const entry = useEntry(entryId)
-  const translation = useGeneralSettingKey("translation") || !!entry?.settings?.translation
+export const usePrefetchEntryTranslation = (entryIds: string[], withContent?: boolean) => {
+  const translation = useGeneralSettingKey("translation")
+  const entryList =
+    useEntryList(entryIds)
+      ?.filter((entry) => entry !== null && (translation || !!entry?.settings?.translation))
+      .map((entry) => entry!.id) || []
+
   const actionLanguage = useGeneralSettingKey("actionLanguage") as SupportedLanguages
-  return useQuery({
-    queryKey: ["entry-translation", entryId, actionLanguage],
-    queryFn: () => translationSyncService.generateTranslation(entryId, actionLanguage),
-    enabled: translation,
+
+  return useQueries({
+    queries: entryList.map((entryId) => ({
+      queryKey: ["translation", entryId, actionLanguage, withContent],
+      queryFn: () =>
+        translationSyncService.generateTranslation({
+          entryId,
+          language: actionLanguage,
+          withContent,
+        }),
+    })),
   })
 }
 

@@ -1,18 +1,15 @@
-import { createContextState } from "foxact/context-state"
-import { useContext } from "react"
+import type { PrimitiveAtom } from "jotai"
+import { createContext, useContext } from "react"
 
-export const [
-  CollapseStateProvider,
-  useCurrentCollapseId,
-  useSetCurrentCollapseId,
-  ____CollapseStateContext,
-] = createContextState<string | null>(null)
-
-export const [
-  CollapseGroupItemStateProvider,
-  useCollapseGroupItemState,
-  useSetCollapseGroupItemState,
-  ____CollapseGroupItemStateContext,
-] = createContextState<Record<string, boolean>>({})
-export const useCollapseId = () => useContext(____CollapseStateContext)
-export const useCollapseGroupItem = () => useContext(____CollapseGroupItemStateContext)
+export interface CollapseContextValue {
+  currentOpenCollapseIdAtom: PrimitiveAtom<string | null>
+  collapseGroupItemStateAtom: PrimitiveAtom<Record<string, boolean>>
+}
+export const CollaspeContext = createContext<CollapseContextValue>(null!)
+export const useCollapseContext = () => {
+  const ctx = useContext(CollaspeContext)
+  if (!ctx) {
+    throw new Error("CollapseContext not found")
+  }
+  return ctx
+}

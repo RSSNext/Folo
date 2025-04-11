@@ -1,6 +1,6 @@
-# Contributing to Follow
+# Contributing to Folo
 
-Thank you for considering contributing to Follow! We welcome contributions from the community to help improve and expand the project.
+Thank you for considering contributing to Folo! We welcome contributions from the community to help improve and expand the project.
 
 ## Getting Started
 
@@ -87,7 +87,7 @@ To develop in the mobile app, follow these steps:
    cd apps/mobile
    ```
 
-2. Build and install Follow(dev) app from source: (This step will take a while and only need to be done once)
+2. Build and install Folo(dev) app from source: (This step will take a while and only need to be done once)
 
    ```sh
    pnpm expo prebuild --clean # Optional
@@ -113,7 +113,7 @@ To develop native iOS modules, follow these steps:
 2. Open project in Xcode:
 
    ```sh
-   open Follow.xcworkspace
+   open Folo.xcworkspace
    ```
 
 3. Open `Pods` in left sidebar and select `FollowNative`:
@@ -140,4 +140,4 @@ We look forward to your contributions!
 
 ## License
 
-By contributing to Follow, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.
+By contributing to Folo, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.

@@ -1,5 +1,7 @@
+import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { transformVideoUrl } from "@follow/utils"
+import { memo } from "react"
 import { Linking } from "react-native"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
@@ -13,7 +15,7 @@ import { unreadSyncService } from "@/src/store/unread/store"
 import { VideoContextMenu } from "../../context-menu/video"
 import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 
-export function EntryVideoItem({ id }: { id: string }) {
+export const EntryVideoItem = memo(({ id }: { id: string }) => {
   const item = useEntry(id)
 
   if (!item || !item.media) {
@@ -46,11 +48,13 @@ export function EntryVideoItem({ id }: { id: string }) {
             width: 200,
           }}
         />
-        <EntryGridFooter entryId={id} />
+        <EntryGridFooter entryId={id} view={FeedViewType.Videos} />
       </ItemPressable>
     </VideoContextMenu>
   )
-}
+})
+
+EntryVideoItem.displayName = "EntryVideoItem"
 
 const parseSchemeLink = (url: string) => {
   let urlObject: URL

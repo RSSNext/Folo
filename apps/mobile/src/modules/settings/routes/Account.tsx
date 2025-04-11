@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { Alert, Text, View } from "react-native"
 
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { GroupedInsetListCardItemStyle } from "@/src/components/ui/grouped/GroupedInsetListCardItemStyle"
@@ -70,9 +70,10 @@ const useAccount = () => {
 export const AccountScreen = () => {
   const { t } = useTranslation("settings")
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("titles.account")} />
-
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("titles.account")} />}
+    >
       <AuthenticationSection />
 
       <SecuritySection />

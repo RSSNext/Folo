@@ -1,21 +1,31 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useSetAtom, useStore } from "jotai"
 import type { PropsWithChildren } from "react"
-import { forwardRef, useContext, useLayoutEffect, useState } from "react"
+import {
+  forwardRef,
+  useContext,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import type { ScrollView, ScrollViewProps, StyleProp, ViewStyle } from "react-native"
-import { View } from "react-native"
+import { findNodeHandle, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
-import { useAnimatedScrollHandler } from "react-native-reanimated"
+import { runOnJS, useAnimatedScrollHandler } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { isScrollToEnd } from "@/src/lib/native"
+import { useInTabScreen } from "@/src/lib/navigation/bottom-tab/hooks"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
 import { ReAnimatedScrollView } from "../../common/AnimatedComponents"
 import type { InternalNavigationHeaderProps } from "../header/NavigationHeader"
 import { InternalNavigationHeader } from "../header/NavigationHeader"
+import { BottomTabBarBackgroundContext } from "../tabbar/contexts/BottomTabBarBackgroundContext"
 import { getDefaultHeaderHeight } from "../utils"
 import {
   NavigationHeaderHeightContext,
@@ -34,6 +44,8 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
 
   contentViewStyle?: StyleProp<ViewStyle>
   contentViewClassName?: string
+
+  Header?: React.ReactNode
 } & PropsWithChildren
 
 export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScrollViewProps>(
@@ -46,9 +58,10 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
       reanimatedScrollY,
       contentViewClassName,
       contentViewStyle,
+      Header,
       ...props
     },
-    ref,
+    forwardedRef,
   ) => {
     const insets = useSafeAreaInsets()
     const tabBarHeight = useBottomTabBarHeight()
@@ -60,12 +73,32 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
     )
     const screenCtxValue = useContext(ScreenItemContext)
 
+    const ref = useRef<ScrollView>(null)
+    useImperativeHandle(forwardedRef, () => ref.current!)
+    const { opacity } = useContext(BottomTabBarBackgroundContext)
+
+    const inTabScreen = useInTabScreen()
+
+    function checkScrollToBottom() {
+      if (!inTabScreen) {
+        return
+      }
+      const handle = findNodeHandle(ref.current!)
+      if (!handle) {
+        return
+      }
+
+      isScrollToEnd(handle).then((isEnd) => {
+        opacity.value = isEnd ? 0 : 1
+      })
+    }
     const scrollHandler = useAnimatedScrollHandler({
       onScroll: (event) => {
         if (reanimatedScrollY) {
           reanimatedScrollY.value = event.contentOffset.y
         }
 
+        runOnJS(checkScrollToBottom)()
         screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
       },
     })
@@ -73,6 +106,7 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
     return (
       <NavigationHeaderHeightContext.Provider value={headerHeight}>
         <SetNavigationHeaderHeightContext.Provider value={setHeaderHeight}>
+          {Header}
           <ReAnimatedScrollView
             ref={ref}
             onScroll={scrollHandler}
@@ -85,6 +119,7 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
             onLayout={useTypeScriptHappyCallback(
               (e) => {
                 screenCtxValue.scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight
+                checkScrollToBottom()
               },
               [screenCtxValue.scrollViewHeight, headerHeight],
             )}
@@ -107,6 +142,35 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
     )
   },
 )
+
+export const NavigationBlurEffectHeaderView = ({
+  headerHideableBottom,
+  headerHideableBottomHeight,
+  headerTitleAbsolute,
+  ...props
+}: InternalNavigationHeaderProps & {
+  blurThreshold?: number
+  headerHideableBottom?: () => React.ReactNode
+  headerHideableBottomHeight?: number
+  headerTitleAbsolute?: boolean
+}) => {
+  const hideableBottom = headerHideableBottom?.()
+  return (
+    <View className="absolute inset-x-0 top-0 z-[99]">
+      <InternalNavigationHeader
+        title={props.title}
+        headerRight={props.headerRight}
+        headerLeft={props.headerLeft}
+        hideableBottom={hideableBottom}
+        hideableBottomHeight={headerHideableBottomHeight}
+        headerTitleAbsolute={headerTitleAbsolute}
+        headerTitle={props.headerTitle}
+        promptBeforeLeave={props.promptBeforeLeave}
+        isLoading={props.isLoading}
+      />
+    </View>
+  )
+}
 
 export const NavigationBlurEffectHeader = ({
   headerHideableBottom,

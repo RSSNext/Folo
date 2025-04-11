@@ -1,4 +1,5 @@
 import { RelativeTime } from "@follow/components/ui/datetime/index.jsx"
+import { MagneticHoverEffect } from "@follow/components/ui/effect/MagneticHoverEffect.js"
 import { FeedIcon } from "@follow/components/ui/feed-icon/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { cn } from "@follow/utils/utils"
@@ -22,7 +23,7 @@ function NormalListItemImpl({
   const displayTime = entry.entries.publishedAt
 
   return (
-    <div className={"group relative flex gap-2 rounded-lg py-4 pl-3 pr-2 duration-200"}>
+    <MagneticHoverEffect className={"group relative flex gap-2 py-4 pl-3 pr-2"}>
       <FeedIcon feed={feed} fallback entry={entry.entries} />
       <div className={"-mt-0.5 flex-1 text-sm leading-tight"}>
         <div
@@ -75,7 +76,7 @@ function NormalListItemImpl({
           </div>
         )}
       </div>
-    </div>
+    </MagneticHoverEffect>
   )
 }
 

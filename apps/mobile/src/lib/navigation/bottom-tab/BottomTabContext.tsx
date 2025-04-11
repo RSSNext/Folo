@@ -1,7 +1,7 @@
 import type { PrimitiveAtom } from "jotai"
 import { createContext } from "react"
 
-import type { TabScreenProps } from "./TabScreen"
+import type { TabScreenProps } from "./types"
 
 export interface BottomTabContextType {
   currentIndexAtom: PrimitiveAtom<number>

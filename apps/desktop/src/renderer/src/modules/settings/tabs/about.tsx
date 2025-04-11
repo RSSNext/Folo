@@ -43,6 +43,7 @@ export const SettingAbout = () => {
                 </span>
               )}
               <CopyButton
+                variant="outline"
                 value={
                   rendererVersion
                     ? `${currentEnvironment}\n**Renderer**: ${rendererVersion}`

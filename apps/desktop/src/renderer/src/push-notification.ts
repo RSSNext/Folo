@@ -37,7 +37,7 @@ export async function registerWebPushNotifications() {
     await apiClient.messaging.$post({
       json: {
         token,
-        channel: "desktop",
+        channel: "web",
       },
     })
 

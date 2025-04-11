@@ -12,6 +12,7 @@ import { SheetProvider } from "react-native-sheet-transitions"
 import { useCurrentColorsVariants } from "react-native-uikit-colors"
 
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
+import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { sqlite } from "../database"
 import { queryClient } from "../lib/query-client"
 import { MigrationProvider } from "./migration"
@@ -25,7 +26,7 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
   return (
     <MigrationProvider>
       <Provider store={jotaiStore}>
-        <ErrorBoundary>
+        <ErrorBoundary fallbackRender={GlobalErrorScreen}>
           <KeyboardProvider>
             <View style={[styles.flex, currentThemeColors]}>
               <QueryClientProvider client={queryClient}>

@@ -9,6 +9,7 @@ import { cloneElement, useRef, useState } from "react"
 
 interface AnimatedCommandButtonProps {
   icon: React.JSX.Element
+  variant?: "solid" | "outline" | "ghost"
 }
 
 const iconVariants: Variants = {
@@ -30,6 +31,7 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
   icon,
   className,
   style,
+  variant = "solid",
   ...props
 }) => {
   const [pressed, setPressed] = useState(false)
@@ -40,7 +42,11 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
       type="button"
       className={cn(
         "center pointer-events-auto flex text-xs",
-        "border-accent/5 bg-accent/80 rounded-md border p-1.5 text-white backdrop-blur duration-200",
+        "rounded-md p-1.5 duration-200",
+        variant === "solid" || variant === "ghost"
+          ? "border-accent/5 bg-accent/80 border text-white backdrop-blur"
+          : "text-accent bg-slate-50/50 dark:bg-slate-900/50",
+        variant === "ghost" && "bg-theme-item-active hover:bg-theme-item-hover",
         className,
       )}
       onClick={useTypeScriptHappyCallback(

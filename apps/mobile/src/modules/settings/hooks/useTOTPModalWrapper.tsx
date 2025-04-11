@@ -7,7 +7,7 @@ import { toast } from "@/src/lib/toast"
 import { TwoFactorAuthScreen } from "@/src/screens/(modal)/2fa"
 import { useWhoami } from "@/src/store/user/hooks"
 
-import { OTPWindow } from "../compoents/OTPWindow"
+import { OTPWindow } from "../components/OTPWindow"
 
 export const useTOTPModalWrapper = <T extends { TOTPCode?: string }>(
   callback: (input: T) => Promise<any>,

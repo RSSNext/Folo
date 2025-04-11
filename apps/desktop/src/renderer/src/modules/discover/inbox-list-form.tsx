@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { UserRole } from "@follow/constants"
+import { repository } from "@pkg"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
@@ -49,12 +50,13 @@ export function DiscoverInboxList() {
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
         <span>{t("discover.inbox.description")}</span>
         <a
-          href="https://github.com/RSSNext/Follow/wiki/Inbox#webhooks"
-          className="text-zinc-600 underline"
+          href={`${repository.url}/wiki/Inbox#webhooks`}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
+          className="text-accent border-accent inline-flex w-auto items-center gap-1 rounded-full border px-2 py-px text-sm"
         >
-          {t("discover.inbox.webhooks_docs")}
+          <i className="i-mgc-book-6-cute-re" />
+          <span>{t("discover.inbox.webhooks_docs")}</span>
         </a>
       </div>
       <InboxTable />

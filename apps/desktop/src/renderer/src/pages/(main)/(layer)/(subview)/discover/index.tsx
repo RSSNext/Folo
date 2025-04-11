@@ -15,7 +15,6 @@ import { DiscoverForm } from "~/modules/discover/form"
 import { DiscoverImport } from "~/modules/discover/import"
 import { DiscoverInboxList } from "~/modules/discover/inbox-list-form"
 import { Recommendations } from "~/modules/discover/recommendations"
-import { DiscoverRSS3 } from "~/modules/discover/rss3-form"
 import { DiscoverTransform } from "~/modules/discover/transform-form"
 import { DiscoverUser } from "~/modules/discover/user-form"
 
@@ -40,10 +39,6 @@ const tabs: {
     name: "words.inbox",
     value: "inbox",
     disableForTrial: true,
-  },
-  {
-    name: "words.rss3",
-    value: "rss3",
   },
   {
     name: "words.user",
@@ -128,7 +123,6 @@ export function Component() {
 
 const TabComponent: Record<string, React.FC<{ type?: string; isInit?: boolean }>> = {
   import: DiscoverImport,
-  rss3: DiscoverRSS3,
   inbox: DiscoverInboxList,
   user: DiscoverUser,
   default: DiscoverForm,

@@ -2,6 +2,7 @@ import { EmptyIcon } from "@follow/components/icons/empty.jsx"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.jsx"
 import { Card, CardContent } from "@follow/components/ui/card/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import {
   Tooltip,
@@ -14,11 +15,18 @@ import { cn, isBizId } from "@follow/utils/utils"
 import type { Variant } from "framer-motion"
 import { m, useAnimationControls } from "framer-motion"
 import type { Components } from "hast-util-to-jsx-runtime"
-import { useEffect, useState } from "react"
+import type { FC } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
+import { useGeneralSettingSelector } from "~/atoms/settings/general"
 import { Collapse } from "~/components/ui/collapse"
 import { RelativeTime } from "~/components/ui/datetime"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu/dropdown-menu"
 import type { LinkProps } from "~/components/ui/link"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
@@ -28,12 +36,17 @@ import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { Paper } from "~/components/ui/paper"
+import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { hasCommand } from "~/modules/command/hooks/use-command"
 import { FlatMarkAllReadButton } from "~/modules/entry-column/components/mark-all-button"
 import { StarIcon } from "~/modules/entry-column/star-icon"
 import { EntryContent } from "~/modules/entry-content"
+import { CommandDropdownMenuItem } from "~/modules/entry-content/actions/more-actions"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { Queries } from "~/queries"
 import { useEntry } from "~/store/entry"
@@ -42,13 +55,15 @@ import { useFeedById } from "~/store/feed"
 import type { DailyItemProps, DailyView } from "./types"
 import { useParseDailyDate } from "./useParseDailyDate"
 
-export const DailyItem = ({ view, day }: DailyItemProps) => {
+export const DailyItem = ({ view, day, className }: DailyItemProps) => {
   const { title, startDate, endDate } = useParseDailyDate(day)
+
   return (
     <Collapse
+      collapseId={`${day}`}
       hideArrow
       title={<DailyReportTitle title={title} startDate={startDate} endDate={endDate} />}
-      className="mx-auto w-full max-w-lg border-b pb-6 last:border-b-0"
+      className={cn(className, "mx-auto w-full max-w-lg border-b pb-6 last:border-b-0")}
     >
       <DailyReportContent endDate={endDate} view={view} startDate={startDate} />
     </Collapse>
@@ -65,8 +80,20 @@ export const DailyReportTitle = ({
   endDate: number
 }) => {
   const { t } = useTranslation()
+  const language = useGeneralSettingSelector((s) => s.language)
+  const locale = useMemo(() => {
+    try {
+      return new Intl.Locale(language)
+    } catch {
+      return new Intl.Locale("en-US")
+    }
+  }, [language])
+
   return (
-    <div className="flex items-center justify-center gap-2 text-base">
+    <m.div
+      className="flex items-center justify-center gap-2 text-base"
+      layoutId={`daily-report-title-${title}`}
+    >
       <i className="i-mgc-magic-2-cute-re" />
       <div className="font-medium">{t("ai_daily.title", { title })}</div>
       <Tooltip>
@@ -82,7 +109,7 @@ export const DailyReportTitle = ({
                   components={{
                     From: (
                       <span>
-                        {new Date(startDate).toLocaleTimeString("en-US", {
+                        {new Date(startDate).toLocaleTimeString(locale, {
                           weekday: "short",
                           hour: "numeric",
                           minute: "numeric",
@@ -91,7 +118,7 @@ export const DailyReportTitle = ({
                     ),
                     To: (
                       <span>
-                        {new Date(endDate + 1).toLocaleTimeString("en-US", {
+                        {new Date(endDate + 1).toLocaleTimeString(locale, {
                           weekday: "short",
                           hour: "numeric",
                           minute: "numeric",
@@ -106,7 +133,7 @@ export const DailyReportTitle = ({
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
-    </div>
+    </m.div>
   )
 }
 
@@ -151,7 +178,7 @@ export const DailyReportContent: Component<DailyReportContentProps> = ({
   return (
     <Card className="border-none bg-transparent">
       <CardContent className={cn("space-y-0 p-0", className)}>
-        <ScrollArea.ScrollArea mask={false} flex viewportClassName="max-h-[calc(100vh-500px)]">
+        <ScrollArea.ScrollArea mask={false} flex viewportClassName="max-h-[calc(100vh-176px)]">
           <AutoResizeHeight spring>
             {content.isLoading ? (
               <LoadingCircle size="large" className="mt-8 text-center" />
@@ -270,7 +297,21 @@ const createRelatedEntryLink = (variant: "toast" | "modal") => (props: LinkProps
             // eslint-disable-next-line @eslint-react/no-nested-component-definitions
             CustomModalComponent: ({ children }) => {
               const { feedId } = useEntry(entryId) || {}
-              return <PeekModal to={`/timeline/${feedId}/${entryId}`}>{children}</PeekModal>
+
+              return (
+                <PeekModal
+                  rightActions={[
+                    {
+                      onClick: () => {},
+                      label: "More Actions",
+                      icon: <EntryMoreActions entryId={entryId} />,
+                    },
+                  ]}
+                  to={`/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`}
+                >
+                  {children}
+                </PeekModal>
+              )
             },
             content: () => <EntryModalPreview entryId={entryId} />,
             overlay: true,
@@ -411,3 +452,47 @@ const EntryModalPreview = ({ entryId }: { entryId: string }) => (
     />
   </Paper>
 )
+
+const EntryMoreActions: FC<{ entryId: string }> = ({ entryId }) => {
+  const { view } = getRouteParams()
+  const { moreAction, mainAction } = useSortedEntryActions({ entryId, view })
+
+  const actionConfigs = useMemo(
+    () => [...moreAction, ...mainAction].filter((action) => hasCommand(action.id)),
+    [moreAction, mainAction],
+  )
+
+  const availableActions = useMemo(
+    () => actionConfigs.filter((item) => item.id !== COMMAND_ID.settings.customizeToolbar),
+    [actionConfigs],
+  )
+
+  const extraAction = useMemo(
+    () => actionConfigs.filter((item) => item.id === COMMAND_ID.settings.customizeToolbar),
+    [actionConfigs],
+  )
+
+  if (availableActions.length === 0 && extraAction.length === 0) {
+    return null
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <i className="i-mgc-more-1-cute-re" />
+      </DropdownMenuTrigger>
+      <RootPortal>
+        <DropdownMenuContent>
+          {availableActions.map((config) => (
+            <CommandDropdownMenuItem
+              key={config.id}
+              commandId={config.id}
+              onClick={config.onClick}
+              active={config.active}
+            />
+          ))}
+        </DropdownMenuContent>
+      </RootPortal>
+    </DropdownMenu>
+  )
+}

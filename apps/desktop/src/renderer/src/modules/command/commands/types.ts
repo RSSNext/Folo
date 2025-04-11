@@ -65,6 +65,11 @@ export type ToggleAITranslationCommand = Command<{
   fn: () => void
 }>
 
+export type ImageGalleryCommand = Command<{
+  id: typeof COMMAND_ID.entry.imageGallery
+  fn: ({ entryId }) => void
+}>
+
 export type EntryCommand =
   | TipCommand
   | StarCommand
@@ -78,6 +83,7 @@ export type EntryCommand =
   | ReadCommand
   | ToggleAISummaryCommand
   | ToggleAITranslationCommand
+  | ImageGalleryCommand
 
 // Settings commands
 
@@ -120,6 +126,11 @@ export type SaveToReadeckCommand = Command<{
   fn: (payload: { entryId: string }) => void
 }>
 
+export type SaveToCuboxCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToCubox
+  fn: (payload: { entryId: string }) => void
+}>
+
 export type IntegrationCommand =
   | SaveToEagleCommand
   | SaveToReadwiseCommand
@@ -127,5 +138,6 @@ export type IntegrationCommand =
   | SaveToObsidianCommand
   | SaveToOutlineCommand
   | SaveToReadeckCommand
+  | SaveToCuboxCommand
 
 export type BasicCommand = EntryCommand | SettingsCommand | IntegrationCommand

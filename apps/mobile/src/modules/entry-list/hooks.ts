@@ -19,6 +19,7 @@ export function useOnViewableItemsChanged({
 
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenRendering = useGeneralSettingKey("renderMarkUnread")
+  const [viewableItems, setViewableItems] = useState<ViewToken[]>([])
   const [lastViewableItems, setLastViewableItems] = useState<ViewToken[] | null>()
   const [lastRemovedItems, setLastRemovedItems] = useState<ViewToken[] | null>(null)
 
@@ -28,6 +29,8 @@ export function useOnViewableItemsChanged({
     viewableItems: ViewToken[]
     changed: ViewToken[]
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
+    setViewableItems(viewableItems)
+
     debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
     const removed = changed.filter((item) => !item.isViewable)
 
@@ -86,7 +89,10 @@ export function useOnViewableItemsChanged({
     lastOffset.current = currentOffset
   }, [])
 
-  return useMemo(() => ({ onViewableItemsChanged, onScroll }), [onScroll, onViewableItemsChanged])
+  return useMemo(
+    () => ({ onViewableItemsChanged, onScroll, viewableItems }),
+    [onScroll, onViewableItemsChanged, viewableItems],
+  )
 }
 
 function useNonReactiveCallback<T extends (...args: any[]) => any>(fn: T): T {

@@ -4604,15 +4604,15 @@ declare const messagingOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<
     token: z.ZodString;
     channel: z.ZodString;
 }, "channel">, {
-    channel: z.ZodEnum<["desktop", "mobile"]>;
+    channel: z.ZodEnum<["macos", "windows", "linux", "ios", "android", "web", "desktop"]>;
 }>, "strip", z.ZodTypeAny, {
     userId: string | null;
     token: string;
-    channel: "desktop" | "mobile";
+    channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
 }, {
     userId: string | null;
     token: string;
-    channel: "desktop" | "mobile";
+    channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
 }>;
 declare const messagingRelations: drizzle_orm.Relations<"messaging", {
     users: drizzle_orm.One<"user", false>;
@@ -15088,6 +15088,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     docs?: string | undefined;
                     isSubscribed?: boolean | undefined;
                     subscriptionCount?: number | undefined;
+                    updatesPerWeek?: number | undefined;
                 }[];
             };
             outputFormat: "json";
@@ -17391,7 +17392,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             input: {
                 json: {
                     token: string;
-                    channel: "desktop" | "mobile";
+                    channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
                 };
             };
             output: {

@@ -11,7 +11,6 @@
       "TabBarModule",
       "TabScreenModule",
       "TabBarPortalModule",
-      "ProfileViewModule",
       "EnhancePagerViewModule",
       "EnhancePageViewModule"
     ]

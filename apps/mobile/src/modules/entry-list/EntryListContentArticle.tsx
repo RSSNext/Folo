@@ -1,9 +1,11 @@
+import type { FeedViewType } from "@follow/constants"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { forwardRef, useCallback, useMemo } from "react"
 import { View } from "react-native"
 
 import { usePlayingUrl } from "@/src/lib/player"
+import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -14,8 +16,8 @@ import { EntryNormalItem } from "./templates/EntryNormalItem"
 
 export const EntryListContentArticle = forwardRef<
   ElementRef<typeof TimelineSelectorList>,
-  { entryIds: string[]; active?: boolean }
->(({ entryIds, active }, ref) => {
+  { entryIds: string[] | null; active?: boolean; view: FeedViewType }
+>(({ entryIds, active, view }, ref) => {
   const playingAudioUrl = usePlayingUrl()
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
@@ -23,9 +25,9 @@ export const EntryListContentArticle = forwardRef<
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem key={id} entryId={id} extraData={extraData} />
+      <EntryNormalItem entryId={id} extraData={extraData} view={view} />
     ),
-    [],
+    [view],
   )
 
   const ListFooterComponent = useMemo(
@@ -33,9 +35,11 @@ export const EntryListContentArticle = forwardRef<
     [hasNextPage],
   )
 
-  const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
+  const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
+
+  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
 
   return (
     <TimelineSelectorList
@@ -58,7 +62,7 @@ export const EntryListContentArticle = forwardRef<
 
 export function EntryItemSkeleton() {
   return (
-    <View className="bg-secondary-system-grouped-background flex flex-row items-center p-4">
+    <View className="bg-system-background flex flex-row items-center p-4">
       <View className="flex flex-1 flex-col gap-2">
         <View className="flex flex-row gap-2">
           {/* Icon skeleton */}

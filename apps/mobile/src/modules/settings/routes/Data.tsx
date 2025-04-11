@@ -4,7 +4,7 @@ import { Alert } from "react-native"
 
 import { setDataSetting, useDataSettingKey } from "@/src/atoms/settings/data"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
@@ -23,10 +23,11 @@ export const DataScreen = () => {
   const { t } = useTranslation("settings")
   const sendAnonymousData = useDataSettingKey("sendAnonymousData")
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title={t("titles.data_control")} />
-
-      <GroupedInsetListSectionHeader label={t("general.privacy")} />
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      Header={<NavigationBlurEffectHeaderView title={t("titles.data_control")} />}
+    >
+      <GroupedInsetListSectionHeader label={t("general.privacy")} marginSize="small" />
 
       <GroupedInsetListCard>
         <GroupedInsetListCell

@@ -1,6 +1,6 @@
 import { parseHtml } from "@follow/components/ui/markdown/parse-html.js"
 import { views } from "@follow/constants"
-import type { SupportedLanguages } from "@follow/models/types"
+import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { franc } from "franc-min"
 
@@ -17,7 +17,7 @@ export const checkLanguage = ({
   language,
 }: {
   content: string
-  language: SupportedLanguages
+  language: SupportedActionLanguage
 }) => {
   if (!content) return true
   const pureContent = parseHtml(content)
@@ -44,7 +44,7 @@ export async function translate({
 }: {
   entry?: FlatEntryModel | null
   view?: number
-  language?: SupportedLanguages
+  language?: SupportedActionLanguage
   extraFields?: string[]
   part?: string
 }) {

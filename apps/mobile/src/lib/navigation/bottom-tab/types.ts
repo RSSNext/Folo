@@ -11,3 +11,10 @@ export type TabScreenComponent = FC & {
 
   lazy?: boolean
 }
+export interface TabScreenProps {
+  title: string
+  tabScreenIndex: number
+  renderIcon?: (props: TabbarIconProps) => React.ReactNode
+  lazy?: boolean
+  identifier?: string
+}

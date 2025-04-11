@@ -1,5 +1,4 @@
 import { FeedViewType } from "@follow/constants"
-import { getLocales } from "expo-localization"
 
 import feeds from "./feeds.json"
 import englishFeeds from "./feeds-english.json"
@@ -23,9 +22,5 @@ export const otherPresetFeeds: PresetFeedConfig[] = feeds
     ...feed,
   }))
 
-const locales = getLocales()
-// `getLocales` guaranteed to contain at least 1 element.
-const languageTag = locales[0]?.languageTag || "en-US"
-const isEnglishUser = languageTag.startsWith("en")
-
-export const presetFeeds = isEnglishUser ? englishPresetFeeds : otherPresetFeeds
+export const getPresetFeeds = (isEnglishUser: boolean) =>
+  isEnglishUser ? englishPresetFeeds : otherPresetFeeds

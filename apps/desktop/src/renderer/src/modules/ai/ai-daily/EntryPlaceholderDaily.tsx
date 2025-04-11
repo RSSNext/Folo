@@ -1,13 +1,14 @@
 import { cn } from "@follow/utils/utils"
-import { useEffect } from "react"
+import { useSetAtom } from "jotai"
+import type { FC } from "react"
+import { useContext } from "react"
 
-import { CollapseGroup } from "~/components/ui/collapse"
-import { useCollapseGroupItemState } from "~/components/ui/collapse/hooks"
-import { setEntryContentPlaceholderLogoShow } from "~/modules/entry-content/atoms"
+import { EntryContentPlaceholderContext } from "~/modules/app-layout/entry-content/EntryContentPlaceholderContext"
 
 import { DayOf } from "./constants"
-import { DailyItem } from "./daily"
-import type { DailyView } from "./types"
+import { DailyReportTitle } from "./daily"
+import type { DailyItemProps, DailyView } from "./types"
+import { useParseDailyDate } from "./useParseDailyDate"
 
 export const EntryPlaceholderDaily = ({
   view,
@@ -17,18 +18,23 @@ export const EntryPlaceholderDaily = ({
   className?: string
 }) => (
   <div className={cn(className, "mx-auto flex w-full max-w-[75ch] flex-col gap-6")}>
-    <CollapseGroup>
-      <CtxConsumer />
-      <DailyItem day={DayOf.Today} view={view} />
-      <DailyItem day={DayOf.Yesterday} view={view} />
-    </CollapseGroup>
+    <NormalDailyReportTitle day={DayOf.Today} view={view} />
+    <NormalDailyReportTitle day={DayOf.Yesterday} view={view} />
   </div>
 )
-const CtxConsumer = () => {
-  const status = useCollapseGroupItemState()
-  const isAllCollapsed = Object.values(status).every((v) => !v)
-  useEffect(() => {
-    setEntryContentPlaceholderLogoShow(isAllCollapsed)
-  }, [isAllCollapsed])
-  return null
+
+const NormalDailyReportTitle: FC<DailyItemProps> = ({ day }) => {
+  const { title, startDate, endDate } = useParseDailyDate(day)
+
+  const setOpenedSummary = useSetAtom(useContext(EntryContentPlaceholderContext).openedSummary)
+
+  return (
+    <button
+      type="button"
+      onClick={() => setOpenedSummary(day)}
+      className="border-b pb-6 last:border-b-0"
+    >
+      <DailyReportTitle title={title} startDate={startDate} endDate={endDate} />
+    </button>
+  )
 }

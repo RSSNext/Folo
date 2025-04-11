@@ -5,18 +5,14 @@ import { StyleSheet, View } from "react-native"
 
 import { WrappedScreenItem } from "../WrappedScreenItem"
 import { BottomTabContext } from "./BottomTabContext"
-import { LifecycleEvents, ScreenNameRegister } from "./shared"
+import { LifecycleEvents, ScreenNameRegister, TabScreenIdentifierRegister } from "./shared"
 import type { TabScreenContextType } from "./TabScreenContext"
 import { TabScreenContext } from "./TabScreenContext"
-import type { TabbarIconProps, TabScreenComponent } from "./types"
+import type { TabScreenComponent, TabScreenProps } from "./types"
 
-export interface TabScreenProps {
-  title: string
-  tabScreenIndex: number
-  renderIcon?: (props: TabbarIconProps) => React.ReactNode
-}
 export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenIndex">>> = ({
   children,
+  identifier,
   ...props
 }) => {
   const { tabScreenIndex } = props as any as TabScreenProps
@@ -38,6 +34,9 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
       if ("title" in childType) {
         propsFromChildren.title = childType.title
       }
+      if ("identifier" in childType && typeof childType.identifier === "string") {
+        propsFromChildren.identifier = childType.identifier
+      }
     }
 
     setTabScreens((prev) => [
@@ -46,6 +45,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
         ...propsFromChildren,
         ...props,
         tabScreenIndex,
+        identifier,
       },
     ])
 
@@ -54,7 +54,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
         prev.filter((tabScreen) => tabScreen.tabScreenIndex !== tabScreenIndex),
       )
     }
-  }, [setTabScreens, props, tabScreenIndex, children])
+  }, [setTabScreens, props, tabScreenIndex, children, identifier])
 
   const currentSelectedIndex = useAtomValue(currentIndexAtom)
 
@@ -78,10 +78,10 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   const ctxValue = useMemo<TabScreenContextType>(
     () => ({
       tabScreenIndex,
-
       titleAtom: atom(props.title),
+      identifierAtom: atom(identifier ?? ""),
     }),
-    [tabScreenIndex, props.title],
+    [tabScreenIndex, props.title, identifier],
   )
   const shouldLoadReact = isSelected || isLoadedBefore
 
@@ -92,6 +92,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
           <WrappedScreenItem screenId={`tab-screen-${tabScreenIndex}`}>
             {children}
             <ScreenNameRegister />
+            <TabScreenIdentifierRegister />
             <LifecycleEvents isSelected={isSelected} />
             {/* <CalculateTabBarOpacity /> */}
           </WrappedScreenItem>

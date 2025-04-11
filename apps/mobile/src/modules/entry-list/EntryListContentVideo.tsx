@@ -5,6 +5,7 @@ import { forwardRef, useMemo } from "react"
 import { View } from "react-native"
 
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
+import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
@@ -13,16 +14,18 @@ import { EntryVideoItem } from "./templates/EntryVideoItem"
 
 export const EntryListContentVideo = forwardRef<
   ElementRef<typeof TimelineSelectorMasonryList>,
-  { entryIds: string[]; active?: boolean } & Omit<
+  { entryIds: string[] | null; active?: boolean } & Omit<
     MasonryFlashListProps<string>,
     "data" | "renderItem"
   >
 >(({ entryIds, active, ...rest }, ref) => {
   const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage } =
     useFetchEntriesControls()
-  const { onViewableItemsChanged, onScroll } = useOnViewableItemsChanged({
+  const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
   })
+
+  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
 
   const ListFooterComponent = useMemo(
     () =>

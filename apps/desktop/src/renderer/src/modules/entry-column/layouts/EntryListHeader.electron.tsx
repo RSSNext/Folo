@@ -7,7 +7,6 @@ import { useIsOnline } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
 import type { FC } from "react"
-import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 import { setGeneralSetting, useGeneralSettingKey } from "~/atoms/settings/general"
@@ -20,7 +19,7 @@ import { EntryHeader } from "~/modules/entry-content/header"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 
-import { MarkAllReadWithOverlay } from "../components/mark-all-button"
+import { MarkAllReadButton } from "../components/mark-all-button"
 import {
   AppendTaildingDivider,
   DailyReportButton,
@@ -58,13 +57,11 @@ export const EntryListHeader: FC<{
 
   const feed = useFeedById(feedId)
 
-  const containerRef = React.useRef<HTMLDivElement>(null)
   const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
 
   const feedColumnShow = useTimelineColumnShow()
   return (
     <div
-      ref={containerRef}
       className={cn(
         "mb-2 flex w-full flex-col pr-4 pt-2.5 transition-[padding] duration-300 ease-in-out",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
@@ -139,7 +136,7 @@ export const EntryListHeader: FC<{
               <i className="i-mgc-round-cute-re" />
             )}
           </ActionButton>
-          <MarkAllReadWithOverlay containerRef={containerRef} shortcut />
+          <MarkAllReadButton shortcut />
         </div>
       </div>
 

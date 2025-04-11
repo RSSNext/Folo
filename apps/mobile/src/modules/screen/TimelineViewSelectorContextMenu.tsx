@@ -24,7 +24,7 @@ export const TimelineViewSelectorContextMenu: FC<
           <ContextMenu.ItemTitle>{t("operation.mark_as_read")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
-              name: "checklist.checked",
+              name: "checkmark.circle",
             }}
           />
         </ContextMenu.Item>

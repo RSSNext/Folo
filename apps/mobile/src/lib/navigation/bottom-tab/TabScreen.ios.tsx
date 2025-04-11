@@ -10,16 +10,10 @@ import { BottomTabContext } from "./BottomTabContext"
 import { LifecycleEvents, ScreenNameRegister } from "./shared"
 import type { TabScreenContextType } from "./TabScreenContext"
 import { TabScreenContext } from "./TabScreenContext"
-import type { TabbarIconProps, TabScreenComponent } from "./types"
+import type { TabScreenComponent, TabScreenProps } from "./types"
 
 const TabScreenNative = requireNativeView<ViewProps>("TabScreen")
 
-export interface TabScreenProps {
-  title: string
-  tabScreenIndex: number
-  renderIcon?: (props: TabbarIconProps) => React.ReactNode
-  lazy?: boolean
-}
 export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenIndex">>> = ({
   children,
   ...props
@@ -46,6 +40,9 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
       }
       if ("lazy" in childType) {
         propsFromChildren.lazy = childType.lazy
+      }
+      if ("identifier" in childType && typeof childType.identifier === "string") {
+        propsFromChildren.identifier = childType.identifier
       }
     }
     return {
@@ -91,10 +88,10 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   const ctxValue = useMemo<TabScreenContextType>(
     () => ({
       tabScreenIndex,
-
+      identifierAtom: atom(props.identifier ?? ""),
       titleAtom: atom(props.title),
     }),
-    [tabScreenIndex, props.title],
+    [tabScreenIndex, props.title, props.identifier],
   )
   const shouldLoadReact = mergedProps.lazy ? isSelected || isLoadedBefore : true
 

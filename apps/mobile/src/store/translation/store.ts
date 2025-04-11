@@ -1,6 +1,7 @@
 import type { TranslationSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import type { SupportedLanguages } from "@/src/lib/language"
+import { checkLanguage } from "@/src/lib/translation"
 import { TranslationService } from "@/src/services/translation"
 
 import { getEntry } from "../entry/getter"
@@ -56,15 +57,39 @@ class TranslationActions {
 export const translationActions = new TranslationActions()
 
 class TranslationSyncService {
-  async generateTranslation(entryId: string, language: SupportedLanguages) {
+  async generateTranslation({
+    entryId,
+    language,
+    withContent,
+  }: {
+    entryId: string
+    language: SupportedLanguages
+    withContent?: boolean
+  }) {
     const entry = getEntry(entryId)
     if (!entry) return
-
     const translationSession = translationActions.getTranslation(entryId, language)
-    if (translationSession) return translationSession
+
+    const fields = (
+      ["title", "description", ...(withContent ? ["content"] : [])] as Array<
+        "title" | "description" | "content"
+      >
+    ).filter((field) => {
+      const content = entry[field]
+      if (!content) return false
+
+      if (translationSession?.[field]) return false
+
+      return !checkLanguage({
+        content,
+        language,
+      })
+    })
+
+    if (fields.length === 0) return null
 
     const res = await apiClient.ai.translation.$get({
-      query: { id: entryId, language, fields: ["title", "description", "content"].join(",") },
+      query: { id: entryId, language, fields: fields.join(",") },
     })
 
     if (!res.data) return null

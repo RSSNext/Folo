@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
@@ -11,18 +12,21 @@ import {
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
-import { getHorizontalScrolling, useSelectedView } from "@/src/modules/screen/atoms"
+import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
 import { useEntry } from "@/src/store/entry/hooks"
 import { unreadSyncService } from "@/src/store/unread/store"
 
-export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: string }>) => {
+export const EntryItemContextMenu = ({
+  id,
+  children,
+  view,
+}: PropsWithChildren<{ id: string; view: FeedViewType }>) => {
   const { t } = useTranslation()
   const entry = useEntry(id)
   const feedId = entry?.feedId
-  const view = useSelectedView()
   const isEntryStarred = useIsEntryStarred(id)
 
   const navigation = useNavigation()
@@ -70,7 +74,7 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
           </ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
-              name: entry.read ? "circle.fill" : "circle",
+              name: entry.read ? "circle.fill" : "checkmark.circle",
             }}
           />
         </ContextMenu.Item>
@@ -81,14 +85,14 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
             onSelect={() => {
               if (isEntryStarred) {
                 collectionSyncService.unstarEntry(id)
-                toast.info("Unstarred")
+                toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
                   feedId,
                   entryId: id,
                   view,
                 })
-                toast.info("Starred")
+                toast.success("Starred")
               }
             }}
           >

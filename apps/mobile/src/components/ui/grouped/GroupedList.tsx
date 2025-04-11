@@ -39,6 +39,10 @@ export const GroupedOutlineDescription: FC<{
 export const GroupedInsetListCard: FC<
   PropsWithChildren & ViewProps & GroupedInsetListCardProps
 > = ({ children, className, showSeparator = true, SeparatorComponent, ...props }) => {
+  const nextChildren = React.useMemo(
+    () => React.Children.toArray(children).filter(Boolean),
+    [children],
+  )
   return (
     <View
       {...props}
@@ -49,8 +53,8 @@ export const GroupedInsetListCard: FC<
       )}
     >
       {showSeparator
-        ? React.Children.map(children, (child, index) => {
-            const isLast = index === React.Children.count(children) - 1
+        ? nextChildren.map((child, index) => {
+            const isLast = index === nextChildren.length - 1
 
             if (child === null) return null
             const isNavigationLink =
@@ -178,7 +182,7 @@ export const GroupedInsetListCell: FC<
 > = ({ label, description, children, leftClassName, rightClassName }) => {
   return (
     <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
-      <View className={cn("flex-1", leftClassName)}>
+      <View className={cn("flex-1 gap-1", leftClassName)}>
         <Text className="text-label">{label}</Text>
         {!!description && (
           <Text className="text-secondary-label text-sm leading-tight">{description}</Text>

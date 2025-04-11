@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { TouchableOpacity, View } from "react-native"
+import { Share, TouchableOpacity, View } from "react-native"
 
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
@@ -12,11 +12,14 @@ import { AddCuteReIcon } from "@/src/icons/add_cute_re"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { RoundCuteFiIcon } from "@/src/icons/round_cute_fi"
 import { RoundCuteReIcon } from "@/src/icons/round_cute_re"
+import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
 import { Dialog } from "@/src/lib/dialog"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 import { LoginScreen } from "@/src/screens/(modal)/login"
 import { ProfileScreen } from "@/src/screens/(modal)/profile"
+import { getFeed } from "@/src/store/feed/getter"
 import { useWhoami } from "@/src/store/user/hooks"
 import { accentColor, useColor } from "@/src/theme/colors"
 
@@ -54,25 +57,23 @@ export function HomeLeftAction() {
   )
 }
 
-export function HomeSharedRightAction(props: PropsWithChildren) {
-  const { t } = useTranslation()
-  return (
-    <ActionGroup>
-      {props.children}
-
-      <UIBarButton
-        label={t("operation.mark_all_as_read")}
-        normalIcon={<CheckCircleCuteReIcon height={24} width={24} color={accentColor} />}
-        onPress={() => {
-          Dialog.show(MarkAllAsReadDialog)
-        }}
-      />
-    </ActionGroup>
-  )
-}
-
 interface HeaderActionButtonProps {
   variant?: "primary" | "secondary"
+}
+
+export const MarkAllAsReadActionButton = ({ variant = "primary" }: HeaderActionButtonProps) => {
+  const { t } = useTranslation()
+  const { size, color } = useButtonVariant({ variant })
+
+  return (
+    <UIBarButton
+      label={t("operation.mark_all_as_read")}
+      normalIcon={<CheckCircleCuteReIcon height={size} width={size} color={color} />}
+      onPress={() => {
+        Dialog.show(MarkAllAsReadDialog)
+      }}
+    />
+  )
 }
 
 const useButtonVariant = ({ variant = "primary" }: HeaderActionButtonProps) => {
@@ -101,7 +102,6 @@ export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButt
           unreadOnly
             ? t("operation.toggle_unread_only.show_all.success")
             : t("operation.toggle_unread_only.show_unread_only.success"),
-          { position: "bottom" },
         )
       }}
       selected={unreadOnly}
@@ -117,6 +117,32 @@ export const AddFeedButton = () => {
       normalIcon={<AddCuteReIcon color={accentColor} />}
       onPress={() => {
         Dialog.show(AddFeedDialog)
+      }}
+    />
+  )
+}
+
+export const FeedShareActionButton = ({
+  feedId,
+  variant = "primary",
+}: { feedId?: string } & HeaderActionButtonProps) => {
+  const { t } = useTranslation()
+  const { size, color } = useButtonVariant({ variant })
+
+  if (!feedId) return null
+  return (
+    <UIBarButton
+      label={t("operation.share")}
+      normalIcon={<Share3CuteReIcon height={size} width={size} color={color} />}
+      onPress={() => {
+        const feed = getFeed(feedId)
+        if (!feed) return
+        const url = `${proxyEnv.WEB_URL}/share/feeds/${feedId}`
+        Share.share({
+          message: `Check out ${feed.title} on Folo: ${url}`,
+          title: feed.title!,
+          url,
+        })
       }}
     />
   )
