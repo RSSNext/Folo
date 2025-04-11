@@ -186,8 +186,6 @@ const PreviewVideoModalContent: ModalContentComponent<{
         <FixedModalCloseButton onClick={dismiss} />
       </m.div>
 
-      <p>hello</p>
-
       <ViewTag src={src} className="size-full" />
       {entry.entries && (
         <div
