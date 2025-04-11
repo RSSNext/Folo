@@ -808,7 +808,7 @@
 * withdraw as rss3 ([5af9cf5](https://github.com/RSSNext/follow/commit/5af9cf5ec7767ea440b85afbc8ad46dd283c4dc6))
 * zen mode and hide extra badge ([7ba07ad](https://github.com/RSSNext/follow/commit/7ba07adff1e7cd3292cc308f3e70803fe11fb8ce))
 * zoom on long image ([930e328](https://github.com/RSSNext/follow/commit/930e328eddb84cde7d664a75e24222d8644af50a))
-* video description, fixed ([#3364] (https://github.com/RSSNext/Folo/issues/3364))
+
 
 ### Performance Improvements
 

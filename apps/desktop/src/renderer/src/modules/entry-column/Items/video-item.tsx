@@ -1,6 +1,5 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
@@ -11,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { AudioPlayer } from "~/atoms/player"
 import { m } from "~/components/common/Motion"
 import { RelativeTime } from "~/components/ui/datetime"
+import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import type { ModalContentComponent } from "~/components/ui/modal"
@@ -20,23 +20,13 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
+import type { FlatEntryModel } from "~/store/entry"
 import { useEntry } from "~/store/entry/hooks"
 
-import { EntryContentHTMLRenderer } from "../../renderer/html"
 import { GridItem } from "../templates/grid-item-template"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
-
-type Entry = {
-  entries?: {
-    id: string
-    title: string | null
-    description: string | null
-    author: string | null
-    content?: string | null
-  }
-}
 
 export function VideoItem({ entryId, entryPreview, translation }: UniversalItemProps) {
   const entry = useEntry(entryId) || entryPreview
@@ -57,7 +47,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
         attachments: entry?.entries.attachments,
       }),
     ],
-    [entry?.entries.url],
+    [entry?.entries.attachments, entry?.entries.url],
   )
   const modalStack = useModalStack()
   const previewMedia = usePreviewMedia()
@@ -156,7 +146,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
 
 const PreviewVideoModalContent: ModalContentComponent<{
   src: string
-  entry: Entry
+  entry: FlatEntryModel
 }> = ({ dismiss, src, entry }) => {
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
   useEffect(() => {
@@ -185,16 +175,10 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
       <ViewTag src={src} className="size-full" />
       {entry.entries && (
-        <div className="bg-white/70 p-10 pt-5 backdrop-blur-sm">
-          <EntryContentHTMLRenderer
-            view={FeedViewType.Videos}
-            feedId=""
-            entryId={entry.entries?.id}
-            as="article"
-            className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
-          >
+        <div className="bg-background p-10 pt-5 backdrop-blur-sm">
+          <HTML as="div" className="prose dark:prose-invert !max-w-full" noMedia>
             {entry.entries?.content}
-          </EntryContentHTMLRenderer>
+          </HTML>
         </div>
       )}
     </m.div>
