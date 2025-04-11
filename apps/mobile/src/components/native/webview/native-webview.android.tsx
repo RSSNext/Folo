@@ -1,9 +1,13 @@
 import { jotaiStore } from "@follow/utils"
 import { atom } from "jotai"
 import type * as React from "react"
-import { useCallback } from "react"
+import type { RefObject } from "react"
+import { useCallback, useRef } from "react"
 import type { ViewProps } from "react-native"
+import type { WebViewNavigation } from "react-native-webview"
 import WebView from "react-native-webview"
+
+import { openLink } from "@/src/lib/native"
 
 import { htmlUrl } from "./constants"
 import { atEnd, atStart } from "./injected-js"
@@ -29,6 +33,9 @@ export const NativeWebView: React.ComponentType<
     url?: string
   }
 > = ({ onContentHeightChange }) => {
+  const webViewRef = useRef<WebView | null>(null)
+  const { onNavigationStateChange } = useWebViewNavigation({ webViewRef })
+
   return (
     <WebView
       ref={(webview) => {
@@ -37,6 +44,8 @@ export const NativeWebView: React.ComponentType<
       style={styles.webview}
       containerStyle={styles.webviewContainer}
       source={{ uri: htmlUrl }}
+      // Open chrome://inspect/#devices, or Development menu on Safari to debug the WebView.
+      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Debugging.md#debugging-webview-contents
       webviewDebuggingEnabled={__DEV__}
       sharedCookiesEnabled
       originWhitelist={["*"]}
@@ -44,6 +53,7 @@ export const NativeWebView: React.ComponentType<
       startInLoadingState
       allowsBackForwardNavigationGestures
       injectedJavaScriptBeforeContentLoaded={atStart}
+      onNavigationStateChange={onNavigationStateChange}
       onLoadEnd={useCallback(() => {
         injectJavaScript(atEnd)
       }, [])}
@@ -59,6 +69,28 @@ export const NativeWebView: React.ComponentType<
       }}
     />
   )
+}
+
+const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebView> }) => {
+  const onNavigationStateChange = useCallback(
+    (newNavState: WebViewNavigation) => {
+      const { url: urlStr } = newNavState
+      const url = URL.canParse(urlStr) ? new URL(urlStr) : null
+      if (!url) return
+      if (url.protocol === "file:") return
+      // if (allowHosts.has(url.host)) return
+      webViewRef.current?.stopLoading()
+      // const formattedUrl = transformVideoUrl({ url: urlStr })
+      if (urlStr) {
+        openLink(urlStr)
+        return
+      }
+      openLink(urlStr)
+    },
+    [webViewRef],
+  )
+
+  return { onNavigationStateChange }
 }
 
 const styles = {
