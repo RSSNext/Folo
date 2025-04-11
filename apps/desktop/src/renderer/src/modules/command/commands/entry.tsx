@@ -274,7 +274,10 @@ export const useRegisterEntryCommands = () => {
         if (IN_ELECTRON) {
           return tipcClient?.showShareMenu(entry.entries.url)
         } else {
+          const { title, description } = entry.entries
           navigator.share({
+            title: title || undefined,
+            text: description || undefined,
             url: entry.entries.url,
           })
         }
