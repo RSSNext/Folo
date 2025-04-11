@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import { useEffect, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
@@ -20,11 +21,13 @@ export const MediaCarousel = ({
   media,
   onPreview,
   aspectRatio,
+  view,
 }: {
   entryId: string
   media: MediaModel[]
   onPreview?: () => void
   aspectRatio: number
+  view?: FeedViewType
 }) => {
   const [containerWidth, setContainerWidth] = useState(0)
   const containerHeight = Math.floor(containerWidth / aspectRatio)
@@ -65,7 +68,7 @@ export const MediaCarousel = ({
                     className="relative"
                     style={{ width: containerWidth, height: containerHeight }}
                   >
-                    <ImageContextMenu entryId={entryId} imageUrl={m.url}>
+                    <ImageContextMenu entryId={entryId} imageUrl={m.url} view={view}>
                       <Galeria.Image onPreview={onPreview} index={index}>
                         <Image
                           proxy={{
@@ -83,7 +86,12 @@ export const MediaCarousel = ({
                 )
               } else if (m.type === "video") {
                 return (
-                  <ImageContextMenu key={index} entryId={entryId} imageUrl={m.preview_image_url}>
+                  <ImageContextMenu
+                    key={index}
+                    entryId={entryId}
+                    imageUrl={m.preview_image_url}
+                    view={view}
+                  >
                     <Video
                       source={{ uri: m.url }}
                       style={{ width: containerWidth, height: containerHeight }}

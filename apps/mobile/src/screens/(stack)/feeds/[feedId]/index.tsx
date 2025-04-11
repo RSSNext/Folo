@@ -7,7 +7,7 @@ import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/conte
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryListSelector } from "@/src/modules/entry-list/EntryListSelector"
 import { EntryListContext, useSelectedView } from "@/src/modules/screen/atoms"
-import { TimelineSelectorProvider } from "@/src/modules/screen/TimelineSelectorProvider"
+import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { useCollectionEntryList } from "@/src/store/collection/hooks"
 import {
   useEntryIdsByCategory,
@@ -46,9 +46,9 @@ export const FeedScreen: NavigationControllerView<{
     <EntryListContext.Provider value={useMemo(() => ({ type: "feed" }), [])}>
       <RootSiblingParent>
         <BottomTabBarHeightContext.Provider value={insets.bottom}>
-          <TimelineSelectorProvider feedId={feed?.id}>
-            <EntryListSelector entryIds={entryIds} viewId={view} />
-          </TimelineSelectorProvider>
+          <TimelineHeader feedId={feed?.id} />
+
+          <EntryListSelector entryIds={entryIds} viewId={view} />
         </BottomTabBarHeightContext.Provider>
       </RootSiblingParent>
     </EntryListContext.Provider>

@@ -8,12 +8,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import {
-  closeDrawer,
-  getHorizontalScrolling,
-  selectFeed,
-  useSelectedFeed,
-} from "@/src/modules/screen/atoms"
+import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
@@ -46,22 +41,12 @@ export const CategoryGrouped = memo(
     }, [rotateSharedValue])
 
     const secondaryLabelColor = useColor("label")
-    const selectedFeed = useSelectedFeed()
     const navigation = useNavigation()
-    if (selectedFeed?.type !== "view") {
-      return null
-    }
-    const view = selectedFeed.viewId
 
     return (
       <>
         <View style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
-          <SubscriptionFeedCategoryContextMenu
-            category={category}
-            feedIds={subscriptionIds}
-            view={view}
-            asChild
-          >
+          <SubscriptionFeedCategoryContextMenu feedIds={subscriptionIds} asChild>
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {
@@ -111,3 +96,5 @@ export const CategoryGrouped = memo(
     )
   },
 )
+
+CategoryGrouped.displayName = "CategoryGrouped"

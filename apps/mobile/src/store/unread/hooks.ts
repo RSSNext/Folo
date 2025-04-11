@@ -54,7 +54,7 @@ export const useUnreadCounts = (subscriptionIds?: string[]): number => {
         }
         return count
       },
-      [subscriptionIds],
+      [subscriptionIds?.toString()],
     ),
   )
 }

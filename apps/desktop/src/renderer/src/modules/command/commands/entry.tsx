@@ -17,6 +17,7 @@ import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
 import { useActivationModal } from "~/modules/activation"
+import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
 import { entryActions, useEntryStore } from "~/store/entry"
 
@@ -92,6 +93,7 @@ export const useRegisterEntryCommands = () => {
   const deleteInboxEntry = useDeleteInboxEntry()
   const showSourceContentModal = useSourceContentModal()
   const openTipModal = useTipModal()
+  const openGalleryModal = useGalleryModal()
   const read = useRead()
   const unread = useUnread()
 
@@ -274,7 +276,10 @@ export const useRegisterEntryCommands = () => {
         if (IN_ELECTRON) {
           return tipcClient?.showShareMenu(entry.entries.url)
         } else {
+          const { title, description } = entry.entries
           navigator.share({
+            title: title || undefined,
+            text: description || undefined,
             url: entry.entries.url,
           })
         }
@@ -298,6 +303,14 @@ export const useRegisterEntryCommands = () => {
         } else {
           read.mutate({ entryId, feedId: entry.feedId })
         }
+      },
+    },
+    {
+      id: COMMAND_ID.entry.imageGallery,
+      label: t("entry_actions.image_gallery"),
+      icon: <i className="i-mgc-pic-cute-fi" />,
+      run: ({ entryId }) => {
+        openGalleryModal(entryId)
       },
     },
   ])

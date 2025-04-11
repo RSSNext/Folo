@@ -1,3 +1,4 @@
+import { FeedViewType } from "@follow/constants"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
@@ -11,7 +12,7 @@ import {
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
-import { getHorizontalScrolling, useSelectedView } from "@/src/modules/screen/atoms"
+import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
@@ -22,7 +23,8 @@ export const EntryItemContextMenu = ({ id, children }: PropsWithChildren<{ id: s
   const { t } = useTranslation()
   const entry = useEntry(id)
   const feedId = entry?.feedId
-  const view = useSelectedView()
+  // const view = useSelectedView()
+  const view = FeedViewType.Articles
   const isEntryStarred = useIsEntryStarred(id)
 
   const navigation = useNavigation()

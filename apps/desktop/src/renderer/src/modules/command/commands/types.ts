@@ -65,6 +65,11 @@ export type ToggleAITranslationCommand = Command<{
   fn: () => void
 }>
 
+export type ImageGalleryCommand = Command<{
+  id: typeof COMMAND_ID.entry.imageGallery
+  fn: ({ entryId }) => void
+}>
+
 export type EntryCommand =
   | TipCommand
   | StarCommand
@@ -78,6 +83,7 @@ export type EntryCommand =
   | ReadCommand
   | ToggleAISummaryCommand
   | ToggleAITranslationCommand
+  | ImageGalleryCommand
 
 // Settings commands
 

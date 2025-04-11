@@ -150,7 +150,7 @@ export const useSortedUngroupedSubscription = (
         const result = sortMethod(a, b)
         return sortOrder === "asc" ? result : -result
       })
-    }, [ids, sortBy, sortOrder]),
+    }, [ids.toString(), sortBy, sortOrder]),
   )
 }
 
@@ -226,6 +226,11 @@ export const useSubscriptionCategory = (view?: FeedViewType) => {
       [view],
     ),
   )
+}
+
+export const getSubscriptionCategory = (view?: FeedViewType) => {
+  const state = useSubscriptionStore.getState()
+  return view === undefined ? [] : Array.from(state.categories[view])
 }
 
 export const useSubscriptionByFeedId = (feedId: string) =>

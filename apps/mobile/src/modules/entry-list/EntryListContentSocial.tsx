@@ -20,7 +20,7 @@ export const EntryListContentSocial = forwardRef<
     useFetchEntriesControls()
 
   const renderItem = useCallback(
-    ({ item: id }: ListRenderItemInfo<string>) => <EntrySocialItem key={id} entryId={id} />,
+    ({ item: id }: ListRenderItemInfo<string>) => <EntrySocialItem entryId={id} />,
     [],
   )
 

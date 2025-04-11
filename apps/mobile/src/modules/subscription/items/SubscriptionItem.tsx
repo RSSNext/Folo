@@ -11,12 +11,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { WifiOffCuteReIcon } from "@/src/icons/wifi_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import {
-  closeDrawer,
-  getHorizontalScrolling,
-  selectFeed,
-  useSelectedFeed,
-} from "@/src/modules/screen/atoms"
+import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
 import { useFeed, usePrefetchFeed } from "@/src/store/feed/hooks"
 import { useSubscription } from "@/src/store/subscription/hooks"
@@ -36,9 +31,6 @@ export const SubscriptionItem = memo(
     const feed = useFeed(id)!
     const inGrouped = !!useContext(GroupedContext)
     const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
-
-    const selectedFeed = useSelectedFeed()
-    const view = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
     const navigation = useNavigation()
     if (isLoading) {
@@ -61,7 +53,7 @@ export const SubscriptionItem = memo(
             "rounded-b-[10px]": isLast,
           })}
         >
-          <SubscriptionFeedItemContextMenu id={id} view={view}>
+          <SubscriptionFeedItemContextMenu id={id}>
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               className={cn(
@@ -107,3 +99,4 @@ export const SubscriptionItem = memo(
     )
   },
 )
+SubscriptionItem.displayName = "SubscriptionItem"

@@ -10,7 +10,7 @@ import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { useWhoami } from "@/src/store/user/hooks"
 
-import { useFetchEntriesControls } from "../feed-drawer/atoms"
+import { useFetchEntriesControls } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"

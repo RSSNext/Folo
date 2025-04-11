@@ -1,3 +1,4 @@
+import type { FeedViewType } from "@follow/constants"
 import ImageEditor from "@react-native-community/image-editor"
 import { requireNativeModule } from "expo"
 import * as FileSystem from "expo-file-system"
@@ -11,7 +12,6 @@ import { findNodeHandle, Image, Pressable } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
-import { useSelectedView } from "@/src/modules/screen/atoms"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
 import { useEntry } from "@/src/store/entry/hooks"
@@ -22,6 +22,7 @@ import { ContextMenu } from "../context-menu"
 type ImageContextMenuProps = PropsWithChildren<{
   imageUrl?: string
   entryId?: string
+  view?: FeedViewType
 }>
 
 interface IOSNativeImageActions {
@@ -35,11 +36,11 @@ const getIOSNativeImageActions = () => {
   return requireNativeModule<IOSNativeImageActions>("Helper")
 }
 
-export const ImageContextMenu = ({ imageUrl, entryId, children }: ImageContextMenuProps) => {
+export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageContextMenuProps) => {
   const { t } = useTranslation()
   const entry = useEntry(entryId!)
   const feedId = entry?.feedId
-  const view = useSelectedView()
+
   const isEntryStarred = useIsEntryStarred(entryId!)
 
   const contextMenuTriggerRef = useRef<View>(null)

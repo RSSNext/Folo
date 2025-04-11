@@ -1,10 +1,10 @@
+import { FeedViewType } from "@follow/constants"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 import { Share } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { toast } from "@/src/lib/toast"
-import { useSelectedView } from "@/src/modules/screen/atoms"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
 import { useEntry } from "@/src/store/entry/hooks"
@@ -18,7 +18,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
   const { t } = useTranslation()
   const entry = useEntry(entryId)
   const feedId = entry?.feedId
-  const view = useSelectedView()
+
   const isEntryStarred = useIsEntryStarred(entryId)
 
   if (!entry) {
@@ -47,7 +47,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
             }}
           />
         </ContextMenu.Item>
-        {feedId && view !== undefined && (
+        {feedId && (
           <ContextMenu.Item
             key="Star"
             onSelect={() => {
@@ -58,7 +58,7 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
                 collectionSyncService.starEntry({
                   feedId,
                   entryId,
-                  view,
+                  view: FeedViewType.Videos,
                 })
                 toast.success("Starred")
               }
