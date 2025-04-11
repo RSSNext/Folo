@@ -19,7 +19,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -27,24 +27,52 @@ import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
-const forgetPasswordFormSchema = z.object({
-  email: z.string().email(),
-})
+function closeRecaptcha(recaptchaRef: React.RefObject<ReCAPTCHA>, mutation?: any) {
+  const handleClick = (e: MouseEvent) => {
+    if (
+      e.target instanceof Element &&
+      !e.target.closest(".g-recaptcha") &&
+      !e.target.closest("iframe")
+    ) {
+      const popup = document.querySelector('div[style*="z-index: 2000000000"]')
+      if (popup) {
+        recaptchaRef.current?.reset()
+        mutation?.reset()
+      }
+    }
+  }
+
+  document.addEventListener("click", handleClick)
+  return () => document.removeEventListener("click", handleClick)
+}
+
+const createEmailSchema = (t: any) =>
+  z.object({
+    email: z
+      .string()
+      .min(1, t("login.forget_password.email_required"))
+      .email(t("login.forget_password.email_invalid")),
+  })
 
 export function Component() {
   const { t } = useTranslation()
-  const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
-    resolver: zodResolver(forgetPasswordFormSchema),
+  const navigate = useNavigate()
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
+
+  const EmailSchema = createEmailSchema(t)
+
+  const form = useForm<z.infer<typeof EmailSchema>>({
+    resolver: zodResolver(EmailSchema),
     defaultValues: {
       email: "",
     },
+    mode: "onChange",
+    delayError: 500,
   })
-
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
 
   const { isValid } = form.formState
   const updateMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof forgetPasswordFormSchema>) => {
+    mutationFn: async (values: z.infer<typeof EmailSchema>) => {
       const token = await recaptchaRef.current?.executeAsync()
       const res = await forgetPassword(
         {
@@ -62,18 +90,24 @@ export function Component() {
       }
     },
     onError: (error) => {
+      recaptchaRef.current?.reset()
       toast.error(error.message)
     },
     onSuccess: () => {
       toast.success(t("login.forget_password.success"))
     },
+    onSettled: () => {
+      recaptchaRef.current?.reset()
+    },
   })
 
-  function onSubmit(values: z.infer<typeof forgetPasswordFormSchema>) {
+  useEffect(() => {
+    return closeRecaptcha(recaptchaRef, updateMutation)
+  }, [updateMutation])
+
+  function onSubmit(values: z.infer<typeof EmailSchema>) {
     updateMutation.mutate(values)
   }
-
-  const navigate = useNavigate()
 
   return (
     <div className="flex h-full items-center justify-center">

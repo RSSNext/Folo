@@ -21,6 +21,7 @@ import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhHK from "@locales/common/zh-HK.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import external_en from "@locales/external/en.json"
+import external_zhCN from "@locales/external/zh-CN.json"
 
 import type { ns, SSRSupportedLanguages } from "./constants"
 
@@ -38,6 +39,7 @@ export const defaultResources = {
   },
   "zh-CN": {
     common: common_zhCN,
+    external: external_zhCN,
   },
   "zh-HK": {
     common: common_zhHK,
