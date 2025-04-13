@@ -36,6 +36,13 @@ button {
   display: none !important;
 }
 
+iframe[src*="recaptcha/api2"],
+iframe[src*="www.recaptcha.net"],
+iframe[src*="google.com/recaptcha"] {
+  pointer-events: auto !important;
+  -webkit-app-region: no-drag !important;
+}
+
 div[style*="z-index: 2000000000"] {
   position: fixed !important;
   top: 0 !important;
