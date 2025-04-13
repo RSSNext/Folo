@@ -15,7 +15,7 @@ import { updateProxy } from "./lib/proxy"
 import { handleUrlRouting } from "./lib/router"
 import { store } from "./lib/store"
 import { registerAppTray } from "./lib/tray"
-import { setBetterAuthSessionCookie, updateNotificationsToken } from "./lib/user"
+import { updateNotificationsToken } from "./lib/user"
 import { logger } from "./logger"
 import { registerUpdater } from "./updater"
 import { cleanupOldRender } from "./updater/hot-updater"
@@ -227,27 +227,13 @@ function bootstrap() {
     const urlObj = new URL(url)
 
     if (urlObj.hostname === "auth" || urlObj.pathname === "//auth") {
-      const ck = urlObj.searchParams.get("ck")
-      const userId = urlObj.searchParams.get("userId")
+      const token = urlObj.searchParams.get("token")
 
-      if (ck && apiURL) {
-        setBetterAuthSessionCookie(ck)
-        const cookie = parse(atob(ck), { decode: (value) => value })
-        Object.keys(cookie).forEach((name) => {
-          const value = cookie[name]
-          mainWindow.webContents.session.cookies.set({
-            url: apiURL,
-            name,
-            value,
-            secure: true,
-            httpOnly: true,
-            domain: new URL(apiURL).hostname,
-            sameSite: "no_restriction",
-          })
-        })
-
-        userId && (await callWindowExpose(mainWindow).clearIfLoginOtherAccount(userId))
+      if (token) {
+        await callWindowExpose(mainWindow).applyOneTimeToken(token)
         mainWindow.reload()
+
+        // TODO
 
         updateNotificationsToken()
       }

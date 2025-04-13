@@ -1,11 +1,7 @@
 import { IN_ELECTRON } from "@follow/shared"
 import type { authPlugins } from "@follow/shared/hono"
 import type { BetterAuthClientPlugin } from "better-auth/client"
-import {
-  inferAdditionalFields,
-  oneTimeTokenClient,
-  twoFactorClient,
-} from "better-auth/client/plugins"
+import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 
 type AuthPlugin = (typeof authPlugins)[number]
@@ -18,6 +14,10 @@ const serverPlugins = [
     id: "getAccountInfo",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "getAccountInfo" }>,
   },
+  {
+    id: "oneTimeToken",
+    $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
+  },
   inferAdditionalFields({
     user: {
       handle: {
@@ -27,7 +27,7 @@ const serverPlugins = [
     },
   }),
 ] satisfies BetterAuthClientPlugin[]
-const plugins = [...serverPlugins, twoFactorClient(), oneTimeTokenClient()]
+const plugins = [...serverPlugins, twoFactorClient()]
 
 export type LoginRuntime = "browser" | "app"
 

@@ -11,6 +11,7 @@ import { setUpdaterStatus } from "~/atoms/updater"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useDiscoverRSSHubRouteModal } from "~/hooks/biz/useDiscoverRSSHubRoute"
 import { useFollow } from "~/hooks/biz/useFollow"
+import { oneTimeToken } from "~/lib/auth"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { clearDataIfLoginOtherAccount } from "~/store/utils/clear"
@@ -42,6 +43,10 @@ export const ExtensionExposeProvider = () => {
       clearIfLoginOtherAccount(newUserId: string) {
         clearDataIfLoginOtherAccount(newUserId)
       },
+      applyOneTimeToken(token: string) {
+        oneTimeToken.apply({ token })
+      },
+
       readyToUpdate() {
         setUpdaterStatus({
           type: "renderer",
