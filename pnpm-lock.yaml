@@ -23,6 +23,9 @@ patchedDependencies:
   '@pengx17/electron-forge-maker-appimage':
     hash: 5b5ab1ba36e8c0d7ffee912ebf29c1a18bc101c9c661ceb1bb0bda3deaf4c667
     path: patches/@pengx17__electron-forge-maker-appimage.patch
+  better-auth:
+    hash: a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126
+    path: patches/better-auth.patch
   daisyui@4.12.24:
     hash: d393ab1cbfbfcff21dce0796a59c2d8a37e2c6dd634a8ab476cbc67e47b93d9c
     path: patches/daisyui@4.12.24.patch
@@ -756,7 +759,7 @@ importers:
     dependencies:
       '@better-auth/expo':
         specifier: 1.2.6
-        version: 1.2.6(better-auth@1.2.6)
+        version: 1.2.6(better-auth@1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126))
       '@expo/metro-runtime':
         specifier: 4.0.1
         version: 4.0.1(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))
@@ -840,7 +843,7 @@ importers:
         version: 1.5.5
       better-auth:
         specifier: 1.2.6
-        version: 1.2.6
+        version: 1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126)
       cookie-es:
         specifier: 2.0.0
         version: 2.0.0
@@ -1547,7 +1550,7 @@ importers:
         version: 0.12.0(typescript@5.8.3)(valibot@1.0.0-beta.15(typescript@5.8.3))(zod@3.24.2)
       better-auth:
         specifier: 1.2.6
-        version: 1.2.6
+        version: 1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126)
       drizzle-orm:
         specifier: 0.41.0
         version: 0.41.0(9928b483d1845c28fd62a2a8fba14be2)
@@ -16714,10 +16717,10 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@better-auth/expo@1.2.6(better-auth@1.2.6)':
+  '@better-auth/expo@1.2.6(better-auth@1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126))':
     dependencies:
       '@better-fetch/fetch': 1.1.18
-      better-auth: 1.2.6
+      better-auth: 1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126)
       better-call: 1.0.7
       zod: 3.24.2
 
@@ -22761,7 +22764,7 @@ snapshots:
 
   before-after-hook@2.2.3: {}
 
-  better-auth@1.2.6:
+  better-auth@1.2.6(patch_hash=a7cb9975502ed770e8071ef9faa8b1ccb7b28cddbe397f20353db712525a7126):
     dependencies:
       '@better-auth/utils': 0.2.4
       '@better-fetch/fetch': 1.1.18
