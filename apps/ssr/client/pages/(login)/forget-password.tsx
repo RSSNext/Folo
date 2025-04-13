@@ -27,18 +27,23 @@ import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
-function closeRecaptcha(recaptchaRef: React.RefObject<ReCAPTCHA>, mutation?: any) {
+function closeRecaptcha(
+  recaptchaRef: React.RefObject<ReCAPTCHA>,
+  mutation?: { reset: () => void },
+) {
   const handleClick = (e: MouseEvent) => {
+    const recaptchaIframeSelector =
+      'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'
+    const recaptchaChallengeIframe = document.querySelector(recaptchaIframeSelector)
+
     if (
       e.target instanceof Element &&
+      (!recaptchaChallengeIframe || !recaptchaChallengeIframe.contains(e.target)) &&
       !e.target.closest(".g-recaptcha") &&
-      !e.target.closest("iframe")
+      recaptchaChallengeIframe
     ) {
-      const popup = document.querySelector('div[style*="z-index: 2000000000"]')
-      if (popup) {
-        recaptchaRef.current?.reset()
-        mutation?.reset()
-      }
+      recaptchaRef.current?.reset()
+      mutation?.reset()
     }
   }
 
@@ -150,7 +155,11 @@ export function Component() {
                 size="invisible"
               />
               <div className="text-right">
-                <Button disabled={!isValid} type="submit" isLoading={updateMutation.isPending}>
+                <Button
+                  disabled={!isValid || updateMutation.isPending}
+                  type="submit"
+                  isLoading={updateMutation.isPending}
+                >
                   {t("login.submit")}
                 </Button>
               </div>
