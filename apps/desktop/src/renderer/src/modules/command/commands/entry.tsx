@@ -15,7 +15,7 @@ import {
   useSourceContentModal,
 } from "~/atoms/source-content"
 import { useUserRole } from "~/atoms/user"
-import { useEntryReadabilityToggle } from "~/hooks/biz/useEntryActions"
+import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
@@ -105,8 +105,6 @@ export const useRegisterEntryCommands = () => {
   const presentActivationModal = useActivationModal()
 
   const voice = useGeneralSettingKey("voice")
-
-  const readabilityToggle = useEntryReadabilityToggle()
 
   useRegisterFollowCommand([
     {
@@ -352,7 +350,7 @@ export const useRegisterEntryCommands = () => {
         <i className={props?.isActive ? "i-mgc-docment-cute-fi" : "i-mgc-docment-cute-re"} />
       ),
       run: async ({ entryId, entryUrl }) => {
-        return readabilityToggle({
+        return toggleEntryReadability({
           id: entryId,
           url: entryUrl,
         })

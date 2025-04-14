@@ -1,7 +1,7 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
 import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
@@ -27,41 +27,40 @@ import { useInboxById } from "~/store/inbox"
 
 import { useRouteParamsSelector } from "./useRouteParams"
 
-export const useEntryReadabilityToggle = () =>
-  useCallback(async ({ id, url }: { id: string; url: string }) => {
-    const status = getReadabilityStatus()[id]
-    const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
+export const toggleEntryReadability = async ({ id, url }: { id: string; url: string }) => {
+  const status = getReadabilityStatus()[id]
+  const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
 
-    if (!isTurnOn && url) {
-      setReadabilityStatus({
-        [id]: ReadabilityStatus.WAITING,
+  if (!isTurnOn && url) {
+    setReadabilityStatus({
+      [id]: ReadabilityStatus.WAITING,
+    })
+    const result = await tipcClient
+      ?.readability({
+        url,
       })
-      const result = await tipcClient
-        ?.readability({
-          url,
-        })
-        .catch(() => {
-          setReadabilityStatus({
-            [id]: ReadabilityStatus.FAILURE,
-          })
-        })
-
-      if (result) {
-        const status = getReadabilityStatus()[id]
-        if (status !== ReadabilityStatus.WAITING) return
+      .catch(() => {
         setReadabilityStatus({
-          [id]: ReadabilityStatus.SUCCESS,
+          [id]: ReadabilityStatus.FAILURE,
         })
-        setReadabilityContent({
-          [id]: result,
-        })
-      }
-    } else {
+      })
+
+    if (result) {
+      const status = getReadabilityStatus()[id]
+      if (status !== ReadabilityStatus.WAITING) return
       setReadabilityStatus({
-        [id]: ReadabilityStatus.INITIAL,
+        [id]: ReadabilityStatus.SUCCESS,
+      })
+      setReadabilityContent({
+        [id]: result,
       })
     }
-  }, [])
+  } else {
+    setReadabilityStatus({
+      [id]: ReadabilityStatus.INITIAL,
+    })
+  }
+}
 
 export type EntryActionItem = {
   id: FollowCommandId
