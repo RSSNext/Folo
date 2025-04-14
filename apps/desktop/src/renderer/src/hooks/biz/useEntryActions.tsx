@@ -83,7 +83,13 @@ export const useEntryActions = ({
   const entry = useEntry(entryId)
   const entryReadabilityStatus = useEntryInReadabilityStatus(entry?.entries.id)
   const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
-  const feed = useFeedById(entry?.feedId)
+  const feed = useFeedById(entry?.feedId, (feed) => {
+    return {
+      type: feed.type,
+      ownerUserId: feed.ownerUserId,
+      id: feed.id,
+    }
+  })
   const listId = useRouteParamsSelector((s) => s.listId)
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
