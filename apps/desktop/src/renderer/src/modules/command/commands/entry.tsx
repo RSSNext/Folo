@@ -358,7 +358,9 @@ export const useRegisterEntryCommands = () => {
     {
       id: COMMAND_ID.entry.readability,
       label: t("entry_content.header.readability"),
-      icon: <i className="i-mgc-docment-cute-re" />,
+      icon: (props) => (
+        <i className={props?.isActive ? "i-mgc-docment-cute-fi" : "i-mgc-docment-cute-re"} />
+      ),
       run: ({ entryId, entryUrl }) => {
         readabilityToggle({
           id: entryId,

@@ -1,6 +1,5 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
-import type { CombinedEntryModel } from "@follow/models/types"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCallback, useMemo } from "react"
 
@@ -8,9 +7,11 @@ import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
+  isInReadability,
   ReadabilityStatus,
   setReadabilityContent,
   setReadabilityStatus,
+  useEntryInReadabilityStatus,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
@@ -81,16 +82,9 @@ export const useEntryActions = ({
   compact?: boolean
 }) => {
   const entry = useEntry(entryId)
+  const entryReadabilityStatus = useEntryInReadabilityStatus(entry?.entries.id)
   const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
   const feed = useFeedById(entry?.feedId)
-  const populatedEntry = useMemo(() => {
-    if (!entry) return null
-    if (!feed) return null
-    return {
-      ...entry,
-      feeds: feed!,
-    } as CombinedEntryModel
-  }, [entry, feed])
   const listId = useRouteParamsSelector((s) => s.listId)
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
@@ -222,18 +216,19 @@ export const useEntryActions = ({
       {
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [
-          { entryId, entryContent: populatedEntry?.entries.content },
+          { entryId, entryContent: entry?.entries.content },
         ]),
         hide: compact,
-        disabled: !populatedEntry?.entries.content,
+        disabled: !entry?.entries.content,
         shortcut: shortcuts.entry.tts.key,
       },
       {
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
-          { entryId, entryUrl: populatedEntry?.entries.url },
+          { entryId, entryUrl: entry?.entries.url },
         ]),
-        hide: compact || (view && views[view]!.wideMode) || !populatedEntry?.entries.url,
+        hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
+        active: isInReadability(entryReadabilityStatus),
       },
       {
         id: COMMAND_ID.settings.customizeToolbar,
@@ -241,11 +236,14 @@ export const useEntryActions = ({
       },
     ].filter((config) => !config.hide)
   }, [
+    compact,
     entry?.collections,
+    entry?.entries.content,
     entry?.entries.url,
     entry?.read,
     entry?.view,
     entryId,
+    entryReadabilityStatus,
     feed?.id,
     feed?.ownerUserId,
     hasEntry,
