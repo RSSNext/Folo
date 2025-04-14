@@ -351,8 +351,8 @@ export const useRegisterEntryCommands = () => {
       icon: (props) => (
         <i className={props?.isActive ? "i-mgc-docment-cute-fi" : "i-mgc-docment-cute-re"} />
       ),
-      run: ({ entryId, entryUrl }) => {
-        readabilityToggle({
+      run: async ({ entryId, entryUrl }) => {
+        return readabilityToggle({
           id: entryId,
           url: entryUrl,
         })
