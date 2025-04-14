@@ -217,8 +217,7 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.entry.tts, [
           { entryId, entryContent: entry?.entries.content },
         ]),
-        hide: compact,
-        disabled: !entry?.entries.content,
+        hide: !IN_ELECTRON || compact || !entry?.entries.content,
         shortcut: shortcuts.entry.tts.key,
       },
       {
@@ -226,7 +225,7 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
           { entryId, entryUrl: entry?.entries.url },
         ]),
-        hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
+        hide: !IN_ELECTRON || compact || (view && views[view]!.wideMode) || !entry?.entries.url,
         active: isInReadability(entryReadabilityStatus),
       },
       {
