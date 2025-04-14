@@ -159,10 +159,7 @@ export const ViewSourceContentAutoToggleEffect = () => {
 }
 
 export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {
-  const toggle = useEntryReadabilityToggle({
-    id,
-    url,
-  })
+  const toggle = useEntryReadabilityToggle()
   const onceRef = useRef(false)
 
   useEffect(() => {
@@ -171,9 +168,9 @@ export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: stri
       setReadabilityStatus({
         [id]: ReadabilityStatus.INITIAL,
       })
-      toggle()
+      toggle({ id, url })
     }
-  }, [toggle])
+  }, [id, toggle, url])
 
   return null
 }
