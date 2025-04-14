@@ -1,5 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, UserRole } from "@follow/constants"
+import { FeedViewType, UserRole, views } from "@follow/constants"
+import type { CombinedEntryModel } from "@follow/models/types"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCallback, useMemo } from "react"
 
@@ -7,9 +8,11 @@ import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
+  isInReadability,
   ReadabilityStatus,
   setReadabilityContent,
   setReadabilityStatus,
+  useEntryInReadabilityStatus,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
@@ -25,8 +28,8 @@ import { useInboxById } from "~/store/inbox"
 
 import { useRouteParamsSelector } from "./useRouteParams"
 
-export const useEntryReadabilityToggle = ({ id, url }: { id: string; url: string }) =>
-  useCallback(async () => {
+export const useEntryReadabilityToggle = () =>
+  useCallback(async ({ id, url }: { id: string; url: string }) => {
     const status = getReadabilityStatus()[id]
     const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
 
@@ -59,7 +62,7 @@ export const useEntryReadabilityToggle = ({ id, url }: { id: string; url: string
         [id]: ReadabilityStatus.INITIAL,
       })
     }
-  }, [id, url])
+  }, [])
 
 export type EntryActionItem = {
   id: FollowCommandId
@@ -70,16 +73,26 @@ export type EntryActionItem = {
   disabled?: boolean
 }
 
-export const useEntryActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
+export const useEntryActions = ({
+  entryId,
+  view,
+  compact,
+}: {
+  entryId: string
+  view?: FeedViewType
+  compact?: boolean
+}) => {
   const entry = useEntry(entryId)
   const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
-  const feed = useFeedById(entry?.feedId, (feed) => {
+  const feed = useFeedById(entry?.feedId)
+  const populatedEntry = useMemo(() => {
+    if (!entry) return null
+    if (!feed) return null
     return {
-      type: feed.type,
-      ownerUserId: feed.ownerUserId,
-      id: feed.id,
-    }
-  })
+      ...entry,
+      feeds: feed!,
+    } as CombinedEntryModel
+  }, [entry, feed])
   const listId = useRouteParamsSelector((s) => s.listId)
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
@@ -95,6 +108,8 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
   const hasEntry = !!entry
 
   const userRole = useUserRole()
+
+  const entryReadabilityStatus = useEntryInReadabilityStatus(entryId)
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -209,6 +224,23 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         shortcut: shortcuts.entry.toggleRead.key,
       },
       {
+        id: COMMAND_ID.entry.tts,
+        onClick: runCmdFn(COMMAND_ID.entry.tts, [
+          { entryId, entryContent: populatedEntry?.entries.content },
+        ]),
+        hide: compact,
+        disabled: !populatedEntry?.entries.content,
+        shortcut: shortcuts.entry.tts.key,
+      },
+      {
+        id: COMMAND_ID.entry.readability,
+        onClick: runCmdFn(COMMAND_ID.entry.readability, [
+          { entryId, entryUrl: populatedEntry?.entries.url },
+        ]),
+        hide: compact || (view && views[view]!.wideMode) || !populatedEntry?.entries.url,
+        disabled: isInReadability(entryReadabilityStatus),
+      },
+      {
         id: COMMAND_ID.settings.customizeToolbar,
         onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
       },
@@ -241,11 +273,13 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
 export const useSortedEntryActions = ({
   entryId,
   view,
+  compact,
 }: {
   entryId: string
   view?: FeedViewType
+  compact?: boolean
 }) => {
-  const entryActions = useEntryActions({ entryId, view })
+  const entryActions = useEntryActions({ entryId, view, compact })
   const orderMap = useToolbarOrderMap()
   const mainAction = useMemo(
     () =>

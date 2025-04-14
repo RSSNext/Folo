@@ -13,6 +13,8 @@ export const COMMAND_ID = {
     toggleAITranslation: "entry:toggle-ai-translation",
     exportAsPDF: "entry:export-as-pdf",
     imageGallery: "entry:image-gallery",
+    tts: "entry:tts",
+    readability: "entry:ability",
   },
   integration: {
     saveToEagle: "integration:save-to-eagle",

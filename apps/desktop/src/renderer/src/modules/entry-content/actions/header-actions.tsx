@@ -8,8 +8,16 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
 import { useEntry } from "~/store/entry/hooks"
 
-export const EntryHeaderActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
-  const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view })
+export const EntryHeaderActions = ({
+  entryId,
+  view,
+  compact,
+}: {
+  entryId: string
+  view?: FeedViewType
+  compact?: boolean
+}) => {
+  const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view, compact })
   const entry = useEntry(entryId)
 
   const hasModal = useHasModal()
