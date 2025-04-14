@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - "**"
-    tags:
-      - "v*"
+    paths:
+      - "apps/desktop/**"
+      - "pnpm-lock.yaml"
   workflow_dispatch:
     inputs:
       tag_version:
@@ -124,20 +125,17 @@ jobs:
       - name: Install dependencies
         run: pnpm i
       - name: Update main hash
-        run: |
-          cd apps/desktop
-          pnpm update:main-hash
+        working-directory: apps/desktop
+        run: pnpm update:main-hash
       - name: Build - Vite
-        run: |
-          cd apps/desktop
-          pnpm build:electron-vite ${{ env.PROD == 'false' && '--mode staging' || '' }}
+        working-directory: apps/desktop
+        run: pnpm build:electron-vite ${{ env.PROD == 'false' && '--mode staging' || '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Build - Windows and Linux
         if: runner.os != 'macOS'
-        run: |
-          cd apps/desktop
-          pnpm build:electron-forge ${{ env.PROD == 'false' && '--mode=staging' || '' }}
+        working-directory: apps/desktop
+        run: pnpm build:electron-forge ${{ env.PROD == 'false' && '--mode=staging' || '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
@@ -166,15 +164,13 @@ jobs:
           OSX_SIGN_IDENTITY: ${{ secrets.OSX_SIGN_IDENTITY_MAS }}
           OSX_SIGN_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/build_pp.provisionprofile
           BUILD_VERSION: ${{ github.event.inputs.build_version }}
-        run: |
-          cd apps/desktop
-          pnpm build:electron-forge:mas
+        working-directory: apps/desktop
+        run: pnpm build:electron-forge:mas
 
       - name: Build - Renderer
         if: runner.os == 'Linux'
-        run: |
-          cd apps/desktop
-          pnpm build:render
+        working-directory: apps/desktop
+        run: pnpm build:render
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 

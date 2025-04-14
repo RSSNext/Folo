@@ -98,9 +98,9 @@ class UserSyncService {
 
     if (!me) throw new Error("user not login")
 
-    const method = enabled ? twoFactor.enable : twoFactor.disable
-
-    const res = await method({ password })
+    const res = enabled
+      ? await twoFactor.enable({ password })
+      : await twoFactor.disable({ password })
 
     if (!res.error) {
       immerSet((state) => {

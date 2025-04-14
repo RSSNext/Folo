@@ -2,12 +2,8 @@ name: Build Android
 
 on:
   push:
-    branches: [dev]
-    paths:
-      - "apps/mobile/**"
-      - "pnpm-lock.yaml"
-  pull_request:
-    branches: [dev]
+    branches:
+      - "**"
     paths:
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
@@ -22,7 +18,7 @@ on:
         description: "Build profile"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
   cancel-in-progress: true
 
 jobs:
@@ -81,3 +77,8 @@ jobs:
           name: aab-android
           path: ${{ github.workspace }}/build.aab
           retention-days: 90
+
+      - name: Submit to Google Play
+        if: github.event.inputs.profile == 'production'
+        working-directory: apps/mobile
+        run: eas submit --platform android --path ${{ github.workspace }}/build.aab --non-interactive

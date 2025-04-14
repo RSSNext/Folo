@@ -39,6 +39,8 @@
   "login.continueWith": "使用 {{provider}} 登入",
   "login.email": "邮件地址",
   "login.forget_password.description": "请输入与你的帐户关联的邮件地址，我们将向你发送一封关于如何重置密码的邮件。",
+  "login.forget_password.email_invalid": "无效的邮箱地址",
+  "login.forget_password.email_required": "请输入邮箱",
   "login.forget_password.label": "忘记密码",
   "login.forget_password.note": "忘记了密码？",
   "login.forget_password.success": "邮件已成功发送。",
