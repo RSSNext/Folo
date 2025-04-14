@@ -2,7 +2,6 @@ import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn, getOS } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -105,8 +104,6 @@ export const useRegisterEntryCommands = () => {
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
 
-  // tts
-  const [ttsLoading, setTtsLoading] = useState(false)
   const voice = useGeneralSettingKey("voice")
 
   const readabilityToggle = useEntryReadabilityToggle()
@@ -327,14 +324,8 @@ export const useRegisterEntryCommands = () => {
     {
       id: COMMAND_ID.entry.tts,
       label: t("entry_content.header.play_tts"),
-      icon: ttsLoading ? (
-        <i className="i-mgc-loading-3-cute-re animate-spin" />
-      ) : (
-        <i className="i-mgc-voice-cute-re" />
-      ),
+      icon: <i className="i-mgc-voice-cute-re" />,
       run: async ({ entryId, entryContent }) => {
-        if (ttsLoading) return
-        setTtsLoading(true)
         if (getAudioPlayerAtomValue().entryId === entryId) {
           AudioPlayer.togglePlayAndPause()
         } else {
@@ -352,7 +343,6 @@ export const useRegisterEntryCommands = () => {
             })
           }
         }
-        setTtsLoading(false)
       },
     },
     {
