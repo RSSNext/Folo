@@ -14,7 +14,7 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 import { tipcClient } from "~/lib/client"
 
 import { CopyButton } from "../../button/CopyButton"
-import { getLanguageColor, getLanguageIcon } from "../constants"
+import { getLanguageIcon } from "../constants"
 import { useShikiDefaultTheme } from "./hooks"
 import { shiki, shikiTransformers } from "./shared"
 import styles from "./shiki.module.css"
@@ -198,13 +198,7 @@ const ShikiCode: FC<
             <span>{language}</span>
           </span>
         )}
-        <CopyButton
-          variant="outline"
-          value={code}
-          style={{
-            color: getLanguageColor(language),
-          }}
-        />
+        <CopyButton variant="ghost" value={code} />
       </div>
       <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
     </div>
