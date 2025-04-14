@@ -8,11 +8,9 @@ import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
-  isInReadability,
   ReadabilityStatus,
   setReadabilityContent,
   setReadabilityStatus,
-  useEntryInReadabilityStatus,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
@@ -108,8 +106,6 @@ export const useEntryActions = ({
   const hasEntry = !!entry
 
   const userRole = useUserRole()
-
-  const entryReadabilityStatus = useEntryInReadabilityStatus(entryId)
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -238,7 +234,6 @@ export const useEntryActions = ({
           { entryId, entryUrl: populatedEntry?.entries.url },
         ]),
         hide: compact || (view && views[view]!.wideMode) || !populatedEntry?.entries.url,
-        disabled: isInReadability(entryReadabilityStatus),
       },
       {
         id: COMMAND_ID.settings.customizeToolbar,
