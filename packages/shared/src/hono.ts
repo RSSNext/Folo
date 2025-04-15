@@ -2,9 +2,9 @@ import * as hono_hono_base from 'hono/hono-base';
 import * as hono_types from 'hono/types';
 import * as hono_utils_http_status from 'hono/utils/http-status';
 import { HttpBindings } from '@hono/node-server';
-import * as better_call from 'better-call';
 import * as zod from 'zod';
 import { z } from 'zod';
+import * as better_call from 'better-call';
 import * as drizzle_orm_pg_core from 'drizzle-orm/pg-core';
 import { AnyPgColumn } from 'drizzle-orm/pg-core';
 import * as drizzle_orm from 'drizzle-orm';
@@ -50,48 +50,6 @@ declare const authPlugins: ({
                 use: any[];
             };
             path: "/get-providers";
-        };
-    };
-} | {
-    id: "customCreateSession";
-    endpoints: {
-        customCreateSession: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "GET" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    ck: string;
-                    userId: string;
-                } | null;
-            } : {
-                ck: string;
-                userId: string;
-            } | null>;
-            options: {
-                method: "GET";
-            } & {
-                use: any[];
-            };
-            path: "/create-session";
         };
     };
 } | {
@@ -184,6 +142,172 @@ declare const authPlugins: ({
                 use: any[];
             };
             path: "/update-user-ccc";
+        };
+    };
+} | {
+    id: "oneTimeToken";
+    endpoints: {
+        generateOneTimeToken: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    token: string;
+                };
+            } : {
+                token: string;
+            }>;
+            options: {
+                method: "GET";
+                use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                    session: {
+                        session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                        };
+                        user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                        };
+                    };
+                }>)[];
+            } & {
+                use: any[];
+            };
+            path: "/one-time-token/generate";
+        };
+        applyOneTimeToken: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                body: {
+                    token: string;
+                };
+            } & {
+                method?: "POST" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    user: {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                    } & Record<string, any>;
+                };
+            } : {
+                user: {
+                    id: string;
+                    name: string;
+                    email: string;
+                    emailVerified: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    image?: string | null | undefined;
+                } & Record<string, any>;
+            }>;
+            options: {
+                method: "POST";
+                body: zod.ZodObject<{
+                    token: zod.ZodString;
+                }, "strip", zod.ZodTypeAny, {
+                    token: string;
+                }, {
+                    token: string;
+                }>;
+            } & {
+                use: any[];
+            };
+            path: "/one-time-token/apply";
+        };
+    };
+} | {
+    id: "customCreateSession";
+    endpoints: {
+        customCreateSession: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    ck: string;
+                    userId: string;
+                } | null;
+            } : {
+                ck: string;
+                userId: string;
+            } | null>;
+            options: {
+                method: "GET";
+            } & {
+                use: any[];
+            };
+            path: "/create-session";
         };
     };
 })[];
@@ -2069,6 +2193,23 @@ declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        readabilityContent: drizzle_orm_pg_core.PgColumn<{
+            name: "readability_content";
+            tableName: "entries";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -2302,6 +2443,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     } | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null>>;
     language: z.ZodNullable<z.ZodString>;
     feedId: z.ZodString;
+    readabilityContent: z.ZodNullable<z.ZodString>;
 }, "media" | "attachments" | "extra">, {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
@@ -2380,6 +2522,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     url: string | null;
     language: string | null;
     feedId: string;
+    readabilityContent: string | null;
     guid: string;
     categories: string[] | null;
     authorUrl: string | null;
@@ -2417,6 +2560,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     url: string | null;
     language: string | null;
     feedId: string;
+    readabilityContent: string | null;
     guid: string;
     categories: string[] | null;
     authorUrl: string | null;
@@ -9927,45 +10071,6 @@ declare const auth: {
             path: "/get-providers";
         };
     } & {
-        customCreateSession: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "GET" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    ck: string;
-                    userId: string;
-                } | null;
-            } : {
-                ck: string;
-                userId: string;
-            } | null>;
-            options: {
-                method: "GET";
-            } & {
-                use: any[];
-            };
-            path: "/create-session";
-        };
-    } & {
         getAccountInfo: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
                 body?: undefined;
@@ -10050,6 +10155,166 @@ declare const auth: {
                 use: any[];
             };
             path: "/update-user-ccc";
+        };
+    } & {
+        generateOneTimeToken: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    token: string;
+                };
+            } : {
+                token: string;
+            }>;
+            options: {
+                method: "GET";
+                use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                    session: {
+                        session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                        };
+                        user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                        };
+                    };
+                }>)[];
+            } & {
+                use: any[];
+            };
+            path: "/one-time-token/generate";
+        };
+        applyOneTimeToken: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                body: {
+                    token: string;
+                };
+            } & {
+                method?: "POST" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    user: {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                    } & Record<string, any>;
+                };
+            } : {
+                user: {
+                    id: string;
+                    name: string;
+                    email: string;
+                    emailVerified: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    image?: string | null | undefined;
+                } & Record<string, any>;
+            }>;
+            options: {
+                method: "POST";
+                body: zod.ZodObject<{
+                    token: zod.ZodString;
+                }, "strip", zod.ZodTypeAny, {
+                    token: string;
+                }, {
+                    token: string;
+                }>;
+            } & {
+                use: any[];
+            };
+            path: "/one-time-token/apply";
+        };
+    } & {
+        customCreateSession: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    ck: string;
+                    userId: string;
+                } | null;
+            } : {
+                ck: string;
+                userId: string;
+            } | null>;
+            options: {
+                method: "GET";
+            } & {
+                use: any[];
+            };
+            path: "/create-session";
         };
     } & {
         enableTwoFactor: {
@@ -11015,113 +11280,6 @@ declare const auth: {
                 use: any[];
             };
             path: "/two-factor/verify-totp";
-        };
-    } & {
-        generateOneTimeToken: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "GET" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    token: string;
-                };
-            } : {
-                token: string;
-            }>;
-            options: {
-                method: "GET";
-                use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
-                    session: {
-                        session: Record<string, any> & {
-                            id: string;
-                            createdAt: Date;
-                            updatedAt: Date;
-                            userId: string;
-                            expiresAt: Date;
-                            token: string;
-                            ipAddress?: string | null | undefined;
-                            userAgent?: string | null | undefined;
-                        };
-                        user: Record<string, any> & {
-                            id: string;
-                            name: string;
-                            email: string;
-                            emailVerified: boolean;
-                            createdAt: Date;
-                            updatedAt: Date;
-                            image?: string | null | undefined;
-                        };
-                    };
-                }>)[];
-            } & {
-                use: any[];
-            };
-            path: "/one-time-token/generate";
-        };
-        verifyOneTimeToken: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
-                body: {
-                    token: string;
-                };
-            } & {
-                method?: "POST" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    session: better_auth.Session & Record<string, any>;
-                    user: better_auth.User & Record<string, any>;
-                };
-            } : {
-                session: better_auth.Session & Record<string, any>;
-                user: better_auth.User & Record<string, any>;
-            }>;
-            options: {
-                method: "POST";
-                body: zod.ZodObject<{
-                    token: zod.ZodString;
-                }, "strip", zod.ZodTypeAny, {
-                    token: string;
-                }, {
-                    token: string;
-                }>;
-            } & {
-                use: any[];
-            };
-            path: "/one-time-token/verify";
         };
     } & {
         getSession: {
@@ -12373,116 +12531,6 @@ declare const auth: {
                 }[];
             };
         } | {
-            id: "one-time-token";
-            endpoints: {
-                generateOneTimeToken: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                        body?: undefined;
-                    } & {
-                        method?: "GET" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: {
-                            token: string;
-                        };
-                    } : {
-                        token: string;
-                    }>;
-                    options: {
-                        method: "GET";
-                        use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
-                            session: {
-                                session: Record<string, any> & {
-                                    id: string;
-                                    createdAt: Date;
-                                    updatedAt: Date;
-                                    userId: string;
-                                    expiresAt: Date;
-                                    token: string;
-                                    ipAddress?: string | null | undefined;
-                                    userAgent?: string | null | undefined;
-                                };
-                                user: Record<string, any> & {
-                                    id: string;
-                                    name: string;
-                                    email: string;
-                                    emailVerified: boolean;
-                                    createdAt: Date;
-                                    updatedAt: Date;
-                                    image?: string | null | undefined;
-                                };
-                            };
-                        }>)[];
-                    } & {
-                        use: any[];
-                    };
-                    path: "/one-time-token/generate";
-                };
-                verifyOneTimeToken: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
-                        body: {
-                            token: string;
-                        };
-                    } & {
-                        method?: "POST" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: {
-                            session: better_auth.Session & Record<string, any>;
-                            user: better_auth.User & Record<string, any>;
-                        };
-                    } : {
-                        session: better_auth.Session & Record<string, any>;
-                        user: better_auth.User & Record<string, any>;
-                    }>;
-                    options: {
-                        method: "POST";
-                        body: zod.ZodObject<{
-                            token: zod.ZodString;
-                        }, "strip", zod.ZodTypeAny, {
-                            token: string;
-                        }, {
-                            token: string;
-                        }>;
-                    } & {
-                        use: any[];
-                    };
-                    path: "/one-time-token/verify";
-                };
-            };
-        } | {
             id: "custom-session";
             endpoints: {
                 getSession: {
@@ -12655,48 +12703,6 @@ declare const auth: {
                 };
             };
         } | {
-            id: "customCreateSession";
-            endpoints: {
-                customCreateSession: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                        body?: undefined;
-                    } & {
-                        method?: "GET" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: {
-                            ck: string;
-                            userId: string;
-                        } | null;
-                    } : {
-                        ck: string;
-                        userId: string;
-                    } | null>;
-                    options: {
-                        method: "GET";
-                    } & {
-                        use: any[];
-                    };
-                    path: "/create-session";
-                };
-            };
-        } | {
             id: "getAccountInfo";
             endpoints: {
                 getAccountInfo: {
@@ -12786,6 +12792,172 @@ declare const auth: {
                         use: any[];
                     };
                     path: "/update-user-ccc";
+                };
+            };
+        } | {
+            id: "oneTimeToken";
+            endpoints: {
+                generateOneTimeToken: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                        body?: undefined;
+                    } & {
+                        method?: "GET" | undefined;
+                    } & {
+                        query?: Record<string, any> | undefined;
+                    } & {
+                        params?: Record<string, any>;
+                    } & {
+                        request?: Request;
+                    } & {
+                        headers?: HeadersInit;
+                    } & {
+                        asResponse?: boolean;
+                        returnHeaders?: boolean;
+                        use?: better_call.Middleware[];
+                        path?: string;
+                    } & {
+                        asResponse?: AsResponse | undefined;
+                        returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                        headers: Headers;
+                        response: {
+                            token: string;
+                        };
+                    } : {
+                        token: string;
+                    }>;
+                    options: {
+                        method: "GET";
+                        use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                            session: {
+                                session: Record<string, any> & {
+                                    id: string;
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    userId: string;
+                                    expiresAt: Date;
+                                    token: string;
+                                    ipAddress?: string | null | undefined;
+                                    userAgent?: string | null | undefined;
+                                };
+                                user: Record<string, any> & {
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    emailVerified: boolean;
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    image?: string | null | undefined;
+                                };
+                            };
+                        }>)[];
+                    } & {
+                        use: any[];
+                    };
+                    path: "/one-time-token/generate";
+                };
+                applyOneTimeToken: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                        body: {
+                            token: string;
+                        };
+                    } & {
+                        method?: "POST" | undefined;
+                    } & {
+                        query?: Record<string, any> | undefined;
+                    } & {
+                        params?: Record<string, any>;
+                    } & {
+                        request?: Request;
+                    } & {
+                        headers?: HeadersInit;
+                    } & {
+                        asResponse?: boolean;
+                        returnHeaders?: boolean;
+                        use?: better_call.Middleware[];
+                        path?: string;
+                    } & {
+                        asResponse?: AsResponse | undefined;
+                        returnHeaders?: ReturnHeaders | undefined;
+                    }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                        headers: Headers;
+                        response: {
+                            user: {
+                                id: string;
+                                name: string;
+                                email: string;
+                                emailVerified: boolean;
+                                createdAt: Date;
+                                updatedAt: Date;
+                                image?: string | null | undefined;
+                            } & Record<string, any>;
+                        };
+                    } : {
+                        user: {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                        } & Record<string, any>;
+                    }>;
+                    options: {
+                        method: "POST";
+                        body: zod.ZodObject<{
+                            token: zod.ZodString;
+                        }, "strip", zod.ZodTypeAny, {
+                            token: string;
+                        }, {
+                            token: string;
+                        }>;
+                    } & {
+                        use: any[];
+                    };
+                    path: "/one-time-token/apply";
+                };
+            };
+        } | {
+            id: "customCreateSession";
+            endpoints: {
+                customCreateSession: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                        body?: undefined;
+                    } & {
+                        method?: "GET" | undefined;
+                    } & {
+                        query?: Record<string, any> | undefined;
+                    } & {
+                        params?: Record<string, any>;
+                    } & {
+                        request?: Request;
+                    } & {
+                        headers?: HeadersInit;
+                    } & {
+                        asResponse?: boolean;
+                        returnHeaders?: boolean;
+                        use?: better_call.Middleware[];
+                        path?: string;
+                    } & {
+                        asResponse?: AsResponse | undefined;
+                        returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                        headers: Headers;
+                        response: {
+                            ck: string;
+                            userId: string;
+                        } | null;
+                    } : {
+                        ck: string;
+                        userId: string;
+                    } | null>;
+                    options: {
+                        method: "GET";
+                    } & {
+                        use: any[];
+                    };
+                    path: "/create-session";
                 };
             };
         })[];
@@ -13066,6 +13238,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     description?: string | undefined;
                     title?: string | undefined;
                     content?: string | undefined;
+                    readabilityContent?: string | undefined;
                 } | undefined;
             };
             outputFormat: "json";
@@ -13079,6 +13252,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                 query: {
                     id: string;
                     language?: "ar-DZ" | "ar-IQ" | "ar-KW" | "ar-MA" | "ar-SA" | "ar-TN" | "de" | "en" | "es" | "fi" | "fr" | "it" | "ja" | "ko" | "pt" | "ru" | "tr" | "zh-CN" | "zh-HK" | "zh-TW" | undefined;
+                    target?: "content" | "readabilityContent" | undefined;
                 };
             };
             output: {
@@ -13220,6 +13394,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         url: string | null;
                         language: string | null;
                         feedId: string;
+                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -13683,6 +13858,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
+                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -13790,6 +13966,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
+                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -13858,6 +14035,24 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
         };
     };
 } & {
+    "/readability": {
+        $get: {
+            input: {
+                query: {
+                    id: string;
+                };
+            };
+            output: {
+                code: 0;
+                data: {
+                    content?: string | null | undefined;
+                } | null;
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
+} & {
     "/stream": {
         $post: {
             input: {
@@ -13889,6 +14084,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     url: string | null;
                     language: string | null;
                     feedId: string;
+                    readabilityContent: string | null;
                     guid: string;
                     categories: string[] | null;
                     authorUrl: string | null;
@@ -14024,6 +14220,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
+                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -15051,6 +15248,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         };
                         language: string | null;
                         feedId: string;
+                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;

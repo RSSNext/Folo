@@ -16,7 +16,7 @@ import {
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
 import { shortcuts } from "~/constants/shortcuts"
-import { tipcClient } from "~/lib/client"
+import { apiClient } from "~/lib/api-fetch"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
@@ -35,24 +35,21 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
     setReadabilityStatus({
       [id]: ReadabilityStatus.WAITING,
     })
-    const result = await tipcClient
-      ?.readability({
-        url,
-      })
-      .catch(() => {
+    try {
+      const result = await apiClient.entries.readability.$get({ query: { id } })
+      if (result.data) {
+        const status = getReadabilityStatus()[id]
+        if (status !== ReadabilityStatus.WAITING) return
         setReadabilityStatus({
-          [id]: ReadabilityStatus.FAILURE,
+          [id]: ReadabilityStatus.SUCCESS,
         })
-      })
-
-    if (result) {
-      const status = getReadabilityStatus()[id]
-      if (status !== ReadabilityStatus.WAITING) return
+        setReadabilityContent({
+          [id]: result.data,
+        })
+      }
+    } catch {
       setReadabilityStatus({
-        [id]: ReadabilityStatus.SUCCESS,
-      })
-      setReadabilityContent({
-        [id]: result,
+        [id]: ReadabilityStatus.FAILURE,
       })
     }
   } else {
@@ -231,7 +228,7 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
           { entryId, entryUrl: entry?.entries.url },
         ]),
-        hide: !IN_ELECTRON || compact || (view && views[view]!.wideMode) || !entry?.entries.url,
+        hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
         active: isInReadability(entryReadabilityStatus),
       },
       {

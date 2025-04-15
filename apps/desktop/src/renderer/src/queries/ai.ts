@@ -22,12 +22,21 @@ export const ai = {
     defineQuery(["translation", entry?.entries.id, view, language, extraFields, part], () =>
       translate({ entry, view, language, extraFields, part }),
     ),
-  summary: ({ entryId, language }: { entryId: string; language?: SupportedLanguages }) =>
-    defineQuery(["summary", entryId, language], async () => {
+  summary: ({
+    entryId,
+    language,
+    target = "content",
+  }: {
+    entryId: string
+    language?: SupportedLanguages
+    target?: "content" | "readabilityContent"
+  }) =>
+    defineQuery(["summary", entryId, language, target], async () => {
       const res = await apiClient.ai.summary.$get({
         query: {
           id: entryId,
           language,
+          target,
         },
       })
       return res.data

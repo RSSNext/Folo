@@ -17,12 +17,12 @@ import {
   ReadabilityStatus,
   setReadabilityStatus,
   useEntryInReadabilityStatus,
+  useEntryIsInReadability,
   useEntryReadabilityContent,
 } from "~/atoms/readability"
 import { enableShowSourceContent } from "~/atoms/source-content"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
@@ -33,7 +33,6 @@ import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
-import { EntryContentHTMLRenderer } from "../renderer/html"
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
 export interface EntryContentProps {
@@ -85,10 +84,13 @@ export const TitleMetaHandler: Component<{
   return null
 }
 
-export const ReadabilityContent = ({ entryId, feedId }: { entryId: string; feedId: string }) => {
+export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
   const result = useEntryReadabilityContent(entryId)
-  const view = useRouteParamsSelector((route) => route.view)
+  const isInReadability = useEntryIsInReadability(entryId)
+  if (!isInReadability) {
+    return null
+  }
 
   return (
     <div className="grow">
@@ -103,16 +105,6 @@ export const ReadabilityContent = ({ entryId, feedId }: { entryId: string; feedI
           <span className="text-sm">{t("entry_content.fetching_content")}</span>
         </div>
       )}
-
-      <EntryContentHTMLRenderer
-        view={view}
-        feedId={feedId}
-        entryId={entryId}
-        as="article"
-        className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold hyphens-auto"
-      >
-        {result?.content ?? ""}
-      </EntryContentHTMLRenderer>
     </div>
   )
 }

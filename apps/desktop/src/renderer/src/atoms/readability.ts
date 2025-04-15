@@ -57,6 +57,12 @@ export const useEntryIsInReadability = (entryId?: string) =>
     [entryId],
   )
 
+export const useEntryIsInReadabilitySuccess = (entryId?: string) =>
+  useReadabilityStatusSelector(
+    (map) => (entryId ? map[entryId] === ReadabilityStatus.SUCCESS : false),
+    [entryId],
+  )
+
 export const useEntryInReadabilityStatus = (entryId?: string) =>
   useReadabilityStatusSelector(
     (map) => (entryId ? map[entryId] || ReadabilityStatus.INITIAL : ReadabilityStatus.INITIAL),
