@@ -1,7 +1,7 @@
 /**
  * This env for apps/mobile
  */
-import { DEFAULT_VALUES } from "./env"
+import { DEFAULT_VALUES } from "@follow/shared/env"
 
 const profile = "prod"
 

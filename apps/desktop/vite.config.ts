@@ -47,6 +47,43 @@ const isWebBuild = process.env.WEB_BUILD === "1"
 // eslint-disable-next-line no-console
 console.log(green("Build type:"), isWebBuild ? "Web" : "Unknown")
 
+const proxyConfig = {
+  target: "http://localhost:2234",
+  changeOrigin: true,
+  selfHandleResponse: true,
+  configure: (proxy, _options) => {
+    proxy.on("proxyRes", (proxyRes, req, res) => {
+      const body = [] as any[]
+      proxyRes.on("data", (chunk: any) => body.push(chunk))
+      proxyRes.on("end", () => {
+        const html = parseHTML(Buffer.concat(body).toString())
+        const doc = html.document
+
+        const $scripts = doc.querySelectorAll("script")
+        $scripts.forEach((script) => {
+          const src = script.getAttribute("src")
+          if (src) {
+            script.setAttribute("src", `http://localhost:2234${src}`)
+          }
+        })
+
+        const $links = doc.querySelectorAll("link")
+        $links.forEach((link) => {
+          const href = link.getAttribute("href")
+          if (href) {
+            link.setAttribute("href", `http://localhost:2234${href}`)
+          }
+        })
+
+        res.setHeader("Content-Type", "text/html; charset=utf-8")
+
+        const modifiedHtml = doc.toString()
+        res.end(modifiedHtml)
+      })
+    })
+  },
+}
+
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   const typedEnv = env as typeof EnvType
@@ -73,42 +110,10 @@ export default ({ mode }) => {
       },
       cors: true,
       proxy: {
-        "/login": {
-          target: "http://localhost:2234",
-          changeOrigin: true,
-          selfHandleResponse: true,
-          configure: (proxy, _options) => {
-            proxy.on("proxyRes", (proxyRes, req, res) => {
-              const body = [] as any[]
-              proxyRes.on("data", (chunk: any) => body.push(chunk))
-              proxyRes.on("end", () => {
-                const html = parseHTML(Buffer.concat(body).toString())
-                const doc = html.document
-
-                const $scripts = doc.querySelectorAll("script")
-                $scripts.forEach((script) => {
-                  const src = script.getAttribute("src")
-                  if (src) {
-                    script.setAttribute("src", `http://localhost:2234${src}`)
-                  }
-                })
-
-                const $links = doc.querySelectorAll("link")
-                $links.forEach((link) => {
-                  const href = link.getAttribute("href")
-                  if (href) {
-                    link.setAttribute("href", `http://localhost:2234${href}`)
-                  }
-                })
-
-                res.setHeader("Content-Type", "text/html; charset=utf-8")
-
-                const modifiedHtml = doc.toString()
-                res.end(modifiedHtml)
-              })
-            })
-          },
-        },
+        "/login": proxyConfig,
+        "/forget-password": proxyConfig,
+        "/reset-password": proxyConfig,
+        "/register": proxyConfig,
 
         ...(env.VITE_DEV_PROXY
           ? {
