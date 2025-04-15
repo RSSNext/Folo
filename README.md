@@ -54,7 +54,7 @@ You can also install using the following methods maintained by our community:
 
 - If you are using Arch Linux, you can install package [follow-appimage](https://aur.archlinux.org/packages/follow-appimage) that maintained by [timochan](https://github.com/ttimochan).
 - If you are using Nix, you can install package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that maintained by [iosmanthus](https://github.com/iosmanthus).
-- If you are using macOS with [Homebrew](https://brew.sh), you can install cask [follow](https://formulae.brew.sh/cask/follow) (also [@alpha](https://formulae.brew.sh/cask/follow@alpha) and [@nightly](https://formulae.brew.sh/cask/follow@nightly)) that maintained by [realSunyz](https://github.com/realSunyz).
+- If you are using macOS with [Homebrew](https://brew.sh), you can install cask [folo](https://formulae.brew.sh/cask/folo) that maintained by [realSunyz](https://github.com/realSunyz).
 
 | [![Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2Ffollowapp%3Fwith_counts%3Dtrue&query=approximate_member_count&color=5865F2&label=Discord&labelColor=black&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/followapp) | Join our Discord server to connect with developers, request features, and receive support. |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
