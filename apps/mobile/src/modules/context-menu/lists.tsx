@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/src/env"
+import { env } from "@follow/shared/src/env.rn"
 import type { FC, PropsWithChildren } from "react"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -33,7 +33,7 @@ export const SubscriptionListItemContextMenu: FC<
           const list = getList(id)
           if (!list) return
           toast.success("Link copied to clipboard")
-          Clipboard.setString(`${env.VITE_WEB_URL}/share/lists/${list.id}`)
+          Clipboard.setString(`${env.WEB_URL}/share/lists/${list.id}`)
         },
       },
       {
