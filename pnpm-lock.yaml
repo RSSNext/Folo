@@ -841,9 +841,6 @@ importers:
       better-auth:
         specifier: 1.2.6
         version: 1.2.6
-      cookie-es:
-        specifier: 2.0.0
-        version: 2.0.0
       dayjs:
         specifier: 1.11.13
         version: 1.11.13

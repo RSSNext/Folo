@@ -6,7 +6,6 @@ import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
-import { parse } from "cookie-es"
 import { app, BrowserWindow, net, protocol, session } from "electron"
 import squirrelStartup from "electron-squirrel-startup"
 
@@ -137,41 +136,6 @@ function bootstrap() {
     registerUpdater()
     registerAppTray()
 
-    // handle session cookie when sign in with email in electron
-    session.defaultSession.webRequest.onHeadersReceived(
-      {
-        urls: [
-          `${apiURL}/better-auth/sign-in/email`,
-          `${apiURL}/better-auth/sign-in/email?*`,
-          `${apiURL}/better-auth/two-factor/verify-totp`,
-          `${apiURL}/better-auth/two-factor/verify-totp?*`,
-        ],
-      },
-      (detail, callback) => {
-        const { responseHeaders } = detail
-        if (responseHeaders?.["set-cookie"]) {
-          const cookies = responseHeaders["set-cookie"] as string[]
-          cookies.forEach((cookie) => {
-            const cookieObj = parse(cookie, { decode: (value) => value })
-            Object.keys(cookieObj).forEach((name) => {
-              const value = cookieObj[name]
-              mainWindow.webContents.session.cookies.set({
-                url: apiURL,
-                name,
-                value,
-                secure: true,
-                httpOnly: true,
-                domain: new URL(apiURL).hostname,
-                sameSite: "no_restriction",
-              })
-            })
-          })
-        }
-
-        callback({ cancel: false, responseHeaders })
-      },
-    )
-
     app.on("open-url", (_, url) => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         if (mainWindow.isMinimized()) mainWindow.restore()
@@ -233,7 +197,6 @@ function bootstrap() {
 
       if (token) {
         await callWindowExpose(mainWindow).applyOneTimeToken(token)
-        mainWindow.reload()
 
         // TODO
 

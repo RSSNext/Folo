@@ -65,3 +65,7 @@ export const useSession = (options?: { enabled?: boolean }) => {
             : "unknown",
   }
 }
+
+export const handleSessionChanges = () => {
+  window.location.reload()
+}
