@@ -26,7 +26,6 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 import { useListById } from "~/store/list"
 
 const handleClickPlay = () => {
@@ -112,6 +111,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const playerValue = { entryId, status, isMute }
 
   const entry = useEntry(playerValue.entryId)
+  const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
   const list = useListById(listId)
 
@@ -141,8 +141,6 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     }
   }, [])
 
-  const isInbox = useInboxById(entry?.feedId, (inbox) => inbox !== null)
-
   const navigateToEntry = useNavigateEntry()
   usePlayerTracker()
 
@@ -170,7 +168,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
       return null
     }
     return options
-  }, [entry, feed, list])
+  }, [entry, feed, isInbox, list])
   if (!entry || !feed) return null
 
   return (

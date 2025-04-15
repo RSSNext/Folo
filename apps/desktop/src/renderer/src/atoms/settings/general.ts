@@ -178,6 +178,13 @@ export function useActionLanguage() {
   ) as SupportedLanguages
 }
 
+export function getActionLanguage() {
+  const { actionLanguage, language } = getGeneralSettingsInternal()
+  return (
+    actionLanguage === DEFAULT_ACTION_LANGUAGE ? language : actionLanguage
+  ) as SupportedLanguages
+}
+
 export const subscribeShouldUseIndexedDB = (callback: (value: boolean) => void) =>
   jotaiStore.sub(__generalSettingAtom, () => callback(getGeneralSettingsInternal().dataPersist))
 

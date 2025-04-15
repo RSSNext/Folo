@@ -100,6 +100,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
               source={entry.entries.title}
               target={translation.data?.title}
               className="inline-block select-text hyphens-auto duration-200"
+              inline={false}
             />
           </a>
         </div>

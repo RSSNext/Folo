@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import path, { resolve } from "node:path"
 
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { minify } from "html-minifier-terser"
 import { parseHTML } from "linkedom"

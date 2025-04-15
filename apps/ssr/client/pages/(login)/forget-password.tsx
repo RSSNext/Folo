@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"

@@ -28,7 +28,6 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
-  if (DEV) app.setPath("appData", path.join(app.getPath("appData"), "Follow (dev)"))
   initializeSentry()
 }
 export const initializeAppStage1 = () => {

@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import type { BrowserOptions } from "@sentry/react"
 import { FetchError } from "ofetch"
 

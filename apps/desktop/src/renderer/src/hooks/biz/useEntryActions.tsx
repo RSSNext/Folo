@@ -1,15 +1,17 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, UserRole } from "@follow/constants"
+import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
 import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
+  isInReadability,
   ReadabilityStatus,
   setReadabilityContent,
   setReadabilityStatus,
+  useEntryInReadabilityStatus,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
@@ -25,41 +27,40 @@ import { useInboxById } from "~/store/inbox"
 
 import { useRouteParamsSelector } from "./useRouteParams"
 
-export const useEntryReadabilityToggle = ({ id, url }: { id: string; url: string }) =>
-  useCallback(async () => {
-    const status = getReadabilityStatus()[id]
-    const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
+export const toggleEntryReadability = async ({ id, url }: { id: string; url: string }) => {
+  const status = getReadabilityStatus()[id]
+  const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
 
-    if (!isTurnOn && url) {
-      setReadabilityStatus({
-        [id]: ReadabilityStatus.WAITING,
+  if (!isTurnOn && url) {
+    setReadabilityStatus({
+      [id]: ReadabilityStatus.WAITING,
+    })
+    const result = await tipcClient
+      ?.readability({
+        url,
       })
-      const result = await tipcClient
-        ?.readability({
-          url,
-        })
-        .catch(() => {
-          setReadabilityStatus({
-            [id]: ReadabilityStatus.FAILURE,
-          })
-        })
-
-      if (result) {
-        const status = getReadabilityStatus()[id]
-        if (status !== ReadabilityStatus.WAITING) return
+      .catch(() => {
         setReadabilityStatus({
-          [id]: ReadabilityStatus.SUCCESS,
+          [id]: ReadabilityStatus.FAILURE,
         })
-        setReadabilityContent({
-          [id]: result,
-        })
-      }
-    } else {
+      })
+
+    if (result) {
+      const status = getReadabilityStatus()[id]
+      if (status !== ReadabilityStatus.WAITING) return
       setReadabilityStatus({
-        [id]: ReadabilityStatus.INITIAL,
+        [id]: ReadabilityStatus.SUCCESS,
+      })
+      setReadabilityContent({
+        [id]: result,
       })
     }
-  }, [id, url])
+  } else {
+    setReadabilityStatus({
+      [id]: ReadabilityStatus.INITIAL,
+    })
+  }
+}
 
 export type EntryActionItem = {
   id: FollowCommandId
@@ -70,8 +71,17 @@ export type EntryActionItem = {
   disabled?: boolean
 }
 
-export const useEntryActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
+export const useEntryActions = ({
+  entryId,
+  view,
+  compact,
+}: {
+  entryId: string
+  view?: FeedViewType
+  compact?: boolean
+}) => {
   const entry = useEntry(entryId)
+  const entryReadabilityStatus = useEntryInReadabilityStatus(entry?.entries.id)
   const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
   const feed = useFeedById(entry?.feedId, (feed) => {
     return {
@@ -209,16 +219,35 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
         shortcut: shortcuts.entry.toggleRead.key,
       },
       {
+        id: COMMAND_ID.entry.tts,
+        onClick: runCmdFn(COMMAND_ID.entry.tts, [
+          { entryId, entryContent: entry?.entries.content },
+        ]),
+        hide: !IN_ELECTRON || compact || !entry?.entries.content,
+        shortcut: shortcuts.entry.tts.key,
+      },
+      {
+        id: COMMAND_ID.entry.readability,
+        onClick: runCmdFn(COMMAND_ID.entry.readability, [
+          { entryId, entryUrl: entry?.entries.url },
+        ]),
+        hide: !IN_ELECTRON || compact || (view && views[view]!.wideMode) || !entry?.entries.url,
+        active: isInReadability(entryReadabilityStatus),
+      },
+      {
         id: COMMAND_ID.settings.customizeToolbar,
         onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
       },
     ].filter((config) => !config.hide)
   }, [
+    compact,
     entry?.collections,
+    entry?.entries.content,
     entry?.entries.url,
     entry?.read,
     entry?.view,
     entryId,
+    entryReadabilityStatus,
     feed?.id,
     feed?.ownerUserId,
     hasEntry,
@@ -241,11 +270,13 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view?: Fee
 export const useSortedEntryActions = ({
   entryId,
   view,
+  compact,
 }: {
   entryId: string
   view?: FeedViewType
+  compact?: boolean
 }) => {
-  const entryActions = useEntryActions({ entryId, view })
+  const entryActions = useEntryActions({ entryId, view, compact })
   const orderMap = useToolbarOrderMap()
   const mainAction = useMemo(
     () =>

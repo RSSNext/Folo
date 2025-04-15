@@ -21,7 +21,7 @@ import {
 } from "~/atoms/readability"
 import { enableShowSourceContent } from "~/atoms/source-content"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { useEntryReadabilityToggle } from "~/hooks/biz/useEntryActions"
+import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
@@ -159,10 +159,6 @@ export const ViewSourceContentAutoToggleEffect = () => {
 }
 
 export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {
-  const toggle = useEntryReadabilityToggle({
-    id,
-    url,
-  })
   const onceRef = useRef(false)
 
   useEffect(() => {
@@ -171,9 +167,9 @@ export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: stri
       setReadabilityStatus({
         [id]: ReadabilityStatus.INITIAL,
       })
-      toggle()
+      toggleEntryReadability({ id, url })
     }
-  }, [toggle])
+  }, [id, url])
 
   return null
 }

@@ -1,5 +1,5 @@
 /**
- * This env for apps/desktop
+ * This env for apps/ssr
  */
 import { createEnv } from "@t3-oss/env-core"
 import { z } from "zod"
@@ -18,6 +18,13 @@ export const env = createEnv({
 
     VITE_OPENPANEL_CLIENT_ID: z.string().optional(),
     VITE_OPENPANEL_API_URL: z.string().url().optional(),
+
+    // For external, use api_url if you don't want to fill it in.
+    VITE_EXTERNAL_PROD_API_URL: z.string().optional(),
+    VITE_EXTERNAL_DEV_API_URL: z.string().optional(),
+    VITE_EXTERNAL_API_URL: z.string().optional(),
+    VITE_WEB_PROD_URL: z.string().optional(),
+    VITE_WEB_DEV_URL: z.string().optional(),
 
     VITE_RECAPTCHA_V2_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V2_SITE_KEY),
     VITE_RECAPTCHA_V3_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V3_SITE_KEY),
@@ -42,25 +49,8 @@ function getRuntimeEnv() {
     if (metaEnvIsEmpty()) {
       return process.env
     }
-    return injectExternalEnv(import.meta.env)
+    return import.meta.env
   } catch {
     return process.env
   }
-}
-
-declare const globalThis: any
-function injectExternalEnv<T>(originEnv: T): T {
-  if (!("document" in globalThis)) {
-    return originEnv
-  }
-  const prefix = "__followEnv"
-  const env = globalThis[prefix]
-  if (!env) {
-    return originEnv
-  }
-
-  for (const key in env) {
-    originEnv[key as keyof T] = env[key]
-  }
-  return originEnv
 }

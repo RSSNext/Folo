@@ -1,3 +1,5 @@
+import "./side-effects"
+
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV } from "@follow/shared/constants"

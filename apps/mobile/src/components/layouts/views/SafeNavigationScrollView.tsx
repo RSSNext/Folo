@@ -48,6 +48,9 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
   Header?: React.ReactNode
 } & PropsWithChildren
 
+export interface ForwardedSafeNavigationScrollView extends ScrollView {
+  checkScrollToBottom: () => void
+}
 export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScrollViewProps>(
   (
     {
@@ -74,7 +77,11 @@ export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScr
     const screenCtxValue = useContext(ScreenItemContext)
 
     const ref = useRef<ScrollView>(null)
-    useImperativeHandle(forwardedRef, () => ref.current!)
+    useImperativeHandle(forwardedRef, () => {
+      return Object.assign({}, ref.current!, {
+        checkScrollToBottom,
+      })
+    })
     const { opacity } = useContext(BottomTabBarBackgroundContext)
 
     const inTabScreen = useInTabScreen()

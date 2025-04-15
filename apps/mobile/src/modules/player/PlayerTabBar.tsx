@@ -47,7 +47,10 @@ export function PlayerTabBar({ className }: { className?: string }) {
   return (
     <Animated.View
       style={animatedStyle}
-      className={cn("border-opaque-separator/70 border-b px-2", className)}
+      className={cn(
+        "border-non-opaque-separator dark:border-opaque-separator/50 border-b-hairline px-2",
+        className,
+      )}
     >
       <Pressable
         onPress={() => {

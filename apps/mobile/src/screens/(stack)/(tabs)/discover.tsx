@@ -20,6 +20,7 @@ export default function Discover() {
     () => ({ animatedX, currentTabAtom, headerHeightAtom, animatedY }),
     [animatedX, currentTabAtom, headerHeightAtom, animatedY],
   )
+
   return (
     <DiscoverContext.Provider value={ctxValue}>
       <StackScreenHeaderPortal>

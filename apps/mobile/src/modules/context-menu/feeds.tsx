@@ -328,7 +328,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
     ({ item: id }: ListRenderItemInfo<string>) => (
       <EntryNormalItem entryId={id} extraData="" view={props.view} />
     ),
-    [],
+    [props.view],
   )
   return (
     <View className="bg-system-background size-full flex-1">

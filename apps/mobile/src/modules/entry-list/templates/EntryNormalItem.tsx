@@ -78,7 +78,7 @@ export const EntryNormalItem = memo(
     const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
     const coverImage = entry?.media?.[0]
-    const image = coverImage?.url
+    const image = coverImage?.url || (view === FeedViewType.Audios ? feed?.image : null)
     const blurhash = coverImage?.blurhash
 
     const audio = entry?.attachments?.find((attachment) =>

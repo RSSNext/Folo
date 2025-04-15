@@ -71,7 +71,10 @@ export const GroupedInsetListCard: FC<
                     <SeparatorComponent />
                   ) : (
                     <View
-                      className={cn("bg-system-fill", isNavigationLink ? "ml-16" : "ml-4")}
+                      className={cn(
+                        "bg-non-opaque-separator dark:bg-opaque-separator/70",
+                        isNavigationLink ? "ml-16" : "ml-4",
+                      )}
                       style={{ height: StyleSheet.hairlineWidth }}
                     />
                   ))}

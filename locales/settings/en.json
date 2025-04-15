@@ -259,6 +259,7 @@
   "integration.readwise.title": "Readwise",
   "integration.readwise.token.description": "You can get it here: ",
   "integration.readwise.token.label": "Readwise Access Token",
+  "integration.save_ai_summary_as_description.label": "Save AI Summary as description",
   "integration.sidebar_title": "Integration",
   "integration.tip": "Tip: Your sensitive data is stored locally and is not uploaded to the server.",
   "integration.title": "Integration",

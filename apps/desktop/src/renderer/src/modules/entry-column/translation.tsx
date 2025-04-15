@@ -7,7 +7,8 @@ export const EntryTranslation: Component<{
   source?: string | null
   target?: string
   isHTML?: boolean
-}> = ({ source, target, className, isHTML }) => {
+  inline?: boolean
+}> = ({ source, target, className, isHTML, inline = true }) => {
   const nextTarget = useMemo(() => {
     if (!target || source === target) {
       return ""
@@ -19,35 +20,24 @@ export const EntryTranslation: Component<{
     return null
   }
 
+  const SourceTag = inline ? "span" : "p"
+
   return (
     <div>
       {isHTML ? (
-        <>
-          {nextTarget && (
-            <>
-              <HTML
-                as="div"
-                className={cn("prose dark:prose-invert align-middle", className)}
-                noMedia
-              >
-                {nextTarget}
-              </HTML>
-              <i className="i-mgc-translate-2-cute-re mb-4 mt-1 align-middle" />
-            </>
-          )}
-          <HTML as="div" className={cn("prose dark:prose-invert align-middle", className)} noMedia>
-            {source}
-          </HTML>
-        </>
+        <HTML as="div" className={cn("prose dark:prose-invert", className)} noMedia>
+          {nextTarget || source}
+        </HTML>
       ) : (
-        <div className={cn("inline align-middle", className)}>
-          {nextTarget && (
+        <div className={cn(inline && "inline align-middle", className)}>
+          {nextTarget && inline && (
             <>
               <span className="align-middle">{nextTarget}</span>
               <i className="i-mgc-translate-2-cute-re mr-2 align-middle" />
             </>
           )}
-          <span className="align-middle">{source}</span>
+          <SourceTag className={cn(inline && "align-middle")}>{source}</SourceTag>
+          {nextTarget && !inline && <p>{nextTarget}</p>}
         </div>
       )}
     </div>

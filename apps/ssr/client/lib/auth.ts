@@ -1,5 +1,5 @@
 import { Auth } from "@follow/shared/auth"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 
 const auth = new Auth({
   apiURL: env.VITE_API_URL,

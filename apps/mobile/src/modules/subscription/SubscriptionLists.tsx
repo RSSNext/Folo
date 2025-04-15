@@ -33,6 +33,7 @@ import {
 } from "@/src/store/subscription/hooks"
 import { subscriptionSyncService } from "@/src/store/subscription/store"
 
+import { usePagerListPerformanceHack } from "../entry-list/hooks"
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { CategoryGrouped } from "./CategoryGrouped"
 import { InboxItem } from "./items/InboxItem"
@@ -103,6 +104,8 @@ const SubscriptionListImpl = ({
 
   const scrollViewRef = useRegisterNavigationScrollView<FlashList<any>>(active)
 
+  const { onScroll, style } = usePagerListPerformanceHack(scrollViewRef)
+
   return (
     <TimelineSelectorList
       contentContainerClassName="pb-6"
@@ -118,8 +121,9 @@ const SubscriptionListImpl = ({
       estimatedItemSize={50}
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
-      // itemLayoutAnimation={LinearTransition}
       extraData={extraData}
+      onScroll={onScroll}
+      style={style}
     />
   )
 }

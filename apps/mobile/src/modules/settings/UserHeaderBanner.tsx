@@ -64,7 +64,7 @@ export const UserHeaderBanner = ({
     if (!gradientColors) return {}
     return {
       transform: [{ scale: scaleValue }],
-      height: 250 + (scrollY.value < 0 ? -scrollY.value : 0),
+      height: 250,
     }
   })
 
@@ -118,8 +118,8 @@ export const UserHeaderBanner = ({
         )}
       </ReAnimated.View>
       <ReAnimated.View
-        className="bg-system-background overflow-hidden rounded-full"
         style={avatarStyles}
+        className="bg-system-background overflow-hidden rounded-full"
       >
         <UserAvatar
           image={user?.image}

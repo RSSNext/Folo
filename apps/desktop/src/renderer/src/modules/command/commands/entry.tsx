@@ -7,15 +7,19 @@ import { toast } from "sonner"
 
 import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
 import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
+import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
   getShowSourceContent,
   toggleShowSourceContent,
   useSourceContentModal,
 } from "~/atoms/source-content"
 import { useUserRole } from "~/atoms/user"
+import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
+import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
@@ -99,6 +103,8 @@ export const useRegisterEntryCommands = () => {
 
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
+
+  const voice = useGeneralSettingKey("voice")
 
   useRegisterFollowCommand([
     {
@@ -311,6 +317,43 @@ export const useRegisterEntryCommands = () => {
       icon: <i className="i-mgc-pic-cute-fi" />,
       run: ({ entryId }) => {
         openGalleryModal(entryId)
+      },
+    },
+    {
+      id: COMMAND_ID.entry.tts,
+      label: t("entry_content.header.play_tts"),
+      icon: <i className="i-mgc-voice-cute-re" />,
+      run: async ({ entryId, entryContent }) => {
+        if (getAudioPlayerAtomValue().entryId === entryId) {
+          AudioPlayer.togglePlayAndPause()
+        } else {
+          const filePath = await tipcClient?.tts({
+            id: entryId,
+            text: parseHtml(entryContent).toText(),
+            voice,
+          })
+          if (filePath) {
+            AudioPlayer.mount({
+              type: "audio",
+              entryId,
+              src: `file://${filePath}`,
+              currentTime: 0,
+            })
+          }
+        }
+      },
+    },
+    {
+      id: COMMAND_ID.entry.readability,
+      label: t("entry_content.header.readability"),
+      icon: (props) => (
+        <i className={props?.isActive ? "i-mgc-docment-cute-fi" : "i-mgc-docment-cute-re"} />
+      ),
+      run: async ({ entryId, entryUrl }) => {
+        return toggleEntryReadability({
+          id: entryId,
+          url: entryUrl,
+        })
       },
     },
   ])

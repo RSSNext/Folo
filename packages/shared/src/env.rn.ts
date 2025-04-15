@@ -1,27 +1,29 @@
 /**
  * This env for apps/mobile
  */
+import { DEFAULT_VALUES } from "./env"
+
 const profile = "prod"
 
 const envProfileMap = {
   prod: {
-    API_URL: "https://api.follow.is",
-    WEB_URL: "https://app.follow.is",
-    INBOXES_EMAIL: "@follow.re",
-    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
-    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
+    API_URL: DEFAULT_VALUES.PROD.API_URL,
+    WEB_URL: DEFAULT_VALUES.PROD.WEB_URL,
+    INBOXES_EMAIL: DEFAULT_VALUES.PROD.INBOXES_EMAIL,
+    OPENPANEL_CLIENT_ID: DEFAULT_VALUES.PROD.OPENPANEL_CLIENT_ID,
+    OPENPANEL_API_URL: DEFAULT_VALUES.PROD.OPENPANEL_API_URL,
   },
   dev: {
-    API_URL: "https://api.dev.follow.is",
-    WEB_URL: "https://dev.follow.is",
-    INBOXES_EMAIL: "__dev@follow.re",
+    API_URL: DEFAULT_VALUES.DEV.API_URL,
+    WEB_URL: DEFAULT_VALUES.DEV.WEB_URL,
+    INBOXES_EMAIL: DEFAULT_VALUES.DEV.INBOXES_EMAIL,
   },
   staging: {
-    API_URL: "https://api.follow.is",
-    WEB_URL: "https://staging.follow.is",
-    INBOXES_EMAIL: "@follow.re",
-    OPENPANEL_CLIENT_ID: "4382168f-b8d2-40c1-9a26-133a312d072b",
-    OPENPANEL_API_URL: "https://openpanel.follow.is/api",
+    API_URL: DEFAULT_VALUES.STAGING.API_URL,
+    WEB_URL: DEFAULT_VALUES.STAGING.WEB_URL,
+    INBOXES_EMAIL: DEFAULT_VALUES.STAGING.INBOXES_EMAIL,
+    OPENPANEL_CLIENT_ID: DEFAULT_VALUES.STAGING.OPENPANEL_CLIENT_ID,
+    OPENPANEL_API_URL: DEFAULT_VALUES.STAGING.OPENPANEL_API_URL,
   },
 }
 export const getEnvProfiles__dangerously = () => envProfileMap
