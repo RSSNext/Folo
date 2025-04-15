@@ -6,6 +6,7 @@ import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
+import { parse } from "cookie-es"
 import { app, BrowserWindow, net, protocol, session } from "electron"
 import squirrelStartup from "electron-squirrel-startup"
 
@@ -16,7 +17,7 @@ import { updateProxy } from "./lib/proxy"
 import { handleUrlRouting } from "./lib/router"
 import { store } from "./lib/store"
 import { registerAppTray } from "./lib/tray"
-import { updateNotificationsToken } from "./lib/user"
+import { setBetterAuthSessionCookie, updateNotificationsToken } from "./lib/user"
 import { logger } from "./logger"
 import { registerUpdater } from "./updater"
 import { cleanupOldRender } from "./updater/hot-updater"
@@ -197,10 +198,32 @@ function bootstrap() {
 
       if (token) {
         await callWindowExpose(mainWindow).applyOneTimeToken(token)
+      } else {
+        // compatible with old version of ssr, should be removed in 0.4.4
+        const ck = urlObj.searchParams.get("ck")
+        const userId = urlObj.searchParams.get("userId")
 
-        // TODO
+        if (ck && apiURL) {
+          setBetterAuthSessionCookie(ck)
+          const cookie = parse(atob(ck), { decode: (value) => value })
+          Object.keys(cookie).forEach((name) => {
+            const value = cookie[name]
+            mainWindow.webContents.session.cookies.set({
+              url: apiURL,
+              name,
+              value,
+              secure: true,
+              httpOnly: true,
+              domain: new URL(apiURL).hostname,
+              sameSite: "no_restriction",
+            })
+          })
 
-        updateNotificationsToken()
+          userId && (await callWindowExpose(mainWindow).clearIfLoginOtherAccount(userId))
+          mainWindow.reload()
+
+          updateNotificationsToken()
+        }
       }
     } else {
       handleUrlRouting(url)

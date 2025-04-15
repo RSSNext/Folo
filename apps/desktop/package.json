@@ -33,6 +33,7 @@
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
   },
   "dependencies": {
+    "cookie-es": "2.0.0",
     "react-google-recaptcha": "3.1.0",
     "react-google-recaptcha-v3": "1.10.1"
   },

@@ -268,6 +268,48 @@ declare const authPlugins: ({
             path: "/one-time-token/apply";
         };
     };
+} | {
+    id: "customCreateSession";
+    endpoints: {
+        customCreateSession: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    ck: string;
+                    userId: string;
+                } | null;
+            } : {
+                ck: string;
+                userId: string;
+            } | null>;
+            options: {
+                method: "GET";
+            } & {
+                use: any[];
+            };
+            path: "/create-session";
+        };
+    };
 })[];
 
 declare const achievements: drizzle_orm_pg_core.PgTableWithColumns<{
@@ -10216,6 +10258,45 @@ declare const auth: {
             path: "/one-time-token/apply";
         };
     } & {
+        customCreateSession: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                body?: undefined;
+            } & {
+                method?: "GET" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    ck: string;
+                    userId: string;
+                } | null;
+            } : {
+                ck: string;
+                userId: string;
+            } | null>;
+            options: {
+                method: "GET";
+            } & {
+                use: any[];
+            };
+            path: "/create-session";
+        };
+    } & {
         enableTwoFactor: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
                 body: {
@@ -12815,6 +12896,48 @@ declare const auth: {
                         use: any[];
                     };
                     path: "/one-time-token/apply";
+                };
+            };
+        } | {
+            id: "customCreateSession";
+            endpoints: {
+                customCreateSession: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                        body?: undefined;
+                    } & {
+                        method?: "GET" | undefined;
+                    } & {
+                        query?: Record<string, any> | undefined;
+                    } & {
+                        params?: Record<string, any>;
+                    } & {
+                        request?: Request;
+                    } & {
+                        headers?: HeadersInit;
+                    } & {
+                        asResponse?: boolean;
+                        returnHeaders?: boolean;
+                        use?: better_call.Middleware[];
+                        path?: string;
+                    } & {
+                        asResponse?: AsResponse | undefined;
+                        returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                        headers: Headers;
+                        response: {
+                            ck: string;
+                            userId: string;
+                        } | null;
+                    } : {
+                        ck: string;
+                        userId: string;
+                    } | null>;
+                    options: {
+                        method: "GET";
+                    } & {
+                        use: any[];
+                    };
+                    path: "/create-session";
                 };
             };
         })[];
