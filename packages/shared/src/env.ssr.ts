@@ -1,9 +1,10 @@
 /**
  * This env for apps/ssr
  */
-import { DEFAULT_VALUES } from "@follow/shared/env"
 import { createEnv } from "@t3-oss/env-core"
 import { z } from "zod"
+
+import { DEFAULT_VALUES } from "./env.common"
 
 export const env = createEnv({
   clientPrefix: "VITE_",
