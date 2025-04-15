@@ -41,6 +41,9 @@ const buildSafeHeaders = createBuildSafeHeaders(env.VITE_WEB_URL, [
   env.VITE_OPENPANEL_API_URL || "",
   IMAGE_PROXY_URL,
   env.VITE_API_URL,
+  // Fix unexpected CORS error when modify the origin header to request domain in the preflight request
+  // Learn more https://github.com/RSSNext/Folo/issues/3312
+  "https://readwise.io",
 ])
 
 function bootstrap() {
