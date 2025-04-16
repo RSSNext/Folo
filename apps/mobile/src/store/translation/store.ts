@@ -30,6 +30,7 @@ class TranslationActions {
           title: translation.title,
           description: translation.description,
           content: translation.content,
+          readabilityContent: translation.readabilityContent,
         }
 
         if (!state.data[translation.entryId]) {
@@ -61,17 +62,19 @@ class TranslationSyncService {
     entryId,
     language,
     withContent,
+    target,
   }: {
     entryId: string
     language: SupportedLanguages
     withContent?: boolean
+    target: "content" | "readabilityContent"
   }) {
     const entry = getEntry(entryId)
     if (!entry) return
     const translationSession = translationActions.getTranslation(entryId, language)
 
     const fields = (
-      ["title", "description", ...(withContent ? ["content"] : [])] as Array<
+      ["title", "description", ...(withContent ? [target] : [])] as Array<
         "title" | "description" | "content"
       >
     ).filter((field) => {
@@ -100,6 +103,7 @@ class TranslationSyncService {
       title: res.data.title || "",
       description: res.data.description || "",
       content: res.data.content || "",
+      readabilityContent: res.data.readabilityContent || "",
     }
 
     await translationActions.upsertMany([translation])

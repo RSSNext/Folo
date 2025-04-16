@@ -111,7 +111,10 @@ const HeaderRightActionsImpl = ({
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()
-      await summarySyncService.generateSummary(entryId)
+      await summarySyncService.generateSummary(
+        entryId,
+        showReadability ? "readabilityContent" : "content",
+      )
       hideGlowEffect()
     }
 
@@ -127,6 +130,7 @@ const HeaderRightActionsImpl = ({
       entryId,
       language: getGeneralSettings().actionLanguage as SupportedLanguages,
       withContent: true,
+      target: showReadability ? "readabilityContent" : "content",
     })
     setShowTranslation((prev) => !prev)
   }
@@ -173,7 +177,7 @@ const HeaderRightActionsImpl = ({
       onPress: toggleReadability,
       active: showReadability,
       isCheckbox: true,
-      inMenu: true,
+      // inMenu: true,
     },
     !showAISummarySetting && {
       key: "GenerateSummary",

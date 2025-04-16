@@ -7,7 +7,15 @@ import type { SupportedLanguages } from "@/src/lib/language"
 import { useEntryList } from "../entry/hooks"
 import { translationSyncService, useTranslationStore } from "./store"
 
-export const usePrefetchEntryTranslation = (entryIds: string[], withContent?: boolean) => {
+export const usePrefetchEntryTranslation = ({
+  entryIds,
+  withContent,
+  target = "content",
+}: {
+  entryIds: string[]
+  withContent?: boolean
+  target?: "content" | "readabilityContent"
+}) => {
   const translation = useGeneralSettingKey("translation")
   const entryList =
     useEntryList(entryIds)
@@ -18,12 +26,13 @@ export const usePrefetchEntryTranslation = (entryIds: string[], withContent?: bo
 
   return useQueries({
     queries: entryList.map((entryId) => ({
-      queryKey: ["translation", entryId, actionLanguage, withContent],
+      queryKey: ["translation", entryId, actionLanguage, withContent, target],
       queryFn: () =>
         translationSyncService.generateTranslation({
           entryId,
           language: actionLanguage,
           withContent,
+          target,
         }),
     })),
   })

@@ -37,7 +37,7 @@ export const EntryListContentSocial = forwardRef<
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
+  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
 
   return (
     <TimelineSelectorList

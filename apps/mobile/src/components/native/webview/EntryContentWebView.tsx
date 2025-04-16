@@ -69,7 +69,9 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     if (showReadability) {
       return {
         ...entry,
-        content: entry.readabilityContent,
+        content: showTranslation
+          ? entry.translation?.readabilityContent || entry.readabilityContent
+          : entry.readabilityContent,
       }
     }
 

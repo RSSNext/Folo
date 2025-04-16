@@ -30,7 +30,7 @@ export const EntryListContentPicture = forwardRef<
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
+  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
 
   return (
     <TimelineSelectorMasonryList

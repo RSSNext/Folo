@@ -32,7 +32,6 @@ export const EntryDetailScreen: NavigationControllerView<{
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
   usePrefetchEntryDetail(entryId)
-  usePrefetchEntryTranslation([entryId], true)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)
@@ -112,6 +111,11 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   const showReadability = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslation = useAtomValue(showAITranslationAtom)
+  usePrefetchEntryTranslation({
+    entryIds: [entry.id],
+    withContent: true,
+    target: showReadability ? "readabilityContent" : "content",
+  })
   return (
     <EntryContentWebView
       entry={entry}

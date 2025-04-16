@@ -44,7 +44,7 @@ export const EntryListContentArticle = forwardRef<
 
   useImperativeHandle(forwardRef, () => ref.current!)
 
-  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
+  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
 
   return (
     <TimelineSelectorList
