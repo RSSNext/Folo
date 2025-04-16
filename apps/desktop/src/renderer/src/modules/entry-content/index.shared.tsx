@@ -4,7 +4,7 @@ import { Button, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
-import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
+import { WEB_BUILD } from "@follow/shared/constants"
 import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
@@ -126,12 +126,7 @@ export const NoContent: FC<{
         {(WEB_BUILD || status === ReadabilityStatus.FAILURE) && (
           <span>{t("entry_content.no_content")}</span>
         )}
-        {WEB_BUILD && (
-          <div>
-            <span>{t("entry_content.web_app_notice")}</span>
-          </div>
-        )}
-        {!sourceContent && url && IN_ELECTRON && <ReadabilityAutoToggleEffect url={url} id={id} />}
+        {!sourceContent && url && <ReadabilityAutoToggleEffect url={url} id={id} />}
       </div>
     </div>
   )

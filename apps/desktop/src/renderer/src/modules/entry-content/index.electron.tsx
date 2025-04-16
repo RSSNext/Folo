@@ -2,7 +2,6 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
-import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
@@ -203,7 +202,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                 </div>
               </WrappedElementProvider>
 
-              {entry.settings?.readability && IN_ELECTRON && (
+              {entry.settings?.readability && (
                 <ReadabilityAutoToggleEffect id={entry.entries.id} url={entry.entries.url ?? ""} />
               )}
               {entry.settings?.sourceContent && <ViewSourceContentAutoToggleEffect />}
