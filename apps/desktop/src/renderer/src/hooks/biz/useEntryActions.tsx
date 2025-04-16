@@ -66,6 +66,11 @@ export type EntryActionItem = {
   shortcut?: string
   active?: boolean
   disabled?: boolean
+  notice?: boolean
+}
+
+function hasHTMLTags(text?: string | null): boolean {
+  return /<[^>]+>/.test(text || "")
 }
 
 export const useEntryActions = ({
@@ -91,6 +96,7 @@ export const useEntryActions = ({
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
   const isInbox = !!inbox
+  const isContentContainsHTMLTags = hasHTMLTags(entry?.entries.content)
 
   const isShowSourceContent = useShowSourceContent()
   const isShowAISummaryAuto = useShowAISummaryAuto(entry)
@@ -230,6 +236,7 @@ export const useEntryActions = ({
         ]),
         hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
         active: isInReadability(entryReadabilityStatus),
+        notice: !isContentContainsHTMLTags,
       },
       {
         id: COMMAND_ID.settings.customizeToolbar,
@@ -256,6 +263,7 @@ export const useEntryActions = ({
     isShowAITranslationAuto,
     isShowAITranslationOnce,
     isShowSourceContent,
+    isContentContainsHTMLTags,
     runCmdFn,
     userRole,
     view,

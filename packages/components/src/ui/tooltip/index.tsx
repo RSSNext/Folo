@@ -6,6 +6,7 @@ import * as React from "react"
 import { tooltipStyle } from "./styles"
 
 const TooltipProvider = TooltipPrimitive.Provider
+const TooltipRoot = TooltipPrimitive.Root
 
 const Tooltip: typeof TooltipProvider = ({ children, ...props }) => (
   <TooltipProvider {...props}>
@@ -45,6 +46,6 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-export { Tooltip, TooltipContent, TooltipTrigger }
+export { Tooltip, TooltipContent, TooltipRoot, TooltipTrigger }
 
 export { RootPortal as TooltipPortal } from "../portal"
