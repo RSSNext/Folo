@@ -7,11 +7,10 @@ import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import {
   getReadabilityStatus,
-  isInReadability,
   ReadabilityStatus,
   setReadabilityContent,
   setReadabilityStatus,
-  useEntryInReadabilityStatus,
+  useEntryIsInReadability,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
@@ -83,7 +82,7 @@ export const useEntryActions = ({
   compact?: boolean
 }) => {
   const entry = useEntry(entryId)
-  const entryReadabilityStatus = useEntryInReadabilityStatus(entry?.entries.id)
+  const isEntryInReadability = useEntryIsInReadability(entry?.entries.id)
   const imageLength = entry?.entries.media?.filter((a) => a.type === "photo").length || 0
   const feed = useFeedById(entry?.feedId, (feed) => {
     return {
@@ -235,8 +234,8 @@ export const useEntryActions = ({
           { entryId, entryUrl: entry?.entries.url },
         ]),
         hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
-        active: isInReadability(entryReadabilityStatus),
-        notice: !isContentContainsHTMLTags,
+        active: isEntryInReadability,
+        notice: !isContentContainsHTMLTags && !isEntryInReadability,
       },
       {
         id: COMMAND_ID.settings.customizeToolbar,
@@ -251,7 +250,7 @@ export const useEntryActions = ({
     entry?.read,
     entry?.view,
     entryId,
-    entryReadabilityStatus,
+    isEntryInReadability,
     feed?.id,
     feed?.ownerUserId,
     hasEntry,
