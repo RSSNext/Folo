@@ -1,34 +1,49 @@
 import { RSSHubCategories } from "@follow/constants"
 import type { RSSHubRouteDeclaration } from "@follow/models/src/rsshub"
 import { isASCII } from "@follow/utils"
+import type { ContentStyle } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import { useQuery } from "@tanstack/react-query"
-import { useAtomValue } from "jotai"
 import type { FC } from "react"
-import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { Animated, Text, TouchableOpacity, useWindowDimensions, View } from "react-native"
+import {
+  Animated,
+  Text,
+  TouchableOpacity,
+  useAnimatedValue,
+  useWindowDimensions,
+  View,
+} from "react-native"
 import type { PanGestureHandlerGestureEvent } from "react-native-gesture-handler"
 import { PanGestureHandler } from "react-native-gesture-handler"
+import type { SharedValue } from "react-native-reanimated"
+import { useSharedValue } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { AnimatedScrollView } from "@/src/components/common/AnimatedComponents"
+import { BlurEffect } from "@/src/components/common/BlurEffect"
+import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import {
   useBottomTabBarHeight,
   useRegisterNavigationScrollView,
 } from "@/src/components/layouts/tabbar/hooks"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { TabBar } from "@/src/components/ui/tabview/TabBar"
 import type { TabComponent } from "@/src/components/ui/tabview/TabView"
+import { MingcuteLeftLineIcon } from "@/src/icons/mingcute_left_line"
 import { apiClient } from "@/src/lib/api-fetch"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useColor } from "@/src/theme/colors"
 
-import { DiscoverContext } from "./DiscoverContext"
 import { RecommendationListItem } from "./RecommendationListItem"
 
 export const Recommendations = () => {
   const { t } = useTranslation("common")
-  const { animatedX, currentTabAtom } = useContext(DiscoverContext)
-  const currentTab = useAtomValue(currentTabAtom)
 
+  const animatedX = useAnimatedValue(0)
+  const [currentTab, setCurrentTab] = useState(0)
   const windowWidth = useWindowDimensions().width
   const ref = useRef<ScrollView>(null)
 
@@ -44,29 +59,60 @@ export const Recommendations = () => {
     })
   }, [currentTab])
 
+  const insets = useSafeAreaInsets()
+  const navigation = useNavigation()
+  const label = useColor("label")
   return (
-    <AnimatedScrollView
-      onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: animatedX } } }], {
-        useNativeDriver: true,
-      })}
-      ref={ref}
-      horizontal
-      pagingEnabled
-      showsHorizontalScrollIndicator={false}
-      nestedScrollEnabled
-    >
-      {RSSHubCategories.map((category, index) => (
-        <View className="flex-1" style={{ width: windowWidth }} key={category}>
-          {loadedTabIndex.has(index) && (
-            <Tab
-              key={category}
-              tab={{ name: t(`discover.category.${category}`), value: category }}
-              isSelected={currentTab === index}
-            />
-          )}
-        </View>
-      ))}
-    </AnimatedScrollView>
+    <View className="flex-1">
+      <View className="pt-safe absolute inset-x-0 top-0 z-10 flex flex-row items-center">
+        <BlurEffect />
+
+        <UINavigationHeaderActionButton
+          onPress={() => {
+            navigation.back()
+          }}
+          className="-mb-2 ml-4"
+        >
+          <MingcuteLeftLineIcon color={label} height={20} width={20} />
+        </UINavigationHeaderActionButton>
+        <TabBar
+          tabScrollContainerAnimatedX={animatedX}
+          tabbarClassName="pt-2"
+          tabs={RSSHubCategories.map((category) => ({
+            name: t(`discover.category.${category}`),
+            value: category,
+          }))}
+          currentTab={currentTab}
+          onTabItemPress={(tab) => {
+            setCurrentTab(tab)
+          }}
+        />
+      </View>
+      <AnimatedScrollView
+        contentInsetAdjustmentBehavior="never"
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: animatedX } } }], {
+          useNativeDriver: true,
+        })}
+        ref={ref}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled
+      >
+        {RSSHubCategories.map((category, index) => (
+          <View className="flex-1" style={{ width: windowWidth }} key={category}>
+            {loadedTabIndex.has(index) && (
+              <RecommendationTab
+                key={category}
+                contentContainerStyle={{ paddingTop: 44 + insets.top }}
+                tab={{ name: t(`discover.category.${category}`), value: category }}
+                isSelected={currentTab === index}
+              />
+            )}
+          </View>
+        ))}
+      </AnimatedScrollView>
+    </View>
   )
 }
 
@@ -98,7 +144,11 @@ const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
   })
 }
 
-const Tab: TabComponent = ({ tab, isSelected, ...rest }) => {
+export const RecommendationTab: TabComponent<{
+  contentContainerStyle?: ContentStyle
+
+  reanimatedScrollY?: SharedValue<number>
+}> = ({ tab, isSelected, contentContainerStyle, reanimatedScrollY, ...rest }) => {
   const tabHeight = useBottomTabBarHeight()
 
   const { data, isLoading } = useQuery({
@@ -175,19 +225,16 @@ const Tab: TabComponent = ({ tab, isSelected, ...rest }) => {
       FlashList<{ key: string; data: RSSHubRouteDeclaration } | string>
     >(isSelected)
 
-  const getItemType = useCallback((item: string | { key: string }) => {
+  const getItemType = useRef((item: string | { key: string }) => {
     return typeof item === "string" ? "sectionHeader" : "row"
-  }, [])
+  }).current
 
-  const keyExtractor = useCallback((item: string | { key: string }) => {
+  const keyExtractor = useRef((item: string | { key: string }) => {
     return typeof item === "string" ? item : item.key
-  }, [])
-
-  const { headerHeightAtom } = useContext(DiscoverContext)
-  const headerHeight = useAtomValue(headerHeightAtom)
+  }).current
 
   const scrollOffsetRef = useRef(0)
-  const { animatedY } = useContext(DiscoverContext)
+  const animatedY = useSharedValue(0)
 
   useEffect(() => {
     if (isSelected) {
@@ -205,6 +252,9 @@ const Tab: TabComponent = ({ tab, isSelected, ...rest }) => {
         onScroll={(e) => {
           scrollOffsetRef.current = e.nativeEvent.contentOffset.y
           animatedY.value = scrollOffsetRef.current
+          if (reanimatedScrollY) {
+            reanimatedScrollY.value = scrollOffsetRef.current
+          }
         }}
         scrollEventThrottle={16}
         estimatedItemSize={150}
@@ -213,13 +263,15 @@ const Tab: TabComponent = ({ tab, isSelected, ...rest }) => {
         keyExtractor={keyExtractor}
         getItemType={getItemType}
         renderItem={ItemRenderer}
+        automaticallyAdjustContentInsets={false}
+        contentInsetAdjustmentBehavior="never"
         automaticallyAdjustsScrollIndicatorInsets={false}
+        contentContainerStyle={contentContainerStyle}
         scrollIndicatorInsets={{
           right: -2,
-          top: headerHeight,
+          top: 0,
           bottom: tabHeight,
         }}
-        contentContainerStyle={{ paddingBottom: tabHeight, paddingTop: headerHeight }}
         removeClippedSubviews
       />
       {/* Right Sidebar */}
@@ -304,15 +356,8 @@ const NavigationSidebar: FC<{
     [scrollToLetter, titles],
   )
 
-  const { headerHeightAtom } = useContext(DiscoverContext)
-  const headerHeight = useAtomValue(headerHeightAtom)
-  const tabHeight = useBottomTabBarHeight()
-
   return (
-    <View
-      className="absolute inset-y-0 right-1 h-full items-center justify-center"
-      style={{ paddingTop: headerHeight, paddingBottom: tabHeight }}
-    >
+    <View className="absolute inset-y-0 right-1 h-full items-center justify-center">
       <PanGestureHandler onGestureEvent={handleGesture}>
         <View className="gap-0.5">
           {titles.map((title) => (

@@ -33,6 +33,7 @@
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
   },
   "dependencies": {
+    "cookie-es": "2.0.0",
     "react-google-recaptcha": "3.1.0",
     "react-google-recaptcha-v3": "1.10.1"
   },
@@ -65,7 +66,7 @@
     "cssnano": "7.0.6",
     "dotenv": "16.5.0",
     "drizzle-orm": "0.41.0",
-    "electron": "34.5.0",
+    "electron": "34.5.1",
     "electron-devtools-installer": "4.0.0",
     "electron-packager-languages": "0.6.0",
     "electron-vite": "3.1.0",

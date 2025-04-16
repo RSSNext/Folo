@@ -4,7 +4,7 @@ import { useCallback } from "react"
 import { setWhoami } from "~/atoms/user"
 import { QUERY_PERSIST_KEY } from "~/constants"
 import { signOut } from "~/lib/auth"
-import { tipcClient } from "~/lib/client"
+import { handleSessionChanges } from "~/queries/auth"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
 export const useSignOut = () =>
@@ -24,12 +24,9 @@ export const useSignOut = () =>
     clearStorage()
 
     // clear local store data
-    await Promise.allSettled([
-      clearLocalPersistStoreData(),
-      tipcClient?.cleanBetterAuthSessionCookie(),
-    ])
+    await clearLocalPersistStoreData()
     // Sign out
     await signOut().then(() => {
-      window.location.reload()
+      handleSessionChanges()
     })
   }, [])

@@ -6,10 +6,8 @@ import { fileURLToPath } from "node:url"
 import { getRendererHandlers } from "@egoist/tipc/main"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
-import { env } from "@follow/shared/env.desktop"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
 
-import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
 import { filePathToAppUrl } from "~/helper"
 import { registerMenuAndContextMenu } from "~/init"
 import { clearAllData, getCacheSize } from "~/lib/cleaner"
@@ -20,7 +18,6 @@ import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
 import { downloadFile } from "../lib/download"
 import { i18n } from "../lib/i18n"
-import { cleanBetterAuthSessionCookie, cleanUser } from "../lib/user"
 import type { RendererHandlers } from "../renderer-handlers"
 import { quitAndInstall } from "../updater"
 import { getMainWindow } from "../window"
@@ -151,16 +148,6 @@ export const appRoute = {
     quitAndInstall()
   }),
 
-  cleanBetterAuthSessionCookie: t.procedure.action(async () => {
-    cleanBetterAuthSessionCookie()
-    cleanUser()
-
-    const mainWindow = getMainWindow()
-    await mainWindow?.webContents.session.cookies.remove(
-      env.VITE_API_URL,
-      BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN,
-    )
-  }),
   /// clipboard
 
   readClipboard: t.procedure.action(async () => clipboard.readText()),

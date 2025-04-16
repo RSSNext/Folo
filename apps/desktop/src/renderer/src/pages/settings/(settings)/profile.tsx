@@ -12,6 +12,7 @@ import { TwoFactor } from "~/modules/profile/two-factor"
 import { UpdatePasswordForm } from "~/modules/profile/update-password-form"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
+import { handleSessionChanges } from "~/queries/auth"
 
 const iconName = "i-mgc-user-setting-cute-re"
 const priority = 1090
@@ -55,7 +56,7 @@ export function Component() {
                           variant="outline"
                           onClick={async () => {
                             await signOut()
-                            window.location.reload()
+                            handleSessionChanges()
                           }}
                         >
                           Delete

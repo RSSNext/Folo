@@ -1,5 +1,5 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
-import { createSession, loginHandler, signOut, twoFactor } from "@client/lib/auth"
+import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -53,11 +53,10 @@ export function Login() {
   }, [isCredentialProvider, provider, status])
 
   const getCallbackUrl = useCallback(async () => {
-    const { data } = await createSession()
+    const { data } = await oneTimeToken.generate()
     if (!data) return null
     return {
-      url: `${DEEPLINK_SCHEME}auth?ck=${data.ck}&userId=${data.userId}`,
-      userId: data.userId,
+      url: `${DEEPLINK_SCHEME}auth?token=${data.token}`,
     }
   }, [])
 

@@ -211,6 +211,9 @@ importers:
 
   apps/desktop:
     dependencies:
+      cookie-es:
+        specifier: 2.0.0
+        version: 2.0.0
       react-google-recaptcha:
         specifier: 3.1.0
         version: 3.1.0(react@18.3.1)
@@ -303,8 +306,8 @@ importers:
         specifier: 0.41.0
         version: 0.41.0(9928b483d1845c28fd62a2a8fba14be2)
       electron:
-        specifier: 34.5.0
-        version: 34.5.0
+        specifier: 34.5.1
+        version: 34.5.1
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
@@ -355,13 +358,13 @@ importers:
     dependencies:
       '@egoist/tipc':
         specifier: 0.3.2
-        version: 0.3.2(electron@34.5.0)(react@18.3.1)
+        version: 0.3.2(electron@34.5.1)(react@18.3.1)
       '@electron-toolkit/preload':
         specifier: 3.0.1
-        version: 3.0.1(electron@34.5.0)
+        version: 3.0.1(electron@34.5.1)
       '@electron-toolkit/utils':
         specifier: 4.0.0
-        version: 4.0.0(electron@34.5.0)
+        version: 4.0.0(electron@34.5.1)
       '@eneris/push-receiver':
         specifier: 4.3.0
         version: 4.3.0
@@ -451,8 +454,8 @@ importers:
         specifier: 22.14.1
         version: 22.14.1
       electron:
-        specifier: 34.5.0
-        version: 34.5.0
+        specifier: 34.5.1
+        version: 34.5.1
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
@@ -470,10 +473,10 @@ importers:
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@egoist/tipc':
         specifier: 0.3.2
-        version: 0.3.2(electron@34.5.0)(react@18.3.1)
+        version: 0.3.2(electron@34.5.1)(react@18.3.1)
       '@electron-toolkit/preload':
         specifier: 3.0.1
-        version: 3.0.1(electron@34.5.0)
+        version: 3.0.1(electron@34.5.1)
       '@follow/electron-main':
         specifier: workspace:*
         version: link:../main
@@ -841,9 +844,6 @@ importers:
       better-auth:
         specifier: 1.2.6
         version: 1.2.6
-      cookie-es:
-        specifier: 2.0.0
-        version: 2.0.0
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
@@ -1535,7 +1535,7 @@ importers:
     dependencies:
       '@electron-toolkit/preload':
         specifier: 3.0.1
-        version: 3.0.1(electron@34.5.0)
+        version: 3.0.1(electron@34.5.1)
       '@electron-toolkit/tsconfig':
         specifier: 1.0.1
         version: 1.0.1(@types/node@22.14.1)
@@ -8626,8 +8626,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@34.5.0:
-    resolution: {integrity: sha512-GabFMG7r2P1NQf5DYp6mnCXo5CcatxXb8YQo54VTStql6weeEv7tsqvl3lAssGwDdd4iMc8QpTCFjErBSVRWeQ==}
+  electron@34.5.1:
+    resolution: {integrity: sha512-z2Wm7QjhnJ5592fLITynj8UwIk1mBiT402mOakxSYiADrERIci3IOPk7xWHAFOMvt/eoG5RW16PPhgJiedZcGA==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
@@ -16835,9 +16835,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@egoist/tipc@0.3.2(electron@34.5.0)(react@18.3.1)':
+  '@egoist/tipc@0.3.2(electron@34.5.1)(react@18.3.1)':
     dependencies:
-      electron: 34.5.0
+      electron: 34.5.1
     optionalDependencies:
       '@tanstack/react-query': 5.69.0(react@18.3.1)
     transitivePeerDependencies:
@@ -17084,17 +17084,17 @@ snapshots:
     dependencies:
       chrome-trace-event: 1.0.4
 
-  '@electron-toolkit/preload@3.0.1(electron@34.5.0)':
+  '@electron-toolkit/preload@3.0.1(electron@34.5.1)':
     dependencies:
-      electron: 34.5.0
+      electron: 34.5.1
 
   '@electron-toolkit/tsconfig@1.0.1(@types/node@22.14.1)':
     dependencies:
       '@types/node': 22.14.1
 
-  '@electron-toolkit/utils@4.0.0(electron@34.5.0)':
+  '@electron-toolkit/utils@4.0.0(electron@34.5.1)':
     dependencies:
-      electron: 34.5.0
+      electron: 34.5.1
 
   '@electron/asar@3.3.1':
     dependencies:
@@ -21877,7 +21877,7 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 20.17.30
+      '@types/node': 22.14.1
     optional: true
 
   '@typescript-eslint/eslint-plugin@8.28.0(@typescript-eslint/parser@8.28.0(eslint@9.24.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.24.0(jiti@2.4.2))(typescript@5.8.3)':
@@ -24461,7 +24461,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron@34.5.0:
+  electron@34.5.1:
     dependencies:
       '@electron/get': 2.0.3
       '@types/node': 20.17.30

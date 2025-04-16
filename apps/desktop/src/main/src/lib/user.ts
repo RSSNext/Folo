@@ -7,11 +7,6 @@ import { logger } from "~/logger"
 import { apiClient } from "./api-client"
 import { store } from "./store"
 
-const BetterAuthKey = "betterAuthSessionCookie"
-export const setBetterAuthSessionCookie = (cookie: string) => store.set(BetterAuthKey, cookie)
-export const getBetterAuthSessionCookie = () => store.get(BetterAuthKey)
-export const cleanBetterAuthSessionCookie = () => store.set(BetterAuthKey, null)
-
 const UserKey = "user"
 export const setUser = (user: UserModel) => store.set(UserKey, JSON.stringify(user))
 export const getUser = (): UserModel | null => {

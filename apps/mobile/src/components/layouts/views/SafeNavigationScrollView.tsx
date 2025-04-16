@@ -179,6 +179,13 @@ export const NavigationBlurEffectHeaderView = ({
   )
 }
 
+/**
+ * @deprecated
+ * please use `NavigationBlurEffectHeaderView` instead, pass `<NavigationBlurEffectHeaderView />` in `SafeNavigationScrollView`'s `Header` prop
+ *
+ * e.g. `<SafeNavigationScrollView Header={<NavigationBlurEffectHeaderView />} />`
+ * @see NavigationBlurEffectHeaderView
+ */
 export const NavigationBlurEffectHeader = ({
   headerHideableBottom,
   headerHideableBottomHeight,

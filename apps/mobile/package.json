@@ -47,7 +47,6 @@
     "@tanstack/react-query-persist-client": "5.73.3",
     "@types/qrcode": "1.5.5",
     "better-auth": "1.2.6",
-    "cookie-es": "2.0.0",
     "dayjs": "1.11.13",
     "dnum": "2.14.0",
     "es-toolkit": "1.34.1",
