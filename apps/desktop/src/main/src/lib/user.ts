@@ -6,6 +6,14 @@ import { logger } from "~/logger"
 import { apiClient } from "./api-client"
 import { store } from "./store"
 
+const notificationChannel = isMacOS
+  ? "macos"
+  : isWindows
+    ? "windows"
+    : isLinux
+      ? "linux"
+      : "desktop"
+
 export const updateNotificationsToken = async (newCredentials?: Credentials) => {
   if (newCredentials) {
     store.set("notifications-credentials", newCredentials)
@@ -16,11 +24,19 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
       await apiClient.messaging.$post({
         json: {
           token: credentials.fcm.token,
-          channel: isMacOS ? "macos" : isWindows ? "windows" : isLinux ? "linux" : "desktop",
+          channel: notificationChannel,
         },
       })
     } catch (error) {
       logger.error("updateNotificationsToken error: ", error)
     }
   }
+}
+
+export const deleteNotificationsToken = async () => {
+  await apiClient.messaging.$delete({
+    json: {
+      channel: notificationChannel,
+    },
+  })
 }

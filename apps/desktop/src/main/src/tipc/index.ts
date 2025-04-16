@@ -1,4 +1,5 @@
 import { appRoute } from "./app"
+import { authRoute } from "./auth"
 import { debugRoute } from "./debug"
 import { dockRoute } from "./dock"
 import { menuRoute } from "./menu"
@@ -12,6 +13,7 @@ export const router = {
   ...appRoute,
   ...dockRoute,
   ...readerRoute,
+  ...authRoute,
 }
 
 export type Router = typeof router

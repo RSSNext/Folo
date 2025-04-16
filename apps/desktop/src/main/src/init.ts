@@ -153,8 +153,6 @@ const registerPushNotifications = async () => {
   const credentials = store.get(credentialsKey)
   const persistentIds = store.get(persistentIdsKey)
 
-  updateNotificationsToken()
-
   const instance = new PushReceiver({
     debug: true,
     firebase: JSON.parse(env.VITE_FIREBASE_CONFIG),

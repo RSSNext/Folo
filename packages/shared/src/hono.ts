@@ -15861,6 +15861,21 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
+} & {
+    "/": {
+        $delete: {
+            input: {
+                json: {
+                    channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
+                };
+            };
+            output: {
+                code: 0;
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
 }, "/messaging"> | hono_types.MergeSchemaPath<{
     "/configs": {
         $get: {

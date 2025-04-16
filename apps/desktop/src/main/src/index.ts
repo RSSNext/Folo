@@ -183,9 +183,9 @@ function bootstrap() {
 
         if (ck && apiURL) {
           const cookie = parse(atob(ck), { decode: (value) => value })
-          Object.keys(cookie).forEach((name) => {
+          Object.keys(cookie).forEach(async (name) => {
             const value = cookie[name]
-            mainWindow.webContents.session.cookies.set({
+            await mainWindow.webContents.session.cookies.set({
               url: apiURL,
               name,
               value,
