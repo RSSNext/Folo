@@ -1,20 +1,10 @@
 import type { Credentials } from "@eneris/push-receiver/dist/types"
-import type { UserModel } from "@follow/models"
 
 import { isLinux, isMacOS, isWindows } from "~/env"
 import { logger } from "~/logger"
 
 import { apiClient } from "./api-client"
 import { store } from "./store"
-
-const UserKey = "user"
-export const setUser = (user: UserModel) => store.set(UserKey, JSON.stringify(user))
-export const getUser = (): UserModel | null => {
-  const user = store.get(UserKey)
-  return user ? JSON.parse(user) : null
-}
-
-export const cleanUser = () => store.set(UserKey, null)
 
 export const updateNotificationsToken = async (newCredentials?: Credentials) => {
   if (newCredentials) {

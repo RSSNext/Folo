@@ -163,9 +163,6 @@ function bootstrap() {
     })
     await session.defaultSession.cookies.flushStore()
 
-    const cookies = await session.defaultSession.cookies.get({})
-    store.set("cookies", cookies)
-
     await cleanupOldRender()
   })
 
@@ -196,6 +193,7 @@ function bootstrap() {
               httpOnly: true,
               domain: new URL(apiURL).hostname,
               sameSite: "no_restriction",
+              expirationDate: new Date().setDate(new Date().getDate() + 30),
             })
           })
 

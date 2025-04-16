@@ -8,7 +8,6 @@ import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
 import { getMainWindow } from "~/window"
 
 import { logger } from "../logger"
-import { getUser } from "./user"
 
 const abortController = new AbortController()
 export const apiFetch = ofetch.create({
@@ -29,8 +28,6 @@ export const apiFetch = ofetch.create({
 export const apiClient = hc<AppType>("", {
   fetch: async (input, options = {}) => apiFetch(input.toString(), options),
   async headers() {
-    const user = getUser()
-
     const window = getMainWindow()
     const cookies = await window?.webContents.session.cookies.get({
       domain: new URL(env.VITE_API_URL).hostname,
@@ -44,7 +41,7 @@ export const apiClient = hc<AppType>("", {
       "X-App-Version": PKG.version,
       "X-App-Dev": process.env.NODE_ENV === "development" ? "1" : "0",
       Cookie: headerCookie,
-      "User-Agent": `Folo/${PKG.version}${user?.id ? ` uid: ${user.id}` : ""}`,
+      "User-Agent": `Folo/${PKG.version}`,
     }
   },
 })
