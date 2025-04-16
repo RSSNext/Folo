@@ -436,8 +436,19 @@ class EntrySyncServices {
     const entry = honoMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])
-    } else if (entry?.content && currentEntry?.content !== entry.content) {
-      await entryActions.updateEntryContent({ entryId, content: entry.content })
+    } else {
+      if (entry?.content && currentEntry?.content !== entry.content) {
+        await entryActions.updateEntryContent({ entryId, content: entry.content })
+      }
+      if (
+        entry?.readabilityContent &&
+        currentEntry?.readabilityContent !== entry.readabilityContent
+      ) {
+        await entryActions.updateEntryContent({
+          entryId,
+          readabilityContent: entry.readabilityContent,
+        })
+      }
     }
     return entry
   }
