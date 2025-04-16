@@ -70,13 +70,6 @@ export const ActionButton = React.forwardRef<
     React.useImperativeHandle(ref, () => buttonRef.current!)
 
     const [loading, setLoading] = useState(false)
-    const [tooltipOpen, setTooltipOpen] = useState(tooltipDefaultOpen)
-
-    React.useEffect(() => {
-      if (tooltipDefaultOpen) {
-        setTooltipOpen(tooltipDefaultOpen)
-      }
-    }, [tooltipDefaultOpen, id])
 
     const Trigger = (
       <button
@@ -136,7 +129,7 @@ export const ActionButton = React.forwardRef<
         )}
         {tooltip ? (
           <Tooltip disableHoverableContent={!enableHoverableContent}>
-            <TooltipRoot open={tooltipOpen} onOpenChange={setTooltipOpen}>
+            <TooltipRoot defaultOpen={tooltipDefaultOpen} key={id}>
               <TooltipTrigger
                 aria-label={typeof tooltip === "string" ? tooltip : undefined}
                 asChild
