@@ -198,7 +198,7 @@ const ShikiCode: FC<
             <span>{language}</span>
           </span>
         )}
-        <CopyButton variant="ghost" value={code} />
+        <CopyButton variant="outline" value={code} />
       </div>
       <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
     </div>
