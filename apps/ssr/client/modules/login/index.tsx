@@ -29,6 +29,27 @@ import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
+function closeRecaptcha(recaptchaRef: React.RefObject<ReCAPTCHA>, resetLoadingState: () => void) {
+  const handleClick = (e: MouseEvent) => {
+    const recaptchaIframeSelector =
+      'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'
+    const recaptchaChallengeIframe = document.querySelector(recaptchaIframeSelector)
+
+    if (
+      e.target instanceof Element &&
+      recaptchaChallengeIframe &&
+      !recaptchaChallengeIframe.contains(e.target) &&
+      !e.target.closest(".g-recaptcha")
+    ) {
+      recaptchaRef.current?.reset()
+      resetLoadingState()
+    }
+  }
+
+  document.addEventListener("click", handleClick)
+  return () => document.removeEventListener("click", handleClick)
+}
+
 export function Login() {
   const { status, refetch } = useSession()
 
@@ -222,41 +243,67 @@ function LoginWithPassword() {
     },
   })
   const [needTwoFactor, setNeedTwoFactor] = useState(false)
+  const [isButtonLoading, setIsButtonLoading] = useState(false)
 
-  const { isSubmitting } = form.formState
   const navigate = useNavigate()
-
   const recaptchaRef = useRef<ReCAPTCHA>(null)
 
+  const resetLoadingState = useCallback(() => {
+    setIsButtonLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if (isButtonLoading) {
+      return closeRecaptcha(recaptchaRef, resetLoadingState)
+    }
+  }, [isButtonLoading, resetLoadingState])
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (needTwoFactor && values.code) {
-      const res = await twoFactor.verifyTotp({ code: values.code })
+    setIsButtonLoading(true)
+    try {
+      if (needTwoFactor && values.code) {
+        const res = await twoFactor.verifyTotp({ code: values.code })
+        if (res?.error) {
+          toast.error(res.error.message)
+          setIsButtonLoading(false)
+        } else {
+          queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
+        }
+        return
+      }
+
+      const token = await recaptchaRef.current?.executeAsync()
+      if (!token) {
+        setIsButtonLoading(false)
+        return
+      }
+
+      const res = await loginHandler("credential", "app", {
+        ...values,
+        headers: {
+          "x-token": `r2:${token}`,
+        },
+      })
+
       if (res?.error) {
         toast.error(res.error.message)
+        setIsButtonLoading(false)
+        return
+      }
+
+      if ((res?.data as any)?.twoFactorRedirect) {
+        setNeedTwoFactor(true)
+        form.setValue("code", "")
+        setTimeout(() => form.setFocus("code"), 0)
+        setIsButtonLoading(false)
+        return
       } else {
         queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
       }
-      return
-    }
-
-    const token = await recaptchaRef.current?.executeAsync()
-    const res = await loginHandler("credential", "app", {
-      ...values,
-      headers: {
-        "x-token": `r2:${token}`,
-      },
-    })
-    if (res?.error) {
-      toast.error(res.error.message)
-      return
-    }
-    if ((res?.data as any)?.twoFactorRedirect) {
-      setNeedTwoFactor(true)
-      form.setValue("code", "")
-      form.setFocus("code")
-      return
-    } else {
-      queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
+    } catch (error) {
+      console.error("Login error:", error)
+      toast.error(t("login.errors.unknown"))
+      setIsButtonLoading(false)
     }
   }
 
@@ -270,7 +317,7 @@ function LoginWithPassword() {
             <FormItem>
               <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input type="email" {...field} disabled={isButtonLoading || needTwoFactor} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -291,7 +338,7 @@ function LoginWithPassword() {
                 </Link>
               </FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} disabled={isButtonLoading || needTwoFactor} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -305,7 +352,7 @@ function LoginWithPassword() {
               <FormItem>
                 <FormLabel>{t("login.two_factor.code")}</FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
+                  <Input type="text" {...field} disabled={isButtonLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -313,8 +360,16 @@ function LoginWithPassword() {
           />
         )}
         <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
-        <Button type="submit" buttonClassName="!mt-3 w-full" isLoading={isSubmitting} size="lg">
-          {t("login.continueWith", { provider: t("words.email") })}
+        <Button
+          type="submit"
+          buttonClassName="!mt-3 w-full"
+          isLoading={isButtonLoading}
+          size="lg"
+          disabled={isButtonLoading}
+        >
+          {needTwoFactor
+            ? t("login.two_factor.verify")
+            : t("login.continueWith", { provider: t("words.email") })}
         </Button>
         <Button
           type="button"
@@ -325,6 +380,7 @@ function LoginWithPassword() {
             navigate("/register")
           }}
           size="lg"
+          disabled={isButtonLoading}
         >
           {t("login.signUp")}
         </Button>

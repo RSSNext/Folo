@@ -13,13 +13,37 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env.ssr"
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
+
+function closeRecaptcha(
+  recaptchaRef: React.RefObject<ReCAPTCHA>,
+  setIsSubmitting: (value: boolean) => void,
+) {
+  const handleClick = (e: MouseEvent) => {
+    const recaptchaIframeSelector =
+      'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'
+    const recaptchaChallengeIframe = document.querySelector(recaptchaIframeSelector)
+
+    if (
+      e.target instanceof Element &&
+      recaptchaChallengeIframe &&
+      !recaptchaChallengeIframe.contains(e.target) &&
+      !e.target.closest(".g-recaptcha")
+    ) {
+      recaptchaRef.current?.reset()
+      setIsSubmitting(false)
+    }
+  }
+
+  document.addEventListener("click", handleClick)
+  return () => document.removeEventListener("click", handleClick)
+}
 
 export function Component() {
   return (
@@ -43,6 +67,9 @@ const formSchema = z
 
 function RegisterForm() {
   const { t } = useTranslation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,34 +80,48 @@ function RegisterForm() {
     },
   })
 
-  const { isValid } = form.formState
-
-  const navigate = useNavigate()
-
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  useEffect(() => {
+    if (isSubmitting) {
+      return closeRecaptcha(recaptchaRef, setIsSubmitting)
+    }
+  }, [isSubmitting])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const token = await recaptchaRef.current?.executeAsync()
-    return signUp.email({
-      email: values.email,
-      password: values.password,
-      name: values.email.split("@")[0]!,
-      callbackURL: "/",
-      fetchOptions: {
-        onSuccess() {
-          tracker.register({
-            type: "email",
-          })
-          navigate("/login")
+    setIsSubmitting(true)
+
+    try {
+      const token = await recaptchaRef.current?.executeAsync()
+
+      if (!token) {
+        return
+      }
+
+      await signUp.email({
+        email: values.email,
+        password: values.password,
+        name: values.email.split("@")[0]!,
+        callbackURL: "/",
+        fetchOptions: {
+          onSuccess() {
+            tracker.register({
+              type: "email",
+            })
+            navigate("/login")
+          },
+          onError(context) {
+            toast.error(context.error.message)
+          },
+          headers: {
+            "x-token": `r2:${token}`,
+          },
         },
-        onError(context) {
-          toast.error(context.error.message)
-        },
-        headers: {
-          "x-token": `r2:${token}`,
-        },
-      },
-    })
+      })
+    } finally {
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset()
+      }
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -109,7 +150,7 @@ function RegisterForm() {
               <FormItem>
                 <FormLabel>{t("register.email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input type="email" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -122,7 +163,7 @@ function RegisterForm() {
               <FormItem>
                 <FormLabel>{t("register.password")}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -135,14 +176,20 @@ function RegisterForm() {
               <FormItem>
                 <FormLabel>{t("register.confirm_password")}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
-          <Button disabled={!isValid} type="submit" className="w-full" size="lg">
+          <Button
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full"
+            size="lg"
+          >
             {t("register.submit")}
           </Button>
         </form>
