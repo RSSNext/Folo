@@ -21,6 +21,7 @@ export interface ActionButtonProps {
   disableTriggerShortcut?: boolean
   enableHoverableContent?: boolean
   size?: "sm" | "base" | "lg"
+  id?: string
 
   /**
    * @description only trigger shortcut when focus with in `<Focusable />`
@@ -44,7 +45,7 @@ export const ActionButton = React.forwardRef<
   (
     {
       icon,
-
+      id,
       tooltip,
       className,
       tooltipSide,
@@ -70,11 +71,12 @@ export const ActionButton = React.forwardRef<
 
     const [loading, setLoading] = useState(false)
     const [tooltipOpen, setTooltipOpen] = useState(tooltipDefaultOpen)
+
     React.useEffect(() => {
       if (tooltipDefaultOpen) {
         setTooltipOpen(tooltipDefaultOpen)
       }
-    }, [tooltipDefaultOpen])
+    }, [tooltipDefaultOpen, id])
 
     const Trigger = (
       <button

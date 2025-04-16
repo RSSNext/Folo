@@ -40,6 +40,7 @@ export const EntryHeaderActions = ({
         shortcut={config.shortcut}
         clickableDisabled={config.disabled}
         tooltipDefaultOpen={config.notice}
+        id={`${config.entryId}/${config.id}`}
       />
     )
   })

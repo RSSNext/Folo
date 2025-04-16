@@ -66,6 +66,7 @@ export type EntryActionItem = {
   active?: boolean
   disabled?: boolean
   notice?: boolean
+  entryId: string
 }
 
 function hasHTMLTags(text?: string | null): boolean {
@@ -241,7 +242,14 @@ export const useEntryActions = ({
         id: COMMAND_ID.settings.customizeToolbar,
         onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
       },
-    ].filter((config) => !config.hide)
+    ]
+      .filter((config) => !config.hide)
+      .map((config) => {
+        return {
+          ...config,
+          entryId,
+        }
+      })
   }, [
     compact,
     entry?.collections,
