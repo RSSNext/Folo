@@ -253,7 +253,11 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
           { entryId, entryUrl: entry?.entries.url },
         ]),
-        hide: compact || (view && views[view]!.wideMode) || !entry?.entries.url,
+        hide:
+          !!entry.settings?.readability ||
+          compact ||
+          (view && views[view]!.wideMode) ||
+          !entry?.entries.url,
         active: isEntryInReadability,
         notice: !isContentContainsHTMLTags && !isEntryInReadability,
       },
@@ -275,6 +279,7 @@ export const useEntryActions = ({
     entry?.entries.content,
     entry?.entries.url,
     entry?.read,
+    entry?.settings?.readability,
     entry?.view,
     entryId,
     isEntryInReadability,
