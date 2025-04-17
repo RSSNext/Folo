@@ -1,10 +1,12 @@
 import { cn } from "@follow/utils"
+import { SymbolView } from "expo-symbols"
 import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
 import type { PressableProps, ViewProps } from "react-native"
 import { Pressable, StyleSheet, Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
+import type { SFSymbol } from "sf-symbols-typescript"
 
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
@@ -23,6 +25,7 @@ import { GroupedInsetListCardItemStyle } from "./GroupedInsetListCardItemStyle"
 interface GroupedInsetListCardProps {
   showSeparator?: boolean
   SeparatorComponent?: FC
+  SeparatorElement?: React.ReactNode
 }
 
 interface BaseCellClassNames {
@@ -38,7 +41,14 @@ export const GroupedOutlineDescription: FC<{
 
 export const GroupedInsetListCard: FC<
   PropsWithChildren & ViewProps & GroupedInsetListCardProps
-> = ({ children, className, showSeparator = true, SeparatorComponent, ...props }) => {
+> = ({
+  children,
+  className,
+  showSeparator = true,
+  SeparatorComponent,
+  SeparatorElement,
+  ...props
+}) => {
   const nextChildren = React.useMemo(
     () => React.Children.toArray(children).filter(Boolean),
     [children],
@@ -63,13 +73,19 @@ export const GroupedInsetListCard: FC<
               ((child.type as Function).name === GroupedInsetListNavigationLink.name ||
                 (child.type as any).itemStyle === GroupedInsetListCardItemStyle.NavigationLink)
 
+            const NextSeparatorComponent =
+              typeof SeparatorComponent === "function" ? <SeparatorComponent /> : undefined
+            const NextSeparatorElement = SeparatorElement
+              ? React.isValidElement(SeparatorElement)
+                ? SeparatorElement
+                : NextSeparatorComponent
+              : NextSeparatorComponent
+
             return (
               <Fragment key={index}>
                 {child}
                 {!isLast &&
-                  (SeparatorComponent ? (
-                    <SeparatorComponent />
-                  ) : (
+                  (NextSeparatorElement ?? (
                     <View
                       className={cn(
                         "bg-non-opaque-separator dark:bg-opaque-separator/70",
@@ -181,12 +197,16 @@ export const GroupedInsetListCell: FC<
     label: string
     description?: string
     children?: React.ReactNode
+    icon?: SFSymbol
   } & BaseCellClassNames
-> = ({ label, description, children, leftClassName, rightClassName }) => {
+> = ({ label, description, children, leftClassName, rightClassName, icon }) => {
   return (
     <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
       <View className={cn("flex-1 gap-1", leftClassName)}>
-        <Text className="text-label">{label}</Text>
+        <View className="flex-row items-center gap-2">
+          {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
+          <Text className="text-label">{label}</Text>
+        </View>
         {!!description && (
           <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
         )}
@@ -257,7 +277,8 @@ export const GroupedInsetListActionCell: FC<{
   description?: string
   onPress?: () => void
   disabled?: boolean
-}> = ({ label, description, onPress, disabled }) => {
+  icon?: SFSymbol
+}> = ({ label, description, onPress, disabled, icon }) => {
   const rightIconColor = useColor("tertiaryLabel")
   return (
     <Pressable
@@ -270,7 +291,10 @@ export const GroupedInsetListActionCell: FC<{
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
         >
           <View className="flex-1">
-            <Text className="text-label">{label}</Text>
+            <View className="flex-row items-center gap-2">
+              {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
+              <Text className="text-label">{label}</Text>
+            </View>
             {!!description && (
               <Text className="text-secondary-label text-sm leading-tight">{description}</Text>
             )}

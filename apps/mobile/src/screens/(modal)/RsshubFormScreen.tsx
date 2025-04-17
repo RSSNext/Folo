@@ -28,7 +28,7 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
 import { feedSyncServices } from "@/src/store/feed/store"
 
-import { FollowScreen } from "./follow"
+import { FollowScreen } from "./FollowScreen"
 
 interface RsshubFormParams {
   route: RSSHubRoute

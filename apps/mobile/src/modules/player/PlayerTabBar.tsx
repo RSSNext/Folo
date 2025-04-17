@@ -13,7 +13,7 @@ import { Image } from "@/src/components/ui/image/Image"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActiveTrack } from "@/src/lib/player"
-import { PlayerScreen } from "@/src/screens/player"
+import { PlayerScreen } from "@/src/screens/PlayerScreen"
 import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton } from "./control"

@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { NavigationBlurEffectHeaderView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { useDefaultHeaderHeight } from "@/src/hooks/useDefaultHeaderHeight"
@@ -14,6 +15,7 @@ export const RecommendationCategoryScreen: NavigationControllerView<{
   const { t } = useTranslation("common")
   const { reAnimatedScrollY } = useContext(ScreenItemContext)!
   const defaultHeaderHeight = useDefaultHeaderHeight()
+  const insets = useSafeAreaInsets()
   return (
     <View className="flex-1">
       <NavigationBlurEffectHeaderView
@@ -26,6 +28,7 @@ export const RecommendationCategoryScreen: NavigationControllerView<{
         reanimatedScrollY={reAnimatedScrollY}
         contentContainerStyle={{
           paddingTop: defaultHeaderHeight,
+          paddingBottom: insets.bottom,
         }}
         tab={{
           name: t(`discover.category.${category}` as any),

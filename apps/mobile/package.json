@@ -47,6 +47,7 @@
     "@tanstack/react-query-persist-client": "5.73.3",
     "@types/qrcode": "1.5.5",
     "better-auth": "1.2.6",
+    "camelcase-keys": "9.1.3",
     "dayjs": "1.11.13",
     "dnum": "2.14.0",
     "es-toolkit": "1.34.1",
@@ -136,7 +137,8 @@
     "eas-cli": "16.3.1",
     "expo-drizzle-studio-plugin": "0.1.2",
     "nbump": "2.0.9",
-    "postcss": "8.5.3"
+    "postcss": "8.5.3",
+    "sf-symbols-typescript": "2.1.0"
   },
   "appName": "Folo",
   "expo": {

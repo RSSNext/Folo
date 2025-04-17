@@ -15,7 +15,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
 
-import { Magic2CuteReIcon } from "@/src/icons/magic_2_cute_re"
+import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 
 export const AISummary: FC<{
   className?: string
@@ -69,7 +69,7 @@ export const AISummary: FC<{
       style={styles.card}
     >
       <View className="mb-2 flex-row items-center gap-2">
-        <Magic2CuteReIcon height={16} width={16} color={purpleColor} />
+        <AiCuteReIcon height={16} width={16} color={purpleColor} />
         <MaskedView
           maskElement={
             <View className="bg-transparent">

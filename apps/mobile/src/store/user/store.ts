@@ -153,6 +153,22 @@ class UserSyncService {
 
     return res
   }
+
+  async fetchUser(userId: string) {
+    const res = await apiClient.profiles.$get({ query: { id: userId } })
+    if (res.code === 0) {
+      const { whoami } = get()
+      immerSet((state) => {
+        state.users[userId] = {
+          email: null,
+          isMe: whoami?.id === userId ? 1 : 0,
+          ...res.data,
+        }
+      })
+    }
+
+    return res.data
+  }
 }
 
 class UserActions {

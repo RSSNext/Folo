@@ -9,7 +9,7 @@ import { useColor } from "react-native-uikit-colors"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { LoginScreen } from "@/src/screens/(modal)/login"
+import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { useImageColors, usePrefetchImageColors } from "@/src/store/image/hooks"
 import { useUser } from "@/src/store/user/hooks"
 

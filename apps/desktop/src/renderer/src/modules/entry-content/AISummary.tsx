@@ -63,7 +63,7 @@ export function AISummary({ entryId }: { entryId: string }) {
           <div className="center relative">
             <i
               className={cn(
-                "i-mgc-magic-2-cute-re text-lg",
+                "i-mgc-ai-cute-re text-lg",
                 summary.isLoading
                   ? "text-purple-500/70 dark:text-purple-400/70"
                   : "text-purple-600 dark:text-purple-400",

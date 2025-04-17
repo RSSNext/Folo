@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { memo, useCallback, useMemo } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
@@ -18,7 +18,7 @@ import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { getAttachmentState, player } from "@/src/lib/player"
 import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
-import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
+import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useEntry } from "@/src/store/entry/hooks"
 import { getInboxFrom } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
@@ -148,7 +148,9 @@ export const EntryNormalItem = memo(
                 ))}
 
               {audio && (
-                <TouchableOpacity
+                <ItemPressable
+                  touchHighlight={false}
+                  itemStyle={ItemPressableStyle.UnStyled}
                   className="absolute inset-0 flex items-center justify-center"
                   onPress={() => {
                     if (isLoading) return
@@ -174,7 +176,7 @@ export const EntryNormalItem = memo(
                       <PlayCuteFiIcon color="white" width={24} height={24} />
                     )}
                   </View>
-                </TouchableOpacity>
+                </ItemPressable>
               )}
             </View>
           )}

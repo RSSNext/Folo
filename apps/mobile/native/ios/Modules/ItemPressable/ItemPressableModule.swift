@@ -39,22 +39,22 @@ class ItemPressableView: ExpoView {
   }
 
   func initizlize() {
-    gestureRecognizers = [UITapGestureRecognizer(target: self, action: #selector(handleTap))]
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+    tapGesture.delegate = self
+    gestureRecognizers = [tapGesture]
   }
 
   @objc func handleTap() {
     let bgColor = layer.backgroundColor
     if touchHighlight {
-      UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseIn]) {
-        self.layer.backgroundColor = UIColor.systemFill.cgColor
-      } completion: { done in
-        if done {
-          UIView.animate(withDuration: 0.2, delay: 0.2, options: [.curveEaseOut]) {
-            self.layer.backgroundColor = bgColor
-          }
-        }
+      layer.backgroundColor = UIColor.systemGray5.cgColor
+
+      UIView.animate(withDuration: 0.2, delay: 0.1, options: [.curveEaseOut]) {
+        self.layer.backgroundColor = bgColor
       }
     }
     onItemPress()
   }
 }
+
+extension ItemPressableView: UIGestureRecognizerDelegate {}

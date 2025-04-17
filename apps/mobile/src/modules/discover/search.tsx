@@ -13,12 +13,15 @@ import Animated, {
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BlurEffect } from "@/src/components/common/BlurEffect"
+import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
-import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
+import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import SearchScreen from "@/src/screens/(headless)/search"
+import { TrendingScreen } from "@/src/screens/(stack)/trending/TrendingScreen"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext } from "./ctx"
@@ -62,10 +65,8 @@ const DynamicBlurEffect = () => {
     </Animated.View>
   )
 }
+
 export const DiscoverHeader = () => {
-  return <DiscoverHeaderImpl />
-}
-const DiscoverHeaderImpl = () => {
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const sheetModal = useScreenIsInSheetModal()
@@ -74,6 +75,7 @@ const DiscoverHeaderImpl = () => {
 
   const setHeaderHeight = useSetAtom(headerHeightAtom)
 
+  const navigation = useNavigation()
   return (
     <View
       style={{ minHeight: headerHeight, paddingTop: insets.top }}
@@ -86,6 +88,11 @@ const DiscoverHeaderImpl = () => {
 
       <View style={styles.header}>
         <PlaceholerSearchBar />
+        <UINavigationHeaderActionButton
+          onPress={() => navigation.pushControllerView(TrendingScreen)}
+        >
+          <TrendingUpCuteReIcon color={accentColor} />
+        </UINavigationHeaderActionButton>
       </View>
     </View>
   )

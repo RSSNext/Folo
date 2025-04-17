@@ -21,20 +21,26 @@ const NativeItemPressable = requireNativeView<
 cssInterop(NativeItemPressable, {
   className: "style",
 })
+
 export const ItemPressable: FC<ItemPressableProps> = memo(
-  ({ children, itemStyle = ItemPressableStyle.Grouped, ...props }) => {
+  ({ children, itemStyle = ItemPressableStyle.Grouped, className, ...props }) => {
+    const isUnStyled = itemStyle === ItemPressableStyle.UnStyled
     return (
       <NativeItemPressable
-        className={cn(
-          "relative overflow-hidden",
+        {...props}
+        className={
+          isUnStyled
+            ? className
+            : cn(
+                "relative overflow-hidden",
 
-          itemStyle === ItemPressableStyle.Plain
-            ? "bg-system-background"
-            : "bg-secondary-system-grouped-background",
-          props.className,
-        )}
-        touchHighlight={props.touchHighlight}
-        style={props.style}
+                itemStyle === ItemPressableStyle.Plain
+                  ? "bg-system-background"
+                  : "bg-secondary-system-grouped-background",
+                className,
+              )
+        }
+        touchHighlight={props.touchHighlight ?? true}
         onItemPress={() => {
           props.onPress?.()
         }}

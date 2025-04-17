@@ -1,7 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
-import { Fragment, useCallback, useEffect, useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { createContext, Fragment, useCallback, useContext, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { FlatList, Image, Share, Text, TouchableOpacity, View } from "react-native"
+import { Alert, FlatList, Image, Share, Text, TouchableOpacity, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -12,6 +13,7 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 
 import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
+import { SwipeableItem } from "@/src/components/common/SwipeableItem"
 import {
   InternalNavigationHeader,
   UINavigationHeaderActionButton,
@@ -30,8 +32,10 @@ import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import type { FeedIconRequiredFeed } from "@/src/components/ui/icon/feed-icon"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
-import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
+import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { apiClient } from "@/src/lib/api-fetch"
+import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
@@ -39,8 +43,14 @@ import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
 import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
 import type { FeedModel } from "@/src/store/feed/types"
 import type { ListModel } from "@/src/store/list/store"
+import { getSubscription } from "@/src/store/subscription/getter"
+import { subscriptionSyncService } from "@/src/store/subscription/store"
 import { useUser, useWhoami } from "@/src/store/user/hooks"
+import { userSyncService } from "@/src/store/user/store"
 import { useColor } from "@/src/theme/colors"
+
+import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
+import { FollowScreen } from "./FollowScreen"
 
 type Subscription = Awaited<ReturnType<typeof apiClient.subscriptions.$get>>["data"][number]
 
@@ -55,6 +65,22 @@ export const ProfileScreen: NavigationControllerView<{
   return <ProfileScreenImpl userId={userId || whoami?.id} />
 }
 
+const IsMyProfileContext = createContext<boolean>(false)
+
+const ActionContext = createContext<{
+  removeItemById: (id: string) => void
+}>({
+  removeItemById: () => {},
+})
+const usePrefetchUser = (userId: string) => {
+  const { data } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => userSyncService.fetchUser(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
+  })
+  return data
+}
 function ProfileScreenImpl(props: { userId: string }) {
   const { t } = useTranslation()
   const scrollY = useSharedValue(0)
@@ -62,6 +88,8 @@ function ProfileScreenImpl(props: { userId: string }) {
     data: subscriptions,
     isLoading,
     isError,
+
+    removeItemById,
   } = useShareSubscription({
     userId: props.userId,
   })
@@ -72,6 +100,7 @@ function ProfileScreenImpl(props: { userId: string }) {
     headerOpacity.value = scrollY.value / 100
   })
 
+  usePrefetchUser(props.userId)
   const user = useUser(props.userId)
   useEffect(() => {
     if (isError) {
@@ -93,6 +122,10 @@ function ProfileScreenImpl(props: { userId: string }) {
   const frame = useSafeAreaFrame()
   const headerHeight = getDefaultHeaderHeight(frame, false, 0)
 
+  const whoami = useWhoami()
+  const isMyProfile = user?.id === whoami?.id
+  const actionCtx = useMemo(() => ({ removeItemById }), [removeItemById])
+
   return (
     <View className="bg-system-grouped-background flex-1">
       <Animated.View
@@ -101,13 +134,14 @@ function ProfileScreenImpl(props: { userId: string }) {
         style={{ opacity: headerOpacity }}
       >
         <BlurEffect />
+
         <InternalNavigationHeader
           title={t("profile.title", {
-            name: user?.name,
+            name: user?.name || user?.handle,
           })}
           headerRight={
             <UINavigationHeaderActionButton onPress={openShareUrl}>
-              <Share3CuteReIcon color={textLabelColor} />
+              <ShareForwardCuteReIcon color={textLabelColor} />
             </UINavigationHeaderActionButton>
           }
         />
@@ -120,7 +154,11 @@ function ProfileScreenImpl(props: { userId: string }) {
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
 
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
-        {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
+        <IsMyProfileContext.Provider value={isMyProfile}>
+          <ActionContext.Provider value={actionCtx}>
+            {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
+          </ActionContext.Provider>
+        </IsMyProfileContext.Provider>
       </ReAnimatedScrollView>
 
       <Animated.View
@@ -131,7 +169,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       >
         <View />
         <TouchableOpacity onPress={openShareUrl}>
-          <Share3CuteReIcon color="#fff" />
+          <ShareForwardCuteReIcon color="#fff" />
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -247,9 +285,21 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
   )
 }
 const renderListItems = ({ item }: { item: PickedListModel }) => (
-  <View
+  <ItemPressable
     className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
     style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+    onPress={() => {
+      if (getSubscription(item.id))
+        Navigation.rootNavigation.pushControllerView(FeedScreen, {
+          feedId: item.id,
+        })
+      else {
+        Navigation.rootNavigation.pushControllerView(FollowScreen, {
+          type: "list",
+          id: item.id,
+        })
+      }
+    }}
   >
     <View className="overflow-hidden rounded">
       {!!item.image && (
@@ -258,37 +308,97 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
       {!item.image && <FallbackIcon title={item.title} size={24} />}
     </View>
 
-    <Text className="text-text" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
+    <Text
+      className="text-text mr-4"
+      numberOfLines={1}
+      style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+    >
       {item.title}
     </Text>
-  </View>
+  </ItemPressable>
 )
 
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
-  <View
-    className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
-    style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
-  >
-    <View className="overflow-hidden rounded">
-      <FeedIcon
-        feed={
-          {
+  <MaybeSwipeable id={item.id}>
+    <ItemPressable
+      className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
+      style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+      onPress={() => {
+        if (getSubscription(item.id))
+          Navigation.rootNavigation.pushControllerView(FeedScreen, {
+            feedId: item.id,
+          })
+        else {
+          Navigation.rootNavigation.pushControllerView(FollowScreen, {
+            type: "feed",
             id: item.id,
-            title: item.title,
-            url: item.url,
-            image: item.image,
-            type: item.view,
-            siteUrl: item.siteUrl || "",
-          } as FeedIconRequiredFeed
+          })
         }
-        size={24}
-      />
-    </View>
-    <Text className="text-text" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
-      {item.title}
-    </Text>
-  </View>
+      }}
+    >
+      <View className="overflow-hidden rounded">
+        <FeedIcon
+          feed={
+            {
+              id: item.id,
+              title: item.title,
+              url: item.url,
+              image: item.image,
+              type: item.view,
+              siteUrl: item.siteUrl || "",
+            } as FeedIconRequiredFeed
+          }
+          size={24}
+        />
+      </View>
+      <Text
+        className="text-text mr-4"
+        numberOfLines={1}
+        style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+      >
+        {item.title}
+      </Text>
+    </ItemPressable>
+  </MaybeSwipeable>
 )
+
+const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const isMyProfile = useContext(IsMyProfileContext)
+  const { t } = useTranslation()
+  const { removeItemById } = useContext(ActionContext)
+  if (!isMyProfile) {
+    return children
+  }
+  return (
+    <SwipeableItem
+      rightActions={[
+        {
+          onPress: () => {
+            // unsubscribe
+            Alert.alert("Unsubscribe?", "This will remove the feed from your subscriptions", [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: t("operation.unfollow"),
+                style: "destructive",
+                onPress: () => {
+                  subscriptionSyncService.unsubscribe(id)
+                  removeItemById(id)
+                },
+              },
+            ])
+          },
+          backgroundColor: "red",
+          label: t("operation.unfollow"),
+        },
+      ]}
+    >
+      {children}
+    </SwipeableItem>
+  )
+}
 
 const SectionHeader = ({ title }: { title: string }) => (
   <View className="mb-2 mt-5" style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>

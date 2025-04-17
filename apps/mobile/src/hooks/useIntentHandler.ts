@@ -2,7 +2,7 @@ import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
 import { useNavigation } from "../lib/navigation/hooks"
-import { FollowScreen } from "../screens/(modal)/follow"
+import { FollowScreen } from "../screens/(modal)/FollowScreen"
 
 // This needs to stay outside of react to persist between account switches
 let previousIntentUrl = ""

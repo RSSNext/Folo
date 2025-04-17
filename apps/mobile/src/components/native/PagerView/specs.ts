@@ -18,6 +18,7 @@ export interface PagerProps {
   page?: number
   pageGap?: number
   transitionStyle?: "scroll" | "pageCurl"
+  initialPageIndex?: number
 }
 export interface PagerRef {
   setPage: (index: number) => void

@@ -32,6 +32,7 @@ interface PagerViewProps {
   onPageWillAppear?: (index: number) => void
   containerStyle?: StyleProp<ViewStyle>
   containerClassName?: string
+  initialPageIndex?: number
 }
 const PagerViewImpl: FC<PagerViewProps> = (
   {
@@ -49,6 +50,7 @@ const PagerViewImpl: FC<PagerViewProps> = (
     onScrollBegin,
     onScrollEnd,
     onPageWillAppear,
+    initialPageIndex,
   },
   ref: any,
 ) => {
@@ -73,6 +75,7 @@ const PagerViewImpl: FC<PagerViewProps> = (
   }))
   return (
     <EnhancePagerView
+      initialPageIndex={initialPageIndex}
       transitionStyle={transitionStyle}
       pageGap={pageGap}
       onPageChange={(e) => {

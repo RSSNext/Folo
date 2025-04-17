@@ -2,7 +2,7 @@ import { Pressable, Text } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { LoginScreen } from "@/src/screens/(modal)/login"
+import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 
 import { Logo } from "../ui/logo"
 
