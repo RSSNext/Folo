@@ -21,7 +21,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
-import { getEntry, useEntry } from "~/store/entry"
+import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
@@ -37,21 +37,11 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
     })
     try {
       let data = getReadabilityContent()[id]
-      if (!data) {
-        const entry = getEntry(id)
-        if (
-          entry &&
-          "readabilityContent" in entry.entries &&
-          entry.entries.readabilityContent !== null
-        ) {
-          data = { content: entry.entries.readabilityContent }
-        }
 
-        if (!data) {
-          const result = await apiClient.entries.readability.$get({ query: { id } })
-          if (result.data) {
-            data = result.data
-          }
+      if (!data) {
+        const result = await apiClient.entries.readability.$get({ query: { id } })
+        if (result.data) {
+          data = result.data
         }
       }
 
