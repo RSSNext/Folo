@@ -27,7 +27,11 @@ export const EntryAISummary: FC<{
   return (
     <AISummary
       className="my-3"
-      summary={showReadability ? summary?.readabilitySummary || "" : summary?.summary || ""}
+      summary={
+        showReadability
+          ? summary?.readabilitySummary || summary?.summary || ""
+          : summary?.summary || ""
+      }
       pending={status === SummaryGeneratingStatus.Pending}
       error={status === SummaryGeneratingStatus.Error ? "Failed to generate summary" : undefined}
     />
