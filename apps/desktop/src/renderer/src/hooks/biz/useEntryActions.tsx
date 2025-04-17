@@ -88,6 +88,7 @@ export const useEntryActions = ({
       type: feed.type,
       ownerUserId: feed.ownerUserId,
       id: feed.id,
+      siteUrl: feed.siteUrl,
     }
   })
   const listId = useRouteParamsSelector((s) => s.listId)
@@ -179,7 +180,9 @@ export const useEntryActions = ({
       },
       {
         id: COMMAND_ID.entry.viewSourceContent,
-        onClick: runCmdFn(COMMAND_ID.entry.viewSourceContent, [{ entryId }]),
+        onClick: runCmdFn(COMMAND_ID.entry.viewSourceContent, [
+          { entryId, siteUrl: feed?.siteUrl },
+        ]),
         hide: isMobile() || !entry?.entries.url,
         active: isShowSourceContent,
       },
@@ -250,6 +253,7 @@ export const useEntryActions = ({
     entryReadabilityStatus,
     feed?.id,
     feed?.ownerUserId,
+    feed?.siteUrl,
     hasEntry,
     imageLength,
     inList,

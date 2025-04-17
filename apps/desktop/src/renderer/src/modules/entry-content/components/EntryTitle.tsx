@@ -1,4 +1,4 @@
-import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
+import { formatEstimatedMins, formatTimeToSeconds, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -16,14 +16,6 @@ import { EntryTranslation } from "../../entry-column/translation"
 interface EntryLinkProps {
   entryId: string
   compact?: boolean
-}
-
-const safeUrl = (url: string, baseUrl: string) => {
-  try {
-    return new URL(url, baseUrl).href
-  } catch {
-    return url
-  }
 }
 
 export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
@@ -45,7 +37,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
       return href
     }
     const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
-    if (href.startsWith("/") && feedSiteUrl) return safeUrl(href, feedSiteUrl)
+    if (href.startsWith("/") && feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
     return href
   }, [entry?.entries.authorUrl, entry?.entries.url, feed?.siteUrl, feed?.type, inbox])
 

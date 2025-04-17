@@ -13,6 +13,7 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { getBackgroundGradient } from "@follow/utils/color"
+import { resolveUrlWithBase } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
@@ -20,7 +21,7 @@ import { m } from "framer-motion"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent, FC } from "react"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -32,6 +33,7 @@ import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
+import { useFeedById } from "~/store/feed"
 
 import { FollowSummary } from "../feed/feed-summary"
 import { FeedForm } from "./feed-form"
@@ -365,42 +367,9 @@ const SearchCard: FC<{
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {item.entries
                   .filter((e) => !!e)
-                  .map((entry) => {
-                    const assertEntry = entry
-                    return (
-                      <a
-                        key={assertEntry.id}
-                        href={assertEntry.url || void 0}
-                        target="_blank"
-                        className="group relative flex flex-col overflow-hidden rounded-lg bg-zinc-50/50 shadow-zinc-100 transition-all duration-200 hover:-translate-y-px hover:shadow-md dark:bg-zinc-800/50 dark:shadow-neutral-700/50"
-                        rel="noreferrer"
-                      >
-                        <div className="aspect-[3/2] w-full overflow-hidden">
-                          <FeedCardMediaThumbnail entry={assertEntry} />
-                        </div>
-                        <div className="flex flex-1 flex-col justify-between p-3">
-                          {assertEntry.title ? (
-                            <div className="line-clamp-2 text-xs font-medium leading-4 text-zinc-900 group-hover:text-black dark:text-zinc-200 dark:group-hover:text-white">
-                              {assertEntry.title}
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-                              <i className="i-mgc-link-cute-re shrink-0 translate-y-px self-start text-[14px]" />
-                              <span className="line-clamp-2 break-all">
-                                {assertEntry.url || "Untitled"}
-                              </span>
-                            </div>
-                          )}
-                          <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                            <RelativeTime
-                              date={assertEntry.publishedAt}
-                              displayAbsoluteTimeAfterDay={Infinity}
-                            />
-                          </div>
-                        </div>
-                      </a>
-                    )
-                  })}
+                  .map((entry) => (
+                    <SearchResultContent key={entry.id} entry={entry} />
+                  ))}
               </div>
             )}
           </CardContent>
@@ -514,5 +483,55 @@ const FeedCardMediaThumbnail: FC<{
       </div>
       <div className="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/5" />
     </div>
+  )
+}
+
+const SearchResultContent: FC<{
+  entry: NonUndefined<DiscoverSearchData[number]["entries"]>[number]
+}> = ({ entry }) => {
+  const feed = useFeedById(entry.feedId)
+
+  const href = useMemo(() => {
+    const href = entry.url
+    if (!href) return "#"
+
+    if (href.startsWith("http")) {
+      const domain = new URL(href).hostname
+      if (domain === "localhost") return "#"
+
+      return href
+    }
+    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
+    if (feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
+    return href
+  }, [entry.url, feed?.siteUrl, feed?.type])
+
+  return (
+    <a
+      key={entry.id}
+      href={href}
+      target="_blank"
+      className="group relative flex flex-col overflow-hidden rounded-lg bg-zinc-50/50 shadow-zinc-100 transition-all duration-200 hover:-translate-y-px hover:shadow-md dark:bg-zinc-800/50 dark:shadow-neutral-700/50"
+      rel="noreferrer"
+    >
+      <div className="aspect-[3/2] w-full overflow-hidden">
+        <FeedCardMediaThumbnail entry={entry} />
+      </div>
+      <div className="flex flex-1 flex-col justify-between p-3">
+        {entry.title ? (
+          <div className="line-clamp-2 text-xs font-medium leading-4 text-zinc-900 group-hover:text-black dark:text-zinc-200 dark:group-hover:text-white">
+            {entry.title}
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <i className="i-mgc-link-cute-re shrink-0 translate-y-px self-start text-[14px]" />
+            <span className="line-clamp-2 break-all">{entry.url || "Untitled"}</span>
+          </div>
+        )}
+        <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <RelativeTime date={entry.publishedAt} displayAbsoluteTimeAfterDay={Infinity} />
+        </div>
+      </div>
+    </a>
   )
 }

@@ -4,7 +4,7 @@ import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn } from "@follow/utils/utils"
+import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
@@ -118,6 +118,22 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const isInPeekModal = useInPeekModal()
 
+  const fullHref = useMemo(() => {
+    if (inbox) return entry?.entries.authorUrl
+    const href = entry?.entries.url
+    if (!href) return "#"
+
+    if (href.startsWith("http")) {
+      const domain = new URL(href).hostname
+      if (domain === "localhost") return "#"
+
+      return href
+    }
+    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
+    if (feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
+    return href
+  }, [entry?.entries.authorUrl, entry?.entries.url, feed?.type, inbox])
+
   if (!entry) return null
 
   const entryContent = entry?.entries.content ?? data?.entries.content
@@ -227,7 +243,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             </article>
           </div>
         </ScrollArea.ScrollArea>
-        <SourceContentPanel src={entry.entries.url} />
+        <SourceContentPanel src={fullHref ?? "#"} />
       </div>
     </>
   )
