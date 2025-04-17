@@ -1,10 +1,11 @@
-import { formatEstimatedMins, formatTimeToSeconds, resolveUrlWithBase } from "@follow/utils/utils"
+import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry, useEntryReadHistory } from "~/store/entry"
@@ -24,23 +25,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   const feed = useFeedById(entry?.feedId)
   const inbox = useInboxById(entry?.inboxId)
   const entryHistory = useEntryReadHistory(entryId)
-
-  const populatedFullHref = useMemo(() => {
-    if (inbox) return entry?.entries.authorUrl
-    const href = entry?.entries.url
-    if (!href) return "#"
-
-    if (href.startsWith("http")) {
-      const domain = new URL(href).hostname
-      if (domain === "localhost") return "#"
-
-      return href
-    }
-    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
-    if (href.startsWith("/") && feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
-    return href
-  }, [entry?.entries.authorUrl, entry?.entries.url, feed?.siteUrl, feed?.type, inbox])
-
+  const populatedFullHref = useFeedSafeUrl(entryId)
   const translation = useEntryTranslation({ entry, extraFields: ["title"] })
 
   const dateFormat = useUISettingKey("dateFormat")

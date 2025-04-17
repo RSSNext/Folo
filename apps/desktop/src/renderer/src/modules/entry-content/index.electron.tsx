@@ -4,7 +4,7 @@ import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
-import { cn, resolveUrlWithBase } from "@follow/utils/utils"
+import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
@@ -15,6 +15,7 @@ import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { Queries } from "~/queries"
 import { useEntryTranslation } from "~/store/ai/hook"
@@ -83,6 +84,8 @@ export const EntryContent: Component<EntryContentProps> = ({
   const contentLineHeight = useUISettingKey("contentLineHeight")
   const contentFontSize = useUISettingKey("contentFontSize")
 
+  const safeUrl = useFeedSafeUrl(entryId)
+
   const stableRenderStyle = useMemo(() => {
     const css = {} as React.CSSProperties
     if (readerFontFamily) {
@@ -117,22 +120,6 @@ export const EntryContent: Component<EntryContentProps> = ({
   const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
   const isInPeekModal = useInPeekModal()
-
-  const fullHref = useMemo(() => {
-    if (inbox) return entry?.entries.authorUrl
-    const href = entry?.entries.url
-    if (!href) return "#"
-
-    if (href.startsWith("http")) {
-      const domain = new URL(href).hostname
-      if (domain === "localhost") return "#"
-
-      return href
-    }
-    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
-    if (feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
-    return href
-  }, [entry?.entries.authorUrl, entry?.entries.url, feed?.type, inbox])
 
   if (!entry) return null
 
@@ -243,7 +230,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             </article>
           </div>
         </ScrollArea.ScrollArea>
-        <SourceContentPanel src={fullHref ?? "#"} />
+        <SourceContentPanel src={safeUrl ?? "#"} />
       </div>
     </>
   )

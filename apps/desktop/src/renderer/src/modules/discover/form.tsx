@@ -13,7 +13,6 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { getBackgroundGradient } from "@follow/utils/color"
-import { resolveUrlWithBase } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
@@ -21,7 +20,7 @@ import { m } from "framer-motion"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent, FC } from "react"
-import { memo, useCallback, useMemo, useState } from "react"
+import { memo, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -31,9 +30,9 @@ import { Media } from "~/components/ui/media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
-import { useFeedById } from "~/store/feed"
 
 import { FollowSummary } from "../feed/feed-summary"
 import { FeedForm } from "./feed-form"
@@ -489,27 +488,11 @@ const FeedCardMediaThumbnail: FC<{
 const SearchResultContent: FC<{
   entry: NonUndefined<DiscoverSearchData[number]["entries"]>[number]
 }> = ({ entry }) => {
-  const feed = useFeedById(entry.feedId)
-
-  const href = useMemo(() => {
-    const href = entry.url
-    if (!href) return "#"
-
-    if (href.startsWith("http")) {
-      const domain = new URL(href).hostname
-      if (domain === "localhost") return "#"
-
-      return href
-    }
-    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
-    if (feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
-    return href
-  }, [entry.url, feed?.siteUrl, feed?.type])
-
+  const safeUrl = useFeedSafeUrl(entry.id)
   return (
     <a
       key={entry.id}
-      href={href}
+      href={safeUrl ?? "#"}
       target="_blank"
       className="group relative flex flex-col overflow-hidden rounded-lg bg-zinc-50/50 shadow-zinc-100 transition-all duration-200 hover:-translate-y-px hover:shadow-md dark:bg-zinc-800/50 dark:shadow-neutral-700/50"
       rel="noreferrer"
