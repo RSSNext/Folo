@@ -1,4 +1,3 @@
-import { cn } from "@follow/utils"
 import { useMemo } from "react"
 import type { TextProps } from "react-native"
 import { Text, View } from "react-native"
@@ -47,19 +46,14 @@ export const EntryTranslation = ({
 
   return (
     <View>
-      {nextTarget && (
-        <>
-          <Text {...props} className={className}>
-            {nextTarget}
-          </Text>
-          <Text {...props} className={cn("my-2", className)}>
-            ⇋
-          </Text>
-        </>
-      )}
       <Text {...props} className={className}>
         {nextSource}
       </Text>
+      {nextTarget && (
+        <Text {...props} className={className}>
+          {nextTarget}
+        </Text>
+      )}
     </View>
   )
 }

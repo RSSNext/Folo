@@ -27,7 +27,6 @@ export const EntryTitle = ({ title, entryId }: { title: string; entryId: string 
         className="text-label px-4 text-4xl font-bold leading-snug"
         source={title}
         target={translation?.title}
-        inline
       />
     </View>
   )
