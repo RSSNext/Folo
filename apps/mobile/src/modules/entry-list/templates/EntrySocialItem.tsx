@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
+import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo } from "react"
 import { Pressable, Text, View } from "react-native"
 
@@ -118,6 +119,17 @@ export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
                       : undefined
                 const fullWidth = index === media.length - 1 && media.length % 2 === 1
                 if (!imageUrl) return null
+                if (mediaItem.type === "video") {
+                  return (
+                    <View key={`${entryId}-${mediaItem.url}`} className="w-full">
+                      <ViewPlayer
+                        source={mediaItem.url}
+                        height={mediaItem.height}
+                        width={mediaItem.width}
+                      />
+                    </View>
+                  )
+                }
                 return (
                   <Pressable
                     key={`${entryId}-${imageUrl}`}
@@ -148,5 +160,29 @@ export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
     </EntryItemContextMenu>
   )
 })
+
+function ViewPlayer({
+  source,
+  width,
+  height,
+}: {
+  source: string
+  width?: number
+  height?: number
+}) {
+  const player = useVideoPlayer(source)
+  return (
+    <VideoView
+      style={{
+        width: "100%",
+        aspectRatio: width && height ? width / height : 1,
+      }}
+      contentFit="cover"
+      player={player}
+      allowsFullscreen
+      allowsPictureInPicture
+    />
+  )
+}
 
 EntrySocialItem.displayName = "EntrySocialItem"
