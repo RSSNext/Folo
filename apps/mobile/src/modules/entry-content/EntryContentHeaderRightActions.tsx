@@ -11,10 +11,10 @@ import type { MenuItemIconProps } from "zeego/lib/typescript/menu"
 import { getGeneralSettings, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { ActionBarItem } from "@/src/components/ui/action-bar/ActionBarItem"
 import { DropdownMenu } from "@/src/components/ui/context-menu"
+import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
-import { Magic2CuteReIcon } from "@/src/icons/magic_2_cute_re"
 import { More1CuteReIcon } from "@/src/icons/more_1_cute_re"
-import { Share3CuteReIcon } from "@/src/icons/share_3_cute_re"
+import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
@@ -111,7 +111,10 @@ const HeaderRightActionsImpl = ({
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()
-      await summarySyncService.generateSummary(entryId)
+      await summarySyncService.generateSummary(
+        entryId,
+        showReadability ? "readabilityContent" : "content",
+      )
       hideGlowEffect()
     }
 
@@ -127,6 +130,7 @@ const HeaderRightActionsImpl = ({
       entryId,
       language: getGeneralSettings().actionLanguage as SupportedLanguages,
       withContent: true,
+      target: showReadability ? "readabilityContent" : "content",
     })
     setShowTranslation((prev) => !prev)
   }
@@ -173,12 +177,12 @@ const HeaderRightActionsImpl = ({
       onPress: toggleReadability,
       active: showReadability,
       isCheckbox: true,
-      inMenu: true,
+      // inMenu: true,
     },
     !showAISummarySetting && {
       key: "GenerateSummary",
       title: "Generate Summary",
-      icon: <Magic2CuteReIcon />,
+      icon: <AiCuteReIcon />,
       iconIOS: { name: "sparkles" },
       onPress: toggleAISummary,
       active: showAISummary,
@@ -198,7 +202,7 @@ const HeaderRightActionsImpl = ({
     {
       key: "Share",
       title: t("operation.share"),
-      icon: <Share3CuteReIcon />,
+      icon: <ShareForwardCuteReIcon />,
       iconIOS: { name: "square.and.arrow.up" },
       onPress: handleShare,
     },

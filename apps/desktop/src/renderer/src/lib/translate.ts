@@ -4,6 +4,7 @@ import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { franc } from "franc-min"
 
+import { getReadabilityContent } from "~/atoms/readability"
 import type { FlatEntryModel } from "~/store/entry"
 
 import { apiClient } from "./api-fetch"
@@ -57,6 +58,16 @@ export async function translate({
   }
 
   fields = fields.filter((field) => {
+    if (language && field === "readabilityContent") {
+      const content = getReadabilityContent()[entry.entries.id]?.content
+      if (!content) return false
+      const isLanguageMatch = checkLanguage({
+        content,
+        language,
+      })
+      return !isLanguageMatch
+    }
+
     if (language && entry.entries[field]) {
       const isLanguageMatch = checkLanguage({
         content: entry.entries[field],

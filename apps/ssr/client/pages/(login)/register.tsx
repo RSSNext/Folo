@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import { tracker } from "@follow/tracker"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef } from "react"

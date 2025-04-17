@@ -1,9 +1,8 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
-import { memo, useCallback, useEffect, useMemo } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import ReAnimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
+import { memo, useCallback, useMemo } from "react"
+import { StyleSheet, Text, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
@@ -14,13 +13,12 @@ import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
-import { gentleSpringPreset } from "@/src/constants/spring"
 import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
 import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { getAttachmentState, player } from "@/src/lib/player"
 import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
-import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
+import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useEntry } from "@/src/store/entry/hooks"
 import { getInboxFrom } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
@@ -53,32 +51,10 @@ export const EntryNormalItem = memo(
       }
     }, [entryId, entry, navigation, view])
 
-    const unreadZoomSharedValue = useSharedValue(entry?.read ? 0 : 1)
-
-    const unreadIndicatorStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            scale: unreadZoomSharedValue.value,
-          },
-        ],
-      }
-    })
-
-    useEffect(() => {
-      if (!entry) return
-
-      if (entry.read) {
-        unreadZoomSharedValue.value = withSpring(0, gentleSpringPreset)
-      } else {
-        unreadZoomSharedValue.value = withSpring(1, gentleSpringPreset)
-      }
-    }, [entry, entry?.read, unreadZoomSharedValue])
-
     const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
     const coverImage = entry?.media?.[0]
-    const image = coverImage?.url
+    const image = coverImage?.url || (view === FeedViewType.Audios ? feed?.image : null)
     const blurhash = coverImage?.blurhash
 
     const audio = entry?.attachments?.find((attachment) =>
@@ -105,14 +81,14 @@ export const EntryNormalItem = memo(
           )}
           onPress={handlePress}
         >
-          <ReAnimated.View
-            className={cn(
-              "bg-red absolute left-2 size-2 rounded-full",
-              view === FeedViewType.Notifications ? "top-[35]" : "top-[43]",
-            )}
-            style={unreadIndicatorStyle}
-          />
-
+          {!entry.read && (
+            <View
+              className={cn(
+                "bg-red absolute left-2 size-2 rounded-full",
+                view === FeedViewType.Notifications ? "top-[35]" : "top-[43]",
+              )}
+            />
+          )}
           <View className="flex-1 space-y-2 self-start">
             <View className="mb-1 flex-row items-center gap-1.5 pr-2">
               <FeedIcon fallback feed={feed} size={view === FeedViewType.Notifications ? 14 : 16} />
@@ -172,7 +148,9 @@ export const EntryNormalItem = memo(
                 ))}
 
               {audio && (
-                <TouchableOpacity
+                <ItemPressable
+                  touchHighlight={false}
+                  itemStyle={ItemPressableStyle.UnStyled}
                   className="absolute inset-0 flex items-center justify-center"
                   onPress={() => {
                     if (isLoading) return
@@ -198,7 +176,7 @@ export const EntryNormalItem = memo(
                       <PlayCuteFiIcon color="white" width={24} height={24} />
                     )}
                   </View>
-                </TouchableOpacity>
+                </ItemPressable>
               )}
             </View>
           )}

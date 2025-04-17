@@ -43,6 +43,11 @@ updates:
         versions: [">=35.0.0"]
       - dependency-name: react-native-sheet-transitions
         versions: [">0.1.2"]
+
+      # filter not work
+      - dependency-name: unplugin-ast
+        versions: ["0.14.5"]
+
     open-pull-requests-limit: 100
     groups:
       minor-and-patch:

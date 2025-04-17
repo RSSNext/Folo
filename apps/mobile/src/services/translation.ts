@@ -21,6 +21,7 @@ class TranslationServiceStatic implements Hydratable, Resetable {
         title: data.title,
         description: data.description,
         content: data.content,
+        readabilityContent: data.readabilityContent,
       }).filter(([_, value]) => !!value),
     )
 

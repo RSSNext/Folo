@@ -7,7 +7,7 @@ import { AnimatedCommandButton } from "./base"
 export const CopyButton: Component<{
   value: string
   style?: React.CSSProperties
-  variant?: "solid" | "outline"
+  variant?: "solid" | "outline" | "ghost"
 }> = ({ value, className, style, variant = "solid" }) => {
   const copiedTimerRef = useRef<any>()
   const handleCopy = useCallback(() => {

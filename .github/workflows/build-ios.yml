@@ -2,12 +2,8 @@ name: Build iOS
 
 on:
   push:
-    branches: [dev]
-    paths:
-      - "apps/mobile/**"
-      - "pnpm-lock.yaml"
-  pull_request:
-    branches: [dev]
+    branches:
+      - "**"
     paths:
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
@@ -22,7 +18,7 @@ on:
         description: "Build profile"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
   cancel-in-progress: true
 
 jobs:
@@ -74,9 +70,8 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build iOS IPA
-        run: |
-          cd apps/mobile
-          eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
         env:
           CI: true
 
@@ -95,6 +90,5 @@ jobs:
 
       - name: Submit to App Store
         if: github.event.inputs.profile == 'production'
-        run: |
-          cd apps/mobile
-          eas submit --platform ios --path build.ipa --non-interactive
+        working-directory: apps/mobile
+        run: eas submit --platform ios --path build.ipa --non-interactive

@@ -12,11 +12,15 @@ export const useSummaryStatus = (entryId: string) => {
   return status
 }
 
-export const usePrefetchSummary = (entryId: string, options?: { enabled?: boolean }) => {
+export const usePrefetchSummary = (
+  entryId: string,
+  target: "content" | "readabilityContent",
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
-    queryKey: ["summary", entryId],
+    queryKey: ["summary", entryId, target],
     queryFn: () => {
-      return summarySyncService.generateSummary(entryId)
+      return summarySyncService.generateSummary(entryId, target)
     },
     enabled: options?.enabled,
     staleTime: 1000 * 60 * 60 * 24,

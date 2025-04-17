@@ -12,7 +12,8 @@
       "TabScreenModule",
       "TabBarPortalModule",
       "EnhancePagerViewModule",
-      "EnhancePageViewModule"
+      "EnhancePageViewModule",
+      "ItemPressableModule"
     ]
   },
   "android": {

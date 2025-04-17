@@ -6,6 +6,7 @@ import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeN
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
 import {
   ActionGroup,
+  AddFeedButton,
   FeedShareActionButton,
   HomeLeftAction,
   MarkAllAsReadActionButton,
@@ -49,6 +50,7 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
           if (isSubscriptions)
             return () => (
               <ActionGroup>
+                <AddFeedButton />
                 <MarkAllAsReadActionButton />
               </ActionGroup>
             )

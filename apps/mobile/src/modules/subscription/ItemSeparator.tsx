@@ -8,7 +8,7 @@ const el = (
     style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
   >
     <View
-      className="bg-opaque-separator/50 ml-12 h-px flex-1"
+      className="bg-opaque-separator dark:bg-opaque-separator/70 ml-12 h-px flex-1"
       collapsable={false}
       style={{ transform: [{ scaleY: 0.5 }] }}
     />
@@ -24,7 +24,7 @@ const el2 = (
     style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
   >
     <View
-      className="bg-opaque-separator/50 ml-16 h-px flex-1"
+      className="bg-opaque-separator dark:bg-opaque-separator/70 ml-16 h-px flex-1"
       collapsable={false}
       style={{ transform: [{ scaleY: 0.5 }] }}
     />

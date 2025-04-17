@@ -2,7 +2,7 @@
 import type { AppType } from "@follow/shared"
 import { FetchError, ofetch } from "ofetch"
 
-import { InvitationScreen } from "../screens/(modal)/invitation"
+import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
 import { userActions } from "../store/user/store"
 import { getCookie } from "./auth"
 import { getUserAgent } from "./native/user-agent"

@@ -1,3 +1,5 @@
+import "./side-effects"
+
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
@@ -15,7 +17,7 @@ import { updateProxy } from "./lib/proxy"
 import { handleUrlRouting } from "./lib/router"
 import { store } from "./lib/store"
 import { registerAppTray } from "./lib/tray"
-import { setBetterAuthSessionCookie, updateNotificationsToken } from "./lib/user"
+import { updateNotificationsToken } from "./lib/user"
 import { logger } from "./logger"
 import { registerUpdater } from "./updater"
 import { cleanupOldRender } from "./updater/hot-updater"
@@ -39,6 +41,9 @@ const buildSafeHeaders = createBuildSafeHeaders(env.VITE_WEB_URL, [
   env.VITE_OPENPANEL_API_URL || "",
   IMAGE_PROXY_URL,
   env.VITE_API_URL,
+  // Fix unexpected CORS error when modify the origin header to request domain in the preflight request
+  // Learn more https://github.com/RSSNext/Folo/issues/3312
+  "https://readwise.io",
 ])
 
 function bootstrap() {
@@ -109,66 +114,9 @@ function bootstrap() {
 
     mainWindow = createMainWindow()
 
-    // restore cookies
-    const cookies = store.get("cookies")
-    if (cookies) {
-      Promise.all(
-        cookies.map((cookie) => {
-          const setCookieDetails: Electron.CookiesSetDetails = {
-            url: apiURL,
-            name: cookie.name,
-            value: cookie.value,
-            domain: cookie.domain,
-            path: cookie.path,
-            secure: cookie.secure,
-            httpOnly: cookie.httpOnly,
-            expirationDate: cookie.expirationDate,
-            sameSite: cookie.sameSite as "unspecified" | "no_restriction" | "lax" | "strict",
-          }
-
-          return mainWindow.webContents.session.cookies.set(setCookieDetails)
-        }),
-      )
-    }
-
     updateProxy()
     registerUpdater()
     registerAppTray()
-
-    // handle session cookie when sign in with email in electron
-    session.defaultSession.webRequest.onHeadersReceived(
-      {
-        urls: [
-          `${apiURL}/better-auth/sign-in/email`,
-          `${apiURL}/better-auth/sign-in/email?*`,
-          `${apiURL}/better-auth/two-factor/verify-totp`,
-          `${apiURL}/better-auth/two-factor/verify-totp?*`,
-        ],
-      },
-      (detail, callback) => {
-        const { responseHeaders } = detail
-        if (responseHeaders?.["set-cookie"]) {
-          const cookies = responseHeaders["set-cookie"] as string[]
-          cookies.forEach((cookie) => {
-            const cookieObj = parse(cookie, { decode: (value) => value })
-            Object.keys(cookieObj).forEach((name) => {
-              const value = cookieObj[name]
-              mainWindow.webContents.session.cookies.set({
-                url: apiURL,
-                name,
-                value,
-                secure: true,
-                httpOnly: true,
-                domain: new URL(apiURL).hostname,
-                sameSite: "no_restriction",
-              })
-            })
-          })
-        }
-
-        callback({ cancel: false, responseHeaders })
-      },
-    )
 
     app.on("open-url", (_, url) => {
       if (mainWindow && !mainWindow.isDestroyed()) {
@@ -215,9 +163,6 @@ function bootstrap() {
     })
     await session.defaultSession.cookies.flushStore()
 
-    const cookies = await session.defaultSession.cookies.get({})
-    store.set("cookies", cookies)
-
     await cleanupOldRender()
   })
 
@@ -227,29 +172,36 @@ function bootstrap() {
     const urlObj = new URL(url)
 
     if (urlObj.hostname === "auth" || urlObj.pathname === "//auth") {
-      const ck = urlObj.searchParams.get("ck")
-      const userId = urlObj.searchParams.get("userId")
+      const token = urlObj.searchParams.get("token")
 
-      if (ck && apiURL) {
-        setBetterAuthSessionCookie(ck)
-        const cookie = parse(atob(ck), { decode: (value) => value })
-        Object.keys(cookie).forEach((name) => {
-          const value = cookie[name]
-          mainWindow.webContents.session.cookies.set({
-            url: apiURL,
-            name,
-            value,
-            secure: true,
-            httpOnly: true,
-            domain: new URL(apiURL).hostname,
-            sameSite: "no_restriction",
+      if (token) {
+        await callWindowExpose(mainWindow).applyOneTimeToken(token)
+      } else {
+        // compatible with old version of ssr, should be removed in 0.4.4
+        const ck = urlObj.searchParams.get("ck")
+        const userId = urlObj.searchParams.get("userId")
+
+        if (ck && apiURL) {
+          const cookie = parse(atob(ck), { decode: (value) => value })
+          Object.keys(cookie).forEach(async (name) => {
+            const value = cookie[name]
+            await mainWindow.webContents.session.cookies.set({
+              url: apiURL,
+              name,
+              value,
+              secure: true,
+              httpOnly: true,
+              domain: new URL(apiURL).hostname,
+              sameSite: "no_restriction",
+              expirationDate: new Date().setDate(new Date().getDate() + 30),
+            })
           })
-        })
 
-        userId && (await callWindowExpose(mainWindow).clearIfLoginOtherAccount(userId))
-        mainWindow.reload()
+          userId && (await callWindowExpose(mainWindow).clearIfLoginOtherAccount(userId))
+          mainWindow.reload()
 
-        updateNotificationsToken()
+          updateNotificationsToken()
+        }
       }
     } else {
       handleUrlRouting(url)

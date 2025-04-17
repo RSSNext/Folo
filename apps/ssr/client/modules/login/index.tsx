@@ -1,5 +1,5 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
-import { createSession, loginHandler, signOut, twoFactor } from "@client/lib/auth"
+import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -18,7 +18,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { authProvidersConfig } from "@follow/constants"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -53,11 +53,10 @@ export function Login() {
   }, [isCredentialProvider, provider, status])
 
   const getCallbackUrl = useCallback(async () => {
-    const { data } = await createSession()
+    const { data } = await oneTimeToken.generate()
     if (!data) return null
     return {
-      url: `${DEEPLINK_SCHEME}auth?ck=${data.ck}&userId=${data.userId}`,
-      userId: data.userId,
+      url: `${DEEPLINK_SCHEME}auth?token=${data.token}`,
     }
   }, [])
 

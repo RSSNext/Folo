@@ -66,21 +66,16 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   }, [codeThemeLight, codeThemeDark, mode])
 
   const entryInWebview = React.useMemo(() => {
-    if (showReadability) {
-      return {
-        ...entry,
-        content: entry.readabilityContent,
-      }
-    }
+    const entryContent = showReadability ? entry.readabilityContent : entry.content
+    const translatedContent = showReadability
+      ? entry.translation?.readabilityContent
+      : entry.translation?.content
+    const content = showTranslation ? translatedContent || entryContent : entryContent
 
-    if (showTranslation) {
-      return {
-        ...entry,
-        content: entry.translation?.content || entry.content,
-      }
+    return {
+      ...entry,
+      content,
     }
-
-    return entry
   }, [entry, showReadability, showTranslation])
 
   useEffect(() => {

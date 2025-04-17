@@ -3,7 +3,6 @@ import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { signOut } from "~/lib/auth"
 import { isInMAS } from "~/lib/utils"
 import { AccountManagement } from "~/modules/profile/account-management"
 import { EmailManagement } from "~/modules/profile/email-management"
@@ -12,6 +11,7 @@ import { TwoFactor } from "~/modules/profile/two-factor"
 import { UpdatePasswordForm } from "~/modules/profile/update-password-form"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
+import { signOut } from "~/queries/auth"
 
 const iconName = "i-mgc-user-setting-cute-re"
 const priority = 1090
@@ -51,13 +51,7 @@ export function Component() {
                           Are you sure you want to delete your account? This action is irreversible
                           and may take up to two days to take effect.
                         </p>
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            await signOut()
-                            window.location.reload()
-                          }}
-                        >
+                        <Button variant="outline" onClick={signOut}>
                           Delete
                         </Button>
                       </div>

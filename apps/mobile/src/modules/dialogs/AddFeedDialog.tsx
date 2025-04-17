@@ -6,7 +6,7 @@ import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
-import { FollowScreen } from "@/src/screens/(modal)/follow"
+import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { accentColor } from "@/src/theme/colors"
 
 export const AddFeedDialog: DialogComponent<{

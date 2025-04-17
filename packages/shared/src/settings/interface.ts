@@ -106,4 +106,6 @@ export interface IntegrationSettings {
   enableCubox: boolean
   cuboxToken: string
   enableCuboxAutoMemo: boolean
+
+  saveSummaryAsDescription: boolean
 }

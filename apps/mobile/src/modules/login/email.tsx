@@ -11,9 +11,9 @@ import { signIn } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { getTokenHeaders } from "@/src/lib/token"
-import { TwoFactorAuthScreen } from "@/src/screens/(modal)/2fa"
-import { ForgetPasswordScreen } from "@/src/screens/(modal)/forget-password"
-import { SignUpScreen } from "@/src/screens/(modal)/sign-up"
+import { ForgetPasswordScreen } from "@/src/screens/(modal)/ForgetPasswordScreen"
+import { SignUpScreen } from "@/src/screens/(modal)/SignUpScreen"
+import { TwoFactorAuthScreen } from "@/src/screens/(modal)/TwoFactorAuthScreen"
 import { accentColor } from "@/src/theme/colors"
 
 const formSchema = z.object({

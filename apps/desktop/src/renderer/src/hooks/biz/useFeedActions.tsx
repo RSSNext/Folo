@@ -359,6 +359,16 @@ export const useFeedActions = ({
           navigator.clipboard.writeText(feedId)
         },
       },
+      {
+        type: "text" as const,
+        label: t("sidebar.feed_actions.copy_feed_badge"),
+        disabled: isEntryList,
+        click: () => {
+          navigator.clipboard.writeText(
+            `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
+          )
+        },
+      },
     ]
 
     return items.filter(

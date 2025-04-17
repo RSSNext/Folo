@@ -22,12 +22,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import { useSignOut } from "~/hooks/biz/useSignOut"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
-import { useSession } from "~/queries/auth"
+import { signOut, useSession } from "~/queries/auth"
 import { useWallet } from "~/queries/wallet"
 
 import { useActivationModal } from "../activation"
@@ -47,7 +46,6 @@ export type ProfileButtonProps = LoginProps & {
 export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const { status, session } = useSession()
   const { user } = session || {}
-  const signOut = useSignOut()
   const settingModalPresent = useSettingModal()
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const presentAchievement = useAchievementModal()

@@ -27,7 +27,7 @@ import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
-import { InvitationScreen } from "@/src/screens/(modal)/invitation"
+import { InvitationScreen } from "@/src/screens/(modal)/InvitationScreen"
 import { useRole, useWhoami } from "@/src/store/user/hooks"
 
 import { AboutScreen } from "./routes/About"

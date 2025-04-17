@@ -220,7 +220,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
               window.open(UrlBuilder.profile(user.data.handle ?? user.data.id))
             }}
           >
-            <i className="i-mgc-share-3-cute-re" />
+            <i className="i-mgc-share-forward-cute-re" />
           </ActionButton>
           <ActionButton tooltip={t("user_profile.close")} onClick={modal.dismiss}>
             <i className="i-mgc-close-cute-re" />

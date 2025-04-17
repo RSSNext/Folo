@@ -64,7 +64,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
         prev.filter((tabScreen) => tabScreen.tabScreenIndex !== tabScreenIndex),
       )
     }
-  }, [setTabScreens, props, tabScreenIndex, children, mergedProps])
+  }, [mergedProps, setTabScreens, tabScreenIndex])
 
   const currentSelectedIndex = useAtomValue(currentIndexAtom)
 
@@ -95,15 +95,15 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   )
   const shouldLoadReact = mergedProps.lazy ? isSelected || isLoadedBefore : true
 
+  const render = __DEV__ ? isSelected : true
   return (
     <TabScreenNative style={StyleSheet.absoluteFill}>
       <TabScreenContext.Provider value={ctxValue}>
-        {shouldLoadReact && (
+        {shouldLoadReact && render && (
           <WrappedScreenItem screenId={`tab-screen-${tabScreenIndex}`}>
             {children}
             <ScreenNameRegister />
             <LifecycleEvents isSelected={isSelected} />
-            {/* <CalculateTabBarOpacity /> */}
           </WrappedScreenItem>
         )}
       </TabScreenContext.Provider>

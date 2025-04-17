@@ -94,7 +94,7 @@ export const DailyReportTitle = ({
       className="flex items-center justify-center gap-2 text-base"
       layoutId={`daily-report-title-${title}`}
     >
-      <i className="i-mgc-magic-2-cute-re" />
+      <i className="i-mgc-ai-cute-re" />
       <div className="font-medium">{t("ai_daily.title", { title })}</div>
       <Tooltip>
         <TooltipTrigger asChild>

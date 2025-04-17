@@ -108,7 +108,8 @@ class Morph {
         title: item.entries.title,
         url: item.entries.url,
         content: null,
-        readabilityContent: null,
+        readabilityContent:
+          "readabilityContent" in item.entries ? item.entries.readabilityContent : null,
         description: item.entries.description,
         guid: item.entries.guid,
         author: item.entries.author,
@@ -163,7 +164,8 @@ class Morph {
       title: data.entries.title,
       url: data.entries.url,
       content: data.entries.content,
-      readabilityContent: null,
+      readabilityContent:
+        "readabilityContent" in data.entries ? data.entries.readabilityContent : null,
       description: data.entries.description,
       guid: data.entries.guid,
       author: data.entries.author,

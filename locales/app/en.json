@@ -312,6 +312,7 @@
   "sidebar.feed_actions.claim": "Claim",
   "sidebar.feed_actions.claim_feed": "Claim Feed",
   "sidebar.feed_actions.copy_email_address": "Copy Email Address",
+  "sidebar.feed_actions.copy_feed_badge": "Copy Feed Badge",
   "sidebar.feed_actions.copy_feed_id": "Copy Feed ID",
   "sidebar.feed_actions.copy_feed_url": "Copy Feed URL",
   "sidebar.feed_actions.copy_list_id": "Copy List ID",

@@ -41,8 +41,9 @@ export const readerRoute = {
       if (!window) return
 
       // It's ok to set voice every time, because it will be cached by msedge-tts
+      // Don't know why webm is not working, using mp3 instead
       await tts
-        .setMetadata(voice, OUTPUT_FORMAT.WEBM_24KHZ_16BIT_MONO_OPUS)
+        .setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
         .catch((error: unknown) => {
           console.error("Failed to set voice", error)
           if (error instanceof Error) {
@@ -55,12 +56,17 @@ export const readerRoute = {
           })
         })
 
-      const filePath = path.join(app.getPath("userData"), `${id}.webm`)
-      if (fs.existsSync(filePath)) {
+      const dirPath = path.join(app.getPath("userData"), "Cache", "tts", id)
+      const possibleFilePathList = ["mp3", "webm"].map((ext) => {
+        return path.join(dirPath, `audio.${ext}`)
+      })
+      const filePath = possibleFilePathList.find((p) => fs.existsSync(p))
+      if (filePath) {
         return filePath
       } else {
-        await tts.toFile(filePath, text)
-        return filePath
+        fs.mkdirSync(dirPath, { recursive: true })
+        const { audioFilePath } = await tts.toFile(dirPath, text)
+        return audioFilePath
       }
     }),
 

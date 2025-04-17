@@ -13,6 +13,7 @@ type SummaryModel = Omit<SummarySchema, "createdAt">
 interface SummaryData {
   lang?: string
   summary: string
+  readabilitySummary: string | null
   lastAccessed: number
 }
 
@@ -41,7 +42,9 @@ class SummaryActions {
       immerSet((state) => {
         state.data[summary.entryId] = {
           lang: summary.language ?? undefined,
-          summary: summary.summary,
+          summary: summary.summary || state.data[summary.entryId]?.summary || "",
+          readabilitySummary:
+            summary.readabilitySummary || state.data[summary.entryId]?.readabilitySummary || null,
           lastAccessed: now,
         }
       })
@@ -96,7 +99,7 @@ export const summaryActions = new SummaryActions()
 class SummarySyncService {
   private pendingPromises: Record<string, Promise<string>> = {}
 
-  async generateSummary(entryId: string) {
+  async generateSummary(entryId: string, target: "content" | "readabilityContent") {
     const entry = getEntry(entryId)
     if (!entry) return
 
@@ -116,6 +119,7 @@ class SummarySyncService {
         query: {
           id: entryId,
           language: actionLanguage as SupportedLanguages,
+          target,
         },
       })
       .then((summary) => {
@@ -127,7 +131,11 @@ class SummarySyncService {
 
           state.data[entryId] = {
             lang: actionLanguage,
-            summary: summary.data,
+            summary: target === "content" ? summary.data : state.data[entryId]?.summary || "",
+            readabilitySummary:
+              target === "readabilityContent"
+                ? summary.data
+                : state.data[entryId]?.readabilitySummary || null,
             lastAccessed: Date.now(),
           }
           state.generatingStatus[entryId] = SummaryGeneratingStatus.Success
@@ -153,8 +161,9 @@ class SummarySyncService {
       summaryActions.upsertMany([
         {
           entryId,
-          summary,
+          summary: target === "content" ? summary : "",
           language: actionLanguage ?? null,
+          readabilitySummary: target === "readabilityContent" ? summary : null,
         },
       ])
     }

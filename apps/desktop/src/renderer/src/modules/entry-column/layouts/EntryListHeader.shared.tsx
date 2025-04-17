@@ -42,7 +42,7 @@ export const DailyReportButton: FC = () => {
       }}
       tooltip={t("entry_list_header.daily_report")}
     >
-      <i className="i-mgc-magic-2-cute-re" />
+      <i className="i-mgc-ai-cute-re" />
     </ActionButton>
   )
 }

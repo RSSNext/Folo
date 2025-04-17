@@ -4,6 +4,7 @@ import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated
 import { RootSiblingParent } from "react-native-root-siblings"
 import { useSheet } from "react-native-sheet-transitions"
 
+import { useBackHandler } from "./hooks/useBackHandler"
 import { useIntentHandler } from "./hooks/useIntentHandler"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 import { usePrefetchActions } from "./store/action/hooks"
@@ -15,6 +16,7 @@ export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()
   useOnboarding()
   useUnreadCountBadge()
+  useBackHandler()
 
   // prefetch actions to detect if the user has any actions contains notifications
   usePrefetchActions()

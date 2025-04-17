@@ -4,8 +4,10 @@ import PKG from "@pkg"
 import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
+import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
+import { getMainWindow } from "~/window"
+
 import { logger } from "../logger"
-import { getBetterAuthSessionCookie, getUser } from "./user"
 
 const abortController = new AbortController()
 export const apiFetch = ofetch.create({
@@ -14,12 +16,6 @@ export const apiFetch = ofetch.create({
   signal: abortController.signal,
   retry: false,
   onRequest({ request }) {
-    const betterAuthSessionCookie = getBetterAuthSessionCookie()
-    if (!betterAuthSessionCookie) {
-      abortController.abort()
-      return
-    }
-
     logger.info(`API Request: ${request.toString()}`)
   },
   onRequestError(context) {
@@ -31,14 +27,21 @@ export const apiFetch = ofetch.create({
 
 export const apiClient = hc<AppType>("", {
   fetch: async (input, options = {}) => apiFetch(input.toString(), options),
-  headers() {
-    const betterAuthSessionCookie = getBetterAuthSessionCookie()
-    const user = getUser()
+  async headers() {
+    const window = getMainWindow()
+    const cookies = await window?.webContents.session.cookies.get({
+      domain: new URL(env.VITE_API_URL).hostname,
+    })
+    const sessionCookie = cookies?.find((cookie) =>
+      cookie.name.includes(BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN),
+    )
+    const headerCookie = sessionCookie ? `${sessionCookie.name}=${sessionCookie.value}` : ""
+
     return {
       "X-App-Version": PKG.version,
       "X-App-Dev": process.env.NODE_ENV === "development" ? "1" : "0",
-      Cookie: betterAuthSessionCookie ? atob(betterAuthSessionCookie) : "",
-      "User-Agent": `Folo/${PKG.version}${user?.id ? ` uid: ${user.id}` : ""}`,
+      Cookie: headerCookie,
+      "User-Agent": `Folo/${PKG.version}`,
     }
   },
 })

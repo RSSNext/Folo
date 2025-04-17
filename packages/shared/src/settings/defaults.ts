@@ -90,7 +90,7 @@ export const defaultUISettings: UISettings = {
 
 export const defaultIntegrationSettings: IntegrationSettings = {
   // eagle
-  enableEagle: true,
+  enableEagle: false,
 
   // readwise
   enableReadwise: false,
@@ -120,6 +120,8 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   enableCubox: false,
   cuboxToken: "",
   enableCuboxAutoMemo: false,
+
+  saveSummaryAsDescription: false,
 }
 
 export const defaultSettings = {

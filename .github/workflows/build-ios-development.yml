@@ -2,14 +2,8 @@ name: Build iOS for development
 
 on:
   push:
-    branches: [dev]
-    paths:
-      - "apps/mobile/web-app/**"
-      - "apps/mobile/native/**"
-      - "apps/mobile/package.json"
-      - "apps/mobile/app.config.ts"
-  pull_request:
-    branches: [dev]
+    branches:
+      - "**"
     paths:
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
@@ -69,9 +63,8 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build iOS IPA
-        run: |
-          cd apps/mobile
-          eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile development --non-interactive --local --output=./build.ipa
         env:
           CI: true
 
@@ -116,9 +109,8 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build iOS IPA
-        run: |
-          cd apps/mobile
-          eas build --platform ios --profile ios-simulator --non-interactive --local --output=./build-simulator.ipa
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile ios-simulator --non-interactive --local --output=./build-simulator.ipa
         env:
           CI: true
 

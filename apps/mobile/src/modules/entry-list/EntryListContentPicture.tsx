@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { forwardRef } from "react"
+import { forwardRef, useImperativeHandle } from "react"
 import { View } from "react-native"
 
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
@@ -10,7 +10,7 @@ import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
-import { useOnViewableItemsChanged } from "./hooks"
+import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
 
@@ -20,14 +20,17 @@ export const EntryListContentPicture = forwardRef<
     MasonryFlashListProps<string>,
     "data" | "renderItem"
   >
->(({ entryIds, active, ...rest }, ref) => {
+>(({ entryIds, active, ...rest }, forwardRef) => {
+  const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
+  useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching } =
     useFetchEntriesControls()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
+    onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation(active ? viewableItems.map((item) => item.key) : [])
+  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
 
   return (
     <TimelineSelectorMasonryList
@@ -42,6 +45,7 @@ export const EntryListContentPicture = forwardRef<
       onScroll={onScroll}
       onEndReached={fetchNextPage}
       numColumns={2}
+      style={hackStyle}
       estimatedItemSize={100}
       ListFooterComponent={
         hasNextPage ? (

@@ -9,7 +9,7 @@ import { useColor } from "react-native-uikit-colors"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { LoginScreen } from "@/src/screens/(modal)/login"
+import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { useImageColors, usePrefetchImageColors } from "@/src/store/image/hooks"
 import { useUser } from "@/src/store/user/hooks"
 
@@ -64,7 +64,7 @@ export const UserHeaderBanner = ({
     if (!gradientColors) return {}
     return {
       transform: [{ scale: scaleValue }],
-      height: 250 + (scrollY.value < 0 ? -scrollY.value : 0),
+      height: 250,
     }
   })
 
@@ -118,8 +118,8 @@ export const UserHeaderBanner = ({
         )}
       </ReAnimated.View>
       <ReAnimated.View
-        className="bg-system-background overflow-hidden rounded-full"
         style={avatarStyles}
+        className="bg-system-background overflow-hidden rounded-full"
       >
         <UserAvatar
           image={user?.image}
