@@ -76,7 +76,7 @@
     "turbo": "2.5.0",
     "typescript": "5.8.3",
     "vite": "6.3.2",
-    "vite-bundle-analyzer": "0.18.1",
+    "vite-bundle-analyzer": "0.19.0",
     "vite-plugin-mkcert": "1.17.8",
     "vite-plugin-pwa": "1.0.0",
     "vite-tsconfig-paths": "5.1.4",
