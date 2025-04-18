@@ -37,7 +37,7 @@
     "electron-squirrel-startup": "1.0.1",
     "electron-store": "10.0.1",
     "electron-updater": "6.6.2",
-    "es-toolkit": "1.34.1",
+    "es-toolkit": "1.35.0",
     "fast-folder-size": "2.4.0",
     "font-list": "1.5.1",
     "i18next": "24.2.3",
@@ -58,6 +58,6 @@
     "@types/node": "22.14.1",
     "electron": "34.5.1",
     "electron-devtools-installer": "4.0.0",
-    "hono": "4.7.6"
+    "hono": "4.7.7"
   }
 }
