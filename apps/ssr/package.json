@@ -21,7 +21,7 @@
     "click-to-react-component": "1.1.2",
     "dayjs": "1.11.13",
     "fastify": "5.3.0",
-    "i18next": "24.2.3",
+    "i18next": "25.0.0",
     "jotai": "2.12.2",
     "kose-font": "1.0.0",
     "linkedom": "0.18.9",

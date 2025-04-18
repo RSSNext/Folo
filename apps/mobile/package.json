@@ -84,7 +84,7 @@
     "expo-web-browser": "14.0.2",
     "franc-min": "6.2.0",
     "hono": "4.7.6",
-    "i18next": "24.2.3",
+    "i18next": "25.0.0",
     "immer": "10.1.1",
     "jotai": "2.12.2",
     "lru-cache": "11.1.0",
