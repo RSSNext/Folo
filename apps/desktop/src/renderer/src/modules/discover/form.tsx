@@ -487,7 +487,7 @@ const FeedCardMediaThumbnail: FC<{
 
 const SearchResultContent: FC<{
   entry: NonUndefined<DiscoverSearchData[number]["entries"]>[number]
-}> = ({ entry }) => {
+}> = memo(({ entry }) => {
   const safeUrl = useFeedSafeUrl(entry.id)
   return (
     <a
@@ -517,4 +517,4 @@ const SearchResultContent: FC<{
       </div>
     </a>
   )
-}
+})

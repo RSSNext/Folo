@@ -187,7 +187,9 @@ export const parseSafeUrl = (url: string) => {
   }
 }
 
-// TODO: Hope we can remove all the usages of this function one day
+/**
+ * @deprecated Remove it in the future but not now
+ */
 export const resolveUrlWithBase = (url: string, baseUrl: string) => {
   try {
     return new URL(url, baseUrl).href
