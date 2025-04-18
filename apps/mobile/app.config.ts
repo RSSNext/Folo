@@ -160,6 +160,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         enableBackgroundRemoteNotifications: true,
       },
     ],
+    [
+      // Fix status bar flash issue on Android
+      // Learn more: https://github.com/expo/expo/blob/main/packages/expo-status-bar/src/StatusBar.android.tsx#L21
+      "react-native-edge-to-edge",
+      {
+        android: {
+          parentTheme: "Default",
+          enforceNavigationBarContrast: false,
+        },
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

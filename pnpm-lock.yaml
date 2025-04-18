@@ -1006,6 +1006,9 @@ importers:
       react-native-color-matrix-image-filters:
         specifier: 7.0.2
         version: 7.0.2(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
+      react-native-edge-to-edge:
+        specifier: 1.6.0
+        version: 1.6.0(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
       react-native-gesture-handler:
         specifier: 2.25.0
         version: 2.25.0(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
@@ -13268,6 +13271,12 @@ packages:
         optional: true
       react-native-svg:
         optional: true
+
+  react-native-edge-to-edge@1.6.0:
+    resolution: {integrity: sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==}
+    peerDependencies:
+      react: 18.3.1
+      react-native: '*'
 
   react-native-gesture-handler@2.25.0:
     resolution: {integrity: sha512-NPjJi6mislXxvjxQPU9IYwBjb1Uejp8GvAbE1Lhh+xMIMEvmgAvVIp5cz1P+xAbV6uYcRRArm278+tEInGOqWg==}
@@ -30009,6 +30018,11 @@ snapshots:
       react-native-svg: 15.11.2(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1)
     transitivePeerDependencies:
       - supports-color
+
+  react-native-edge-to-edge@1.6.0(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-native: 0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5)
 
   react-native-gesture-handler@2.25.0(react-native@0.77.2(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.12)(bufferutil@4.0.9)(react@18.3.1)(utf-8-validate@6.0.5))(react@18.3.1):
     dependencies:
