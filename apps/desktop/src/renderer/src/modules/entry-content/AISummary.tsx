@@ -3,6 +3,7 @@ import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
 import { useShowAISummary } from "~/atoms/ai-summary"
+import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useAuthQuery } from "~/hooks/common"
@@ -12,12 +13,14 @@ import { useEntry } from "~/store/entry"
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
   const entry = useEntry(entryId)
+  const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const showAISummary = useShowAISummary(entry)
   const actionLanguage = useActionLanguage()
   const summary = useAuthQuery(
     Queries.ai.summary({
       entryId,
       language: actionLanguage,
+      target: isInReadabilitySuccess ? "readabilityContent" : "content",
     }),
     {
       enabled: showAISummary,
@@ -60,7 +63,7 @@ export function AISummary({ entryId }: { entryId: string }) {
           <div className="center relative">
             <i
               className={cn(
-                "i-mgc-magic-2-cute-re text-lg",
+                "i-mgc-ai-cute-re text-lg",
                 summary.isLoading
                   ? "text-purple-500/70 dark:text-purple-400/70"
                   : "text-purple-600 dark:text-purple-400",

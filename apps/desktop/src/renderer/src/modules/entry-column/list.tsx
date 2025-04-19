@@ -6,7 +6,7 @@ import { LRUCache } from "@follow/utils/lru-cache"
 import { clsx } from "@follow/utils/utils"
 import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
-import type { HTMLMotionProps } from "framer-motion"
+import type { HTMLMotionProps } from "motion/react"
 import type { FC, MutableRefObject, ReactNode } from "react"
 import {
   forwardRef,

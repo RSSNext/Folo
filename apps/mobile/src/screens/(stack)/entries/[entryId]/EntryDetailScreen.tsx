@@ -2,8 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue } from "jotai"
 import { useEffect, useMemo } from "react"
-import { Pressable, Text, View } from "react-native"
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
+import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
@@ -13,11 +12,14 @@ import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNav
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
+import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
+import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { CalendarTimeAddCuteReIcon } from "@/src/icons/calendar_time_add_cute_re"
 import { openLink } from "@/src/lib/native"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
+import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
@@ -32,7 +34,6 @@ export const EntryDetailScreen: NavigationControllerView<{
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
   usePrefetchEntryDetail(entryId)
-  usePrefetchEntryTranslation([entryId], true)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)
@@ -50,6 +51,8 @@ export const EntryDetailScreen: NavigationControllerView<{
       showAISummaryAtom: atom(entry?.settings?.summary || false),
       showAITranslationAtom: atom(!!entry?.settings?.translation || false),
       showReadabilityAtom: atom(entry?.settings?.readability || false),
+
+      titleHeightAtom: atom(0),
     }),
     [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
   )
@@ -65,30 +68,24 @@ export const EntryDetailScreen: NavigationControllerView<{
       <PortalProvider>
         <BottomTabBarHeightContext.Provider value={insets.bottom}>
           <SafeNavigationScrollView
+            Header={<EntryNavigationHeader entryId={entryId} />}
             automaticallyAdjustContentInsets={false}
             className="bg-system-background"
           >
-            <Pressable onPress={() => entry?.url && openLink(entry.url)} className="relative py-4">
-              {({ pressed }) => (
+            <ItemPressable
+              itemStyle={ItemPressableStyle.UnStyled}
+              onPress={() => entry?.url && openLink(entry.url)}
+              className="relative rounded-xl py-4"
+            >
+              {viewType === FeedViewType.SocialMedia ? (
+                <EntrySocialTitle entryId={entryId as string} />
+              ) : (
                 <>
-                  {pressed && (
-                    <Animated.View
-                      entering={FadeIn}
-                      exiting={FadeOut}
-                      className={"bg-system-fill absolute inset-x-1 inset-y-0 rounded-xl"}
-                    />
-                  )}
-                  {viewType === FeedViewType.SocialMedia ? (
-                    <EntrySocialTitle entryId={entryId as string} />
-                  ) : (
-                    <>
-                      <EntryTitle title={entry?.title || ""} entryId={entryId as string} />
-                      <EntryInfo entryId={entryId as string} />
-                    </>
-                  )}
+                  <EntryTitle title={entry?.title || ""} entryId={entryId as string} />
+                  <EntryInfo entryId={entryId as string} />
                 </>
               )}
-            </Pressable>
+            </ItemPressable>
             <EntryAISummary entryId={entryId as string} />
             {entryWithTranslation && (
               <View className="mt-3">
@@ -112,6 +109,11 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   const showReadability = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslation = useAtomValue(showAITranslationAtom)
+  usePrefetchEntryTranslation({
+    entryIds: [entry.id],
+    withContent: true,
+    target: showReadability ? "readabilityContent" : "content",
+  })
   return (
     <EntryContentWebView
       entry={entry}

@@ -33,11 +33,12 @@
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
   },
   "dependencies": {
+    "cookie-es": "2.0.0",
     "react-google-recaptcha": "3.1.0",
     "react-google-recaptcha-v3": "1.10.1"
   },
   "devDependencies": {
-    "@clack/prompts": "0.10.0",
+    "@clack/prompts": "0.10.1",
     "@electron-forge/cli": "7.8.0",
     "@electron-forge/maker-appx": "7.8.0",
     "@electron-forge/maker-dmg": "7.8.0",
@@ -58,50 +59,30 @@
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/react-google-recaptcha": "2.1.9",
-    "@vitejs/plugin-legacy": "6.0.2",
-    "@vitejs/plugin-react": "4.3.4",
+    "@vitejs/plugin-legacy": "6.1.0",
+    "@vitejs/plugin-react": "4.4.0",
     "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
     "cssnano": "7.0.6",
-    "dotenv": "16.4.7",
-    "drizzle-orm": "0.41.0",
-    "electron": "34.5.0",
+    "dotenv": "16.5.0",
+    "drizzle-orm": "0.42.0",
+    "electron": "35.1.5",
     "electron-devtools-installer": "4.0.0",
     "electron-packager-languages": "0.6.0",
     "electron-vite": "3.1.0",
     "fake-indexeddb": "6.0.0",
     "happy-dom": "17.4.4",
-    "hono": "4.7.5",
+    "hono": "4.7.6",
     "html-minifier-terser": "7.2.0",
     "js-yaml": "4.1.0",
-    "nbump": "2.0.7",
+    "nbump": "2.1.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tar": "7.4.3",
     "tsup": "8.4.0",
-    "unplugin-ast": "0.14.4",
+    "unplugin-ast": "0.14.6",
     "utf-8-validate": "6.0.5"
   },
   "productName": "Folo",
-  "mainHash": "274b8ef4d0671d642c1350e1e4463fce6d677f81f77f59a666d6aa83f5866a22",
-  "bump": {
-    "before": [
-      "git pull --rebase",
-      "tsx scripts/apply-changelog.ts ${NEW_VERSION}",
-      "git add changelog",
-      "tsx plugins/vite/generate-main-hash.ts",
-      "pnpm eslint --fix package.json",
-      "pnpm prettier --ignore-unknown --write package.json",
-      "git add package.json"
-    ],
-    "after": [
-      "gh pr create --title 'release(desktop): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head dev"
-    ],
-    "commit_message": "release(desktop): release v${NEW_VERSION}",
-    "tag": false,
-    "changelog": false,
-    "allowed_branches": [
-      "dev"
-    ]
-  }
+  "mainHash": "274b8ef4d0671d642c1350e1e4463fce6d677f81f77f59a666d6aa83f5866a22"
 }

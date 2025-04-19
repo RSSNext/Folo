@@ -23,12 +23,12 @@ const serverPlugins = [
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "customGetProviders" }>,
   },
   {
-    id: "customCreateSession",
-    $InferServerPlugin: {} as Extract<AuthPlugin, { id: "customCreateSession" }>,
-  },
-  {
     id: "getAccountInfo",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "getAccountInfo" }>,
+  },
+  {
+    id: "oneTimeToken",
+    $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
   },
   inferAdditionalFields({
     user: {
@@ -75,6 +75,7 @@ export const {
   getCookie,
   getProviders,
   linkSocial,
+  oneTimeToken,
   sendVerificationEmail,
   signIn,
   signOut,

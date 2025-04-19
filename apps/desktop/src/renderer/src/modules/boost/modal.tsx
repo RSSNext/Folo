@@ -1,7 +1,7 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { from } from "dnum"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import { useCallback, useState } from "react"
 
 import { softSpringPreset } from "~/components/ui/constants/spring"

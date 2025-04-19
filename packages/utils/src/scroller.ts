@@ -1,7 +1,7 @@
 // @see https://github.com/Innei/sprightly/blob/2444dcdb789ca585337a4d241095640a524231db/src/lib/scroller.ts
 
-import type { Spring } from "framer-motion"
-import { animateValue } from "framer-motion"
+import type { Spring } from "motion/react"
+import { animateValue } from "motion/react"
 
 const spring: Spring = {
   type: "spring",

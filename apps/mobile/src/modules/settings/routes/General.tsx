@@ -84,7 +84,7 @@ export const GeneralScreen: NavigationControllerView = () => {
   const expandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenInView = useGeneralSettingKey("renderMarkUnread")
-  const openLinksInApp = useGeneralSettingKey("openLinksInApp")
+  const openLinksInExternalApp = useGeneralSettingKey("openLinksInExternalApp")
 
   return (
     <SafeNavigationScrollView
@@ -213,12 +213,12 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label={t("general.content")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("general.open_links_in_app.label")}>
+        <GroupedInsetListCell label={t("general.open_links_in_external_app.label")}>
           <Switch
             size="sm"
-            value={openLinksInApp}
+            value={openLinksInExternalApp}
             onValueChange={(value) => {
-              setGeneralSetting("openLinksInApp", value)
+              setGeneralSetting("openLinksInExternalApp", value)
             }}
           />
         </GroupedInsetListCell>

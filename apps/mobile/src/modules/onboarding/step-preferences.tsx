@@ -11,7 +11,7 @@ import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
 import { Settings1CuteReIcon } from "@/src/icons/settings_1_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { SelectReadingModeScreen } from "@/src/screens/(modal)/onboarding/select-reading-mode"
+import { SelectReadingModeScreen } from "@/src/screens/(modal)/onboarding/SelectReadingModeScreen"
 import { accentColor } from "@/src/theme/colors"
 
 import { EditProfileScreen } from "../settings/routes/EditProfile"

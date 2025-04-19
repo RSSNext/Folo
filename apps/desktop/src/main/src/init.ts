@@ -28,7 +28,6 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
-  if (DEV) app.setPath("appData", path.join(app.getPath("appData"), "Follow (dev)"))
   initializeSentry()
 }
 export const initializeAppStage1 = () => {
@@ -153,8 +152,6 @@ const registerPushNotifications = async () => {
   const persistentIdsKey = "notifications-persistent-ids"
   const credentials = store.get(credentialsKey)
   const persistentIds = store.get(persistentIdsKey)
-
-  updateNotificationsToken()
 
   const instance = new PushReceiver({
     debug: true,

@@ -1,8 +1,8 @@
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
-import type { HTMLMotionProps, Variants } from "framer-motion"
-import { AnimatePresence, m } from "framer-motion"
+import type { HTMLMotionProps, Variants } from "motion/react"
+import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 import * as React from "react"
 import { cloneElement, useRef, useState } from "react"
@@ -44,7 +44,7 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
         "center pointer-events-auto flex text-xs",
         "rounded-md p-1.5 duration-200",
         variant === "solid" || variant === "ghost"
-          ? "border-accent/5 bg-accent/80 border text-white backdrop-blur"
+          ? "border-accent/5 bg-accent/80 text-accent border backdrop-blur"
           : "text-accent bg-slate-50/50 dark:bg-slate-900/50",
         variant === "ghost" && "bg-theme-item-active hover:bg-theme-item-hover",
         className,

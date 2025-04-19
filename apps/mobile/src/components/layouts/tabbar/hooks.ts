@@ -1,5 +1,5 @@
 import type { RefObject } from "react"
-import { useCallback, useContext, useEffect, useRef } from "react"
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react"
 import type { FlatList, ScrollView } from "react-native"
 import { findNodeHandle, Platform } from "react-native"
 
@@ -8,8 +8,9 @@ import {
   SetAttachNavigationScrollViewContext,
   useAttachNavigationScrollView,
 } from "@/src/lib/navigation/AttachNavigationScrollViewContext"
-import { useScreenIsAppeared } from "@/src/lib/navigation/bottom-tab/hooks"
+import { useScreenIsAppeared, useTabScreenIsFocused } from "@/src/lib/navigation/bottom-tab/hooks"
 
+import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackgroundContext"
 import { BottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
 
 export const useBottomTabBarHeight = () => {
@@ -62,8 +63,26 @@ export const useRegisterNavigationScrollView = <T = unknown>(active = true) => {
     if (!active) return
     if (!setAttachNavigationScrollViewRef) return
     if (!tabScreenIsFocused) return
+    if (
+      scrollViewRef.current &&
+      typeof scrollViewRef.current === "object" &&
+      "checkScrollToBottom" in scrollViewRef.current &&
+      typeof scrollViewRef.current.checkScrollToBottom === "function"
+    ) {
+      scrollViewRef.current.checkScrollToBottom()
+    }
 
     setAttachNavigationScrollViewRef(scrollViewRef as unknown as RefObject<ScrollView>)
   }, [setAttachNavigationScrollViewRef, scrollViewRef, active, tabScreenIsFocused])
   return scrollViewRef
+}
+
+export const useResetTabOpacityWhenFocused = () => {
+  const { opacity } = useContext(BottomTabBarBackgroundContext)
+  const tabScreenIsFocus = useTabScreenIsFocused()
+  useLayoutEffect(() => {
+    if (tabScreenIsFocus) {
+      opacity.value = 1
+    }
+  }, [tabScreenIsFocus, opacity])
 }

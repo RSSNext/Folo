@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { memo, useMemo } from "react"
 
 import { useSelectedFeed, useSelectedView } from "@/src/modules/screen/atoms"
-import { PagerList } from "@/src/modules/screen/PageList"
+import { PagerList } from "@/src/modules/screen/PagerList"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import {
   useEntryIdsByCategory,

@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils"
+import { EventBus } from "@follow/utils/src/event-bus"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import {
   createElement,
@@ -35,7 +36,6 @@ import {
   useScreenIsInSheetModal,
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
-import { useHorizontalScrolling } from "@/src/modules/screen/atoms"
 
 import { ThemedBlurView } from "../../common/ThemedBlurView"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -105,12 +105,11 @@ const useHideableBottom = (
     },
   )
 
-  const horizontalScrolling = useHorizontalScrolling()
   useEffect(() => {
-    if (horizontalScrolling) {
+    EventBus.subscribe("SELECT_TIMELINE", () => {
       largeHeaderHeight.value = withTiming(largeDefaultHeaderHeightRef.current)
-    }
-  }, [horizontalScrolling, largeHeaderHeight])
+    })
+  }, [largeHeaderHeight])
 
   const layoutHeightOnceRef = useRef(false)
   const onLayout = useCallback(
@@ -335,7 +334,7 @@ export const InternalNavigationHeader = ({
               {/* Only show loading indicator when headerTitle is not absolute */}
               {!headerTitleAbsolute && isLoading && (
                 <View
-                  className="absolute right-0"
+                  className="absolute right-0 z-10"
                   style={{ transform: [{ translateX: "100%" }, { scale: 0.74 }] }}
                 >
                   <PlatformActivityIndicator size="small" />

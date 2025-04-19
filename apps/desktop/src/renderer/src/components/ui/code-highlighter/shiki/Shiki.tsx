@@ -1,4 +1,3 @@
-import { useIsDark } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
@@ -11,11 +10,12 @@ import type {
   DynamicImportThemeRegistration,
 } from "shiki"
 
-import { useUISettingKey, useUISettingSelector } from "~/atoms/settings/ui"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { tipcClient } from "~/lib/client"
 
 import { CopyButton } from "../../button/CopyButton"
-import { getLanguageColor, getLanguageIcon } from "../constants"
+import { getLanguageIcon } from "../constants"
+import { useShikiDefaultTheme } from "./hooks"
 import { shiki, shikiTransformers } from "./shared"
 import styles from "./shiki.module.css"
 
@@ -72,10 +72,7 @@ export const ShikiHighLighter: FC<ShikiProps> = (props) => {
 
   const [loaded, setLoaded] = useState(false)
 
-  const isDark = useIsDark()
-  const codeThemeLight = useUISettingSelector((s) => overrideTheme || s.codeHighlightThemeLight)
-  const codeThemeDark = useUISettingSelector((s) => overrideTheme || s.codeHighlightThemeDark)
-  const codeTheme = isDark ? codeThemeDark : codeThemeLight
+  const codeTheme = useShikiDefaultTheme(overrideTheme)
 
   useIsomorphicLayoutEffect(() => {
     let isMounted = true
@@ -188,27 +185,22 @@ const ShikiCode: FC<
   return (
     <div
       className={cn(
-        "group relative my-4",
+        "my-4 border",
         styles["shiki-wrapper"],
         transparent ? styles["transparent"] : null,
         className,
       )}
     >
+      <div className="flex items-center justify-between border-b p-2">
+        {language !== "plaintext" && (
+          <span className="center flex gap-1 text-xs uppercase opacity-80 dark:text-white">
+            <span className="center [&_svg]:size-4">{getLanguageIcon(language)}</span>
+            <span>{language}</span>
+          </span>
+        )}
+        <CopyButton variant="outline" value={code} />
+      </div>
       <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
-      <CopyButton
-        variant="outline"
-        value={code}
-        style={{
-          color: getLanguageColor(language),
-        }}
-        className={"absolute right-2 top-2 opacity-0 duration-200 group-hover:opacity-100"}
-      />
-      {language !== "plaintext" && (
-        <span className="center absolute bottom-2 right-2 flex gap-1 text-xs uppercase opacity-80 dark:text-white">
-          <span className="center [&_svg]:size-4">{getLanguageIcon(language)}</span>
-          <span>{language}</span>
-        </span>
-      )}
     </div>
   )
 }

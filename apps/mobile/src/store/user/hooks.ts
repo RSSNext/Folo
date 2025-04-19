@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { apiClient } from "@/src/lib/api-fetch"
 import { kv } from "@/src/lib/kv"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { OnboardingScreen } from "@/src/screens/onboarding"
+import { OnboardingScreen } from "@/src/screens/OnboardingScreen"
 
 import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "./constants"
 import { userSyncService, useUserStore } from "./store"

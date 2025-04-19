@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils/utils"
-import type { Spring, Target } from "framer-motion"
-import { AnimatePresence, m } from "framer-motion"
+import type { Spring, Target } from "motion/react"
+import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { cloneElement, useEffect, useState } from "react"
 

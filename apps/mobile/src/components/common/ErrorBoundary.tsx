@@ -34,7 +34,7 @@ export const ErrorBoundary = ({
 const defaultFallbackRender = ({ error }: { error: Error }) => {
   return (
     <View className="flex-1 items-center justify-center">
-      <Text>{error.message}</Text>
+      <Text className="text-label">{error.message}</Text>
     </View>
   )
 }

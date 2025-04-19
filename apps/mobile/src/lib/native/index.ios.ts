@@ -13,8 +13,8 @@ interface NativeModule {
 }
 const nativeModule = requireNativeModule("Helper") as NativeModule
 export const openLink = (url: string, onDismiss?: () => void) => {
-  const { openLinksInApp } = getGeneralSettings()
-  if (!openLinksInApp) {
+  const { openLinksInExternalApp } = getGeneralSettings()
+  if (openLinksInExternalApp) {
     openURL(url)
     return
   }

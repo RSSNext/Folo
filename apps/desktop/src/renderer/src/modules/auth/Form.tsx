@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.js"
 import { Input } from "@follow/components/ui/input/Input.js"
+import type { LoginRuntime } from "@follow/shared/auth"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef } from "react"
@@ -18,8 +19,8 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import type { LoginRuntime } from "~/lib/auth"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
+import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
 
@@ -71,14 +72,14 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
                 }
               }}
               onSuccess={() => {
-                window.location.reload()
+                handleSessionChanges()
               }}
             />
           )
         },
       })
     } else {
-      window.location.reload()
+      handleSessionChanges()
     }
   }
 
@@ -188,7 +189,7 @@ function RegisterForm() {
       callbackURL: "/",
       fetchOptions: {
         onSuccess() {
-          window.location.reload()
+          handleSessionChanges()
         },
         onError(context) {
           toast.error(context.error.message)

@@ -12,9 +12,9 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
-import type { Variant } from "framer-motion"
-import { m, useAnimationControls } from "framer-motion"
 import type { Components } from "hast-util-to-jsx-runtime"
+import type { Variant } from "motion/react"
+import { m, useAnimationControls } from "motion/react"
 import type { FC } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -94,7 +94,7 @@ export const DailyReportTitle = ({
       className="flex items-center justify-center gap-2 text-base"
       layoutId={`daily-report-title-${title}`}
     >
-      <i className="i-mgc-magic-2-cute-re" />
+      <i className="i-mgc-ai-cute-re" />
       <div className="font-medium">{t("ai_daily.title", { title })}</div>
       <Tooltip>
         <TooltipTrigger asChild>

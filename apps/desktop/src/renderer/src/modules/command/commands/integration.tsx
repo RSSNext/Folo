@@ -16,10 +16,13 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { getReadabilityContent, getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
-import { useIntegrationSettingKey } from "~/atoms/settings/integration"
+import { getActionLanguage } from "~/atoms/settings/general"
+import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
 import { parseHtml } from "~/lib/parse-html"
+import { queryClient } from "~/lib/query-client"
+import { Queries } from "~/queries"
 import type { FlatEntryModel } from "~/store/entry"
 import { useEntryStore } from "~/store/entry"
 
@@ -464,29 +467,6 @@ const useRegisterCuboxCommands = () => {
   const enableCuboxAutoMemo = useIntegrationSettingKey("enableCuboxAutoMemo")
   const cuboxAvailable = enableCubox && !!cuboxToken
 
-  const buildUrlRequestBody = (entry: FlatEntryModel) => {
-    return {
-      type: "url",
-      content: entry.entries.url || "",
-      title: entry.entries.title || "",
-      description: entry.entries.description || "",
-      tags: [],
-      folder: "",
-    }
-  }
-
-  const buildMemoRequestBody = (entry: FlatEntryModel, selectedText: string) => {
-    return {
-      type: "memo",
-      content: selectedText,
-      title: entry.entries.title || "",
-      description: entry.entries.description || "",
-      tags: [],
-      folder: "",
-      source_url: entry.entries.url,
-    }
-  }
-
   useRegisterCommandEffect(
     !cuboxAvailable
       ? []
@@ -538,4 +518,43 @@ const useRegisterCuboxCommands = () => {
       deps: [cuboxAvailable, cuboxToken, enableCuboxAutoMemo],
     },
   )
+}
+
+const getDescription = (entry: FlatEntryModel) => {
+  const actionLanguage = getActionLanguage()
+  const { saveSummaryAsDescription } = getIntegrationSettings()
+
+  if (!saveSummaryAsDescription) {
+    return entry.entries.description || ""
+  }
+  const summary = queryClient
+    .getQueriesData({
+      queryKey: Queries.ai.summary({ entryId: entry.entries.id, language: actionLanguage }).key,
+    })
+    .at(0)
+    ?.at(1) as string | undefined
+  return summary || entry.entries.description || ""
+}
+
+const buildUrlRequestBody = (entry: FlatEntryModel) => {
+  return {
+    type: "url",
+    content: entry.entries.url || "",
+    title: entry.entries.title || "",
+    description: getDescription(entry),
+    tags: [],
+    folder: "",
+  }
+}
+
+const buildMemoRequestBody = (entry: FlatEntryModel, selectedText: string) => {
+  return {
+    type: "memo",
+    content: selectedText,
+    title: entry.entries.title || "",
+    description: getDescription(entry),
+    tags: [],
+    folder: "",
+    source_url: entry.entries.url,
+  }
 }

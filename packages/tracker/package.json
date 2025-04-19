@@ -4,6 +4,6 @@
   "private": true,
   "main": "./src/index.ts",
   "devDependencies": {
-    "@react-native-firebase/analytics": "21.13.0"
+    "@react-native-firebase/analytics": "21.14.0"
   }
 }

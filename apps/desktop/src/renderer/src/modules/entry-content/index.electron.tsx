@@ -2,14 +2,17 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
-import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 
-import { useEntryIsInReadability } from "~/atoms/readability"
+import {
+  useEntryIsInReadability,
+  useEntryIsInReadabilitySuccess,
+  useEntryReadabilityContent,
+} from "~/atoms/readability"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -35,7 +38,7 @@ import {
   ContainerToc,
   NoContent,
   ReadabilityAutoToggleEffect,
-  ReadabilityContent,
+  ReadabilityNotice,
   RenderError,
   TitleMetaHandler,
   ViewSourceContentAutoToggleEffect,
@@ -62,11 +65,13 @@ export const EntryContent: Component<EntryContentProps> = ({
       staleTime: 300_000,
     },
   )
+  const readabilityContent = useEntryReadabilityContent(entryId)
 
   const readerFontFamily = useUISettingKey("readerFontFamily")
   const view = useRouteParamsSelector((route) => route.view)
 
   const isInReadabilityMode = useEntryIsInReadability(entryId)
+  const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const scrollerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     scrollerRef.current?.scrollTo(0, 0)
@@ -114,14 +119,21 @@ export const EntryContent: Component<EntryContentProps> = ({
   )
   const customCSS = useUISettingKey("customCSS")
 
-  const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
+  const contentTranslated = useEntryTranslation({
+    entry,
+    extraFields: isReadabilitySuccess ? ["readabilityContent"] : ["content"],
+  })
 
   const isInPeekModal = useInPeekModal()
 
   if (!entry) return null
 
-  const entryContent = entry?.entries.content ?? data?.entries.content
-  const translatedContent = contentTranslated.data?.content
+  const entryContent = isInReadabilityMode
+    ? readabilityContent?.content
+    : (entry?.entries.content ?? data?.entries.content)
+  const translatedContent = isInReadabilityMode
+    ? contentTranslated.data?.readabilityContent
+    : contentTranslated.data?.content
   const content = translatedContent || entryContent
 
   const isInbox = !!inbox
@@ -166,34 +178,31 @@ export const EntryContent: Component<EntryContentProps> = ({
                   <TitleMetaHandler entryId={entry.entries.id} />
                   <AISummary entryId={entry.entries.id} />
                   <ErrorBoundary fallback={RenderError}>
-                    {!isInReadabilityMode ? (
-                      <ShadowDOM injectHostStyles={!isInbox}>
-                        {!!customCSS && (
-                          <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>
-                        )}
-                        <EntryContentHTMLRenderer
-                          view={view}
-                          feedId={feed?.id}
-                          entryId={entryId}
-                          mediaInfo={mediaInfo}
-                          noMedia={noMedia}
-                          accessory={contentAccessories}
-                          as="article"
-                          className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
-                          style={stableRenderStyle}
-                          renderInlineStyle={readerRenderInlineStyle}
-                        >
-                          {content}
-                        </EntryContentHTMLRenderer>
-                      </ShadowDOM>
-                    ) : (
-                      <ReadabilityContent entryId={entryId} feedId={feed.id} />
-                    )}
+                    <ReadabilityNotice entryId={entryId} />
+                    <ShadowDOM injectHostStyles={!isInbox}>
+                      {!!customCSS && (
+                        <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>
+                      )}
+                      <EntryContentHTMLRenderer
+                        view={view}
+                        feedId={feed?.id}
+                        entryId={entryId}
+                        mediaInfo={mediaInfo}
+                        noMedia={noMedia}
+                        accessory={contentAccessories}
+                        as="article"
+                        className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+                        style={stableRenderStyle}
+                        renderInlineStyle={readerRenderInlineStyle}
+                      >
+                        {content}
+                      </EntryContentHTMLRenderer>
+                    </ShadowDOM>
                   </ErrorBoundary>
                 </div>
               </WrappedElementProvider>
 
-              {entry.settings?.readability && IN_ELECTRON && (
+              {entry.settings?.readability && (
                 <ReadabilityAutoToggleEffect id={entry.entries.id} url={entry.entries.url ?? ""} />
               )}
               {entry.settings?.sourceContent && <ViewSourceContentAutoToggleEffect />}

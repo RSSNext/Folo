@@ -8,7 +8,7 @@ import { apiClient } from "@/src/lib/api-fetch"
 import { kv } from "@/src/lib/kv"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { requestNotificationPermission } from "@/src/lib/permission"
-import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]"
+import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { useHasNotificationActions } from "../action/hooks"
 import { useWhoami } from "../user/hooks"

@@ -2,9 +2,9 @@
 import { clearRequestTimeout, requestTimeout } from "@essentials/request-timeout"
 import { useWindowSize } from "@react-hook/window-size"
 import { isEqual, throttle } from "es-toolkit/compat"
-import { useForceUpdate } from "framer-motion"
 import type { ContainerPosition, MasonryProps, MasonryScrollerProps, Positioner } from "masonic"
 import { createResizeObserver, useMasonry, usePositioner, useScrollToIndex } from "masonic"
+import { useForceUpdate } from "motion/react"
 import * as React from "react"
 
 import { useScrollViewElement } from "../scroll-area/hooks.js"

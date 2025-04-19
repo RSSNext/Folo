@@ -184,16 +184,3 @@ export const useViewDefinition = (view?: FeedViewType) => {
   const viewDef = useMemo(() => views.find((v) => v.view === view), [view])
   return viewDef
 }
-
-// horizontal scrolling state
-
-const horizontalScrollingAtom = atom<boolean>(false)
-
-export const setHorizontalScrolling = (value: boolean) =>
-  jotaiStore.set(horizontalScrollingAtom, value)
-
-export const getHorizontalScrolling = () => jotaiStore.get(horizontalScrollingAtom)
-
-export const useHorizontalScrolling = () => {
-  return useAtomValue(horizontalScrollingAtom)
-}

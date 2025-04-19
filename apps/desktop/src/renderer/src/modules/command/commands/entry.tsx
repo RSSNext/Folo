@@ -1,21 +1,25 @@
 import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { cn, getOS } from "@follow/utils/utils"
+import { cn } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
 import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
+import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
   getShowSourceContent,
   toggleShowSourceContent,
   useSourceContentModal,
 } from "~/atoms/source-content"
 import { useUserRole } from "~/atoms/user"
+import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
+import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
@@ -99,6 +103,8 @@ export const useRegisterEntryCommands = () => {
 
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
+
+  const voice = useGeneralSettingKey("voice")
 
   useRegisterFollowCommand([
     {
@@ -259,12 +265,7 @@ export const useRegisterEntryCommands = () => {
     {
       id: COMMAND_ID.entry.share,
       label: t("entry_actions.share"),
-      icon:
-        getOS() === "macOS" ? (
-          <i className="i-mgc-share-3-cute-re" />
-        ) : (
-          <i className="i-mgc-share-forward-cute-re" />
-        ),
+      icon: <i className="i-mgc-share-forward-cute-re" />,
       run: ({ entryId }) => {
         const entry = useEntryStore.getState().flatMapEntries[entryId]
         if (!entry || !entry.entries.url) {
@@ -313,6 +314,43 @@ export const useRegisterEntryCommands = () => {
         openGalleryModal(entryId)
       },
     },
+    {
+      id: COMMAND_ID.entry.tts,
+      label: t("entry_content.header.play_tts"),
+      icon: <i className="i-mgc-voice-cute-re" />,
+      run: async ({ entryId, entryContent }) => {
+        if (getAudioPlayerAtomValue().entryId === entryId) {
+          AudioPlayer.togglePlayAndPause()
+        } else {
+          const filePath = await tipcClient?.tts({
+            id: entryId,
+            text: parseHtml(entryContent).toText(),
+            voice,
+          })
+          if (filePath) {
+            AudioPlayer.mount({
+              type: "audio",
+              entryId,
+              src: `file://${filePath}`,
+              currentTime: 0,
+            })
+          }
+        }
+      },
+    },
+    {
+      id: COMMAND_ID.entry.readability,
+      label: t("entry_content.header.readability"),
+      icon: (props) => (
+        <i className={props?.isActive ? "i-mgc-docment-cute-fi" : "i-mgc-docment-cute-re"} />
+      ),
+      run: async ({ entryId, entryUrl }) => {
+        return toggleEntryReadability({
+          id: entryId,
+          url: entryUrl,
+        })
+      },
+    },
   ])
 
   useRegisterFollowCommand(
@@ -320,7 +358,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.toggleAISummary,
         label: t("entry_actions.toggle_ai_summary"),
-        icon: <i className="i-mgc-magic-2-cute-re" />,
+        icon: <i className="i-mgc-ai-cute-re" />,
         run: () => {
           if (role === UserRole.Trial) {
             presentActivationModal()
@@ -332,7 +370,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.toggleAITranslation,
         label: t("entry_actions.toggle_ai_translation"),
-        icon: <i className="i-mgc-translate-2-cute-re" />,
+        icon: <i className="i-mgc-translate-2-ai-cute-re" />,
         run: () => {
           if (role === UserRole.Trial) {
             presentActivationModal()

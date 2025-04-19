@@ -9,7 +9,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { FollowScreen } from "@/src/screens/(modal)/follow"
+import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { useSubscriptionByListId } from "@/src/store/subscription/hooks"
 
 import { useSearchPageContext } from "../ctx"

@@ -13,15 +13,15 @@ public class EnhancePagerViewModule: Module {
 
         View(EnhancePagerView.self) {
             OnViewDidUpdateProps { view in
-                view.initizlize()
+                view.initialize()
             }
 
             Prop("page") { (view: EnhancePagerView, index: Int) in
                 view.page = index
             }
 
-            Prop("pageGap") { (view: EnhancePagerView, gap: Int) in
-                view.pageGap = gap
+            Prop("initialPageIndex") { (view: EnhancePagerView, index: Int) in
+                view.initialPageIndex = index
             }
 
             Prop("transitionStyle") { (view: EnhancePagerView, style: TransitionStyle?) in
@@ -98,20 +98,23 @@ private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
         }
     }
 
+    var initialPageIndex: Int = 0
+
     var pageGap = 20
     var transitionStyle: TransitionStyle = .scroll
     var panGestureRecognizer: UIGestureRecognizer?
-    func initizlize() {
+    func initialize() {
         let panGestureRecognizer = UIPanGestureRecognizer()
         panGestureRecognizer.delegate = self
         self.panGestureRecognizer = panGestureRecognizer
         addGestureRecognizer(panGestureRecognizer)
 
-        pageController = EnhancePagerController(pageViews: pageViews, initialPageIndex: page,
-                                                transitionStyle: transitionStyle.toUIPageViewControllerTransitionStyle(),
-                                                options: [
-                                                    .interPageSpacing: pageGap,
-                                                ])
+        pageController = EnhancePagerController(
+            pageViews: pageViews, initialPageIndex: initialPageIndex,
+            transitionStyle: transitionStyle.toUIPageViewControllerTransitionStyle(),
+            options: [
+                .interPageSpacing: pageGap
+            ])
         guard let pageController = pageController else { return }
         addSubview(pageController.view)
         pageController.view.snp.makeConstraints { make in
@@ -149,12 +152,16 @@ private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
         }
     #endif
 
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
         guard let pageController = pageController else { return false }
         let currentIndex = pageController.getCurrentPageIndex()
         guard let scrollView = pageController.scrollView else { return false }
         if gestureRecognizer == panGestureRecognizer,
-           NSStringFromClass(type(of: otherGestureRecognizer)) == "RNSPanGestureRecognizer" {
+            NSStringFromClass(type(of: otherGestureRecognizer)) == "RNSPanGestureRecognizer"
+        {
             if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
                 let velocity = panGestureRecognizer.velocity(in: self)
                 let isLTR = true

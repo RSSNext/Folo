@@ -20,7 +20,8 @@ export const useRegisterCommandEffect = (
   const { t } = useTranslation()
   useEffect(() => {
     if (!Array.isArray(options)) {
-      return registerCommand(options)
+      const unsubscribe = registerCommand(options)
+      return () => unsubscribe()
     }
 
     const unsubscribes = options.map((option) => registerCommand(option))

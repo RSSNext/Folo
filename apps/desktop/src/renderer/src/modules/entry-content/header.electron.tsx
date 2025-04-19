@@ -1,12 +1,11 @@
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useEntry } from "~/store/entry/hooks"
 
-import { ElectronAdditionActions } from "./actions/electron-actions"
 import { EntryHeaderActions } from "./actions/header-actions"
 import { MoreActions } from "./actions/more-actions"
 import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
@@ -71,9 +70,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
         </div>
 
         <div className="relative flex shrink-0 items-center justify-end gap-2">
-          {!compact && <ElectronAdditionActions view={view} entry={entry} key={entry.entries.id} />}
-
-          <EntryHeaderActions entryId={entry.entries.id} view={view} />
+          <EntryHeaderActions entryId={entry.entries.id} view={view} compact={compact} />
           <MoreActions entryId={entry.entries.id} />
         </div>
       </div>

@@ -3,7 +3,7 @@ import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
 import { memo, useCallback, useContext, useMemo, useRef } from "react"
-import type { NativeSyntheticEvent } from "react-native"
+import type { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
 import { StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ScreenStackHeaderConfigProps, StackPresentationTypes } from "react-native-screens"
@@ -33,6 +33,7 @@ export const WrappedScreenItem: FC<
 
     headerConfig?: ScreenStackHeaderConfigProps
     screenOptions?: NavigationControllerViewExtraProps
+    style?: StyleProp<ViewStyle>
   } & ScreenOptionsContextType
 > = memo(
   ({
@@ -41,6 +42,7 @@ export const WrappedScreenItem: FC<
     stackPresentation,
     headerConfig,
     screenOptions: screenOptionsProp,
+    style,
     ...rest
   }) => {
     const navigation = useNavigation()
@@ -143,6 +145,7 @@ export const WrappedScreenItem: FC<
             style={[
               StyleSheet.absoluteFill,
               { backgroundColor: screenOptionsProp?.transparent ? undefined : backgroundColor },
+              style,
             ]}
             {...rest}
             {...mergedScreenOptions}

@@ -19,6 +19,7 @@ import { useAuthQuery } from "~/hooks/common"
 import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
 import { useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { AddModalContent } from "~/modules/rsshub/add-modal-content"
+import { ConfirmDeleteModalContent } from "~/modules/rsshub/delete-modal-content"
 import { SetModalContent } from "~/modules/rsshub/set-modal-content"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { Queries } from "~/queries"
@@ -145,6 +146,10 @@ function List({ data }: { data?: RSSHubModel[] }) {
             return a.price - b.price || loadA - loadB
           })
           .map((instance) => {
+            const instanceUserCountExceptOwner = instance.userCount
+              ? instance.userCount - (instance.ownerUserId === me?.id ? 1 : 0)
+              : 0
+
             return (
               <TableRow key={instance.id}>
                 <TableCell className="text-nowrap">
@@ -224,6 +229,22 @@ function List({ data }: { data?: RSSHubModel[] }) {
                         }
                       >
                         {t("rsshub.table.edit")}
+                      </Button>
+                    )}
+                    {me?.id === instance.ownerUserId && (
+                      <Button
+                        variant="outline"
+                        disabled={!!instanceUserCountExceptOwner}
+                        onClick={() =>
+                          present({
+                            title: t("rsshub.table.delete.label"),
+                            content: ({ dismiss }) => (
+                              <ConfirmDeleteModalContent dismiss={dismiss} id={instance.id} />
+                            ),
+                          })
+                        }
+                      >
+                        {t("rsshub.table.delete.label")}
                       </Button>
                     )}
                   </div>

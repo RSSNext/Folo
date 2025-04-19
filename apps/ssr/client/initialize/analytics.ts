@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import { setOpenPanelTracker } from "@follow/tracker"
 
 import { op } from "./op"

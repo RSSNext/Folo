@@ -1,6 +1,6 @@
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
-import { m, useMotionTemplate, useMotionValue } from "framer-motion"
+import { m, useMotionTemplate, useMotionValue } from "motion/react"
 import { useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 

@@ -109,12 +109,11 @@ export const summariesTable = sqliteTable(
   {
     entryId: text("entry_id").notNull().primaryKey(),
     summary: text("summary").notNull(),
+    readabilitySummary: text("readability_summary"),
     createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
     language: text("language"),
   },
-  (table) => ({
-    unq: uniqueIndex("unq").on(table.entryId, table.language),
-  }),
+  (t) => [uniqueIndex("unq").on(t.entryId, t.language)],
 )
 
 export const translationsTable = sqliteTable(
@@ -125,6 +124,7 @@ export const translationsTable = sqliteTable(
     title: t.text("title").notNull(),
     description: t.text("description").notNull(),
     content: t.text("content").notNull(),
+    readabilityContent: t.text("readability_content"),
     createdAt: t
       .text("created_at")
       .notNull()

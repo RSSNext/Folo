@@ -7,12 +7,13 @@ import type { Options } from "react-hotkeys-hook"
 import { useHotkeys } from "react-hotkeys-hook"
 
 import { KbdCombined } from "../kbd/Kbd"
-import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from "../tooltip"
+import { Tooltip, TooltipContent, TooltipPortal, TooltipRoot, TooltipTrigger } from "../tooltip"
 
 export interface ActionButtonProps {
   icon?: React.ReactNode | ((props: { isActive?: boolean; className: string }) => React.ReactNode)
   tooltip?: React.ReactNode
   tooltipSide?: "top" | "bottom"
+  tooltipDefaultOpen?: boolean
   active?: boolean
   disabled?: boolean
   clickableDisabled?: boolean
@@ -20,6 +21,7 @@ export interface ActionButtonProps {
   disableTriggerShortcut?: boolean
   enableHoverableContent?: boolean
   size?: "sm" | "base" | "lg"
+  id?: string
 
   /**
    * @description only trigger shortcut when focus with in `<Focusable />`
@@ -43,10 +45,11 @@ export const ActionButton = React.forwardRef<
   (
     {
       icon,
-
+      id,
       tooltip,
       className,
       tooltipSide,
+      tooltipDefaultOpen,
       children,
       active,
       shortcut,
@@ -126,19 +129,24 @@ export const ActionButton = React.forwardRef<
         )}
         {tooltip ? (
           <Tooltip disableHoverableContent={!enableHoverableContent}>
-            <TooltipTrigger aria-label={typeof tooltip === "string" ? tooltip : undefined} asChild>
-              {Trigger}
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent className="flex items-center gap-1" side={tooltipSide ?? "bottom"}>
-                {tooltip}
-                {!!finalShortcut && (
-                  <div className="ml-1">
-                    <KbdCombined className="text-foreground/80">{finalShortcut}</KbdCombined>
-                  </div>
-                )}
-              </TooltipContent>
-            </TooltipPortal>
+            <TooltipRoot defaultOpen={tooltipDefaultOpen} key={id}>
+              <TooltipTrigger
+                aria-label={typeof tooltip === "string" ? tooltip : undefined}
+                asChild
+              >
+                {Trigger}
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent className="flex items-center gap-1" side={tooltipSide ?? "bottom"}>
+                  {tooltip}
+                  {!!finalShortcut && (
+                    <div className="ml-1">
+                      <KbdCombined className="text-foreground/80">{finalShortcut}</KbdCombined>
+                    </div>
+                  )}
+                </TooltipContent>
+              </TooltipPortal>
+            </TooltipRoot>
           </Tooltip>
         ) : (
           Trigger

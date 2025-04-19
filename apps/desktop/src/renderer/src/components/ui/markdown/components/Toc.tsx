@@ -1,7 +1,7 @@
 import { useViewport } from "@follow/components/hooks/useViewport.js"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import { memo, useContext, useEffect, useRef, useState } from "react"
 
 import { useRealInWideMode } from "~/atoms/settings/ui"

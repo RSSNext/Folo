@@ -1,5 +1,5 @@
-import type { MotionProps, TargetAndTransition } from "framer-motion"
-import { m as M } from "framer-motion"
+import type { MotionProps, TargetAndTransition } from "motion/react"
+import { m as M } from "motion/react"
 import { createElement, forwardRef } from "react"
 
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"

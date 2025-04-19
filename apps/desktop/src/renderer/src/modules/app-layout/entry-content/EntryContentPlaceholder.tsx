@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, LayoutGroup, m } from "framer-motion"
 import { atom, useAtomValue, useSetAtom } from "jotai"
+import { AnimatePresence, LayoutGroup, m } from "motion/react"
 import * as React from "react"
 
 import { CollapseGroup } from "~/components/ui/collapse"

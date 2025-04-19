@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "motion/react"
 import type { FC, ReactNode } from "react"
 import { useId, useMemo } from "react"
 

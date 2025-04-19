@@ -255,20 +255,22 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
               },
             ]}
           >
-            {action.component ? (
-              <action.component rule={rule} />
-            ) : action.onNavigate ? (
-              <GroupedInsetListActionCell
-                label={t(action.label)}
-                onPress={() => action.onNavigate?.(navigation, rule.index)}
-              />
-            ) : (
-              <GroupedInsetListCell
-                label={t(action.label)}
-                leftClassName="flex-none"
-                rightClassName="flex-1 flex-row justify-end"
-              />
-            )}
+            <View className="flex-row items-center gap-2">
+              {action.onNavigate ? (
+                <GroupedInsetListActionCell
+                  label={t(action.label)}
+                  icon={action.icon}
+                  onPress={() => action.onNavigate?.(navigation, rule.index)}
+                />
+              ) : (
+                <GroupedInsetListCell
+                  label={t(action.label)}
+                  icon={action.icon}
+                  leftClassName="flex-none"
+                  rightClassName="flex-1 flex-row justify-end"
+                />
+              )}
+            </View>
           </SwipeableItem>
         ))}
         {notEnabledActions.length > 0 && (
@@ -288,6 +290,11 @@ const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
                     }
                   }}
                 >
+                  <DropdownMenu.ItemIcon
+                    ios={{
+                      name: action.icon,
+                    }}
+                  />
                   <DropdownMenu.ItemTitle>{t(action.label)}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
               ))}

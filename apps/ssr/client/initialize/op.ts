@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import { OpenPanel } from "@openpanel/web"
 
 export const op = new OpenPanel({

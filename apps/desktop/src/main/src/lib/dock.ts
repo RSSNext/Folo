@@ -11,3 +11,12 @@ export const setDockCount = (input: number) => {
     app.setBadgeCount(input)
   }
 }
+
+export const getDockCount = () => {
+  if (isWindows) return null
+  if (app.dock) {
+    return app.dock.getBadge()
+  } else {
+    return app.getBadgeCount()
+  }
+}

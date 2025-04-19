@@ -1,4 +1,4 @@
-import { useReducedMotion } from "framer-motion"
+import { useReducedMotion } from "motion/react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 

@@ -12,7 +12,7 @@ import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
-import { RsshubFormScreen } from "@/src/screens/(modal)/rsshub-form"
+import { RsshubFormScreen } from "@/src/screens/(modal)/RsshubFormScreen"
 
 export const RecommendationListItem: FC<{
   data: RSSHubRouteDeclaration

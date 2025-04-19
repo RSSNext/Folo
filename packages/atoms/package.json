@@ -19,6 +19,6 @@
     "@follow/hooks": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "jotai": "2.12.2"
+    "jotai": "2.12.3"
   }
 }

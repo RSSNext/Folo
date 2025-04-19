@@ -2,7 +2,7 @@ import { useInputComposition } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import clsx from "clsx"
-import { useMotionValue } from "framer-motion"
+import { useMotionValue } from "motion/react"
 import type { DetailedHTMLProps, PropsWithChildren, TextareaHTMLAttributes } from "react"
 import { forwardRef, useCallback, useState } from "react"
 

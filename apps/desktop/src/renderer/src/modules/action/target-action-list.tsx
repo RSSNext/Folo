@@ -23,6 +23,7 @@ import { actionActions, useActionByIndex } from "~/store/action"
 
 type Action = {
   title: string
+  icon: React.ReactNode
   config?: () => React.ReactNode
   configInline?: boolean
   enabled: boolean
@@ -73,6 +74,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
     () => [
       {
         title: t("actions.action_card.generate_summary"),
+        icon: <i className="i-mgc-ai-cute-re" />,
         enabled: !!summary,
         onInit: (data) => {
           data.result.summary = true
@@ -83,6 +85,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.translate_into"),
+        icon: <i className="i-mgc-translate-2-ai-cute-re" />,
         enabled: !!translation,
         onInit: (data) => {
           data.result.translation = true
@@ -93,6 +96,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.enable_readability"),
+        icon: <i className="i-mgc-docment-cute-re" />,
         enabled: !!readability,
         onInit: (data) => {
           data.result.readability = true
@@ -103,6 +107,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.source_content"),
+        icon: <i className="i-mgc-web-cute-re" />,
         enabled: !!sourceContent,
         onInit: (data) => {
           data.result.sourceContent = true
@@ -113,6 +118,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.new_entry_notification"),
+        icon: <i className="i-mgc-bell-ringing-cute-re" />,
         enabled: !!newEntryNotification,
         onInit: (data) => {
           data.result.newEntryNotification = true
@@ -123,6 +129,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.silence"),
+        icon: <i className="i-mgc-volume-mute-cute-re" />,
         enabled: !!silence,
         onInit: (data) => {
           data.result.silence = true
@@ -133,6 +140,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.block"),
+        icon: <i className="i-mgc-delete-2-cute-re" />,
         enabled: !!block,
         onInit: (data) => {
           data.result.block = true
@@ -143,6 +151,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.rewrite_rules"),
+        icon: <i className="i-mgc-quill-pen-cute-re" />,
         enabled: !!rewriteRules,
         onInit: (data) => {
           data.result.rewriteRules = [
@@ -226,6 +235,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.webhooks"),
+        icon: <i className="i-mgc-webhook-cute-re" />,
         enabled: !!webhooks,
         onInit: (data) => {
           data.result.webhooks = [""]
@@ -324,7 +334,10 @@ export const TargetActionList = ({ index }: { index: number }) => {
                     })
                   }}
                 >
-                  {action.title}
+                  <div className="flex items-center gap-2">
+                    {action.icon}
+                    {action.title}
+                  </div>
                 </DropdownMenuItem>
               )
             })}
@@ -338,7 +351,10 @@ export const TargetActionList = ({ index }: { index: number }) => {
               return (
                 <Fragment key={action.title}>
                   <div className="group/action mt-3 flex w-full items-center justify-between">
-                    <span className="w-0 shrink grow truncate">{action.title}</span>
+                    <div className="flex items-center gap-2">
+                      {action.icon}
+                      <span className="shrink grow truncate">{action.title}</span>
+                    </div>
                     {action.configInline && action.config && action.config()}
 
                     <Button

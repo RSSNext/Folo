@@ -6,6 +6,13 @@ import type { SummarySchema } from "../database/schemas/types"
 
 class SummaryServiceStatic {
   async insertSummary(data: Omit<SummarySchema, "createdAt">) {
+    const updateExceptEmpty = Object.fromEntries(
+      Object.entries({
+        summary: data.summary,
+        readabilitySummary: data.readabilitySummary,
+      }).filter(([_, value]) => !!value),
+    )
+
     await db
       .insert(summariesTable)
       .values({
@@ -14,9 +21,7 @@ class SummaryServiceStatic {
       })
       .onConflictDoUpdate({
         target: [summariesTable.entryId, summariesTable.language],
-        set: {
-          summary: data.summary,
-        },
+        set: updateExceptEmpty,
       })
   }
 

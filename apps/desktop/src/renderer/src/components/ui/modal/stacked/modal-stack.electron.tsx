@@ -1,5 +1,5 @@
-import { AnimatePresence } from "framer-motion"
 import { useAtomValue } from "jotai"
+import { AnimatePresence } from "motion/react"
 
 import { modalStackAtom } from "./atom"
 import { useModalStack } from "./hooks"
