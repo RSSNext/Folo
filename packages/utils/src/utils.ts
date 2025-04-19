@@ -186,6 +186,18 @@ export const parseSafeUrl = (url: string) => {
     return null
   }
 }
+
+/**
+ * @deprecated Remove it in the future but not now
+ */
+export const resolveUrlWithBase = (url: string, baseUrl: string) => {
+  try {
+    return new URL(url, baseUrl).href
+  } catch {
+    return url
+  }
+}
+
 export const getUrlIcon = (url: string, fallback?: boolean | undefined) => {
   let src: string
   let fallbackUrl = ""

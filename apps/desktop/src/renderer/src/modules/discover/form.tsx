@@ -30,6 +30,7 @@ import { Media } from "~/components/ui/media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
 
@@ -365,42 +366,9 @@ const SearchCard: FC<{
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {item.entries
                   .filter((e) => !!e)
-                  .map((entry) => {
-                    const assertEntry = entry
-                    return (
-                      <a
-                        key={assertEntry.id}
-                        href={assertEntry.url || void 0}
-                        target="_blank"
-                        className="group relative flex flex-col overflow-hidden rounded-lg bg-zinc-50/50 shadow-zinc-100 transition-all duration-200 hover:-translate-y-px hover:shadow-md dark:bg-zinc-800/50 dark:shadow-neutral-700/50"
-                        rel="noreferrer"
-                      >
-                        <div className="aspect-[3/2] w-full overflow-hidden">
-                          <FeedCardMediaThumbnail entry={assertEntry} />
-                        </div>
-                        <div className="flex flex-1 flex-col justify-between p-3">
-                          {assertEntry.title ? (
-                            <div className="line-clamp-2 text-xs font-medium leading-4 text-zinc-900 group-hover:text-black dark:text-zinc-200 dark:group-hover:text-white">
-                              {assertEntry.title}
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-                              <i className="i-mgc-link-cute-re shrink-0 translate-y-px self-start text-[14px]" />
-                              <span className="line-clamp-2 break-all">
-                                {assertEntry.url || "Untitled"}
-                              </span>
-                            </div>
-                          )}
-                          <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                            <RelativeTime
-                              date={assertEntry.publishedAt}
-                              displayAbsoluteTimeAfterDay={Infinity}
-                            />
-                          </div>
-                        </div>
-                      </a>
-                    )
-                  })}
+                  .map((entry) => (
+                    <SearchResultContent key={entry.id} entry={entry} />
+                  ))}
               </div>
             )}
           </CardContent>
@@ -516,3 +484,37 @@ const FeedCardMediaThumbnail: FC<{
     </div>
   )
 }
+
+const SearchResultContent: FC<{
+  entry: NonUndefined<DiscoverSearchData[number]["entries"]>[number]
+}> = memo(({ entry }) => {
+  const safeUrl = useFeedSafeUrl(entry.id)
+  return (
+    <a
+      key={entry.id}
+      href={safeUrl ?? "#"}
+      target="_blank"
+      className="group relative flex flex-col overflow-hidden rounded-lg bg-zinc-50/50 shadow-zinc-100 transition-all duration-200 hover:-translate-y-px hover:shadow-md dark:bg-zinc-800/50 dark:shadow-neutral-700/50"
+      rel="noreferrer"
+    >
+      <div className="aspect-[3/2] w-full overflow-hidden">
+        <FeedCardMediaThumbnail entry={entry} />
+      </div>
+      <div className="flex flex-1 flex-col justify-between p-3">
+        {entry.title ? (
+          <div className="line-clamp-2 text-xs font-medium leading-4 text-zinc-900 group-hover:text-black dark:text-zinc-200 dark:group-hover:text-white">
+            {entry.title}
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <i className="i-mgc-link-cute-re shrink-0 translate-y-px self-start text-[14px]" />
+            <span className="line-clamp-2 break-all">{entry.url || "Untitled"}</span>
+          </div>
+        )}
+        <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <RelativeTime date={entry.publishedAt} displayAbsoluteTimeAfterDay={Infinity} />
+        </div>
+      </div>
+    </a>
+  )
+})
