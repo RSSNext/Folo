@@ -58,6 +58,6 @@
     "@types/node": "22.14.1",
     "electron": "35.1.5",
     "electron-devtools-installer": "4.0.0",
-    "hono": "4.7.6"
+    "hono": "4.7.7"
   }
 }

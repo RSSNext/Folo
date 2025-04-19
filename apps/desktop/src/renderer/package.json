@@ -61,7 +61,7 @@
     "hast-util-to-jsx-runtime": "2.3.6",
     "hast-util-to-mdast": "10.1.2",
     "i18next": "25.0.0",
-    "i18next-browser-languagedetector": "8.0.4",
+    "i18next-browser-languagedetector": "8.0.5",
     "idb-keyval": "6.2.1",
     "immer": "10.1.1",
     "jotai": "2.12.3",
