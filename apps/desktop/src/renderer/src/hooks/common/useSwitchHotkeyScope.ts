@@ -26,8 +26,8 @@ export const useSwitchHotKeyScope = () => {
   )
 }
 export const useHotkeyScopeFn = (scope: keyof typeof HotKeyScopeMap) => {
-  const { enableScope, disableScope, enabledScopes } = useHotkeysContext()
-  const currentScopeRef = useRef(enabledScopes)
+  const { enableScope, disableScope, activeScopes } = useHotkeysContext()
+  const currentScopeRef = useRef(activeScopes)
 
   return useCallback(() => {
     const currentScope = currentScopeRef.current

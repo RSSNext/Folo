@@ -210,6 +210,9 @@ export const SettingIntegration = () => {
             label: t("integration.cubox.autoMemo.label"),
             description: t("integration.cubox.autoMemo.description"),
           }),
+          defineSettingItem("saveSummaryAsDescription", {
+            label: t("integration.save_ai_summary_as_description.label"),
+          }),
           BottomTip,
         ]}
       />

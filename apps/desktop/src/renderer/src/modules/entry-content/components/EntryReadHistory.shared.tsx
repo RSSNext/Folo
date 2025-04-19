@@ -8,7 +8,7 @@ import {
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { FeedViewType } from "@follow/constants"
 import { getNameInitials } from "@follow/utils/cjk"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 

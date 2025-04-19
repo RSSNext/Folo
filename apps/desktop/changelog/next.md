@@ -1,7 +1,7 @@
 # What's new in vNEXT_VERSION
 
-## Shiny new things
+## New Features
 
 ## Improvements
 
-## No longer broken
+## Bug Fixes

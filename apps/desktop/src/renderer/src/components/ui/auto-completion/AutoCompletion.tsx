@@ -3,8 +3,8 @@ import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
-import { AnimatePresence, m } from "framer-motion"
 import Fuse from "fuse.js"
+import { AnimatePresence, m } from "motion/react"
 import { forwardRef, Fragment, useCallback, useEffect, useState } from "react"
 
 export type Suggestion = {

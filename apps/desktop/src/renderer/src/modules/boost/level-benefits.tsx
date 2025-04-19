@@ -28,7 +28,7 @@ const benefits = [
     level: 4,
     benefits: [
       { icon: "i-mgc-eye-2-cute-re", text: "More developer attention" },
-      { icon: "i-mgc-magic-2-cute-re", text: "AI summary for feed", comingSoon: true },
+      { icon: "i-mgc-ai-cute-re", text: "AI summary for feed", comingSoon: true },
       { icon: "i-mgc-rocket-cute-re", text: "Faster feed refresh time" },
     ],
   },

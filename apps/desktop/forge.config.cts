@@ -96,6 +96,7 @@ const ignorePattern = new RegExp(`^/node_modules/(?!${[...keepModules].join("|")
 
 const config: ForgeConfig = {
   packagerConfig: {
+    name: isStaging ? "Folo Staging" : "Folo",
     appCategoryType: "public.app-category.news",
     buildVersion: process.env.BUILD_VERSION || undefined,
     appBundleId: "is.follow",

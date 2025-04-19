@@ -1,18 +1,33 @@
+import type { FlashList } from "@shopify/flash-list"
 import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
-import { useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
-import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
+import type { RefObject } from "react"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useInsertionEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import type { NativeScrollEvent, NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
+import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { debouncedFetchEntryContentByStream } from "@/src/store/entry/store"
 import { unreadSyncService } from "@/src/store/unread/store"
 
+import { PagerListVisibleContext, PagerListWillVisibleContext } from "../screen/PagerListContext"
+
 const defaultIdExtractor = (item: ViewToken) => item.key
 export function useOnViewableItemsChanged({
   disabled,
   idExtractor = defaultIdExtractor,
+  onScroll: onScrollProp,
 }: {
   disabled?: boolean
   idExtractor?: (item: ViewToken) => string
+  onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void
 } = {}) {
   const orientation = useRef<"down" | "up">("down")
   const lastOffset = useRef(0)
@@ -82,12 +97,16 @@ export function useOnViewableItemsChanged({
     stableIdExtractor,
   ])
 
-  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentOffset = e.nativeEvent.contentOffset.y
-    const currentOrientation = currentOffset > lastOffset.current ? "down" : "up"
-    orientation.current = currentOrientation
-    lastOffset.current = currentOffset
-  }, [])
+  const onScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const currentOffset = e.nativeEvent.contentOffset.y
+      const currentOrientation = currentOffset > lastOffset.current ? "down" : "up"
+      orientation.current = currentOrientation
+      lastOffset.current = currentOffset
+      onScrollProp?.(e)
+    },
+    [onScrollProp],
+  )
 
   return useMemo(
     () => ({ onViewableItemsChanged, onScroll, viewableItems }),
@@ -107,4 +126,34 @@ function useNonReactiveCallback<T extends (...args: any[]) => any>(fn: T): T {
     },
     [ref],
   ) as unknown as T
+}
+
+export const usePagerListPerformanceHack = (provideRef?: RefObject<FlashList<any>>) => {
+  const lastY = useRef(0)
+
+  const onScroll = useEventCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!visible) return
+
+    lastY.current = e.nativeEvent.contentOffset.y
+  })
+
+  const visible = useContext(PagerListVisibleContext)
+  const willVisible = useContext(PagerListWillVisibleContext)
+
+  const nextVisible = visible || willVisible
+
+  const ref = useRef<FlashList<any>>(null)
+
+  const usingRef = provideRef ?? ref
+  const [style, setStyle] = useState<StyleProp<ViewStyle>>({})
+  useEffect(() => {
+    setStyle({ display: nextVisible ? "flex" : "none" })
+    if (nextVisible && lastY.current > 0) {
+      requestAnimationFrame(() => {
+        usingRef.current?.scrollToOffset({ offset: lastY.current, animated: false })
+      })
+    }
+  }, [nextVisible, usingRef])
+
+  return { onScroll, ref, style }
 }

@@ -11,7 +11,7 @@ import { Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@follow/components
 import { Label } from "@follow/components/ui/label/index.js"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { m, useAnimation } from "framer-motion"
+import { m, useAnimation } from "motion/react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"

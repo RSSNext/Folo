@@ -1,4 +1,3 @@
-import { RSSHubCategories } from "@follow/constants"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import type { FC } from "react"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -15,10 +14,10 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
-import { TabBar } from "@/src/components/ui/tabview/TabBar"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
+import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import SearchScreen from "@/src/screens/(headless)/search"
 import { accentColor, useColor } from "@/src/theme/colors"
 
@@ -54,9 +53,9 @@ export const SearchHeader: FC<{
 }
 
 const DynamicBlurEffect = () => {
-  const { animatedY } = useContext(DiscoverContext)
+  const { reAnimatedScrollY } = useContext(ScreenItemContext)
   const blurStyle = useAnimatedStyle(() => ({
-    opacity: Math.max(0, Math.min(1, animatedY.value / 50)),
+    opacity: Math.max(0, Math.min(1, reAnimatedScrollY.value / 50)),
   }))
   return (
     <Animated.View className="absolute inset-0 flex-1" style={blurStyle} pointerEvents={"none"}>
@@ -64,17 +63,14 @@ const DynamicBlurEffect = () => {
     </Animated.View>
   )
 }
+
 export const DiscoverHeader = () => {
-  return <DiscoverHeaderImpl />
-}
-const DiscoverHeaderImpl = () => {
-  const { t } = useTranslation("common")
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
   const sheetModal = useScreenIsInSheetModal()
   const headerHeight = getDefaultHeaderHeight(frame, sheetModal, insets.top)
-  const { animatedX, currentTabAtom, headerHeightAtom } = useContext(DiscoverContext)
-  const setCurrentTab = useSetAtom(currentTabAtom)
+  const { headerHeightAtom } = useContext(DiscoverContext)
+
   const setHeaderHeight = useSetAtom(headerHeightAtom)
 
   return (
@@ -87,26 +83,10 @@ const DiscoverHeaderImpl = () => {
     >
       <DynamicBlurEffect />
 
-      <View style={[styles.header, styles.discoverHeader]}>
+      <View style={styles.header}>
         <PlaceholerSearchBar />
-
-        {/* Right actions group */}
-        <View className="ml-2">
-          <AddFeedButton />
-        </View>
+        <AddFeedButton />
       </View>
-
-      <TabBar
-        tabs={RSSHubCategories.map((category) => ({
-          name: t(`discover.category.${category}`),
-          value: category,
-        }))}
-        tabScrollContainerAnimatedX={animatedX}
-        onTabItemPress={(index) => {
-          setCurrentTab(index)
-        }}
-        tabbarClassName="border-b border-b-quaternary-system-fill"
-      />
     </View>
   )
 }
@@ -277,10 +257,6 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     marginHorizontal: 16,
     position: "relative",
-  },
-
-  discoverHeader: {
-    marginRight: 0,
   },
 
   searchbar: {

@@ -40,6 +40,9 @@ export const loadLanguageAndApply = async (lang: string) => {
   const loaded = loadedLangs.has(lang)
 
   if (loaded) {
+    if (import.meta.env.DEV) {
+      EventBus.dispatch("I18N_UPDATE", "")
+    }
     return
   }
 

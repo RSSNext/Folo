@@ -37,12 +37,12 @@
     "chardet": "2.1.0",
     "clsx": "2.1.1",
     "dompurify": "3.2.5",
-    "framer-motion": "12.6.3",
     "linkedom": "0.18.9",
+    "motion": "12.7.4",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
-    "tailwind-merge": "3.1.0",
-    "tldts": "6.1.85",
+    "tailwind-merge": "3.2.0",
+    "tldts": "7.0.0",
     "uniqolor": "1.1.1"
   }
 }

@@ -66,6 +66,13 @@ export function AddModalContent({
     }
   }, [details.data])
 
+  const codes = [
+    `FOLLOW_OWNER_USER_ID=${me?.handle || me?.id}      # User id or handle of your follow account`,
+    `FOLLOW_DESCRIPTION=${instance?.description || `${me?.name}'s instance`} # The description of your instance`,
+    `FOLLOW_PRICE=${instance?.price || 100}                 # The monthly price of your instance, set to 0 means free.`,
+    `FOLLOW_USER_LIMIT=${instance?.userLimit || 1000}           # The user limit of your instance, set it to 0 or 1 can make your instance private, leaving it empty means no restriction`,
+  ]
+
   return (
     <div className="max-w-[550px] space-y-4 lg:min-w-[550px]">
       <div className="text-sm">{t("rsshub.addModal.description")}</div>
@@ -73,11 +80,8 @@ export function AddModalContent({
       <ShikiHighLighter
         transparent
         theme={shikiTheme}
-        className="border-border group relative mt-3 cursor-auto select-text whitespace-pre break-words rounded-lg border bg-zinc-100 p-2 text-sm dark:bg-neutral-800 [&_pre]:whitespace-pre [&_pre]:break-words [&_pre]:!p-0"
-        code={`FOLLOW_OWNER_USER_ID=${me?.handle || me?.id}      # User id or handle of your follow account
-FOLLOW_DESCRIPTION=${instance?.description || `${me?.name}'s instance`} # The description of your instance
-FOLLOW_PRICE=${instance?.price || 100}                 # The monthly price of your instance, set to 0 means free.
-FOLLOW_USER_LIMIT=${instance?.userLimit || 1000}           # The user limit of your instance, set it to 0 or 1 can make your instance private, leaving it empty means no restriction`}
+        className="group mt-3 cursor-auto select-text whitespace-pre break-words rounded-lg bg-zinc-100 text-sm dark:bg-neutral-800 [&_pre]:whitespace-pre [&_pre]:break-words"
+        code={codes.join("\n")}
         language="dotenv"
       />
       {details.isLoading ? (

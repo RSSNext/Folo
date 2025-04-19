@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useId, useMemo, useState } from "react"
 import { useContextSelector } from "use-context-selector"

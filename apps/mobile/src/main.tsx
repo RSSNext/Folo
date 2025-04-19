@@ -2,6 +2,7 @@ import "./global.css"
 
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
+import { LinearGradient } from "expo-linear-gradient"
 import { cssInterop } from "nativewind"
 import { useTranslation } from "react-i18next"
 import { enableFreeze } from "react-native-screens"
@@ -23,10 +24,11 @@ import { SubscriptionsTabScreen } from "./screens/(stack)/(tabs)/subscriptions"
 import { registerSitemap } from "./sitemap"
 
 enableFreeze(true)
-cssInterop(Image, { className: "style" })
+;[Image, LinearGradient].forEach((Component) => {
+  cssInterop(Component, { className: "style" })
+})
 
 initializeApp()
-
 registerSitemap()
 initializeI18n().then(() => {
   registerRootComponent(RootComponent)

@@ -9,8 +9,8 @@ import { Link } from "react-router"
 
 import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
 import { useUserRole, useWhoami } from "~/atoms/user"
-import { useSignOut } from "~/hooks/biz/useSignOut"
 import { UrlBuilder } from "~/lib/url-builder"
+import { signOut } from "~/queries/auth"
 import { useWallet } from "~/queries/wallet"
 
 import { useAchievementModal } from "../achievement/hooks"
@@ -25,8 +25,6 @@ import { UserAvatar } from "./UserAvatar"
 
 export const ProfileButton: FC<ProfileButtonProps> = () => {
   const user = useWhoami()
-
-  const signOut = useSignOut()
 
   const presentUserProfile = usePresentUserProfileModal("dialog")
   const presentAchievement = useAchievementModal()

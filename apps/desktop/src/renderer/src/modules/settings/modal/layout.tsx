@@ -3,7 +3,7 @@ import { LetsIconsResizeDownRightLight } from "@follow/components/icons/resize.j
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
-import type { BoundingBox } from "framer-motion"
+import type { BoundingBox } from "motion/react"
 import { Resizable } from "re-resizable"
 import type { PropsWithChildren } from "react"
 import { memo, Suspense, useCallback, useEffect, useRef } from "react"

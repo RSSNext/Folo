@@ -77,7 +77,7 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [settingWideMode])
+  }, [settingWideMode, simple, translation?.description, translation?.title])
 
   const audioAttachment = useMemo(() => {
     return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)

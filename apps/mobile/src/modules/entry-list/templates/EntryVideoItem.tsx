@@ -82,8 +82,8 @@ const parseSchemeLink = (url: string) => {
 }
 
 const openVideo = async (url: string) => {
-  const { openLinksInApp } = getGeneralSettings()
-  if (!openLinksInApp) {
+  const { openLinksInExternalApp } = getGeneralSettings()
+  if (openLinksInExternalApp) {
     const schemeLink = parseSchemeLink(url)
     try {
       const isInstalled = !!schemeLink && (await Linking.canOpenURL(schemeLink))

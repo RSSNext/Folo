@@ -1,7 +1,7 @@
 import "./load-env"
 
 import { requestContext } from "@fastify/request-context"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import type { AppType } from "@follow/shared/hono"
 import { hc } from "hono/client"
 import { ofetch } from "ofetch"

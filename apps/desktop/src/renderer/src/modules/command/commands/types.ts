@@ -70,6 +70,16 @@ export type ImageGalleryCommand = Command<{
   fn: ({ entryId }) => void
 }>
 
+export type TTSCommand = Command<{
+  id: typeof COMMAND_ID.entry.tts
+  fn: ({ entryId, entryContent }) => void
+}>
+
+export type ReadabilityCommand = Command<{
+  id: typeof COMMAND_ID.entry.readability
+  fn: ({ entryId, entryUrl }) => void
+}>
+
 export type EntryCommand =
   | TipCommand
   | StarCommand
@@ -84,6 +94,8 @@ export type EntryCommand =
   | ToggleAISummaryCommand
   | ToggleAITranslationCommand
   | ImageGalleryCommand
+  | TTSCommand
+  | ReadabilityCommand
 
 // Settings commands
 

@@ -19,9 +19,9 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
+import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
 import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
-import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]"
+import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import {
   useGroupedSubscription,
@@ -33,6 +33,7 @@ import {
 } from "@/src/store/subscription/hooks"
 import { subscriptionSyncService } from "@/src/store/subscription/store"
 
+import { usePagerListPerformanceHack } from "../entry-list/hooks"
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { CategoryGrouped } from "./CategoryGrouped"
 import { InboxItem } from "./items/InboxItem"
@@ -103,6 +104,8 @@ const SubscriptionListImpl = ({
 
   const scrollViewRef = useRegisterNavigationScrollView<FlashList<any>>(active)
 
+  const { onScroll, style } = usePagerListPerformanceHack(scrollViewRef)
+
   return (
     <TimelineSelectorList
       contentContainerClassName="pb-6"
@@ -118,8 +121,9 @@ const SubscriptionListImpl = ({
       estimatedItemSize={50}
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
-      // itemLayoutAnimation={LinearTransition}
       extraData={extraData}
+      onScroll={onScroll}
+      style={style}
     />
   )
 }
@@ -232,10 +236,6 @@ const StarItem = () => {
       <ItemPressable
         itemStyle={ItemPressableStyle.Grouped}
         onPress={() => {
-          const isHorizontalScrolling = getHorizontalScrolling()
-          if (isHorizontalScrolling) {
-            return
-          }
           selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
           closeDrawer()
           navigation.pushControllerView(FeedScreen, {

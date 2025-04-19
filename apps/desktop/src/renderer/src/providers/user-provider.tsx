@@ -3,7 +3,6 @@ import { useEffect } from "react"
 
 import { setUserRole, setWhoami } from "~/atoms/user"
 import { setIntegrationIdentify } from "~/initialize/helper"
-import { tipcClient } from "~/lib/client"
 import { useSession } from "~/queries/auth"
 import { CleanerService } from "~/services/cleaner"
 
@@ -18,9 +17,6 @@ export const UserProvider = () => {
     }
     setIntegrationIdentify(session.user)
 
-    tipcClient?.trackerIdentify({
-      user: session.user,
-    })
     CleanerService.cleanRemainingData(session.user.id)
   }, [session?.role, session?.user])
 

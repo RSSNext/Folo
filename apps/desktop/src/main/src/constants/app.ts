@@ -12,4 +12,4 @@ export const GITHUB_REPO = process.env.GITHUB_REPO || "follow"
 // https://github.com/electron/electron/issues/25081
 export const START_IN_TRAY_ARGS = "--start-in-tray"
 
-export const BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN = "__Secure-better-auth.session_token"
+export const BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN = "better-auth.session_token"

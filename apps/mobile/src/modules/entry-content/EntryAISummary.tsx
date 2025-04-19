@@ -13,10 +13,13 @@ export const EntryAISummary: FC<{
   entryId: string
 }> = ({ entryId }) => {
   const ctx = useEntryContentContext()
+  const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
   const summary = useSummary(entryId)
-  usePrefetchSummary(entryId, { enabled: showAISummary })
+  usePrefetchSummary(entryId, showReadability ? "readabilityContent" : "content", {
+    enabled: showAISummary,
+  })
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null
@@ -24,7 +27,11 @@ export const EntryAISummary: FC<{
   return (
     <AISummary
       className="my-3"
-      summary={summary?.summary || ""}
+      summary={
+        showReadability
+          ? summary?.readabilitySummary || summary?.summary || ""
+          : summary?.summary || ""
+      }
       pending={status === SummaryGeneratingStatus.Pending}
       error={status === SummaryGeneratingStatus.Error ? "Failed to generate summary" : undefined}
     />

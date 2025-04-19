@@ -6,11 +6,12 @@ import { useColor } from "react-native-uikit-colors"
 import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { ListErrorView } from "@/src/components/errors/ListErrorView"
+import { useResetTabOpacityWhenFocused } from "@/src/components/layouts/tabbar/hooks"
 import { BlackBoard2CuteFiIcon } from "@/src/icons/black_board_2_cute_fi"
 import { BlackBoard2CuteReIcon } from "@/src/icons/black_board_2_cute_re"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
 import { EntryListContext } from "@/src/modules/screen/atoms"
-import { PagerList } from "@/src/modules/screen/PageList"
+import { PagerList } from "@/src/modules/screen/PagerList"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { SubscriptionList } from "@/src/modules/subscription/SubscriptionLists"
 import { useWhoami } from "@/src/store/user/hooks"
@@ -18,7 +19,7 @@ import { useWhoami } from "@/src/store/user/hooks"
 export default function Subscriptions() {
   const whoami = useWhoami()
   const systemGroupedBackground = useColor("systemGroupedBackground")
-
+  useResetTabOpacityWhenFocused()
   return (
     <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
       <RootSiblingParent>

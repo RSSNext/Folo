@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { stopPropagation } from "@follow/utils/dom"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 

@@ -12,6 +12,7 @@ const entryItemInMore = new Set<string>([
   COMMAND_ID.entry.openInBrowser,
   COMMAND_ID.entry.exportAsPDF,
   COMMAND_ID.entry.read,
+  COMMAND_ID.entry.tts,
 ])
 
 export const DEFAULT_ACTION_ORDER: ToolbarActionOrder = {

@@ -2,7 +2,7 @@ import "./src/lib/load-env"
 
 import middie from "@fastify/middie"
 import { fastifyRequestContext } from "@fastify/request-context"
-import { env } from "@follow/shared/env"
+import { env } from "@follow/shared/env.ssr"
 import type { FastifyRequest } from "fastify"
 import Fastify from "fastify"
 import { nanoid } from "nanoid"

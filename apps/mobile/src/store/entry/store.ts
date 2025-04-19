@@ -1,5 +1,4 @@
 import { FeedViewType } from "@follow/constants"
-import { readability } from "@follow/utils"
 import { debounce } from "es-toolkit/compat"
 import { fetch as expoFetch } from "expo/fetch"
 
@@ -436,8 +435,19 @@ class EntrySyncServices {
     const entry = honoMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])
-    } else if (entry?.content && currentEntry?.content !== entry.content) {
-      await entryActions.updateEntryContent({ entryId, content: entry.content })
+    } else {
+      if (entry?.content && currentEntry?.content !== entry.content) {
+        await entryActions.updateEntryContent({ entryId, content: entry.content })
+      }
+      if (
+        entry?.readabilityContent &&
+        currentEntry?.readabilityContent !== entry.readabilityContent
+      ) {
+        await entryActions.updateEntryContent({
+          entryId,
+          readabilityContent: entry.readabilityContent,
+        })
+      }
     }
     return entry
   }
@@ -445,8 +455,12 @@ class EntrySyncServices {
   async fetchEntryReadabilityContent(entryId: EntryId) {
     const entry = getEntry(entryId)
 
-    if (entry?.url && !entry?.readabilityContent) {
-      const contentByFetch = await readability(entry.url)
+    if (entry?.url && entry?.readabilityContent === null) {
+      const { data: contentByFetch } = await apiClient.entries.readability.$get({
+        query: {
+          id: entryId,
+        },
+      })
       if (contentByFetch?.content && entry?.readabilityContent !== contentByFetch.content) {
         await entryActions.updateEntryContent({
           entryId,

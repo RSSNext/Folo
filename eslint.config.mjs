@@ -43,6 +43,7 @@ export default defineConfig(
       "@eslint-react/no-clone-element": 0,
       "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": 0,
       "@eslint-react/dom/no-flush-sync": 1,
+      "@eslint-react/hooks-extra/no-unnecessary-use-callback": "warn",
       // NOTE: Disable this temporarily
       "react-compiler/react-compiler": 0,
       "no-restricted-syntax": 0,
