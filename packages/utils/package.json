@@ -42,7 +42,7 @@
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
     "tailwind-merge": "3.2.0",
-    "tldts": "7.0.0",
+    "tldts": "7.0.1",
     "uniqolor": "1.1.1"
   }
 }

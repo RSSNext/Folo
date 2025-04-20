@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@egoist/tipc": "0.3.2",
-    "@electron-toolkit/preload": "3.0.1",
+    "@electron-toolkit/preload": "3.0.2",
     "@electron-toolkit/utils": "4.0.0",
     "@eneris/push-receiver": "4.3.0",
     "@follow/shared": "workspace:*",
@@ -33,7 +33,7 @@
     "builder-util-runtime": "9.3.1",
     "cookie-es": "2.0.0",
     "electron-context-menu": "4.0.5",
-    "electron-log": "5.3.3",
+    "electron-log": "5.3.4",
     "electron-squirrel-startup": "1.0.1",
     "electron-store": "10.0.1",
     "electron-updater": "6.6.2",
@@ -58,6 +58,6 @@
     "@types/node": "22.14.1",
     "electron": "35.1.5",
     "electron-devtools-installer": "4.0.0",
-    "hono": "4.7.6"
+    "hono": "4.7.7"
   }
 }
