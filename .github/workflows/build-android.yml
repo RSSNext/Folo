@@ -22,10 +22,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner-label: ${{ steps.set-runner.outputs.runner-label }}
+
+    steps:
+      - name: Set runner
+        id: set-runner
+        run: |
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.RUNNER_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          available=$(echo "$runners" | jq '.runners[]? | select(.status == "online" and .busy == false and .labels[] .name == "Linux")')
+          if [ -n "$available" ]; then
+            echo "runner-label=[self-hosted, Linux]" >> $GITHUB_OUTPUT
+          else
+            echo "runner-label=ubuntu-latest" >> $GITHUB_OUTPUT
+          fi
+
   build:
     name: Build Android apk for device
     if: github.secret_source != 'None'
-    runs-on: ubuntu-latest
+    needs: check-runner
+    runs-on: ${{ needs.check-runner.outputs.runner-label }}
 
     steps:
       - name: 📦 Checkout code
