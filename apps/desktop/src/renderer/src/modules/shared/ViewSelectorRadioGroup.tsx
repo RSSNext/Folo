@@ -2,21 +2,23 @@ import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.
 import { FeedViewType, views } from "@follow/constants"
 import type { EntryModelSimple, FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
-import { cloneElement, forwardRef } from "react"
+import { cloneElement } from "react";
 
 import { useI18n } from "~/hooks/common"
 
 import { EntryItemSkeleton } from "../entry-column/item"
 import { EntryItemStateless } from "../entry-column/item-stateless"
 
-export const ViewSelectorRadioGroup = forwardRef<
-  HTMLInputElement,
+export const ViewSelectorRadioGroup = (
   {
-    entries?: EntryModelSimple[]
-    feed?: FeedModel
-    view?: number
-  } & React.InputHTMLAttributes<HTMLInputElement>
->(({ entries, feed, view, className, ...rest }, ref) => {
+    ref,
+    entries,
+    feed,
+    view,
+    className,
+    ...rest
+  }
+) => {
   const t = useI18n()
 
   return (
@@ -64,4 +66,4 @@ export const ViewSelectorRadioGroup = forwardRef<
       )}
     </Card>
   )
-})
+}
