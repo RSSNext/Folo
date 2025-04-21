@@ -28,7 +28,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react-native": ">=0.74.0"
+    "@types/react": ">=18.3.1",
+    "@types/react-dom": ">=18.3.1",
+    "react": ">=18.3.1",
+    "react-dom": ">=18.3.1",
+    "react-native": ">=0.76.0"
   },
   "dependencies": {
     "@follow/shared": "workspace:*",

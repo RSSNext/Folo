@@ -9,6 +9,12 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "peerDependencies": {
+    "@types/react": ">=18.3.1",
+    "@types/react-dom": ">=18.3.1",
+    "react": ">=18.3.1",
+    "react-dom": ">=18.3.1"
+  },
   "dependencies": {
     "@follow/types": "workspace:*"
   }

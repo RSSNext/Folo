@@ -6,5 +6,9 @@
     "./global": "./global.d.ts",
     "./react": "./react-global.d.ts",
     "./vite": "./vite-env.d.ts"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.1",
+    "react-dom": ">=18.3.1"
   }
 }
