@@ -8,14 +8,12 @@ export interface CommandActionButtonProps extends ActionButtonProps {
   commandId: FollowCommandId
   onClick: () => void
 }
-export const CommandActionButton = (
-  {
-    ref,
-    ...props
-  }: CommandActionButtonProps & {
-    ref: React.RefObject<HTMLButtonElement>;
-  }
-) => {
+export const CommandActionButton = ({
+  ref,
+  ...props
+}: CommandActionButtonProps & {
+  ref: React.RefObject<HTMLButtonElement>
+}) => {
   const { commandId, ...rest } = props
   const command = useCommand(commandId)
   if (!command) return null

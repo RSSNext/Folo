@@ -24,15 +24,13 @@ const motionBaseMap = {
     whileTap: { opacity: 0.2 },
   },
 } as const
-export const MotionButtonBase = (
-  {
-    ref,
-    children,
-    ...rest
-  }: HTMLMotionProps<"button"> & {
-    ref: React.RefObject<HTMLButtonElement>;
-  }
-) => {
+export const MotionButtonBase = ({
+  ref,
+  children,
+  ...rest
+}: HTMLMotionProps<"button"> & {
+  ref: React.RefObject<HTMLButtonElement>
+}) => {
   const isMobile = useMobile()
   return (
     <m.button
@@ -49,27 +47,25 @@ export const MotionButtonBase = (
 
 MotionButtonBase.displayName = "MotionButtonBase"
 
-export const Button = (
-  {
-    ref,
-    className,
-    buttonClassName,
-    disabled,
-    isLoading,
-    variant,
-    status,
-    size,
-    ...props
-  }: React.PropsWithChildren<
-    Omit<HTMLMotionProps<"button">, "children"> &
-      BaseButtonProps &
-      VariantProps<typeof styledButtonVariant> & {
-        buttonClassName?: string
-      }
-  > & {
-    ref: React.RefObject<HTMLButtonElement>;
-  }
-) => {
+export const Button = ({
+  ref,
+  className,
+  buttonClassName,
+  disabled,
+  isLoading,
+  variant,
+  status,
+  size,
+  ...props
+}: React.PropsWithChildren<
+  Omit<HTMLMotionProps<"button">, "children"> &
+    BaseButtonProps &
+    VariantProps<typeof styledButtonVariant> & {
+      buttonClassName?: string
+    }
+> & {
+  ref: React.RefObject<HTMLButtonElement>
+}) => {
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = React.useCallback(
     (e) => {
       if (isLoading || disabled) {
@@ -114,12 +110,7 @@ export const Button = (
   )
 }
 
-export const IconButton = (
-  {
-    ref,
-    ...props
-  }
-) => {
+export const IconButton = ({ ref, ...props }) => {
   const { icon, ...rest } = props
   return (
     <button

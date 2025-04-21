@@ -1,7 +1,7 @@
 import { useDraggable } from "@dnd-kit/core"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
-import { memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventListener } from "usehooks-ts"
@@ -25,15 +25,13 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./FeedList.shared"
 import { useShouldFreeUpSpace } from "./hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
 
-const FeedListImpl = (
-  {
-    ref,
-    className,
-    view
-  }: { className?: string; view: number } & {
-    ref: React.RefObject<HTMLDivElement>;
-  }
-) => {
+const FeedListImpl = ({
+  ref,
+  className,
+  view,
+}: { className?: string; view: number } & {
+  ref: React.RefObject<HTMLDivElement>
+}) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
   const inboxesData = useInboxesGroupedData(view)
@@ -246,7 +244,7 @@ const FeedListImpl = (
             {t("words.feeds")}
           </div>
         )}
-        <DraggableContext.Provider value={draggableContextValue}>
+        <DraggableContext value={draggableContextValue}>
           <div className="space-y-px" id="feeds-area" ref={setNodeRef}>
             {hasData ? (
               <SortableFeedList
@@ -258,7 +256,7 @@ const FeedListImpl = (
               <EmptyFeedList />
             )}
           </div>
-        </DraggableContext.Provider>
+        </DraggableContext>
       </ScrollArea.ScrollArea>
     </div>
   )

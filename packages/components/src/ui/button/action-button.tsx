@@ -38,28 +38,26 @@ const actionButtonStyleVariant = {
   },
 }
 
-export const ActionButton = (
-  {
-    ref,
-    icon,
-    id,
-    tooltip,
-    className,
-    tooltipSide,
-    tooltipDefaultOpen,
-    children,
-    active,
-    shortcut,
-    disabled,
-    clickableDisabled,
-    disableTriggerShortcut,
-    enableHoverableContent,
-    size = "base",
-    shortcutOnlyFocusWithIn,
-    onClick,
-    ...rest
-  }
-) => {
+export const ActionButton = ({
+  ref,
+  icon,
+  id,
+  tooltip,
+  className,
+  tooltipSide,
+  tooltipDefaultOpen,
+  children,
+  active,
+  shortcut,
+  disabled,
+  clickableDisabled,
+  disableTriggerShortcut,
+  enableHoverableContent,
+  size = "base",
+  shortcutOnlyFocusWithIn,
+  onClick,
+  ...rest
+}) => {
   const finalShortcut =
     getOS() === "Windows" ? shortcut?.replace("meta", "ctrl").replace("Meta", "Ctrl") : shortcut
   const buttonRef = React.useRef<HTMLButtonElement>(null)
@@ -126,10 +124,7 @@ export const ActionButton = (
       {tooltip ? (
         <Tooltip disableHoverableContent={!enableHoverableContent}>
           <TooltipRoot defaultOpen={tooltipDefaultOpen} key={id}>
-            <TooltipTrigger
-              aria-label={typeof tooltip === "string" ? tooltip : undefined}
-              asChild
-            >
+            <TooltipTrigger aria-label={typeof tooltip === "string" ? tooltip : undefined} asChild>
               {Trigger}
             </TooltipTrigger>
             <TooltipPortal>

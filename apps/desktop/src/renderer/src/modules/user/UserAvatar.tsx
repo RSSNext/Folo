@@ -9,22 +9,19 @@ import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"
 import { userActions } from "~/store/user"
 
-import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 
-export const UserAvatar = (
-  {
-    ref,
-    className,
-    avatarClassName,
-    hideName,
-    userId,
-    enableModal,
-    style,
-    onClick,
-    ...props
-  }
-) => {
+export const UserAvatar = ({
+  ref,
+  className,
+  avatarClassName,
+  hideName,
+  userId,
+  enableModal,
+  style,
+  onClick,
+  ...props
+}) => {
   const { session, status } = useSession({
     enabled: !userId,
   })

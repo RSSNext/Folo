@@ -8,15 +8,13 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import type { EntryColumnWrapperProps } from "./wrapper.shared"
 import { animationStyles, styles } from "./wrapper.shared"
 
-export const EntryColumnWrapper = (
-  {
-    ref,
-    children,
-    onScroll
-  }: EntryColumnWrapperProps & {
-    ref: React.RefObject<HTMLDivElement>;
-  }
-) => {
+export const EntryColumnWrapper = ({
+  ref,
+  children,
+  onScroll,
+}: EntryColumnWrapperProps & {
+  ref: React.RefObject<HTMLDivElement>
+}) => {
   const view = useRouteParamsSelector((state) => state.view)
 
   const isZenMode = useIsZenMode()

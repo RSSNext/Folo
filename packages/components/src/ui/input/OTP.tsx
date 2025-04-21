@@ -2,46 +2,37 @@ import { cn } from "@follow/utils/utils"
 import { OTPInput, OTPInputContext } from "input-otp"
 import * as React from "react"
 
-const InputOTP = (
-  {
-    ref,
-    className,
-    containerClassName,
-    ...props
-  }: React.ComponentPropsWithoutRef<typeof OTPInput> & {
-    ref: React.RefObject<React.ElementRef<typeof OTPInput>>;
-  }
-) => (<OTPInput
-  ref={ref}
-  containerClassName={cn(
-    "flex items-center gap-2 has-[:disabled]:opacity-50",
-    containerClassName,
-  )}
-  className={cn("disabled:cursor-not-allowed", className)}
-  {...props}
-/>)
+const InputOTP = ({
+  ref,
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof OTPInput> & {
+  ref: React.RefObject<React.ElementRef<typeof OTPInput>>
+}) => (
+  <OTPInput
+    ref={ref}
+    containerClassName={cn(
+      "flex items-center gap-2 has-[:disabled]:opacity-50",
+      containerClassName,
+    )}
+    className={cn("disabled:cursor-not-allowed", className)}
+    {...props}
+  />
+)
 InputOTP.displayName = "InputOTP"
 
-const InputOTPGroup = (
-  {
-    ref,
-    className,
-    ...props
-  }: React.ComponentPropsWithoutRef<"div"> & {
-    ref: React.RefObject<React.ElementRef<"div">>;
-  }
-) => (<div ref={ref} className={cn("flex items-center", className)} {...props} />)
+const InputOTPGroup = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div"> & {
+  ref: React.RefObject<React.ElementRef<"div">>
+}) => <div ref={ref} className={cn("flex items-center", className)} {...props} />
 InputOTPGroup.displayName = "InputOTPGroup"
 
-const InputOTPSlot = (
-  {
-    ref,
-    index,
-    className,
-    ...props
-  }
-) => {
-  const inputOTPContext = React.useContext(OTPInputContext)
+const InputOTPSlot = ({ ref, index, className, ...props }) => {
+  const inputOTPContext = React.use(OTPInputContext)
   const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]!
 
   return (
@@ -65,22 +56,22 @@ const InputOTPSlot = (
 }
 InputOTPSlot.displayName = "InputOTPSlot"
 
-const InputOTPSeparator = (
-  {
-    ref,
-    className,
-    ...props
-  }: React.ComponentPropsWithoutRef<"div"> & {
-    ref: React.RefObject<React.ElementRef<"div">>;
-  }
-) => (<div
-  ref={ref}
-  className={cn("flex w-10 items-center justify-center", className)}
-  role="separator"
-  {...props}
->
-  <div className="bg-border h-1 w-3 rounded-full" />
-</div>)
+const InputOTPSeparator = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div"> & {
+  ref: React.RefObject<React.ElementRef<"div">>
+}) => (
+  <div
+    ref={ref}
+    className={cn("flex w-10 items-center justify-center", className)}
+    role="separator"
+    {...props}
+  >
+    <div className="bg-border h-1 w-3 rounded-full" />
+  </div>
+)
 InputOTPSeparator.displayName = "InputOTPSeparator"
 
 export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot }

@@ -5,7 +5,7 @@ import { cn } from "@follow/utils/utils"
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
 import Fuse from "fuse.js"
 import { AnimatePresence, m } from "motion/react"
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react"
 
 export type Suggestion = {
   name: string
@@ -25,21 +25,19 @@ export interface AutocompleteProps extends React.InputHTMLAttributes<HTMLInputEl
 
 const defaultSearchKeys = ["name", "value"]
 const defaultRenderSuggestion = (suggestion: any) => suggestion?.name
-export const Autocomplete = (
-  {
-    ref: forwardedRef,
-    suggestions,
-    renderSuggestion = defaultRenderSuggestion,
-    onSuggestionSelected,
-    maxHeight,
-    value,
-    searchKeys = defaultSearchKeys,
-    defaultValue,
-    ...inputProps
-  }: AutocompleteProps & {
-    ref: React.RefObject<HTMLInputElement>;
-  }
-) => {
+export const Autocomplete = ({
+  ref: forwardedRef,
+  suggestions,
+  renderSuggestion = defaultRenderSuggestion,
+  onSuggestionSelected,
+  maxHeight,
+  value,
+  searchKeys = defaultSearchKeys,
+  defaultValue,
+  ...inputProps
+}: AutocompleteProps & {
+  ref: React.RefObject<HTMLInputElement>
+}) => {
   const [selectedOptions, setSelectedOptions] = useState<NoInfer<Suggestion> | null>(
     () => suggestions.find((suggestion) => suggestion.value === value) || null,
   )

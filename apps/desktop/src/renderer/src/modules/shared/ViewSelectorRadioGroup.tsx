@@ -1,24 +1,14 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { FeedViewType, views } from "@follow/constants"
-import type { EntryModelSimple, FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
-import { cloneElement } from "react";
+import { cloneElement } from "react"
 
 import { useI18n } from "~/hooks/common"
 
 import { EntryItemSkeleton } from "../entry-column/item"
 import { EntryItemStateless } from "../entry-column/item-stateless"
 
-export const ViewSelectorRadioGroup = (
-  {
-    ref,
-    entries,
-    feed,
-    view,
-    className,
-    ...rest
-  }
-) => {
+export const ViewSelectorRadioGroup = ({ ref, entries, feed, view, className, ...rest }) => {
   const t = useI18n()
 
   return (

@@ -1,6 +1,6 @@
 import type { MotionProps, TargetAndTransition } from "motion/react"
 import { m as M } from "motion/react"
-import { createElement } from "react";
+import { createElement } from "react"
 
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 
@@ -12,14 +12,12 @@ export const m: typeof M = new Proxy(M, {
     if (cacheMap.has(p)) {
       return cacheMap.get(p)
     }
-    const MotionComponent = (
-      {
-        ref,
-        ...props
-      }: MotionProps & {
-        ref: React.RefObject<unknown>;
-      }
-    ) => {
+    const MotionComponent = ({
+      ref,
+      ...props
+    }: MotionProps & {
+      ref: React.RefObject<unknown>
+    }) => {
       const shouldReduceMotion = useReduceMotion()
       const nextProps = { ...props }
       if (shouldReduceMotion) {
