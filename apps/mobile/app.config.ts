@@ -135,14 +135,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-apple-authentication",
     "expo-av",
     [
-      require("./scripts/with-follow-assets.js"),
+      require("./plugins/with-follow-assets.js"),
       {
         // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
         assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
       },
     ],
-    [require("./scripts/with-follow-app-delegate.js")],
-    [require("./scripts/with-gradle-jvm-heap-size-increase.js")],
+    [require("./plugins/with-follow-app-delegate.js")],
+    [require("./plugins/with-gradle-jvm-heap-size-increase.js")],
     "expo-secure-store",
     "@react-native-firebase/app",
     "@react-native-firebase/crashlytics",
@@ -171,5 +171,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    [require("./plugins/android-trust-user-certs.js")],
   ],
 })
