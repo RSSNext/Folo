@@ -101,7 +101,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-localization",
-
     [
       "expo-splash-screen",
       {
@@ -141,8 +140,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
       },
     ],
-    [require("./plugins/with-follow-app-delegate.js")],
-    [require("./plugins/with-gradle-jvm-heap-size-increase.js")],
+    require("./plugins/with-follow-app-delegate.js"),
+    require("./plugins/with-gradle-jvm-heap-size-increase.js"),
     "expo-secure-store",
     "@react-native-firebase/app",
     "@react-native-firebase/crashlytics",
@@ -171,6 +170,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
-    [require("./plugins/android-trust-user-certs.js")],
+    process.env.PROFILE !== "production" && require("./plugins/android-trust-user-certs.js"),
   ],
 })
