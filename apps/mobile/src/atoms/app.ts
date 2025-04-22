@@ -1,3 +1,4 @@
+import type { DeviceType } from "expo-device"
 import { atom } from "jotai"
 
 export const loadingVisibleAtom = atom(false)
@@ -15,3 +16,9 @@ export const loadingAtom = atom<{
   done: null,
   thenable: null,
 })
+/**
+ * Do not use directly
+ */
+export const appAtoms = {
+  deviceType: atom<DeviceType | null>(null),
+}

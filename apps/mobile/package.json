@@ -61,6 +61,7 @@
     "expo-clipboard": "7.0.1",
     "expo-constants": "17.0.8",
     "expo-dev-client": "5.0.20",
+    "expo-device": "7.0.3",
     "expo-document-picker": "13.0.3",
     "expo-file-system": "18.0.12",
     "expo-haptics": "14.0.1",

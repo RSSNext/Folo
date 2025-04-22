@@ -181,7 +181,8 @@ const ModalScreenStackItems: FC<{
   if (!rootModalRoute) {
     return null
   }
-  const isStackModal = rootModalRoute.type !== "formSheet"
+  const isFormSheet = rootModalRoute.type === "formSheet"
+  const isStackModal = !isFormSheet
 
   const isFullScreen = rootModalRoute.type !== "modal" && rootModalRoute.type !== "formSheet"
 
@@ -229,16 +230,20 @@ const ModalScreenStackItems: FC<{
       </ModalScreenItemOptionsContext.Provider>
     )
   }
+
   return routes.map((route) => {
     return (
-      <WrappedScreenItem
-        key={route.id}
-        screenId={route.id}
-        stackPresentation={route.type}
-        screenOptions={route.screenOptions}
-      >
-        <ResolveView comp={route.Component} element={route.element} props={route.props} />
-      </WrappedScreenItem>
+      <ModalScreenItemOptionsContext.Provider value={modalScreenOptionsCtxValue} key={route.id}>
+        <ModalSafeAreaInsetsContext hasTopInset={!isFormSheet}>
+          <WrappedScreenItem
+            screenId={route.id}
+            stackPresentation={route.type}
+            screenOptions={route.screenOptions}
+          >
+            <ResolveView comp={route.Component} element={route.element} props={route.props} />
+          </WrappedScreenItem>
+        </ModalSafeAreaInsetsContext>
+      </ModalScreenItemOptionsContext.Provider>
     )
   })
 })

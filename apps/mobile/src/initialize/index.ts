@@ -8,6 +8,7 @@ import { initializeAppCheck } from "./app-check"
 import { initBackgroundFetch } from "./background"
 import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
+import { initDeviceType } from "./device"
 import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
@@ -17,6 +18,7 @@ export const initializeApp = async () => {
   console.log(`Initialize...`)
 
   const now = Date.now()
+  initDeviceType()
   initializeDb()
 
   await apm("migrateDatabase", migrateDatabase)

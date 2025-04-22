@@ -2,7 +2,7 @@ import { deleteAsync } from "expo-file-system"
 import type { ReactNode } from "react"
 import { Button, Text, View } from "react-native"
 
-import { LoadingIndicator } from "../components/ui/loading"
+import { PlatformActivityIndicator } from "../components/ui/loading/PlatformActivityIndicator"
 import { getDbPath } from "../database"
 import { BugCuteReIcon } from "../icons/bug_cute_re"
 import { useDatabaseMigration } from "../initialize/migration"
@@ -35,9 +35,8 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
   if (!success) {
     return (
       <View className="flex-1 items-center justify-center">
-        <LoadingIndicator>
-          <Text>Database Migrations...</Text>
-        </LoadingIndicator>
+        <PlatformActivityIndicator />
+        <Text className="text-label mt-4">Database Migrations...</Text>
       </View>
     )
   }
