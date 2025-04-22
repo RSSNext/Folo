@@ -14,6 +14,7 @@ import {
 import type { ScreenStackHeaderConfigProps } from "react-native-screens"
 import { ScreenStack } from "react-native-screens"
 
+import { isAndroid } from "../platform"
 import {
   AttachNavigationScrollViewContext,
   SetAttachNavigationScrollViewContext,
