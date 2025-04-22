@@ -225,7 +225,7 @@ export const InternalNavigationHeader = ({
   )
   const rootTitleBarStyle = useAnimatedStyle(() => {
     const styles = {
-      paddingTop: sheetModal ? 0 : insets.top,
+      paddingTop: insets.top,
       position: "relative",
       overflow: "hidden",
     } satisfies DefaultStyle

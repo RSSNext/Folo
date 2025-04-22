@@ -4,6 +4,7 @@ import { Text, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
@@ -16,6 +17,7 @@ import { whoamiQueryKey } from "@/src/store/user/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 export const TwoFactorAuthScreen: NavigationControllerView = () => {
+  const insets = useSafeAreaInsets()
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
 
@@ -40,7 +42,7 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
   })
 
   return (
-    <View className="p-safe flex-1">
+    <View className="flex-1" style={{ paddingTop: insets.top + 56 }}>
       <HeaderCloseOnly />
       <TouchableWithoutFeedback
         onPress={() => {

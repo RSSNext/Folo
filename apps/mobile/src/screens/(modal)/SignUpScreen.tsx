@@ -6,6 +6,7 @@ import { useController, useForm } from "react-hook-form"
 import type { TextInputProps } from "react-native"
 import { Text, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
 import { SubmitButton } from "@/src/components/common/SubmitButton"
@@ -162,13 +163,14 @@ function EmailSignUp() {
 }
 
 export const SignUpScreen: NavigationControllerView = () => {
+  const insets = useSafeAreaInsets()
   const scaledHeight = useScaleHeight()
   const logoSize = scaledHeight(80)
   const gapSize = scaledHeight(28)
   const fontSize = scaledHeight(28)
   const lineHeight = scaledHeight(32)
   return (
-    <View className="p-safe flex-1">
+    <View className="flex-1" style={{ paddingTop: insets.top + 56 }}>
       <HeaderCloseOnly />
       <TouchableWithoutFeedback
         onPress={() => {

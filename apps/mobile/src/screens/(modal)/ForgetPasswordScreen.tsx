@@ -14,7 +14,7 @@ import { toast } from "@/src/lib/toast"
 import { getTokenHeaders } from "@/src/lib/token"
 
 export const ForgetPasswordScreen: NavigationControllerView = () => {
-  const offset = useSafeAreaInsets()
+  const insets = useSafeAreaInsets()
   const [email, setEmail] = useState("")
 
   const navigation = useNavigation()
@@ -48,7 +48,7 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
     >
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <HeaderCloseOnly />
-        <View className="p-safe px-safe-offset-4 flex-1 justify-between">
+        <View className="flex-1 justify-between" style={{ paddingTop: insets.bottom + 56 }}>
           <View className="items-center">
             <Text className="text-text text-center text-4xl font-bold">Forgot password?</Text>
             <Text className="text-text mx-10 mt-6 text-lg">
@@ -76,7 +76,7 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
             title="Continue"
             className="self-stretch"
             style={{
-              bottom: offset.bottom + 30,
+              bottom: insets.bottom + 30,
             }}
             disabled={!email || forgetPasswordMutation.isPending}
             isLoading={forgetPasswordMutation.isPending}
