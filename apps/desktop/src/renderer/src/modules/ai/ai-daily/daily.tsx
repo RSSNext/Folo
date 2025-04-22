@@ -197,15 +197,6 @@ export const DailyReportContent: Component<DailyReportContentProps> = ({
             )}
           </AutoResizeHeight>
         </ScrollArea.ScrollArea>
-        {!!content.data && (
-          <FlatMarkAllReadButton
-            className="ml-auto"
-            filter={{
-              startTime: startDate,
-              endTime: endDate,
-            }}
-          />
-        )}
       </CardContent>
     </Card>
   )
