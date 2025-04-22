@@ -73,6 +73,7 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           packager: pnpm
+          eas-cache: false
 
       - name: Install dependencies
         run: pnpm install
