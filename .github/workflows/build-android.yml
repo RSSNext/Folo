@@ -34,7 +34,7 @@ jobs:
           runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.RUNNER_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
           available=$(echo "$runners" | jq '.runners[]? | select(.status == "online" and .busy == false and .labels[] .name == "Linux")')
           if [ -n "$available" ]; then
-            echo "runner-label=Linux" >> $GITHUB_OUTPUT
+            echo "runner-label=[self-hosted, Linux]" >> $GITHUB_OUTPUT
           else
             echo "runner-label=ubuntu-latest" >> $GITHUB_OUTPUT
           fi
@@ -72,6 +72,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: pnpm
 
       - name: Install dependencies
         run: pnpm install
