@@ -58,6 +58,10 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
+      - name: 📦 Setup yarn
+        if: needs.check-runner.outputs.runner-label != 'macos-latest'
+        run: npm install --global yarn
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -72,7 +76,6 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-          packager: pnpm
           eas-cache: false
 
       - name: Install dependencies
