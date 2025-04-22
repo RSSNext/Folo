@@ -133,7 +133,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   const { publishedAt } = entry
 
   return (
-    <View className="mt-4 flex flex-row items-center gap-4 px-4">
+    <View className="mt-4 flex flex-row items-center gap-4 px-5">
       {feed && (
         <View className="flex shrink flex-row items-center gap-2">
           <FeedIcon feed={feed} />

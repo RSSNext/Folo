@@ -16,7 +16,7 @@ import type { Components } from "hast-util-to-jsx-runtime"
 import type { Variant } from "motion/react"
 import { m, useAnimationControls } from "motion/react"
 import type { FC } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import { MenuItemText } from "~/atoms/context-menu"
@@ -53,6 +53,7 @@ import { Queries } from "~/queries"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 
+import { remarkSnowflakeId } from "./plugins/parse-snowflake"
 import type { DailyItemProps, DailyView } from "./types"
 import { useParseDailyDate } from "./useParseDailyDate"
 
@@ -176,17 +177,28 @@ export const DailyReportContent: Component<DailyReportContentProps> = ({
   const content = useQueryData({ endDate, startDate, view })
 
   const RelatedEntryLink = useState(() => createRelatedEntryLink("modal"))[0]
+
   return (
     <Card className="border-none bg-transparent">
       <CardContent className={cn("space-y-0 p-0", className)}>
-        <ScrollArea.ScrollArea mask={false} flex viewportClassName="max-h-[calc(100vh-176px)]">
+        <ScrollArea.ScrollArea mask={false} flex viewportClassName="h-[calc(100vh-176px)]">
           <AutoResizeHeight spring>
             {content.isLoading ? (
-              <LoadingCircle size="large" className="mt-8 text-center" />
+              <LoadingCircle
+                size="large"
+                className="center flex h-[calc(100vh-176px)] text-center"
+              />
             ) : (
               !!content.data && (
                 <Markdown
+                  applyMiddleware={(pipeline) => {
+                    pipeline.use(remarkSnowflakeId)
+
+                    return pipeline
+                  }}
                   components={{
+                    // @ts-expect-error
+                    "snowflake-id": SnowflakeId,
                     a: RelatedEntryLink as Components["a"],
                   }}
                   className="prose-sm prose-p:my-1 prose-ul:my-1 prose-ul:list-outside prose-ul:list-disc prose-li:marker:text-accent mt-4 px-6"
@@ -265,8 +277,7 @@ const createRelatedEntryLink = (variant: "toast" | "modal") => (props: LinkProps
   const { href, children } = props
   const entryId = isBizId(href) ? href : null
 
-  const { present } = useModalStack()
-
+  const peekModal = usePeekModal()
   if (!entryId) {
     return <MarkdownLink {...props} />
   }
@@ -275,49 +286,7 @@ const createRelatedEntryLink = (variant: "toast" | "modal") => (props: LinkProps
       type="button"
       className="follow-link--underline text-foreground cursor-pointer font-semibold no-underline"
       onClick={() => {
-        const basePresentProps = {
-          clickOutsideToDismiss: true,
-          title: "Entry Preview",
-        }
-
-        if (variant === "toast") {
-          present({
-            ...basePresentProps,
-            CustomModalComponent: PlainModal,
-            content: () => <EntryToastPreview entryId={entryId} />,
-            overlay: false,
-            modal: false,
-            modalContainerClassName: "right-0 left-[auto]",
-          })
-        } else {
-          present({
-            ...basePresentProps,
-            autoFocus: false,
-            modalClassName:
-              "relative mx-auto mt-[10vh] scrollbar-none max-w-full overflow-auto px-2 lg:max-w-[65rem] lg:p-0",
-            // eslint-disable-next-line @eslint-react/no-nested-component-definitions
-            CustomModalComponent: ({ children }) => {
-              const { feedId } = useEntry(entryId) || {}
-
-              return (
-                <PeekModal
-                  rightActions={[
-                    {
-                      onClick: () => {},
-                      label: "More Actions",
-                      icon: <EntryMoreActions entryId={entryId} />,
-                    },
-                  ]}
-                  to={`/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`}
-                >
-                  {children}
-                </PeekModal>
-              )
-            },
-            content: () => <EntryModalPreview entryId={entryId} />,
-            overlay: true,
-          })
-        }
+        peekModal(entryId, variant)
       }}
     >
       {children}
@@ -326,6 +295,57 @@ const createRelatedEntryLink = (variant: "toast" | "modal") => (props: LinkProps
   )
 }
 
+const usePeekModal = () => {
+  const { present } = useModalStack()
+  return useCallback(
+    (entryId: string, variant: "toast" | "modal") => {
+      const basePresentProps = {
+        clickOutsideToDismiss: true,
+        title: "Entry Preview",
+      }
+
+      if (variant === "toast") {
+        present({
+          ...basePresentProps,
+          CustomModalComponent: PlainModal,
+          content: () => <EntryToastPreview entryId={entryId} />,
+          overlay: false,
+          modal: false,
+          modalContainerClassName: "right-0 left-[auto]",
+        })
+      } else {
+        present({
+          ...basePresentProps,
+          autoFocus: false,
+          modalClassName:
+            "relative mx-auto mt-[10vh] scrollbar-none max-w-full overflow-auto px-2 lg:max-w-[65rem] lg:p-0",
+
+          CustomModalComponent: ({ children }) => {
+            const { feedId } = useEntry(entryId) || {}
+
+            return (
+              <PeekModal
+                rightActions={[
+                  {
+                    onClick: () => {},
+                    label: "More Actions",
+                    icon: <EntryMoreActions entryId={entryId} />,
+                  },
+                ]}
+                to={`/timeline/view-${getRouteParams().view}/${feedId}/${entryId}`}
+              >
+                {children}
+              </PeekModal>
+            )
+          },
+          content: () => <EntryModalPreview entryId={entryId} />,
+          overlay: true,
+        })
+      }
+    },
+    [present],
+  )
+}
 const EntryToastPreview = ({ entryId }: { entryId: string }) => {
   useAuthQuery(Queries.entries.byId(entryId))
 
@@ -506,5 +526,29 @@ const EntryMoreActions: FC<{ entryId: string }> = ({ entryId }) => {
         </DropdownMenuContent>
       </RootPortal>
     </DropdownMenu>
+  )
+}
+
+interface SnowflakeIdProps {
+  id: string
+  children?: React.ReactNode
+  index: number
+}
+
+const SnowflakeId: React.FC<SnowflakeIdProps> = ({ id: entryId, index }) => {
+  const peekModal = usePeekModal()
+
+  return (
+    <button
+      type="button"
+      className="follow-link--underline text-foreground cursor-pointer font-semibold no-underline"
+      onClick={() => {
+        peekModal(entryId, "modal")
+      }}
+    >
+      <sup className="inline-flex items-center gap-0.5 font-medium">
+        <span className="text-[0.65rem] opacity-70">{index}</span>
+      </sup>
+    </button>
   )
 }

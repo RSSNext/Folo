@@ -18,19 +18,18 @@ const migrateStore = {
   error: null as Error | null,
 }
 
-export const migrateDatabase = () => {
-  return migrate(db, migrations)
-    .then(() => {
-      migrateStore.success = true
-      storeChangeFn?.()
-    })
-    .catch((error) => {
-      migrateStore.error = error
+export const migrateDatabase = async () => {
+  try {
+    await migrate(db, migrations)
+    migrateStore.success = true
+    storeChangeFn?.()
+  } catch (error) {
+    migrateStore.error = error as Error
 
-      console.error(error)
+    console.error(error)
 
-      storeChangeFn?.()
-    })
+    storeChangeFn?.()
+  }
 }
 
 const getSnapshot = () => {

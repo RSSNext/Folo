@@ -103,8 +103,8 @@ const Wrapper: Component<{
                   "flex justify-end gap-3 p-2 text-white/70 duration-200 [&_button]:hover:text-white",
                   "hover:!transform-none hover:!opacity-100",
 
-                  sideContent ? "rounded-bl-xl" : "rounded-xl",
-                  "bg-black/30",
+                  // sideContent ? "rounded-bl-xl" : "rounded-xl",
+                  "bg-black/50",
                 )}
                 onClick={stopPropagation}
               >

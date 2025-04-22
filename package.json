@@ -97,7 +97,8 @@
       "@microflash/remark-callout-directives": "patches/@microflash__remark-callout-directives.patch",
       "react-native-track-player": "patches/react-native-track-player.patch",
       "react-native-sheet-transitions": "patches/react-native-sheet-transitions.patch",
-      "react-native-screens": "patches/react-native-screens.patch"
+      "react-native-screens": "patches/react-native-screens.patch",
+      "expo-image": "patches/expo-image.patch"
     },
     "overrides": {
       "@electron/node-gyp": "10.2.0-electron.2",

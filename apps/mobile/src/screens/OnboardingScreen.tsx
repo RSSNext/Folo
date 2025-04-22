@@ -1,8 +1,9 @@
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native"
+import { Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { kv } from "../lib/kv"
 import { useNavigation } from "../lib/navigation/hooks"
@@ -16,6 +17,7 @@ import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "../store/user
 
 export const OnboardingScreen: NavigationControllerView = () => {
   const { t } = useTranslation("common")
+  const insets = useSafeAreaInsets()
 
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
@@ -39,43 +41,44 @@ export const OnboardingScreen: NavigationControllerView = () => {
   }, [])
 
   return (
-    <View className="bg-system-grouped-background flex-1 px-6">
-      <SafeAreaView className="flex-1">
-        <ProgressIndicator
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          setCurrentStep={setCurrentStep}
-        />
+    <View
+      className="bg-system-grouped-background flex-1 px-6"
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
+      <ProgressIndicator
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        setCurrentStep={setCurrentStep}
+      />
 
-        <Animated.View
-          className={"flex-1"}
-          key={`step-${currentStep}`}
-          exiting={FadeOutLeft}
-          entering={FadeInRight}
+      <Animated.View
+        className={"flex-1"}
+        key={`step-${currentStep}`}
+        exiting={FadeOutLeft}
+        entering={FadeInRight}
+      >
+        {/* Content */}
+        {currentStep === 1 && <StepWelcome />}
+        {currentStep === 2 && <StepPreferences />}
+        {currentStep === 3 && <StepInterests />}
+        {currentStep === 4 && <StepFinished />}
+      </Animated.View>
+
+      {/* Navigation buttons */}
+      <View className="mb-6 px-6">
+        <TouchableOpacity
+          onPress={handleNext}
+          className="bg-accent w-full items-center rounded-xl py-4"
         >
-          {/* Content */}
-          {currentStep === 1 && <StepWelcome />}
-          {currentStep === 2 && <StepPreferences />}
-          {currentStep === 3 && <StepInterests />}
-          {currentStep === 4 && <StepFinished />}
-        </Animated.View>
-
-        {/* Navigation buttons */}
-        <View className="mb-6 px-6">
-          <TouchableOpacity
-            onPress={handleNext}
-            className="bg-accent w-full items-center rounded-xl py-4"
-          >
-            <Text className="text-lg font-bold text-white">
-              {currentStep < totalSteps - 1
-                ? t("words.next")
-                : currentStep === totalSteps - 1
-                  ? t("words.finishSetup")
-                  : t("words.letsGo")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+          <Text className="text-lg font-bold text-white">
+            {currentStep < totalSteps - 1
+              ? t("words.next")
+              : currentStep === totalSteps - 1
+                ? t("words.finishSetup")
+                : t("words.letsGo")}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }

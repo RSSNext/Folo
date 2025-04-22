@@ -18,7 +18,8 @@ export const initializeApp = async () => {
   console.log(`Initialize...`)
 
   const now = Date.now()
-  initDeviceType()
+
+  await initDeviceType()
   initializeDb()
 
   await apm("migrateDatabase", migrateDatabase)

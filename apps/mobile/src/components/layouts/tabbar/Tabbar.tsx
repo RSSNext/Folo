@@ -16,6 +16,7 @@ import { SetBottomTabBarHeightContext } from "@/src/components/layouts/tabbar/co
 import { gentleSpringPreset, quickSpringPreset, softSpringPreset } from "@/src/constants/spring"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import type { TabbarIconProps, TabScreenProps } from "@/src/lib/navigation/bottom-tab/types"
+import { isAndroid } from "@/src/lib/platform"
 import { PlayerTabBar } from "@/src/modules/player/PlayerTabBar"
 import { accentColor } from "@/src/theme/colors"
 
@@ -73,7 +74,8 @@ export const Tabbar: FC<{
         transform: [{ translateY }],
       }}
       onLayout={(e) => {
-        setTabBarHeight(e.nativeEvent.layout.height)
+        const tabBarHeight = e.nativeEvent.layout.height + (isAndroid ? insets.bottom : 0)
+        setTabBarHeight(tabBarHeight)
       }}
     >
       <TabBarBackground />
@@ -260,7 +262,7 @@ const TabBarBackground = () => {
         <ThemedBlurView style={styles.blurEffect} />
       </Animated.View>
       <Animated.View
-        className="bg-non-opaque-separator dark:bg-opaque-separator/50 absolute top-0 w-full"
+        className="bg-opaque-separator/50 absolute top-0 w-full"
         style={[
           separatorStyle,
           {
