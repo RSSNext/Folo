@@ -78,6 +78,7 @@ export const Image = forwardRef<ExpoImage, ImageProps>(
           blurhash,
           ...(typeof rest.placeholder === "object" && { ...rest.placeholder }),
         }}
+        placeholderContentFit="cover"
         style={{
           aspectRatio,
           ...(typeof rest.style === "object" && { ...rest.style }),

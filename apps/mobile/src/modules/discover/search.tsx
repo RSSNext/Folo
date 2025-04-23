@@ -21,7 +21,6 @@ import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import SearchScreen from "@/src/screens/(headless)/search"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { AddFeedButton } from "../screen/action"
 import { useSearchPageContext } from "./ctx"
 import { DiscoverContext } from "./DiscoverContext"
 import { SearchTabBar } from "./SearchTabBar"
@@ -85,7 +84,6 @@ export const DiscoverHeader = () => {
 
       <View style={styles.header}>
         <PlaceholerSearchBar />
-        <AddFeedButton />
       </View>
     </View>
   )

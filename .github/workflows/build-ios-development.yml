@@ -32,8 +32,8 @@ jobs:
             echo "runner-label=macos-latest" >> $GITHUB_OUTPUT
           fi
 
-  build-on-self-hosted:
-    name: Build iOS IPA for device on self-hosted runner
+  build-ipa-device-self-hosted:
+    name: Build iOS IPA for device (self-hosted)
     if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'self-hosted'
     needs: check-runner
     runs-on: [self-hosted, macOS]
@@ -69,8 +69,8 @@ jobs:
         run: |
           rm -rf ~/Library/Developer/Xcode/DerivedData
 
-  build-on-github:
-    name: Build iOS IPA for device on GitHub-hosted runner
+  build-ipa-device-github:
+    name: Build iOS IPA for device (GitHub-hosted)
     if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'macos-latest'
     needs: check-runner
     runs-on: macos-latest

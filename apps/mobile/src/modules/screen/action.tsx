@@ -8,7 +8,6 @@ import { Share, TouchableOpacity, View } from "react-native"
 import { setGeneralSetting, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { UIBarButton } from "@/src/components/ui/button/UIBarButton"
-import { AddCuteReIcon } from "@/src/icons/add_cute_re"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { RoundCuteFiIcon } from "@/src/icons/round_cute_fi"
 import { RoundCuteReIcon } from "@/src/icons/round_cute_re"
@@ -23,7 +22,6 @@ import { getFeed } from "@/src/store/feed/getter"
 import { useWhoami } from "@/src/store/user/hooks"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { AddFeedDialog } from "../dialogs/AddFeedDialog"
 import { MarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
 
 export const ActionGroup = ({ children, className }: PropsWithChildren<{ className?: string }>) => {
@@ -106,18 +104,6 @@ export const UnreadOnlyActionButton = ({ variant = "primary" }: HeaderActionButt
       }}
       selected={unreadOnly}
       overlay={false}
-    />
-  )
-}
-
-export const AddFeedButton = () => {
-  return (
-    <UIBarButton
-      label="Add Feed"
-      normalIcon={<AddCuteReIcon color={accentColor} />}
-      onPress={() => {
-        Dialog.show(AddFeedDialog)
-      }}
     />
   )
 }
