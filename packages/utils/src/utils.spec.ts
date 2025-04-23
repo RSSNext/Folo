@@ -29,9 +29,9 @@ describe("utils", () => {
 
   test("toScientificNotation", () => {
     // Test numbers below threshold (should return original number)
-    expect(toScientificNotation(123n, 3)).toBe("123")
-    expect(toScientificNotation(999n, 3)).toBe("999")
-    expect(toScientificNotation(1234n, 5)).toBe("1,234")
+    expect(toScientificNotation(123n, 3)).toBe("123.00")
+    expect(toScientificNotation(999n, 3)).toBe("999.00")
+    expect(toScientificNotation(1234n, 5)).toBe("1,234.00")
 
     // Test numbers above threshold (should convert to scientific notation)
     expect(toScientificNotation(1234n, 3)).toBe("1.23e+3")
@@ -40,14 +40,13 @@ describe("utils", () => {
 
     // Test with decimal numbers
     expect(toScientificNotation([123456n, 2], 3)).toBe("1.23e+3")
-    expect(toScientificNotation([1234n, 4], 3)).toBe("0.1234")
 
     // Test with leading zeros
     expect(toScientificNotation(1234n, 3)).toBe("1.23e+3")
-    expect(toScientificNotation([1234n, 4], 3)).toBe("0.1234")
+    expect(toScientificNotation([1234n, 4], 3)).toBe("0.12")
 
     // Test with larger threshold
-    expect(toScientificNotation(12345678n, 8)).toBe("12,345,678")
+    expect(toScientificNotation(12345678n, 8)).toBe("12,345,678.00")
     expect(toScientificNotation(123456789n, 8)).toBe("1.23e+8")
 
     // Edge cases
@@ -71,10 +70,13 @@ describe("utils", () => {
     expect(toScientificNotation(1234567n, 3, "en-US")).toBe("1.23e+6")
 
     // Test with integer numbers below threshold with different locales
-    expect(toScientificNotation(1234n, 5, "en-US")).toBe("1,234")
-    expect(toScientificNotation(1234n, 5, "de-DE")).toBe("1.234")
+    expect(toScientificNotation(1234n, 5, "en-US")).toBe("1,234.00")
+    expect(toScientificNotation(1234n, 5, "de-DE")).toBe("1.234,00")
 
-    expect(toScientificNotation(1234n, 5, "fr-FR")).toBe("1 234")
+    expect(toScientificNotation(1234n, 5, "fr-FR")).toBe("1 234,00")
+
+    // Test with real cases
+    expect(toScientificNotation([60386874408275410679920n, 18], 6)).toBe("60,386.87")
   })
 
   test("omitShallow", () => {

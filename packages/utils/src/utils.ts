@@ -291,7 +291,8 @@ export const toScientificNotation = (
     // Use provided locale or default to en-US
     const localeString = locale?.toString() || "en-US"
     const formatter = new Intl.NumberFormat(localeString, {
-      maximumFractionDigits: decimals,
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
     })
 
     // Convert bigint to number with correct decimal places
