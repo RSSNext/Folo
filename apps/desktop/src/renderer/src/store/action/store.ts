@@ -1,4 +1,5 @@
 import type { ActionModel, ActionsResponse } from "@follow/models/types"
+import { isEqual } from "es-toolkit/compat"
 
 import { apiClient } from "~/lib/api-fetch"
 
@@ -7,6 +8,7 @@ import type { ActionState } from "./types"
 
 export const useActionStore = createZustandStore<ActionState>("action")(() => ({
   actions: [],
+  originalActions: [],
   isDirty: false,
 }))
 
@@ -17,6 +19,7 @@ class ActionActionStatic {
   init(actions: ActionModel[]) {
     set((state) => {
       state.actions = actions
+      state.originalActions = structuredClone(actions)
     })
   }
 
@@ -27,21 +30,21 @@ class ActionActionStatic {
         condition: [],
         result: {},
       })
-      state.isDirty = true
+      state.isDirty = !isEqual(state.actions, state.originalActions)
     })
   }
 
   removeByIndex(index: number) {
     set((state) => {
       state.actions.splice(index, 1)
-      state.isDirty = state.actions.length > 0
+      state.isDirty = !isEqual(state.actions, state.originalActions)
     })
   }
 
   updateByIndex(index: number, update: (action: ActionModel) => void) {
     set((state) => {
       update(state.actions[index]!)
-      state.isDirty = true
+      state.isDirty = !isEqual(state.actions, state.originalActions)
     })
   }
 
@@ -92,6 +95,7 @@ class ActionActionStatic {
       },
     })
     set((state) => {
+      state.originalActions = structuredClone(get().actions)
       state.isDirty = false
     })
   }
