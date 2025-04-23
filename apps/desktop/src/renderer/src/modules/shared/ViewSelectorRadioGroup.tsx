@@ -19,6 +19,9 @@ export const ViewSelectorRadioGroup = forwardRef<
 >(({ entries, feed, view, className, ...rest }, ref) => {
   const t = useI18n()
 
+  const showPreview = feed && entries && entries.length > 0
+  const showLoading = !!feed && !showPreview
+
   return (
     <Card>
       <CardHeader className={cn("grid grid-cols-6 space-y-0 px-2 py-3", className)}>
@@ -53,15 +56,14 @@ export const ViewSelectorRadioGroup = forwardRef<
           </div>
         ))}
       </CardHeader>
-      {!!feed && !!entries ? (
+      {showPreview && (
         <CardContent className="space-y-2 p-2">
           {entries.slice(0, 2).map((entry) => (
             <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
           ))}
         </CardContent>
-      ) : (
-        <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />
       )}
+      {showLoading && <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />}
     </Card>
   )
 })
