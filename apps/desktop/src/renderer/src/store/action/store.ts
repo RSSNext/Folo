@@ -34,7 +34,7 @@ class ActionActionStatic {
   removeByIndex(index: number) {
     set((state) => {
       state.actions.splice(index, 1)
-      state.isDirty = true
+      state.isDirty = state.actions.length > 0
     })
   }
 
