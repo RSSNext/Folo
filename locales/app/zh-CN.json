@@ -372,6 +372,7 @@
   "tip_modal.tip_title": "打赏 Power",
   "tip_modal.unclaimed_feed": "这个订阅源还没有被认证，收到的 Power 将存放在区块链直到源所有者完成认证。",
   "trending.entry": "热门条目",
+  "trending.entry_no_results": "没有找到热门条目",
   "trending.feed": "热门订阅源",
   "trending.list": "热门列表",
   "trending.user": "热门用户",

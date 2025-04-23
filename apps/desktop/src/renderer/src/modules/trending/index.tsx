@@ -264,7 +264,10 @@ const TrendingFeeds = ({ data }: { data: FeedModel[] }) => {
               </a>
 
               <div className="pr-2">
-                <UserCount className="-mr-2" count={(feed as any).subscriberCount} />
+                <UserCount
+                  className="-mr-2 group-hover:opacity-0"
+                  count={(feed as any).subscriberCount}
+                />
 
                 <Button
                   type="button"
@@ -293,31 +296,35 @@ const TrendingEntries = ({ data }: { data: Models.TrendingEntry[] }) => {
     <section className="mt-8 w-full text-left">
       <h2 className="my-2 text-xl font-bold">{t("trending.entry")}</h2>
 
-      <ul className="mt-2 list-inside list-disc space-y-1">
-        {filteredData.map((entry) => {
-          return (
-            <li
-              key={entry.id}
-              className="marker:text-accent relative grid w-full grid-cols-[1fr_auto] gap-2 whitespace-nowrap py-0.5"
-            >
-              <div className="m-0 min-w-0 truncate p-0">
-                <a
-                  href={entry.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="follow-link--underline truncate text-sm"
-                >
-                  {entry.title}
-                </a>
-              </div>
-              <span className="flex items-center gap-0.5 text-xs tabular-nums opacity-60">
-                <i className="i-mingcute-book-2-line" />
-                <span>{entry.readCount}</span>
-              </span>
-            </li>
-          )
-        })}
-      </ul>
+      {filteredData.length > 0 ? (
+        <ul className="mt-2 list-inside list-disc space-y-1">
+          {filteredData.map((entry) => {
+            return (
+              <li
+                key={entry.id}
+                className="marker:text-accent relative grid w-full grid-cols-[1fr_auto] gap-2 whitespace-nowrap py-0.5"
+              >
+                <div className="m-0 min-w-0 truncate p-0">
+                  <a
+                    href={entry.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="follow-link--underline truncate text-sm"
+                  >
+                    {entry.title}
+                  </a>
+                </div>
+                <span className="flex items-center gap-0.5 text-xs tabular-nums opacity-60">
+                  <i className="i-mingcute-book-2-line" />
+                  <span>{entry.readCount}</span>
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <div className="mt-2 text-center text-sm opacity-80">{t("trending.entry_no_results")}</div>
+      )}
     </section>
   )
 }

@@ -373,6 +373,7 @@
   "tip_modal.tip_title": "Tip Power",
   "tip_modal.unclaimed_feed": "No one has claimed this feed yet. The received Power will be securely held in the blockchain contract until it is claimed.",
   "trending.entry": "Trending Entries",
+  "trending.entry_no_results": "No trending entries found",
   "trending.feed": "Trending Feeds",
   "trending.list": "Trending Lists",
   "trending.user": "Trending Users",
