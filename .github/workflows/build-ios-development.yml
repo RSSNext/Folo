@@ -36,9 +36,7 @@ jobs:
     name: Build iOS IPA for device
     if: github.secret_source != 'None'
     needs: check-runner
-    runs-on:
-      labels: ${{ needs.check-runner.outputs.runner-label }}
-      group: macOS-runners
+    runs-on: ${{ fromJson(needs.check-runner.outputs.runner-label) }})
 
     steps:
       - name: 📦 Checkout code
