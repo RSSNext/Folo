@@ -1,3 +1,5 @@
+import { useEvent } from "expo"
+import type { VideoSource } from "expo-video"
 import { useVideoPlayer, VideoView } from "expo-video"
 import { useRef, useState } from "react"
 
@@ -5,10 +7,12 @@ import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 
 export function VideoPlayer({
   source,
+  placeholder,
   width,
   height,
 }: {
-  source: string
+  source: VideoSource
+  placeholder?: React.ReactNode
   width?: number
   height?: number
 }) {
@@ -19,6 +23,7 @@ export function VideoPlayer({
     player.muted = true
     player.play()
   })
+  const { status } = useEvent(player, "statusChange", { status: player.status })
   return (
     <NativePressable
       onPress={() => {
@@ -31,6 +36,7 @@ export function VideoPlayer({
         style={{
           width: "100%",
           aspectRatio: width && height ? width / height : 1,
+          display: status === "readyToPlay" ? "flex" : "none",
         }}
         contentFit={isFullScreen ? "contain" : "cover"}
         player={player}
@@ -45,6 +51,7 @@ export function VideoPlayer({
           player.muted = true
         }}
       />
+      {status !== "readyToPlay" && placeholder}
     </NativePressable>
   )
 }
