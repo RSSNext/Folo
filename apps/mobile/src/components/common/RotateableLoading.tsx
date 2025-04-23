@@ -1,5 +1,6 @@
 import type { FC } from "react"
 import { useEffect } from "react"
+import type { StyleProp, ViewStyle } from "react-native"
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -11,10 +12,17 @@ import Animated, {
 import { Loading3CuteReIcon } from "@/src/icons/loading_3_cute_re"
 
 export interface RotateableLoadingProps {
+  className?: string
+  style?: StyleProp<ViewStyle>
   size?: number
   color?: string
 }
-export const RotateableLoading: FC<RotateableLoadingProps> = ({ size = 36, color = "#fff" }) => {
+export const RotateableLoading: FC<RotateableLoadingProps> = ({
+  size = 36,
+  color = "#fff",
+  className,
+  style,
+}) => {
   const rotate = useSharedValue(0)
   useEffect(() => {
     rotate.value = withRepeat(
@@ -28,11 +36,14 @@ export const RotateableLoading: FC<RotateableLoadingProps> = ({ size = 36, color
   }, [rotate])
 
   const rotateStyle = useAnimatedStyle(() => ({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     transform: [{ rotate: `${rotate.value}deg` }],
   }))
 
   return (
-    <Animated.View style={rotateStyle}>
+    <Animated.View className={className} style={[rotateStyle, style]}>
       <Loading3CuteReIcon height={size} width={size} color={color} />
     </Animated.View>
   )

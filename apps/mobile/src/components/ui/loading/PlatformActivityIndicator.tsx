@@ -12,6 +12,11 @@ export const PlatformActivityIndicator: FC<
   return Platform.OS === "ios" ? (
     <ActivityIndicator {...props} />
   ) : (
-    <RotateableLoading color={props.color} size={props.size === "small" ? 20 : 36} />
+    <RotateableLoading
+      className={props.className}
+      style={props.style}
+      color={props.color}
+      size={props.size === "small" ? 20 : 36}
+    />
   )
 }
