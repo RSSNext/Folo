@@ -10,7 +10,6 @@ import { useSharedValue } from "react-native-reanimated"
 import { selectTimeline, useSelectedFeed } from "@/src/modules/screen/atoms"
 import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 
-import { setHorizontalScrolling } from "./atoms"
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"
 
 const AnimatedPagerView = Animated.createAnimatedComponent<typeof PagerView>(PagerView)
@@ -96,7 +95,6 @@ export function PagerList({
           setDragging(false)
         }
 
-        setHorizontalScrolling(pageScrollState !== "idle")
         if (pageScrollState === "settling") {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         }

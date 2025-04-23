@@ -1,6 +1,6 @@
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"

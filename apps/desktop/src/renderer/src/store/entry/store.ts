@@ -7,8 +7,8 @@ import type {
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
-import { omitObjectUndefinedValue } from "@follow/utils/utils"
-import { isNil, merge, omit } from "es-toolkit/compat"
+import { omitObjectUndefinedValue, omitShallow } from "@follow/utils/utils"
+import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
 
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty, setFeedUnreadDirty } from "~/atoms/feed"
@@ -77,11 +77,11 @@ class EntryActions {
       },
     })
     if (data) {
-      this.upsertMany([
-        // patch data, should omit `read` because the network race condition or server cache
-        omit(data, "read") as any,
-      ])
-      feedActions.upsertMany([data.feeds])
+      // @ts-expect-error
+      // patch data, should omit `read` because the network race condition or server cache
+      const { read, ...nextData } = data
+      this.upsertMany([nextData as any])
+      feedActions.upsertMany([nextData.feeds])
     }
 
     return data
@@ -94,8 +94,10 @@ class EntryActions {
       },
     })
     if (data) {
+      // @ts-expect-error
       // patch data, should omit `read` because the network race condition or server cache
-      const nextData = omit(data, "feeds", "read")
+      const { feeds, read, ...nextData } = data
+
       // Data compatibility
       if (data.feeds && !(data as any).inboxes) (nextData as any).inboxes = data.feeds
       this.upsertMany([nextData as any])
@@ -292,14 +294,14 @@ class EntryActions {
               draft.internal_feedId2entryIdSet[item.feeds.id]!.add(item.entries.id)
             }
 
-            // @ts-expect-error FIXME: fix this
-            draft.flatMapEntries[item.entries.id] = merge(
+            draft.flatMapEntries[item.entries.id] = Object.assign(
+              {},
               draft.flatMapEntries[item.entries.id] || {},
               {
                 feedId: item.feeds.id,
                 entries: mergedEntry,
               },
-              omit(item, "feeds"),
+              omitShallow(item, "feeds"),
             )
 
             // Push feed
@@ -324,14 +326,13 @@ class EntryActions {
               draft.internal_feedId2entryIdSet[inboxId].add(item.entries.id)
             }
 
-            // @ts-expect-error FIXME: fix this
             draft.flatMapEntries[item.entries.id] = merge(
               draft.flatMapEntries[item.entries.id] || {},
               {
                 inboxId: item.inboxes.id,
                 entries: mergedEntry,
               },
-              omit(item, "inboxes"),
+              omitShallow(item, "inboxes"),
             )
 
             // Push entryFeedMap
@@ -442,10 +443,12 @@ class EntryActions {
   }
 
   async markRead({ feedId, entryId, read }: { feedId: string; entryId: string; read: boolean }) {
+    if (!feedId || !entryId) {
+      return
+    }
     const entry = get().flatMapEntries[entryId]
     const isInbox = !!(entry?.entries && "inboxHandle" in entry.entries)
     const subscription = getSubscriptionByFeedId(feedId)
-
     if (read && entry?.read) {
       return
     }

@@ -35,6 +35,7 @@ export function RSSHubGuide({ categories, lang }: { categories?: string; lang?: 
       <ScrollArea.ScrollArea
         viewportClassName="h-[450px]"
         scrollbarClassName="-mr-4"
+        flex
         rootClassName="overflow-visible"
       >
         <div className="space-y-3">

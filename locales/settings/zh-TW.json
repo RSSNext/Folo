@@ -192,7 +192,7 @@
   "general.minimize_to_tray.description": "關閉視窗時最小化到工作列通知區域",
   "general.minimize_to_tray.label": "最小化到通知區域",
   "general.network": "網路",
-  "general.open_links_in_app.label": "從 app 開啟連結",
+  "general.open_links_in_external_app.label": "在外部 app 開啟連結",
   "general.privacy": "隱私",
   "general.proxy.description": "設定 Proxy 伺服器來處理網路流量，例如：socks://proxy.example.com:1080",
   "general.proxy.label": "Proxy 伺服器",

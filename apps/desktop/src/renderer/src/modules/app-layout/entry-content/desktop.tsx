@@ -1,7 +1,7 @@
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
-import { easeOut } from "framer-motion"
+import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"

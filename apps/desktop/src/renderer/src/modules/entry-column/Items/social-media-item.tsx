@@ -10,6 +10,7 @@ import { atom } from "jotai"
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { MenuItemText } from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { RelativeTime } from "~/components/ui/datetime"
@@ -136,6 +137,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
     <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
       <div className="flex items-center gap-1">
         {entryActions
+          .filter((item) => item instanceof MenuItemText)
           .filter(
             (item) =>
               item.id !== COMMAND_ID.entry.read && item.id !== COMMAND_ID.entry.openInBrowser,
@@ -144,7 +146,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
             <CommandActionButton
               commandId={item.id}
               active={item.active}
-              onClick={item.onClick}
+              onClick={item.click!}
               key={item.id}
             />
           ))}

@@ -42,7 +42,7 @@ export type OpenInBrowserCommand = Command<{
 
 export type ViewSourceContentCommand = Command<{
   id: typeof COMMAND_ID.entry.viewSourceContent
-  fn: (data: { entryId: string }) => void
+  fn: (data: { entryId: string; siteUrl?: string | null | undefined }) => void
 }>
 
 export type ShareCommand = Command<{

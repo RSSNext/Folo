@@ -5,8 +5,7 @@ import type {
   ListModelPoplutedFeeds,
   SubscriptionModel,
 } from "@follow/models/types"
-import { capitalizeFirstLetter } from "@follow/utils/utils"
-import { omit } from "es-toolkit/compat"
+import { capitalizeFirstLetter, omitShallow } from "@follow/utils/utils"
 import { produce } from "immer"
 import { parse } from "tldts"
 
@@ -197,11 +196,12 @@ class SubscriptionActions {
         } else if (subscription.inboxId) {
           state.inboxIds.add(subscription.inboxId)
         }
-        state.data[subscription.feedId] = omit(subscription, [
+        state.data[subscription.feedId] = omitShallow(
+          subscription,
           "feeds",
           "lists",
           "inboxes",
-        ]) as SubscriptionFlatModel
+        ) as SubscriptionFlatModel
         state.feedIdByView[subscription.view].push(subscription.feedId)
       })
     })

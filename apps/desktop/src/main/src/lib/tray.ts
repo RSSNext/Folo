@@ -1,12 +1,13 @@
 import { name } from "@pkg"
 import { app, Menu, nativeImage, Tray } from "electron"
 
-import { isMacOS } from "~/env"
+import { isMacOS, isWindows } from "~/env"
 import { getTrayIconPath } from "~/helper"
 import { logger, revealLogFile } from "~/logger"
 import { checkForAppUpdates } from "~/updater"
 
 import { getMainWindowOrCreate } from "../window"
+import { getDockCount } from "./dock"
 import { t } from "./i18n"
 import { store } from "./store"
 
@@ -14,19 +15,17 @@ import { store } from "./store"
 
 let tray: Tray | null = null
 
-export const registerAppTray = () => {
-  if (!getTrayConfig()) return
-  if (tray) {
-    destroyAppTray()
-  }
-
-  const icon = nativeImage.createFromPath(getTrayIconPath())
-  // See https://stackoverflow.com/questions/41664208/electron-tray-icon-change-depending-on-dark-theme/41998326#41998326
-  const trayIcon = isMacOS ? icon.resize({ width: 16 }) : icon
-  trayIcon.setTemplateImage(true)
-  tray = new Tray(trayIcon)
-
-  const contextMenu = Menu.buildFromTemplate([
+const getTrayContextMenu = () => {
+  const count = getDockCount()
+  return Menu.buildFromTemplate([
+    ...(count
+      ? [
+          {
+            label: `${t("menu.unread")} ${count}`,
+            enabled: false,
+          },
+        ]
+      : []),
     {
       label: t("menu.open", { name }),
       click: showWindow,
@@ -71,9 +70,27 @@ export const registerAppTray = () => {
       },
     },
   ])
-  tray.setContextMenu(contextMenu)
+}
+export const registerAppTray = () => {
+  if (!getTrayConfig()) return
+  if (tray) {
+    destroyAppTray()
+  }
+
+  const icon = nativeImage.createFromPath(getTrayIconPath())
+  // See https://stackoverflow.com/questions/41664208/electron-tray-icon-change-depending-on-dark-theme/41998326#41998326
+  const trayIcon = isMacOS ? icon.resize({ width: 16 }) : icon
+  trayIcon.setTemplateImage(true)
+  tray = new Tray(trayIcon)
+
+  tray.setContextMenu(getTrayContextMenu())
   tray.setToolTip(app.getName())
-  tray.on("click", showWindow)
+  tray.on("mouse-enter", () => {
+    tray?.setContextMenu(getTrayContextMenu())
+  })
+  if (isWindows) {
+    tray.on("click", showWindow)
+  }
 }
 
 const showWindow = () => {

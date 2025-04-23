@@ -1,4 +1,4 @@
-import type { Spring } from "framer-motion"
+import type { Spring } from "motion/react"
 
 export const reboundPreset: Spring = {
   type: "spring",

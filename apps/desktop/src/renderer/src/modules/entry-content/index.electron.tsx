@@ -18,6 +18,7 @@ import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
+import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { Queries } from "~/queries"
 import { useEntryTranslation } from "~/store/ai/hook"
@@ -87,6 +88,8 @@ export const EntryContent: Component<EntryContentProps> = ({
   useFocusEntryContainerSubscriptions(scrollerRef)
   const contentLineHeight = useUISettingKey("contentLineHeight")
   const contentFontSize = useUISettingKey("contentFontSize")
+
+  const safeUrl = useFeedSafeUrl(entryId)
 
   const stableRenderStyle = useMemo(() => {
     const css = {} as React.CSSProperties
@@ -236,7 +239,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             </article>
           </div>
         </ScrollArea.ScrollArea>
-        <SourceContentPanel src={entry.entries.url} />
+        <SourceContentPanel src={safeUrl ?? "#"} />
       </div>
     </>
   )

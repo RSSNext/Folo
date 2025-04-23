@@ -19,7 +19,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
+import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
 import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
@@ -236,10 +236,6 @@ const StarItem = () => {
       <ItemPressable
         itemStyle={ItemPressableStyle.Grouped}
         onPress={() => {
-          const isHorizontalScrolling = getHorizontalScrolling()
-          if (isHorizontalScrolling) {
-            return
-          }
           selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
           closeDrawer()
           navigation.pushControllerView(FeedScreen, {

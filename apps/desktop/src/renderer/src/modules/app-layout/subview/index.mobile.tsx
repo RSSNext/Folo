@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { easeOut, m, useScroll, useTransform } from "framer-motion"
+import { easeOut, m, useScroll, useTransform } from "motion/react"
 import { Outlet } from "react-router"
 
 import { HeaderTopReturnBackButton } from "~/components/mobile/button"

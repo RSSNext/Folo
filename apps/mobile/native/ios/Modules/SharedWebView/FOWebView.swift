@@ -23,7 +23,6 @@ class FOWebView: WKWebView {
     if #available(iOS 16.4, *) {
       isInspectable = true
     }
-
   }
 
   private var state: WebViewState!
@@ -39,46 +38,45 @@ class FOWebView: WKWebView {
     navigationDelegate = self
     uiDelegate = self
   }
-  
+
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 }
 
 private class FOWKWebViewConfiguration: WKWebViewConfiguration {
-  static public let shared = FOWKWebViewConfiguration()
+  public static let shared = FOWKWebViewConfiguration()
   override init() {
     super.init()
     let configuration = self
 
     let hexAccentColor = Utils.accentColor.toHex()
     let css = """
-          :root { overflow: hidden !important; overflow-behavior: none !important; }
-          body { 
-              overflow-y: visible !important;
-              position: absolute !important;
-              width: 100% !important;
-              height: auto !important;
-              -webkit-overflow-scrolling: touch !important;
-          }
-          ::selection {
-              background-color: \(hexAccentColor) !important;
-          }
-      """
+        :root { overflow: hidden !important; overflow-behavior: none !important; }
+        body { 
+            overflow-y: visible !important;
+            position: absolute !important;
+            width: 100% !important;
+            height: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        ::selection {
+            background-color: \(hexAccentColor) !important;
+        }
+    """
 
-    let script = WKUserScript(
+    _ = WKUserScript(
       source: """
-            var style = document.createElement('style');
-            style.textContent = '\(css)';
-            document.head.appendChild(style);
-        """,
+          var style = document.createElement('style');
+          style.textContent = '\(css)';
+          document.head.appendChild(style);
+      """,
       injectionTime: .atDocumentStart,
       forMainFrameOnly: true
     )
 
     let atStartScripts = WKWebView.loadInjectedJs(forResource: "at_start")
-    
-    
 
     if let jsString = atStartScripts {
       let script = WKUserScript(
@@ -104,54 +102,54 @@ private class FOWKWebViewConfiguration: WKWebViewConfiguration {
 
     let schemeHandler = FollowImageURLSchemeHandler()
     configuration.setURLSchemeHandler(
-      schemeHandler, forURLScheme: FollowImageURLSchemeHandler.rewriteScheme)
+      schemeHandler, forURLScheme: FollowImageURLSchemeHandler.rewriteScheme
+    )
 
     let customSchemeScript = WKUserScript(
       source: """
-        (function() {
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...args) {
-                const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-                originalXHROpen.call(this, method, modifiedUrl, ...args);
-            };
+      (function() {
+          const originalXHROpen = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function(method, url, ...args) {
+              const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
+              originalXHROpen.call(this, method, modifiedUrl, ...args);
+          };
 
-            const originalFetch = window.fetch;
-            window.fetch = function(url, options) {
-                const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-                return originalFetch(modifiedUrl, options);
-            };
+          const originalFetch = window.fetch;
+          window.fetch = function(url, options) {
+              const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
+              return originalFetch(modifiedUrl, options);
+          };
 
-            const originalImageSrc = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
-            Object.defineProperty(Image.prototype, 'src', {
-                set: function(url) {
-                    const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
-                    originalImageSrc.set.call(this, modifiedUrl);
-                }
-            });
-        })();
-        """,
+          const originalImageSrc = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
+          Object.defineProperty(Image.prototype, 'src', {
+              set: function(url) {
+                  const modifiedUrl = url.replace(/^https?:/, '\(FollowImageURLSchemeHandler.rewriteScheme):');
+                  originalImageSrc.set.call(this, modifiedUrl);
+              }
+          });
+      })();
+      """,
       injectionTime: .atDocumentStart,
       forMainFrameOnly: false
     )
     configuration.userContentController.addUserScript(customSchemeScript)
 
     configuration.userContentController.addUserScript(script2)
-
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 }
 
-extension WKWebView {
-
-  fileprivate static func loadInjectedJs(forResource: String) -> String? {
+private extension WKWebView {
+  static func loadInjectedJs(forResource: String) -> String? {
     if let bundleURL = Bundle(for: WebViewView.self).url(
-      forResource: "js", withExtension: "bundle"),
+      forResource: "js", withExtension: "bundle"
+    ),
       let resourceBundle = Bundle(url: bundleURL)
     {
-
       if let jsPath = resourceBundle.path(forResource: forResource, ofType: "js") {
         do {
           let initJsContent = try String(contentsOfFile: jsPath, encoding: .utf8)
@@ -161,15 +159,12 @@ extension WKWebView {
           print("Error reading JS file:", error)
         }
       }
-
     }
     return nil
   }
-
 }
 
 extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
-
   func userContentController(
     _ userContentController: WKUserContentController, didReceive message: WKScriptMessage
   ) {
@@ -184,7 +179,8 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
         switch data.type {
         case "setContentHeight":
           let data = try? JSONDecoder().decode(
-            SetContentHeightPayload.self, from: decode)
+            SetContentHeightPayload.self, from: decode
+          )
           guard let data = data else { return }
 
           DispatchQueue.main.async {
@@ -192,11 +188,12 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
           }
 
         case "measure":
-          self.measureWebView(SharedWebViewModule.sharedWebView!)
+          measureWebView(SharedWebViewModule.sharedWebView!)
 
         case "previewImage":
           let data = try? JSONDecoder().decode(
-            PreviewImagePayload.self, from: decode)
+            PreviewImagePayload.self, from: decode
+          )
 
           guard let data = data else { return }
           DispatchQueue.main.async {
@@ -209,15 +206,13 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
         default:
           break
         }
-
       }
-
     }
   }
 
   private func measureWebView(_ webView: WKWebView) {
     let jsCode = "document.querySelector('#root').scrollHeight"
-    webView.evaluateJavaScript(jsCode) { (height, error) in
+    webView.evaluateJavaScript(jsCode) { height, _ in
       if let height = height as? CGFloat, height > 0 {
         DispatchQueue.main.async {
           self.state.contentHeight = height
@@ -233,7 +228,6 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
     Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
       self?.measureWebView(webView)
     }
-
   }
 
   func webView(
@@ -241,7 +235,7 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
     for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures
   ) -> WKWebView? {
     if let url = navigationAction.request.url,
-      let viewController = Utils.getRootVC()
+       let viewController = Utils.getRootVC()
     {
       WebViewManager.presentModalWebView(url: url, from: viewController)
     }
@@ -254,7 +248,7 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
   ) {
     if navigationAction.targetFrame == nil {
       if let url = navigationAction.request.url,
-        let viewController = Utils.getRootVC()
+         let viewController = Utils.getRootVC()
       {
         WebViewManager.presentModalWebView(url: url, from: viewController)
         decisionHandler(.cancel)

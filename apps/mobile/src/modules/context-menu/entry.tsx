@@ -12,7 +12,6 @@ import {
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
-import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
@@ -31,8 +30,7 @@ export const EntryItemContextMenu = ({
 
   const navigation = useNavigation()
   const handlePressPreview = useCallback(() => {
-    const isHorizontalScrolling = getHorizontalScrolling()
-    if (entry && !isHorizontalScrolling) {
+    if (entry) {
       preloadWebViewEntry(entry)
       navigation.pushControllerView(EntryDetailScreen, {
         entryId: id,

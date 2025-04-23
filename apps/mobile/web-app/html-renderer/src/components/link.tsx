@@ -21,7 +21,7 @@ export const MarkdownLink = (props: LinkProps) => {
       <TooltipTrigger asChild>
         <a
           draggable="false"
-          className="follow-link--underline text-foreground font-semibold no-underline"
+          className="text-foreground font-semibold no-underline"
           href={populatedFullHref}
           title={props.title}
           target="_blank"

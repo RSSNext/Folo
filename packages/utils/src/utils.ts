@@ -186,6 +186,18 @@ export const parseSafeUrl = (url: string) => {
     return null
   }
 }
+
+/**
+ * @deprecated Remove it in the future but not now
+ */
+export const resolveUrlWithBase = (url: string, baseUrl: string) => {
+  try {
+    return new URL(url, baseUrl).href
+  } catch {
+    return url
+  }
+}
+
 export const getUrlIcon = (url: string, fallback?: boolean | undefined) => {
   let src: string
   let fallbackUrl = ""
@@ -357,4 +369,16 @@ export const formatEstimatedMins = (estimatedMins: number) => {
     return `${hours}h ${minutes}m`
   }
   return `${estimatedMins} mins`
+}
+
+export const omitShallow = (obj: any, ...keys: string[]) => {
+  if (!obj) return obj
+  if (typeof obj !== "object") return obj
+  if (Array.isArray(obj)) return obj
+
+  const nextObj = { ...obj }
+  for (const key of keys) {
+    Reflect.deleteProperty(nextObj, key)
+  }
+  return nextObj
 }

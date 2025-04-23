@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 
+import { MenuItemText } from "~/atoms/context-menu"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { useHasModal } from "~/components/ui/modal/stacked/hooks"
 import { shortcuts } from "~/constants/shortcuts"
@@ -29,19 +30,21 @@ export const EntryHeaderActions = ({
     args: [{ entryId }],
   })
 
-  return actionConfigs.map((config) => {
-    return (
-      <CommandActionButton
-        active={config.active}
-        key={config.id}
-        disableTriggerShortcut={hasModal}
-        commandId={config.id}
-        onClick={config.onClick}
-        shortcut={config.shortcut}
-        clickableDisabled={config.disabled}
-        tooltipDefaultOpen={config.notice}
-        id={`${config.entryId}/${config.id}`}
-      />
-    )
-  })
+  return actionConfigs
+    .filter((item) => item instanceof MenuItemText)
+    .map((config) => {
+      return (
+        <CommandActionButton
+          active={config.active}
+          key={config.id}
+          disableTriggerShortcut={hasModal}
+          commandId={config.id}
+          onClick={config.onClick!}
+          shortcut={config.shortcut!}
+          clickableDisabled={config.disabled}
+          tooltipDefaultOpen={config.notice}
+          id={`${config.entryId}/${config.id}`}
+        />
+      )
+    })
 }

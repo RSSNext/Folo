@@ -72,7 +72,7 @@ export function SetModalContent({
           <table className="w-full">
             <tbody className="divide-y-8 divide-transparent">
               <tr>
-                <td className="text-muted-foreground w-24 text-sm">{t("rsshub.table.owner")}</td>
+                <td className="text-text-secondary w-24 text-sm">{t("rsshub.table.owner")}</td>
                 <td>
                   <UserAvatar
                     userId={instance.ownerUserId}
@@ -82,21 +82,21 @@ export function SetModalContent({
                 </td>
               </tr>
               <tr>
-                <td className="text-muted-foreground text-sm">{t("rsshub.table.description")}</td>
+                <td className="text-text-secondary text-sm">{t("rsshub.table.description")}</td>
                 <td className="line-clamp-2">{instance.description}</td>
               </tr>
               <tr>
-                <td className="text-muted-foreground text-sm">{t("rsshub.table.price")}</td>
+                <td className="text-text-secondary text-sm">{t("rsshub.table.price")}</td>
                 <td className="flex items-center gap-1">
                   {instance.price} <i className="i-mgc-power text-accent" />
                 </td>
               </tr>
               <tr>
-                <td className="text-muted-foreground text-sm">{t("rsshub.table.userCount")}</td>
+                <td className="text-text-secondary text-sm">{t("rsshub.table.userCount")}</td>
                 <td>{instance.userCount}</td>
               </tr>
               <tr>
-                <td className="text-muted-foreground text-sm">{t("rsshub.table.userLimit")}</td>
+                <td className="text-text-secondary text-sm">{t("rsshub.table.userLimit")}</td>
                 <td>{instance.userLimit || t("rsshub.table.unlimited")}</td>
               </tr>
             </tbody>
@@ -105,7 +105,7 @@ export function SetModalContent({
       </Card>
       {details.data?.purchase && (
         <div>
-          <div className="text-muted-foreground text-sm">
+          <div className="text-text-secondary text-sm">
             {t("rsshub.useModal.purchase_expires_at")}
           </div>
           <div className="line-clamp-2">
@@ -134,7 +134,7 @@ export function SetModalContent({
                           min={hasPurchase ? 0 : 1}
                           {...field}
                         />
-                        <span className="text-muted-foreground text-sm">
+                        <span className="text-text-secondary text-sm">
                           {t("rsshub.useModal.month")}
                         </span>
                       </div>

@@ -14,17 +14,20 @@ import remarkGfm from "remark-gfm"
 import remarkGithubAlerts from "remark-gh-alerts"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
+import type { Processor } from "unified"
 import { unified } from "unified"
 import { VFile } from "vfile"
 
 export interface RemarkOptions {
   components: Partial<Components>
+  applyMiddleware?: <T extends Processor<any, any, any, any, any>>(pipeline: T) => T
 }
+
 export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>) => {
   const file = new VFile(content)
-  const { components } = options || {}
+  const { components, applyMiddleware } = options || {}
 
-  const pipeline = unified()
+  let pipeline: Processor<any, any, any, any, any> = unified()
     .use(remarkDirective)
     .use(remarkParse)
 
@@ -61,6 +64,12 @@ export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>)
       },
     })
 
+  // Apply custom middleware if provided
+  if (applyMiddleware) {
+    pipeline = applyMiddleware(pipeline)
+  }
+
+  pipeline = pipeline
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeStringify, { allowDangerousHtml: true })
 

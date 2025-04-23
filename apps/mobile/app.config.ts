@@ -101,7 +101,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-localization",
-
     [
       "expo-splash-screen",
       {
@@ -141,14 +140,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [
-      require("./scripts/with-follow-assets.js"),
+      require("./plugins/with-follow-assets.js"),
       {
         // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
         assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
       },
     ],
-    [require("./scripts/with-follow-app-delegate.js")],
-    [require("./scripts/with-gradle-jvm-heap-size-increase.js")],
+    require("./plugins/with-follow-app-delegate.js"),
+    require("./plugins/with-gradle-jvm-heap-size-increase.js"),
     "expo-secure-store",
     "@react-native-firebase/app",
     "@react-native-firebase/crashlytics",
@@ -166,8 +165,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         enableBackgroundRemoteNotifications: true,
       },
     ],
+    [
+      // Fix status bar flash issue on Android
+      // Learn more: https://github.com/expo/expo/blob/main/packages/expo-status-bar/src/StatusBar.android.tsx#L21
+      "react-native-edge-to-edge",
+      {
+        android: {
+          parentTheme: "Default",
+          enforceNavigationBarContrast: false,
+        },
+      },
+    ],
+    process.env.PROFILE !== "production" && require("./plugins/android-trust-user-certs.js"),
   ],
-  experiments: {
-    typedRoutes: true,
-  },
 })

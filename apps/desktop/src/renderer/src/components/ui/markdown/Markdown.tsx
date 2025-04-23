@@ -10,8 +10,8 @@ export const Markdown: Component<
   {
     children: string
   } & Partial<RemarkOptions>
-> = ({ children, components, className }) => {
-  const stableRemarkOptions = useState({ components })[0]
+> = ({ children, components, className, applyMiddleware }) => {
+  const stableRemarkOptions = useState({ components, applyMiddleware })[0]
 
   const markdownElement = useMemo(
     () => parseMarkdown(children, { ...stableRemarkOptions }).content,

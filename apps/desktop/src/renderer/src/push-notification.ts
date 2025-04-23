@@ -46,9 +46,8 @@ export async function registerWebPushNotifications() {
     return token
   } catch (error) {
     if (error instanceof Error) {
-      throw new TypeError(`Failed to register push notifications: ${error.message}`)
+      console.error(`Failed to register push notifications: ${error.message}`)
     }
-    throw error
   }
 }
 

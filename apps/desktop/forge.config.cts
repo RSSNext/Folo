@@ -117,6 +117,9 @@ const config: ForgeConfig = {
     ignore: [ignorePattern],
 
     prune: true,
+    extendInfo: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
     osxSign: {
       optionsForFile:
         platform === "mas"
@@ -197,7 +200,7 @@ const config: ForgeConfig = {
     }),
     new MakerPKG(
       {
-        name: "Folo Staging",
+        name: "Folo",
         keychain: process.env.KEYCHAIN_PATH,
       },
       ["mas"],

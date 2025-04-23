@@ -18,7 +18,6 @@ import {
 } from "@follow/utils/path-parser"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { omit } from "es-toolkit/compat"
 import type { FC } from "react"
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import type { UseFormReturn } from "react-hook-form"
@@ -249,7 +248,7 @@ export const DiscoverFeedForm = ({
         {keys.map((keyItem) => {
           const parameters = normalizeRSSHubParameters(route.parameters?.[keyItem.name]!)
 
-          const formRegister = form.register(keyItem.name)
+          const { ref, ...formRegister } = form.register(keyItem.name)
 
           return (
             <FormItem key={keyItem.name} className="flex flex-col space-y-2">
@@ -259,14 +258,14 @@ export const DiscoverFeedForm = ({
               </FormLabel>
               {parameters?.options ? (
                 <Select
-                  {...omit(formRegister, "ref")}
+                  {...formRegister}
                   onValueChange={(value) => {
                     form.setValue(keyItem.name, value)
                   }}
                   defaultValue={parameters.default || void 0}
                 >
                   {/* Select focused ref on `SelectTrigger` or `Select` */}
-                  <SelectTrigger ref={formRegister.ref}>
+                  <SelectTrigger ref={ref}>
                     <SelectValue placeholder={t("discover.select_placeholder")} />
                   </SelectTrigger>
                   <SelectContent>

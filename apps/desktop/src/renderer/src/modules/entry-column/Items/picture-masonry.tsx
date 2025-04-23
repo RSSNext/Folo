@@ -12,7 +12,7 @@ import { useRefValue } from "@follow/hooks"
 import { clsx } from "@follow/utils/utils"
 import type { RenderComponentProps } from "masonic"
 import { useInfiniteLoader } from "masonic"
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 import {
   createContext,
   startTransition,
@@ -228,6 +228,15 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
                       onRender={handleRender}
                       itemKey={itemKey}
                     />
+                    {props.Footer ? (
+                      typeof props.Footer === "function" ? (
+                        <div className="mb-4">
+                          <props.Footer />
+                        </div>
+                      ) : (
+                        <div className="mb-4">{props.Footer}</div>
+                      )
+                    ) : null}
                   </FirstScreenReadyContext.Provider>
                 </MediaContainerWidthProvider>
               </MasonryIntersectionContext.Provider>
@@ -269,6 +278,7 @@ interface MasonryProps {
   data: string[]
   endReached: () => any
   hasNextPage: boolean
+  Footer?: FC | ReactNode
 }
 
 const LoadingSkeletonItem = () => {

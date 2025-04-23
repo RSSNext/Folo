@@ -24,11 +24,11 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
   const currentThemeColors = useCurrentColorsVariants()
 
   return (
-    <MigrationProvider>
-      <Provider store={jotaiStore}>
-        <ErrorBoundary fallbackRender={GlobalErrorScreen}>
-          <KeyboardProvider>
-            <View style={[styles.flex, currentThemeColors]}>
+    <View style={[styles.flex, currentThemeColors]}>
+      <MigrationProvider>
+        <Provider store={jotaiStore}>
+          <ErrorBoundary fallbackRender={GlobalErrorScreen}>
+            <KeyboardProvider>
               <QueryClientProvider client={queryClient}>
                 <GestureHandlerRootView>
                   <SheetProvider>
@@ -39,11 +39,11 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
                   </SheetProvider>
                 </GestureHandlerRootView>
               </QueryClientProvider>
-            </View>
-          </KeyboardProvider>
-        </ErrorBoundary>
-      </Provider>
-    </MigrationProvider>
+            </KeyboardProvider>
+          </ErrorBoundary>
+        </Provider>
+      </MigrationProvider>
+    </View>
   )
 }
 

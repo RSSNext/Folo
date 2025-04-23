@@ -1,8 +1,8 @@
 import { jotaiStore } from "@follow/utils/jotai"
 import { cn } from "@follow/utils/utils"
-import type { Variants } from "framer-motion"
-import { AnimatePresence, m } from "framer-motion"
 import { atom, useAtom, useStore } from "jotai"
+import type { Variants } from "motion/react"
+import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect } from "react"
 

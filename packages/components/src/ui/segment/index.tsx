@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useId, useMemo, useState } from "react"
 import { useContextSelector } from "use-context-selector"
@@ -33,7 +33,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       <div
         role="tablist"
         className={cn(
-          "bg-muted text-muted-foreground inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
+          "bg-material-medium text-text-secondary inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
           className,
         )}
         tabIndex={0}

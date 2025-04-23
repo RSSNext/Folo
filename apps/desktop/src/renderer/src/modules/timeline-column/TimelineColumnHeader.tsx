@@ -1,10 +1,10 @@
+import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.jsx"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -16,6 +16,12 @@ import { setAppSearchOpen } from "~/atoms/app"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
@@ -60,7 +66,7 @@ export const TimelineColumnHeader = memo(() => {
             }}
           >
             <Logo className="mr-1 size-6" />
-            {APP_NAME}
+            <Folo className="size-8" />
           </div>
         </LogoContextMenu>
       )}
@@ -137,47 +143,37 @@ const LogoContextMenu: FC<PropsWithChildren> = ({ children }) => {
     },
   })
 
+  const logoTextRef = useRef<SVGSVGElement>(null)
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild {...contextMenuProps}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild {...contextMenuProps}>
         {children}
-      </PopoverTrigger>
-      <PopoverContent align="start" className="!p-1">
-        <button
-          type="button"
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem
           onClick={() => {
             navigator.clipboard.writeText(logoRef.current?.outerHTML || "")
             setOpen(false)
             toast.success(t.common("app.copied_to_clipboard"))
           }}
-          className={cn(
-            "cursor-menu relative flex select-none items-center rounded-sm px-1 py-0.5 text-sm outline-none",
-            "hover:bg-theme-item-hover focus-within:outline-transparent dark:hover:bg-neutral-800",
-            "text-foreground/80 gap-2 [&_svg]:size-3",
-          )}
         >
-          <Logo ref={logoRef} />
+          <Logo ref={logoRef} className="hidden" />
           <span>{t("app.copy_logo_svg")}</span>
-        </button>
-      </PopoverContent>
-    </Popover>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(logoTextRef.current?.outerHTML || "")
+            setOpen(false)
+            toast.success(t.common("app.copied_to_clipboard"))
+          }}
+        >
+          <Folo ref={logoTextRef} className="hidden" />
+          <span>{t("app.copy_logo_text_svg")}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
-
-// const SearchActionButton = () => {
-//   const canSearch = useGeneralSettingKey("dataPersist")
-//   const { t } = useTranslation()
-//   if (!canSearch) return null
-//   return (
-//     <ActionButton
-//       shortcut="Meta+K"
-//       tooltip={t("words.search")}
-//       onClick={() => setAppSearchOpen(true)}
-//     >
-//       <i className="i-mgc-search-2-cute-re size-5 text-theme-vibrancyFg" />
-//     </ActionButton>
-//   )
-// }
 
 const SearchTrigger = () => {
   const canSearch = useGeneralSettingKey("dataPersist")

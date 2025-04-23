@@ -1,4 +1,6 @@
+import { getStorageNS } from "@follow/utils/ns"
 import { atom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
 
 import { createAtomHooks } from "~/lib/jotai"
 
@@ -28,7 +30,11 @@ export const [
   getReadabilityContent,
   __setReadabilityContent,
   useReadabilityContentSelector,
-] = createAtomHooks(atom<Record<string, Readability>>({}))
+] = createAtomHooks(
+  atomWithStorage<Record<string, Readability>>(getStorageNS("readability-content"), {}, undefined, {
+    getOnInit: true,
+  }),
+)
 export const setReadabilityContent = mergeObjectSetter(
   __setReadabilityContent,
   getReadabilityContent,

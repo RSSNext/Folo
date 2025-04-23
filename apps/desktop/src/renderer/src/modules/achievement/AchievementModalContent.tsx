@@ -242,7 +242,7 @@ export const AchievementModalContent: FC = () => {
                         </MotionButtonBase>
                       )}
                     </div>
-                    <div className="text-muted-foreground flex items-center text-sm">
+                    <div className="text-text-secondary flex items-center text-sm">
                       {t(copy.description)}
                     </div>
                   </div>
@@ -261,16 +261,30 @@ export const AchievementModalContent: FC = () => {
                     <IncompleteButton achievement={achievement} refetch={refetch} />
                   )}
                   {achievement.type === "received" && (
-                    <div
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (copy.video) {
+                          presentBadgeVideo(achievement.actionId)
+                        }
+                      }}
                       className={styledButtonVariant({
                         variant: "outline",
-                        className:
+                        className: [
                           "dark:text-foreground relative gap-1 border-green-200 !bg-green-100/50 text-green-800 dark:border-green-200/20 dark:!bg-green-100/5",
+                          copy.video ? "cursor-button" : "cursor-default",
+                        ],
                       })}
                     >
-                      <i className="i-mgc-check-filled" />
-                      {t("achievement.all_done")}
-                    </div>
+                      {copy.video && achievement.type === "received" ? (
+                        <>View Badge</>
+                      ) : (
+                        <>
+                          <i className="i-mgc-check-filled" />
+                          {t("achievement.all_done")}
+                        </>
+                      )}
+                    </button>
                   )}
 
                   {achievement.type === "audit" && (
@@ -300,9 +314,7 @@ export const AchievementModalContent: FC = () => {
         </ul>
       </ScrollArea>
 
-      <p className="text-muted-foreground mt-4 pb-2 text-xs">
-        * {t("achievement.nft_coming_soon")}
-      </p>
+      <p className="text-text-tertiary mt-4 pb-4 text-xs">* {t("achievement.nft_coming_soon")}</p>
     </div>
   )
 }
@@ -428,7 +440,7 @@ const IncompleteButton: FC<{
           </div>
           <div className="duration-200 group-hover:opacity-30">
             <span className="center relative ml-2 inline-flex w-24 -translate-y-1 flex-col *:!m-0">
-              <small className="text-muted-foreground shrink-0 text-xs leading-tight">
+              <small className="text-text shrink-0 text-xs leading-tight">
                 {achievement.progress} / {achievement.progressMax}
               </small>
               <span className="bg-accent/10 relative h-1 w-full overflow-hidden rounded-full">

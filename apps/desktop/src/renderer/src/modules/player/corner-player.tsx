@@ -6,7 +6,7 @@ import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useState } from "react"
 import Marquee from "react-fast-marquee"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -220,7 +220,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
           </Marquee>
           <div
             className={cn(
-              "text-muted-foreground mt-0.5 overflow-hidden truncate text-xs",
+              "text-text-secondary mt-0.5 overflow-hidden truncate text-xs",
               !isMobile && "group-hover:opacity-0",
             )}
           >

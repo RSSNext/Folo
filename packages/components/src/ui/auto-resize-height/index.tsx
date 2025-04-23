@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils/utils"
-import type { Spring } from "framer-motion"
-import { m } from "framer-motion"
+import type { Spring } from "motion/react"
+import { m } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
 const softSpringPreset: Spring = {

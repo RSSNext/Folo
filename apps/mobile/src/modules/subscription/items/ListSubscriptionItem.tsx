@@ -14,7 +14,7 @@ import { useList } from "@/src/store/list/hooks"
 import { useListUnreadCount } from "@/src/store/unread/hooks"
 
 import { SubscriptionListItemContextMenu } from "../../context-menu/lists"
-import { getHorizontalScrolling, selectFeed } from "../../screen/atoms"
+import { selectFeed } from "../../screen/atoms"
 import { ItemSeparator } from "../ItemSeparator"
 import type { SubscriptionItemBaseProps } from "./types"
 import { UnreadCount } from "./UnreadCount"
@@ -41,10 +41,6 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
             itemStyle={ItemPressableStyle.Grouped}
             className="h-12 flex-row items-center px-3"
             onPress={() => {
-              const isHorizontalScrolling = getHorizontalScrolling()
-              if (isHorizontalScrolling) {
-                return
-              }
               selectFeed({
                 type: "list",
                 listId: id,

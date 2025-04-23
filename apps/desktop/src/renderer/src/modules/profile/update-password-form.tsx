@@ -159,7 +159,7 @@ export const UpdatePasswordForm = () => {
 
 export const NoPasswordHint = ({ i18nKey }: { i18nKey: string }) => {
   return (
-    <p className="text-muted-foreground text-sm">
+    <p className="text-text-secondary text-sm">
       <Trans
         ns="settings"
         i18nKey={i18nKey as any}

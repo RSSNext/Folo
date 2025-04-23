@@ -8,9 +8,24 @@
 import ExpoModulesCore
 import Foundation
 import SnapKit
+import UIKit
 
 class TabBarRootView: ExpoView {
-  private let tabBarController = UITabBarController()
+  private lazy var tabBarController = {
+    let tabBarController = UITabBarController()
+    if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
+      tabBarController.tabBar.isTranslucent = false
+      tabBarController.tabBar.barStyle = .default
+    }
+
+    tabBarController.tabBar.isHidden = true
+    if #available(iOS 18.0, *) {
+      tabBarController.isTabBarHidden = true
+    }
+
+    return tabBarController
+  }()
+
   private let vc = UIViewController()
   private var tabViewControllers: [UIViewController] = []
 
@@ -19,7 +34,6 @@ class TabBarRootView: ExpoView {
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
-    tabBarController.tabBar.isHidden = true
     tabBarController.delegate = self
     addSubview(vc.view)
     vc.addChild(tabBarController)
@@ -28,19 +42,17 @@ class TabBarRootView: ExpoView {
     }
     vc.view.addSubview(tabBarController.view)
     tabBarController.didMove(toParent: vc)
-
   }
 
   #if RCT_NEW_ARCH_ENABLED
 
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-      self.insertSubview(childComponentView, at: index)
+      insertSubview(childComponentView, at: index)
     }
 
     override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
-      self.willRemoveSubview(childComponentView)
+      willRemoveSubview(childComponentView)
       //      gestureRecognizers?.removeAll()
-
     }
   #endif
 
@@ -54,7 +66,7 @@ class TabBarRootView: ExpoView {
       return
     }
     if let fromView = tabViewControllers[beforeIndex].view,
-      let toView = tabViewControllers[index].view
+       let toView = tabViewControllers[index].view
     {
       if fromView != toView {
         UIView.transition(
@@ -70,13 +82,10 @@ class TabBarRootView: ExpoView {
     if let selectedViewController = tabBarController.selectedViewController {
       tabBarController(tabBarController, didSelect: selectedViewController)
     }
-
   }
 
   override func insertSubview(_ subview: UIView, at atIndex: Int) {
-
     if let tabScreenView = subview as? TabScreenView {
-
       let screenVC = UIViewController()
       screenVC.view = tabScreenView
       tabViewControllers.append(screenVC)
@@ -85,28 +94,26 @@ class TabBarRootView: ExpoView {
     }
 
     if let tabBarPortalView = subview as? TabBarPortalView {
-      let tabBarView = self.tabBarController.view!
+      let tabBarView = tabBarController.view!
       tabBarView.addSubview(tabBarPortalView)
-
     }
   }
 
   override func willRemoveSubview(_ subview: UIView) {
     if let tabScreenView = subview as? TabScreenView {
       tabViewControllers.removeAll { viewController in
-        return viewController.view == tabScreenView
+        viewController.view == tabScreenView
       }
 
       tabBarController.viewControllers = tabViewControllers
       tabBarController.didMove(toParent: vc)
     }
   }
-
 }
 
 // MARK: - UITabBarControllerDelegate
-extension TabBarRootView: UITabBarControllerDelegate {
 
+extension TabBarRootView: UITabBarControllerDelegate {
   func tabBarController(
     _ tabBarController: UITabBarController, didSelect viewController: UIViewController
   ) {
@@ -122,5 +129,4 @@ extension TabBarRootView: UITabBarControllerDelegate {
 
   //   return nil
   // }
-
 }

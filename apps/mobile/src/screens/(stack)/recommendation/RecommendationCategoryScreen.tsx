@@ -25,6 +25,7 @@ export const RecommendationCategoryScreen: NavigationControllerView<{
 
       <RecommendationTab
         isSelected
+        insets={{ top: defaultHeaderHeight }}
         reanimatedScrollY={reAnimatedScrollY}
         contentContainerStyle={{
           paddingTop: defaultHeaderHeight,

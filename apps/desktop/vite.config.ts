@@ -241,7 +241,7 @@ export default ({ mode }) => {
         ],
         ["vfile", "unified"],
         ["es-toolkit/compat"],
-        ["framer-motion"],
+        ["motion/react"],
         ["clsx", "tailwind-merge", "class-variance-authority"],
 
         [

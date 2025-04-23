@@ -35,10 +35,12 @@ export const SettingAbout = () => {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {appVersion && (
-                <span className="bg-muted rounded px-2 py-1 text-xs">app: {appVersion}</span>
+                <span className="bg-material-medium rounded px-2 py-1 text-xs">
+                  app: {appVersion}
+                </span>
               )}
               {rendererVersion && (
-                <span className="bg-muted rounded px-2 py-1 text-xs">
+                <span className="bg-material-medium rounded px-2 py-1 text-xs">
                   renderer: {rendererVersion}
                 </span>
               )}

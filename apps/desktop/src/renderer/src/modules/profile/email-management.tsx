@@ -12,7 +12,7 @@ import { Label } from "@follow/components/ui/label/index.js"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -59,7 +59,7 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <p className="text-muted-foreground group flex gap-2 text-sm">
+      <p className="text-text-secondary group flex gap-2 text-sm">
         {user?.email}
 
         <AnimatedCommandButton

@@ -1,8 +1,7 @@
 import { nextFrame } from "@follow/utils/dom"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
-import { omit } from "es-toolkit/compat"
-import { useForceUpdate } from "framer-motion"
+import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
 import { createContext, memo, useContext, useMemo, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
@@ -185,11 +184,13 @@ const MediaImpl: FC<MediaProps> = ({
   const InnerContent = useMemo(() => {
     switch (type) {
       case "photo": {
+        // @ts-expect-error
+        const { cacheDimensions, ...props } = rest
         return (
           <img
             height={finalHeight}
             width={finalWidth}
-            {...(omit(rest, "cacheDimensions") as ImgHTMLAttributes<HTMLImageElement>)}
+            {...(props as ImgHTMLAttributes<HTMLImageElement>)}
             onError={errorHandle}
             className={cn(
               "size-full object-contain",

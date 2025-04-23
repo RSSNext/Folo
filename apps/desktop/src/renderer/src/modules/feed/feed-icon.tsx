@@ -4,7 +4,7 @@ import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { forwardRef, useMemo } from "react"
 

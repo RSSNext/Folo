@@ -13,11 +13,11 @@ import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
 import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { getAttachmentState, player } from "@/src/lib/player"
-import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useEntry } from "@/src/store/entry/hooks"
 import { getInboxFrom } from "@/src/store/entry/utils"
@@ -36,8 +36,7 @@ export const EntryNormalItem = memo(
     const feed = useFeed(entry?.feedId as string)
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
-      const isHorizontalScrolling = getHorizontalScrolling()
-      if (entry && !isHorizontalScrolling) {
+      if (entry) {
         preloadWebViewEntry(entry)
         tracker.navigateEntry({
           feedId: entry.feedId!,
@@ -134,7 +133,7 @@ export const EntryNormalItem = memo(
             )}
           </View>
           {view !== FeedViewType.Notifications && (
-            <View className="relative ml-2">
+            <View className="relative ml-4">
               {image &&
                 (thumbnailRatio === "square" ? (
                   <SquareImage image={image} blurhash={blurhash} />
@@ -148,9 +147,7 @@ export const EntryNormalItem = memo(
                 ))}
 
               {audio && (
-                <ItemPressable
-                  touchHighlight={false}
-                  itemStyle={ItemPressableStyle.UnStyled}
+                <NativePressable
                   className="absolute inset-0 flex items-center justify-center"
                   onPress={() => {
                     if (isLoading) return
@@ -176,7 +173,7 @@ export const EntryNormalItem = memo(
                       <PlayCuteFiIcon color="white" width={24} height={24} />
                     )}
                   </View>
-                </ItemPressable>
+                </NativePressable>
               )}
             </View>
           )}

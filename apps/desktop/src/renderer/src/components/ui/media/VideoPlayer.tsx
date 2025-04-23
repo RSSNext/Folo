@@ -5,7 +5,7 @@ import { useRefValue, useVideo } from "@follow/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { clsx, cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
-import { m, useDragControls, useSpring } from "framer-motion"
+import { m, useDragControls, useSpring } from "motion/react"
 import type { PropsWithChildren } from "react"
 import {
   forwardRef,

@@ -3,9 +3,9 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import type { ComponentProps, FunctionComponentElement } from "react"
-import { createElement, useCallback, useEffect, useMemo, useState } from "react"
+import { createElement, useEffect, useMemo, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import RSSHubIconUrl from "~/assets/rsshub-icon.png?url"
@@ -67,6 +67,18 @@ function Outtro() {
       <Logo className="mx-auto size-20" />
       <p className="mt-5 text-xl font-semibold">{t("new_user_guide.outro.title")}</p>
       <p className="text-lg">{t("new_user_guide.outro.description")}</p>
+
+      <div className="space-y-2 text-sm opacity-80">
+        <p>Tip: {t("new_user_guide.step.shortcuts.description1")}</p>
+        <p>
+          <Trans
+            i18nKey="new_user_guide.step.shortcuts.description2"
+            components={{
+              kbd: <Kbd>H</Kbd>,
+            }}
+          />
+        </p>
+      </div>
     </div>
   )
 }
@@ -125,23 +137,6 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           }),
           icon: <img src={RSSHubIcon} className="size-[22px]" />,
         },
-        {
-          title: t.app("new_user_guide.step.shortcuts.title"),
-          content: (
-            <div className="space-y-2">
-              <p>{t.app("new_user_guide.step.shortcuts.description1")}</p>
-              <p>
-                <Trans
-                  i18nKey="new_user_guide.step.shortcuts.description2"
-                  components={{
-                    kbd: <Kbd>H</Kbd>,
-                  }}
-                />
-              </p>
-            </div>
-          ),
-          icon: "i-mgc-hotkey-cute-re",
-        },
       ].filter((i) => !!i) as {
         title: string
         icon: React.ReactNode
@@ -168,11 +163,11 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
 
   const [isLottieAnimating, setIsLottieAnimating] = useState(false)
 
-  const finishGuide = useCallback(() => {
+  const finishGuide = useRef(() => {
     settingSyncQueue.replaceRemote().then(() => {
       settings.get().invalidate()
     })
-  }, [])
+  }).current
 
   return (
     <m.div
@@ -205,7 +200,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
                   {title}
                 </h1>
                 {!!guideSteps[step - 1]!.description && (
-                  <div className="text-theme-vibrancyFg flex justify-center text-center text-sm">
+                  <div className="text-theme-vibrancyFg mx-auto mt-4 flex max-w-prose justify-center text-center text-sm">
                     <Markdown className="prose max-w-[100ch] text-left text-sm">
                       {guideSteps[step - 1]!.description!}
                     </Markdown>
@@ -278,9 +273,12 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
 
                   onComplete() {
                     setIsLottieAnimating(false)
-                    onClose()
                   },
                 })
+
+                setTimeout(() => {
+                  onClose()
+                }, 50)
               }
             }}
           >

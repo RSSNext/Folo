@@ -7,7 +7,11 @@ export const Divider: FC<DetailedHTMLProps<HTMLAttributes<HTMLHRElement>, HTMLHR
   const { className, ...rest } = props
   return (
     <hr
-      className={cn("my-4 h-[0.5px] border-0 bg-black/30 dark:bg-white/30", className)}
+      className={cn(
+        "my-4 h-[0.5px] border-0",
+        "bg-[#282828] !opacity-[0.36] dark:bg-[#F6F6F6]",
+        className,
+      )}
       {...rest}
     />
   )
@@ -20,7 +24,8 @@ export const DividerVertical: FC<
   return (
     <span
       className={cn(
-        "mx-3 inline-block h-full w-[0.5px] select-none bg-black text-transparent !opacity-20 dark:bg-white",
+        "mx-3 inline-block h-full w-[0.5px] select-none text-transparent",
+        "bg-[#282828] opacity-[0.36] dark:bg-[#F6F6F6]",
         className,
       )}
       {...rest}

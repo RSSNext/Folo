@@ -6,7 +6,12 @@ import { Fragment, memo, useCallback, useEffect, useRef } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 
 import type { FollowMenuItem } from "~/atoms/context-menu"
-import { useContextMenuState } from "~/atoms/context-menu"
+import {
+  MenuItemSeparator,
+  MenuItemText,
+  MenuItemType,
+  useContextMenuState,
+} from "~/atoms/context-menu"
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -74,7 +79,21 @@ const Handler = () => {
       <ContextMenuTrigger className="hidden" ref={ref} />
       <ContextMenuContent onContextMenu={preventDefault}>
         {contextMenuState.open &&
-          contextMenuState.menuItems.map((item, index) => <Item key={index} item={item} />)}
+          contextMenuState.menuItems.map((item, index) => {
+            const prevItem = contextMenuState.menuItems[index - 1]
+            if (prevItem instanceof MenuItemSeparator && item instanceof MenuItemSeparator) {
+              return null
+            }
+
+            if (!prevItem && item instanceof MenuItemSeparator) {
+              return null
+            }
+            const nextItem = contextMenuState.menuItems[index + 1]
+            if (!nextItem && item instanceof MenuItemSeparator) {
+              return null
+            }
+            return <Item key={index} item={item} />
+          })}
       </ContextMenuContent>
     </ContextMenu>
   )
@@ -92,8 +111,9 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
     }
   }, [item])
   const itemRef = useRef<HTMLDivElement>(null)
-  useHotkeys((item as any).shortcut, () => itemRef.current?.click(), {
-    enabled: (item as any).enabled !== false && (item as any).shortcut !== undefined,
+  useHotkeys((item as any as MenuItemText).shortcut!, () => itemRef.current?.click(), {
+    // enabled: item.enabled !== false && item.shortcut !== undefined,
+    enabled: item instanceof MenuItemText && !!item.shortcut,
     scopes: HotKeyScopeMap.Menu,
     preventDefault: true,
   })
@@ -101,23 +121,24 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
   const isMobile = useMobile()
 
   switch (item.type) {
-    case "separator": {
+    case MenuItemType.Separator: {
       return <ContextMenuSeparator />
     }
-    case "text": {
-      const Wrapper = item.submenu
+    case MenuItemType.Action: {
+      const hasSubmenu = item.submenu.length > 0
+      const Wrapper = hasSubmenu
         ? ContextMenuSubTrigger
         : typeof item.checked === "boolean"
           ? ContextMenuCheckboxItem
           : ContextMenuItem
 
-      const Sub = item.submenu ? ContextMenuSub : Fragment
+      const Sub = hasSubmenu ? ContextMenuSub : Fragment
 
       return (
         <Sub>
           <Wrapper
             ref={itemRef}
-            disabled={item.disabled || (item.click === undefined && !item.submenu)}
+            disabled={item.disabled || (item.click === undefined && !hasSubmenu)}
             onClick={onClick}
             className="flex items-center gap-2"
             checked={item.checked}
@@ -133,7 +154,7 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
               </div>
             )}
           </Wrapper>
-          {item.submenu && (
+          {hasSubmenu && (
             <ContextMenuPortal>
               <ContextMenuSubContent>
                 {item.submenu.map((subItem, index) => (

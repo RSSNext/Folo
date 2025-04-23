@@ -35,6 +35,7 @@ export const EntryColumnGrid: FC<EntryListProps> = (props) => {
         hasNextPage={hasNextPage}
         endReached={fetchNextPage}
         data={entriesIds}
+        Footer={props.Footer}
       />
     )
   }

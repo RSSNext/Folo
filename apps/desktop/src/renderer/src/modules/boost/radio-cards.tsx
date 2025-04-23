@@ -1,7 +1,7 @@
 import { RadioCard } from "@follow/components/ui/radio-group/RadioCard.js"
 import { RadioGroup } from "@follow/components/ui/radio-group/RadioGroup.js"
 import dayjs from "dayjs"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 
 import { softSpringPreset } from "~/components/ui/constants/spring"
 

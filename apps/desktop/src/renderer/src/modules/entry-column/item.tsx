@@ -3,7 +3,7 @@ import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
-import { memo } from "react"
+import { forwardRef, memo } from "react"
 
 import { useEntryTranslation } from "~/store/ai/hook"
 import type { FlatEntryModel } from "~/store/entry"
@@ -35,6 +35,21 @@ export const EntryItem: FC<EntryItemProps> = memo(({ entryId, view }) => {
 
   if (!entry) return null
   return <EntryItemImpl entry={entry} view={view} />
+})
+
+export const EntryVirtualListItem = forwardRef<
+  HTMLDivElement,
+  EntryItemProps & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+>(({ entryId, view, className, ...props }, ref) => {
+  const entry = useEntry(entryId)
+
+  if (!entry) return <div ref={ref} {...props} style={undefined} />
+
+  return (
+    <div className="absolute left-0 top-0 w-full will-change-transform" ref={ref} {...props}>
+      <EntryItemImpl entry={entry} view={view} />
+    </div>
+  )
 })
 
 const LoadingCircleFallback = (

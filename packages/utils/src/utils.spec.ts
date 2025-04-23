@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 
-import { isBizId, toScientificNotation } from "./utils"
+import { isBizId, omitShallow, toScientificNotation } from "./utils"
 
 describe("utils", () => {
   test("isBizId", () => {
@@ -75,5 +75,12 @@ describe("utils", () => {
     expect(toScientificNotation(1234n, 5, "de-DE")).toBe("1.234")
 
     expect(toScientificNotation(1234n, 5, "fr-FR")).toBe("1 234")
+  })
+
+  test("omitShallow", () => {
+    expect(omitShallow({ a: 1, b: 2, c: 3 }, "a", "b")).toEqual({ c: 3 })
+    expect(omitShallow(null)).toEqual(null)
+    expect(omitShallow(void 0)).toEqual(void 0)
+    expect(omitShallow([1, 2])).toEqual([1, 2])
   })
 })

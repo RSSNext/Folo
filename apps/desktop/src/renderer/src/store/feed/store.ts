@@ -4,7 +4,6 @@ import type {
   FeedOrListRespModel,
   UserModel,
 } from "@follow/models/types"
-import { omit } from "es-toolkit/compat"
 import { produce } from "immer"
 import { nanoid } from "nanoid"
 
@@ -64,7 +63,9 @@ class FeedActions {
               feed.tipUsers = [...targetFeed.tipUsers]
             }
 
-            state.feeds[feed.id] = omit(feed, "feeds") as FeedModel
+            // @ts-expect-error
+            const { feeds, ...nextFeeds } = feed
+            state.feeds[feed.id] = nextFeeds as FeedModel
           } else {
             // Store temp feed in memory
             const nonce = feed["nonce"] || nanoid(8)

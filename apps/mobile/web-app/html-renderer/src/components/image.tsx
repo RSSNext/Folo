@@ -37,7 +37,7 @@ export const MarkdownImage = (props: HTMLProps<"img">) => {
   return (
     <button
       type="button"
-      className="relative -mx-3 overflow-hidden bg-gray-300 dark:bg-neutral-800"
+      className="relative -mx-5 overflow-hidden bg-gray-300 dark:bg-neutral-800"
       style={{
         width: scaleWidth || undefined,
         height: scaleHeight || undefined,
@@ -53,7 +53,7 @@ export const MarkdownImage = (props: HTMLProps<"img">) => {
         })
       }}
     >
-      {image?.blurhash && (
+      {image?.blurhash && scaleWidth && scaleHeight && (
         <Blurhash
           hash={image.blurhash}
           width={scaleWidth}
@@ -68,13 +68,14 @@ export const MarkdownImage = (props: HTMLProps<"img">) => {
         {...rest}
         onLoad={() => setIsLoading(false)}
         style={{
-          width: scaleWidth,
-          height: scaleHeight,
+          width: scaleWidth || undefined,
+          height: scaleHeight || undefined,
         }}
         loading="lazy"
         className={clsx(
-          "absolute inset-0 !my-0 transition-opacity duration-500",
+          "!my-0 transition-opacity duration-500",
           isLoading && "opacity-0",
+          scaleWidth && scaleHeight && "absolute inset-0",
         )}
         crossOrigin="anonymous"
         src={src}

@@ -6,9 +6,10 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 import { GROUPED_LIST_MARGIN } from "@/src/components/ui/grouped/constants"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
+import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
@@ -50,10 +51,6 @@ export const CategoryGrouped = memo(
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {
-                const isHorizontalScrolling = getHorizontalScrolling()
-                if (isHorizontalScrolling) {
-                  return
-                }
                 selectFeed({
                   type: "category",
                   categoryName: category,
@@ -68,9 +65,7 @@ export const CategoryGrouped = memo(
                 "rounded-b-[10px]": isLast && !expanded,
               })}
             >
-              <ItemPressable
-                touchHighlight={false}
-                itemStyle={ItemPressableStyle.UnStyled}
+              <NativePressable
                 hitSlop={10}
                 onPress={() => {
                   rotateSharedValue.value = withSpring(expanded ? 0 : 90, {})
@@ -81,7 +76,7 @@ export const CategoryGrouped = memo(
                 <Animated.View style={rotateStyle} className="ml-2">
                   <RightCuteFiIcon color={secondaryLabelColor} height={14} width={14} />
                 </Animated.View>
-              </ItemPressable>
+              </NativePressable>
               <Text className="text-text ml-4 font-medium">{category}</Text>
               <UnreadCount unread={unreadCounts} className="text-secondary-label ml-auto text-xs" />
             </ItemPressable>

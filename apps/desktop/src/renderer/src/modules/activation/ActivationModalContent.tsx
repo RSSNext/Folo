@@ -10,7 +10,7 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { m } from "framer-motion"
+import { m } from "motion/react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"

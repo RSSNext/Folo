@@ -56,9 +56,9 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
               marginLeft: `-${LIMIT * 8}px`,
               zIndex: LIMIT + 1,
             }}
-            className="no-drag-region border-border bg-muted ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
+            className="no-drag-region border-border bg-material-medium ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
           >
-            <span className="text-muted-foreground text-[10px] font-medium tabular-nums">
+            <span className="text-text-secondary text-[10px] font-medium tabular-nums">
               +{Math.min(totalCount - LIMIT, 99)}
             </span>
           </button>

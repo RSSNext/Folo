@@ -1,9 +1,10 @@
-import { useEffect } from "react"
-import { Text, TouchableOpacity } from "react-native"
+import { Fragment, useEffect } from "react"
+import { ScrollView, Text, TouchableOpacity } from "react-native"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { useIsiPad } from "@/src/lib/platform"
 import { Login } from "@/src/modules/login"
 import { useWhoami } from "@/src/store/user/hooks"
 
@@ -24,11 +25,15 @@ export const LoginScreen: NavigationControllerView = () => {
       exit()
     }
   }, [whoami])
+  const isiPad = useIsiPad()
+  const Container = isiPad ? ScrollView : Fragment
 
   // For development purposes, we don't want to redirect to the home page automatically
   return (
     <>
-      <Login />
+      <Container>
+        <Login />
+      </Container>
       <HeaderCloseOnly />
       {!!whoami?.id && __DEV__ && (
         <TouchableOpacity
@@ -46,3 +51,5 @@ export const LoginScreen: NavigationControllerView = () => {
     </>
   )
 }
+
+LoginScreen.sheetGrabberVisible = false

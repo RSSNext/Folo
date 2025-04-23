@@ -39,7 +39,7 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
               >
                 {entry.entries.title}
               </Marquee>
-              <div className="text-muted-foreground mt-0.5 overflow-hidden truncate text-xs">
+              <div className="text-text mt-0.5 overflow-hidden truncate text-xs">
                 <span>{feed.title}</span>
                 <span> · </span>
                 <span>
@@ -92,11 +92,7 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
 }
 
 const ActionIcon = ({ className, onClick }: { className?: string; onClick?: () => void }) => (
-  <button
-    type="button"
-    className="center text-muted-foreground size-10 rounded-full"
-    onClick={onClick}
-  >
+  <button type="button" className="center text-text size-10 rounded-full" onClick={onClick}>
     <i className={className} />
   </button>
 )
@@ -113,10 +109,8 @@ const PlaybackRateButton = () => {
   }
 
   return (
-    <button onClick={handleClick}>
-      <span className="text-muted-foreground block font-mono text-xs">
-        {rates[currentIndex]!.toFixed(2)}x
-      </span>
+    <button onClick={handleClick} type="button">
+      <span className="text-text block font-mono text-xs">{rates[currentIndex]!.toFixed(2)}x</span>
     </button>
   )
 }

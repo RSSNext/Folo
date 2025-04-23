@@ -14,6 +14,8 @@ import {
   ScreenStackItem,
 } from "react-native-screens"
 
+import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
+import { ScreenErrorScreen } from "@/src/components/errors/ScreenErrorScreen"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useColor } from "@/src/theme/colors"
 
@@ -153,7 +155,7 @@ export const WrappedScreenItem: FC<
             onNativeDismissCancelled={handleDismiss}
           >
             <Header />
-            {children}
+            <ErrorBoundary fallbackRender={ScreenErrorScreen}>{children}</ErrorBoundary>
           </ScreenStackItem>
         </ScreenOptionsContext.Provider>
       </ScreenItemContext.Provider>

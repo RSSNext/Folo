@@ -10,6 +10,7 @@ declare global {
       : T
 
   export const APP_NAME = "Folo"
+  type NilValue = null | undefined | false | ""
 }
 
 export {}

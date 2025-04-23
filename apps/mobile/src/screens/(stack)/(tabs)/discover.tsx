@@ -1,4 +1,4 @@
-import { CategoryEmojiMap, RSSHubCategories } from "@follow/constants"
+import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { LinearGradient } from "expo-linear-gradient"
 import { atom } from "jotai"
 import { memo, useMemo, useState } from "react"
@@ -38,7 +38,7 @@ export default function Discover() {
 
         <GoodLuck />
 
-        <View className="mt-12 flex-row items-center gap-1 px-6 pt-4">
+        <View className="mt-4 flex-row items-center gap-1 px-6 pt-4">
           <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>
         </View>
 
@@ -60,25 +60,11 @@ const DiscoverGrid = () => {
   )
 }
 
-const generateColors = (seed: string) => {
-  const hash = seed.split("").reduce((acc, char) => {
-    // eslint-disable-next-line unicorn/prefer-code-point
-    const chr = char.charCodeAt(0)
-    return ((acc << 5) - acc + chr) | 0
-  }, 0)
-
-  const hue = Math.abs(hash) % 360
-
-  return [`hsla(${hue}, 80%, 85%, 0.8)`, `hsla(${hue}, 70%, 75%, 0.8)`]
-}
-
 const CategoryItem = memo(({ category }: { category: string }) => {
   const { t } = useTranslation("common")
   const name = t(`discover.category.${category}` as any)
-  const colors = useMemo(() => generateColors(category), [category])
-
-  const emoji = CategoryEmojiMap[category as keyof typeof CategoryEmojiMap]
   const navigation = useNavigation()
+
   return (
     <Pressable
       className="overflow-hidden rounded-2xl"
@@ -94,15 +80,20 @@ const CategoryItem = memo(({ category }: { category: string }) => {
       }}
     >
       <LinearGradient
-        colors={colors as [string, string]}
+        colors={[
+          CategoryMap[category as keyof typeof CategoryMap].fromColor,
+          CategoryMap[category as keyof typeof CategoryMap].toColor,
+        ]}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 1 }}
         className="rounded-2xl p-4"
         style={styles.cardItem}
       >
         <View className="flex-1">
-          <Text className="absolute right-2 top-2 text-3xl">{emoji}</Text>
-          <Text className="absolute bottom-0 left-2 text-lg font-medium text-white">{name}</Text>
+          <Text className="absolute right-2 top-2 text-4xl">
+            {CategoryMap[category as keyof typeof CategoryMap].emoji}
+          </Text>
+          <Text className="absolute bottom-0 left-2 text-xl font-bold text-white">{name}</Text>
         </View>
       </LinearGradient>
     </Pressable>
@@ -111,7 +102,7 @@ const CategoryItem = memo(({ category }: { category: string }) => {
 
 const styles = StyleSheet.create({
   cardItem: {
-    aspectRatio: 1.6,
+    aspectRatio: 16 / 9,
   },
 })
 export const DiscoverTabScreen: TabScreenComponent = Discover

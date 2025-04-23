@@ -3,6 +3,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
 
+import { MenuItemText } from "~/atoms/context-menu"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,17 +20,23 @@ export const MoreActions = ({ entryId, view }: { entryId: string; view?: FeedVie
   const { moreAction } = useSortedEntryActions({ entryId, view })
 
   const actionConfigs = useMemo(
-    () => moreAction.filter((action) => hasCommand(action.id)),
+    () => moreAction.filter((action) => action instanceof MenuItemText && hasCommand(action.id)),
     [moreAction],
   )
 
   const availableActions = useMemo(
-    () => actionConfigs.filter((item) => item.id !== COMMAND_ID.settings.customizeToolbar),
+    () =>
+      actionConfigs.filter(
+        (item) => item instanceof MenuItemText && item.id !== COMMAND_ID.settings.customizeToolbar,
+      ),
     [actionConfigs],
   )
 
   const extraAction = useMemo(
-    () => actionConfigs.filter((item) => item.id === COMMAND_ID.settings.customizeToolbar),
+    () =>
+      actionConfigs.filter(
+        (item) => item instanceof MenuItemText && item.id === COMMAND_ID.settings.customizeToolbar,
+      ),
     [actionConfigs],
   )
 
@@ -44,23 +51,27 @@ export const MoreActions = ({ entryId, view }: { entryId: string; view?: FeedVie
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent>
-          {availableActions.map((config) => (
-            <CommandDropdownMenuItem
-              key={config.id}
-              commandId={config.id}
-              onClick={config.onClick}
-              active={config.active}
-            />
-          ))}
+          {availableActions
+            .filter((item) => item instanceof MenuItemText)
+            .map((config) => (
+              <CommandDropdownMenuItem
+                key={config.id}
+                commandId={config.id}
+                onClick={config.onClick!}
+                active={config.active}
+              />
+            ))}
           {availableActions.length > 0 && <DropdownMenuSeparator />}
-          {extraAction.map((config) => (
-            <CommandDropdownMenuItem
-              key={config.id}
-              commandId={config.id}
-              onClick={config.onClick}
-              active={config.active}
-            />
-          ))}
+          {extraAction
+            .filter((item) => item instanceof MenuItemText)
+            .map((config) => (
+              <CommandDropdownMenuItem
+                key={config.id}
+                commandId={config.id}
+                onClick={config.onClick!}
+                active={config.active}
+              />
+            ))}
         </DropdownMenuContent>
       </RootPortal>
     </DropdownMenu>

@@ -4,7 +4,7 @@ import { DividerVertical } from "@follow/components/ui/divider/Divider.js"
 import { views } from "@follow/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { clsx } from "@follow/utils/utils"
-import { m, useAnimationControls } from "framer-motion"
+import { m, useAnimationControls } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useAudioPlayerAtomSelector } from "~/atoms/player"

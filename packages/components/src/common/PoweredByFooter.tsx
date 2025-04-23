@@ -1,5 +1,6 @@
 import { cn } from "@follow/utils/utils"
 
+import { Folo } from "../icons/folo"
 import { Logo } from "../icons/logo"
 
 export const PoweredByFooter: Component = ({ className }) => (
@@ -12,7 +13,7 @@ export const PoweredByFooter: Component = ({ className }) => (
       target="_blank"
       rel="noreferrer"
     >
-      {APP_NAME}
+      <Folo className="size-8" />
     </a>
   </footer>
 )

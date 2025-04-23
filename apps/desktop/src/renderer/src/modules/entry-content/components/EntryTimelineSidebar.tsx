@@ -1,7 +1,7 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { cn } from "@follow/utils/utils"
-import type { Target, TargetAndTransition } from "framer-motion"
-import { m } from "framer-motion"
+import type { Target, TargetAndTransition } from "motion/react"
+import { m } from "motion/react"
 
 import { useIsZenMode } from "~/atoms/settings/ui"
 import { useAsRead } from "~/hooks/biz/useAsRead"

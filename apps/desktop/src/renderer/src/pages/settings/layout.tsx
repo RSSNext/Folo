@@ -1,3 +1,4 @@
+import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
@@ -32,7 +33,8 @@ function Layout() {
 
           <div className="center my-3 flex">
             <Logo className="size-6" />
-            <span className="ml-2 font-semibold">{APP_NAME}</span>
+
+            <Folo className="ml-2 size-8" />
           </div>
         </WindowUnderBlur>
         <div className="bg-theme-background h-screen flex-1 overflow-y-auto p-8 pt-0">

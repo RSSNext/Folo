@@ -1,3 +1,4 @@
+/* @moduleResolution bundler */
 import "./tw-css-plugin"
 
 import path, { resolve } from "node:path"
@@ -6,8 +7,9 @@ import { getIconCollections, iconsPlugin } from "@egoist/tailwindcss-icons"
 import { cleanupSVG, importDirectorySync, isEmptyColor, parseColors, runSVGO } from "@iconify/tools"
 import { compareColors, stringToColor } from "@iconify/utils/lib/colors"
 import type { Config } from "tailwindcss"
+import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
 
-export const baseTwConfig = {
+const twConfig = {
   darkMode: ["class", '[data-theme="dark"]'],
   content: [],
   prefix: "",
@@ -25,42 +27,14 @@ export const baseTwConfig = {
         theme: "var(--fo-font-family)",
         default: "SN pro, sans-serif, system-ui",
       },
-      cursor: {
-        button: "var(--cursor-button)",
-        select: "var(--cursor-select)",
-        checkbox: "var(--cursor-checkbox)",
-        link: "var(--cursor-link)",
-        menu: "var(--cursor-menu)",
-        radio: "var(--cursor-radio)",
-        switch: "var(--cursor-switch)",
-        card: "var(--cursor-card)",
-      },
-      width: {
-        "feed-col": "var(--fo-feed-col-w)",
-      },
+
       colors: {
         border: "hsl(var(--border) / <alpha-value>)",
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
 
-        destructive: {
-          DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
-          foreground: "hsl(var(--destructive-foreground) / <alpha-value>)",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted) / <alpha-value>)",
-          foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
-        },
         accent: "hsl(var(--fo-a) / <alpha-value>)",
 
-        popover: {
-          DEFAULT: "hsl(var(--popover) / <alpha-value>)",
-          foreground: "hsl(var(--popover-foreground) / <alpha-value>)",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card) / <alpha-value>)",
-          foreground: "hsl(var(--card-foreground) / <alpha-value>)",
-        },
         native: {
           DEFAULT: "hsl(var(--fo-native) / <alpha-value>)",
           active: "hsl(var(--fo-native-active) / <alpha-value>)",
@@ -70,17 +44,17 @@ export const baseTwConfig = {
           // https://uicolors.app/create
           accent: {
             DEFAULT: "hsl(var(--fo-a) / <alpha-value>)",
-            50: "#fff7ec",
-            100: "#ffeed3",
-            200: "#ffd9a5",
-            300: "#ffbd6d",
-            400: "#ff9532",
-            500: "#ff760a",
-            600: "#ff5c00",
-            700: "#cc4102",
-            800: "#a1330b",
-            900: "#822c0c",
-            950: "#461304",
+            "50": "#fff8ed",
+            "100": "#ffeed4",
+            "200": "#ffdaa8",
+            "300": "#ffbe70",
+            "400": "#ff9737",
+            "500": "#ff760a",
+            "600": "#f05d06",
+            "700": "#c74507",
+            "800": "#9e360e",
+            "900": "#7f2f0f",
+            "950": "#451505",
           },
 
           vibrancyFg: "hsl(var(--fo-vibrancy-foreground) / <alpha-value>)",
@@ -118,6 +92,9 @@ export const baseTwConfig = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      backdropBlur: {
+        background: "80px",
+      },
 
       typography: (theme: any) => ({
         zinc: {
@@ -127,16 +104,6 @@ export const baseTwConfig = {
           },
         },
       }),
-
-      keyframes: {
-        "caret-blink": {
-          "0%,70%,100%": { opacity: "1" },
-          "20%,50%": { opacity: "0" },
-        },
-      },
-      animation: {
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
-      },
     },
   },
 
@@ -156,6 +123,7 @@ export const baseTwConfig = {
     require(resolve(__dirname, "./tailwind-extend.css")),
   ],
 } satisfies Config
+export const baseTwConfig = withUIKit(twConfig) as typeof twConfig
 
 function getCollections(dir: string) {
   // Import icons

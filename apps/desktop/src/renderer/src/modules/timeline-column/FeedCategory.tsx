@@ -9,7 +9,7 @@ import { useInputComposition, useRefValue } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
-import { AnimatePresence, m } from "framer-motion"
+import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -17,7 +17,7 @@ import { toast } from "sonner"
 import { useEventCallback, useOnClickOutside } from "usehooks-ts"
 
 import type { MenuItemInput } from "~/atoms/context-menu"
-import { useShowContextMenu } from "~/atoms/context-menu"
+import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { useAddFeedToFeedList } from "~/hooks/biz/useFeedActions"
@@ -187,29 +187,24 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const contextMenuProps = useContextMenu({
     onContextMenu: async (e) => {
       setIsContextMenuOpen(true)
-
       await showContextMenu(
         [
-          {
-            type: "text",
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.mark_as_read"),
             click: () => {
               subscriptionActions.markReadByFeedIds({
                 feedIds: ids,
               })
             },
-          },
-          { type: "separator" },
-          {
-            type: "text",
+          }),
+          new MenuItemSeparator(),
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.add_feeds_to_list"),
-
             submenu: listList
               ?.map(
                 (list) =>
-                  ({
+                  new MenuItemText({
                     label: list.title || "",
-                    type: "text",
                     click() {
                       return addMutation.mutate({
                         feedIds: ids,
@@ -218,46 +213,43 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
                     },
                   }) as MenuItemInput,
               )
-              .concat(listList?.length > 0 ? [{ type: "separator" as const }] : [])
+              .concat(listList?.length > 0 ? [new MenuItemSeparator()] : [])
               .concat([
-                {
+                new MenuItemText({
                   label: t("sidebar.feed_actions.create_list"),
-                  type: "text" as const,
-
-                  click() {
+                  click: () => {
                     present({
                       title: t("sidebar.feed_actions.create_list"),
                       content: () => <ListCreationModalContent />,
                     })
                   },
-                },
+                }),
               ]),
-          },
-          { type: "separator" },
-          {
-            type: "text",
+          }),
+          MenuItemSeparator.default,
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.change_to_other_view"),
             submenu: views
               .filter((v) => v.view !== view)
-              .map((v) => ({
-                label: t(v.name, { ns: "common" }),
-                type: "text" as const,
-                shortcut: (v.view + 1).toString(),
-                icon: v.icon,
-                click() {
-                  return changeCategoryView(v.view)
-                },
-              })),
-          },
-          {
-            type: "text",
+              .map(
+                (v) =>
+                  new MenuItemText({
+                    label: t(v.name, { ns: "common" }),
+                    shortcut: (v.view + 1).toString(),
+                    icon: v.icon,
+                    click() {
+                      return changeCategoryView(v.view)
+                    },
+                  }),
+              ),
+          }),
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.rename_category"),
             click: () => {
               setIsCategoryEditing(true)
             },
-          },
-          {
-            type: "text",
+          }),
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.delete_category"),
             hide: !folderName || isAutoGroupedCategory,
             click: () => {
@@ -268,10 +260,11 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
                 content: () => <CategoryRemoveDialogContent feedIdList={ids} />,
               })
             },
-          },
+          }),
         ],
         e,
       )
+
       setIsContextMenuOpen(false)
     },
   })

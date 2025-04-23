@@ -14,7 +14,7 @@ import dayjs from "dayjs"
 import { memo, useCallback, useContext, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useShowContextMenu } from "~/atoms/context-menu"
+import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { getMainContainerElement } from "~/atoms/dom"
 import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -129,13 +129,9 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
       if (!feed) return
       if (isFeed && feed.errorAt && feed.errorMessage) {
         nextItems.push(
-          {
-            type: "separator",
-            disabled: false,
-          },
-          {
+          MenuItemSeparator.default,
+          new MenuItemText({
             label: "Feedback",
-            type: "text",
             click: () => {
               window.open(
                 getNewIssueUrl({
@@ -149,7 +145,7 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
                 }),
               )
             },
-          },
+          }),
         )
       }
       setIsContextMenuOpen(true)

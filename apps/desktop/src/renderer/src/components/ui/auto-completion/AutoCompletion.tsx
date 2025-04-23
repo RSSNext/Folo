@@ -3,8 +3,8 @@ import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
-import { AnimatePresence, m } from "framer-motion"
 import Fuse from "fuse.js"
+import { AnimatePresence, m } from "motion/react"
 import { forwardRef, Fragment, useCallback, useEffect, useState } from "react"
 
 export type Suggestion = {
@@ -99,7 +99,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                     onWheel={stopPropagation}
                     className={cn(
                       "pointer-events-auto max-h-48 grow",
-                      "shadow-perfect border-border bg-popover text-popover-foreground overflow-auto rounded-md border",
+                      "shadow-perfect border-border bg-material-medium text-text backdrop-blur-background overflow-auto rounded-md border",
                       "w-[var(--input-width)] empty:invisible",
                     )}
                   >

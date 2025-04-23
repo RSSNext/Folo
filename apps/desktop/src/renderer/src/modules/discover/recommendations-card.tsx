@@ -87,7 +87,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
                 >
                   <button
                     type="button"
-                    className="before:bg-accent group-hover:bg-muted relative rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-2 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:content-['']"
+                    className="before:bg-accent group-hover:bg-material-medium relative rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-2 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:content-['']"
                     onClick={() => {
                       present({
                         id: `recommendation-content-${route}`,
@@ -111,7 +111,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
             })}
           </ul>
 
-          <div className="text-muted-foreground mt-4 flex flex-col gap-2">
+          <div className="text-text-secondary mt-4 flex flex-col gap-2">
             <div className="flex flex-1 items-center text-sm">
               <i className="i-mingcute-hammer-line mr-1 shrink-0 translate-y-0.5 self-start" />
 
@@ -141,7 +141,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
                     key={c}
                     type="button"
                     className={clsx(
-                      "bg-muted/50 hover:bg-muted cursor-pointer rounded px-1.5 duration-200",
+                      "bg-material-medium hover:bg-material-medium cursor-pointer rounded px-1.5 duration-200",
                       !RSSHubCategories.includes(c) && "pointer-events-none opacity-50",
                     )}
                   >

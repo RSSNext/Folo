@@ -1,11 +1,12 @@
 import { siteConfig } from "@client/configs"
 import { openInFollowApp } from "@client/lib/helper"
+import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.jsx"
 import { cn } from "@follow/utils/utils"
-import type { MotionValue } from "framer-motion"
-import { useMotionValueEvent, useScroll } from "framer-motion"
+import type { MotionValue } from "motion/react"
+import { useMotionValueEvent, useScroll } from "motion/react"
 import * as React from "react"
 import { useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -73,7 +74,8 @@ export const Header = () => {
           <div className="flex items-center md:gap-x-12">
             <a className="flex items-center gap-4" href="/">
               <Logo className="h-8 w-auto" />
-              <p className="font-default text-xl font-semibold">{APP_NAME}</p>
+              {/* <p className="font-default text-xl font-semibold">{APP_NAME}</p> */}
+              <Folo className="size-10" />
             </a>
           </div>
           <div className="flex items-center gap-4">

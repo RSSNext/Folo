@@ -1,6 +1,6 @@
 import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { cn } from "@follow/utils/utils"
+import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -234,7 +234,7 @@ export const useRegisterEntryCommands = () => {
       id: COMMAND_ID.entry.viewSourceContent,
       label: t("entry_actions.view_source_content"),
       icon: <i className="i-mgc-web-cute-re" />,
-      run: ({ entryId }) => {
+      run: ({ entryId, siteUrl }) => {
         if (!getShowSourceContent()) {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
           if (!entry || !entry.entries.url) {
@@ -250,7 +250,7 @@ export const useRegisterEntryCommands = () => {
           if (viewPreviewInModal) {
             showSourceContentModal({
               title: entry.entries.title ?? undefined,
-              src: entry.entries.url,
+              src: siteUrl ? resolveUrlWithBase(entry?.entries.url, siteUrl) : entry?.entries.url,
             })
             return
           }

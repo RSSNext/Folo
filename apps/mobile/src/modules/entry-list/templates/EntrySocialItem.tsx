@@ -13,7 +13,6 @@ import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { getHorizontalScrolling } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useEntry } from "@/src/store/entry/hooks"
@@ -33,18 +32,15 @@ export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
 
   const navigation = useNavigation()
   const handlePress = useCallback(() => {
-    const isHorizontalScrolling = getHorizontalScrolling()
-    if (!isHorizontalScrolling) {
-      unreadSyncService.markEntryAsRead(entryId)
-      tracker.navigateEntry({
-        feedId: entry?.feedId!,
-        entryId,
-      })
-      navigation.pushControllerView(EntryDetailScreen, {
-        entryId,
-        view: FeedViewType.SocialMedia,
-      })
-    }
+    unreadSyncService.markEntryAsRead(entryId)
+    tracker.navigateEntry({
+      feedId: entry?.feedId!,
+      entryId,
+    })
+    navigation.pushControllerView(EntryDetailScreen, {
+      entryId,
+      view: FeedViewType.SocialMedia,
+    })
   }, [entry?.feedId, entryId, navigation])
 
   const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")

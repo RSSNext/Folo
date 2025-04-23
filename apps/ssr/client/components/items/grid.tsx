@@ -43,7 +43,7 @@ const Wrapper: FC<{
       rel="noopener noreferrer"
       target="_blank"
       className={cn(
-        "hover:bg-muted overflow-hidden rounded-md p-1.5 duration-200",
+        "hover:bg-material-medium overflow-hidden rounded-md p-1.5 duration-200",
         wrapperClassName,
       )}
     >

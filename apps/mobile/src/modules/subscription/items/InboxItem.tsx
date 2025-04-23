@@ -9,7 +9,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { InboxCuteFiIcon } from "@/src/icons/inbox_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { getHorizontalScrolling, selectFeed } from "@/src/modules/screen/atoms"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useSubscription } from "@/src/store/subscription/hooks"
 import { getInboxStoreId } from "@/src/store/subscription/utils"
@@ -37,10 +37,6 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
         itemStyle={ItemPressableStyle.Grouped}
         className="h-12 flex-row items-center px-3"
         onPress={() => {
-          const isHorizontalScrolling = getHorizontalScrolling()
-          if (isHorizontalScrolling) {
-            return
-          }
           selectFeed({ type: "inbox", inboxId: id })
           navigation.pushControllerView(FeedScreen, {
             feedId: id,

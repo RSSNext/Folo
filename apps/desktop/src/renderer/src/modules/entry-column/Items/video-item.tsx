@@ -133,7 +133,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
               showFallback={true}
             />
           ) : (
-            <div className="center bg-muted text-muted-foreground aspect-video w-full flex-col gap-1 rounded-md text-xs">
+            <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
               <i className="i-mgc-sad-cute-re size-6" />
               No media available
             </div>

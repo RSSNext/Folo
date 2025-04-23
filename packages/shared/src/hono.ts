@@ -2193,23 +2193,6 @@ declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        readabilityContent: drizzle_orm_pg_core.PgColumn<{
-            name: "readability_content";
-            tableName: "entries";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -2443,7 +2426,6 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     } | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null>>;
     language: z.ZodNullable<z.ZodString>;
     feedId: z.ZodString;
-    readabilityContent: z.ZodNullable<z.ZodString>;
 }, "media" | "attachments" | "extra">, {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
@@ -2522,7 +2504,6 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     url: string | null;
     language: string | null;
     feedId: string;
-    readabilityContent: string | null;
     guid: string;
     categories: string[] | null;
     authorUrl: string | null;
@@ -2560,7 +2541,6 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     url: string | null;
     language: string | null;
     feedId: string;
-    readabilityContent: string | null;
     guid: string;
     categories: string[] | null;
     authorUrl: string | null;
@@ -4819,6 +4799,65 @@ type MessagingData = {
     title: string;
     description: string;
 };
+
+declare const readabilities: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "readabilities";
+    schema: undefined;
+    columns: {
+        id: drizzle_orm_pg_core.PgColumn<{
+            name: "id";
+            tableName: "readabilities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: true;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        entryId: drizzle_orm_pg_core.PgColumn<{
+            name: "entry_id";
+            tableName: "readabilities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        content: drizzle_orm_pg_core.PgColumn<{
+            name: "content";
+            tableName: "readabilities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
 
 declare const rsshub: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "rsshub";
@@ -13394,7 +13433,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         url: string | null;
                         language: string | null;
                         feedId: string;
-                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -13858,7 +13896,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
-                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -13966,7 +14003,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
-                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -14084,7 +14120,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     url: string | null;
                     language: string | null;
                     feedId: string;
-                    readabilityContent: string | null;
                     guid: string;
                     categories: string[] | null;
                     authorUrl: string | null;
@@ -14220,7 +14255,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         author: string | null;
                         url: string | null;
                         language: string | null;
-                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -15248,7 +15282,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         };
                         language: string | null;
                         feedId: string;
-                        readabilityContent: string | null;
                         guid: string;
                         categories: string[] | null;
                         authorUrl: string | null;
@@ -16168,4 +16201,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/upload">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, rsshub, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

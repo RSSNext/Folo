@@ -57,7 +57,7 @@ const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, T
       <TabsPrimitive.List
         ref={ref}
         className={cn(
-          "text-muted-foreground relative inline-flex items-center justify-center",
+          "text-text-secondary relative inline-flex items-center justify-center",
           className,
         )}
       >
@@ -67,7 +67,7 @@ const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, T
           className={cn(
             "absolute left-0 duration-200 will-change-[transform,width]",
             variant === "rounded"
-              ? "bg-muted group-hover:bg-theme-item-hover inset-0 z-0 h-full rounded-lg"
+              ? "bg-material-medium group-hover:bg-theme-item-hover inset-0 z-0 h-full rounded-lg"
               : "bg-accent bottom-0 h-0.5 rounded",
           )}
           style={{

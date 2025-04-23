@@ -1,4 +1,4 @@
-import { useDragControls } from "framer-motion"
+import { useDragControls } from "motion/react"
 import type { PointerEventHandler, RefObject } from "react"
 import { useCallback } from "react"
 

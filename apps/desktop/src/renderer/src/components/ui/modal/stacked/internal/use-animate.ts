@@ -1,5 +1,5 @@
 import { nextFrame } from "@follow/utils/dom"
-import { useAnimationControls } from "framer-motion"
+import { useAnimationControls } from "motion/react"
 import { useCallback, useEffect, useLayoutEffect } from "react"
 import { useEventCallback } from "usehooks-ts"
 

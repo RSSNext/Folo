@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import type { FollowMenuItem, MenuItemInput } from "~/atoms/context-menu"
+import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { apiClient } from "~/lib/api-fetch"
@@ -109,8 +110,7 @@ export const useFeedActions = ({
     const isFeedOwner = related.ownerUserId === whoami()?.id
 
     const items: MenuItemInput[] = [
-      {
-        type: "text" as const,
+      new MenuItemText({
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: "Meta+Shift+A",
         disabled: isEntryList,
@@ -119,11 +119,11 @@ export const useFeedActions = ({
             feedIds: isMultipleSelection ? feedIds : [feedId],
           }),
         supportMultipleSelection: true,
-      },
+      }),
       !related.ownerUserId &&
         !!isBizId(related.id) &&
-        related.type === "feed" && {
-          type: "text" as const,
+        related.type === "feed" &&
+        new MenuItemText({
           label: isEntryList
             ? t("sidebar.feed_actions.claim_feed")
             : t("sidebar.feed_actions.claim"),
@@ -131,44 +131,37 @@ export const useFeedActions = ({
           click: () => {
             claimFeed({ feedId })
           },
-        },
+        }),
       ...(isFeedOwner
         ? [
-            {
-              type: "text" as const,
+            new MenuItemText({
               label: t("sidebar.feed_actions.feed_owned_by_you"),
-            },
-            {
-              type: "text" as const,
+            }),
+            new MenuItemText({
               label: t("sidebar.feed_actions.reset_feed"),
               click: () => {
                 resetFeed(feedId)
               },
-            },
+            }),
           ]
         : []),
-      {
-        type: "text" as const,
+      new MenuItemText({
         label: t("words.boost"),
         click: () => {
           openBoostModal(feedId)
         },
-      },
-      {
-        type: "separator" as const,
-        disabled: isEntryList,
-      },
-      {
-        type: "text" as const,
+      }),
+
+      new MenuItemSeparator(isEntryList),
+      new MenuItemText({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_list"),
         disabled: isInbox,
         supportMultipleSelection: true,
         submenu: [
           ...listByView.map((list) => {
             const isIncluded = list.feedIds.includes(feedId)
-            return {
+            return new MenuItemText({
               label: list.title || "",
-              type: "text" as const,
               checked: isIncluded,
               click() {
                 if (isMultipleSelection) {
@@ -191,12 +184,11 @@ export const useFeedActions = ({
                   })
                 }
               },
-            }
+            })
           }),
-          listByView.length > 0 && { type: "separator" as const },
-          {
+          listByView.length > 0 && new MenuItemSeparator(),
+          new MenuItemText({
             label: t("sidebar.feed_actions.create_list"),
-            type: "text" as const,
             icon: <i className="i-mgc-add-cute-re" />,
             click() {
               present({
@@ -204,11 +196,10 @@ export const useFeedActions = ({
                 content: () => <ListCreationModalContent />,
               })
             },
-          },
+          }),
         ],
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_column.context_menu.add_feeds_to_category"),
         disabled: isInbox,
         supportMultipleSelection: true,
@@ -217,9 +208,8 @@ export const useFeedActions = ({
             const isIncluded = isMultipleSelection
               ? subscriptions.every((s) => s!.category === category)
               : subscription?.category === category
-            return {
+            return new MenuItemText({
               label: category,
-              type: "text" as const,
               checked: isIncluded,
               click() {
                 addFeedsToCategoryMutation({
@@ -228,12 +218,11 @@ export const useFeedActions = ({
                   view: view!,
                 })
               },
-            }
+            })
           }),
-          listByView.length > 0 && { type: "separator" as const },
-          {
+          listByView.length > 0 && MenuItemSeparator.default,
+          new MenuItemText({
             label: t("sidebar.feed_column.context_menu.create_category"),
-            type: "text" as const,
             icon: <i className="i-mgc-add-cute-re" />,
             click() {
               present({
@@ -251,15 +240,11 @@ export const useFeedActions = ({
                 ),
               })
             },
-          },
+          }),
         ],
-      },
-      {
-        type: "separator" as const,
-        disabled: isEntryList,
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemSeparator(isEntryList),
+      new MenuItemText({
         label: isEntryList ? t("sidebar.feed_actions.edit_feed") : t("sidebar.feed_actions.edit"),
         shortcut: "E",
         disabled: isInbox,
@@ -269,9 +254,8 @@ export const useFeedActions = ({
             content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
           })
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: isMultipleSelection
           ? t("sidebar.feed_actions.unfollow_feed_many")
           : isEntryList
@@ -297,31 +281,25 @@ export const useFeedActions = ({
           }
           deleteSubscription.mutate({ subscription })
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.navigate_to_feed"),
         shortcut: "Meta+G",
         disabled: isInbox || !isEntryList || getRouteParams().feedId === feedId,
         click: () => {
           navigateEntry({ feedId })
         },
-      },
-      {
-        type: "separator" as const,
-        disabled: isEntryList,
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemSeparator(isEntryList),
+      new MenuItemText({
         label: t("sidebar.feed_actions.open_feed_in_browser", {
           which: t(IN_ELECTRON ? "words.browser" : "words.newTab"),
         }),
         disabled: isEntryList,
         shortcut: "O",
         click: () => window.open(UrlBuilder.shareFeed(feedId, view), "_blank"),
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.open_site_in_browser", {
           which: t(IN_ELECTRON ? "words.browser" : "words.newTab"),
         }),
@@ -333,13 +311,9 @@ export const useFeedActions = ({
             "siteUrl" in feed && feed.siteUrl && window.open(feed.siteUrl, "_blank")
           }
         },
-      },
-      {
-        type: "separator",
-        disabled: isEntryList,
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemSeparator(isEntryList),
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_url"),
         disabled: isEntryList,
         shortcut: "Meta+C",
@@ -349,18 +323,16 @@ export const useFeedActions = ({
           if (!copied) return
           navigator.clipboard.writeText(copied)
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_id"),
         shortcut: "Meta+Shift+C",
         disabled: isEntryList,
         click: () => {
           navigator.clipboard.writeText(feedId)
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_badge"),
         disabled: isEntryList,
         click: () => {
@@ -368,7 +340,7 @@ export const useFeedActions = ({
             `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
           )
         },
-      },
+      }),
     ]
 
     return items.filter(
@@ -386,6 +358,7 @@ export const useFeedActions = ({
     isEntryList,
     isInbox,
     listByView,
+    categories,
     isMultipleSelection,
     feedId,
     feedIds,
@@ -395,10 +368,12 @@ export const useFeedActions = ({
     addFeedToListMutation,
     removeFeedFromListMutation,
     present,
-    deleteSubscription,
+    subscriptions,
     subscription,
-    navigateEntry,
+    addFeedsToCategoryMutation,
     view,
+    deleteSubscription,
+    navigateEntry,
   ])
 
   return items
@@ -418,17 +393,13 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
     if (!list) return []
 
     const items: MenuItemInput[] = [
-      list.ownerUserId === whoami()?.id && {
-        type: "text" as const,
-        label: t("sidebar.feed_actions.list_owned_by_you"),
-      },
-      {
-        type: "separator" as const,
-        hide: list.ownerUserId !== whoami()?.id,
-      },
+      list.ownerUserId === whoami()?.id &&
+        new MenuItemText({
+          label: t("sidebar.feed_actions.list_owned_by_you"),
+        }),
+      list.ownerUserId !== whoami()?.id && MenuItemSeparator.default,
 
-      {
-        type: "text" as const,
+      new MenuItemText({
         label: t("sidebar.feed_actions.edit"),
         shortcut: "E",
         click: () => {
@@ -437,58 +408,43 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
             content: ({ dismiss }) => <ListForm id={listId} onSuccess={dismiss} />,
           })
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.unfollow"),
         shortcut: "Meta+Backspace",
         click: () => deleteSubscription({ subscription }),
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.navigate_to_list"),
         shortcut: "Meta+G",
         disabled: getRouteParams().feedId === listId,
         click: () => {
           navigateEntry({ listId })
         },
-      },
-      {
-        type: "separator" as const,
-        disabled: false,
-      },
-      {
-        type: "text" as const,
+      }),
+      MenuItemSeparator.default,
+      new MenuItemText({
         label: t("sidebar.feed_actions.open_list_in_browser", {
           which: t(IN_ELECTRON ? "words.browser" : "words.newTab"),
         }),
-        disabled: false,
         shortcut: "O",
         click: () => window.open(UrlBuilder.shareList(listId, view), "_blank"),
-      },
-
-      {
-        type: "separator",
-        disabled: false,
-      },
-      {
-        type: "text" as const,
+      }),
+      MenuItemSeparator.default,
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_url"),
-        disabled: false,
         shortcut: "Meta+C",
         click: () => {
           navigator.clipboard.writeText(UrlBuilder.shareList(listId, view))
         },
-      },
-      {
-        type: "text" as const,
+      }),
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_id"),
         shortcut: "Meta+Shift+C",
-        disabled: false,
         click: () => {
           navigator.clipboard.writeText(listId)
         },
-      },
+      }),
     ]
 
     return items
@@ -506,8 +462,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
     if (!inbox) return []
 
     const items: FollowMenuItem[] = [
-      {
-        type: "text" as const,
+      new MenuItemText({
         label: t("sidebar.feed_actions.edit"),
         shortcut: "E",
         click: () => {
@@ -516,20 +471,15 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
             content: ({ dismiss }) => <InboxForm asWidget id={inboxId} onSuccess={dismiss} />,
           })
         },
-      },
-      {
-        type: "separator" as const,
-        disabled: false,
-      },
-      {
-        type: "text" as const,
+      }),
+      MenuItemSeparator.default,
+      new MenuItemText({
         label: t("sidebar.feed_actions.copy_email_address"),
         shortcut: "Meta+Shift+C",
-        disabled: false,
         click: () => {
           navigator.clipboard.writeText(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
         },
-      },
+      }),
     ]
 
     return items

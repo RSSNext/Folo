@@ -9,6 +9,7 @@ import type { ListRenderItemInfo } from "react-native"
 import { Alert, FlatList, View } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
@@ -322,7 +323,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
 const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   const { id: feedId } = props
   const entryIds = useEntryIdsByFeedId(feedId)
-  usePrefetchEntries({ feedId, limit: 5 })
+  const { isLoading } = usePrefetchEntries({ feedId, limit: 5 })
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (
@@ -332,6 +333,9 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   )
   return (
     <View className="bg-system-background size-full flex-1">
+      {isLoading && !entryIds?.length && (
+        <PlatformActivityIndicator className="absolute inset-0 flex items-center justify-center" />
+      )}
       <FlatList
         scrollEnabled={false}
         data={useMemo(() => entryIds?.slice(0, 5), [entryIds])}

@@ -29,7 +29,7 @@ export interface GeneralSettings {
   enhancedSettings: boolean
 
   // @mobile
-  openLinksInApp: boolean
+  openLinksInExternalApp: boolean
 }
 
 export interface UISettings {
