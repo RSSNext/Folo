@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - "**"
-    # paths:
-    #   - "apps/mobile/web-app/**"
-    #   - "apps/mobile/native/**"
-    #   - "apps/mobile/package.json"
-    #   - "apps/mobile/app.config.ts"
+    paths:
+      - "apps/mobile/web-app/**"
+      - "apps/mobile/native/**"
+      - "apps/mobile/package.json"
+      - "apps/mobile/app.config.ts"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

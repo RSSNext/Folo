@@ -1,6 +1,5 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
-import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo } from "react"
 import { Pressable, Text, View } from "react-native"
 
@@ -12,6 +11,7 @@ import { Galeria } from "@/src/components/ui/image/galeria"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { VideoPlayer } from "@/src/components/ui/video/VideoPlayer"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
@@ -118,7 +118,7 @@ export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
                 if (mediaItem.type === "video") {
                   return (
                     <View key={`${entryId}-${mediaItem.url}`} className="w-full">
-                      <ViewPlayer
+                      <VideoPlayer
                         source={mediaItem.url}
                         height={mediaItem.height}
                         width={mediaItem.width}
@@ -156,29 +156,5 @@ export const EntrySocialItem = memo(({ entryId }: { entryId: string }) => {
     </EntryItemContextMenu>
   )
 })
-
-function ViewPlayer({
-  source,
-  width,
-  height,
-}: {
-  source: string
-  width?: number
-  height?: number
-}) {
-  const player = useVideoPlayer(source)
-  return (
-    <VideoView
-      style={{
-        width: "100%",
-        aspectRatio: width && height ? width / height : 1,
-      }}
-      contentFit="cover"
-      player={player}
-      allowsFullscreen
-      allowsPictureInPicture
-    />
-  )
-}
 
 EntrySocialItem.displayName = "EntrySocialItem"
