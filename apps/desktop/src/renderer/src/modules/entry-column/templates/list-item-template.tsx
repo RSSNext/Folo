@@ -4,6 +4,7 @@ import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@f
 import { useMemo } from "react"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media"
@@ -54,15 +55,16 @@ export function ListItem({
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 
+  const translationMode = useGeneralSettingKey("translationMode")
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = settingWideMode ? 1 : 2
     let lineClampDescription = settingWideMode ? 1 : 2
 
-    if (translation?.title && !simple) {
+    if (translation?.title && !simple && translationMode !== "translation-only") {
       lineClampTitle += 1
     }
-    if (translation?.description && !simple) {
+    if (translation?.description && !simple && translationMode !== "translation-only") {
       lineClampDescription += 1
     }
 
@@ -77,7 +79,7 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [settingWideMode, simple, translation?.description, translation?.title])
+  }, [settingWideMode, simple, translation?.description, translation?.title, translationMode])
 
   const audioAttachment = useMemo(() => {
     return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)

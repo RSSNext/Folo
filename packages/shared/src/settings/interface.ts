@@ -2,6 +2,7 @@ export interface GeneralSettings {
   appLaunchOnStartup: boolean
   language: string
   translation: boolean
+  translationMode: "bilingual" | "translation-only"
   summary: boolean
   actionLanguage: string
   startupScreen: "subscription" | "timeline"
