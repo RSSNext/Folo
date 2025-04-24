@@ -72,6 +72,30 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
   )
 }
 
+function TranslationModeSetting() {
+  const { t } = useTranslation("settings")
+  const translationMode = useGeneralSettingKey("translationMode")
+
+  return (
+    <GroupedInsetListBaseCell>
+      <Text className="text-label">{t("general.translation_mode.label")}</Text>
+
+      <View className="w-[150px]">
+        <Select
+          value={translationMode}
+          onValueChange={(value) => {
+            setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
+          }}
+          options={[
+            { label: t("general.translation_mode.bilingual"), value: "bilingual" },
+            { label: t("general.translation_mode.translation-only"), value: "translation-only" },
+          ]}
+        />
+      </View>
+    </GroupedInsetListBaseCell>
+  )
+}
+
 export const GeneralScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
 
@@ -119,6 +143,7 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
+        <TranslationModeSetting />
         <LanguageSetting settingKey="actionLanguage" />
       </GroupedInsetListCard>
 

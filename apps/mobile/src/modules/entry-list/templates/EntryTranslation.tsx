@@ -36,6 +36,15 @@ export const EntryTranslation = ({
     return target.trim()
   }, [nextSource, target, showTranslationFinal])
 
+  const translationMode = useGeneralSettingKey("translationMode")
+  if (translationMode === "translation-only") {
+    return (
+      <Text {...props} className={className}>
+        {nextTarget || nextSource}
+      </Text>
+    )
+  }
+
   if (inline) {
     return (
       <Text {...props} className={className}>
