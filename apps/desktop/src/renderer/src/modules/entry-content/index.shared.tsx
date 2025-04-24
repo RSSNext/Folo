@@ -88,6 +88,8 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
   const result = useEntryReadabilityContent(entryId)
   const isInReadability = useEntryIsInReadability(entryId)
+  const status = useEntryInReadabilityStatus(entryId)
+
   if (!isInReadability) {
     return null
   }
@@ -100,10 +102,19 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
           {t("entry_content.readability_notice")}
         </p>
       ) : (
-        <div className="center mt-16 flex flex-col gap-2">
-          <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
-          <span className="text-sm">{t("entry_content.fetching_content")}</span>
-        </div>
+        <>
+          {status === ReadabilityStatus.FAILURE ? (
+            <p className="mb-4 rounded-xl border p-3 text-sm opacity-80">
+              <i className="i-mingcute-warning-line mr-1 translate-y-[2px]" />
+              {t("entry_content.fetching_content_failed")}
+            </p>
+          ) : (
+            <div className="center mt-16 flex flex-col gap-2">
+              <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
+              <span className="text-sm">{t("entry_content.fetching_content")}</span>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

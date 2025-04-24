@@ -130,6 +130,7 @@
   "entry_column.refreshing": "Refreshing new entries...",
   "entry_content.ai_summary": "AI summary",
   "entry_content.fetching_content": "Fetching original content and processing...",
+  "entry_content.fetching_content_failed": "Failed to fetch original content.",
   "entry_content.header.play_tts": "Play TTS",
   "entry_content.header.readability": "Readability",
   "entry_content.no_content": "No media available",

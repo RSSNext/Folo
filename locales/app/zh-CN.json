@@ -129,6 +129,7 @@
   "entry_column.refreshing": "正在刷新",
   "entry_content.ai_summary": "AI 总结",
   "entry_content.fetching_content": "正在获取原始内容并处理",
+  "entry_content.fetching_content_failed": "获取原始内容失败",
   "entry_content.header.play_tts": "播放文本转语音",
   "entry_content.header.readability": "阅读模式",
   "entry_content.no_content": "没有内容",
