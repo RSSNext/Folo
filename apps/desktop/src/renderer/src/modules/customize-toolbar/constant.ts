@@ -15,6 +15,18 @@ const entryItemInMore = new Set<string>([
   COMMAND_ID.entry.tts,
 ])
 
+export const entryItemHideInHeader = new Set<string>([
+  COMMAND_ID.entry.readAbove,
+  COMMAND_ID.entry.readBelow,
+])
+
+export const entryItemHideInContextMenu = new Set<string>([
+  COMMAND_ID.entry.viewSourceContent,
+  COMMAND_ID.entry.toggleAISummary,
+  COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.settings.customizeToolbar,
+])
+
 export const DEFAULT_ACTION_ORDER: ToolbarActionOrder = {
   main: Object.values(COMMAND_ID.entry).filter((id) => !entryItemInMore.has(id)),
   more: [

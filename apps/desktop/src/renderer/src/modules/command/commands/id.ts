@@ -9,6 +9,8 @@ export const COMMAND_ID = {
     viewSourceContent: "entry:view-source-content",
     share: "entry:share",
     read: "entry:read",
+    readAbove: "entry:read-above",
+    readBelow: "entry:read-below",
     toggleAISummary: "entry:toggle-ai-summary",
     toggleAITranslation: "entry:toggle-ai-translation",
     exportAsPDF: "entry:export-as-pdf",

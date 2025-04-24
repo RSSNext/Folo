@@ -19,7 +19,7 @@ import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
-import { COMMAND_ID } from "~/modules/command/commands/id"
+import { entryItemHideInContextMenu } from "~/modules/customize-toolbar/constant"
 import type { FlatEntryModel } from "~/store/entry"
 import { entryActions } from "~/store/entry"
 
@@ -105,12 +105,7 @@ export const EntryItemWrapper: FC<
             if (item instanceof MenuItemSeparator) {
               return true
             }
-            return ![
-              COMMAND_ID.entry.viewSourceContent,
-              COMMAND_ID.entry.toggleAISummary,
-              COMMAND_ID.entry.toggleAITranslation,
-              COMMAND_ID.settings.customizeToolbar,
-            ].includes(item.id as any)
+            return !entryItemHideInContextMenu.has(item.id as any)
           }),
           MENU_ITEM_SEPARATOR,
           ...feedItems.filter((item) => {

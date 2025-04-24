@@ -5,7 +5,8 @@ import { INBOX_PREFIX_ID } from "~/constants"
 import { apiClient } from "~/lib/api-fetch"
 import { FeedUnreadService } from "~/services"
 
-import { createTransaction, createZustandStore } from "../utils/helper"
+import { getSubscriptionByView } from "../subscription/getters"
+import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 interface UnreadState {
   data: Record<string, number>
@@ -19,10 +20,27 @@ export const useFeedUnreadStore = createZustandStore<UnreadState>("unread")(() =
 
 const set = useFeedUnreadStore.setState
 const get = useFeedUnreadStore.getState
+const immerSet = createImmerSetter(useFeedUnreadStore)
 class FeedUnreadActions {
   private internal_reset() {
     set({ data: {} })
     FeedUnreadService.clear()
+  }
+
+  private internal_reset_by_view(view?: FeedViewType) {
+    if (view === undefined) return
+    const viewSubscription = getSubscriptionByView(view)
+    const ids = viewSubscription.map(
+      (s) => s?.feedId || s?.listId || INBOX_PREFIX_ID + (s?.feedId || ""),
+    )
+
+    immerSet((state) => {
+      for (const id of ids) {
+        state.data[id] = 0
+      }
+      return state
+    })
+    FeedUnreadService.bulkDelete(ids)
   }
 
   clear() {
@@ -54,6 +72,7 @@ class FeedUnreadActions {
 
     const { data } = unread
 
+    this.internal_reset_by_view(view)
     this.internal_setValue(Object.entries(data))
 
     return data

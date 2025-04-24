@@ -1,4 +1,10 @@
-import { subscriptionCategoryExistSelector } from "./selector"
+import type { FeedViewType } from "@follow/constants"
+
+import {
+  folderFeedsByFeedIdSelector,
+  subscriptionByViewSelector,
+  subscriptionCategoryExistSelector,
+} from "./selector"
 import { useSubscriptionStore } from "./store"
 
 const get = useSubscriptionStore.getState
@@ -16,3 +22,9 @@ export const isListSubscription = (feedId?: FeedId) => {
 
 export const subscriptionCategoryExist = (name: string) =>
   subscriptionCategoryExistSelector(name)(get())
+
+export const getFolderFeedsByFeedId = ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
+  folderFeedsByFeedIdSelector({ feedId, view })(get()) || []
+
+export const getSubscriptionByView = (view: FeedViewType) =>
+  subscriptionByViewSelector(view)(get()) || []

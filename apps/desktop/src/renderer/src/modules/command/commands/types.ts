@@ -55,6 +55,16 @@ export type ReadCommand = Command<{
   fn: ({ entryId }) => void
 }>
 
+export type ReadAboveCommand = Command<{
+  id: typeof COMMAND_ID.entry.readAbove
+  fn: ({ publishedAt }) => void
+}>
+
+export type ReadBelowCommand = Command<{
+  id: typeof COMMAND_ID.entry.readBelow
+  fn: ({ publishedAt }) => void
+}>
+
 export type ToggleAISummaryCommand = Command<{
   id: typeof COMMAND_ID.entry.toggleAISummary
   fn: () => void
@@ -91,6 +101,8 @@ export type EntryCommand =
   | ViewSourceContentCommand
   | ShareCommand
   | ReadCommand
+  | ReadAboveCommand
+  | ReadBelowCommand
   | ToggleAISummaryCommand
   | ToggleAITranslationCommand
   | ImageGalleryCommand

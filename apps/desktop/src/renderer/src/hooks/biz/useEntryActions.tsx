@@ -289,6 +289,16 @@ export const useEntryActions = ({
         shortcut: shortcuts.entry.toggleRead.key,
         entryId,
       }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.readAbove,
+        onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.readBelow,
+        onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.entries.publishedAt }]),
+        entryId,
+      }),
       MENU_ITEM_SEPARATOR,
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.delete,
@@ -338,6 +348,7 @@ export const useEntryActions = ({
     compact,
     entry?.collections,
     entry?.entries.content,
+    entry?.entries.publishedAt,
     entry?.entries.url,
     entry?.read,
     entry?.settings?.readability,
