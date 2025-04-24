@@ -13268,6 +13268,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     id: string;
                     language: "ar-DZ" | "ar-IQ" | "ar-KW" | "ar-MA" | "ar-SA" | "ar-TN" | "de" | "en" | "es" | "fi" | "fr" | "it" | "ja" | "ko" | "pt" | "ru" | "tr" | "zh-CN" | "zh-HK" | "zh-TW";
                     fields: string;
+                    mode?: "bilingual" | "translation-only" | undefined;
                     part?: string | undefined;
                 };
             };
