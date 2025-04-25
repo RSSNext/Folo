@@ -15,8 +15,11 @@ import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useIsEntryStarred } from "@/src/store/collection/hooks"
 import { collectionSyncService } from "@/src/store/collection/store"
+import { getFetchEntryPayload } from "@/src/store/entry/getter"
 import { useEntry } from "@/src/store/entry/hooks"
 import { unreadSyncService } from "@/src/store/unread/store"
+
+import { useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const EntryItemContextMenu = ({
   id,
@@ -24,6 +27,8 @@ export const EntryItemContextMenu = ({
   view,
 }: PropsWithChildren<{ id: string; view: FeedViewType }>) => {
   const { t } = useTranslation()
+  const selectedView = useSelectedView()
+  const selectedFeed = useSelectedFeed()
   const entry = useEntry(id)
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
@@ -75,6 +80,42 @@ export const EntryItemContextMenu = ({
               name: entry.read ? "circle.fill" : "checkmark.circle",
             }}
           />
+        </ContextMenu.Item>
+
+        <ContextMenu.Item
+          key="MarkAsReadAbove"
+          onSelect={() => {
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            const { publishedAt } = entry
+            unreadSyncService.markViewAsRead({
+              view: selectedView,
+              filter: payload,
+              timeRange: {
+                startTime: new Date(publishedAt).getTime(),
+                endTime: Date.now(),
+              },
+            })
+          }}
+        >
+          <ContextMenu.ItemTitle>mark above as read</ContextMenu.ItemTitle>
+        </ContextMenu.Item>
+
+        <ContextMenu.Item
+          key="MarkAsReadBelow"
+          onSelect={() => {
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            const { publishedAt } = entry
+            unreadSyncService.markViewAsRead({
+              view: selectedView,
+              filter: payload,
+              timeRange: {
+                startTime: 1,
+                endTime: new Date(publishedAt).getTime(),
+              },
+            })
+          }}
+        >
+          <ContextMenu.ItemTitle>mark below as read</ContextMenu.ItemTitle>
         </ContextMenu.Item>
 
         {feedId && view !== undefined && (

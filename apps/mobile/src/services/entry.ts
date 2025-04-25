@@ -1,4 +1,4 @@
-import { eq, inArray, or } from "drizzle-orm"
+import { and, between, eq, inArray, or } from "drizzle-orm"
 
 import { getGeneralSettings } from "../atoms/settings/general"
 import { db } from "../database"
@@ -6,6 +6,7 @@ import { entriesTable } from "../database/schemas"
 import type { EntrySchema } from "../database/schemas/types"
 import { dbStoreMorph } from "../morph/db-store"
 import { entryActions } from "../store/entry/store"
+import type { PublishAtTimeRangeFilter } from "../store/unread/types"
 import type { Hydratable, Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
@@ -33,17 +34,28 @@ class EntryServiceStatic implements Hydratable, Resetable {
     entry,
     entryIds,
     feedIds,
+    timeRange,
   }: {
     entry: Partial<EntrySchema>
     entryIds?: string[]
     feedIds?: string[]
+    timeRange?: PublishAtTimeRangeFilter
   }) {
     if (!entryIds && !feedIds) return
     await db
       .update(entriesTable)
       .set(entry)
       .where(
-        or(inArray(entriesTable.id, entryIds ?? []), inArray(entriesTable.feedId, feedIds ?? [])),
+        and(
+          or(inArray(entriesTable.id, entryIds ?? []), inArray(entriesTable.feedId, feedIds ?? [])),
+          timeRange
+            ? between(
+                entriesTable.publishedAt,
+                new Date(timeRange.startTime),
+                new Date(timeRange.endTime),
+              )
+            : undefined,
+        ),
       )
   }
 

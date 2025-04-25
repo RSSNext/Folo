@@ -12,6 +12,7 @@ import { collectionActions } from "../collection/store"
 import { feedActions } from "../feed/store"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { getSubscription } from "../subscription/getter"
+import type { PublishAtTimeRangeFilter } from "../unread/types"
 import { getEntry } from "./getter"
 import type { EntryModel, FetchEntriesProps } from "./types"
 import { getEntriesParams } from "./utils"
@@ -273,18 +274,30 @@ class EntryActions {
     entryIds,
     feedIds,
     read,
+    timeRange,
   }: {
     entryIds?: EntryId[]
     feedIds?: FeedId[]
     read: boolean
+    timeRange?: PublishAtTimeRangeFilter
   }) {
     immerSet((draft) => {
       if (entryIds) {
         for (const entryId of entryIds) {
           const entry = draft.data[entryId]
-          if (entry) {
-            entry.read = read
+          if (!entry) {
+            continue
           }
+
+          if (
+            timeRange &&
+            (+new Date(entry.publishedAt) < timeRange.startTime ||
+              +new Date(entry.publishedAt) > timeRange.endTime)
+          ) {
+            continue
+          }
+
+          entry.read = read
         }
       }
 
@@ -297,6 +310,14 @@ class EntryActions {
           )
 
         for (const entry of entries) {
+          if (
+            timeRange &&
+            (+new Date(entry.publishedAt) < timeRange.startTime ||
+              +new Date(entry.publishedAt) > timeRange.endTime)
+          ) {
+            continue
+          }
+
           entry.read = read
         }
       }

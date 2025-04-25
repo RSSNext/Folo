@@ -11,7 +11,7 @@ import { unreadSyncService, useUnreadStore } from "./store"
 export const usePrefetchUnread = () => {
   return useQuery({
     queryKey: ["unread"],
-    queryFn: () => unreadSyncService.fetch(),
+    queryFn: () => unreadSyncService.resetFromRemote(),
     staleTime: 5 * 1000 * 60, // 5 minutes
   })
 }

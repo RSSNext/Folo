@@ -12,6 +12,7 @@ import { createTransaction, createZustandStore } from "../internal/helper"
 import { getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
 import { getAllUnreadCount } from "./getter"
+import type { PublishAtTimeRangeFilter } from "./types"
 
 type SubscriptionId = string
 interface UnreadStore {
@@ -23,7 +24,7 @@ export const useUnreadStore = createZustandStore<UnreadStore>("unread")(() => ({
 const set = useUnreadStore.setState
 
 class UnreadSyncService {
-  async fetch() {
+  async resetFromRemote() {
     const res = await apiClient.reads.$get({
       query: {},
     })
@@ -34,61 +35,75 @@ class UnreadSyncService {
   }
 
   async updateBadgeAtBackground() {
-    await this.fetch()
+    await this.resetFromRemote()
     const allUnreadCount = getAllUnreadCount()
     setBadgeCountAsyncWithPermission(allUnreadCount)
     return true
   }
 
-  private async updateUnreadStatus(feedIds: string[]) {
-    await unreadActions.upsertMany(feedIds.map((id) => ({ subscriptionId: id, count: 0 })))
-    entryActions.markEntryReadStatusInSession({ feedIds, read: true })
+  private async updateUnreadStatus(feedIds: string[], timeRange?: PublishAtTimeRangeFilter) {
+    if (timeRange) {
+      await this.resetFromRemote()
+    } else {
+      await unreadActions.upsertMany(feedIds.map((id) => ({ subscriptionId: id, count: 0 })))
+    }
+    entryActions.markEntryReadStatusInSession({ feedIds, read: true, timeRange })
     await EntryService.patchMany({
       feedIds,
       entry: { read: true },
+      timeRange,
     })
   }
 
-  async markViewAsRead(
-    view: FeedViewType,
+  async markViewAsRead({
+    view,
+    filter,
+    timeRange,
+  }: {
+    view: FeedViewType
     filter?: {
       feedId?: string
       listId?: string
       feedIdList?: string[]
       inboxId?: string
-    } | null,
-  ) {
+    } | null
+    timeRange?: PublishAtTimeRangeFilter
+  }) {
     await apiClient.reads.all.$post({
       json: {
         view,
         ...filter,
+        ...timeRange,
       },
     })
     if (filter?.feedIdList) {
-      this.updateUnreadStatus(filter.feedIdList)
+      this.updateUnreadStatus(filter.feedIdList, timeRange)
     } else if (filter?.feedId) {
-      this.updateUnreadStatus([filter.feedId])
+      this.updateUnreadStatus([filter.feedId], timeRange)
     } else if (filter?.listId) {
       const feedIds = getListFeedIds(filter.listId)
       if (feedIds) {
-        this.updateUnreadStatus(feedIds)
+        this.updateUnreadStatus(feedIds, timeRange)
       }
     } else if (filter?.inboxId) {
-      this.updateUnreadStatus([filter.inboxId])
+      this.updateUnreadStatus([filter.inboxId], timeRange)
     } else {
       const subscriptionIds = getSubscriptionByView(view)
-      this.updateUnreadStatus(subscriptionIds)
+      this.updateUnreadStatus(subscriptionIds, timeRange)
     }
   }
 
-  async markFeedAsRead(feedId: string | string[]) {
+  async markFeedAsRead(feedId: string | string[], timeRange?: PublishAtTimeRangeFilter) {
     const feedIds = Array.isArray(feedId) ? feedId : [feedId]
 
     await apiClient.reads.all.$post({
-      json: { feedIdList: feedIds },
+      json: {
+        feedIdList: feedIds,
+        ...timeRange,
+      },
     })
 
-    this.updateUnreadStatus(feedIds)
+    this.updateUnreadStatus(feedIds, timeRange)
   }
 
   async markEntryAsRead(entryId: string) {

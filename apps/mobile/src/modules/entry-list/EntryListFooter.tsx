@@ -23,7 +23,7 @@ export const EntryListFooter = () => {
         onPress={() => {
           if (typeof selectedView === "number") {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            unreadSyncService.markViewAsRead(selectedView, payload)
+            unreadSyncService.markViewAsRead({ view: selectedView, filter: payload })
           }
         }}
       >
@@ -49,7 +49,7 @@ export const GridEntryListFooter = () => {
       onPress={() => {
         if (typeof selectedView === "number") {
           const payload = getFetchEntryPayload(selectedFeed, selectedView)
-          unreadSyncService.markViewAsRead(selectedView, payload)
+          unreadSyncService.markViewAsRead({ view: selectedView, filter: payload })
         }
       }}
     >
