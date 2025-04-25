@@ -1,11 +1,8 @@
 import { parseHtml } from "@follow/components/src/ui/markdown/parse-html"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
+import { duplicateIfLengthLessThan } from "@follow/utils"
 import { franc } from "franc-min"
-
-function duplicateIfLengthLessThan(text: string, length: number) {
-  return text.length < length ? text.repeat(Math.ceil(length / text.length)) : text
-}
 
 export const checkLanguage = ({
   content,
