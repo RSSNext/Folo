@@ -78,6 +78,7 @@ export const TitleMetaHandler: Component<{
 
 export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
+  const { t: T } = useTranslation("common")
   const result = useEntryReadabilityContent(entryId)
   const isInReadability = useEntryIsInReadability(entryId)
   const status = useEntryInReadabilityStatus(entryId)
@@ -89,17 +90,29 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   return (
     <div className="grow">
       {result ? (
-        <p className="mb-4 rounded-xl border p-3 text-sm opacity-80">
-          <i className="i-mgc-information-cute-re mr-1 translate-y-[2px]" />
+        <p className="mb-4 flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50/30 p-3 text-sm text-blue-700 shadow-sm dark:border-blue-800/30 dark:bg-blue-900/10 dark:text-blue-300">
+          <i className="i-mgc-information-cute-re self-baseline text-lg" />
           {t("entry_content.readability_notice")}
         </p>
       ) : (
         <>
           {status === ReadabilityStatus.FAILURE ? (
-            <p className="mb-4 rounded-xl border p-3 text-sm opacity-80">
-              <i className="i-mingcute-warning-line mr-1 translate-y-[2px]" />
-              {t("entry_content.fetching_content_failed")}
-            </p>
+            <div className="center mt-36 flex flex-col items-center gap-3">
+              <i className="i-mgc-warning-cute-re text-red text-4xl" />
+              <span className="text-balance text-center text-sm">
+                {t("entry_content.fetching_content_failed")}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setReadabilityStatus({
+                    [entryId]: ReadabilityStatus.INITIAL,
+                  })
+                }}
+              >
+                {T("words.back")}
+              </Button>
+            </div>
           ) : (
             <div className="center mt-32 flex flex-col gap-2">
               <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />

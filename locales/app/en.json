@@ -130,7 +130,7 @@
   "entry_column.refreshing": "Refreshing new entries...",
   "entry_content.ai_summary": "AI summary",
   "entry_content.fetching_content": "Fetching original content and processing...",
-  "entry_content.fetching_content_failed": "Failed to fetch original content.",
+  "entry_content.fetching_content_failed": "Readability: Failed to fetch original content, try again later or back to the RSS content.",
   "entry_content.header.play_tts": "Play TTS",
   "entry_content.header.readability": "Readability",
   "entry_content.header.readability_description": "Using readability's ability to obtain the original website content and parse it may allow for more readable content. Recommended to use it when the RSS content is not available or incomplete.",
