@@ -9,6 +9,7 @@ import { createElement, useEffect, useMemo, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import RSSHubIconUrl from "~/assets/rsshub-icon.png?url"
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { mountLottie } from "~/components/ui/lottie-container"
 import { Markdown } from "~/components/ui/markdown/Markdown"
@@ -90,6 +91,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   const [direction, setDirection] = useState(1)
   const lang = useGeneralSettingKey("language")
   const defaultLang = ["zh-CN", "zh-HK", "zh-TW"].includes(lang ?? "") ? "zh-CN" : "en"
+  const isInMASReview = useIsInMASReview()
 
   const guideSteps = useMemo(
     () =>
@@ -104,17 +106,23 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           ),
           icon: "i-mgc-user-setting-cute-re",
         },
-        {
-          title: t.app("new_user_guide.step.activation.title"),
-          description: t.app("new_user_guide.step.activation.description"),
-          content: <ActivationModalContent className="w-full max-w-[500px]" hideDescription />,
-          icon: "i-mgc-love-cute-re",
-        },
-        {
-          title: t.app("new_user_guide.step.migrate.wallet"),
-          content: <MyWalletSection className="w-full max-w-[600px]" />,
-          icon: <i className="i-mgc-power text-accent" />,
-        },
+        ...(!isInMASReview
+          ? [
+              {
+                title: t.app("new_user_guide.step.activation.title"),
+                description: t.app("new_user_guide.step.activation.description"),
+                content: (
+                  <ActivationModalContent className="w-full max-w-[500px]" hideDescription />
+                ),
+                icon: "i-mgc-love-cute-re",
+              },
+              {
+                title: t.app("new_user_guide.step.migrate.wallet"),
+                content: <MyWalletSection className="w-full max-w-[600px]" />,
+                icon: <i className="i-mgc-power text-accent" />,
+              },
+            ]
+          : []),
         {
           title: t.app("new_user_guide.step.behavior.unread_question.content"),
           description: t.app("new_user_guide.step.behavior.unread_question.description"),

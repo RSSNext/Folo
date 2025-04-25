@@ -199,7 +199,7 @@ export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProp
 }
 
 export const SocialMediaItemSkeleton = (
-  <div className="bg-theme-background relative m-auto w-[645px] rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative m-auto w-[645px] rounded-md">
     <div className="relative">
       <div className="group relative flex px-8 py-6">
         <Skeleton className="mr-2 size-9" />
@@ -207,7 +207,7 @@ export const SocialMediaItemSkeleton = (
           <div className="-mt-0.5 line-clamp-5 flex-1 text-sm">
             <div className="flex w-[calc(100%-10rem)] space-x-1">
               <Skeleton className="h-4 w-16" />
-              <span className="text-zinc-500">·</span>
+              <span className="text-material-opaque">·</span>
               <Skeleton className="h-4 w-12" />
             </div>
             <div className="relative mt-0.5 text-sm">

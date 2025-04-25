@@ -542,6 +542,40 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        createdAt: drizzle_orm_pg_core.PgColumn<{
+            name: "created_at";
+            tableName: "actions";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        updatedAt: drizzle_orm_pg_core.PgColumn<{
+            name: "updated_at";
+            tableName: "actions";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
         rules: drizzle_orm_pg_core.PgColumn<{
             name: "rules";
             tableName: "actions";
@@ -774,6 +808,8 @@ declare const actionsItemOpenAPISchema: z.ZodObject<{
 }>;
 declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     userId: z.ZodString;
+    createdAt: z.ZodNullable<z.ZodString>;
+    updatedAt: z.ZodNullable<z.ZodString>;
     rules: z.ZodNullable<z.ZodType<string | number | boolean | {
         [key: string]: string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | (string | number | boolean | /*elided*/ any | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null;
     } | (string | number | boolean | {
@@ -987,6 +1023,8 @@ declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
         };
     }>, "many">>>;
 }>, "strip", z.ZodTypeAny, {
+    createdAt: string | null;
+    updatedAt: string | null;
     userId: string;
     rules?: {
         name: string;
@@ -1021,6 +1059,8 @@ declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
         };
     }[] | null | undefined;
 }, {
+    createdAt: string | null;
+    updatedAt: string | null;
     userId: string;
     rules?: {
         name: string;
@@ -13175,6 +13215,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data?: {
+                    createdAt: string | null;
+                    updatedAt: string | null;
                     userId: string;
                     rules?: {
                         name: string;
@@ -15938,6 +15980,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     ANNOUNCEMENT: string;
                     MAX_TRIAL_USER_FEED_SUBSCRIPTION: number;
                     MAX_TRIAL_USER_LIST_SUBSCRIPTION: number;
+                    MAS_IN_REVIEW_VERSION?: string | undefined;
                 };
             };
             outputFormat: "json";

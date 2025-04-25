@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
@@ -46,7 +47,17 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
     currentField?.type === "view"
       ? views.find((view) => view.view === Number(item.value))
       : undefined
-  const { t: tCommon } = useTranslation("common")
+
+  const operatorOptions = useMemo(() => {
+    return filterOperatorOptions
+      .map((i) => ({ ...i, label: t(i.label) }))
+      .filter((operator) => operator.types.includes(currentField?.type ?? "text"))
+  }, [t, currentField])
+  if (operatorOptions.length === 1 && currentOperator?.value !== operatorOptions[0]!.value) {
+    actionActions.pathCondition(index, {
+      operator: operatorOptions[0]!.value as any,
+    })
+  }
 
   return (
     <>
@@ -69,9 +80,7 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
         <GroupedInsetListBaseCell className="flex flex-row justify-between">
           <Text className="text-label">{t("actions.action_card.operator")}</Text>
           <Select
-            options={filterOperatorOptions
-              .map((i) => ({ ...i, label: t(i.label) }))
-              .filter((operator) => operator.types.includes(currentField?.type ?? "text"))}
+            options={operatorOptions}
             value={currentOperator?.value}
             onValueChange={(value) => {
               actionActions.pathCondition(index, {
@@ -84,30 +93,19 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
 
         <GroupedInsetListBaseCell className="flex flex-row justify-between">
           <Text className="text-label">{t("actions.action_card.value")}</Text>
-          {currentField?.type === "view" ? (
-            <Select
-              options={views.map((field) => ({
-                label: tCommon(field.name),
-                value: String(field.view),
-              }))}
-              value={currentView?.view ? String(currentView.view) : undefined}
-              onValueChange={(val) => {
-                actionActions.pathCondition(index, { value: val })
-              }}
-              wrapperClassName="min-w-40"
-            />
-          ) : (
-            <PlainTextField
-              className="w-full flex-1 text-right"
-              value={item.value}
-              onChangeText={(value) => {
-                actionActions.pathCondition(index, { value })
-              }}
-              hitSlop={10}
-              selectionColor={accentColor}
-              placeholder="Enter value"
-            />
-          )}
+          <ValueField
+            type={currentField?.type ?? "text"}
+            value={
+              currentField?.type === "view"
+                ? currentView?.view !== undefined
+                  ? String(currentView.view)
+                  : undefined
+                : item.value
+            }
+            onChange={(value) => {
+              actionActions.pathCondition(index, { value })
+            }}
+          />
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
       {__DEV__ && (
@@ -117,4 +115,68 @@ function ConditionForm({ index }: { index: ConditionIndex }) {
       )}
     </>
   )
+}
+
+function ValueField({
+  type,
+  value,
+  onChange,
+}: {
+  type: string
+  value?: string
+  onChange: (value: string | undefined) => void
+}) {
+  const { t } = useTranslation("common")
+
+  switch (type) {
+    case "view": {
+      return (
+        <Select
+          options={views.map((field) => ({
+            label: t(field.name),
+            value: String(field.view),
+          }))}
+          value={value}
+          onValueChange={(val) => {
+            onChange(val)
+          }}
+          wrapperClassName="min-w-40"
+        />
+      )
+    }
+    case "status": {
+      if (value === undefined) {
+        onChange("collected")
+      }
+      return (
+        <Select
+          options={[
+            {
+              label: t("words.starred"),
+              value: "collected",
+            },
+          ]}
+          value={value}
+          onValueChange={(val) => {
+            onChange(val as string)
+          }}
+          wrapperClassName="min-w-40"
+        />
+      )
+    }
+    default: {
+      return (
+        <PlainTextField
+          className="w-full flex-1 text-right"
+          value={value}
+          onChangeText={(value) => {
+            onChange(value)
+          }}
+          hitSlop={10}
+          selectionColor={accentColor}
+          placeholder="Enter value"
+        />
+      )
+    }
+  }
 }

@@ -145,7 +145,7 @@ const SortButton = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98, y: 10 }}
                 transition={{ type: "spring", duration: 0.3 }}
-                className="border-border bg-theme-background relative z-10 rounded-md border p-3 shadow-md dark:shadow-zinc-500/20"
+                className="border-border bg-theme-background shadow-context-menu relative z-10 rounded-md border p-3"
               >
                 <HoverCard.Arrow className="fill-border -translate-x-4" />
                 <section className="w-[170px] text-center">

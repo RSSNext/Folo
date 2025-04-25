@@ -54,7 +54,7 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
                 marginLeft: `-${LIMIT * 8}px`,
                 zIndex: LIMIT + 1,
               }}
-              className="no-drag-region border-border bg-material-medium ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
+              className="no-drag-region border-border bg-material-opaque ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
             >
               <span className="text-text-secondary text-[10px] font-medium tabular-nums">
                 +{Math.min(totalCount - LIMIT, 99)}
@@ -69,7 +69,7 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
                 align="start"
                 side="right"
                 className={clsx(
-                  "bg-background z-10 rounded-md border drop-shadow",
+                  "shadow-menu bg-material-medium shadow-context-menu backdrop-blur-background rounded-md border",
                   "data-[state=open]:animate-in data-[state=closed]:animate-out",
                   "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                   "data-[state=closed]:slide-out-to-left-5 data-[state=open]:slide-in-from-left-5",

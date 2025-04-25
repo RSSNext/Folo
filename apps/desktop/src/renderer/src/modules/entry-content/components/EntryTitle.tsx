@@ -71,7 +71,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
             href={populatedFullHref ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="cursor-link hover:multi-[scale-105;opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
+            className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
           >
             <EntryTranslation
               source={entry.entries.title}
@@ -84,7 +84,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <div className="text-text-secondary [&>div:hover]:multi-['text-gray-700;dark:text-gray-300'] flex flex-wrap items-center gap-4 [&>div]:transition-colors">
+          <div className="text-text-secondary [&>div:hover]:multi-[text-text] flex flex-wrap items-center gap-4 [&>div]:transition-colors">
             <div
               className="flex items-center text-xs font-medium"
               onClick={() =>

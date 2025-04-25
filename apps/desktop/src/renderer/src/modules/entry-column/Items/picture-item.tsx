@@ -178,7 +178,7 @@ MasonryItemFixedDimensionWrapper.whyDidYouRender = {
 }
 
 export const PictureItemSkeleton = (
-  <div className="bg-theme-background relative max-w-md rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative max-w-md rounded-md">
     <div className="relative">
       <div className="p-1.5">
         <div className="relative flex gap-2 overflow-x-auto">
@@ -193,7 +193,7 @@ export const PictureItemSkeleton = (
           <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
             <Skeleton className="mr-0.5 size-4" />
             <Skeleton className="h-3 w-1/2" />
-            <span className="text-zinc-500">·</span>
+            <span className="text-material-opaque">·</span>
             <Skeleton className="h-3 w-12" />
           </div>
         </div>

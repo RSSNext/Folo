@@ -12,7 +12,7 @@ import { analyzer } from "vite-bundle-analyzer"
 import mkcert from "vite-plugin-mkcert"
 import { VitePWA } from "vite-plugin-pwa"
 
-import type { env as EnvType } from "../../packages/shared/src/env"
+import type { env as EnvType } from "../../packages/shared/src/env.ssr"
 import { viteRenderBaseConfig } from "./configs/vite.render.config"
 import { createDependencyChunksPlugin } from "./plugins/vite/deps"
 import { htmlInjectPlugin } from "./plugins/vite/html-inject"
@@ -104,6 +104,7 @@ export default ({ mode }) => {
       },
     },
     server: {
+      host: true,
       port: 2233,
       watch: {
         ignored: ["**/dist/**", "**/out/**", "**/public/**", ".git/**"],

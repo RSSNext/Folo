@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useUserRole } from "~/atoms/user"
 
 import { getMemoizedSettings } from "../settings-glob"
@@ -7,7 +8,8 @@ import type { SettingPageContext } from "../utils"
 
 export const useSettingPageContext = (): SettingPageContext => {
   const role = useUserRole()
-  return useMemo(() => ({ role }), [role])
+  const isInMASReview = useIsInMASReview()
+  return useMemo(() => ({ role, isInMASReview }), [role, isInMASReview])
 }
 
 export const useAvailableSettings = () => {

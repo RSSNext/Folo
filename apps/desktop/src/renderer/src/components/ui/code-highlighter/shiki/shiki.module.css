@@ -72,12 +72,12 @@
       @apply bg-green-100 dark:bg-green-900;
 
       &::before {
-        @apply bg-green-500;
+        @apply bg-green;
       }
 
       &::after {
         content: " +";
-        @apply absolute left-0 text-green-500;
+        @apply text-green absolute left-0;
       }
     }
 
@@ -90,7 +90,7 @@
 
       &::after {
         content: " -";
-        @apply absolute left-0 text-red-500;
+        @apply text-red absolute left-0;
       }
     }
 

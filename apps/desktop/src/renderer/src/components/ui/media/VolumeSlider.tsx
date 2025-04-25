@@ -15,11 +15,13 @@ export const VolumeSlider: FC<{
       onVolumeChange?.(values[0]!)
     }}
   >
-    <Slider.Track className="relative w-1 grow rounded bg-zinc-500">
-      <Slider.Range className="absolute w-full rounded bg-black dark:bg-white" />
+    <Slider.Track className="relative w-1 grow rounded bg-white dark:bg-neutral-800">
+      <Slider.Range className="absolute w-full rounded bg-zinc-500/40 dark:bg-neutral-600" />
     </Slider.Track>
+
+    {/* indicator */}
     <Slider.Thumb
-      className="block size-3 rounded-full bg-black dark:bg-white"
+      className="block size-3 rounded-full bg-zinc-500 dark:bg-zinc-400"
       aria-label="Volume"
     />
   </Slider.Root>

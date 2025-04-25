@@ -10,6 +10,7 @@ import { toast } from "sonner"
 
 import type { FollowMenuItem, MenuItemInput } from "~/atoms/context-menu"
 import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { apiClient } from "~/lib/api-fetch"
@@ -103,6 +104,8 @@ export const useFeedActions = ({
 
   const isMultipleSelection = feedIds && feedIds.length > 1 && feedIds.includes(feedId)
 
+  const isInMASReview = useIsInMASReview()
+
   const items = useMemo(() => {
     const related = feed || inbox
     if (!related) return []
@@ -145,12 +148,16 @@ export const useFeedActions = ({
             }),
           ]
         : []),
-      new MenuItemText({
-        label: t("words.boost"),
-        click: () => {
-          openBoostModal(feedId)
-        },
-      }),
+      ...(!isInMASReview
+        ? [
+            new MenuItemText({
+              label: t("words.boost"),
+              click: () => {
+                openBoostModal(feedId)
+              },
+            }),
+          ]
+        : []),
 
       new MenuItemSeparator(isEntryList),
       new MenuItemText({

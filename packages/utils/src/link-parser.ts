@@ -50,7 +50,7 @@ export const isXUrl = defineLinkParser({
 export const isV2exUrl = defineLinkParser({
   name: "v2ex",
   validator: (url) => url.hostname.includes("v2ex.com"),
-  icon: "i-simple-icons-v2ex text-foreground",
+  icon: "i-simple-icons-v2ex text-text",
 })
 
 export const isPixivUrl = defineLinkParser({

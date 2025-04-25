@@ -36,7 +36,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium text-zinc-600 dark:text-zinc-300",
+        "text-text-secondary flex h-20 items-center justify-center gap-8 px-10 py-4 text-2xl font-medium",
         className,
       )}
     >

@@ -14,20 +14,18 @@ export function ArticleItem({ entryId, entryPreview, translation }: UniversalIte
 
 export function ArticleItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="relative select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+    <div className="bg-theme-background text-text relative select-none rounded-md transition-colors">
       <div className="relative">
         <div className="group relative flex py-4 pl-3 pr-2">
           <FeedIcon className="mr-2 size-5 rounded-sm" feed={feed} fallback />
           <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-            <div className="flex gap-1 text-[10px] font-bold text-zinc-400 dark:text-neutral-500">
+            <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
               <FeedTitle feed={feed} />
               <span>·</span>
               <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
             </div>
             <div className="relative my-1 break-words font-medium">{entry.title}</div>
-            <div className="mt-1.5 text-[13px] text-zinc-400 dark:text-neutral-500">
-              {entry.description}
-            </div>
+            <div className="text-text-secondary mt-1.5 text-[13px]">{entry.description}</div>
           </div>
           {entry.media?.[0] ? (
             <Media
@@ -56,12 +54,12 @@ export function ArticleItemStateLess({ entry, feed }: EntryItemStatelessProps) {
 }
 
 export const ArticleItemSkeleton = (
-  <div className="relative h-[120px] rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative h-[120px] rounded-md">
     <div className="relative">
       <div className="group relative flex py-4 pl-3 pr-2">
         <Skeleton className="mr-2 size-5 rounded-sm" />
         <div className="-mt-0.5 flex-1 text-sm leading-tight">
-          <div className="flex gap-1 text-[10px] font-bold text-zinc-400 dark:text-neutral-500">
+          <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
             <Skeleton className="h-3 w-24" />
             <span>·</span>
             <Skeleton className="h-3 w-12 shrink-0" />
@@ -70,7 +68,7 @@ export const ArticleItemSkeleton = (
             <Skeleton className="h-3.5 w-full" />
             <Skeleton className="mt-1 h-3.5 w-3/4" />
           </div>
-          <div className="mt-1.5 text-[13px] text-zinc-400 dark:text-neutral-500">
+          <div className="text-material-opaque mt-1.5 text-[13px]">
             <Skeleton className="h-3 w-full" />
             <Skeleton className="mt-1 h-3 w-4/5" />
           </div>

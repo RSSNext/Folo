@@ -371,7 +371,7 @@
   "wallet.create.button": "創建錢包",
   "wallet.create.description": "創建一個免費的錢包來接收 <PowerIcon /> <strong>Power</strong>，可以用來贊助創作者，也可以因你的內容貢獻而獲得回報。",
   "wallet.power.dailyClaim": "你可以每日領取 {{amount}} 免費的 Power，用於在 Folo 上贊助 RSS 條目。",
-  "wallet.power.description2": "Power 是 {{blockchainName}} 區塊鏈上的 <Link>ERC-20 代币</Link>，可用於 Folo 購買或贊助",
+  "wallet.power.description2": "Power 是 {{blockchainName}} 區塊鏈上的 <Link>ERC-20 代币</Link>",
   "wallet.power.rewardDescription": "所有 Folo 的活躍用戶都可以獲得每日 Power 獎勵",
   "wallet.power.rewardDescription2": "根據你的等級和過去活動，你獲得一份 <Balance /> 奖励。<Link>更多詳情</Link>",
   "wallet.ranking.level": "等級",

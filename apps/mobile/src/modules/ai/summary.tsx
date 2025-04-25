@@ -16,6 +16,7 @@ import Animated, {
 import { useColor } from "react-native-uikit-colors"
 
 import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
+import { isAndroid } from "@/src/lib/platform"
 
 export const AISummary: FC<{
   className?: string
@@ -63,7 +64,8 @@ export const AISummary: FC<{
     <Animated.View
       className={cn(
         "border-opaque-separator/50 mx-4 my-2 rounded-xl p-4",
-        "bg-secondary-system-background/30",
+        // Opacity modifier style incorrectly applied in Android
+        isAndroid ? "bg-secondary-system-background" : "bg-secondary-system-background/30",
         className,
       )}
       style={styles.card}

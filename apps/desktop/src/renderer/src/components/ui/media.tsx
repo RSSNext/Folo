@@ -334,7 +334,7 @@ const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, classNam
     <div
       className={cn(
         "size-full",
-        "center rounded bg-zinc-100 dark:bg-neutral-900",
+        "center bg-material-ultra-thick rounded",
         "not-prose @container !flex max-h-full flex-col space-y-1 p-4",
         mediaContainerClassName,
       )}

@@ -135,7 +135,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
       className={cn(
         "relative flex h-full flex-col pt-2.5",
 
-        !feedColumnShow && ELECTRON_BUILD && "bg-zinc-200 dark:bg-neutral-800",
+        !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
         className,
       )}
       onClick={useCallback(() => navigateBackHome(), [navigateBackHome])}

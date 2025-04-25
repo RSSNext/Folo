@@ -104,7 +104,3 @@ export const getBlockchainExplorerUrl = () => {
     return `https://scan.rss3.io`
   }
 }
-
-export const isInMAS = () => {
-  return typeof process !== "undefined" && process.mas
-}

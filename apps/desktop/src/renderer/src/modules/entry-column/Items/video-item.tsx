@@ -190,7 +190,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
 export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="bg-theme-background relative mx-auto w-full max-w-lg rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+    <div className="bg-theme-background text-text relative mx-auto w-full max-w-lg rounded-md transition-colors">
       <div className="relative">
         <div className="p-1.5">
           <div className="w-full">
@@ -221,10 +221,10 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
             <div className="relative mb-1 mt-1.5 truncate font-medium leading-none">
               {entry.title}
             </div>
-            <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
+            <div className="text-text-secondary mt-1 flex items-center gap-1 truncate text-[13px]">
               <FeedIcon feed={feed} fallback className="size-4" />
               <FeedTitle feed={feed} />
-              <span className="text-zinc-500">·</span>
+              <span className="text-material-opaque">·</span>
               {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
             </div>
           </div>
@@ -235,7 +235,7 @@ export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
 }
 
 export const VideoItemSkeleton = (
-  <div className="bg-theme-background relative mx-auto w-full max-w-lg rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative mx-auto w-full max-w-lg rounded-md">
     <div className="relative">
       <div className="p-1.5">
         <div className="w-full">
@@ -250,7 +250,7 @@ export const VideoItemSkeleton = (
           <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
             <Skeleton className="mr-0.5 size-4" />
             <Skeleton className="h-3 w-1/2" />
-            <span className="text-zinc-500">·</span>
+            <span className="text-material-opaque">·</span>
             <Skeleton className="h-3 w-12" />
           </div>
         </div>

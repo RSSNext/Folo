@@ -48,7 +48,7 @@ export const EntryUserRow: Component<{ userId: string }> = memo(({ userId }) => 
       }}
       role="button"
       tabIndex={0}
-      className="cursor-button hover:bg-material-medium relative flex min-w-0 max-w-[50ch] shrink-0 items-center gap-2 truncate rounded-md p-1 px-2"
+      className="cursor-button hover:bg-theme-selection-hover hover:text-theme-selection-foreground relative flex min-w-0 max-w-[50ch] shrink-0 items-center gap-2 truncate rounded-md p-1 px-2"
     >
       <Avatar className="border-border ring-background block aspect-square size-7 overflow-hidden rounded-full border ring-1">
         <AvatarImage src={replaceImgUrlIfNeed(user?.image || undefined)} />

@@ -15,7 +15,7 @@ import {
 } from "~/atoms/readability"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
-import { useInPeekModal } from "~/components/ui/modal/inspire/PeekModal"
+import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -154,16 +154,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 
       <div className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible">
         <EntryTimelineSidebar entryId={entry.entries.id} />
-        <ScrollArea.ScrollArea
-          mask={false}
-          rootClassName={cn(
-            "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
-            className,
-          )}
-          scrollbarClassName="mr-[1.5px] print:hidden"
-          viewportClassName="p-5"
-          ref={scrollerRef}
-        >
+        <EntryScrollArea className={className} scrollerRef={scrollerRef}>
           <div
             style={stableRenderStyle}
             className="animate-in fade-in slide-in-from-bottom-24 f-motion-reduce:fade-in-0 f-motion-reduce:slide-in-from-bottom-0 select-text duration-200 ease-in-out"
@@ -238,9 +229,33 @@ export const EntryContent: Component<EntryContentProps> = ({
               <SupportCreator entryId={entryId} />
             </article>
           </div>
-        </ScrollArea.ScrollArea>
+        </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </div>
     </>
+  )
+}
+
+const EntryScrollArea: Component<{
+  scrollerRef: React.RefObject<HTMLDivElement>
+}> = ({ children, className, scrollerRef }) => {
+  const isInPeekModal = useInPeekModal()
+
+  if (isInPeekModal) {
+    return <div className="p-5">{children}</div>
+  }
+  return (
+    <ScrollArea.ScrollArea
+      mask={false}
+      rootClassName={cn(
+        "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
+        className,
+      )}
+      scrollbarClassName="mr-[1.5px] print:hidden"
+      viewportClassName="p-5"
+      ref={scrollerRef}
+    >
+      {children}
+    </ScrollArea.ScrollArea>
   )
 }

@@ -52,7 +52,6 @@ import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { FooterInfo } from "./components/FooterInfo"
 import { NewUserGuide } from "./index.shared"
 
 const errorTypes = [
@@ -112,7 +111,6 @@ export function MainDestopLayout() {
           >
             <FeedColumn>
               <CornerPlayer />
-              <FooterInfo />
 
               <UpdateNotice />
 

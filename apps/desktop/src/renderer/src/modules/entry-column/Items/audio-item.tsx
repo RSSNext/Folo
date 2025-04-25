@@ -13,11 +13,11 @@ export function AudioItem({ entryId, entryPreview, translation }: UniversalItemP
 
 export function AudioItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="bg-theme-background relative mx-auto w-full max-w-lg select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+    <div className="relative mx-auto w-full max-w-lg select-none rounded-md">
       <div className="relative">
         <div className="group relative flex py-4 pl-3 pr-2">
           <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-            <div className="flex gap-1 text-[10px] font-bold text-zinc-400 dark:text-neutral-500">
+            <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
               <FeedTitle feed={feed} />
               <span>·</span>
               <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
@@ -55,11 +55,11 @@ export function AudioItemStateLess({ entry, feed }: EntryItemStatelessProps) {
 }
 
 export const AudioItemSkeleton = (
-  <div className="bg-theme-background relative mx-auto w-full select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative mx-auto w-full select-none rounded-md">
     <div className="relative">
       <div className="group relative flex py-4 pl-3 pr-2">
         <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-          <div className="flex gap-1 text-[10px] font-bold text-zinc-400 dark:text-neutral-500">
+          <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
             <Skeleton className="h-3 w-20" />
             <span>·</span>
             <Skeleton className="h-3 w-10" />

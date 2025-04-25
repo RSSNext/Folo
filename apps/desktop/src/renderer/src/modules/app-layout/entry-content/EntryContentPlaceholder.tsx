@@ -57,8 +57,9 @@ const SummaryDetailContent = () => {
   const ctxValue = React.useContext(EntryContentPlaceholderContext)
   const openedSummary = useAtomValue(ctxValue.openedSummary)
   const setOpenedSummary = useSetAtom(ctxValue.openedSummary)
+
   return (
-    <div className="relative">
+    <>
       <div className="fade-in-0 absolute right-4 top-4 duration-200">
         <PeekModalBaseButton
           icon={<i className="i-mgc-close-cute-re" />}
@@ -67,27 +68,35 @@ const SummaryDetailContent = () => {
         />
       </div>
 
-      <CollapseGroup
-        defaultOpenId={`${openedSummary}`}
-        onOpenChange={(state) => {
-          const isAllClosed = Object.values(state).every((v) => !v)
-          if (isAllClosed) {
-            setOpenedSummary(null)
-          }
-        }}
-      >
+      <CollapseGroup defaultOpenId={`${openedSummary}`}>
         <DailyItem
+          isOpened={openedSummary === DayOf.Today}
+          onClick={() => {
+            if (openedSummary === DayOf.Today) {
+              setOpenedSummary(null)
+            } else {
+              setOpenedSummary(DayOf.Today)
+            }
+          }}
           day={DayOf.Today}
           view={view as DailyView}
           className={cn(openedSummary === DayOf.Today && "grow", "pt-6")}
         />
 
         <DailyItem
+          isOpened={openedSummary === DayOf.Yesterday}
+          onClick={() => {
+            if (openedSummary === DayOf.Yesterday) {
+              setOpenedSummary(null)
+            } else {
+              setOpenedSummary(DayOf.Yesterday)
+            }
+          }}
           day={DayOf.Yesterday}
           view={view as DailyView}
           className={cn(openedSummary === DayOf.Yesterday && "grow", "pt-6")}
         />
       </CollapseGroup>
-    </div>
+    </>
   )
 }

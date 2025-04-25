@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { Media } from "~/components/ui/media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -104,16 +105,20 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
     },
   })
   const { t } = useTranslation()
+  const isInMASReview = useIsInMASReview()
 
   const jotaiStore = useStore()
   const mutation = useMutation({
     mutationFn: async ({ keyword, target }: { keyword: string; target: "feeds" | "lists" }) => {
-      const { data } = await apiClient.discover.$post({
+      let { data } = await apiClient.discover.$post({
         json: {
           keyword: keyword.trim(),
           target,
         },
       })
+      if (isInMASReview) {
+        data = data.filter((item) => !item.list?.fee)
+      }
 
       jotaiStore.set(discoverSearchDataAtom, data)
 

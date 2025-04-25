@@ -24,7 +24,6 @@ import { z } from "zod"
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { exportDB } from "~/database"
-import { initAnalytics } from "~/initialize/analytics"
 import { tipcClient } from "~/lib/client"
 import { queryClient } from "~/lib/query-client"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
@@ -45,21 +44,6 @@ export const SettingDataControl = () => {
     <div className="mt-4">
       <SettingBuilder
         settings={[
-          {
-            type: "title",
-            value: t("general.privacy"),
-          },
-          defineSettingItem("sendAnonymousData", {
-            label: t("general.send_anonymous_data.label"),
-            description: t("general.send_anonymous_data.description"),
-            onChange(value) {
-              setGeneralSetting("sendAnonymousData", value)
-              if (value) {
-                initAnalytics()
-              }
-            },
-          }),
-
           {
             type: "title",
             value: t("general.data"),

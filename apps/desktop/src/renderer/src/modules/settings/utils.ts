@@ -2,6 +2,7 @@ import type { UserRole } from "@follow/constants"
 
 export interface SettingPageContext {
   role: Nullable<UserRole>
+  isInMASReview: boolean
 }
 
 export enum DisableWhy {

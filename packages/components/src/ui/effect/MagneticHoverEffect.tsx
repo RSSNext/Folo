@@ -57,7 +57,8 @@ export const MagneticHoverEffect = <T extends React.ElementType = "div">({
       className={cn(
         "relative",
         "inline-block transition-all duration-200 ease-out",
-        "before:backdrop-blur-background before:absolute before:-inset-x-2 before:inset-y-0 before:z-[-1] before:scale-0 before:rounded-xl before:bg-black/[0.03] before:opacity-0 before:transition-all before:duration-200 before:[transform-origin:var(--origin-x)_var(--origin-y)] hover:before:scale-100 hover:before:opacity-100 dark:before:bg-white/[0.10]",
+        "hover:bg-material-ultra-thick",
+        "before:backdrop-blur-background before:absolute before:-inset-x-2 before:inset-y-0 before:z-[-1] before:scale-0 before:rounded-xl before:opacity-0 before:transition-all before:duration-200 before:[transform-origin:var(--origin-x)_var(--origin-y)] hover:before:scale-100 hover:before:opacity-100",
         rest.className,
       )}
     >
