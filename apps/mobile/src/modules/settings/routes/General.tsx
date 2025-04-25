@@ -2,7 +2,7 @@ import { ACTION_LANGUAGE_KEYS } from "@follow/shared"
 import i18next from "i18next"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import type { MobileSupportedLanguages } from "@/src/@types/constants"
 import { currentSupportedLanguages } from "@/src/@types/constants"
@@ -13,7 +13,6 @@ import {
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { Select } from "@/src/components/ui/form/Select"
 import {
-  GroupedInsetListBaseCell,
   GroupedInsetListCard,
   GroupedInsetListCell,
   GroupedInsetListSectionHeader,
@@ -60,15 +59,13 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
   const { t } = useTranslation("settings")
 
   return (
-    <GroupedInsetListBaseCell>
-      <Text className="text-label">
-        {settingKey === "language" ? t("general.language") : t("general.action_language.label")}
-      </Text>
-
+    <GroupedInsetListCell
+      label={settingKey === "language" ? t("general.language") : t("general.action_language.label")}
+    >
       <View className="w-[150px]">
         <LanguageSelect settingKey={settingKey} />
       </View>
-    </GroupedInsetListBaseCell>
+    </GroupedInsetListCell>
   )
 }
 
@@ -77,10 +74,11 @@ function TranslationModeSetting() {
   const translationMode = useGeneralSettingKey("translationMode")
 
   return (
-    <GroupedInsetListBaseCell>
-      <Text className="text-label">{t("general.translation_mode.label")}</Text>
-
-      <View className="w-[150px]">
+    <GroupedInsetListCell
+      label={t("general.translation_mode.label")}
+      description={t("general.translation_mode.description")}
+    >
+      <View className="w-[130px]">
         <Select
           value={translationMode}
           onValueChange={(value) => {
@@ -92,7 +90,7 @@ function TranslationModeSetting() {
           ]}
         />
       </View>
-    </GroupedInsetListBaseCell>
+    </GroupedInsetListCell>
   )
 }
 

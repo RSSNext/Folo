@@ -10,6 +10,7 @@ export const EntryTranslation = ({
   className,
   inline,
   showTranslation,
+  bilingual,
   ...props
 }: {
   source?: string | null
@@ -17,6 +18,7 @@ export const EntryTranslation = ({
   className?: string
   inline?: boolean
   showTranslation?: boolean
+  bilingual?: boolean
 } & TextProps) => {
   const nextSource = useMemo(() => {
     if (!source) {
@@ -37,7 +39,7 @@ export const EntryTranslation = ({
   }, [nextSource, target, showTranslationFinal])
 
   const translationMode = useGeneralSettingKey("translationMode")
-  if (translationMode === "translation-only") {
+  if (translationMode === "translation-only" && !bilingual) {
     return (
       <Text {...props} className={className}>
         {nextTarget || nextSource}

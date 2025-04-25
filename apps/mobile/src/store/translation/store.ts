@@ -26,18 +26,36 @@ class TranslationActions {
   upsertManyInSession(translations: TranslationModel[]) {
     translations.forEach((translation) => {
       immerSet((state) => {
-        const translationData = {
-          title: translation.title,
-          description: translation.description,
-          content: translation.content,
-          readabilityContent: translation.readabilityContent,
-        }
-
         if (!state.data[translation.entryId]) {
           state.data[translation.entryId] = {}
         }
 
-        state.data[translation.entryId]![translation.language] = translationData
+        if (!state.data[translation.entryId]![translation.language]) {
+          state.data[translation.entryId]![translation.language] = {
+            title: "",
+            description: "",
+            content: "",
+            readabilityContent: "",
+          }
+        }
+
+        if (translation.title) {
+          state.data[translation.entryId]![translation.language]!.title = translation.title
+        }
+
+        if (translation.description) {
+          state.data[translation.entryId]![translation.language]!.description =
+            translation.description
+        }
+
+        if (translation.content) {
+          state.data[translation.entryId]![translation.language]!.content = translation.content
+        }
+
+        if (translation.readabilityContent) {
+          state.data[translation.entryId]![translation.language]!.readabilityContent =
+            translation.readabilityContent
+        }
       })
     })
   }
