@@ -20,7 +20,7 @@ import { shortcuts } from "~/constants/shortcuts"
 import { apiClient } from "~/lib/api-fetch"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
-import type { FollowCommandId, FollowCommandMap } from "~/modules/command/types"
+import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
@@ -68,7 +68,7 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
   }
 }
 
-type EntryActionMenuItemConfig = {
+interface EntryActionMenuItemConfig {
   id: FollowCommandId
   onClick: () => void
   hide?: boolean
@@ -82,7 +82,6 @@ type EntryActionMenuItemConfig = {
 export class EntryActionMenuItem extends MenuItemText {
   protected privateConfig: EntryActionMenuItemConfig
 
-  private cmd: FollowCommandMap[keyof FollowCommandMap] | null = null
   constructor(config: EntryActionMenuItemConfig) {
     const cmd = getCommand(config.id) || null
     super({
@@ -91,7 +90,7 @@ export class EntryActionMenuItem extends MenuItemText {
       click: () => config.onClick?.(),
       hide: !cmd || config.hide,
     })
-    this.cmd = cmd
+
     this.privateConfig = config
   }
 

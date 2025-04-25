@@ -112,7 +112,7 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   usePrefetchEntryTranslation({
     entryIds: [entry.id],
     withContent: true,
-    target: showReadability ? "readabilityContent" : "content",
+    target: showReadability && entry.readabilityContent ? "readabilityContent" : "content",
   })
   return (
     <EntryContentWebView

@@ -4,6 +4,7 @@ import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@f
 import { useMemo } from "react"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media"
@@ -54,15 +55,16 @@ export function ListItem({
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 
+  const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = settingWideMode ? 1 : 2
     let lineClampDescription = settingWideMode ? 1 : 2
 
-    if (translation?.title && !simple) {
+    if (translation?.title && !simple && bilingual) {
       lineClampTitle += 1
     }
-    if (translation?.description && !simple) {
+    if (translation?.description && !simple && bilingual) {
       lineClampDescription += 1
     }
 
@@ -77,7 +79,7 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [settingWideMode, simple, translation?.description, translation?.title])
+  }, [settingWideMode, simple, translation?.description, translation?.title, bilingual])
 
   const audioAttachment = useMemo(() => {
     return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
@@ -280,7 +282,7 @@ function AudioCover({
       >
         <button
           type="button"
-          className="center bg-theme-background hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
+          className="center bg-material-opaque hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
         >
           <i
             className={cn("size-6", {
@@ -296,17 +298,17 @@ function AudioCover({
         <div className="absolute bottom-0 w-full overflow-hidden rounded-b-sm text-center">
           <div
             className={cn(
-              "absolute left-0 top-0 size-full bg-white/50 opacity-0 duration-200 group-hover:opacity-100 dark:bg-neutral-900/70",
+              "bg-material-ultra-thick absolute left-0 top-0 size-full opacity-0 duration-200 group-hover:opacity-100",
               isMobile && "opacity-100",
             )}
           />
           <div
             className={cn(
-              "text-[13px] opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100 group-hover:backdrop-blur-sm",
-              isMobile && "opacity-100 backdrop-blur-sm",
+              "group-hover:backdrop-blur-background text-[13px] opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100",
+              isMobile && "backdrop-blur-background opacity-100",
             )}
           >
-            {formatEstimatedMins(estimatedMins)}
+            {formatEstimatedMins(10)}
           </div>
         </div>
       )}

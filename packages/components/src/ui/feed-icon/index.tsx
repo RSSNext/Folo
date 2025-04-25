@@ -89,7 +89,7 @@ export function FeedIcon({
       }
       className={cn(
         "flex shrink-0 items-center justify-center rounded-sm",
-        "bg-[var(--fo-light-background)] text-white dark:bg-[var(--fo-dark-background)]",
+        "bg-material-ultra-thick text-white",
         "mr-2",
         className,
       )}

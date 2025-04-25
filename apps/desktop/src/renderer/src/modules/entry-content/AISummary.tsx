@@ -111,9 +111,9 @@ export function AISummary({ entryId }: { entryId: string }) {
       >
         {summary.isLoading ? (
           <div className="space-y-2">
-            <div className="h-3 w-full rounded-lg bg-neutral-200/30 dark:bg-neutral-700/30" />
-            <div className="h-3 w-[92%] rounded-lg bg-neutral-200/30 dark:bg-neutral-700/30" />
-            <div className="h-3 w-[85%] rounded-lg bg-neutral-200/30 dark:bg-neutral-700/30" />
+            <div className="bg-material-ultra-thick h-3 w-full rounded-lg" />
+            <div className="bg-material-ultra-thick h-3 w-[92%] rounded-lg" />
+            <div className="bg-material-ultra-thick h-3 w-[85%] rounded-lg" />
           </div>
         ) : (
           <div className="animate-in fade-in-0 duration-500">{summary.data}</div>

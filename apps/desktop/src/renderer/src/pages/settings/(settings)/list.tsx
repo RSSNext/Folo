@@ -12,6 +12,7 @@ export const loader = defineSettingPageData({
   name: "titles.lists",
   priority,
   disableIf: (ctx) => [ctx.role === UserRole.Trial, DisableWhy.NotActivation],
+  hideIf: (ctx) => ctx.isInMASReview,
 })
 
 export function Component() {

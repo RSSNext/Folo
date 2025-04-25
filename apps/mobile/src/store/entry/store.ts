@@ -494,7 +494,7 @@ class EntrySyncServices {
       // https://github.com/facebook/react-native/issues/37505
       // TODO: And it seems we can not just use fetch from expo for ofetch, need further investigation
       const response = await expoFetch(apiClient.entries.stream.$url().toString(), {
-        method: "post",
+        method: "POST",
         headers: {
           cookie: getCookie(),
         },

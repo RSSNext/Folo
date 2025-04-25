@@ -414,8 +414,8 @@ const PlaybackRateSelector = () => {
           type="button"
           className={cn(
             "center hover:bg-theme-item-hover rounded-md p-1 font-mono",
-            playbackRate === rate && "bg-theme-item-hover text-black dark:text-white",
-            playbackRate !== rate && "text-zinc-500",
+            playbackRate === rate && "bg-theme-item-hover text-text",
+            playbackRate !== rate && "text-text-secondary",
           )}
           onClick={() => AudioPlayer.setPlaybackRate(rate)}
         >

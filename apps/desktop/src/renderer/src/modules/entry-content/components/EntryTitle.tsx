@@ -78,13 +78,14 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
               target={translation.data?.title}
               className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
+              bilingual
             />
           </a>
         </div>
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <div className="text-text-secondary [&>div:hover]:multi-['text-gray-700;dark:text-gray-300'] flex flex-wrap items-center gap-4 [&>div]:transition-colors">
+          <div className="text-text-secondary [&>div:hover]:multi-[text-text] flex flex-wrap items-center gap-4 [&>div]:transition-colors">
             <div
               className="flex items-center text-xs font-medium"
               onClick={() =>

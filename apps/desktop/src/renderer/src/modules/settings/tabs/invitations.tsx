@@ -46,8 +46,7 @@ export const SettingInvitations = () => {
     <section className="mt-4">
       <div className="mb-4 space-y-2 text-sm">
         <Trans ns="settings" i18nKey="invitation.earlyAccess">
-          Follow is currently in <strong>early access</strong> and requires an invitation code to
-          use.
+          Folo is currently requires an invitation code to use.
         </Trans>
         <p>
           <Trans

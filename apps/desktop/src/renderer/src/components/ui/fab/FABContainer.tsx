@@ -52,12 +52,13 @@ export const FABBase = typescriptHappyForwardRef(
               "mt-2 flex items-center justify-center",
               "size-9 text-lg md:text-base",
               "outline-accent hover:opacity-100 focus:opacity-100 focus:outline-none",
-              "rounded-xl border border-zinc-400/20 backdrop-blur-lg dark:border-zinc-500/30 dark:text-zinc-200",
-              "bg-zinc-50/80 shadow-lg dark:bg-neutral-900/80",
+              "hover:border-border bg-background relative rounded-xl border border-transparent",
+              "group duration-200",
               className,
             )}
             {...rest}
           >
+            <div className="shadow-perfect border-border/50 pointer-events-none absolute inset-0 rounded-xl border shadow-xl duration-200 group-hover:opacity-0" />
             {children}
           </m.button>
         )}

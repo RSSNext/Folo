@@ -1,6 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import { useMemo } from "react"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { HTML } from "~/components/ui/markdown/HTML"
 
 export const EntryTranslation: Component<{
@@ -8,7 +9,10 @@ export const EntryTranslation: Component<{
   target?: string
   isHTML?: boolean
   inline?: boolean
-}> = ({ source, target, className, isHTML, inline = true }) => {
+  bilingual?: boolean
+}> = ({ source, target, className, isHTML, inline = true, bilingual }) => {
+  const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
+
   const nextTarget = useMemo(() => {
     if (!target || source === target) {
       return ""
@@ -18,6 +22,20 @@ export const EntryTranslation: Component<{
 
   if (!source) {
     return null
+  }
+
+  if (!bilingualFinal) {
+    return (
+      <div>
+        {isHTML ? (
+          <HTML as="div" className={cn("prose dark:prose-invert", className)} noMedia>
+            {nextTarget || source}
+          </HTML>
+        ) : (
+          <div className={className}>{nextTarget || source}</div>
+        )}
+      </div>
+    )
   }
 
   const SourceTag = inline ? "span" : "p"

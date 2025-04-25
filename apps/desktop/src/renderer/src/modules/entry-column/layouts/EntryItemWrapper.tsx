@@ -63,7 +63,7 @@ export const EntryItemWrapper: FC<
   )
 
   const navigate = useNavigateEntry()
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
+  const handleClick = useCallback(
     (e) => {
       e.stopPropagation()
 
@@ -134,7 +134,6 @@ export const EntryItemWrapper: FC<
       <div
         className={cn(
           "hover:bg-theme-item-hover relative duration-200",
-          asRead ? "text-zinc-700 dark:text-neutral-400" : "text-zinc-900 dark:text-neutral-300",
           views[view as FeedViewType]?.wideMode ? "rounded-md" : "px-2",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
@@ -144,6 +143,7 @@ export const EntryItemWrapper: FC<
         onMouseLeave={handleMouseEnter.cancel}
         onDoubleClick={handleDoubleClick}
         {...contextMenuProps}
+        onTouchStart={handleClick}
       >
         {children}
       </div>

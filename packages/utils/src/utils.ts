@@ -401,3 +401,9 @@ export const omitShallow = (obj: any, ...keys: string[]) => {
   }
   return nextObj
 }
+
+export function duplicateIfLengthLessThan(text: string, length: number) {
+  return text.length > 0 && text.length < length
+    ? text.repeat(Math.ceil(length / text.length))
+    : text
+}

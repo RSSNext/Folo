@@ -143,7 +143,9 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
                     exit={{ opacity: 0, x: 110, transition: { duration: 0.1 } }}
                     transition={{ duration: 0.5, type: "spring" }}
                     className={cn(
-                      "relative z-10 -mt-1 rounded-xl border bg-white px-3 py-1 text-xs drop-shadow-xl dark:bg-neutral-950",
+                      "relative z-10 -mt-1 rounded-xl border",
+                      "px-3 py-1 text-xs",
+                      "bg-material-ultra-thick backdrop-blur-background shadow-context-menu",
                       "scrollbar-none max-h-[calc(100svh-4rem)] overflow-auto",
                     )}
                   >

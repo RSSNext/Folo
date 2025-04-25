@@ -44,7 +44,7 @@ export const EntryHeaderActions = ({
           onClick={config.onClick!}
           shortcut={config.shortcut!}
           clickableDisabled={config.disabled}
-          tooltipDefaultOpen={config.notice}
+          highlightMotion={config.notice}
           id={`${config.entryId}/${config.id}`}
         />
       )

@@ -306,7 +306,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
                   }}
                   className="center hover:bg-material-ultra-thick -ml-1 flex size-5 shrink-0 rounded-lg"
                 >
-                  <i className="i-mgc-close-cute-re text-red-500 dark:text-red-400" />
+                  <i className="i-mgc-close-cute-re text-red" />
                 </MotionButtonBase>
               ) : (
                 <div className="center mr-2 size-[16px]">
@@ -435,7 +435,7 @@ const RenameCategoryForm: FC<{
       />
       <MotionButtonBase
         type="submit"
-        className="center hover:bg-material-ultra-thick -mr-1 flex size-5 shrink-0 rounded-lg text-green-600 dark:text-green-400"
+        className="center hover:bg-material-ultra-thick text-green -mr-1 flex size-5 shrink-0 rounded-lg"
       >
         <i className="i-mgc-check-filled size-3" />
       </MotionButtonBase>

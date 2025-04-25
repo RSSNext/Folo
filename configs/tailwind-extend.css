@@ -395,6 +395,32 @@
   .animate-rocket {
     animation: rocketAnimation 1s infinite ease-out;
   }
+
+  @keyframes radialPulse {
+    0% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, hsl(var(--fo-a) / 0.3)) 0%,
+        transparent 0%
+      );
+    }
+    40% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, hsl(var(--fo-a) / 0.3)) 0%,
+        transparent 50%
+      );
+      opacity: 1;
+    }
+    100% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, oklch(var(--fo-a) / 0.3)) 0%,
+        transparent 80%
+      );
+      opacity: 0;
+    }
+  }
 }
 
 @layer components {

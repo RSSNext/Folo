@@ -148,6 +148,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     require("./plugins/with-follow-app-delegate.js"),
     require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+    require("./plugins/with-android-day-night-theme-plugin.js"),
     "expo-secure-store",
     "@react-native-firebase/app",
     "@react-native-firebase/crashlytics",
