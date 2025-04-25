@@ -2,6 +2,7 @@ import { useAtomValue } from "jotai"
 import type { FC } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useEntry } from "@/src/store/entry/hooks"
 import { SummaryGeneratingStatus } from "@/src/store/summary/enum"
 import { usePrefetchSummary, useSummary } from "@/src/store/summary/hooks"
 import { useSummaryStore } from "@/src/store/summary/store"
@@ -16,9 +17,11 @@ export const EntryAISummary: FC<{
   const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
+  const entryContent = useEntry(entryId, (state) => state.content)
+  const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
   const summary = useSummary(entryId)
   usePrefetchSummary(entryId, showReadability ? "readabilityContent" : "content", {
-    enabled: showAISummary,
+    enabled: showAISummary && (showReadability ? !!entryReadabilityContent : !!entryContent),
   })
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
