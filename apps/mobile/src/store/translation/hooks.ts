@@ -19,25 +19,17 @@ export const usePrefetchEntryTranslation = ({
   const translation = useGeneralSettingKey("translation")
   const entryList =
     useEntryList(entryIds)
-      ?.filter((entry) => entry !== null)
-      .filter((entry) => translation || !!entry?.settings?.translation) || []
+      ?.filter((entry) => entry !== null && (translation || !!entry?.settings?.translation))
+      .map((entry) => entry!.id) || []
 
   const actionLanguage = useGeneralSettingKey("actionLanguage") as SupportedLanguages
 
   return useQueries({
-    queries: entryList.map((entry) => ({
-      queryKey: [
-        "translation",
-        entry.id,
-        entry.content,
-        entry.readabilityContent,
-        actionLanguage,
-        withContent,
-        target,
-      ],
+    queries: entryList.map((entryId) => ({
+      queryKey: ["translation", entryId, actionLanguage, withContent, target],
       queryFn: () =>
         translationSyncService.generateTranslation({
-          entryId: entry.id,
+          entryId,
           language: actionLanguage,
           withContent,
           target,

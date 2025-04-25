@@ -17,12 +17,15 @@ export const EntryAISummary: FC<{
   const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
-  const entryContent = useEntry(entryId, (state) => state.content)
   const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
   const summary = useSummary(entryId)
-  usePrefetchSummary(entryId, showReadability ? "readabilityContent" : "content", {
-    enabled: showAISummary && (showReadability ? !!entryReadabilityContent : !!entryContent),
-  })
+  usePrefetchSummary(
+    entryId,
+    showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    {
+      enabled: showAISummary,
+    },
+  )
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null
