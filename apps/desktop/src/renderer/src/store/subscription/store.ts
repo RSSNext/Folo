@@ -248,6 +248,9 @@ class SubscriptionActions {
           ...filter,
         },
       })
+      if (filter) {
+        feedUnreadActions.fetchUnreadByView(view)
+      }
     })
 
     const feedIds = [] as string[]
@@ -272,9 +275,6 @@ class SubscriptionActions {
             entryActions.patchManyByFeedId(feedId, { read: true }, filter)
           }
         }
-      }
-      if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
       }
     })
 
