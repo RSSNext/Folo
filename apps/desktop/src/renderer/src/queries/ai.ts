@@ -12,27 +12,15 @@ export const ai = {
     language,
     extraFields,
     part,
-    mode,
   }: {
     entry?: FlatEntryModel | null
     view?: number
     language?: SupportedLanguages
     extraFields?: string[]
     part?: string
-    mode?: "bilingual" | "translation-only"
   }) =>
-    defineQuery(
-      [
-        "translation",
-        entry?.entries.id,
-        entry?.entries.content,
-        view,
-        language,
-        extraFields,
-        part,
-        mode,
-      ],
-      () => translate({ entry, view, language, extraFields, part, mode }),
+    defineQuery(["translation", entry?.entries.id, view, language, extraFields, part], () =>
+      translate({ entry, view, language, extraFields, part }),
     ),
   summary: ({
     entryId,

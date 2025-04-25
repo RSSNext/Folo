@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { useShowAITranslation, useShowAITranslationAuto } from "~/atoms/ai-translation"
-import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { Queries } from "~/queries"
 
@@ -20,15 +20,12 @@ export function useEntryTranslation({
   const showAITranslation =
     !extraFields || extraFields.length === 0 ? showAITranslationAuto : showAITranslationFinal
 
-  const mode = useGeneralSettingKey("translationMode")
-
   const res = useAuthQuery(
     Queries.ai.translation({
       entry,
       view: entry?.view,
       language: actionLanguage,
       extraFields,
-      mode,
     }),
     {
       enabled: showAITranslation,

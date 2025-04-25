@@ -42,14 +42,12 @@ export async function translate({
   language,
   extraFields,
   part,
-  mode,
 }: {
   entry?: FlatEntryModel | null
   view?: number
   language?: SupportedActionLanguage
   extraFields?: string[]
   part?: string
-  mode?: "bilingual" | "translation-only"
 }) {
   if (!language || !entry) {
     return null
@@ -91,7 +89,6 @@ export async function translate({
       language,
       fields: fields?.join(",") || "title",
       part,
-      mode,
     },
   })
   return res.data
