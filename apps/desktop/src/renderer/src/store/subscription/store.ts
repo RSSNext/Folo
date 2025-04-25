@@ -323,6 +323,9 @@ class SubscriptionActions {
           ...filter,
         },
       })
+      if (filter) {
+        feedUnreadActions.fetchUnreadByView(view)
+      }
     })
     tx.optimistic(() => {
       if (listId) {
@@ -342,9 +345,6 @@ class SubscriptionActions {
           !filter && feedUnreadActions.updateByFeedId(feedId, 0)
           entryActions.patchManyByFeedId(feedId, { read: true }, filter)
         }
-      }
-      if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
       }
     })
 
