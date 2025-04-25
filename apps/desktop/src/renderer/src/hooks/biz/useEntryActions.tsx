@@ -215,7 +215,12 @@ export const useEntryActions = ({
         shortcut: shortcuts.entry.toggleStarred.key,
         entryId,
       }),
-
+      new EntryActionMenuItem({
+        id: COMMAND_ID.entry.copyTitle,
+        onClick: runCmdFn(COMMAND_ID.entry.copyTitle, [{ entryId }]),
+        shortcut: shortcuts.entry.copyTitle.key,
+        entryId,
+      }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.copyLink,
         onClick: runCmdFn(COMMAND_ID.entry.copyLink, [{ entryId }]),

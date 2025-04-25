@@ -124,6 +124,7 @@
   "entry_actions.unstar": "Unstar",
   "entry_actions.unstarred": "Unstarred.",
   "entry_actions.view_source_content": "View Source Content",
+  "entry_actions.warn_info_for_desktop": "This feature is only available in the desktop app",
   "entry_column.filtered_content_tip": "You have filtered content hidden.",
   "entry_column.filtered_content_tip_2": "In addition to the entries shown above, there is also filtered content.",
   "entry_column.refreshing": "Refreshing new entries...",

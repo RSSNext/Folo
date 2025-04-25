@@ -123,6 +123,7 @@
   "entry_actions.unstar": "取消收藏",
   "entry_actions.unstarred": "取消收藏",
   "entry_actions.view_source_content": "查看原文",
+  "entry_actions.warn_info_for_desktop": "此功能只在桌面端可用",
   "entry_column.filtered_content_tip": "部分内容已被过滤隐藏。",
   "entry_column.filtered_content_tip_2": "除了上面显示的内容外，还有一些被过滤的内容。",
   "entry_column.refreshing": "正在刷新",
