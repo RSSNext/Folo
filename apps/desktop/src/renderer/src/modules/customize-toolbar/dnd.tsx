@@ -49,8 +49,19 @@ const SortableItem = ({ id, children }: { id: UniqueIdentifier; children: ReactN
   )
 }
 
-const warningActionButton: Partial<Record<FollowCommandId, string>> = {
-  [COMMAND_ID.entry.tts]: "entry_actions.warn_info_for_desktop",
+const warningActionButton: Partial<
+  Record<
+    FollowCommandId,
+    {
+      show: boolean
+      info: string
+    }
+  >
+> = {
+  [COMMAND_ID.entry.tts]: {
+    show: !IN_ELECTRON,
+    info: "entry_actions.warn_info_for_desktop",
+  },
 }
 
 export const SortableActionButton = ({ id }: { id: UniqueIdentifier }) => {
@@ -65,13 +76,13 @@ export const SortableActionButton = ({ id }: { id: UniqueIdentifier }) => {
           {typeof cmd.icon === "function" ? cmd.icon({ isActive: false }) : cmd.icon}
         </div>
         <div className="mt-1 text-center text-xs text-neutral-500 dark:text-neutral-400">
-          {!IN_ELECTRON && warnInfo && (
+          {warnInfo?.show && (
             <Tooltip>
               <TooltipTrigger>
                 <i className="i-mgc-information-cute-re mr-1 translate-y-[2px]" />
               </TooltipTrigger>
               <TooltipPortal>
-                <TooltipContent>{t(warnInfo as any)}</TooltipContent>
+                <TooltipContent>{t(warnInfo.info as any)}</TooltipContent>
               </TooltipPortal>
             </Tooltip>
           )}
