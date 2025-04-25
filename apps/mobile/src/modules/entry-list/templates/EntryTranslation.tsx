@@ -14,19 +14,21 @@ export const EntryTranslation = ({
   ...props
 }: {
   source?: string | null
-  target?: string
+  target?: string | null
   className?: string
   inline?: boolean
   showTranslation?: boolean
   bilingual?: boolean
 } & TextProps) => {
+  const showTranslationFinal = useGeneralSettingKey("translation") || showTranslation
+  const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
+
   const nextSource = useMemo(() => {
     if (!source) {
       return ""
     }
     return source.trim()
   }, [source])
-  const showTranslationFinal = useGeneralSettingKey("translation") || showTranslation
   const nextTarget = useMemo(() => {
     if (
       !target ||
@@ -38,8 +40,7 @@ export const EntryTranslation = ({
     return target.trim()
   }, [nextSource, target, showTranslationFinal])
 
-  const translationMode = useGeneralSettingKey("translationMode")
-  if (translationMode === "translation-only" && !bilingual) {
+  if (!bilingualFinal) {
     return (
       <Text {...props} className={className}>
         {nextTarget || nextSource}
