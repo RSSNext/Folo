@@ -9,7 +9,8 @@ export const EntryTranslation: Component<{
   target?: string
   isHTML?: boolean
   inline?: boolean
-}> = ({ source, target, className, isHTML, inline = true }) => {
+  bilingual?: boolean
+}> = ({ source, target, className, isHTML, inline = true, bilingual }) => {
   const translationMode = useGeneralSettingKey("translationMode")
 
   const nextTarget = useMemo(() => {
@@ -23,7 +24,7 @@ export const EntryTranslation: Component<{
     return null
   }
 
-  if (translationMode === "translation-only") {
+  if (translationMode === "translation-only" && !bilingual) {
     return (
       <div>
         {isHTML ? (

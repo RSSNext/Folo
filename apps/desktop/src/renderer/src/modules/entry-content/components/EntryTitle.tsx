@@ -78,6 +78,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
               target={translation.data?.title}
               className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
+              bilingual
             />
           </a>
         </div>
