@@ -70,7 +70,7 @@ export const ResponsiveSelect = ({
       >
         <span className="flex">
           {(renderValue?.(valueInner) ?? valueToLabelMap[valueInner]) || (
-            <span className="text-theme-placeholder-text">{placeholder}</span>
+            <span className="text-text-tertiary">{placeholder}</span>
           )}
         </span>
         <i className="i-mingcute-down-line ml-2 size-4 shrink-0 opacity-50" />

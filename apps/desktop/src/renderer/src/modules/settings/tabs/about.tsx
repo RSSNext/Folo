@@ -51,7 +51,7 @@ export const SettingAbout = () => {
                     ? `${currentEnvironment}\n**Renderer**: ${rendererVersion}`
                     : currentEnvironment
                 }
-                className="text-foreground/80 hover:bg-theme-item-hover hover:text-foreground active:bg-theme-item-active border-0 bg-transparent p-1 [&_i]:size-3"
+                className="text-text-secondary hover:bg-theme-item-hover hover:text-text active:bg-theme-item-active border-0 bg-transparent p-1 [&_i]:size-3"
               />
             </div>
           </div>

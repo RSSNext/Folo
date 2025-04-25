@@ -45,14 +45,6 @@ export interface EntryContentClassNames {
   header?: string
 }
 
-export const SummaryLoadingSkeleton = (
-  <div className="space-y-2">
-    <span className="block h-3 w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-neutral-800" />
-    <span className="block h-3 w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-neutral-800" />
-    <span className="block h-3 w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-neutral-800" />
-  </div>
-)
-
 export const TitleMetaHandler: Component<{
   entryId: string
 }> = ({ entryId }) => {

@@ -271,7 +271,7 @@ export const AchievementModalContent: FC = () => {
                       className={styledButtonVariant({
                         variant: "outline",
                         className: [
-                          "dark:text-foreground relative gap-1 border-green-200 !bg-green-100/50 text-green-800 dark:border-green-200/20 dark:!bg-green-100/5",
+                          "dark:text-text relative gap-1 border-green-200 !bg-green-100/50 text-green-800 dark:border-green-200/20 dark:!bg-green-100/5",
                           copy.video ? "cursor-button" : "cursor-default",
                         ],
                       })}
@@ -292,7 +292,7 @@ export const AchievementModalContent: FC = () => {
                       className={styledButtonVariant({
                         variant: "outline",
                         className:
-                          "dark:text-foreground relative cursor-not-allowed gap-1 border-zinc-200 !bg-zinc-100/50 text-zinc-800 dark:border-zinc-200/20 dark:!bg-zinc-100/5",
+                          "dark:text-text relative cursor-not-allowed gap-1 border-zinc-200 !bg-zinc-100/50 text-zinc-800 dark:border-zinc-200/20 dark:!bg-zinc-100/5",
                       })}
                     >
                       Validating...

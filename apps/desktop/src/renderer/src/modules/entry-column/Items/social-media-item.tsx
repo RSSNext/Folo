@@ -17,7 +17,7 @@ import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
-import { useAsRead } from "~/hooks/biz/useAsRead"
+import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { jotaiStore } from "~/lib/jotai"
 import { parseSocialMedia } from "~/lib/parsers"
@@ -34,7 +34,7 @@ const socialMediaContentWidthAtom = atom(0)
 export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, translation }) => {
   const entry = useEntry(entryId) || entryPreview
 
-  const asRead = useAsRead(entry)
+  const asRead = useEntryIsRead(entry)
   const feed = useFeedById(entry?.feedId)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -199,7 +199,7 @@ export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProp
 }
 
 export const SocialMediaItemSkeleton = (
-  <div className="bg-theme-background relative m-auto w-[645px] rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+  <div className="relative m-auto w-[645px] rounded-md">
     <div className="relative">
       <div className="group relative flex px-8 py-6">
         <Skeleton className="mr-2 size-9" />
@@ -207,7 +207,7 @@ export const SocialMediaItemSkeleton = (
           <div className="-mt-0.5 line-clamp-5 flex-1 text-sm">
             <div className="flex w-[calc(100%-10rem)] space-x-1">
               <Skeleton className="h-4 w-16" />
-              <span className="text-zinc-500">·</span>
+              <span className="text-material-opaque">·</span>
               <Skeleton className="h-4 w-12" />
             </div>
             <div className="relative mt-0.5 text-sm">
@@ -289,7 +289,7 @@ const SocialMediaGallery = ({ media }: { media: MediaModel[] }) => {
               type={media.type}
               previewImageUrl={media.preview_image_url}
               blurhash={media.blurhash}
-              className="data-[state=loading]:!bg-theme-placeholder-image size-28 shrink-0"
+              className="data-[state=loading]:!bg-material-ultra-thick size-28 shrink-0"
               loading="lazy"
               proxy={proxySize}
               onClick={() => {
@@ -401,7 +401,7 @@ const CollapsedSocialMediaItem: Component<{
               collapsedItemCache.put(entryId, true)
             }}
             aria-hidden
-            className="hover:text-foreground flex items-center justify-center text-xs duration-200"
+            className="hover:text-text flex items-center justify-center text-xs duration-200"
           >
             <i className="i-mingcute-arrow-to-down-line" />
             <span className="ml-2">{t("words.show_more")}</span>

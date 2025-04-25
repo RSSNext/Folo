@@ -84,10 +84,10 @@ export function Component() {
             { replace: true },
           )
         }}
-        className="max-w-full"
+        className="w-full"
       >
-        <ScrollArea.ScrollArea orientation="horizontal" rootClassName="max-w-max">
-          <TabsList className="relative w-full">
+        <ScrollArea.ScrollArea flex orientation="horizontal" rootClassName="w-full">
+          <TabsList className="relative flex w-full">
             {currentTabs.map((tab) => (
               <TabsTrigger
                 key={tab.name}

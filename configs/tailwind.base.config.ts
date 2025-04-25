@@ -6,7 +6,8 @@ import path, { resolve } from "node:path"
 import { getIconCollections, iconsPlugin } from "@egoist/tailwindcss-icons"
 import { cleanupSVG, importDirectorySync, isEmptyColor, parseColors, runSVGO } from "@iconify/tools"
 import { compareColors, stringToColor } from "@iconify/utils/lib/colors"
-import type { Config } from "tailwindcss"
+import { theme } from "tailwindcss/defaultConfig"
+import type { Config } from "tailwindcss/types/config"
 import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
 
 const twConfig = {
@@ -22,6 +23,20 @@ const twConfig = {
       },
     },
 
+    fontSize: {
+      ...theme?.fontSize,
+      largeTitle: ["26px", "32px"],
+      title1: ["22px", "26px"],
+      title2: ["17px", "22px"],
+      title3: ["15px", "20px"],
+      headline: ["13px", "16px"],
+      body: ["13px", "16px"],
+      callout: ["12px", "15px"],
+      subheadline: ["11px", "14px"],
+      footnote: ["10px", "13px"],
+      caption: ["10px", "13px"],
+    },
+
     extend: {
       fontFamily: {
         theme: "var(--fo-font-family)",
@@ -31,14 +46,8 @@ const twConfig = {
       colors: {
         border: "hsl(var(--border) / <alpha-value>)",
         background: "hsl(var(--background) / <alpha-value>)",
-        foreground: "hsl(var(--foreground) / <alpha-value>)",
 
         accent: "hsl(var(--fo-a) / <alpha-value>)",
-
-        native: {
-          DEFAULT: "hsl(var(--fo-native) / <alpha-value>)",
-          active: "hsl(var(--fo-native-active) / <alpha-value>)",
-        },
 
         theme: {
           // https://uicolors.app/create
@@ -57,31 +66,25 @@ const twConfig = {
             "950": "#451505",
           },
 
+          boxShadow: {
+            "context-menu":
+              "0px 0px 1px rgba(0, 0, 0, 0.4), 0px 0px 1.5px rgba(0, 0, 0, 0.3), 0px 7px 22px rgba(0, 0, 0, 0.25)",
+          },
+
           item: {
             active: "var(--fo-item-active)",
             hover: "var(--fo-item-hover)",
+          },
+          selection: {
+            active: "var(--fo-selection-active)",
+            hover: "var(--fo-selection-hover)",
+            foreground: "var(--fo-selection-foreground)",
           },
 
           inactive: "hsl(var(--fo-inactive) / <alpha-value>)",
           disabled: "hsl(var(--fo-disabled) / <alpha-value>)",
 
-          foreground: "hsl(var(--fo-text-primary) / <alpha-value>)",
           background: "var(--fo-background)",
-
-          "foreground-hover": "hsl(var(--fo-text-primary-hover) / <alpha-value>)",
-
-          modal: {
-            background: "var(--fo-modal-background)",
-            "background-opaque": "var(--fo-modal-background-opaque)",
-          },
-          button: {
-            hover: "var(--fo-button-hover)",
-          },
-
-          placeholder: {
-            text: "var(--fo-text-placeholder)",
-            image: "var(--fo-image-placeholder)",
-          },
         },
       },
       borderRadius: {

@@ -10,7 +10,7 @@ import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
 import { checkForAppUpdates, quitAndInstall } from "./updater"
-import { createSettingWindow, createWindow, getMainWindow } from "./window"
+import { createWindow, getMainWindow, showSetting } from "./window"
 
 export const registerAppMenu = () => {
   const menus: Array<MenuItemConstructorOptions | MenuItem> = [
@@ -23,14 +23,14 @@ export const registerAppMenu = () => {
                 type: "normal",
                 label: t("menu.about", { name }),
                 click: () => {
-                  createSettingWindow("about")
+                  showSetting("about")
                 },
               },
               { type: "separator" },
               {
                 label: t("menu.settings"),
                 accelerator: "CmdOrCtrl+,",
-                click: () => createSettingWindow(),
+                click: () => showSetting(),
               },
               { type: "separator" },
               { role: "services", label: t("menu.services") },

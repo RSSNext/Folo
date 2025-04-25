@@ -10,7 +10,7 @@ import type { EntryItemStatelessProps } from "../types"
 
 export function PictureItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="bg-theme-background relative mx-auto max-w-md select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+    <div className="bg-theme-background text-text relative mx-auto max-w-md select-none rounded-md transition-colors">
       <div className="relative">
         <div className="p-1.5">
           <div className="relative flex gap-2 overflow-x-auto">
@@ -49,7 +49,7 @@ export function PictureItemStateLess({ entry, feed }: EntryItemStatelessProps) {
             <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
               <FeedIcon feed={feed} fallback className="size-4" />
               <FeedTitle feed={feed} />
-              <span className="text-zinc-500">·</span>
+              <span className="text-material-opaque">·</span>
               {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
             </div>
           </div>

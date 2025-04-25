@@ -5,6 +5,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   appLaunchOnStartup: false,
   language: "en",
   translation: false,
+  translationMode: "bilingual",
   summary: true,
   actionLanguage: "default",
 
@@ -56,7 +57,7 @@ export const defaultUISettings: UISettings = {
   // Misc
   modalOverlay: true,
   modalDraggable: true,
-  modalOpaque: true,
+
   reduceMotion: false,
   usePointerCursor: false,
 

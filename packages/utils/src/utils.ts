@@ -1,9 +1,27 @@
 import type { ClassValue } from "clsx"
 import { clsx } from "clsx"
 import dayjs from "dayjs"
-import { twMerge } from "tailwind-merge"
+import { extendTailwindMerge } from "tailwind-merge"
 import { parse } from "tldts"
 
+const twMerge = extendTailwindMerge({
+  extend: {
+    theme: {
+      text: [
+        "largeTitle",
+        "title1",
+        "title2",
+        "title3",
+        "headline",
+        "body",
+        "callout",
+        "subheadline",
+        "footnote",
+        "caption",
+      ],
+    },
+  },
+})
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -273,7 +291,8 @@ export const toScientificNotation = (
     // Use provided locale or default to en-US
     const localeString = locale?.toString() || "en-US"
     const formatter = new Intl.NumberFormat(localeString, {
-      maximumFractionDigits: decimals,
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
     })
 
     // Convert bigint to number with correct decimal places
@@ -381,4 +400,10 @@ export const omitShallow = (obj: any, ...keys: string[]) => {
     Reflect.deleteProperty(nextObj, key)
   }
   return nextObj
+}
+
+export function duplicateIfLengthLessThan(text: string, length: number) {
+  return text.length > 0 && text.length < length
+    ? text.repeat(Math.ceil(length / text.length))
+    : text
 }

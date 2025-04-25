@@ -13,7 +13,7 @@ import {
   useShowContextMenu,
 } from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useAsRead } from "~/hooks/biz/useAsRead"
+import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -45,7 +45,7 @@ export const EntryItemWrapper: FC<
     [entry.entries.id],
   )
 
-  const asRead = useAsRead(entry)
+  const asRead = useEntryIsRead(entry)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const handleMouseEnter = useDebounceCallback(
@@ -63,7 +63,7 @@ export const EntryItemWrapper: FC<
   )
 
   const navigate = useNavigateEntry()
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
+  const handleClick = useCallback(
     (e) => {
       e.stopPropagation()
 
@@ -110,6 +110,7 @@ export const EntryItemWrapper: FC<
               COMMAND_ID.entry.toggleAISummary,
               COMMAND_ID.entry.toggleAITranslation,
               COMMAND_ID.settings.customizeToolbar,
+              COMMAND_ID.entry.readability,
             ].includes(item.id as any)
           }),
           MENU_ITEM_SEPARATOR,
@@ -139,7 +140,6 @@ export const EntryItemWrapper: FC<
       <div
         className={cn(
           "hover:bg-theme-item-hover relative duration-200",
-          asRead ? "text-zinc-700 dark:text-neutral-400" : "text-zinc-900 dark:text-neutral-300",
           views[view as FeedViewType]?.wideMode ? "rounded-md" : "px-2",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
@@ -149,6 +149,7 @@ export const EntryItemWrapper: FC<
         onMouseLeave={handleMouseEnter.cancel}
         onDoubleClick={handleDoubleClick}
         {...contextMenuProps}
+        onTouchStart={handleClick}
       >
         {children}
       </div>

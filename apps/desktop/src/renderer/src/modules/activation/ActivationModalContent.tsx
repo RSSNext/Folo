@@ -80,11 +80,11 @@ export const ActivationModalContent = ({
           render={({ field }) => (
             <FormItem className="flex flex-col items-center gap-2 md:block">
               {!hideDescription && (
-                <FormLabel className="!text-foreground">{t("activation.description")}</FormLabel>
+                <FormLabel className="!text-text">{t("activation.description")}</FormLabel>
               )}
               <FormControl>
                 <Input
-                  className="placeholder:text-theme-placeholder-text mt-1 dark:text-zinc-200"
+                  className="mt-1 dark:text-zinc-200"
                   placeholder={t("activation.title")}
                   {...field}
                 />

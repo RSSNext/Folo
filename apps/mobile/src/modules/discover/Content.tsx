@@ -9,5 +9,5 @@ export default function Content() {
   const { searchFocusedAtom } = useSearchPageContext()
   const isFocused = useAtomValue(searchFocusedAtom)
 
-  return <View className="pt-4">{isFocused ? <SearchContent /> : <DiscoverContent />}</View>
+  return <View>{isFocused ? <SearchContent /> : <DiscoverContent />}</View>
 }

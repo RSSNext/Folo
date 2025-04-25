@@ -236,7 +236,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
       {!hideControls && (
         <div
           className={cn(
-            "bg-theme-modal-background-opaque absolute inset-x-0 top-0 z-[-1] flex justify-between border-t p-1 opacity-0 transition-all duration-200 ease-in-out",
+            "bg-theme-background absolute inset-x-0 top-0 z-[-1] flex justify-between border-t p-1 opacity-0 transition-all duration-200 ease-in-out",
             isMobile
               ? "-translate-y-full opacity-100"
               : "group-hover:-translate-y-full group-hover:opacity-100",
@@ -387,7 +387,7 @@ const ActionIcon = ({
 }) => (
   <Tooltip delayDuration={labelDelayDuration}>
     <TooltipTrigger
-      className="center hover:bg-theme-button-hover size-6 rounded-md text-zinc-500"
+      className="center hover:bg-material-ultra-thick size-6 rounded-md text-zinc-500"
       onClick={onClick}
       asChild
     >
@@ -414,8 +414,8 @@ const PlaybackRateSelector = () => {
           type="button"
           className={cn(
             "center hover:bg-theme-item-hover rounded-md p-1 font-mono",
-            playbackRate === rate && "bg-theme-item-hover text-black dark:text-white",
-            playbackRate !== rate && "text-zinc-500",
+            playbackRate === rate && "bg-theme-item-hover text-text",
+            playbackRate !== rate && "text-text-secondary",
           )}
           onClick={() => AudioPlayer.setPlaybackRate(rate)}
         >

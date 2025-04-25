@@ -112,7 +112,7 @@ export const PresentSheet = forwardRef<SheetRef, PropsWithChildren<PresentSheetP
             }}
             aria-describedby={undefined}
             className={cn(
-              "bg-theme-modal-background-opaque fixed inset-x-0 bottom-0 flex max-h-[calc(100svh-3rem)] flex-col rounded-t-[10px] border-t pt-4",
+              "bg-theme-background fixed inset-x-0 bottom-0 flex max-h-[calc(100svh-3rem)] flex-col rounded-t-[10px] border-t pt-4",
               modalClassName,
             )}
           >

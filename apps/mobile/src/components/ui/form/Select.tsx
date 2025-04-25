@@ -30,12 +30,11 @@ export function Select<T>({
   wrapperStyle,
   label,
 }: SelectProps<T>) {
-  const [currentValue, setCurrentValue] = useState(() => {
-    if (!value) {
-      return options[0]!.value
-    }
-    return value
-  })
+  const [currentValue, setCurrentValue] = useState(() => value)
+
+  useEffect(() => {
+    setCurrentValue(value)
+  }, [value])
 
   const valueToLabelMap = useMemo(() => {
     return options.reduce((acc, option) => {

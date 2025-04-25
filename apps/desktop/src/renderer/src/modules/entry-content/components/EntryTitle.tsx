@@ -71,22 +71,23 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
             href={populatedFullHref ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="cursor-link select-text break-words text-[1.7rem] font-bold leading-normal hover:opacity-80"
+            className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
           >
             <EntryTranslation
               source={entry.entries.title}
               target={translation.data?.title}
-              className="inline-block select-text hyphens-auto duration-200"
+              className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
+              bilingual
             />
           </a>
         </div>
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <div className="flex flex-wrap items-center gap-4 text-gray-500 dark:text-gray-400">
+          <div className="text-text-secondary [&>div:hover]:multi-[text-text] flex flex-wrap items-center gap-4 [&>div]:transition-colors">
             <div
-              className="flex items-center text-xs font-medium text-zinc-800/90 duration-200 hover:text-zinc-900 dark:text-zinc-300/90 dark:hover:text-zinc-100"
+              className="flex items-center text-xs font-medium"
               onClick={() =>
                 navigateEntry({
                   feedId: feed?.id,
@@ -96,7 +97,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
               <FeedIcon fallback feed={feed || inbox} entry={entry.entries} size={16} />
               {getPreferredTitle(feed || inbox, entry.entries)}
             </div>
-            <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+            <div className="flex items-center gap-1.5">
               <i className="i-mgc-calendar-time-add-cute-re text-base" />
               <span className="text-xs tabular-nums">
                 <RelativeTime date={entry.entries.publishedAt} dateFormatTemplate={dateFormat} />
@@ -104,7 +105,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
             </div>
 
             {estimatedMins && (
-              <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+              <div className="flex items-center gap-1.5">
                 <i className="i-mgc-time-cute-re text-base" />
                 <span className="text-xs tabular-nums">{estimatedMins}</span>
               </div>
@@ -116,7 +117,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 (entryHistory?.userIds?.every((id) => id !== user?.id) ? 1 : 0)
 
               return readCount > 0 ? (
-                <div className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300">
+                <div className="flex items-center gap-1.5">
                   <i className="i-mgc-eye-2-cute-re text-base" />
                   <span className="text-xs tabular-nums">{readCount.toLocaleString()}</span>
                 </div>

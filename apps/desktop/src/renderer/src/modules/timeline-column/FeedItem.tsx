@@ -178,12 +178,7 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
       }}
       {...contextMenuProps}
     >
-      <div
-        className={cn(
-          "flex min-w-0 items-center",
-          isFeed && feed.errorAt && "text-red-900 dark:text-red-500",
-        )}
-      >
+      <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
         <FeedIcon fallback feed={feed} size={16} />
         <FeedTitle feed={feed} />
         {isFeed && feed.errorAt && (

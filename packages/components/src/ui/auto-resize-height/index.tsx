@@ -1,11 +1,8 @@
 import { cn } from "@follow/utils/utils"
-import type { Spring } from "motion/react"
 import { m } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
-const softSpringPreset: Spring = {
-  type: "spring",
-}
+import { Spring } from "../../constants/spring"
 
 interface AnimateChangeInHeightProps {
   children: React.ReactNode
@@ -56,7 +53,7 @@ export const AutoResizeHeight: React.FC<AnimateChangeInHeightProps> = ({
       transition={
         spring
           ? {
-              ...softSpringPreset,
+              ...Spring.presets.softSpring,
               duration,
             }
           : {

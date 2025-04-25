@@ -2,8 +2,8 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { isInMAS } from "~/lib/utils"
 import { AccountManagement } from "~/modules/profile/account-management"
 import { EmailManagement } from "~/modules/profile/email-management"
 import { ProfileSettingForm } from "~/modules/profile/profile-setting-form"
@@ -23,6 +23,7 @@ export const loader = defineSettingPageData({
 
 export function Component() {
   const { present } = useModalStack()
+  const isInMASReview = useIsInMASReview()
   return (
     <>
       <SettingsTitle />
@@ -37,7 +38,7 @@ export function Component() {
           <UpdatePasswordForm />
           <TwoFactor />
           {/* TODO: Temporary fake account deletion feature */}
-          {isInMAS() && (
+          {isInMASReview && (
             <div className="flex items-center justify-between">
               <Label>Delete Account</Label>
               <Button

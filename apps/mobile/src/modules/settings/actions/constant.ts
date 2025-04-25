@@ -12,8 +12,13 @@ import { EditWebhooksScreen } from "../routes/EditWebhooks"
 export const filterFieldOptions: Array<{
   label: Extract<ParseKeys<"settings">, `actions.action_card.feed_options.${string}`>
   value: string
-  type?: "text" | "number" | "view"
+  type?: "text" | "number" | "view" | "status"
 }> = [
+  {
+    label: "actions.action_card.feed_options.status",
+    value: "status",
+    type: "status",
+  },
   {
     label: "actions.action_card.feed_options.subscription_view",
     value: "view",
@@ -61,7 +66,7 @@ export const filterFieldOptions: Array<{
 export const filterOperatorOptions: Array<{
   label: Extract<ParseKeys<"settings">, `actions.action_card.operation_options.${string}`>
   value: string
-  types: Array<"text" | "number" | "view">
+  types: Array<"text" | "number" | "view" | "status">
 }> = [
   {
     label: "actions.action_card.operation_options.contains",
@@ -76,7 +81,7 @@ export const filterOperatorOptions: Array<{
   {
     label: "actions.action_card.operation_options.is_equal_to",
     value: "eq",
-    types: ["number", "text", "view"],
+    types: ["number", "text", "view", "status"],
   },
   {
     label: "actions.action_card.operation_options.is_not_equal_to",

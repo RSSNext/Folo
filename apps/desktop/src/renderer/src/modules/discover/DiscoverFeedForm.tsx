@@ -41,7 +41,7 @@ const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
   }
 
   return (
-    <div className="text-theme-foreground/80 mb-2 flex flex-col gap-x-1 text-sm">
+    <div className="text-text mb-2 flex flex-col gap-x-1 text-sm">
       <Trans
         i18nKey="discover.feed_maintainers"
         components={{
@@ -53,7 +53,7 @@ const FeedMaintainers = ({ maintainers }: { maintainers?: string[] }) => {
                   key={maintainer}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-theme-foreground/50 hover:text-accent inline-flex cursor-pointer items-center duration-200"
+                  className="text-text-secondary hover:text-accent inline-flex cursor-pointer items-center duration-200"
                 >
                   @{maintainer}
                   <i className="i-mgc-external-link-cute-re ml-0.5" />
@@ -252,9 +252,9 @@ export const DiscoverFeedForm = ({
 
           return (
             <FormItem key={keyItem.name} className="flex flex-col space-y-2">
-              <FormLabel className="capitalize">
+              <FormLabel className="text-text text-headline pl-3 capitalize">
                 {keyItem.name}
-                {!keyItem.optional && <sup className="ml-1 align-sub text-red-500">*</sup>}
+                {!keyItem.optional && <sup className="text-red ml-1 align-sub">*</sup>}
               </FormLabel>
               {parameters?.options ? (
                 <Select
@@ -294,7 +294,7 @@ export const DiscoverFeedForm = ({
                 />
               )}
               {!!parameters && (
-                <Markdown className="text-theme-foreground/50 w-full max-w-full text-xs">
+                <Markdown className="text-text-secondary text-footnote w-full max-w-full pl-3">
                   {parameters.description}
                 </Markdown>
               )}
@@ -302,17 +302,17 @@ export const DiscoverFeedForm = ({
           )
         })}
         {routeParams && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-2 gap-y-5 sm:grid-cols-2">
             {Object.entries(routeParams).map(([key, value]) => (
               <FormItem key={`${routeParamsKeyPrefix}${key}`} className="flex flex-col space-y-2">
-                <FormLabel className="capitalize">{key}</FormLabel>
+                <FormLabel className="text-text text-headline pl-3 capitalize">{key}</FormLabel>
                 <Input
                   {...form.register(`${routeParamsKeyPrefix}${key}`)}
                   placeholder={value.default}
                   className="grow-0"
                 />
                 {!!value.description && (
-                  <Markdown className="text-theme-foreground/50 w-full max-w-full text-xs">
+                  <Markdown className="text-text-secondary text-footnote w-full max-w-full pl-3">
                     {value.description}
                   </Markdown>
                 )}
@@ -358,10 +358,11 @@ const PreviewUrl: FC<{
   const renderedPath = `${routePrefix}${fullPath}`
   return (
     <div className="group relative min-w-0 pb-4">
-      <pre className="text-theme-foreground/40 w-full whitespace-pre-line break-words text-xs">
+      <pre className="text-text-tertiary w-full whitespace-pre-line break-words text-xs">
         {renderedPath}
       </pre>
       <CopyButton
+        variant="outline"
         value={renderedPath}
         className="absolute right-0 top-0 opacity-0 duration-200 group-hover:opacity-100"
       />

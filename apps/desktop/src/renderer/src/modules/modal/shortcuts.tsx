@@ -37,7 +37,7 @@ const ShortcutModalContent = () => {
         cursor: "grabbing",
       }}
       className={clsx(
-        "center bg-theme-modal-background-opaque absolute inset-0 m-auto flex max-h-[80vh] w-[60ch] max-w-[90vw] flex-col rounded-xl border",
+        "center bg-background absolute inset-0 m-auto flex max-h-[80vh] w-[60ch] max-w-[90vw] flex-col rounded-xl border",
 
         !modalOverlay && "shadow-modal",
       )}
@@ -52,17 +52,19 @@ const ShortcutModalContent = () => {
         <i className="i-mgc-close-cute-re" />
       </MotionButtonBase>
       <ScrollArea.ScrollArea scrollbarClassName="w-2" rootClassName="w-full h-full">
-        <div className="w-full space-y-6 px-4 pb-5 pt-3">
+        <div className="w-full space-y-6 px-4 pb-5 pt-6">
           {Object.keys(shortcuts).map((type) => (
             <section key={type}>
-              <div className="mb-2 text-base font-medium capitalize">{t(shortcutsType[type])}</div>
-              <div className="rounded-md border text-[13px] text-zinc-600 dark:text-zinc-300">
+              <div className="text-text-secondary mb-2 pl-4 text-xs font-medium capitalize">
+                {t(shortcutsType[type])}
+              </div>
+              <div className="text-text rounded-md border text-[13px]">
                 {Object.keys(shortcuts[type]).map((action, index) => (
                   <div
                     key={`${type}-${action}`}
                     className={cn(
                       "flex h-9 items-center justify-between px-3 py-1.5",
-                      index % 2 && "bg-native/40",
+                      index % 2 && "bg-fill-quinary",
                     )}
                   >
                     <div>{t(shortcuts[type][action].name)}</div>

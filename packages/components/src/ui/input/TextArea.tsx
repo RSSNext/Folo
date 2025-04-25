@@ -56,7 +56,7 @@ export const TextArea = forwardRef<
         "hover:border-accent/60 border-transparent",
         isFocus && "!border-accent/80 ring-2",
 
-        "placeholder:text-theme-placeholder-text dark:text-zinc-200",
+        "placeholder:text-text-tertiary dark:text-zinc-200",
         wrapperClassName,
       )}
       onMouseMove={handleMouseMove}

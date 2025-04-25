@@ -2,7 +2,7 @@ import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 
-import { useAsRead } from "~/hooks/biz/useAsRead"
+import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
@@ -47,7 +47,7 @@ export const GridItemFooter = ({
   const entry = useEntry(entryId) || entryPreview
   const feeds = useFeedById(entry?.feedId)
 
-  const asRead = useAsRead(entry)
+  const asRead = useEntryIsRead(entry)
 
   if (!entry) return null
   return (

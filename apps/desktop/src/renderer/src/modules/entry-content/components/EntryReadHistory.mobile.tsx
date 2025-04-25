@@ -109,7 +109,7 @@ const EntryUser: Component<{ userId: string; i: number }> = ({ userId, i }) => {
       <Avatar className="border-border ring-background aspect-square size-7 border ring-1">
         <AvatarImage
           src={replaceImgUrlIfNeed(user?.image || undefined)}
-          className="bg-theme-placeholder-image"
+          className="bg-material-ultra-thick"
         />
         <AvatarFallback>{user.name?.slice(0, 2)}</AvatarFallback>
       </Avatar>

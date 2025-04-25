@@ -149,7 +149,7 @@ const CmdFImpl: FC<{
 
         <CanvasText
           scrollLeft={scrollLeft}
-          className="[&::placeholder]:text-foreground pointer-events-none absolute inset-0 size-full text-transparent"
+          className="[&::placeholder]:text-text pointer-events-none absolute inset-0 size-full text-transparent"
           text={value}
         />
       </div>
@@ -205,7 +205,7 @@ const drawText = (canvas: HTMLCanvasElement, text: string, scrollLeft: number) =
 
   const rootStyles = getComputedStyle(document.documentElement)
 
-  const textColor = `hsl(${rootStyles.getPropertyValue("--foreground").trim()})`
+  const textColor = `hsl(${rootStyles.getPropertyValue("--color-text").trim()})`
 
   ctx.scale(dpr, dpr)
   ctx.clearRect(0, 0, canvas.width, canvas.height)

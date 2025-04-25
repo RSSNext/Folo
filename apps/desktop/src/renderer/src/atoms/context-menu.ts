@@ -103,9 +103,10 @@ function transformMenuItemsForNative(nextItems: FollowMenuItem[]): ElectronMenuI
         (!item.disabled && item.click !== undefined) || (!!item.submenu && item.submenu.length > 0),
       accelerator: item.shortcut?.replace("Meta", "CmdOrCtrl"),
       checked: typeof item.checked === "boolean" ? item.checked : undefined,
-      submenu: item.submenu
-        ? transformMenuItemsForNative(filterNullableMenuItems(item.submenu))
-        : undefined,
+      submenu:
+        item.submenu.length > 0
+          ? transformMenuItemsForNative(filterNullableMenuItems(item.submenu))
+          : undefined,
     }
   })
 }

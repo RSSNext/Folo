@@ -1,7 +1,13 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
 import { Radio, RadioGroup } from "@follow/components/ui/radio-group/index.js"
-import { Select, SelectTrigger, SelectValue } from "@follow/components/ui/select/index.jsx"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@follow/components/ui/select/index.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import {
   Table,
@@ -24,6 +30,11 @@ export const FeedFilter = ({ index }: { index: number }) => {
 
   const FeedOptions = useMemo(() => {
     return [
+      {
+        label: t("actions.action_card.feed_options.status"),
+        value: "status",
+        type: "status",
+      },
       {
         label: t("actions.action_card.feed_options.subscription_view"),
         value: "view",
@@ -150,24 +161,12 @@ export const FeedFilter = ({ index }: { index: number }) => {
                           className="max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-4 max-sm:pr-0"
                         >
                           <span className="sm:hidden">{t("actions.action_card.value")}</span>
-                          {type === "view" ? (
-                            <Select
-                              disabled={disabled}
-                              onValueChange={(value) => change("value", value)}
-                              value={condition.value}
-                            >
-                              <CommonSelectTrigger className="max-sm:w-fit" />
-                              <ViewSelectContent />
-                            </Select>
-                          ) : (
-                            <Input
-                              disabled={disabled}
-                              type={type}
-                              value={condition.value}
-                              className="h-8"
-                              onChange={(e) => change("value", e.target.value)}
-                            />
-                          )}
+                          <ValueTableCell
+                            type={type}
+                            value={condition.value}
+                            onChange={(value) => change("value", value)}
+                            disabled={disabled}
+                          />
                         </TableCell>
 
                         <ActionTableCell
@@ -247,7 +246,7 @@ const OperationTableCell = ({
       {
         label: t("actions.action_card.operation_options.is_equal_to"),
         value: "eq",
-        types: ["number", "text", "view"],
+        types: ["number", "text", "view", "status"],
       },
       {
         label: t("actions.action_card.operation_options.is_not_equal_to"),
@@ -273,6 +272,9 @@ const OperationTableCell = ({
   }, [t])
 
   const options = OperationOptions.filter((option) => option.types.includes(type))
+  if (options.length === 1 && value === undefined) {
+    onValueChange?.(options[0]!.value as ActionOperation)
+  }
   return (
     <TableCell
       size="sm"
@@ -289,6 +291,67 @@ const OperationTableCell = ({
       />
     </TableCell>
   )
+}
+
+const ValueTableCell = ({
+  type,
+  value,
+  onChange,
+  disabled,
+}: {
+  type: string
+  value?: string | number
+  onChange: (value: string | number) => void
+  disabled?: boolean
+}) => {
+  const { t } = useTranslation()
+
+  switch (type) {
+    case "view": {
+      return (
+        <Select
+          disabled={disabled}
+          onValueChange={(value) => onChange(value)}
+          value={value as string | undefined}
+        >
+          <CommonSelectTrigger className="max-sm:w-fit" />
+          <ViewSelectContent />
+        </Select>
+      )
+    }
+    case "status": {
+      if (value === undefined) {
+        onChange("collected")
+      }
+      return (
+        <Select
+          disabled={disabled}
+          onValueChange={(value) => onChange(value)}
+          value={value as string | undefined}
+        >
+          <CommonSelectTrigger className="max-sm:w-fit" />
+          <SelectContent>
+            <SelectItem value="collected">
+              <div className="flex items-center gap-2">
+                <span>{t("words.starred")}</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      )
+    }
+    default: {
+      return (
+        <Input
+          disabled={disabled}
+          type={type}
+          value={value}
+          className="h-8"
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )
+    }
+  }
 }
 
 const CommonSelectTrigger = ({ className }: { className?: string }) => (

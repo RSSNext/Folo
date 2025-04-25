@@ -267,6 +267,7 @@ const TarBarItem: FC<{
         onLayout(event, index)
       }}
       tab={tab}
+      className="py-1"
     >
       <TabItemInner tab={tab} isSelected={isSelected} />
     </TabItem>

@@ -12,7 +12,6 @@
 
   [data-theme="light"] {
     --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
 
     --border: 20 5.9% 90%;
     --radius: 0.5rem;
@@ -20,7 +19,6 @@
 
   [data-theme="dark"] {
     --background: 0 0% 7.1%;
-    --foreground: 60 9.1% 97.8%;
 
     --border: 0 0% 22.1%;
   }
@@ -32,7 +30,7 @@
   }
 
   body {
-    @apply text-theme-foreground;
+    @apply text-text;
   }
 }
 

@@ -3,6 +3,7 @@ import { Divider } from "@follow/components/ui/divider/index.js"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useIsInMASReview } from "~/atoms/server-configs"
 import { useWhoami } from "~/atoms/user"
 import { useBoostModal } from "~/modules/boost/hooks"
 import { useFeedBoostersQuery } from "~/modules/boost/query"
@@ -35,6 +36,8 @@ export const SupportCreator = ({ entryId }: { entryId: string }) => {
   )
   const supportAmount = allSupporters.length
 
+  const isInMASReview = useIsInMASReview()
+
   if (!feed || feed.type !== "feed") return null
 
   return (
@@ -54,29 +57,31 @@ export const SupportCreator = ({ entryId }: { entryId: string }) => {
         )}
         <span className="-mt-6 text-lg font-medium">{feed.title}</span>
 
-        <div className="flex items-center gap-4">
-          {!isMyOwnedFeed && (
+        {!isInMASReview && (
+          <div className="flex items-center gap-4">
+            {!isMyOwnedFeed && (
+              <Button
+                onClick={() =>
+                  openTipModal({
+                    userId: feed.ownerUserId ?? undefined,
+                    feedId: entry?.feedId,
+                    entryId,
+                  })
+                }
+              >
+                <i className="i-mgc-power-outline mr-1.5 text-lg" />
+                {t("entry_content.support_creator")}
+              </Button>
+            )}
             <Button
-              onClick={() =>
-                openTipModal({
-                  userId: feed.ownerUserId ?? undefined,
-                  feedId: entry?.feedId,
-                  entryId,
-                })
-              }
+              variant={!isMyOwnedFeed ? "outline" : "primary"}
+              onClick={() => openBoostModal(feed.id)}
             >
-              <i className="i-mgc-power-outline mr-1.5 text-lg" />
-              {t("entry_content.support_creator")}
+              <i className="i-mgc-rocket-cute-fi mr-1.5 text-lg" />
+              {t("boost.boost_feed")}
             </Button>
-          )}
-          <Button
-            variant={!isMyOwnedFeed ? "outline" : "primary"}
-            onClick={() => openBoostModal(feed.id)}
-          >
-            <i className="i-mgc-rocket-cute-fi mr-1.5 text-lg" />
-            {t("boost.boost_feed")}
-          </Button>
-        </div>
+          </div>
+        )}
 
         {supportAmount > 0 && (
           <>

@@ -66,7 +66,7 @@ export const ListHeader = ({ view }: { view: number }) => {
       >
         {view !== undefined && t(views[view]!.name, { ns: "common" })}
       </div>
-      <div className="lg:!text-text-secondary ml-2 flex items-center gap-3 text-base text-zinc-400 lg:text-sm dark:text-zinc-600">
+      <div className="text-text-secondary ml-2 flex items-center gap-3 text-base lg:text-sm">
         <SortButton />
         {expansion ? (
           <i
@@ -145,7 +145,7 @@ const SortButton = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98, y: 10 }}
                 transition={{ type: "spring", duration: 0.3 }}
-                className="border-border bg-theme-modal-background-opaque relative z-10 rounded-md border p-3 shadow-md dark:shadow-zinc-500/20"
+                className="border-border bg-theme-background shadow-context-menu relative z-10 rounded-md border p-3"
               >
                 <HoverCard.Arrow className="fill-border -translate-x-4" />
                 <section className="w-[170px] text-center">

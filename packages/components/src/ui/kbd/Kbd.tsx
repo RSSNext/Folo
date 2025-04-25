@@ -39,15 +39,6 @@ SpecialKeys.iOS = SpecialKeys.macOS
 // @ts-ignore
 SpecialKeys.Android = SpecialKeys.Linux
 
-// const allSpecialKeys = new Set(
-//   [
-//     SpecialKeys.Windows,
-//     SpecialKeys.macOS,
-//     SpecialKeys.Linux,
-//     SharedKeys,
-//   ].flatMap((element) => Object.values(element)),
-// )
-
 const os = getOS()
 export const KbdCombined: FC<{
   children: string
@@ -331,7 +322,7 @@ export const Kbd: FC<{ children: string; className?: string }> = memo(({ childre
     <button type="button" onClick={handleClick}>
       <kbd
         className={cn(
-          "kbd box-border h-5 space-x-1 font-sans text-[0.7rem]",
+          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem]",
 
           isKeyPressed ? "" : "border-b-2",
           className,

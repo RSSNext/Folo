@@ -13,13 +13,14 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 import { ReAnimatedTouchableOpacity } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
+import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { useSearchPageContext } from "./ctx"
-import { DiscoverContext } from "./DiscoverContext"
+import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./ctx"
+import { SearchTabBar } from "./SearchTabBar"
 
 const DynamicBlurEffect = () => {
   const { reAnimatedScrollY } = useContext(ScreenItemContext)
@@ -38,9 +39,12 @@ export const DiscoverHeader = () => {
   const insets = useSafeAreaInsets()
   const sheetModal = useScreenIsInSheetModal()
   const headerHeight = getDefaultHeaderHeight(frame, sheetModal, insets.top)
-  const { headerHeightAtom } = useContext(DiscoverContext)
 
-  const setHeaderHeight = useSetAtom(headerHeightAtom)
+  const scrollContainerAnimatedX = useSearchPageScrollContainerAnimatedX()
+  const { searchFocusedAtom } = useSearchPageContext()
+  const isFocused = useAtomValue(searchFocusedAtom)
+
+  const setHeaderHeight = useContext(SetNavigationHeaderHeightContext)
 
   return (
     <View
@@ -55,6 +59,7 @@ export const DiscoverHeader = () => {
       <View style={styles.header}>
         <SearchInput />
       </View>
+      {isFocused && <SearchTabBar animatedX={scrollContainerAnimatedX} />}
     </View>
   )
 }

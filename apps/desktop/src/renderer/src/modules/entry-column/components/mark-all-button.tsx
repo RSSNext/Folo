@@ -75,7 +75,7 @@ export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProp
             />
             {shortcut && (
               <div className="ml-1">
-                <KbdCombined className="text-foreground/80">
+                <KbdCombined className="text-text-secondary">
                   {shortcuts.entries.markAllAsRead.key}
                 </KbdCombined>
               </div>

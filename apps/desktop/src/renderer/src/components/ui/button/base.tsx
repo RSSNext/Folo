@@ -45,7 +45,7 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
         "rounded-md p-1.5 duration-200",
         variant === "solid" || variant === "ghost"
           ? "border-accent/5 bg-accent/80 text-accent border backdrop-blur"
-          : "text-accent bg-slate-50/50 dark:bg-slate-900/50",
+          : "text-accent hover:bg-material-ultra-thick",
         variant === "ghost" && "bg-theme-item-active hover:bg-theme-item-hover",
         className,
       )}

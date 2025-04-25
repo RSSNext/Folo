@@ -69,7 +69,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
           </CardTitle>
         </CardHeader>
         <CardContent className="flex grow flex-col p-5 pt-0">
-          <ul className="text-foreground/90 grow columns-2 gap-2 space-y-1 text-sm">
+          <ul className="text-text grow columns-2 gap-2 space-y-1 text-sm">
             {Object.keys(data.routes).map((route) => {
               const routeData = data.routes[route]!
               // some routes have multiple paths, like `huxiu`
@@ -79,7 +79,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
               return (
                 <li
                   key={route}
-                  className="hover:text-theme-foreground-hover group ml-1"
+                  className="hover:text-accent group ml-1"
                   onClick={(e) => {
                     ;(e.target as HTMLElement).querySelector("button")?.click()
                   }}

@@ -57,7 +57,7 @@
   }
 
   #root [data-button="true"][data-action="true"] {
-    @apply text-foreground before:bg-foreground/30 relative -mr-[16px] bg-transparent px-4 font-sans font-bold before:absolute before:inset-y-0 before:left-0 before:w-px;
+    @apply text-text before:bg-text-tertiary relative -mr-[16px] bg-transparent px-4 font-sans font-bold before:absolute before:inset-y-0 before:left-0 before:w-px;
   }
 }
 

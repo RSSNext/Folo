@@ -31,8 +31,10 @@ const NormalDailyReportTitle: FC<DailyItemProps> = ({ day }) => {
   return (
     <button
       type="button"
-      onClick={() => setOpenedSummary(day)}
-      className="border-b pb-6 last:border-b-0"
+      onClick={() => {
+        setOpenedSummary(day)
+      }}
+      className="border-b last:border-b-0"
     >
       <DailyReportTitle title={title} startDate={startDate} endDate={endDate} />
     </button>

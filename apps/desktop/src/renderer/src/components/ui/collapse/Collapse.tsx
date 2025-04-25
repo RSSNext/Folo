@@ -15,6 +15,7 @@ interface CollapseProps {
   defaultOpen?: boolean
   collapseId?: string
   onOpenChange?: (isOpened: boolean) => void
+  contentClassName?: string
 }
 
 export const CollapseGroup: Component<{
@@ -91,7 +92,9 @@ export const CollapseControlled: Component<
         </div>
       )}
     </div>
-    <CollapseContent isOpened={props.isOpened}>{props.children}</CollapseContent>
+    <CollapseContent isOpened={props.isOpened} className={props.contentClassName}>
+      {props.children}
+    </CollapseContent>
   </div>
 )
 export const CollapseContent: Component<{

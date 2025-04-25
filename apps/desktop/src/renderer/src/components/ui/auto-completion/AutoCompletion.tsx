@@ -1,11 +1,12 @@
 import { Input } from "@follow/components/ui/input/index.js"
+import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
 import Fuse from "fuse.js"
 import { AnimatePresence, m } from "motion/react"
-import { forwardRef, Fragment, useCallback, useEffect, useState } from "react"
+import { forwardRef, Fragment, memo, useCallback, useEffect, useState } from "react"
 
 export type Suggestion = {
   name: string
@@ -87,37 +88,32 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
               />
               <AnimatePresence>
                 {open && filterableSuggestions.length > 0 && (
-                  <ComboboxOptions
-                    portal
-                    static
-                    as={m.div}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    anchor="bottom"
-                    style={{ zIndex }}
-                    onWheel={stopPropagation}
-                    className={cn(
-                      "pointer-events-auto max-h-48 grow",
-                      "shadow-perfect border-border bg-material-medium text-text backdrop-blur-background overflow-auto rounded-md border",
-                      "w-[var(--input-width)] empty:invisible",
-                    )}
-                  >
-                    <div style={{ maxHeight }}>
-                      {filterableSuggestions.map((suggestion) => (
-                        <ComboboxOption
-                          key={suggestion.value}
-                          value={suggestion}
-                          className={cn(
-                            "data-[focus]:bg-theme-item-hover dark:data-[focus]:bg-neutral-800",
-                            "px-4 py-1.5 text-sm",
-                          )}
-                        >
-                          {suggestion.name}
-                        </ComboboxOption>
-                      ))}
-                    </div>
-                  </ComboboxOptions>
+                  <RootPortal>
+                    <ComboboxOptions
+                      portal
+                      static
+                      as={m.div}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      anchor="bottom"
+                      style={{ zIndex }}
+                      onWheel={stopPropagation}
+                      className={cn(
+                        "z-[60]",
+                        "bg-material-medium backdrop-blur-background text-text",
+                        "shadow-context-menu min-w-32 overflow-hidden rounded-[6px] border p-1",
+                        "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+                        "w-[var(--input-width)] empty:invisible",
+                      )}
+                    >
+                      <div style={{ maxHeight }}>
+                        {filterableSuggestions.map((suggestion) => (
+                          <MemoizedComboboxOption key={suggestion.value} suggestion={suggestion} />
+                        ))}
+                      </div>
+                    </ComboboxOptions>
+                  </RootPortal>
                 )}
               </AnimatePresence>
             </Fragment>
@@ -127,5 +123,22 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     )
   },
 )
+
+const MemoizedComboboxOption = memo(({ suggestion }: { suggestion: Suggestion }) => {
+  return (
+    <ComboboxOption
+      key={suggestion.value}
+      value={suggestion}
+      className={cn(
+        "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground",
+        "data-[focus]:bg-theme-selection-hover data-[focus]:text-theme-selection-foreground",
+        "relative flex select-none items-center rounded-[5px] px-2.5 py-1.5 outline-none",
+        "h-[28px]",
+      )}
+    >
+      {suggestion.name}
+    </ComboboxOption>
+  )
+})
 
 Autocomplete.displayName = "Autocomplete"

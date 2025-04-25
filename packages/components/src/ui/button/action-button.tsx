@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipPortal, TooltipRoot, TooltipTrigger } f
 export interface ActionButtonProps {
   icon?: React.ReactNode | ((props: { isActive?: boolean; className: string }) => React.ReactNode)
   tooltip?: React.ReactNode
+  tooltipDescription?: React.ReactNode
   tooltipSide?: "top" | "bottom"
   tooltipDefaultOpen?: boolean
   active?: boolean
@@ -22,7 +23,10 @@ export interface ActionButtonProps {
   enableHoverableContent?: boolean
   size?: "sm" | "base" | "lg"
   id?: string
-
+  /**
+   * Use motion effects to prompt and guide users to pay attention or click this button
+   */
+  highlightMotion?: boolean
   /**
    * @description only trigger shortcut when focus with in `<Focusable />`
    * @default false
@@ -47,9 +51,11 @@ export const ActionButton = React.forwardRef<
       icon,
       id,
       tooltip,
+      tooltipDescription,
       className,
       tooltipSide,
       tooltipDefaultOpen,
+      highlightMotion,
       children,
       active,
       shortcut,
@@ -69,6 +75,7 @@ export const ActionButton = React.forwardRef<
     const buttonRef = React.useRef<HTMLButtonElement>(null)
     React.useImperativeHandle(ref, () => buttonRef.current!)
 
+    const [shouldHighlightMotion, setShouldHighlightMotion] = useState(highlightMotion)
     const [loading, setLoading] = useState(false)
 
     const Trigger = (
@@ -79,17 +86,29 @@ export const ActionButton = React.forwardRef<
         className={cn(
           "no-drag-region pointer-events-auto inline-flex items-center justify-center",
           active && typeof icon !== "function" && "bg-zinc-500/15 hover:bg-zinc-500/20",
-          "hover:bg-theme-button-hover data-[state=open]:bg-theme-button-hover rounded-md duration-200",
+          "hover:bg-theme-item-hover data-[state=open]:bg-theme-item-active rounded-md duration-200",
           "disabled:cursor-not-allowed disabled:opacity-50",
           clickableDisabled && "cursor-not-allowed opacity-50",
+          shouldHighlightMotion &&
+            "relative after:absolute after:inset-0 after:animate-[radialPulse_3s_ease-in-out_infinite] after:rounded-md after:bg-center after:bg-no-repeat after:content-['']",
           actionButtonStyleVariant.size[size],
           className,
         )}
+        style={{
+          ...rest.style,
+          ...(shouldHighlightMotion
+            ? ({
+                "--tw-accent-opacity": "0.3",
+                "--highlight-color": "hsl(var(--fo-a) / var(--tw-accent-opacity))",
+              } as React.CSSProperties)
+            : {}),
+        }}
         type="button"
         disabled={disabled}
         onClick={
-          typeof onClick === "function"
+          onClick
             ? async (e) => {
+                setShouldHighlightMotion(false)
                 if (loading) return
                 setLoading(true)
                 try {
@@ -98,7 +117,7 @@ export const ActionButton = React.forwardRef<
                   setLoading(false)
                 }
               }
-            : onClick
+            : void 0
         }
         {...rest}
       >
@@ -137,13 +156,21 @@ export const ActionButton = React.forwardRef<
                 {Trigger}
               </TooltipTrigger>
               <TooltipPortal>
-                <TooltipContent className="flex items-center gap-1" side={tooltipSide ?? "bottom"}>
-                  {tooltip}
-                  {!!finalShortcut && (
-                    <div className="ml-1">
-                      <KbdCombined className="text-foreground/80">{finalShortcut}</KbdCombined>
-                    </div>
-                  )}
+                <TooltipContent
+                  className="max-w-[300px] flex-col gap-1"
+                  side={tooltipSide ?? "bottom"}
+                >
+                  <div className="flex items-center gap-1">
+                    {tooltip}
+                    {!!finalShortcut && (
+                      <div className="ml-1">
+                        <KbdCombined className="text-text">{finalShortcut}</KbdCombined>
+                      </div>
+                    )}
+                  </div>
+                  {tooltipDescription ? (
+                    <div className="text-text-secondary text-body">{tooltipDescription}</div>
+                  ) : null}
                 </TooltipContent>
               </TooltipPortal>
             </TooltipRoot>

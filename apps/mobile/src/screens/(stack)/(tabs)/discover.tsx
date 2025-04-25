@@ -1,5 +1,3 @@
-import { atom } from "jotai"
-import { useMemo, useState } from "react"
 import { View } from "react-native"
 
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
@@ -11,30 +9,23 @@ import {
   SearchPageProvider,
   SearchPageScrollContainerAnimatedXProvider,
 } from "@/src/modules/discover/ctx"
-import { DiscoverContext } from "@/src/modules/discover/DiscoverContext"
 import { DiscoverHeader } from "@/src/modules/discover/search"
 
 export default function Discover() {
-  const headerHeightAtom = useState(() => atom(0))[0]
-
-  const ctxValue = useMemo(() => ({ headerHeightAtom }), [headerHeightAtom])
-
   return (
-    <DiscoverContext.Provider value={ctxValue}>
-      <SearchPageScrollContainerAnimatedXProvider>
-        <SearchPageProvider>
-          <SafeNavigationScrollView
-            Header={
-              <View className="absolute top-0 z-10 w-full">
-                <DiscoverHeader />
-              </View>
-            }
-          >
-            <Content />
-          </SafeNavigationScrollView>
-        </SearchPageProvider>
-      </SearchPageScrollContainerAnimatedXProvider>
-    </DiscoverContext.Provider>
+    <SearchPageScrollContainerAnimatedXProvider>
+      <SearchPageProvider>
+        <SafeNavigationScrollView
+          Header={
+            <View className="absolute top-0 z-10 w-full">
+              <DiscoverHeader />
+            </View>
+          }
+        >
+          <Content />
+        </SafeNavigationScrollView>
+      </SearchPageProvider>
+    </SearchPageScrollContainerAnimatedXProvider>
   )
 }
 

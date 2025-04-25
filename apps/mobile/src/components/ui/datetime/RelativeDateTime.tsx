@@ -49,7 +49,7 @@ interface RelativeDateTimeProps extends TextProps {
 
 export const RelativeDateTime = ({
   date,
-  displayAbsoluteTimeAfterDay = 29,
+  displayAbsoluteTimeAfterDay = Infinity,
   dateFormatTemplate,
   postfixText,
   ...props

@@ -87,7 +87,7 @@ const Wrapper: Component<{
           className={cn(
             "relative flex h-full w-auto overflow-hidden",
             sideContent
-              ? "bg-native min-w-96 items-center justify-center rounded-l-xl"
+              ? "bg-sidebar min-w-96 items-center justify-center rounded-l-xl"
               : "rounded-xl",
           )}
         >

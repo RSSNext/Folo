@@ -55,13 +55,13 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
                 initial={{ opacity: 0.01, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0.01, y: 30 }}
-                className="text-theme-foreground flex min-w-0 shrink items-end gap-2 truncate text-sm leading-tight"
+                className="text-text text-title3 flex min-w-0 shrink items-end gap-2 truncate leading-tight"
               >
                 <span className="min-w-[50%] shrink truncate font-bold">
                   {entryTitleMeta.title}
                 </span>
                 <i className="i-mgc-line-cute-re size-[10px] shrink-0 translate-y-[-3px] rotate-[-25deg]" />
-                <span className="shrink truncate text-xs opacity-80">
+                <span className="text-text-secondary text-headline shrink truncate">
                   {entryTitleMeta.description}
                 </span>
               </m.div>

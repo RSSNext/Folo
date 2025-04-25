@@ -7,24 +7,14 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 type Props = Component<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 >
-const MacOSVibrancy: Props = ({ className, children, ...rest }) => (
-  <Focusable className={cn("bg-native/30 dark:bg-native/10", className)} {...rest}>
-    {children}
-  </Focusable>
-)
+const MacOSVibrancy: Props = ({ children, ...rest }) => <Focusable {...rest}>{children}</Focusable>
 
 const Noop: Props = ({ children, className, ...rest }) => (
-  <Focusable className={cn("bg-native", className)} {...rest}>
+  <Focusable className={cn("bg-sidebar", className)} {...rest}>
     {children}
   </Focusable>
 )
 
-// Disable blur effect on Windows, because electron backgroundMaterial has some issues
-// const Win32Material: Props = ({ className, children, ...rest }) => (
-//   <div className={cn("bg-transparent", className)} {...rest}>
-//     {children}
-//   </div>
-// )
 export const WindowUnderBlur: Props = SYSTEM_CAN_UNDER_BLUR_WINDOW
   ? (props) => {
       const opaqueSidebar = useUISettingKey("opaqueSidebar")

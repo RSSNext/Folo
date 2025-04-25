@@ -4,11 +4,12 @@ import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@f
 import { useMemo } from "react"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media"
 import { FEED_COLLECTION_LIST } from "~/constants"
-import { useAsRead } from "~/hooks/biz/useAsRead"
+import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryTranslation } from "~/modules/entry-column/translation"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -31,7 +32,7 @@ export function ListItem({
   const isMobile = useMobile()
   const entry = useEntry(entryId) || entryPreview
 
-  const asRead = useAsRead(entry)
+  const isRead = useEntryIsRead(entry)
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 
@@ -54,15 +55,16 @@ export function ListItem({
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 
+  const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
     let lineClampTitle = settingWideMode ? 1 : 2
     let lineClampDescription = settingWideMode ? 1 : 2
 
-    if (translation?.title && !simple) {
+    if (translation?.title && !simple && bilingual) {
       lineClampTitle += 1
     }
-    if (translation?.description && !simple) {
+    if (translation?.description && !simple && bilingual) {
       lineClampDescription += 1
     }
 
@@ -77,7 +79,7 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [settingWideMode, simple, translation?.description, translation?.title])
+  }, [settingWideMode, simple, translation?.description, translation?.title, bilingual])
 
   const audioAttachment = useMemo(() => {
     return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
@@ -115,7 +117,7 @@ export function ListItem({
     <div
       className={cn(
         "cursor-menu group relative flex pl-3 pr-2",
-        !asRead &&
+        !isRead &&
           "before:bg-accent before:absolute before:-left-0.5 before:top-[1.4375rem] before:block before:size-2 before:rounded-full",
         settingWideMode ? "py-3" : "py-4",
       )}
@@ -130,8 +132,8 @@ export function ListItem({
         <div
           className={cn(
             "flex gap-1 text-[10px] font-bold",
-            asRead ? "text-zinc-400 dark:text-neutral-500" : "text-zinc-500 dark:text-zinc-400",
-            entry.collections && "text-zinc-600 dark:text-zinc-500",
+            "text-text-secondary",
+            entry.collections && "text-text-secondary",
           )}
         >
           <EllipsisHorizontalTextWithTooltip className="truncate">
@@ -147,6 +149,7 @@ export function ListItem({
         <div
           className={cn(
             "relative my-0.5 break-words",
+            "text-text",
             !!entry.collections && "pr-5",
             entry.entries.title ? "font-medium" : "text-[13px]",
           )}
@@ -167,14 +170,7 @@ export function ListItem({
           {!!entry.collections && <StarIcon className="absolute right-0 top-0" />}
         </div>
         {!simple && (
-          <div
-            className={cn(
-              "text-[13px]",
-              asRead
-                ? "text-zinc-400 dark:text-neutral-500"
-                : "text-zinc-500 dark:text-neutral-400",
-            )}
-          >
+          <div className={cn("text-[13px]", "text-text-secondary")}>
             <EntryTranslation
               className={cn("hyphens-auto", lineClamp.description)}
               source={entry.entries.description}
@@ -195,7 +191,7 @@ export function ListItem({
               fallbackElement={
                 <div
                   className={clsx(
-                    "bg-theme-placeholder-image",
+                    "bg-material-ultra-thick",
                     settingWideMode ? "size-[65px]" : "size-[80px]",
                     "rounded",
                   )}
@@ -286,7 +282,7 @@ function AudioCover({
       >
         <button
           type="button"
-          className="center bg-theme-background hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
+          className="center bg-material-opaque hover:bg-accent size-10 rounded-full opacity-95 hover:text-white hover:opacity-100"
         >
           <i
             className={cn("size-6", {
@@ -302,17 +298,17 @@ function AudioCover({
         <div className="absolute bottom-0 w-full overflow-hidden rounded-b-sm text-center">
           <div
             className={cn(
-              "absolute left-0 top-0 size-full bg-white/50 opacity-0 duration-200 group-hover:opacity-100 dark:bg-neutral-900/70",
+              "bg-material-ultra-thick absolute left-0 top-0 size-full opacity-0 duration-200 group-hover:opacity-100",
               isMobile && "opacity-100",
             )}
           />
           <div
             className={cn(
-              "text-[13px] opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100 group-hover:backdrop-blur-sm",
-              isMobile && "opacity-100 backdrop-blur-sm",
+              "group-hover:backdrop-blur-background text-[13px] opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100",
+              isMobile && "backdrop-blur-background opacity-100",
             )}
           >
-            {formatEstimatedMins(estimatedMins)}
+            {formatEstimatedMins(10)}
           </div>
         </div>
       )}

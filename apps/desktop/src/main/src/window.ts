@@ -21,7 +21,6 @@ import { cancelPollingUpdateUnreadCount, pollingUpdateUnreadCount } from "./tipc
 import { loadDynamicRenderEntry } from "./updater/hot-updater"
 
 const windows = {
-  settingWindow: null as BrowserWindow | null,
   mainWindow: null as BrowserWindow | null,
 }
 globalThis["windows"] = windows
@@ -61,8 +60,8 @@ export function createWindow(
           x: 18,
           y: 18,
         },
-        vibrancy: "under-window",
-        visualEffectState: "active",
+        vibrancy: "sidebar",
+        visualEffectState: "followWindow",
         transparent: true,
       } as Electron.BrowserWindowConstructorOptions)
       break
@@ -324,30 +323,22 @@ export const createMainWindow = () => {
   return window
 }
 
-export const createSettingWindow = (path?: string) => {
+export const showSetting = (path?: string) => {
   // We need to open the setting modal in the main window when the main window exists,
   // if we open a new window then the state between the two windows will be out of sync.
-  if (windows.mainWindow && windows.mainWindow.isVisible()) {
+  if (windows.mainWindow) {
+    if (windows.mainWindow.isMinimized()) {
+      windows.mainWindow.restore()
+    }
     windows.mainWindow.show()
 
     callWindowExpose(windows.mainWindow).showSetting(path)
     return
+  } else {
+    windows.mainWindow = createMainWindow()
+    windows.mainWindow.show()
+    callWindowExpose(windows.mainWindow).showSetting(path)
   }
-  if (windows.settingWindow) {
-    windows.settingWindow.show()
-    return
-  }
-  const window = createWindow({
-    extraPath: `#settings/${path || ""}`,
-    width: 700,
-    height: 600,
-    resizable: false,
-  })
-
-  windows.settingWindow = window
-  window.on("closed", () => {
-    windows.settingWindow = null
-  })
 }
 
 export const getMainWindow = () => windows.mainWindow

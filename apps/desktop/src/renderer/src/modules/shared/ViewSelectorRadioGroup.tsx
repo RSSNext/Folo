@@ -19,8 +19,11 @@ export const ViewSelectorRadioGroup = forwardRef<
 >(({ entries, feed, view, className, ...rest }, ref) => {
   const t = useI18n()
 
+  const showPreview = feed && entries && entries.length > 0
+  const showLoading = !!feed && !showPreview
+
   return (
-    <Card>
+    <Card className={rest.disabled ? "pointer-events-none" : void 0}>
       <CardHeader className={cn("grid grid-cols-6 space-y-0 px-2 py-3", className)}>
         {views.map((view) => (
           <div key={view.name}>
@@ -35,10 +38,10 @@ export const ViewSelectorRadioGroup = forwardRef<
             <label
               htmlFor={view.name}
               className={cn(
-                "hover:text-theme-foreground dark:hover:text-white",
+                "hover:text-text",
                 view.peerClassName,
                 "center flex h-10 flex-col text-xs leading-none opacity-80 duration-200",
-                "text-neutral-800 dark:text-zinc-200",
+                "text-text-secondary",
                 "peer-checked:opacity-100",
                 "whitespace-nowrap",
               )}
@@ -53,15 +56,14 @@ export const ViewSelectorRadioGroup = forwardRef<
           </div>
         ))}
       </CardHeader>
-      {!!feed && !!entries ? (
+      {showPreview && (
         <CardContent className="space-y-2 p-2">
           {entries.slice(0, 2).map((entry) => (
             <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
           ))}
         </CardContent>
-      ) : (
-        <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />
       )}
+      {showLoading && <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />}
     </Card>
   )
 })

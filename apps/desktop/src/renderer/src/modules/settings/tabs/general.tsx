@@ -7,7 +7,7 @@ import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useAtom } from "jotai"
-import { useCallback, useEffect } from "react"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useRevalidator } from "react-router"
 
@@ -40,18 +40,18 @@ const { defineSettingItem: _defineSettingItem, SettingBuilder } = createSetting(
   useGeneralSettingValue,
   setGeneralSetting,
 )
+
+const saveLoginSetting = (checked: boolean) => {
+  tipcClient?.setLoginItemSettings(checked)
+  setGeneralSetting("appLaunchOnStartup", checked)
+}
+
 export const SettingGeneral = () => {
   const { t } = useTranslation("settings")
   useEffect(() => {
     tipcClient?.getLoginItemSettings().then((settings) => {
       setGeneralSetting("appLaunchOnStartup", settings.openAtLogin)
     })
-  }, [])
-
-  const saveLoginSetting = useCallback((checked: boolean) => {
-    tipcClient?.setLoginItemSettings(checked)
-
-    setGeneralSetting("appLaunchOnStartup", checked)
   }, [])
 
   const defineSettingItem = useWrapEnhancedSettingItem(
@@ -99,6 +99,7 @@ export const SettingGeneral = () => {
             label: t("general.action.translation"),
             disabled: isTrialUser,
           }),
+          TranslationModeSelector,
           ActionLanguageSelector,
 
           {
@@ -277,6 +278,37 @@ export const LanguageSelector = ({
         }))}
       />
     </div>
+  )
+}
+
+const TranslationModeSelector = () => {
+  const { t } = useTranslation("settings")
+  const translationMode = useGeneralSettingKey("translationMode")
+  const role = useUserRole()
+  if (role === UserRole.Trial) {
+    return null
+  }
+
+  return (
+    <SettingItemGroup>
+      <div className="flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("general.translation_mode.label")}</span>
+        <ResponsiveSelect
+          size="sm"
+          triggerClassName="w-48"
+          defaultValue={translationMode}
+          value={translationMode}
+          onValueChange={(value) => {
+            setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
+          }}
+          items={[
+            { label: t("general.translation_mode.bilingual"), value: "bilingual" },
+            { label: t("general.translation_mode.translation-only"), value: "translation-only" },
+          ]}
+        />
+      </div>
+      <SettingDescription>{t("general.translation_mode.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 

@@ -35,7 +35,7 @@ export const MarkdownLink = (props: LinkProps) => {
         <MagneticHoverEffect
           as="a"
           draggable="false"
-          className="text-foreground before:!bg-accent/50 font-semibold no-underline"
+          className="text-text font-semibold no-underline"
           href={populatedFullHref}
           title={props.title}
           target="_blank"

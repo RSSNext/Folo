@@ -46,7 +46,7 @@ export function DiscoverInboxList() {
   const preCheck = useCanCreateMoreInboxAndNotify()
 
   return (
-    <>
+    <div className="mx-auto w-full max-w-[540px]">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
         <span>{t("discover.inbox.description")}</span>
         <a
@@ -84,6 +84,6 @@ export function DiscoverInboxList() {
           {t("discover.inbox_create")}
         </Button>
       </div>
-    </>
+    </div>
   )
 }

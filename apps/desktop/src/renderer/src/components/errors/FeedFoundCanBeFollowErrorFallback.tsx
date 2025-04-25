@@ -26,7 +26,7 @@ const FeedFoundCanBeFollowErrorFallback: FC<AppErrorFallbackProps> = ({ resetErr
   useResetErrorWhenRouteChange(resetError)
 
   return (
-    <div className="bg-theme-modal-background-opaque flex w-full flex-col overflow-auto p-2">
+    <div className="bg-theme-background flex w-full flex-col overflow-auto p-2">
       <FeedPreview feedId={feed.id}>
         {{
           actions: (

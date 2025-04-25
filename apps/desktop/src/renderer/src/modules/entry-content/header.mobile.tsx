@@ -59,7 +59,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
                 transform: shouldShowMeta ? "translateY(0)" : "translateY(30px)",
                 opacity: shouldShowMeta ? 1 : 0,
               }}
-              className="text-theme-foreground pointer-events-auto flex w-full min-w-0 shrink gap-2 truncate px-1.5 pl-10 text-sm leading-tight duration-200"
+              className="text-text pointer-events-auto flex w-full min-w-0 shrink gap-2 truncate px-1.5 pl-10 text-sm leading-tight duration-200"
             >
               <div className="flex min-w-0 grow items-center">
                 <div className="flex min-w-0 shrink items-end gap-1 truncate">
@@ -175,7 +175,7 @@ const HeaderRightActions = ({
                     stiffness: 300,
                     mass: 0.8,
                   }}
-                  className="shadow-modal bg-theme-modal-background-opaque fixed right-1 top-1 z-[1] mt-14 max-w-full rounded-lg border"
+                  className="shadow-modal bg-theme-background fixed right-1 top-1 z-[1] mt-14 max-w-full rounded-lg border"
                 >
                   <div className="flex flex-col items-center py-2">
                     {actions

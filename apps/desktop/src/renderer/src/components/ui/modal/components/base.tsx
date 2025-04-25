@@ -17,14 +17,14 @@ export const PeekModalBaseButton = ({
     <Tooltip>
       <TooltipTrigger
         type="button"
+        aria-label={label}
         className={cn(
-          "no-drag-region center bg-background flex size-8 rounded-full p-1 shadow-sm ring-1 ring-zinc-200 dark:ring-neutral-800",
+          "no-drag-region center bg-background ring-border flex size-8 rounded-full p-1 shadow-sm ring-1 empty:hidden",
           className,
         )}
         onClick={onClick}
       >
         {icon}
-        <span className="sr-only">{label}</span>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>

@@ -2,6 +2,7 @@ import { cn } from "@follow/utils/utils"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import * as React from "react"
 
+import { Divider } from "../divider/Divider"
 import { RootPortal } from "../portal"
 
 const Select = SelectPrimitive.Root
@@ -19,18 +20,21 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "placeholder:text-text-secondary flex w-full items-center justify-between whitespace-nowrap rounded-md bg-transparent disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      "ring-accent/20 focus:border-accent/80 duration-200 focus:outline-none focus:ring-2",
+      "flex w-full items-center justify-between whitespace-nowrap rounded-[5px] bg-transparent",
+      "outline-none focus-within:outline-transparent",
       "border-border border",
-      size === "sm" ? "h-7 p-2 text-sm" : "h-9 px-3 py-2 text-sm",
-      "hover:border-accent/80",
+      size === "sm" ? "h-7 px-2.5 text-sm" : "h-9 px-2.5 py-1.5 text-sm",
+      "placeholder:text-text-secondary",
+      "disabled:cursor-not-allowed disabled:opacity-50",
+      "[&>span]:line-clamp-1",
       className,
+      props.disabled && "cursor-not-allowed opacity-30",
     )}
     {...props}
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <i className="i-mingcute-down-line ml-2 size-4 shrink-0 opacity-50" />
+      <i className="i-mingcute-down-line ml-2 size-3.5 shrink-0 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
@@ -42,10 +46,10 @@ const SelectScrollUpButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
-    className={cn("cursor-select flex items-center justify-center py-1", className)}
+    className={cn("cursor-menu flex items-center justify-center py-1", className)}
     {...props}
   >
-    <i className="i-mingcute-up-line" />
+    <i className="i-mingcute-up-line size-3.5" />
   </SelectPrimitive.ScrollUpButton>
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
@@ -56,10 +60,10 @@ const SelectScrollDownButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
-    className={cn("cursor-select flex items-center justify-center py-1", className)}
+    className={cn("cursor-menu flex items-center justify-center py-1", className)}
     {...props}
   >
-    <i className="i-mingcute-down-line" />
+    <i className="i-mingcute-down-line size-3.5" />
   </SelectPrimitive.ScrollDownButton>
 ))
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
@@ -72,7 +76,9 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "shadow-perfect bg-material-medium backdrop-blur-background relative max-h-96 min-w-32 overflow-hidden rounded-md border",
+        "bg-material-medium backdrop-blur-background text-text z-[60] max-h-96 min-w-32 overflow-hidden rounded-[6px] border p-1",
+        "shadow-context-menu",
+        "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
         className,
       )}
       position={position}
@@ -81,7 +87,7 @@ const SelectContent = React.forwardRef<
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
+          "p-0",
           position === "popper" &&
             "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
         )}
@@ -96,11 +102,13 @@ SelectContent.displayName = SelectPrimitive.Content.displayName
 
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> & {
+    inset?: boolean
+  }
+>(({ className, inset, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-2 py-1.5 text-sm font-semibold", className)}
+    className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
     {...props}
   />
 ))
@@ -108,19 +116,24 @@ SelectLabel.displayName = SelectPrimitive.Label.displayName
 
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> & {
+    inset?: boolean
+  }
+>(({ className, children, inset, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "cursor-select focus:bg-theme-item-active focus:text-theme-foreground pointer-events-auto relative flex w-full items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "cursor-menu focus:bg-theme-selection-active focus:text-theme-selection-foreground relative flex select-none items-center rounded-[5px] px-2.5 py-1 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "data-[highlighted]:bg-theme-selection-hover focus-within:outline-transparent",
+      "h-[28px] w-full",
+      inset && "pl-8",
       className,
     )}
     {...props}
   >
     <span className="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <i className="i-mingcute-check-line size-3" />
+        <i className="i-mgc-check-filled size-3" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -131,12 +144,15 @@ SelectItem.displayName = SelectPrimitive.Item.displayName
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
+>(({ ...props }, ref) => (
   <SelectPrimitive.Separator
+    className="backdrop-blur-background mx-2 my-1 h-px"
+    asChild
     ref={ref}
-    className={cn("bg-material-medium -mx-1 my-1 h-px", className)}
     {...props}
-  />
+  >
+    <Divider />
+  </SelectPrimitive.Separator>
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 

@@ -138,13 +138,13 @@ export const SearchCmdK: React.FC = () => {
         onOpenChange={setAppSearchOpen}
         className={cn(
           "h-[600px] max-h-[80vh] w-[800px] max-w-[100vw] rounded-none md:h-screen md:max-h-[60vh] md:max-w-[80vw]",
-          "flex min-h-[50vh] flex-col bg-zinc-50/85 shadow-2xl backdrop-blur-xl md:rounded-xl dark:bg-neutral-900/90",
-          "border-0 border-zinc-300 md:border dark:border-zinc-700",
+          "backdrop-blur-background bg-material-ultra-thick flex min-h-[50vh] flex-col shadow-2xl md:rounded-xl",
+          "border-border border-0 md:border",
           "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
         )}
       >
         <Command.Input
-          className="w-full shrink-0 border-b border-zinc-200 bg-transparent p-4 px-5 text-lg leading-4 dark:border-neutral-700"
+          className="border-border w-full shrink-0 border-b bg-transparent p-4 px-5 text-lg leading-4"
           ref={inputRef}
           placeholder={searchActions.getCurrentKeyword() || t("search.placeholder")}
           onValueChange={handleSearch}
@@ -348,7 +348,7 @@ const SearchOptions: Component = memo(({ children }) => {
   const searchInstance = React.useContext(SearchCmdKContext)
 
   return (
-    <div className="text-theme-foreground/80 flex items-center gap-2 text-sm">
+    <div className="text-text flex items-center gap-2 text-sm">
       <span className="shrink-0">{t("search.options.search_type")}</span>
 
       <Select

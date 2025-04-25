@@ -367,7 +367,7 @@ const FeedInnerForm = ({
               </FormItem>
             )}
           />
-          <div className="bg-theme-modal-background-opaque absolute inset-x-0 bottom-0 right-[6px] flex flex-1 items-center justify-end gap-4 p-4">
+          <div className="bg-theme-background absolute inset-x-0 bottom-0 right-[6px] flex flex-1 items-center justify-end gap-4 p-4">
             {isSubscribed && (
               <Button
                 type="button"

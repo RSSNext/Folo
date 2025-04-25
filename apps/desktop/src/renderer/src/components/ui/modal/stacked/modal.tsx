@@ -113,7 +113,6 @@ export const ModalInternal = memo(
       [close],
     )
 
-    const opaque = useUISettingKey("modalOpaque")
     const modalSettingOverlay = useUISettingKey("modalOverlay")
 
     const dismiss = useCallback(
@@ -329,13 +328,11 @@ export const ModalInternal = memo(
                   animate={animateController}
                   className={cn(
                     "relative flex flex-col overflow-hidden rounded-lg px-2 pt-2",
-                    opaque
-                      ? "bg-theme-modal-background-opaque"
-                      : "bg-theme-modal-background backdrop-blur-sm",
+                    "bg-background",
                     "shadow-modal",
                     max ? "h-[90vh] w-[90vw]" : "max-h-[90vh]",
 
-                    "border border-slate-200 dark:border-neutral-800",
+                    "border-border border",
                     modalClassName,
                   )}
                   tabIndex={-1}
@@ -373,7 +370,7 @@ export const ModalInternal = memo(
                       </Dialog.Title>
                       {canClose && (
                         <Dialog.DialogClose
-                          className="center hover:bg-theme-button-hover z-[2] rounded-lg p-2"
+                          className="center hover:bg-material-ultra-thick z-[2] rounded-lg p-2"
                           tabIndex={1}
                           onClick={close}
                         >
@@ -381,9 +378,9 @@ export const ModalInternal = memo(
                         </Dialog.DialogClose>
                       )}
                     </div>
-                    <div className="mt-2 h-px w-full shrink-0 bg-slate-200 dark:bg-neutral-800" />
+                    <div className="bg-border mx-1 mt-2 h-px shrink-0" />
 
-                    <div className="-mx-2 min-h-0 shrink grow overflow-auto px-6 py-4">
+                    <div className="-mx-2 min-h-0 shrink grow overflow-auto p-4">
                       <ModalContext modalContextProps={ModalContextProps} isTop={!!isTop}>
                         {finalChildren}
                       </ModalContext>

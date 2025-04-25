@@ -149,7 +149,7 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
             <span className={cn(item.icon && "pl-6")}>{item.label}</span>
 
             {!!item.shortcut && !isMobile && (
-              <div className="ml-auto pl-4">
+              <div className="-mr-1 ml-auto pl-4">
                 <KbdCombined joint>{item.shortcut}</KbdCombined>
               </div>
             )}

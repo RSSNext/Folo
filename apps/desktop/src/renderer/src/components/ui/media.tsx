@@ -265,7 +265,7 @@ const MediaImpl: FC<MediaProps> = ({
         >
           <span
             className={cn(
-              "bg-theme-placeholder-image relative inline-block max-w-full",
+              "bg-material-ultra-thick relative inline-block max-w-full",
               mediaContainerClassName,
             )}
             style={{
@@ -334,13 +334,13 @@ const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, classNam
     <div
       className={cn(
         "size-full",
-        "center rounded bg-zinc-100 dark:bg-neutral-900",
+        "center bg-material-ultra-thick rounded",
         "not-prose @container !flex max-h-full flex-col space-y-1 p-4",
         mediaContainerClassName,
       )}
     >
       <div className="@sm:hidden @md:contents hidden">
-        <i className="i-mgc-close-cute-re text-xl text-red-500" />
+        <i className="i-mgc-close-cute-re text-red text-xl" />
         <p>Media loaded failed</p>
         <div className="space-x-1 break-all px-4 text-sm">
           Go to{" "}

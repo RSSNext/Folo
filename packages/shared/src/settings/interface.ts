@@ -2,6 +2,7 @@ export interface GeneralSettings {
   appLaunchOnStartup: boolean
   language: string
   translation: boolean
+  translationMode: "bilingual" | "translation-only"
   summary: boolean
   actionLanguage: string
   startupScreen: "subscription" | "timeline"
@@ -43,7 +44,6 @@ export interface UISettings {
   showDockBadge: boolean
   modalOverlay: boolean
   modalDraggable: boolean
-  modalOpaque: boolean
   reduceMotion: boolean
   usePointerCursor: boolean | null
   uiFontFamily: string

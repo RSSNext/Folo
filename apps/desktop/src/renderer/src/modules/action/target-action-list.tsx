@@ -319,7 +319,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       <div className="relative w-full space-y-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild disabled={disabled}>
-            <ActionButton className="hover:text-foreground absolute right-0 top-0 -translate-y-11 text-zinc-500 duration-200">
+            <ActionButton className="hover:text-text absolute right-0 top-0 -translate-y-11 text-zinc-500 duration-200">
               <i className="i-mgc-add-cute-re" />
             </ActionButton>
           </DropdownMenuTrigger>

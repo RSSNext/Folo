@@ -4,7 +4,7 @@ import type { Target, TargetAndTransition } from "motion/react"
 import { m } from "motion/react"
 
 import { useIsZenMode } from "~/atoms/settings/ui"
-import { useAsRead } from "~/hooks/biz/useAsRead"
+import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useGetEntryIdInRange } from "~/modules/entry-column/hooks/useEntryIdListSnap"
@@ -48,7 +48,7 @@ const TimelineItem = ({ id }: { id: string }) => {
     title: e.entries.title,
     read: e.read,
   }))
-  const asRead = useAsRead(entry!)
+  const asRead = useEntryIsRead(entry!)
   const navigate = useNavigateEntry()
 
   const isActive = useRouteParamsSelector((r) => r.entryId === id)

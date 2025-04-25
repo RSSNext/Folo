@@ -1,6 +1,7 @@
 import { merge } from "es-toolkit/compat"
 import plugin from "tailwindcss/plugin"
 import resolveConfig from "tailwindcss/resolveConfig"
+import type { Config } from "tailwindcss/types/config"
 
 import { baseTwConfig } from "../../configs/tailwind.base.config"
 
@@ -44,6 +45,9 @@ export default resolveConfig(
         height: {
           screen: "100svh",
         },
+        colors: {
+          sidebar: "hsl(var(--fo-sidebar) / <alpha-value>)",
+        },
 
         keyframes: {
           "caret-blink": {
@@ -74,7 +78,7 @@ export default resolveConfig(
         addVariant("macos", ":where(html[data-os='macOS']) &")
         addVariant("windows", ":where(html[data-os='Windows']) &")
       }),
-
+      require("tailwindcss-multi"),
       plugin(({ addUtilities, matchUtilities, theme }) => {
         addUtilities({
           ".safe-inset-top": {
@@ -116,5 +120,5 @@ export default resolveConfig(
         )
       }),
     ],
-  }),
+  } as Config),
 )

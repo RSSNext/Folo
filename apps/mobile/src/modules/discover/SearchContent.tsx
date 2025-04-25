@@ -13,8 +13,6 @@ import {
 import { SearchFeed } from "@/src/modules/discover/search-tabs/SearchFeed"
 import { SearchList } from "@/src/modules/discover/search-tabs/SearchList"
 
-import { SearchTabBar } from "./SearchTabBar"
-
 export const SearchContent = () => {
   const scrollContainerAnimatedX = useSearchPageScrollContainerAnimatedX()
   const { searchTypeAtom } = useSearchPageContext()
@@ -44,7 +42,6 @@ export const SearchContent = () => {
 
   return (
     <>
-      <SearchTabBar animatedX={scrollContainerAnimatedX} />
       <AnimatedScrollView
         ref={scrollRef}
         horizontal
