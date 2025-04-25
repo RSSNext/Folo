@@ -111,6 +111,9 @@ export const EntryItemWrapper: FC<
               COMMAND_ID.entry.toggleAITranslation,
               COMMAND_ID.settings.customizeToolbar,
               COMMAND_ID.entry.readability,
+              // Copy
+              COMMAND_ID.entry.copyTitle,
+              COMMAND_ID.entry.copyLink,
             ].includes(item.id as any)
           }),
           MENU_ITEM_SEPARATOR,
@@ -122,6 +125,13 @@ export const EntryItemWrapper: FC<
           }),
 
           MENU_ITEM_SEPARATOR,
+          // Copy
+          ...actionConfigs.filter((item) => {
+            if (item instanceof MenuItemSeparator) {
+              return false
+            }
+            return [COMMAND_ID.entry.copyTitle, COMMAND_ID.entry.copyLink].includes(item.id as any)
+          }),
           new MenuItemText({
             label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
             click: () => {

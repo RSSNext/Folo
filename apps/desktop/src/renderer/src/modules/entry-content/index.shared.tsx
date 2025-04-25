@@ -101,7 +101,7 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
               {t("entry_content.fetching_content_failed")}
             </p>
           ) : (
-            <div className="center mt-16 flex flex-col gap-2">
+            <div className="center mt-32 flex flex-col gap-2">
               <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
               <span className="text-sm">{t("entry_content.fetching_content")}</span>
             </div>
