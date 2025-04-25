@@ -290,22 +290,25 @@ const TranslationModeSelector = () => {
   }
 
   return (
-    <div className="mb-3 mt-4 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("general.translation_mode.label")}</span>
-      <ResponsiveSelect
-        size="sm"
-        triggerClassName="w-48"
-        defaultValue={translationMode}
-        value={translationMode}
-        onValueChange={(value) => {
-          setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
-        }}
-        items={[
-          { label: t("general.translation_mode.bilingual"), value: "bilingual" },
-          { label: t("general.translation_mode.translation-only"), value: "translation-only" },
-        ]}
-      />
-    </div>
+    <SettingItemGroup>
+      <div className="flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("general.translation_mode.label")}</span>
+        <ResponsiveSelect
+          size="sm"
+          triggerClassName="w-48"
+          defaultValue={translationMode}
+          value={translationMode}
+          onValueChange={(value) => {
+            setGeneralSetting("translationMode", value as "bilingual" | "translation-only")
+          }}
+          items={[
+            { label: t("general.translation_mode.bilingual"), value: "bilingual" },
+            { label: t("general.translation_mode.translation-only"), value: "translation-only" },
+          ]}
+        />
+      </div>
+      <SettingDescription>{t("general.translation_mode.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 

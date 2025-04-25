@@ -218,6 +218,7 @@
   "general.subscriptions": "Subscriptions",
   "general.timeline": "Timeline",
   "general.translation_mode.bilingual": "Bilingual Comparison",
+  "general.translation_mode.description": "Choose how the translated text is displayed in the entry list.",
   "general.translation_mode.label": "Translation Mode",
   "general.translation_mode.translation-only": "Only the translation",
   "general.unread": "Unread",

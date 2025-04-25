@@ -217,6 +217,7 @@
   "general.subscriptions": "订阅",
   "general.timeline": "时间线",
   "general.translation_mode.bilingual": "双语对照",
+  "general.translation_mode.description": "选择译文在条目列表中的显示方式。",
   "general.translation_mode.label": "翻译偏好",
   "general.translation_mode.translation-only": "仅译文",
   "general.unread": "未读",
