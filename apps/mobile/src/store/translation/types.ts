@@ -1,6 +1,6 @@
 export interface EntryTranslation {
-  title: string
-  description: string
-  content: string
+  title: string | null
+  description: string | null
+  content: string | null
   readabilityContent: string | null
 }

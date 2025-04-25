@@ -32,10 +32,10 @@ class TranslationActions {
 
         if (!state.data[translation.entryId]![translation.language]) {
           state.data[translation.entryId]![translation.language] = {
-            title: "",
-            description: "",
-            content: "",
-            readabilityContent: "",
+            title: null,
+            description: null,
+            content: null,
+            readabilityContent: null,
           }
         }
 
@@ -64,7 +64,7 @@ class TranslationActions {
     this.upsertManyInSession(translations)
 
     for (const translation of translations) {
-      TranslationService.insertTranslation(translation)
+      await TranslationService.insertTranslation(translation)
     }
   }
 
@@ -93,7 +93,7 @@ class TranslationSyncService {
 
     const fields = (
       ["title", "description", ...(withContent ? [target] : [])] as Array<
-        "title" | "description" | "content"
+        "title" | "description" | "content" | "readabilityContent"
       >
     ).filter((field) => {
       const content = entry[field]
@@ -118,11 +118,14 @@ class TranslationSyncService {
     const translation: TranslationModel = {
       entryId,
       language,
-      title: res.data.title || "",
-      description: res.data.description || "",
-      content: res.data.content || "",
-      readabilityContent: res.data.readabilityContent || "",
+      title: null,
+      description: null,
+      content: null,
+      readabilityContent: null,
     }
+    fields.forEach((field) => {
+      translation[field] = res.data?.[field] ?? ""
+    })
 
     await translationActions.upsertMany([translation])
     return translation
