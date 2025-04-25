@@ -11,7 +11,7 @@ export const EntryTranslation: Component<{
   inline?: boolean
   bilingual?: boolean
 }> = ({ source, target, className, isHTML, inline = true, bilingual }) => {
-  const translationMode = useGeneralSettingKey("translationMode")
+  const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
 
   const nextTarget = useMemo(() => {
     if (!target || source === target) {
@@ -24,7 +24,7 @@ export const EntryTranslation: Component<{
     return null
   }
 
-  if (translationMode === "translation-only" && !bilingual) {
+  if (!bilingualFinal) {
     return (
       <div>
         {isHTML ? (
