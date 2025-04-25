@@ -316,6 +316,26 @@ export const useRegisterEntryCommands = () => {
         },
       },
       {
+        id: COMMAND_ID.entry.readAbove,
+        label: t("entry_actions.mark_above_as_read"),
+        run: ({ publishedAt }: { publishedAt: string }) => {
+          return markAllByRoute({
+            startTime: new Date(publishedAt).getTime(),
+            endTime: Date.now(),
+          })
+        },
+      },
+      {
+        id: COMMAND_ID.entry.readBelow,
+        label: t("entry_actions.mark_below_as_read"),
+        run: ({ publishedAt }: { publishedAt: string }) => {
+          return markAllByRoute({
+            startTime: 0,
+            endTime: new Date(publishedAt).getTime(),
+          })
+        },
+      },
+      {
         id: COMMAND_ID.entry.imageGallery,
         label: t("entry_actions.image_gallery"),
         icon: <i className="i-mgc-pic-cute-fi" />,
@@ -323,33 +343,6 @@ export const useRegisterEntryCommands = () => {
           openGalleryModal(entryId)
         },
       },
-    },
-    {
-      id: COMMAND_ID.entry.readAbove,
-      label: t("entry_actions.mark_above_as_read"),
-      run: ({ publishedAt }: { publishedAt: string }) => {
-        return markAllByRoute({
-          startTime: new Date(publishedAt).getTime(),
-          endTime: Date.now(),
-        })
-      },
-    },
-    {
-      id: COMMAND_ID.entry.readBelow,
-      label: t("entry_actions.mark_below_as_read"),
-      run: ({ publishedAt }: { publishedAt: string }) => {
-        return markAllByRoute({
-          startTime: 0,
-          endTime: new Date(publishedAt).getTime(),
-        })
-      },
-    },
-    {
-      id: COMMAND_ID.entry.imageGallery,
-      label: t("entry_actions.image_gallery"),
-      icon: <i className="i-mgc-pic-cute-fi" />,
-      run: ({ entryId }) => {
-        openGalleryModal(entryId)
       {
         id: COMMAND_ID.entry.tts,
         label: t("entry_content.header.play_tts"),
