@@ -54,12 +54,12 @@ export async function translate({
     fields = [...fields, ...extraFields]
   }
 
+  const readabilityContent = getReadabilityContent()[entry.entries.id]?.content
   fields = fields.filter((field) => {
     if (language && field === "readabilityContent") {
-      const content = getReadabilityContent()[entry.entries.id]?.content
-      if (!content) return false
+      if (!readabilityContent) return false
       const isLanguageMatch = checkLanguage({
-        content,
+        content: readabilityContent,
         language,
       })
       return !isLanguageMatch
@@ -88,5 +88,20 @@ export async function translate({
       part,
     },
   })
-  return res.data
+
+  const data: {
+    description?: string
+    title?: string
+    content?: string
+    readabilityContent?: string
+  } = {}
+
+  fields.forEach((field) => {
+    const content = field === "readabilityContent" ? readabilityContent : entry.entries[field]
+    if (content !== res.data?.[field]) {
+      data[field] = res.data?.[field]
+    }
+  })
+
+  return data
 }
