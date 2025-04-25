@@ -6,7 +6,8 @@ import { TranslationService } from "@/src/services/translation"
 
 import { getEntry } from "../entry/getter"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
-import type { EntryTranslation } from "./types"
+import type { EntryTranslation, TranslationFieldArray } from "./types"
+import { translationFields } from "./types"
 
 type TranslationModel = Omit<TranslationSchema, "createdAt">
 
@@ -39,23 +40,11 @@ class TranslationActions {
           }
         }
 
-        if (translation.title) {
-          state.data[translation.entryId]![translation.language]!.title = translation.title
-        }
-
-        if (translation.description) {
-          state.data[translation.entryId]![translation.language]!.description =
-            translation.description
-        }
-
-        if (translation.content) {
-          state.data[translation.entryId]![translation.language]!.content = translation.content
-        }
-
-        if (translation.readabilityContent) {
-          state.data[translation.entryId]![translation.language]!.readabilityContent =
-            translation.readabilityContent
-        }
+        translationFields.forEach((field) => {
+          if (translation[field]) {
+            state.data[translation.entryId]![translation.language]![field] = translation[field]
+          }
+        })
       })
     })
   }
@@ -63,9 +52,9 @@ class TranslationActions {
   async upsertMany(translations: TranslationModel[]) {
     this.upsertManyInSession(translations)
 
-    for (const translation of translations) {
-      await TranslationService.insertTranslation(translation)
-    }
+    await Promise.all(
+      translations.map((translation) => TranslationService.insertTranslation(translation)),
+    )
   }
 
   getTranslation(entryId: string, language: SupportedLanguages) {
@@ -92,9 +81,7 @@ class TranslationSyncService {
     const translationSession = translationActions.getTranslation(entryId, language)
 
     const fields = (
-      ["title", "description", ...(withContent ? [target] : [])] as Array<
-        "title" | "description" | "content" | "readabilityContent"
-      >
+      ["title", "description", ...(withContent ? [target] : [])] as TranslationFieldArray
     ).filter((field) => {
       const content = entry[field]
       if (!content) return false

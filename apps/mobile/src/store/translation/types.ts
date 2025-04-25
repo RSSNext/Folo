@@ -1,6 +1,4 @@
-export interface EntryTranslation {
-  title: string | null
-  description: string | null
-  content: string | null
-  readabilityContent: string | null
-}
+export const translationFields = ["title", "description", "content", "readabilityContent"] as const
+export type TranslationField = (typeof translationFields)[number]
+export type TranslationFieldArray = Array<TranslationField>
+export type EntryTranslation = Record<TranslationField, string | null>
