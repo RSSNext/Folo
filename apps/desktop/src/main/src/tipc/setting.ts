@@ -8,7 +8,7 @@ import { getTrayConfig, setTrayConfig } from "~/lib/tray"
 import { setDockCount } from "../lib/dock"
 import { setProxyConfig, updateProxy } from "../lib/proxy"
 import { store } from "../lib/store"
-import { createSettingWindow } from "../window"
+import { showSetting } from "../window"
 import { t } from "./_instance"
 
 const require = createRequire(import.meta.url)
@@ -21,7 +21,7 @@ export const settingRoute = {
       args: [START_IN_TRAY_ARGS],
     })
   }),
-  openSettingWindow: t.procedure.action(async () => createSettingWindow()),
+  openSettingWindow: t.procedure.action(async () => showSetting()),
   getSystemFonts: t.procedure.action(
     async (): Promise<string[]> =>
       new Promise((resolve) => {

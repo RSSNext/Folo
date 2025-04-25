@@ -15,8 +15,8 @@ export const SettingSectionTitle: FC<{
 }> = ({ title, margin }) => (
   <div
     className={cn(
-      "text-text-secondary text-headline shrink-0 font-medium capitalize first:mt-0",
-      margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-8",
+      "text-text text-headline shrink-0 font-bold capitalize opacity-50 first:mt-0",
+      margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
     )}
   >
     {title}

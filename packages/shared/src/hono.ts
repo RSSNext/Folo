@@ -15958,7 +15958,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data: {
-                    MAS_IN_REVIEW: boolean;
                     MAX_SUBSCRIPTIONS: number;
                     MAX_LISTS: number;
                     MAX_ACTIONS: number;
