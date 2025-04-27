@@ -65,6 +65,33 @@ export const EntryItemContextMenu = ({
         </ContextMenu.Preview>
 
         <ContextMenu.Item
+          key="MarkAsReadAbove"
+          onSelect={() => {
+            const payload = getFetchEntryPayload(selectedFeed, selectedView)
+            const { publishedAt } = entry
+            unreadSyncService.markViewAsRead({
+              view: selectedView,
+              filter: payload,
+              timeRange: {
+                startTime: new Date(publishedAt).getTime(),
+                endTime: Date.now(),
+              },
+            })
+          }}
+        >
+          <ContextMenu.ItemIcon
+            ios={{
+              name: "arrow.up",
+            }}
+          />
+          <ContextMenu.ItemTitle>
+            {t("operation.mark_all_as_read_which", {
+              which: t("operation.mark_all_as_read_which_above"),
+            })}
+          </ContextMenu.ItemTitle>
+        </ContextMenu.Item>
+
+        <ContextMenu.Item
           key="MarkAsRead"
           onSelect={() => {
             entry.read
@@ -83,24 +110,6 @@ export const EntryItemContextMenu = ({
         </ContextMenu.Item>
 
         <ContextMenu.Item
-          key="MarkAsReadAbove"
-          onSelect={() => {
-            const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
-              view: selectedView,
-              filter: payload,
-              timeRange: {
-                startTime: new Date(publishedAt).getTime(),
-                endTime: Date.now(),
-              },
-            })
-          }}
-        >
-          <ContextMenu.ItemTitle>mark above as read</ContextMenu.ItemTitle>
-        </ContextMenu.Item>
-
-        <ContextMenu.Item
           key="MarkAsReadBelow"
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
@@ -115,7 +124,16 @@ export const EntryItemContextMenu = ({
             })
           }}
         >
-          <ContextMenu.ItemTitle>mark below as read</ContextMenu.ItemTitle>
+          <ContextMenu.ItemIcon
+            ios={{
+              name: "arrow.down",
+            }}
+          />
+          <ContextMenu.ItemTitle>
+            {t("operation.mark_all_as_read_which", {
+              which: t("operation.mark_all_as_read_which_below"),
+            })}
+          </ContextMenu.ItemTitle>
         </ContextMenu.Item>
 
         {feedId && view !== undefined && (
