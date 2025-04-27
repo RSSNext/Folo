@@ -3,7 +3,7 @@ import { useMemo } from "react"
 
 import { useUISettingSelector } from "~/atoms/settings/ui"
 
-import { DEFAULT_ACTION_ORDER } from "./constant"
+import { DEFAULT_ACTION_ORDER, entryItemHideInHeader } from "./constant"
 
 export const useActionOrder = () => {
   const actionOrderSetting = useUISettingSelector((s) => s.toolbarOrder)
@@ -17,8 +17,12 @@ export const useActionOrder = () => {
     )
 
     return {
-      main: [...actionOrderSetting.main, ...missingMainActions],
-      more: [...actionOrderSetting.more, ...missingMoreActions],
+      main: [...actionOrderSetting.main, ...missingMainActions].filter(
+        (id) => !entryItemHideInHeader.has(id as string),
+      ),
+      more: [...actionOrderSetting.more, ...missingMoreActions].filter(
+        (id) => !entryItemHideInHeader.has(id as string),
+      ),
     }
   }, [actionOrderSetting])
 }
