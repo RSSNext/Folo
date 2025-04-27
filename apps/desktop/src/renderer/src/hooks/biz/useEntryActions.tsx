@@ -314,7 +314,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [
-          { entryId, entryContent: entry?.entries.content },
+          { entryId, entryContent: entry?.entries.content! },
         ]),
         hide: !IN_ELECTRON || compact || !entry?.entries.content,
         shortcut: shortcuts.entry.tts.key,
@@ -323,7 +323,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
-          { entryId, entryUrl: entry?.entries.url },
+          { entryId, entryUrl: entry?.entries.url! },
         ]),
         hide:
           !!entry.settings?.readability ||

@@ -47,22 +47,22 @@ export type ViewSourceContentCommand = Command<{
 
 export type ShareCommand = Command<{
   id: typeof COMMAND_ID.entry.share
-  fn: ({ entryId }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type ReadCommand = Command<{
   id: typeof COMMAND_ID.entry.read
-  fn: ({ entryId }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type ReadAboveCommand = Command<{
   id: typeof COMMAND_ID.entry.readAbove
-  fn: ({ publishedAt }) => void
+  fn: (data: { publishedAt: string }) => void
 }>
 
 export type ReadBelowCommand = Command<{
   id: typeof COMMAND_ID.entry.readBelow
-  fn: ({ publishedAt }) => void
+  fn: (data: { publishedAt: string }) => void
 }>
 
 export type ToggleAISummaryCommand = Command<{
@@ -77,17 +77,17 @@ export type ToggleAITranslationCommand = Command<{
 
 export type ImageGalleryCommand = Command<{
   id: typeof COMMAND_ID.entry.imageGallery
-  fn: ({ entryId }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type TTSCommand = Command<{
   id: typeof COMMAND_ID.entry.tts
-  fn: ({ entryId, entryContent }) => void
+  fn: (data: { entryId: string; entryContent: string }) => void
 }>
 
 export type ReadabilityCommand = Command<{
   id: typeof COMMAND_ID.entry.readability
-  fn: ({ entryId, entryUrl }) => void
+  fn: (data: { entryId: string; entryUrl: string }) => void
 }>
 
 export type EntryCommand =
