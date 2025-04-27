@@ -72,7 +72,7 @@ export const EntryItemContextMenu = ({
             unreadSyncService.markViewAsRead({
               view: selectedView,
               filter: payload,
-              timeRange: {
+              time: {
                 startTime: new Date(publishedAt).getTime(),
                 endTime: Date.now(),
               },
@@ -117,7 +117,7 @@ export const EntryItemContextMenu = ({
             unreadSyncService.markViewAsRead({
               view: selectedView,
               filter: payload,
-              timeRange: {
+              time: {
                 startTime: 1,
                 endTime: new Date(publishedAt).getTime(),
               },

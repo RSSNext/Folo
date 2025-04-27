@@ -41,24 +41,24 @@ class UnreadSyncService {
     return true
   }
 
-  private async updateUnreadStatus(feedIds: string[], timeRange?: PublishAtTimeRangeFilter) {
-    if (timeRange) {
+  private async updateUnreadStatus(feedIds: string[], time?: PublishAtTimeRangeFilter) {
+    if (time) {
       await this.resetFromRemote()
     } else {
       await unreadActions.upsertMany(feedIds.map((id) => ({ subscriptionId: id, count: 0 })))
     }
-    entryActions.markEntryReadStatusInSession({ feedIds, read: true, timeRange })
+    entryActions.markEntryReadStatusInSession({ feedIds, read: true, time })
     await EntryService.patchMany({
       feedIds,
       entry: { read: true },
-      timeRange,
+      time,
     })
   }
 
   async markViewAsRead({
     view,
     filter,
-    timeRange,
+    time,
   }: {
     view: FeedViewType
     filter?: {
@@ -67,43 +67,43 @@ class UnreadSyncService {
       feedIdList?: string[]
       inboxId?: string
     } | null
-    timeRange?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter
   }) {
     await apiClient.reads.all.$post({
       json: {
         view,
         ...filter,
-        ...timeRange,
+        ...time,
       },
     })
     if (filter?.feedIdList) {
-      this.updateUnreadStatus(filter.feedIdList, timeRange)
+      this.updateUnreadStatus(filter.feedIdList, time)
     } else if (filter?.feedId) {
-      this.updateUnreadStatus([filter.feedId], timeRange)
+      this.updateUnreadStatus([filter.feedId], time)
     } else if (filter?.listId) {
       const feedIds = getListFeedIds(filter.listId)
       if (feedIds) {
-        this.updateUnreadStatus(feedIds, timeRange)
+        this.updateUnreadStatus(feedIds, time)
       }
     } else if (filter?.inboxId) {
-      this.updateUnreadStatus([filter.inboxId], timeRange)
+      this.updateUnreadStatus([filter.inboxId], time)
     } else {
       const subscriptionIds = getSubscriptionByView(view)
-      this.updateUnreadStatus(subscriptionIds, timeRange)
+      this.updateUnreadStatus(subscriptionIds, time)
     }
   }
 
-  async markFeedAsRead(feedId: string | string[], timeRange?: PublishAtTimeRangeFilter) {
+  async markFeedAsRead(feedId: string | string[], time?: PublishAtTimeRangeFilter) {
     const feedIds = Array.isArray(feedId) ? feedId : [feedId]
 
     await apiClient.reads.all.$post({
       json: {
         feedIdList: feedIds,
-        ...timeRange,
+        ...time,
       },
     })
 
-    this.updateUnreadStatus(feedIds, timeRange)
+    this.updateUnreadStatus(feedIds, time)
   }
 
   async markEntryAsRead(entryId: string) {

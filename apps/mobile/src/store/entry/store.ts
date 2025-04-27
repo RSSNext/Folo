@@ -274,12 +274,12 @@ class EntryActions {
     entryIds,
     feedIds,
     read,
-    timeRange,
+    time,
   }: {
     entryIds?: EntryId[]
     feedIds?: FeedId[]
     read: boolean
-    timeRange?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter
   }) {
     immerSet((draft) => {
       if (entryIds) {
@@ -290,9 +290,9 @@ class EntryActions {
           }
 
           if (
-            timeRange &&
-            (+new Date(entry.publishedAt) < timeRange.startTime ||
-              +new Date(entry.publishedAt) > timeRange.endTime)
+            time &&
+            (+new Date(entry.publishedAt) < time.startTime ||
+              +new Date(entry.publishedAt) > time.endTime)
           ) {
             continue
           }
@@ -311,9 +311,9 @@ class EntryActions {
 
         for (const entry of entries) {
           if (
-            timeRange &&
-            (+new Date(entry.publishedAt) < timeRange.startTime ||
-              +new Date(entry.publishedAt) > timeRange.endTime)
+            time &&
+            (+new Date(entry.publishedAt) < time.startTime ||
+              +new Date(entry.publishedAt) > time.endTime)
           ) {
             continue
           }

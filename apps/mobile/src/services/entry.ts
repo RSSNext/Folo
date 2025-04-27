@@ -34,12 +34,12 @@ class EntryServiceStatic implements Hydratable, Resetable {
     entry,
     entryIds,
     feedIds,
-    timeRange,
+    time,
   }: {
     entry: Partial<EntrySchema>
     entryIds?: string[]
     feedIds?: string[]
-    timeRange?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter
   }) {
     if (!entryIds && !feedIds) return
     await db
@@ -48,12 +48,8 @@ class EntryServiceStatic implements Hydratable, Resetable {
       .where(
         and(
           or(inArray(entriesTable.id, entryIds ?? []), inArray(entriesTable.feedId, feedIds ?? [])),
-          timeRange
-            ? between(
-                entriesTable.publishedAt,
-                new Date(timeRange.startTime),
-                new Date(timeRange.endTime),
-              )
+          time
+            ? between(entriesTable.publishedAt, new Date(time.startTime), new Date(time.endTime))
             : undefined,
         ),
       )
