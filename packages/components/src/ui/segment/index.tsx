@@ -1,10 +1,10 @@
-import { Spring } from "@follow/components/constants/spring"
 import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useId, useMemo, useState } from "react"
 import { useContextSelector } from "use-context-selector"
 
+import { Spring } from "../../constants/spring"
 import { SegmentGroupContext } from "./ctx"
 
 interface SegmentGroupProps {
