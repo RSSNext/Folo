@@ -7,6 +7,7 @@ import { shortcuts } from "~/constants/shortcuts"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
+import { entryItemHideInHeader } from "~/modules/customize-toolbar/constant"
 import { useEntry } from "~/store/entry/hooks"
 
 export const EntryHeaderActions = ({
@@ -32,6 +33,7 @@ export const EntryHeaderActions = ({
 
   return actionConfigs
     .filter((item) => item instanceof MenuItemText)
+    .filter((item) => !entryItemHideInHeader.has(item.id))
     .map((config) => {
       return (
         <CommandActionButton
