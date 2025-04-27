@@ -14,7 +14,7 @@ import { IconScaleTransition } from "~/components/ux/transition/icon"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { isListSubscription } from "~/store/subscription"
 
-import { useMarkAllByRoute } from "../hooks/useMarkAll"
+import { markAllByRoute } from "../hooks/useMarkAll"
 
 interface DateItemInnerProps {
   date: Date
@@ -79,11 +79,6 @@ const DateItemInner: FC<DateItemInnerProps> = ({
     [date, rid],
   )
 
-  const handleMarkAllAsRead = useMarkAllByRoute({
-    startTime,
-    endTime,
-  })
-
   const [confirmMark, setConfirmMark] = useState(false)
   const removeConfirm = useDebounceCallback(
     () => {
@@ -127,7 +122,10 @@ const DateItemInner: FC<DateItemInnerProps> = ({
           onClick={() => {
             if (confirmMark) {
               clearTimeout(timerRef.current)
-              handleMarkAllAsRead()
+              markAllByRoute({
+                startTime,
+                endTime,
+              })
               setConfirmMark(false)
             } else {
               setConfirmMark(true)

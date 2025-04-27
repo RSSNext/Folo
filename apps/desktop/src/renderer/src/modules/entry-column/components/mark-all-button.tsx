@@ -13,7 +13,7 @@ import { shortcuts } from "~/constants/shortcuts"
 import { useI18n } from "~/hooks/common"
 
 import type { MarkAllFilter } from "../hooks/useMarkAll"
-import { useMarkAllByRoute } from "../hooks/useMarkAll"
+import { markAllByRoute } from "../hooks/useMarkAll"
 
 interface MarkAllButtonProps {
   className?: string
@@ -25,8 +25,6 @@ export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProp
   ({ className, which = "all", shortcut }, ref) => {
     const { t } = useTranslation()
     const { t: commonT } = useTranslation("common")
-
-    const handleMarkAllAsRead = useMarkAllByRoute()
 
     useHotkeys(
       shortcuts.entries.markAllAsRead.key,
@@ -42,7 +40,7 @@ export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProp
           duration: 3000,
           onAutoClose() {
             if (cancel) return
-            handleMarkAllAsRead()
+            markAllByRoute()
           },
           action: {
             label: (
@@ -85,7 +83,7 @@ export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProp
         className={className}
         ref={ref}
         onClick={() => {
-          handleMarkAllAsRead()
+          markAllByRoute()
         }}
       >
         <i className="i-mgc-check-circle-cute-re" />
@@ -125,7 +123,6 @@ export const FlatMarkAllReadButton: FC<
 
   const { className, filter, which, buttonClassName, iconClassName } = props
   const [status, setStatus] = useState<"initial" | "confirm" | "done">("initial")
-  const handleMarkAll = useMarkAllByRoute(filter)
 
   const animate = {
     initial: { rotate: -30, opacity: 0.9 },
@@ -143,7 +140,7 @@ export const FlatMarkAllReadButton: FC<
         className,
       )}
       onClick={() => {
-        handleMarkAll()
+        markAllByRoute(filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))
       }}
