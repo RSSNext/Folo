@@ -331,7 +331,7 @@ export const useRegisterEntryCommands = () => {
         run: ({ publishedAt }: { publishedAt: string }) => {
           return markAllByRoute({
             startTime: 1,
-            endTime: new Date(publishedAt).getTime(),
+            endTime: new Date(publishedAt).getTime() - 1,
           })
         },
       },
