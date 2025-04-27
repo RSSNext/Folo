@@ -74,7 +74,7 @@ export class ToastManager {
     }
 
     setTimeout(async () => {
-      await this.toastRefs[index]?.dimiss()
+      await this.toastRefs[index]?.dismiss()
       this.remove(index)
     }, props.duration)
   }

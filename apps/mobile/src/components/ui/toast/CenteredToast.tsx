@@ -14,7 +14,7 @@ export const CenteredToast = (props: ToastProps) => {
   const { register } = useContext(ToastActionContext)
   useEffect(() => {
     const disposer = register(props.currentIndex, {
-      dimiss: async () => {},
+      dismiss: async () => {},
     })
     return () => {
       disposer()

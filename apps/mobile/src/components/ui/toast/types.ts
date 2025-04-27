@@ -29,5 +29,5 @@ export type BottomToastProps = Partial<ToastProps> & {
 }
 
 export interface ToastRef {
-  dimiss: () => Promise<void>
+  dismiss: () => Promise<void>
 }
