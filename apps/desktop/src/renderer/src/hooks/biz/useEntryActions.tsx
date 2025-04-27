@@ -421,8 +421,7 @@ export const useSortedEntryActions = ({
             return false
           }
           const order = orderMap.get(item.id)
-          // If the order is not set, it should be in the "more" menu
-          if (!order) return true
+          if (!order) return false
           return order.type !== "main"
         })
         // .filter((item) => item.id !== COMMAND_ID.settings.customizeToolbar)

@@ -15,19 +15,12 @@ import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { hasCommand, useCommand } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
-import { entryItemHideInHeader } from "~/modules/customize-toolbar/constant"
 
 export const MoreActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
   const { moreAction } = useSortedEntryActions({ entryId, view })
 
   const actionConfigs = useMemo(
-    () =>
-      moreAction.filter(
-        (action) =>
-          action instanceof MenuItemText &&
-          hasCommand(action.id) &&
-          !entryItemHideInHeader.has(action.id),
-      ),
+    () => moreAction.filter((action) => action instanceof MenuItemText && hasCommand(action.id)),
     [moreAction],
   )
 

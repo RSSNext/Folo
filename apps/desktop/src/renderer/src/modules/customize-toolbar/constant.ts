@@ -25,5 +25,6 @@ export const DEFAULT_ACTION_ORDER: ToolbarActionOrder = {
   more: [
     ...Object.values(COMMAND_ID.integration),
     ...Object.values(COMMAND_ID.entry).filter((id) => entryItemInMore.has(id)),
+    COMMAND_ID.settings.customizeToolbar,
   ],
 }
