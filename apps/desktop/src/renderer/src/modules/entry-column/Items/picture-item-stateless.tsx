@@ -10,7 +10,7 @@ import type { EntryItemStatelessProps } from "../types"
 
 export function PictureItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="bg-theme-background text-text relative mx-auto max-w-md select-none rounded-md transition-colors">
+    <div className="text-text relative mx-auto max-w-md select-none rounded-md transition-colors">
       <div className="relative">
         <div className="p-1.5">
           <div className="relative flex gap-2 overflow-x-auto">

@@ -304,7 +304,7 @@ function AudioCover({
           />
           <div
             className={cn(
-              "group-hover:backdrop-blur-background text-[13px] opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100",
+              "group-hover:backdrop-blur-background text-body opacity-0 backdrop-blur-none duration-200 group-hover:opacity-100",
               isMobile && "backdrop-blur-background opacity-100",
             )}
           >

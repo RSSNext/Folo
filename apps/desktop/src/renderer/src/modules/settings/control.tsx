@@ -105,9 +105,7 @@ export const SettingTabbedSegment: Component<{
 }
 
 export const SettingDescription: Component = ({ children, className }) => (
-  <small className={cn("text-text-secondary block w-4/5 text-[13px] leading-tight", className)}>
-    {children}
-  </small>
+  <small className={cn("text-text-secondary text-body block w-4/5", className)}>{children}</small>
 )
 
 export const SettingActionItem = ({

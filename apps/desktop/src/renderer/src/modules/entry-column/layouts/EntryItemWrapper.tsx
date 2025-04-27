@@ -1,3 +1,4 @@
+import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
@@ -37,6 +38,7 @@ export const EntryItemWrapper: FC<
     view,
     type: "entryList",
   })
+  const isMobile = useMobile()
 
   const { t } = useTranslation("common")
 
@@ -159,7 +161,7 @@ export const EntryItemWrapper: FC<
         onMouseLeave={handleMouseEnter.cancel}
         onDoubleClick={handleDoubleClick}
         {...contextMenuProps}
-        onTouchStart={handleClick}
+        {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
       </div>

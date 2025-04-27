@@ -74,7 +74,8 @@ class TabBarRootView: ExpoView {
           to: toView,
           duration: 0.1,
           options: [.transitionCrossDissolve, .preferredFramesPerSecond60],
-          completion: nil)
+          completion: nil
+        )
       }
     }
 

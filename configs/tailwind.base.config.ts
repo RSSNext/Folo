@@ -25,16 +25,16 @@ const twConfig = {
 
     fontSize: {
       ...theme?.fontSize,
-      largeTitle: ["26px", "32px"],
-      title1: ["22px", "26px"],
-      title2: ["17px", "22px"],
-      title3: ["15px", "20px"],
-      headline: ["13px", "16px"],
-      body: ["13px", "16px"],
-      callout: ["12px", "15px"],
-      subheadline: ["11px", "14px"],
-      footnote: ["10px", "13px"],
-      caption: ["10px", "13px"],
+      largeTitle: ["1.625rem", "2rem"], // 26px
+      title1: ["1.375rem", "1.625rem"], // 22px
+      title2: ["1.0625rem", "1.375rem"], // 17px
+      title3: ["0.9375rem", "1.25rem"], // 15px
+      headline: ["0.8125rem", "1rem"], // 13px
+      body: ["0.8125rem", "1rem"], // 13px
+      callout: ["0.75rem", "0.9375rem"], // 12px
+      subheadline: ["0.6875rem", "0.875rem"], // 11px
+      footnote: ["0.625rem", "0.8125rem"], // 10px
+      caption: ["0.625rem", "0.8125rem"], // 10px
     },
 
     extend: {

@@ -83,7 +83,7 @@
   "appearance.general": "General",
   "appearance.guess_code_language.description": "Major programming languages that use models to infer unlabeled code blocks",
   "appearance.guess_code_language.label": "Guess code language",
-  "appearance.hide_extra_badge.description": "Hide the special badge of the feed in the sidebar, e.g. Boost,Claimed",
+  "appearance.hide_extra_badge.description": "Hide the special badge of the feed in the sidebar, e.g. Boost, Claimed",
   "appearance.hide_extra_badge.label": "Hide special badge",
   "appearance.hide_recent_reader.description": "Hide the recent reader in the entry header.",
   "appearance.hide_recent_reader.label": "Hide recent reader",

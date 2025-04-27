@@ -1,3 +1,4 @@
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { useTranslation } from "react-i18next"
 
@@ -18,13 +19,15 @@ export const EnhancedSettingsIndicator = () => {
           )}
         </IconTransition>
       </TooltipTrigger>
-      <TooltipContent className="max-w-[40ch]">
-        {enhancedSettings ? (
-          <p>{t("general.enhanced.enabled.tip")}</p>
-        ) : (
-          <p>{t("general.enhanced.disabled.tip")}</p>
-        )}
-      </TooltipContent>
+      <RootPortal>
+        <TooltipContent className="max-w-[40ch]">
+          {enhancedSettings ? (
+            <p>{t("general.enhanced.enabled.tip")}</p>
+          ) : (
+            <p>{t("general.enhanced.disabled.tip")}</p>
+          )}
+        </TooltipContent>
+      </RootPortal>
     </Tooltip>
   )
 }

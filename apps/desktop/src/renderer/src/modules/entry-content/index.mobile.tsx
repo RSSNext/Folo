@@ -148,7 +148,7 @@ export const EntryContent: Component<{
             {!hideRecentReader && (
               <div
                 className={cn(
-                  "absolute top-0 my-2 -mt-8 flex items-center gap-2 text-[13px] leading-none text-zinc-500",
+                  "text-body absolute top-0 my-2 -mt-8 flex items-center gap-2 leading-none text-zinc-500",
                   "visible z-[11]",
                 )}
               >

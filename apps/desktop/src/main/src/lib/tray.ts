@@ -1,7 +1,7 @@
 import { name } from "@pkg"
 import { app, Menu, nativeImage, Tray } from "electron"
 
-import { isMacOS, isWindows } from "~/env"
+import { isMacOS, isMAS, isWindows } from "~/env"
 import { getTrayIconPath } from "~/helper"
 import { logger, revealLogFile } from "~/logger"
 import { checkForAppUpdates } from "~/updater"
@@ -53,13 +53,17 @@ const getTrayContextMenu = () => {
             await revealLogFile()
           },
         },
-        {
-          label: t("menu.checkForUpdates"),
-          click: async () => {
-            showWindow()
-            await checkForAppUpdates()
-          },
-        },
+        ...(!isMAS
+          ? [
+              {
+                label: t("menu.checkForUpdates"),
+                click: async () => {
+                  showWindow()
+                  await checkForAppUpdates()
+                },
+              },
+            ]
+          : []),
       ],
     },
     {

@@ -5,7 +5,7 @@ import { name } from "@pkg"
 import type { BrowserWindow, MenuItem, MenuItemConstructorOptions } from "electron"
 import { Menu } from "electron"
 
-import { isMacOS } from "./env"
+import { isMacOS, isMAS } from "./env"
 import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
@@ -192,13 +192,17 @@ export const registerAppMenu = () => {
             await revealLogFile()
           },
         },
-        {
-          label: t("menu.checkForUpdates"),
-          click: async () => {
-            getMainWindow()?.show()
-            await checkForAppUpdates()
-          },
-        },
+        ...(!isMAS
+          ? [
+              {
+                label: t("menu.checkForUpdates"),
+                click: async () => {
+                  getMainWindow()?.show()
+                  await checkForAppUpdates()
+                },
+              },
+            ]
+          : []),
       ],
     },
   ]

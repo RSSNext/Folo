@@ -17,7 +17,7 @@ export function AudioItemStateLess({ entry, feed }: EntryItemStatelessProps) {
       <div className="relative">
         <div className="group relative flex py-4 pl-3 pr-2">
           <div className="-mt-0.5 line-clamp-4 flex-1 text-sm leading-tight">
-            <div className="text-material-opaque flex gap-1 text-[10px] font-bold">
+            <div className="text-text-secondary flex gap-1 text-[10px] font-bold">
               <FeedTitle feed={feed} />
               <span>·</span>
               <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>

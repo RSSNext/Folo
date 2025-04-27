@@ -6,6 +6,7 @@ export const channel: "development" | "beta" | "alpha" | "stable" = DEV ? "devel
 
 const { platform } = process
 export const isMacOS = platform === "darwin"
+export const isMAS = process.mas
 
 export const isWindows = platform === "win32"
 

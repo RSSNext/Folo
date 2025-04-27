@@ -100,8 +100,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
                       style={{ zIndex }}
                       onWheel={stopPropagation}
                       className={cn(
-                        "z-[60]",
-                        "bg-material-medium backdrop-blur-background text-text",
+                        "bg-material-medium backdrop-blur-background text-text pointer-events-auto",
                         "shadow-context-menu min-w-32 overflow-hidden rounded-[6px] border p-1",
                         "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
                         "w-[var(--input-width)] empty:invisible",

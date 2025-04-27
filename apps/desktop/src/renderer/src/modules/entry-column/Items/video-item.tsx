@@ -190,7 +190,7 @@ const PreviewVideoModalContent: ModalContentComponent<{
 
 export function VideoItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="bg-theme-background text-text relative mx-auto w-full max-w-lg rounded-md transition-colors">
+    <div className="text-text relative mx-auto w-full max-w-lg rounded-md transition-colors">
       <div className="relative">
         <div className="p-1.5">
           <div className="w-full">

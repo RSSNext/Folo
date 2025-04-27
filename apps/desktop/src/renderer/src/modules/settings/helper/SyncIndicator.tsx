@@ -1,6 +1,7 @@
 import { PhCloudCheck } from "@follow/components/icons/PhCloudCheck.jsx"
 import { PhCloudWarning } from "@follow/components/icons/PhCloudWarning.jsx"
 import { PhCloudX } from "@follow/components/icons/PhCloudX.jsx"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { useIsOnline } from "@follow/hooks"
 import { useEffect, useMemo, useRef } from "react"
@@ -64,9 +65,11 @@ export const SettingSyncIndicator = () => {
           <metaInfo.icon className="size-4" />
         </div>
       </TooltipTrigger>
-      <TooltipContent>
-        <div className="text-center text-xs">{metaInfo.text}</div>
-      </TooltipContent>
+      <RootPortal>
+        <TooltipContent>
+          <div className="text-center text-xs">{metaInfo.text}</div>
+        </TooltipContent>
+      </RootPortal>
     </Tooltip>
   )
 }
