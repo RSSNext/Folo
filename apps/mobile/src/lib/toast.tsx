@@ -48,6 +48,7 @@ export const toast = {
       type,
       message,
       variant: "center-replace",
+      duration: options.duration ?? 1500,
       ...options,
     })
   }
