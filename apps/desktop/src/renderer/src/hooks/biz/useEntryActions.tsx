@@ -286,16 +286,16 @@ export const useEntryActions = ({
         entryId,
       }),
       new EntryActionMenuItem({
+        id: COMMAND_ID.entry.readAbove,
+        onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
         hide: !hasEntry || !!entry.collections || !!inList,
         active: !!entry?.read,
         shortcut: shortcuts.entry.toggleRead.key,
-        entryId,
-      }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.entry.readAbove,
-        onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
         entryId,
       }),
       new EntryActionMenuItem({

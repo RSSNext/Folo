@@ -297,6 +297,16 @@ export const useRegisterEntryCommands = () => {
         },
       },
       {
+        id: COMMAND_ID.entry.readAbove,
+        label: t("entry_actions.mark_above_as_read"),
+        run: ({ publishedAt }: { publishedAt: string }) => {
+          return markAllByRoute({
+            startTime: new Date(publishedAt).getTime(),
+            endTime: Date.now(),
+          })
+        },
+      },
+      {
         id: COMMAND_ID.entry.read,
         label: t("entry_actions.mark_as_read"),
         icon: (props) => (
@@ -313,16 +323,6 @@ export const useRegisterEntryCommands = () => {
           } else {
             read.mutate({ entryId, feedId: entry.feedId })
           }
-        },
-      },
-      {
-        id: COMMAND_ID.entry.readAbove,
-        label: t("entry_actions.mark_above_as_read"),
-        run: ({ publishedAt }: { publishedAt: string }) => {
-          return markAllByRoute({
-            startTime: new Date(publishedAt).getTime(),
-            endTime: Date.now(),
-          })
         },
       },
       {
