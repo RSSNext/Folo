@@ -46,7 +46,7 @@ export function DiscoverInboxList() {
   const preCheck = useCanCreateMoreInboxAndNotify()
 
   return (
-    <div className="mx-auto w-full max-w-[540px]">
+    <div className="bg-material-ultra-thin mx-auto w-full max-w-[540px] rounded-lg border p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
         <span>{t("discover.inbox.description")}</span>
         <a

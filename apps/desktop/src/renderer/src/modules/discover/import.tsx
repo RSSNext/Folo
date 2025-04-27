@@ -106,7 +106,10 @@ export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-[540px] space-y-8">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="bg-material-ultra-thin w-full max-w-[540px] space-y-8 rounded-lg border p-5 shadow-sm"
+        >
           <FormField
             control={form.control}
             name="file"
@@ -124,8 +127,8 @@ export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
                       </Fragment>
                     ) : (
                       <Fragment>
-                        <i className="i-mgc-file-upload-cute-re size-5" />
-                        <span className="ml-2 text-sm opacity-80">
+                        <i className="i-mgc-file-upload-cute-re text-text-tertiary size-10" />
+                        <span className="text-title2 text-text-tertiary ml-2">
                           {t("discover.import.click_to_upload")}
                         </span>
                       </Fragment>

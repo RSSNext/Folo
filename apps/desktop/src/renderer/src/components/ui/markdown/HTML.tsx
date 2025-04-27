@@ -16,7 +16,7 @@ export type HTMLProps<A extends keyof JSX.IntrinsicElements = "div"> = {
 
   accessory?: React.ReactNode
   noMedia?: boolean
-  mediaInfo?: MediaInfoRecord
+  mediaInfo?: Nullable<MediaInfoRecord>
 } & JSX.IntrinsicElements[A] &
   Partial<{
     renderInlineStyle: boolean

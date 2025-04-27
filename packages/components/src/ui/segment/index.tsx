@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring"
 import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
@@ -33,7 +34,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       <div
         role="tablist"
         className={cn(
-          "bg-material-medium text-text-secondary inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
+          "bg-fill-secondary text-text-secondary inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
           className,
         )}
         tabIndex={0}
@@ -73,6 +74,7 @@ export const SegmentItem: Component<{
       {isActive && (
         <m.span
           layout
+          transition={Spring.presets.smooth}
           layoutId={layoutId}
           className="bg-background absolute inset-0 z-0 rounded-md shadow"
         />

@@ -2,7 +2,16 @@ import { useViewport } from "@follow/components/hooks/useViewport.js"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { AnimatePresence, m } from "motion/react"
-import { memo, useContext, useEffect, useRef, useState } from "react"
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react"
 
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import {
@@ -31,44 +40,58 @@ export interface TocProps {
 const WiderTocStyle = {
   width: 200,
 } satisfies React.CSSProperties
-export const Toc: Component<TocProps> = ({ className, onItemClick }) => {
-  const markdownElement = useContext(MarkdownRenderContainerRefContext)
-  const { toc, rootDepth } = useTocItems(markdownElement)
-  const { currentScrollRange, handleScrollTo } = useScrollTracking(toc, {
-    onItemClick,
-  })
-
-  const renderContentElementPosition = useWrappedElementPosition()
-  const renderContentElementSize = useWrappedElementSize()
-  const entryContentInWideMode = useRealInWideMode()
-  const shouldShowTitle = useViewport((v) => {
-    if (!entryContentInWideMode) return false
-    const { w } = v
-    const xAxis = renderContentElementPosition.x + renderContentElementSize.w
-
-    return w - xAxis > WiderTocStyle.width + 50
-  })
-
-  if (toc.length === 0) return null
-
-  return shouldShowTitle ? (
-    <TocContainer
-      className={className}
-      toc={toc}
-      rootDepth={rootDepth}
-      currentScrollRange={currentScrollRange}
-      handleScrollTo={handleScrollTo}
-    />
-  ) : (
-    <TocHoverCard
-      className={className}
-      toc={toc}
-      rootDepth={rootDepth}
-      currentScrollRange={currentScrollRange}
-      handleScrollTo={handleScrollTo}
-    />
-  )
+export interface TocRef {
+  refreshItems: () => void
 }
+export const Toc = forwardRef<TocRef, ComponentType<TocProps>>(
+  ({ className, onItemClick }, ref) => {
+    const markdownElement = useContext(MarkdownRenderContainerRefContext)
+    const { toc, rootDepth, refreshItems } = useTocItems(markdownElement)
+    const { currentScrollRange, handleScrollTo } = useScrollTracking(toc, {
+      onItemClick,
+    })
+
+    useImperativeHandle(
+      ref,
+      useCallback(() => {
+        return {
+          refreshItems,
+        }
+      }, [refreshItems]),
+    )
+
+    const renderContentElementPosition = useWrappedElementPosition()
+    const renderContentElementSize = useWrappedElementSize()
+    const entryContentInWideMode = useRealInWideMode()
+    const shouldShowTitle = useViewport((v) => {
+      if (!entryContentInWideMode) return false
+      const { w } = v
+      const xAxis = renderContentElementPosition.x + renderContentElementSize.w
+
+      return w - xAxis > WiderTocStyle.width + 50
+    })
+
+    if (toc.length === 0) return null
+
+    return shouldShowTitle ? (
+      <TocContainer
+        className={className}
+        toc={toc}
+        rootDepth={rootDepth}
+        currentScrollRange={currentScrollRange}
+        handleScrollTo={handleScrollTo}
+      />
+    ) : (
+      <TocHoverCard
+        className={className}
+        toc={toc}
+        rootDepth={rootDepth}
+        currentScrollRange={currentScrollRange}
+        handleScrollTo={handleScrollTo}
+      />
+    )
+  },
+)
 
 const TocContainer: React.FC<TocContainerProps> = ({
   className,

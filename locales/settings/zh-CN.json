@@ -22,6 +22,7 @@
   "actions.action_card.feed_options.feed_title": "订阅源标题",
   "actions.action_card.feed_options.feed_url": "订阅源地址",
   "actions.action_card.feed_options.site_url": "网站链接",
+  "actions.action_card.feed_options.status": "状态",
   "actions.action_card.feed_options.subscription_view": "订阅视图",
   "actions.action_card.field": "字段",
   "actions.action_card.from": "从",

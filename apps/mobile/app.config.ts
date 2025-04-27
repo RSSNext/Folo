@@ -16,166 +16,173 @@ const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap
 
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const result = {
+    ...config,
 
-  extra: {
-    eas: {
-      projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
+    extra: {
+      eas: {
+        projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
+      },
     },
-  },
-  owner: "follow",
-  updates: {
-    url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
-  },
-  runtimeVersion: {
-    policy: "appVersion",
-  },
+    owner: "follow",
+    updates: {
+      url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
+    },
+    runtimeVersion: {
+      policy: "appVersion" as const,
+    },
 
-  name: "Folo",
-  slug: "follow",
-  version: PKG.version,
-  orientation: "portrait",
-  icon: iconPath,
-  scheme: "follow",
-  userInterfaceStyle: "automatic",
-  newArchEnabled: true,
-  ios: {
-    supportsTablet: true,
-    bundleIdentifier: "is.follow",
-    usesAppleSignIn: true,
-    infoPlist: {
-      LSApplicationCategoryType: "public.app-category.news",
-      ITSAppUsesNonExemptEncryption: false,
-      UIBackgroundModes: ["audio"],
-      LSApplicationQueriesSchemes: ["bilibili", "youtube"],
-      CFBundleAllowMixedLocalizations: true,
-      // apps/mobile/src/@types/constants.ts currentSupportedLanguages
-      CFBundleLocalizations: [
-        "en",
-        "de",
-        "ja",
-        "zh-CN",
-        "zh-TW",
-        "zh-HK",
-        "pt",
-        "fr",
-        "ar-DZ",
-        "ar-SA",
-        "ar-MA",
-        "ar-IQ",
-        "ar-KW",
-        "ar-TN",
-        "fi",
-        "it",
-        "ru",
-        "es",
-        "ko",
-        "tr",
+    name: "Folo",
+    slug: "follow",
+    version: PKG.version,
+    orientation: "portrait" as const,
+    icon: iconPath,
+    scheme: "follow",
+    userInterfaceStyle: "automatic" as const,
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "is.follow",
+      usesAppleSignIn: true,
+      infoPlist: {
+        LSApplicationCategoryType: "public.app-category.news",
+        ITSAppUsesNonExemptEncryption: false,
+        UIBackgroundModes: ["audio"],
+        LSApplicationQueriesSchemes: ["bilibili", "youtube"],
+        CFBundleAllowMixedLocalizations: true,
+        // apps/mobile/src/@types/constants.ts currentSupportedLanguages
+        CFBundleLocalizations: [
+          "en",
+          "de",
+          "ja",
+          "zh-CN",
+          "zh-TW",
+          "zh-HK",
+          "pt",
+          "fr",
+          "ar-DZ",
+          "ar-SA",
+          "ar-MA",
+          "ar-IQ",
+          "ar-KW",
+          "ar-TN",
+          "fi",
+          "it",
+          "ru",
+          "es",
+          "ko",
+          "tr",
+        ],
+        CFBundleDevelopmentRegion: "en",
+      },
+      googleServicesFile: "./build/GoogleService-Info.plist",
+    },
+    android: {
+      package: "is.follow",
+      adaptiveIcon: {
+        foregroundImage: adaptiveIconPath,
+        backgroundColor: "#FF5C00",
+      },
+      googleServicesFile: "./build/google-services.json",
+    },
+    androidStatusBar: {
+      translucent: true,
+    },
+    // web: {
+    //   bundler: "metro",
+    //   output: "static",
+    //   favicon: iconPath,
+    // },
+    plugins: [
+      [
+        "expo-document-picker",
+        {
+          iCloudContainerEnvironment: "Production",
+        },
       ],
-      CFBundleDevelopmentRegion: "en",
-    },
-    googleServicesFile: "./build/GoogleService-Info.plist",
-  },
-  android: {
-    package: "is.follow",
-    adaptiveIcon: {
-      foregroundImage: adaptiveIconPath,
-      backgroundColor: "#FF5C00",
-    },
-    googleServicesFile: "./build/google-services.json",
-  },
-  androidStatusBar: {
-    translucent: true,
-  },
-  // web: {
-  //   bundler: "metro",
-  //   output: "static",
-  //   favicon: iconPath,
-  // },
-  plugins: [
-    [
-      "expo-document-picker",
-      {
-        iCloudContainerEnvironment: "Production",
-      },
-    ],
-    "expo-localization",
-    [
-      "expo-splash-screen",
-      {
-        backgroundColor: "#ffffff",
-        dark: {
-          backgroundColor: "#000000",
+      "expo-localization",
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#ffffff",
+          dark: {
+            backgroundColor: "#000000",
+          },
+          android: {
+            image: iconPath,
+            imageWidth: 200,
+          },
         },
-        android: {
-          image: iconPath,
-          imageWidth: 200,
+      ],
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            useFrameworks: "static",
+          },
         },
-      },
-    ],
-    [
-      "expo-build-properties",
-      {
-        ios: {
-          useFrameworks: "static",
+      ],
+      "expo-sqlite",
+      [
+        "expo-media-library",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+          savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
+          isAccessMediaLocationEnabled: true,
         },
-      },
-    ],
-    "expo-sqlite",
-    [
-      "expo-media-library",
-      {
-        photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
-        savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
-        isAccessMediaLocationEnabled: true,
-      },
-    ],
-    "expo-apple-authentication",
-    [
-      "expo-video",
-      {
-        supportsBackgroundPlayback: true,
-        supportsPictureInPicture: true,
-      },
-    ],
-    [
-      require("./plugins/with-follow-assets.js"),
-      {
-        // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
-        assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
-      },
-    ],
-    require("./plugins/with-follow-app-delegate.js"),
-    require("./plugins/with-gradle-jvm-heap-size-increase.js"),
-    require("./plugins/with-android-day-night-theme-plugin.js"),
-    "expo-secure-store",
-    "@react-native-firebase/app",
-    "@react-native-firebase/crashlytics",
-    "@react-native-firebase/app-check",
-    [
-      "expo-image-picker",
-      {
-        photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
-      },
-    ],
-    [
-      "expo-notifications",
-      {
-        enableBackgroundRemoteNotifications: true,
-      },
-    ],
-    [
-      // Fix status bar flash issue on Android
-      // Learn more: https://github.com/expo/expo/blob/main/packages/expo-status-bar/src/StatusBar.android.tsx#L21
-      "react-native-edge-to-edge",
-      {
-        android: {
-          parentTheme: "Default",
-          enforceNavigationBarContrast: false,
+      ],
+      "expo-apple-authentication",
+      [
+        "expo-video",
+        {
+          supportsBackgroundPlayback: true,
+          supportsPictureInPicture: true,
         },
-      },
+      ],
+      [
+        require("./plugins/with-follow-assets.js"),
+        {
+          // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
+          assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
+        },
+      ],
+      require("./plugins/with-follow-app-delegate.js"),
+      require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+      require("./plugins/with-android-day-night-theme-plugin.js"),
+      "expo-secure-store",
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      "@react-native-firebase/app-check",
+      [
+        "expo-image-picker",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+        },
+      ],
+      [
+        "expo-notifications",
+        {
+          enableBackgroundRemoteNotifications: true,
+        },
+      ],
+      [
+        // Fix status bar flash issue on Android
+        // Learn more: https://github.com/expo/expo/blob/main/packages/expo-status-bar/src/StatusBar.android.tsx#L21
+        "react-native-edge-to-edge",
+        {
+          android: {
+            parentTheme: "Default",
+            enforceNavigationBarContrast: false,
+          },
+        },
+      ],
     ],
-    process.env.PROFILE !== "production" && require("./plugins/android-trust-user-certs.js"),
-  ],
-})
+  }
+
+  if (process.env.PROFILE !== "production") {
+    result.plugins.push(require("./plugins/android-trust-user-certs.js"))
+  }
+
+  return result
+}

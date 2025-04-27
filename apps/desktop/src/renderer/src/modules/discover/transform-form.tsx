@@ -68,7 +68,7 @@ export function DiscoverTransform() {
   return (
     <>
       {data?.rsshub!.routes && (
-        <div className="w-full max-w-[540px]">
+        <div className="bg-material-ultra-thin w-full max-w-[540px] rounded-lg border p-5 shadow-sm">
           <DiscoverFeedForm
             routePrefix="rsshub"
             route={data?.rsshub.routes["/transform/html/:url/:routeParams"]!}

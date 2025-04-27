@@ -10,7 +10,7 @@ import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import type { FallbackRender } from "@sentry/react"
 import type { FC } from "react"
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { forwardRef, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -21,6 +21,7 @@ import {
   useEntryReadabilityContent,
 } from "~/atoms/readability"
 import { enableShowSourceContent } from "~/atoms/source-content"
+import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { getNewIssueUrl } from "~/lib/issues"
@@ -78,8 +79,11 @@ export const TitleMetaHandler: Component<{
 
 export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
+  const { t: T } = useTranslation("common")
   const result = useEntryReadabilityContent(entryId)
   const isInReadability = useEntryIsInReadability(entryId)
+  const status = useEntryInReadabilityStatus(entryId)
+
   if (!isInReadability) {
     return null
   }
@@ -87,15 +91,36 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   return (
     <div className="grow">
       {result ? (
-        <p className="mb-4 rounded-xl border p-3 text-sm opacity-80">
-          <i className="i-mgc-information-cute-re mr-1 translate-y-[2px]" />
+        <p className="mb-4 flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50/30 p-3 text-sm text-blue-700 shadow-sm dark:border-blue-800/30 dark:bg-blue-900/10 dark:text-blue-300">
+          <i className="i-mgc-information-cute-re self-baseline text-lg" />
           {t("entry_content.readability_notice")}
         </p>
       ) : (
-        <div className="center mt-16 flex flex-col gap-2">
-          <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
-          <span className="text-sm">{t("entry_content.fetching_content")}</span>
-        </div>
+        <>
+          {status === ReadabilityStatus.FAILURE ? (
+            <div className="center mt-36 flex flex-col items-center gap-3">
+              <i className="i-mgc-warning-cute-re text-red text-4xl" />
+              <span className="text-balance text-center text-sm">
+                {t("entry_content.fetching_content_failed")}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setReadabilityStatus({
+                    [entryId]: ReadabilityStatus.INITIAL,
+                  })
+                }}
+              >
+                {T("words.back")}
+              </Button>
+            </div>
+          ) : (
+            <div className="center mt-32 flex flex-col gap-2">
+              <LoadingWithIcon size="large" icon={<i className="i-mgc-docment-cute-re" />} />
+              <span className="text-sm">{t("entry_content.fetching_content")}</span>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -158,7 +183,7 @@ export const RenderError: FallbackRender = ({ error }) => {
   const nextError = typeof error === "string" ? new Error(error) : (error as Error)
   return (
     <div className="center mt-16 flex flex-col gap-2">
-      <i className="i-mgc-close-cute-re text-3xl text-red-500" />
+      <i className="i-mgc-close-cute-re text-red text-3xl" />
       <span className="font-sans text-sm">
         {t("entry_content.render_error")} {nextError.message}
       </span>
@@ -221,35 +246,37 @@ const useReadPercent = () => {
   return [readPercent, scrollTop]
 }
 
-export const ContainerToc: FC = memo(() => {
-  const wrappedElement = useWrappedElement()
+export const ContainerToc = memo(
+  forwardRef<TocRef, ComponentType>((_, ref) => {
+    const wrappedElement = useWrappedElement()
 
-  return (
-    <RootPortal to={wrappedElement!}>
-      <div className="group absolute right-[-130px] top-0 h-full w-[100px]" data-hide-in-print>
-        <div className="sticky top-0">
-          <Toc
-            onItemClick={() => {
-              EventBus.dispatch("FOCUS_ENTRY_CONTAINER")
-            }}
-            className={cn(
-              "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
-              "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",
-              "@[700px]:-translate-x-12 @[800px]:-translate-x-16 @[900px]:translate-x-0 @[900px]:items-start",
-            )}
-          />
+    return (
+      <RootPortal to={wrappedElement!}>
+        <div className="group absolute right-[-130px] top-0 h-full w-[100px]" data-hide-in-print>
+          <div className="sticky top-0">
+            <Toc
+              ref={ref}
+              onItemClick={() => {
+                EventBus.dispatch("FOCUS_ENTRY_CONTAINER")
+              }}
+              className={cn(
+                "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
+                "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",
+                "@[700px]:-translate-x-12 @[800px]:-translate-x-16 @[900px]:translate-x-0 @[900px]:items-start",
+              )}
+            />
 
-          <BackTopIndicator
-            className={
-              "@[700px]:-translate-x-4 @[800px]:-translate-x-8 @[900px]:translate-x-0 @[900px]:items-start"
-            }
-          />
+            <BackTopIndicator
+              className={
+                "@[700px]:-translate-x-4 @[800px]:-translate-x-8 @[900px]:translate-x-0 @[900px]:items-start"
+              }
+            />
+          </div>
         </div>
-      </div>
-    </RootPortal>
-  )
-})
-
+      </RootPortal>
+    )
+  }),
+)
 const BackTopIndicator: Component = memo(({ className }) => {
   const [readPercent] = useReadPercent()
   const scrollElement = useScrollViewElement()

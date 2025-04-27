@@ -1,4 +1,3 @@
-import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardContent, CardFooter, CardHeader } from "@follow/components/ui/card/index.jsx"
@@ -12,6 +11,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
+import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,7 +19,6 @@ import { repository } from "@pkg"
 import { useMutation } from "@tanstack/react-query"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
-import { m } from "motion/react"
 import type { ChangeEvent, FC } from "react"
 import { memo, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -232,99 +231,89 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-[540px] space-y-8"
+          className="w-full max-w-[540px]"
           data-testid="discover-form"
         >
-          <FormField
-            control={form.control}
-            name="keyword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-4">
-                  {t(info[type]?.label!)}
-                  {info[type]?.labelSuffix}
-                </FormLabel>
-                <FormControl>
-                  <Input autoFocus {...field} onChange={handleKeywordChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {type === "search" && (
+          <div className="border-border bg-material-ultra-thin rounded-lg border p-5 shadow-sm">
             <FormField
               control={form.control}
-              name="target"
+              name="keyword"
               render={({ field }) => (
-                <FormItem className="!mt-4 flex items-center justify-between">
-                  <FormLabel>{t("discover.target.label")}</FormLabel>
+                <FormItem className="mb-4">
+                  <FormLabel className="text-text text-headline mb-2 flex items-center gap-2 pl-2 font-bold">
+                    {t(info[type]?.label!)}
+                    {info[type]?.labelSuffix}
+                  </FormLabel>
                   <FormControl>
-                    <div className="flex gap-4 text-sm">
-                      {isMobile ? (
-                        <ResponsiveSelect
-                          size="sm"
-                          value={field.value}
-                          onValueChange={handleTargetChange}
-                          items={[
-                            { label: t("discover.target.feeds"), value: "feeds" },
-                            { label: t("discover.target.lists"), value: "lists" },
-                          ]}
-                        />
-                      ) : (
-                        <div className="relative flex h-7 items-stretch overflow-hidden rounded-lg bg-zinc-100/80 p-0.5 shadow-inner dark:bg-zinc-800/80">
-                          <m.div
-                            className="absolute left-0.5 top-0.5 z-0 h-6 rounded-md bg-white shadow-sm dark:bg-zinc-700"
-                            initial={false}
-                            animate={{
-                              x: field.value === "lists" ? "calc(100% + 2px)" : 0,
-                              width: "calc(50% - 4px)",
-                            }}
-                            transition={Spring.presets.smooth}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleTargetChange("feeds")}
-                            className={`relative z-10 min-w-[80px] rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
-                              field.value === "feeds"
-                                ? "text-zinc-900 dark:text-white"
-                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                            }`}
-                          >
-                            {t("discover.target.feeds")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleTargetChange("lists")}
-                            className={`relative z-10 min-w-[80px] rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
-                              field.value === "lists"
-                                ? "text-zinc-900 dark:text-white"
-                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                            }`}
-                          >
-                            {t("discover.target.lists")}
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <Input
+                      autoFocus
+                      {...field}
+                      onChange={handleKeywordChange}
+                      placeholder={type === "search" ? "Enter URL or keyword..." : undefined}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
-          <div className="center flex" data-testid="discover-form-actions">
-            <Button disabled={!form.formState.isValid} type="submit" isLoading={mutation.isPending}>
-              {info[type]!.showModal ? t("discover.preview") : t("words.search")}
-            </Button>
+            {type === "search" && (
+              <FormField
+                control={form.control}
+                name="target"
+                render={({ field }) => (
+                  <FormItem className="mb-4 pl-2">
+                    <div className="mb-2 flex items-center justify-between">
+                      <FormLabel className="text-text-secondary text-headline font-medium">
+                        {t("discover.target.label")}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="flex">
+                          {isMobile ? (
+                            <ResponsiveSelect
+                              size="sm"
+                              value={field.value}
+                              onValueChange={handleTargetChange}
+                              items={[
+                                { label: t("discover.target.feeds"), value: "feeds" },
+                                { label: t("discover.target.lists"), value: "lists" },
+                              ]}
+                            />
+                          ) : (
+                            <SegmentGroup
+                              className="-mt-2 h-8"
+                              value={field.value}
+                              onValueChanged={handleTargetChange}
+                            >
+                              <SegmentItem value="feeds" label={t("discover.target.feeds")} />
+                              <SegmentItem value="lists" label={t("discover.target.lists")} />
+                            </SegmentGroup>
+                          )}
+                        </div>
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            <div className="center flex" data-testid="discover-form-actions">
+              <Button
+                disabled={!form.formState.isValid}
+                type="submit"
+                isLoading={mutation.isPending}
+              >
+                {info[type]!.showModal ? t("discover.preview") : t("words.search")}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
       {mutation.isSuccess && (
         <div className="mt-8 w-full max-w-lg">
-          <div className="mb-4 pl-7 text-sm text-zinc-500">
+          <div className="mb-4 text-sm text-zinc-500">
             {t("discover.search.results", { count: mutation.data?.length || 0 })}
           </div>
-          <div className="space-y-6 text-sm">
+          <div className="space-y-4 text-sm">
             {discoverSearchData?.map((item) => (
               <SearchCard
                 key={item.feed?.id || item.list?.id}

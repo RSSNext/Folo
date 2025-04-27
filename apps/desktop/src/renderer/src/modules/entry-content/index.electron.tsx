@@ -1,5 +1,6 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import type { FeedViewType } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
 import { stopPropagation } from "@follow/utils/dom"
@@ -15,6 +16,7 @@ import {
 } from "~/atoms/readability"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
+import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
@@ -57,7 +59,7 @@ export const EntryContent: Component<EntryContentProps> = ({
   useTitle(entry?.entries.title)
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
-  const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
+
   const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
 
   const { error, data, isPending } = useAuthQuery(
@@ -68,7 +70,6 @@ export const EntryContent: Component<EntryContentProps> = ({
   )
   const readabilityContent = useEntryReadabilityContent(entryId)
 
-  const readerFontFamily = useUISettingKey("readerFontFamily")
   const view = useRouteParamsSelector((route) => route.view)
 
   const isInReadabilityMode = useEntryIsInReadability(entryId)
@@ -79,47 +80,10 @@ export const EntryContent: Component<EntryContentProps> = ({
     scrollerRef.current?.focus()
   }, [entryId])
 
-  const isPeekModal = useInPeekModal()
-
-  const contentAccessories = useMemo(
-    () => (isPeekModal ? undefined : <ContainerToc key={entryId} />),
-    [entryId, isPeekModal],
-  )
   useFocusEntryContainerSubscriptions(scrollerRef)
-  const contentLineHeight = useUISettingKey("contentLineHeight")
-  const contentFontSize = useUISettingKey("contentFontSize")
 
   const safeUrl = useFeedSafeUrl(entryId)
 
-  const stableRenderStyle = useMemo(() => {
-    const css = {} as React.CSSProperties
-    if (readerFontFamily) {
-      css.fontFamily = readerFontFamily
-    }
-    if (contentLineHeight) {
-      css.lineHeight = contentLineHeight
-    }
-    if (contentFontSize) {
-      css.fontSize = contentFontSize
-    }
-
-    return css
-  }, [readerFontFamily, contentLineHeight, contentFontSize])
-  const mediaInfo = useMemo(
-    () =>
-      Object.fromEntries(
-        (entry?.entries.media ?? data?.entries.media)
-          ?.filter((m) => m.type === "photo")
-          .map((cur) => [
-            cur.url,
-            {
-              width: cur.width,
-              height: cur.height,
-            },
-          ]) ?? [],
-      ),
-    [entry?.entries.media, data?.entries.media],
-  )
   const customCSS = useUISettingKey("customCSS")
 
   const contentTranslated = useEntryTranslation({
@@ -156,7 +120,6 @@ export const EntryContent: Component<EntryContentProps> = ({
         <EntryTimelineSidebar entryId={entry.entries.id} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
           <div
-            style={stableRenderStyle}
             className="animate-in fade-in slide-in-from-bottom-24 f-motion-reduce:fade-in-0 f-motion-reduce:slide-in-from-bottom-0 select-text duration-200 ease-in-out"
             key={entry.entries.id}
           >
@@ -177,20 +140,14 @@ export const EntryContent: Component<EntryContentProps> = ({
                       {!!customCSS && (
                         <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>
                       )}
-                      <EntryContentHTMLRenderer
+
+                      <Renderer
+                        entryId={entryId}
                         view={view}
                         feedId={feed?.id}
-                        entryId={entryId}
-                        mediaInfo={mediaInfo}
                         noMedia={noMedia}
-                        accessory={contentAccessories}
-                        as="article"
-                        className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
-                        style={stableRenderStyle}
-                        renderInlineStyle={readerRenderInlineStyle}
-                      >
-                        {content}
-                      </EntryContentHTMLRenderer>
+                        content={content}
+                      />
                     </ShadowDOM>
                   </ErrorBoundary>
                 </div>
@@ -208,10 +165,9 @@ export const EntryContent: Component<EntryContentProps> = ({
                       icon={!isInbox ? (feed as FeedModel)?.siteUrl : undefined}
                     />
                   ) : error ? (
-                    <div className="center flex min-w-0 flex-col gap-2">
-                      <i className="i-mgc-close-cute-re text-3xl text-red-500" />
-                      <span className="font-sans text-sm">Network Error</span>
-
+                    <div className="center mt-36 flex flex-col items-center gap-3">
+                      <i className="i-mgc-warning-cute-re text-red text-4xl" />
+                      <span className="text-balance text-center text-sm">Network Error</span>
                       <pre className="mt-6 w-full overflow-auto whitespace-pre-wrap break-all">
                         {error.message}
                       </pre>
@@ -259,3 +215,74 @@ const EntryScrollArea: Component<{
     </ScrollArea.ScrollArea>
   )
 }
+
+const Renderer: React.FC<{
+  entryId: string
+  view: FeedViewType
+  feedId: string
+  noMedia?: boolean
+  content?: Nullable<string>
+}> = React.memo(({ entryId, view, feedId, noMedia = false, content = "" }) => {
+  const mediaInfo = useEntry(entryId, (entry) =>
+    Object.fromEntries(
+      entry?.entries.media
+        ?.filter((m) => m.type === "photo")
+        .map((cur) => [
+          cur.url,
+          {
+            width: cur.width,
+            height: cur.height,
+          },
+        ]) ?? [],
+    ),
+  )
+
+  const contentLineHeight = useUISettingKey("contentLineHeight")
+  const contentFontSize = useUISettingKey("contentFontSize")
+  const readerFontFamily = useUISettingKey("readerFontFamily")
+  const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
+
+  const stableRenderStyle = useMemo(() => {
+    const css = {} as React.CSSProperties
+    if (readerFontFamily) {
+      css.fontFamily = readerFontFamily
+    }
+    if (contentLineHeight) {
+      css.lineHeight = contentLineHeight
+    }
+    if (contentFontSize) {
+      css.fontSize = contentFontSize
+    }
+
+    return css
+  }, [readerFontFamily, contentLineHeight, contentFontSize])
+  const isInPeekModal = useInPeekModal()
+
+  const tocRef = useRef<TocRef | null>(null)
+  const contentAccessories = useMemo(
+    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} />),
+    [isInPeekModal],
+  )
+
+  useEffect(() => {
+    if (tocRef) {
+      tocRef.current?.refreshItems()
+    }
+  }, [content, tocRef])
+  return (
+    <EntryContentHTMLRenderer
+      view={view}
+      feedId={feedId}
+      entryId={entryId}
+      mediaInfo={mediaInfo}
+      noMedia={noMedia}
+      accessory={contentAccessories}
+      as="article"
+      className="prose dark:prose-invert prose-h1:text-[1.6em] prose-h1:font-bold !max-w-full hyphens-auto"
+      style={stableRenderStyle}
+      renderInlineStyle={readerRenderInlineStyle}
+    >
+      {content}
+    </EntryContentHTMLRenderer>
+  )
+})

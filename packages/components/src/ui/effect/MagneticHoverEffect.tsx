@@ -1,20 +1,23 @@
 import { cn } from "@follow/utils/utils"
 import * as React from "react"
-import { useCallback, useRef } from "react"
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
 
 type MagneticHoverEffectProps<T extends React.ElementType> = {
   as?: T
   children: React.ReactNode
 } & Omit<React.ComponentPropsWithoutRef<T>, "as" | "children">
 
-export const MagneticHoverEffect = <T extends React.ElementType = "div">({
-  as,
-  children,
-  ...rest
-}: MagneticHoverEffectProps<T>) => {
+const MagneticHoverEffect = <T extends React.ElementType = "div">(
+  { as, children, ...rest }: MagneticHoverEffectProps<T>,
+  ref: React.ForwardedRef<T>,
+) => {
   const Component = as || "div"
 
   const itemRef = useRef<HTMLElement>(null)
+
+  useImperativeHandle(ref, () => {
+    return itemRef.current as unknown as T
+  })
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
     if (!itemRef.current) return
@@ -66,3 +69,8 @@ export const MagneticHoverEffect = <T extends React.ElementType = "div">({
     </Component>
   )
 }
+
+const ForwardedRefMagneticHoverEffect: typeof MagneticHoverEffect = forwardRef(
+  MagneticHoverEffect as any,
+) as any
+export { ForwardedRefMagneticHoverEffect as MagneticHoverEffect }

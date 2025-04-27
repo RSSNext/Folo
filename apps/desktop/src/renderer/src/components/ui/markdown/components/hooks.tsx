@@ -23,11 +23,16 @@ import type { ITocItem, TocProps } from "./Toc"
 
 // Hooks
 export const useTocItems = (markdownElement: HTMLElement | null) => {
-  const $headings = useMemo(
-    () =>
-      (markdownElement?.querySelectorAll("h1, h2, h3, h4, h5, h6") || []) as HTMLHeadingElement[],
+  const queryToCItems = useCallback(
+    (): HTMLHeadingElement[] =>
+      Array.from(markdownElement?.querySelectorAll("h1, h2, h3, h4, h5, h6") || []),
     [markdownElement],
   )
+  const [$headings, setHeadings] = useState(queryToCItems)
+
+  useEffect(() => {
+    setHeadings(queryToCItems())
+  }, [markdownElement, queryToCItems])
 
   const toc: ITocItem[] = useMemo(
     () =>
@@ -59,7 +64,13 @@ export const useTocItems = (markdownElement: HTMLElement | null) => {
     [toc],
   )
 
-  return { toc, rootDepth }
+  return {
+    toc,
+    rootDepth,
+    refreshItems: useCallback(() => {
+      setHeadings(queryToCItems())
+    }, [queryToCItems]),
+  }
 }
 
 type DebouncedFuncLeading<T extends (..._args: any[]) => any> = T & {

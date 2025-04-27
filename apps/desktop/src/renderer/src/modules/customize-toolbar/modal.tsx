@@ -14,7 +14,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { Button } from "@follow/components/ui/button/index.js"
-import { useCallback } from "react"
+import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting } from "~/atoms/settings/ui"
@@ -74,9 +74,9 @@ const CustomizeToolbar = () => {
     [actionOrder],
   )
 
-  const resetActionOrder = useCallback(() => {
+  const resetActionOrder = useRef(() => {
     setUISetting("toolbarOrder", DEFAULT_ACTION_ORDER)
-  }, [])
+  }).current
 
   return (
     <div
@@ -84,8 +84,12 @@ const CustomizeToolbar = () => {
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="mb-4">
-        <h2 className="text-lg font-semibold">{t("customizeToolbar.quick_actions.title")}</h2>
-        <p className="text-sm text-gray-500">{t("customizeToolbar.quick_actions.description")}</p>
+        <h2 className="text-text text-title2 font-semibold">
+          {t("customizeToolbar.quick_actions.title")}
+        </h2>
+        <p className="text-text-secondary text-headline">
+          {t("customizeToolbar.quick_actions.description")}
+        </p>
       </div>
       {/* Refer to https://github.com/clauderic/dnd-kit/blob/master/stories/2%20-%20Presets/Sortable/MultipleContainers.tsx */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver}>
@@ -105,8 +109,10 @@ const CustomizeToolbar = () => {
 
           {/* More panel */}
           <div className="mb-4">
-            <h2 className="text-lg font-semibold">{t("customizeToolbar.more_actions.title")}</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-text text-title2 font-semibold">
+              {t("customizeToolbar.more_actions.title")}
+            </h2>
+            <p className="text-text-secondary text-headline">
               {t("customizeToolbar.more_actions.description")}
             </p>
           </div>

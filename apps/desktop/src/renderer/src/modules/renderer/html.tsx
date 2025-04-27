@@ -9,7 +9,7 @@ import type { HTMLProps } from "~/components/ui/markdown/HTML"
 import { HTML } from "~/components/ui/markdown/HTML"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
 import { useEntry } from "~/store/entry/hooks"
-import { useFeedByIdSelector } from "~/store/feed/hooks"
+import { getFeedById } from "~/store/feed"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
@@ -27,12 +27,6 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
   children: Nullable<string>
 } & HTMLProps<AS>) {
   const entry = useEntry(entryId)
-
-  const { feedSiteUrl, feedUrl } =
-    useFeedByIdSelector(feedId, (feed) => ({
-      feedSiteUrl: "siteUrl" in feed ? feed.siteUrl : undefined,
-      feedUrl: "url" in feed ? feed.url : undefined,
-    })) || {}
 
   const images: Record<string, MarkdownImage> = useMemo(() => {
     return (
@@ -54,20 +48,22 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
       },
       transformUrl(url) {
         if (!url || url.startsWith("http")) return url
+        const feed = getFeedById(feedId)
+        if (!feed) return url
+        const feedSiteUrl = "siteUrl" in feed ? feed.siteUrl : undefined
+
         if (url.startsWith("/") && feedSiteUrl) return safeUrl(url, feedSiteUrl)
         return url
       },
       ensureAndRenderTimeStamp,
     }
-  }, [feedSiteUrl, view])
+  }, [feedId, view])
   return (
     <MarkdownImageRecordContext.Provider value={images}>
       <MarkdownRenderActionContext.Provider value={actions}>
         <EntryInfoContext.Provider value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>
           {/*  @ts-expect-error */}
-          <HTML data-feed-url={feedUrl} data-view={view} {...props}>
-            {children}
-          </HTML>
+          <HTML {...props}>{children}</HTML>
         </EntryInfoContext.Provider>
       </MarkdownRenderActionContext.Provider>
     </MarkdownImageRecordContext.Provider>

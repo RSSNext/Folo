@@ -480,7 +480,7 @@ export const MediaInfoRecordProvider = ({
   mediaInfo,
 }: {
   children: React.ReactNode
-  mediaInfo?: MediaInfoRecord
+  mediaInfo?: Nullable<MediaInfoRecord>
 }) => {
   return (
     <MediaInfoRecordContext.Provider value={mediaInfo || noop}>
