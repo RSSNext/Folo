@@ -128,6 +128,7 @@ export const ScrollArea = React.forwardRef<
     mask?: boolean
     onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
     orientation?: "vertical" | "horizontal"
+    asChild?: boolean
   }
 >(
   (
@@ -140,6 +141,7 @@ export const ScrollArea = React.forwardRef<
       mask = false,
       onScroll,
       orientation = "vertical",
+      asChild = false,
     },
     ref,
   ) => {
@@ -154,6 +156,7 @@ export const ScrollArea = React.forwardRef<
             onWheel={stopPropagation}
             className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
             mask={mask}
+            asChild={asChild}
             onScroll={onScroll}
           >
             {children}
