@@ -17,6 +17,11 @@
     ]
   },
   "android": {
-    "modules": []
+    "modules": [
+      "expo.modules.follownative.tabbar.TabBarModule",
+      "expo.modules.follownative.tabbar.TabScreenModule",
+      "expo.modules.follownative.tabbar.TabBarPortalModule",
+      "expo.modules.follownative.itempressable.ItemPressableModule"
+    ]
   }
 }

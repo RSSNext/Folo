@@ -28,6 +28,11 @@ if (useManagedAndroidSdkVersions) {
       minSdkVersion safeExtGet("minSdkVersion", 21)
       targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
+
+    dependencies {
+      implementation "androidx.fragment:fragment:1.8.6"
+      implementation "androidx.viewpager2:viewpager2:1.1.0"
+    }
   }
 }
 
