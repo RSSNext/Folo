@@ -16,7 +16,7 @@ export interface ModalProps {
   clickOutsideToDismiss?: boolean
   modalClassName?: string
   modalContainerClassName?: string
-
+  modalContentClassName?: string
   max?: boolean
 
   wrapper?: FC

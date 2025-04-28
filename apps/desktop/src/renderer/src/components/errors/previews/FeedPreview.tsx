@@ -7,7 +7,7 @@ import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
-import { getItemComponentByView } from "~/modules/entry-column/Items"
+import { getItemComponentByView } from "~/modules/entry-column/Items/getItemComponentByView"
 import type { UniversalItemProps } from "~/modules/entry-column/types"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"

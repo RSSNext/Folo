@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType, views } from "@follow/constants"
 import type { EntryModelSimple, FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
@@ -6,7 +7,7 @@ import { cloneElement, forwardRef } from "react"
 
 import { useI18n } from "~/hooks/common"
 
-import { EntryItemSkeleton } from "../entry-column/item"
+import { EntryItemSkeleton } from "../entry-column/EntryItemSkeleton"
 import { EntryItemStateless } from "../entry-column/item-stateless"
 
 export const ViewSelectorRadioGroup = forwardRef<
@@ -57,10 +58,14 @@ export const ViewSelectorRadioGroup = forwardRef<
         ))}
       </CardHeader>
       {showPreview && (
-        <CardContent className="space-y-2 p-2">
-          {entries.slice(0, 2).map((entry) => (
-            <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
-          ))}
+        <CardContent className="relative h-64 w-full">
+          <div className="absolute inset-0">
+            <ScrollArea flex rootClassName="h-full" viewportClassName="flex flex-col gap-2">
+              {entries.slice(0, 2).map((entry) => (
+                <EntryItemStateless entry={entry} feed={feed} view={view} key={entry.guid} />
+              ))}
+            </ScrollArea>
+          </div>
         </CardContent>
       )}
       {showLoading && <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />}

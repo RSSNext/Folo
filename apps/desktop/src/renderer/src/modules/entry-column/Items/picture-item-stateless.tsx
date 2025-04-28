@@ -1,60 +1,75 @@
-import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { cn } from "@follow/utils/utils"
+import {
+  MasonryItemsAspectRatioContext,
+  MasonryItemsAspectRatioSetterContext,
+  MasonryItemWidthContext,
+  useMasonryItemWidth,
+} from "@follow/components/ui/masonry/contexts.jsx"
+import { Masonry } from "@follow/components/ui/masonry/index.js"
+import { useMeasure } from "@follow/hooks"
+import { useState } from "react"
 
-import { RelativeTime } from "~/components/ui/datetime"
-import { Media } from "~/components/ui/media"
-import { FeedIcon } from "~/modules/feed/feed-icon"
-import { FeedTitle } from "~/modules/feed/feed-title"
+import { Media, MediaContainerWidthProvider } from "~/components/ui/media"
 
 import type { EntryItemStatelessProps } from "../types"
 
-export function PictureItemStateLess({ entry, feed }: EntryItemStatelessProps) {
+const MasonryRender = ({ data }) => {
+  const { url, type, previewImageUrl, height, width, blurhash } = data
+  const itemWidth = useMasonryItemWidth()
+
   return (
-    <div className="text-text relative mx-auto max-w-md select-none rounded-md transition-colors">
-      <div className="relative">
-        <div className="p-1.5">
-          <div className="relative flex gap-2 overflow-x-auto">
-            <div
-              className={cn(
-                "relative flex w-full shrink-0 items-center overflow-hidden rounded-md",
-                !entry.media?.[0]!.url && "aspect-square",
-              )}
-            >
-              {entry.media?.[0] ? (
-                <Media
-                  thumbnail
-                  src={entry.media[0].url}
-                  type={entry.media[0].type}
-                  previewImageUrl={entry.media[0].preview_image_url}
-                  className="size-full overflow-hidden"
-                  mediaContainerClassName={"w-auto h-auto rounded"}
-                  loading="lazy"
-                  proxy={{
-                    width: 0,
-                    height: 0,
-                  }}
-                  height={entry.media[0].height}
-                  width={entry.media[0].width}
-                  blurhash={entry.media[0].blurhash}
-                />
-              ) : (
-                <Skeleton className="size-full overflow-hidden" />
-              )}
-            </div>
-          </div>
-          <div className="relative flex-1 px-2 pb-3 pt-1 text-sm">
-            <div className="relative mb-1 mt-1.5 truncate font-medium leading-none">
-              {entry.title}
-            </div>
-            <div className="mt-1 flex items-center gap-1 truncate text-[13px]">
-              <FeedIcon feed={feed} fallback className="size-4" />
-              <FeedTitle feed={feed} />
-              <span className="text-material-opaque">·</span>
-              {!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}
-            </div>
-          </div>
-        </div>
-      </div>
+    <Media
+      thumbnail
+      src={url}
+      type={type}
+      previewImageUrl={previewImageUrl}
+      className="size-full overflow-hidden"
+      mediaContainerClassName={"w-auto h-auto rounded"}
+      loading="lazy"
+      proxy={{
+        width: itemWidth,
+        height: 0,
+      }}
+      height={height}
+      width={width}
+      blurhash={blurhash}
+    />
+  )
+}
+
+export function PictureItemStateLess({ entry }: EntryItemStatelessProps) {
+  const [masonryItemsRadio, setMasonryItemsRadio] = useState<Record<string, number>>({})
+
+  const [ref, bounds] = useMeasure()
+  const mediaItems =
+    entry.media?.map((item) => ({
+      url: item.url,
+      type: item.type,
+      previewImageUrl: item.preview_image_url,
+      height: item.height,
+      width: item.width,
+      blurhash: item.blurhash,
+    })) || []
+
+  const currentItemWidth = (bounds.width - 12) / 2
+
+  return (
+    <div className="text-text relative w-full select-none rounded-md transition-colors" ref={ref}>
+      <MasonryItemWidthContext.Provider value={currentItemWidth}>
+        <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
+          <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
+            <MediaContainerWidthProvider width={currentItemWidth}>
+              <Masonry
+                items={mediaItems}
+                columnGutter={12}
+                columnWidth={currentItemWidth}
+                columnCount={2}
+                overscanBy={2}
+                render={MasonryRender}
+              />
+            </MediaContainerWidthProvider>
+          </MasonryItemsAspectRatioSetterContext.Provider>
+        </MasonryItemsAspectRatioContext.Provider>
+      </MasonryItemWidthContext.Provider>
     </div>
   )
 }

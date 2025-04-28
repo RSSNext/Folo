@@ -18,7 +18,8 @@ import {
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 
-import { EntryItem, EntryItemSkeleton } from "./item"
+import { EntryItemSkeleton } from "./EntryItemSkeleton"
+import { EntryItem } from "./item"
 import { PictureMasonry } from "./Items/picture-masonry"
 import type { EntryListProps } from "./list"
 

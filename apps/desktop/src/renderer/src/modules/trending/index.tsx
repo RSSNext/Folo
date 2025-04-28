@@ -42,7 +42,7 @@ export const TrendingButton = ({ language, className }: TrendingProps & { classN
           CustomModalComponent: !isMobile() ? DrawerModalLayout : undefined,
         })
       }}
-      buttonClassName={cn("px-2", className)}
+      buttonClassName={cn("rounded px-2 h-8", className)}
     >
       <i className="i-mgc-trending-up-cute-re mr-1" />
       {t("words.trending")}

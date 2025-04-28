@@ -47,6 +47,7 @@ const FeedFoundCanBeFollowErrorFallback: FC<AppErrorFallbackProps> = ({ resetErr
                 onClick={() => {
                   present({
                     title: t("feed_form.add_feed"),
+                    modalContentClassName: "overflow-visible",
                     content: ({ dismiss }) => (
                       <FeedForm
                         url={feed.url}

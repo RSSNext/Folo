@@ -308,7 +308,7 @@ function AudioCover({
               isMobile && "backdrop-blur-background opacity-100",
             )}
           >
-            {formatEstimatedMins(10)}
+            {formatEstimatedMins(estimatedMins)}
           </div>
         </div>
       )}

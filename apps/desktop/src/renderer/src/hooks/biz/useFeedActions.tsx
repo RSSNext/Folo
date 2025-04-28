@@ -257,6 +257,7 @@ export const useFeedActions = ({
         disabled: isInbox,
         click: () => {
           present({
+            modalContentClassName: "overflow-visible",
             title: t("sidebar.feed_actions.edit_feed"),
             content: ({ dismiss }) => <FeedForm id={feedId} onSuccess={dismiss} />,
           })

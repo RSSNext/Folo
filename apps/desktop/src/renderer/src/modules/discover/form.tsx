@@ -123,6 +123,9 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
 
       return data
     },
+    onSuccess() {
+      form.resetField("keyword")
+    },
   })
   const discoverSearchDataAtom = useState(() => atom<DiscoverSearchData>())[0]
 
@@ -310,8 +313,18 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       </Form>
       {mutation.isSuccess && (
         <div className="mt-8 w-full max-w-lg">
-          <div className="mb-4 text-sm text-zinc-500">
+          <div className="mb-4 flex items-center gap-2 text-sm text-zinc-500">
             {t("discover.search.results", { count: mutation.data?.length || 0 })}
+
+            {mutation.data?.length > 0 && (
+              <button
+                className="hover:text-accent flex cursor-pointer items-center justify-between gap-2"
+                type="button"
+                onClick={mutation.reset}
+              >
+                <i className="i-mgc-close-cute-re" />
+              </button>
+            )}
           </div>
           <div className="space-y-4 text-sm">
             {discoverSearchData?.map((item) => (
@@ -396,6 +409,7 @@ const SearchCard: FC<{
             <div className="flex items-center justify-between gap-2">
               <Button
                 variant="ghost"
+                disabled={!item.feed?.id}
                 buttonClassName="rounded-lg px-3 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
                 onClick={() => {
                   if (!item.feed?.id) return

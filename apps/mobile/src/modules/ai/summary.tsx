@@ -125,7 +125,9 @@ export const AISummary: FC<{
               )}
             </View>
           ) : (
-            <Text className="text-label mt-2 text-[14px] leading-[22px]">{summary.trim()}</Text>
+            <Text className="text-label mt-2 text-[14px] leading-[22px]" selectable>
+              {summary.trim()}
+            </Text>
           )}
         </View>
       </View>

@@ -80,6 +80,7 @@ export const useFollow = () => {
 
       present({
         title: `${isFollowed ? `${t("common:words.edit")} ` : ""}${options?.isList ? t("words.lists") : t("words.feeds")}`,
+        modalContentClassName: "overflow-visible",
         content: ({ dismiss }) => {
           const onSuccess = () => {
             options?.onSuccess?.()

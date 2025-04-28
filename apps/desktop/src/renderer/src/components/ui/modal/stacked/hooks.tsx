@@ -100,6 +100,8 @@ const actions = {
 
 export const useCurrentModal = () => useContext(CurrentModalContext)
 
+export const useIsInModal = () => useContextSelector(CurrentModalStateContext, (v) => v.isInModal)
+
 export const useResizeableModal = (
   modalElementRef: React.RefObject<HTMLDivElement>,
   {

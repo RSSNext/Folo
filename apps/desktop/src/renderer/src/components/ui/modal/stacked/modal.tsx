@@ -66,11 +66,14 @@ export const ModalInternal = memo(
   ) {
     const {
       CustomModalComponent,
-      modalClassName,
       content,
       title,
       clickOutsideToDismiss,
+
+      modalClassName,
       modalContainerClassName,
+      modalContentClassName,
+
       wrapper: Wrapper = Fragment,
       max,
       icon,
@@ -268,7 +271,7 @@ export const ModalInternal = memo(
                 >
                   {DragBar}
                   <div
-                    className={cn("contents", modalClassName)}
+                    className={cn("contents", modalClassName, modalContentClassName)}
                     onClick={stopPropagation}
                     tabIndex={-1}
                     ref={modalElementRef}
@@ -380,7 +383,12 @@ export const ModalInternal = memo(
                     </div>
                     <div className="bg-border mx-1 mt-2 h-px shrink-0" />
 
-                    <div className="-mx-2 min-h-0 shrink grow overflow-auto p-4">
+                    <div
+                      className={cn(
+                        "-mx-2 min-h-0 shrink grow overflow-auto p-4",
+                        modalContentClassName,
+                      )}
+                    >
                       <ModalContext modalContextProps={ModalContextProps} isTop={!!isTop}>
                         {finalChildren}
                       </ModalContext>
@@ -426,6 +434,7 @@ const ModalContext: FC<
         value={useMemo(
           () => ({
             isTop: !!isTop,
+            isInModal: true,
           }),
           [isTop],
         )}

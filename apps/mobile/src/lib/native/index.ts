@@ -1,8 +1,19 @@
 import { openURL } from "expo-linking"
+import * as WebBrowser from "expo-web-browser"
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+import { getGeneralSettings } from "@/src/atoms/settings/general"
+
 export const openLink = (url: string, onDismiss?: () => void) => {
-  openURL(url)
+  const { openLinksInExternalApp } = getGeneralSettings()
+  if (openLinksInExternalApp) {
+    openURL(url)
+    return
+  }
+  WebBrowser.openBrowserAsync(url).then((res) => {
+    if (res.type === "dismiss") {
+      onDismiss?.()
+    }
+  })
 }
 
 export const performNativeScrollToTop = (_reactTag: number) => {

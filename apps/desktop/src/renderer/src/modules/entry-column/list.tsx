@@ -29,7 +29,8 @@ import { isListSubscription } from "~/store/subscription"
 
 import { DateItem } from "./components/DateItem"
 import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
-import { EntryItemSkeleton, EntryVirtualListItem } from "./item"
+import { EntryItemSkeleton } from "./EntryItemSkeleton"
+import { EntryVirtualListItem } from "./item"
 
 export const EntryEmptyList = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>((props, ref) => {
   const unreadOnly = useGeneralSettingKey("unreadOnly")

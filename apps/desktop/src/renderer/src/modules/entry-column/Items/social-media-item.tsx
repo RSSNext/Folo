@@ -157,7 +157,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
 
 export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
-    <div className="relative m-auto select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
+    <div className="relative select-none rounded-md text-zinc-700 transition-colors dark:text-neutral-400">
       <div className="relative">
         <div className="group relative flex px-8 py-6">
           <FeedIcon className="mr-2 size-9" feed={feed} fallback />
@@ -171,7 +171,7 @@ export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProp
               <div className="relative mt-0.5 text-sm">{entry.description}</div>
             </div>
             <div className="mt-2 flex gap-2 overflow-x-auto">
-              {entry.media?.map((media) => (
+              {entry.media?.slice(0, 2).map((media) => (
                 <Media
                   key={media.url}
                   thumbnail

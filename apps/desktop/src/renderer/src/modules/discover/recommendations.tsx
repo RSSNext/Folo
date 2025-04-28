@@ -1,21 +1,26 @@
+import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { EmptyIcon } from "@follow/components/icons/empty.js"
+import { ActionButton } from "@follow/components/ui/button/action-button.js"
+import { Card, CardContent } from "@follow/components/ui/card/index.jsx"
+import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
-import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { Masonry } from "@follow/components/ui/masonry/index.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
-import { Tabs, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.js"
-import { cn, isASCII } from "@follow/utils/utils"
+import { CategoryMap, RSSHubCategories } from "@follow/constants"
+import { isASCII } from "@follow/utils/utils"
 import { keepPreviousData } from "@tanstack/react-query"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
-import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { DrawerModalLayout } from "~/components/ui/modal/stacked/custom-modal"
+import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 
 import { TrendingButton } from "../trending"
-import { RSSHubCategories } from "./constants"
-import styles from "./recommendations.module.css"
 import { RecommendationCard } from "./recommendations-card"
 
 const LanguageOptions = [
@@ -44,17 +49,10 @@ const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
   })
 }
 let firstLoad = true
-export function Recommendations({
-  hideTitle,
-  className,
-  headerClassName,
-}: {
-  hideTitle?: boolean
-  className?: string
-  headerClassName?: string
-}) {
+export function Recommendations() {
   const { t } = useTranslation()
   const lang = useGeneralSettingKey("language")
+  const { present } = useModalStack()
 
   const defaultLang = !lang || ["zh-CN", "zh-HK", "zh-TW"].includes(lang) ? "all" : "en"
   const [category, setCategory] = useState<DiscoverCategories>("all")
@@ -111,25 +109,24 @@ export function Recommendations({
     rsshubPopular.refetch()
   }
 
-  const tabRef = useRef<HTMLDivElement>(null)
-  const handleChangeCategoryAndJumpTo = useEventCallback((category: DiscoverCategories) => {
-    handleCategoryChange(category)
+  const handleShowCategoryContent = (selectedCategory: DiscoverCategories) => {
+    present({
+      id: `category-content-${selectedCategory}`,
+      CustomModalComponent: !isMobile() ? DrawerModalLayout : undefined,
 
-    if (tabRef.current) {
-      const tab = tabRef.current.querySelector(`[data-value="${category}"]`)
-      if (tab) {
-        const tabRect = tab.getBoundingClientRect()
-        const containerRect = tabRef.current.getBoundingClientRect()
-        const scrollLeft =
-          tabRect.left -
-          containerRect.left +
-          tabRef.current.scrollLeft -
-          (containerRect.width - tabRect.width) / 2
-
-        tabRef.current.scrollTo({ left: scrollLeft, behavior: "smooth" })
-      }
-    }
-  })
+      content: () => {
+        return (
+          <RecommendationDrawerContent
+            keys={keys}
+            data={data}
+            selectedCategory={selectedCategory}
+            handleCategoryChange={handleCategoryChange}
+          />
+        )
+      },
+      title: t(`discover.category.${selectedCategory}` as any, { ns: "common" }),
+    })
+  }
 
   if (isLoading) {
     return null
@@ -140,68 +137,142 @@ export function Recommendations({
   }
 
   return (
-    <div className={cn(!hideTitle && "mt-8 w-full max-w-[1200px]")}>
-      {!hideTitle && (
-        <div className="center relative flex text-lg font-bold">
-          <span>{t("discover.popular")}</span>
-
-          <div className="absolute bottom-0 right-0">
-            <TrendingButton language={selectedLang} />
-          </div>
-          {isFetching && (
-            <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center gap-8">
-              <span className="opacity-0" aria-hidden>
-                {t("discover.popular")}
-              </span>
-
-              <LoadingCircle size="small" className="center flex" />
-            </div>
-          )}
+    <div className="mt-12 w-full max-w-[1200px]">
+      <div className="center relative flex">
+        <div className="absolute bottom-0 right-0 flex items-center gap-2">
+          <span className="text-headline text-text font-medium">Preferred language:</span>
+          <ResponsiveSelect
+            value={selectedLang}
+            onValueChange={handleLangChange}
+            triggerClassName="w-32 h-8 rounded"
+            size="sm"
+            items={LanguageOptions as any}
+          />
+          <TrendingButton language={selectedLang} />
         </div>
-      )}
+        {isFetching && (
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center gap-8">
+            <span className="opacity-0" aria-hidden>
+              {t("discover.popular")}
+            </span>
 
-      <div
-        className={cn(
-          "bg-background z-[9] my-3 flex w-full flex-col items-end gap-4 sm:flex-row sm:items-center",
-          headerClassName,
+            <LoadingCircle size="small" className="center flex" />
+          </div>
         )}
-      >
-        <ScrollArea.ScrollArea
-          ref={tabRef}
-          orientation="horizontal"
-          rootClassName="grow min-w-0 max-w-full overflow-visible"
-          scrollbarClassName="-mb-3 z-[100]"
-        >
-          <Tabs value={category} onValueChange={handleCategoryChange}>
-            <TabsList>
-              {RSSHubCategories.map((category) => (
-                <TabsTrigger data-value={category} key={category} value={category}>
-                  {t(`discover.category.${category}`, { ns: "common" })}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </ScrollArea.ScrollArea>
-
-        <ResponsiveSelect
-          value={selectedLang}
-          onValueChange={handleLangChange}
-          triggerClassName="w-32"
-          size="sm"
-          items={LanguageOptions as any}
-        />
       </div>
 
-      <div className={cn(styles["recommendations-grid"], "mt-6", className)}>
-        {keys.map((key) => (
-          <RecommendationCard
-            key={key}
-            data={data[key]}
-            routePrefix={key}
-            setCategory={handleChangeCategoryAndJumpTo}
-          />
+      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {RSSHubCategories.map((cat) => (
+          <Card
+            key={cat}
+            className="cursor-pointer transition-all duration-200 hover:scale-[102%] hover:shadow-lg"
+            style={{
+              backgroundImage: `linear-gradient(-135deg, ${CategoryMap[cat]?.color}80, ${CategoryMap[cat]?.color})`,
+            }}
+            onClick={() => handleShowCategoryContent(cat)}
+          >
+            <CardContent className="flex min-h-[100px] flex-col items-center justify-center p-4 text-center">
+              <div className="mb-2 text-2xl">{CategoryMap[cat]?.emoji}</div>
+              <div className="font-medium text-white">
+                {t(`discover.category.${cat}`, { ns: "common" })}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
+    </div>
+  )
+}
+
+const RecommendationDrawerContent = ({
+  keys,
+  data,
+  selectedCategory,
+  handleCategoryChange,
+}: {
+  keys: string[]
+  data: any
+  selectedCategory: string
+  handleCategoryChange: (category: string) => void
+}) => {
+  const { t } = useTranslation()
+
+  const filteredItems = keys
+    .map((key) => {
+      if (selectedCategory !== "all") {
+        const categories = new Set<string>()
+        for (const route in data![key].routes) {
+          const routeData = data![key].routes[route]!
+          if (routeData.categories) {
+            routeData.categories.forEach((c) => categories.add(c))
+          }
+        }
+        if (!categories.has(selectedCategory as string)) {
+          return null
+        }
+      }
+
+      return {
+        key,
+        data: data![key],
+        routePrefix: key,
+      }
+    })
+    .filter(Boolean)
+
+  const { dismiss } = useCurrentModal()
+
+  return (
+    <div className="absolute inset-0 flex flex-col">
+      <h1 className="text-title2 mt-4 pl-8 font-semibold">
+        {t(`discover.category.${selectedCategory}` as any, { ns: "common" })}
+      </h1>
+
+      {/* Close */}
+      <ActionButton
+        className="absolute right-4 top-4"
+        onClick={dismiss}
+        tooltip={t("words.close", { ns: "common" })}
+      >
+        <i className="i-mgc-close-cute-re" />
+      </ActionButton>
+      <Divider className="m-4" />
+      {filteredItems.length > 0 ? (
+        <ScrollArea rootClassName="w-full" viewportClassName="px-8">
+          <Masonry
+            items={filteredItems}
+            columnGutter={16}
+            columnWidth={280}
+            columnCount={isMobile() ? 1 : 2}
+            overscanBy={2}
+            render={({ data: itemData }) => {
+              if (!itemData) return null
+              return (
+                <RecommendationCard
+                  key={itemData.key}
+                  data={itemData.data}
+                  routePrefix={itemData.routePrefix}
+                  setCategory={handleCategoryChange}
+                />
+              )
+            }}
+          />
+        </ScrollArea>
+      ) : (
+        <div className="flex h-full -translate-y-12 flex-col items-center justify-center text-center">
+          <div className="mb-4 text-6xl">
+            <EmptyIcon />
+          </div>
+          <p className="text-text text-title2">
+            {t("common.noContent", { defaultValue: "No content found in this category" })}
+          </p>
+          <p className="text-text-secondary text-body mt-2">
+            {t("discover.tryAnotherCategory", {
+              defaultValue: "Try selecting another category or language",
+            })}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

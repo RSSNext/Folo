@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@follow/components/ui/card/index.jsx"
-import { getDominantColor } from "@follow/utils/color"
+import { RSSHubCategories } from "@follow/constants"
+import { getHighestWeightColor } from "@follow/utils/color"
 import { clsx, cn, getUrlIcon } from "@follow/utils/utils"
 import { upperFirst } from "es-toolkit/compat"
 import type { FC } from "react"
@@ -9,9 +10,7 @@ import { useTranslation } from "react-i18next"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
-import { RSSHubCategories } from "./constants"
 import { RecommendationContent } from "./recommendation-content"
-import styles from "./recommendations.module.css"
 import type { RSSHubRouteDeclaration } from "./types"
 
 interface RecommendationCardProps {
@@ -44,7 +43,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
     }, [data])
 
     return (
-      <Card className={styles["recommendations-card"]}>
+      <Card className="shadow-background border-border flex flex-col overflow-hidden rounded-lg border">
         <CardHeader className="@container relative p-5 pb-3">
           <div className="@[280px]:h-[80px] absolute left-0 top-0 h-[50px] w-full overflow-hidden dark:brightness-75">
             <span className="pointer-events-none opacity-50">
@@ -62,14 +61,14 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
               href={`https://${data.url}`}
               target="_blank"
               rel="noreferrer"
-              className="ml-2 translate-y-1.5"
+              className="text-title2 ml-2 line-clamp-1 translate-y-1.5"
             >
               {data.name}
             </a>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex grow flex-col p-5 pt-0">
-          <ul className="text-text grow columns-2 gap-2 space-y-1 text-sm">
+          <ul className="text-text grow gap-2 space-y-1 text-sm">
             {Object.keys(data.routes).map((route) => {
               const routeData = data.routes[route]!
               // some routes have multiple paths, like `huxiu`
@@ -87,7 +86,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
                 >
                   <button
                     type="button"
-                    className="before:bg-accent group-hover:bg-material-medium relative rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-2 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:content-['']"
+                    className="before:bg-accent text-headline group-hover:bg-material-medium relative ml-3 rounded p-0.5 px-1 text-left duration-200 before:absolute before:inset-y-0 before:-left-3 before:mb-auto before:mt-2 before:size-1.5 before:rounded-full before:content-['']"
                     onClick={() => {
                       present({
                         id: `recommendation-content-${route}`,
@@ -115,7 +114,7 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
             <div className="flex flex-1 items-center text-sm">
               <i className="i-mingcute-hammer-line mr-1 shrink-0 translate-y-0.5 self-start" />
 
-              <span className="flex flex-wrap gap-1">
+              <span className="text-body flex flex-wrap gap-1">
                 {maintainers.map((m) => (
                   <a
                     key={m}
@@ -130,8 +129,8 @@ export const RecommendationCard: FC<RecommendationCardProps> = memo(
               </span>
             </div>
             <div className="flex flex-1 items-center text-sm">
-              <i className="i-mingcute-tag-2-line mr-1 shrink-0 translate-y-1 self-start" />
-              <span className="flex flex-wrap gap-1">
+              <i className="i-mingcute-tag-2-line mr-1 shrink-0 translate-y-0.5 self-start" />
+              <span className="text-body flex flex-wrap gap-1">
                 {categories.map((c) => (
                   <button
                     onClick={() => {
@@ -169,7 +168,7 @@ const BackgroundGradient = memo(({ url, className }: { url: string; className?: 
     image.crossOrigin = "anonymous"
     image.onload = () => {
       try {
-        const color = getDominantColor(image)
+        const color = getHighestWeightColor(image)
         setColor(color)
       } catch {
         setColor("#333")

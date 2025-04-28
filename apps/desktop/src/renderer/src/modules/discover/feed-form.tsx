@@ -11,6 +11,8 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { EntryModelSimple, FeedModel } from "@follow/models/types"
@@ -25,7 +27,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { Autocomplete } from "~/components/ui/auto-completion"
-import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
@@ -69,85 +71,92 @@ export const FeedForm: Component<{
 
   const { t } = useTranslation()
 
+  const isInModal = useIsInModal()
+  const rootContainerRef = useRef<HTMLDivElement>(null)
+
   return (
-    <div
-      className={cn(
-        "flex h-full flex-col",
-        "mx-auto min-h-[420px] w-full max-w-[550px] lg:min-w-[550px]",
-      )}
-    >
-      {feed ? (
-        <FeedInnerForm
-          {...{
-            defaultValues,
-            id,
-            url,
+    <div className="flex flex-col" ref={rootContainerRef}>
+      <ScrollArea.ScrollArea
+        rootClassName={cn(
+          "flex h-full max-h-[calc(100vh-300px)] flex-col",
+          "mx-auto min-h-[420px] w-full max-w-[550px] lg:min-w-[550px]",
+          isInModal && "-mx-4 px-4",
+        )}
+      >
+        {feed ? (
+          <FeedInnerForm
+            {...{
+              defaultValues,
+              id,
+              url,
 
-            onSuccess,
-            subscriptionData: feedQuery.data?.subscription,
-            entries: feedQuery.data?.entries,
-            feed,
-          }}
-        />
-      ) : feedQuery.isLoading ? (
-        <div className="flex flex-1 items-center justify-center">
-          <LoadingCircle size="large" />
-        </div>
-      ) : feedQuery.error ? (
-        <div className="center grow flex-col gap-3">
-          <i className="i-mgc-close-cute-re size-7 text-red-500" />
-          <p>{t("feed_form.error_fetching_feed")}</p>
-          <p className="cursor-text select-text break-all px-8 text-center">
-            {getFetchErrorMessage(feedQuery.error)}
-          </p>
-
-          <div className="flex items-center gap-4">
-            <Button
-              variant="text"
-              onClick={() => {
-                feedQuery.refetch()
-              }}
-            >
-              {t("feed_form.retry")}
-            </Button>
-
-            <Button
-              variant="primary"
-              onClick={() => {
-                window.open(
-                  getNewIssueUrl({
-                    body: [
-                      "### Info:",
-                      "",
-                      "Feed URL:",
-                      "```",
-                      url,
-                      "```",
-                      "",
-                      "Error:",
-                      "```",
-                      getFetchErrorMessage(feedQuery.error),
-                      "```",
-                    ].join("\n"),
-                    title: `Error in fetching feed: ${id ?? url}`,
-                    target: "discussion",
-                    category: "feed-expired",
-                  }),
-                  "_blank",
-                )
-              }}
-            >
-              {t("feed_form.feedback")}
-            </Button>
+              onSuccess,
+              subscriptionData: feedQuery.data?.subscription,
+              entries: feedQuery.data?.entries,
+              feed,
+              rootContainerRef,
+            }}
+          />
+        ) : feedQuery.isLoading ? (
+          <div className="flex flex-1 items-center justify-center">
+            <LoadingCircle size="large" />
           </div>
-        </div>
-      ) : (
-        <div className="center h-full grow flex-col">
-          <i className="i-mgc-question-cute-re mb-6 size-12 text-zinc-500" />
-          <p>{t("feed_form.feed_not_found")}</p>
-          <p>{url}</p>
-        </div>
-      )}
+        ) : feedQuery.error ? (
+          <div className="center grow flex-col gap-3">
+            <i className="i-mgc-close-cute-re text-red size-7" />
+            <p>{t("feed_form.error_fetching_feed")}</p>
+            <p className="cursor-text select-text break-all px-8 text-center">
+              {getFetchErrorMessage(feedQuery.error)}
+            </p>
+
+            <div className="flex items-center gap-4">
+              <Button
+                variant="text"
+                onClick={() => {
+                  feedQuery.refetch()
+                }}
+              >
+                {t("feed_form.retry")}
+              </Button>
+
+              <Button
+                variant="primary"
+                onClick={() => {
+                  window.open(
+                    getNewIssueUrl({
+                      body: [
+                        "### Info:",
+                        "",
+                        "Feed URL:",
+                        "```",
+                        url,
+                        "```",
+                        "",
+                        "Error:",
+                        "```",
+                        getFetchErrorMessage(feedQuery.error),
+                        "```",
+                      ].join("\n"),
+                      title: `Error in fetching feed: ${id ?? url}`,
+                      target: "discussion",
+                      category: "feed-expired",
+                    }),
+                    "_blank",
+                  )
+                }}
+              >
+                {t("feed_form.feedback")}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="center h-full grow flex-col">
+            <i className="i-mgc-question-cute-re mb-6 size-12 text-zinc-500" />
+            <p>{t("feed_form.feed_not_found")}</p>
+            <p>{url}</p>
+          </div>
+        )}
+      </ScrollArea.ScrollArea>
     </div>
   )
 }
@@ -160,6 +169,8 @@ const FeedInnerForm = ({
   subscriptionData,
   feed,
   entries,
+
+  rootContainerRef,
 }: {
   defaultValues?: z.infer<typeof formSchema>
   id?: string
@@ -173,10 +184,11 @@ const FeedInnerForm = ({
   }
   feed: FeedModel
   entries?: EntryModelSimple[]
+
+  rootContainerRef: React.RefObject<HTMLDivElement>
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
   const isSubscribed = !!subscription
-  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -367,23 +379,24 @@ const FeedInnerForm = ({
               </FormItem>
             )}
           />
-          <div className="bg-theme-background absolute inset-x-0 bottom-0 right-[6px] flex flex-1 items-center justify-end gap-4 p-4">
-            {isSubscribed && (
-              <Button
-                type="button"
-                ref={buttonRef}
-                variant="text"
-                onClick={() => {
-                  dismiss()
-                }}
-              >
-                {t.common("words.cancel")}
+          <RootPortal to={rootContainerRef.current}>
+            <div className="flex items-center justify-end gap-4 px-4 pt-2">
+              {isSubscribed && (
+                <Button
+                  type="button"
+                  variant="text"
+                  onClick={() => {
+                    dismiss()
+                  }}
+                >
+                  {t.common("words.cancel")}
+                </Button>
+              )}
+              <Button type="submit" isLoading={followMutation.isPending}>
+                {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
               </Button>
-            )}
-            <Button ref={buttonRef} type="submit" isLoading={followMutation.isPending}>
-              {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
-            </Button>
-          </div>
+            </div>
+          </RootPortal>
         </form>
       </Form>
     </div>

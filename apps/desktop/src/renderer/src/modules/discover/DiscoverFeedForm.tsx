@@ -200,6 +200,7 @@ export const DiscoverFeedForm = ({
 
         present({
           title: t("feed_form.add_feed"),
+          modalContentClassName: "overflow-visible",
           content: () => (
             <FeedForm
               url={finalUrl}
