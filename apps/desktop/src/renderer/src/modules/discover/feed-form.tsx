@@ -84,19 +84,26 @@ export const FeedForm: Component<{
         )}
       >
         {feed ? (
-          <FeedInnerForm
-            {...{
-              defaultValues,
-              id,
-              url,
+          // Workaround for the issue with the scroll area viewport setting the display to table
+          // Learn more about the issue here:
+          // https://github.com/radix-ui/primitives/issues/926 https://github.com/radix-ui/primitives/issues/3129 https://github.com/radix-ui/primitives/pull/3225
+          <div className="flex">
+            <div className="w-0 grow truncate">
+              <FeedInnerForm
+                {...{
+                  defaultValues,
+                  id,
+                  url,
 
-              onSuccess,
-              subscriptionData: feedQuery.data?.subscription,
-              entries: feedQuery.data?.entries,
-              feed,
-              rootContainerRef,
-            }}
-          />
+                  onSuccess,
+                  subscriptionData: feedQuery.data?.subscription,
+                  entries: feedQuery.data?.entries,
+                  feed,
+                  rootContainerRef,
+                }}
+              />
+            </div>
+          </div>
         ) : feedQuery.isLoading ? (
           <div className="flex flex-1 items-center justify-center">
             <LoadingCircle size="large" />
