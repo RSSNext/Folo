@@ -35,7 +35,7 @@ export function Settings() {
         ref={scrollViewRef}
         style={{ paddingTop: insets.top }}
         className="bg-system-grouped-background flex-1"
-        contentViewClassName="-mt-24"
+        contentViewClassName="-mt-24 pb-36"
       >
         <UserHeaderBanner scrollY={screenContext.reAnimatedScrollY} userId={whoami?.id} />
 
