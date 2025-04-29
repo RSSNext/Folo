@@ -1,3 +1,4 @@
+import type { ActionFilter, ActionModel } from "@follow/models/src/types"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -21,7 +22,6 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { useActionRule } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
-import type { ActionFilter, ActionRule } from "@/src/store/action/types"
 import { accentColor, useColors } from "@/src/theme/colors"
 
 import { availableActionList, filterFieldOptions, filterOperatorOptions } from "../actions/constant"
@@ -68,7 +68,7 @@ const RuleImpl: React.FC<{ index: number }> = ({ index }) => {
   )
 }
 
-const NameSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+const NameSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
   return (
     <GroupedInsetListCard>
@@ -93,7 +93,7 @@ const NameSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
   )
 }
 
-const FilterSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+const FilterSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
   const hasCustomFilters = rule.condition.length > 0
   return (
@@ -226,7 +226,7 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
   )
 }
 
-const ActionSection: React.FC<{ rule: ActionRule }> = ({ rule }) => {
+const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
   const enabledActions = availableActionList.filter(
     (action) => rule.result[action.value] !== undefined,

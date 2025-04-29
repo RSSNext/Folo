@@ -1,10 +1,10 @@
+import type { ActionId } from "@follow/models/src/types"
 import type { ParseKeys } from "i18next"
 import type { SFSymbol } from "sf-symbols-typescript"
 
 import type { SupportedLanguages } from "@/src/lib/language"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { actionActions } from "@/src/store/action/store"
-import type { ActionId } from "@/src/store/action/types"
 
 import { EditRewriteRulesScreen } from "../routes/EditRewriteRules"
 import { EditWebhooksScreen } from "../routes/EditWebhooks"

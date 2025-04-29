@@ -1,9 +1,15 @@
+import type {
+  ActionConditionIndex,
+  ActionFilterItem,
+  ActionId,
+  ActionModel,
+  ActionRules,
+} from "@follow/models/src/types"
 import { merge } from "es-toolkit/compat"
 
 import { apiClient } from "@/src/lib/api-fetch"
 
 import { createImmerSetter, createZustandStore } from "../internal/helper"
-import type { ActionFilterItem, ActionId, ActionRule, ActionRules, ConditionIndex } from "./types"
 
 type ActionStore = {
   rules: ActionRules
@@ -50,7 +56,7 @@ class ActionActions {
     })
   }
 
-  patchRule(index: number, rule: Partial<ActionRule>) {
+  patchRule(index: number, rule: Partial<ActionModel>) {
     immerSet((state) => {
       if (state.rules[index]) {
         state.rules[index] = merge(state.rules[index], rule)
@@ -71,7 +77,7 @@ class ActionActions {
     })
   }
 
-  pathCondition(index: ConditionIndex, condition: Partial<ActionFilterItem>) {
+  pathCondition(index: ActionConditionIndex, condition: Partial<ActionFilterItem>) {
     immerSet((state) => {
       const rule = state.rules[index.ruleIndex]
       if (!rule) return
@@ -82,7 +88,7 @@ class ActionActions {
     })
   }
 
-  addConditionItem(index: Omit<ConditionIndex, "conditionIndex">) {
+  addConditionItem(index: Omit<ActionConditionIndex, "conditionIndex">) {
     immerSet((state) => {
       const rule = state.rules[index.ruleIndex]
       if (!rule) return
@@ -92,7 +98,7 @@ class ActionActions {
       state.isDirty = true
     })
   }
-  deleteConditionItem(index: ConditionIndex) {
+  deleteConditionItem(index: ActionConditionIndex) {
     immerSet((state) => {
       const rule = state.rules[index.ruleIndex]
       if (!rule) return
@@ -106,7 +112,7 @@ class ActionActions {
     })
   }
 
-  addConditionGroup(index: Omit<ConditionIndex, "conditionIndex" | "groupIndex">) {
+  addConditionGroup(index: Omit<ActionConditionIndex, "conditionIndex" | "groupIndex">) {
     immerSet((state) => {
       const rule = state.rules[index.ruleIndex]
       if (!rule) return

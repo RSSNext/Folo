@@ -1,3 +1,4 @@
+import type { ActionModel } from "@follow/models/src/types"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
@@ -30,7 +31,6 @@ import {
   useUpdateActionsMutation,
 } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
-import type { ActionRule } from "@/src/store/action/types"
 import { accentColor } from "@/src/theme/colors"
 
 import { EditRuleScreen } from "./EditRule"
@@ -142,11 +142,11 @@ const ItemSeparatorComponent = () => {
   )
 }
 
-const keyExtractor = (item: ActionRule) => item.index.toString()
-const ListItemCell: ListRenderItem<ActionRule> = (props) => {
+const keyExtractor = (item: ActionModel) => item.index.toString()
+const ListItemCell: ListRenderItem<ActionModel> = (props) => {
   return <ListItemCellImpl {...props} />
 }
-const ListItemCellImpl: ListRenderItem<ActionRule> = ({ item: rule }) => {
+const ListItemCellImpl: ListRenderItem<ActionModel> = ({ item: rule }) => {
   const { t } = useTranslation("common")
   const navigation = useNavigation()
   const colors = useColors()

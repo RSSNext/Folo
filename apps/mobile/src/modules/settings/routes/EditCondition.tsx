@@ -1,3 +1,4 @@
+import type { ActionConditionIndex } from "@follow/models/src/types"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
@@ -17,7 +18,6 @@ import { views } from "@/src/constants/views"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { useActionRuleCondition } from "@/src/store/action/hooks"
 import { actionActions } from "@/src/store/action/store"
-import type { ConditionIndex } from "@/src/store/action/types"
 import { accentColor } from "@/src/theme/colors"
 
 import { filterFieldOptions, filterOperatorOptions } from "../actions/constant"
@@ -38,7 +38,7 @@ export const EditConditionScreen: NavigationControllerView<{
   )
 }
 
-function ConditionForm({ index }: { index: ConditionIndex }) {
+function ConditionForm({ index }: { index: ActionConditionIndex }) {
   const { t } = useTranslation("settings")
   const item = useActionRuleCondition(index)!
   const currentField = filterFieldOptions.find((field) => field.value === item.field)

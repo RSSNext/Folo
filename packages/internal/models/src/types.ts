@@ -116,37 +116,29 @@ export type MediaModel = Exclude<
   undefined
 >["entries"]["media"]
 
-export type ActionModel = {
-  name: string
-  condition: {
-    field?: ActionFeedField
-    operator?: ActionOperation
-    value?: string
-  }[][]
-  result: {
-    disabled?: boolean
-    translation?: boolean | string
-    summary?: boolean
-    readability?: boolean
-    silence?: boolean
-    block?: boolean
-    star?: boolean
-    sourceContent?: boolean
-    newEntryNotification?: boolean
-    rewriteRules?: {
-      from: string
-      to: string
-    }[]
-    blockRules?: {
-      field?: ActionEntryField
-      operator?: ActionOperation
-      value?: string | number
-    }[]
-    webhooks?: string[]
-  }
-}
+type ActionRulesRes = Exclude<
+  Exclude<ExtractBizResponse<typeof _apiClient.actions.$get>["data"], undefined>["rules"],
+  undefined | null
+>[number]
 
-export type ActionsInput = ActionModel[]
+export type ActionFilterItem = Partial<
+  Exclude<ActionRulesRes["condition"][number], { length: number }>
+>
+export type ActionFilterGroup = ActionFilterItem[]
+export type ActionFilter = ActionFilterGroup[]
+
+export type ActionModel = Omit<ActionRulesRes, "condition"> & {
+  condition: ActionFilter
+  index: number
+}
+export type ActionId = Exclude<keyof ActionModel["result"], "disabled">
+export type ActionRules = ActionModel[]
+
+export type ActionConditionIndex = {
+  ruleIndex: number
+  groupIndex: number
+  conditionIndex: number
+}
 
 export const TransactionTypes = ["mint", "purchase", "tip", "withdraw", "airdrop"] as const
 
