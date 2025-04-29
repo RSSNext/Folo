@@ -287,6 +287,10 @@ export const DiscoverFeedForm = ({
                       formRegister.onBlur(e)
                     })
                   }}
+                  onChange={(e) => {
+                    form.setValue(keyItem.name, e.target.value)
+                  }}
+                  defaultValue={parameters?.default ?? ""}
                   placeholder={
                     (parameters?.default ?? formPlaceholder[keyItem.name])
                       ? `e.g. ${formPlaceholder[keyItem.name]}`
