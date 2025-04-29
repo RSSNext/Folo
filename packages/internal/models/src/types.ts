@@ -130,6 +130,7 @@ export type ActionModel = {
     readability?: boolean
     silence?: boolean
     block?: boolean
+    star?: boolean
     sourceContent?: boolean
     newEntryNotification?: boolean
     rewriteRules?: {

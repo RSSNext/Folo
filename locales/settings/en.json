@@ -42,6 +42,7 @@
   "actions.action_card.rewrite_rules": "Rewrite rules",
   "actions.action_card.silence": "Silence",
   "actions.action_card.source_content": "View source content",
+  "actions.action_card.star": "Star",
   "actions.action_card.then_do": "Then do…",
   "actions.action_card.to": "To",
   "actions.action_card.translate_into": "Translate",

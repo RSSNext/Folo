@@ -794,6 +794,7 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
             sourceContent?: boolean
             silence?: boolean
             block?: boolean
+            star?: boolean
             newEntryNotification?: boolean
             rewriteRules?: {
               from: string
@@ -831,6 +832,7 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
             sourceContent?: boolean
             silence?: boolean
             block?: boolean
+            star?: boolean
             newEntryNotification?: boolean
             rewriteRules?: {
               from: string
@@ -1016,6 +1018,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<
         sourceContent: z.ZodOptional<z.ZodBoolean>
         silence: z.ZodOptional<z.ZodBoolean>
         block: z.ZodOptional<z.ZodBoolean>
+        star: z.ZodOptional<z.ZodBoolean>
         newEntryNotification: z.ZodOptional<z.ZodBoolean>
         rewriteRules: z.ZodOptional<
           z.ZodArray<
@@ -1098,6 +1101,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<
         sourceContent?: boolean | undefined
         silence?: boolean | undefined
         block?: boolean | undefined
+        star?: boolean | undefined
         newEntryNotification?: boolean | undefined
         rewriteRules?:
           | {
@@ -1144,6 +1148,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<
         sourceContent?: boolean | undefined
         silence?: boolean | undefined
         block?: boolean | undefined
+        star?: boolean | undefined
         newEntryNotification?: boolean | undefined
         rewriteRules?:
           | {
@@ -1229,6 +1234,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<
       sourceContent?: boolean | undefined
       silence?: boolean | undefined
       block?: boolean | undefined
+      star?: boolean | undefined
       newEntryNotification?: boolean | undefined
       rewriteRules?:
         | {
@@ -1311,6 +1317,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<
       sourceContent?: boolean | undefined
       silence?: boolean | undefined
       block?: boolean | undefined
+      star?: boolean | undefined
       newEntryNotification?: boolean | undefined
       rewriteRules?:
         | {
@@ -2827,6 +2834,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
                     sourceContent: z.ZodOptional<z.ZodBoolean>
                     silence: z.ZodOptional<z.ZodBoolean>
                     block: z.ZodOptional<z.ZodBoolean>
+                    star: z.ZodOptional<z.ZodBoolean>
                     newEntryNotification: z.ZodOptional<z.ZodBoolean>
                     rewriteRules: z.ZodOptional<
                       z.ZodArray<
@@ -2923,6 +2931,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
                     sourceContent?: boolean | undefined
                     silence?: boolean | undefined
                     block?: boolean | undefined
+                    star?: boolean | undefined
                     newEntryNotification?: boolean | undefined
                     rewriteRules?:
                       | {
@@ -2976,6 +2985,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
                     sourceContent?: boolean | undefined
                     silence?: boolean | undefined
                     block?: boolean | undefined
+                    star?: boolean | undefined
                     newEntryNotification?: boolean | undefined
                     rewriteRules?:
                       | {
@@ -3082,6 +3092,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
                   sourceContent?: boolean | undefined
                   silence?: boolean | undefined
                   block?: boolean | undefined
+                  star?: boolean | undefined
                   newEntryNotification?: boolean | undefined
                   rewriteRules?:
                     | {
@@ -3185,6 +3196,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
                   sourceContent?: boolean | undefined
                   silence?: boolean | undefined
                   block?: boolean | undefined
+                  star?: boolean | undefined
                   newEntryNotification?: boolean | undefined
                   rewriteRules?:
                     | {
@@ -3288,6 +3300,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
             sourceContent?: boolean | undefined
             silence?: boolean | undefined
             block?: boolean | undefined
+            star?: boolean | undefined
             newEntryNotification?: boolean | undefined
             rewriteRules?:
               | {
@@ -3378,6 +3391,7 @@ declare const actionsOpenAPISchema: z.ZodObject<
             sourceContent?: boolean | undefined
             silence?: boolean | undefined
             block?: boolean | undefined
+            star?: boolean | undefined
             newEntryNotification?: boolean | undefined
             rewriteRules?:
               | {
@@ -30616,6 +30630,7 @@ declare const _routes: hono_hono_base.HonoBase<
                             sourceContent?: boolean | undefined
                             silence?: boolean | undefined
                             block?: boolean | undefined
+                            star?: boolean | undefined
                             newEntryNotification?: boolean | undefined
                             rewriteRules?:
                               | {
@@ -30734,6 +30749,7 @@ declare const _routes: hono_hono_base.HonoBase<
                         sourceContent?: boolean | undefined
                         silence?: boolean | undefined
                         block?: boolean | undefined
+                        star?: boolean | undefined
                         newEntryNotification?: boolean | undefined
                         rewriteRules?:
                           | {
@@ -31353,6 +31369,7 @@ declare const _routes: hono_hono_base.HonoBase<
                             sourceContent?: boolean | undefined
                             silence?: boolean | undefined
                             block?: boolean | undefined
+                            star?: boolean | undefined
                             newEntryNotification?: boolean | undefined
                             rewriteRules?:
                               | {
@@ -31695,6 +31712,7 @@ declare const _routes: hono_hono_base.HonoBase<
                             sourceContent?: boolean | undefined
                             silence?: boolean | undefined
                             block?: boolean | undefined
+                            star?: boolean | undefined
                             newEntryNotification?: boolean | undefined
                             rewriteRules?:
                               | {

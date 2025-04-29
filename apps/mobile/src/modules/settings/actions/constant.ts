@@ -148,6 +148,11 @@ export const availableActionList: Array<{
     icon: "xmark.circle",
   },
   {
+    value: "star",
+    label: "actions.action_card.star",
+    icon: "star",
+  },
+  {
     value: "rewriteRules",
     label: "actions.action_card.rewrite_rules",
     icon: "pencil.and.outline",

@@ -62,6 +62,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
   const newEntryNotification = useActionByIndex(index, (a) => a.result.newEntryNotification)
   const silence = useActionByIndex(index, (a) => a.result.silence)
   const block = useActionByIndex(index, (a) => a.result.block)
+  const star = useActionByIndex(index, (a) => a.result.star)
   const rewriteRules = useActionByIndex(index, (a) => a.result.rewriteRules)
   const webhooks = useActionByIndex(index, (a) => a.result.webhooks)
 
@@ -147,6 +148,17 @@ export const TargetActionList = ({ index }: { index: number }) => {
         },
         onRemove: (data) => {
           delete data.result.block
+        },
+      },
+      {
+        title: t("actions.action_card.star"),
+        icon: <i className="i-mgc-star-cute-re" />,
+        enabled: !!star,
+        onInit: (data) => {
+          data.result.star = true
+        },
+        onRemove: (data) => {
+          delete data.result.star
         },
       },
       {
