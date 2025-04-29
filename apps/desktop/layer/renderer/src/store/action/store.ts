@@ -26,6 +26,7 @@ class ActionActionStatic {
         name,
         condition: [],
         result: {},
+        index: state.actions.length,
       })
       state.isDirty = true
     })
