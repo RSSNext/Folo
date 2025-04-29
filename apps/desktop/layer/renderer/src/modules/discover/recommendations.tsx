@@ -230,7 +230,7 @@ const RecommendationDrawerContent = ({
 
       {/* Close */}
       <ActionButton
-        className="absolute right-4 top-4"
+        className="absolute right-4 top-4 z-10"
         onClick={dismiss}
         tooltip={t("words.close", { ns: "common" })}
       >
