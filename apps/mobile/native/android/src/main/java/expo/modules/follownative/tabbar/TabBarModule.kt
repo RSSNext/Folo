@@ -1,8 +1,8 @@
 package expo.modules.follownative.tabbar
 
-import android.util.Log
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.launch
 
 class TabBarModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -10,14 +10,15 @@ class TabBarModule : Module() {
 
     View(TabBarRootView::class) {
       Prop("selectedIndex") { view: TabBarRootView, index: Int ->
-        view.setPage(index, false)
+        view.setSelectedIndex(index)
       }
 
       Events("onTabIndexChange")
+    }
 
-      AsyncFunction("switchTab") { view: TabBarRootView, index: Int ->
-        Log.d("[Native] switchTab", "Switching to tab index: $index")
-        view.setPage(index, true)
+    AsyncFunction("switchTab") { view: TabBarRootView, index: Int ->
+      appContext.mainQueue.launch {
+        view.setSelectedIndex(index)
       }
     }
   }
