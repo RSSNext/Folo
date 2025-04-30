@@ -57,7 +57,10 @@ export const initI18n = async () => {
   await i18next.use(initReactI18next).init({
     ns,
     lng: cache ? lang : fallbackLanguage,
-    fallbackLng: fallbackLanguage,
+    fallbackLng: {
+      default: [fallbackLanguage],
+      "zh-TW": ["zh-CN", fallbackLanguage],
+    },
     defaultNS,
     debug: import.meta.env.DEV,
 

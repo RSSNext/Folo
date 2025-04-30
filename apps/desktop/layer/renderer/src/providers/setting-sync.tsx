@@ -60,6 +60,9 @@ const useLanguageSync = () => {
   useEffect(() => {
     let mounted = true
 
+    if (language === "zh-TW") {
+      loadLanguageAndApply("zh-CN")
+    }
     loadLanguageAndApply(language as string).then(() => {
       langChain.next(() => {
         if (mounted) {

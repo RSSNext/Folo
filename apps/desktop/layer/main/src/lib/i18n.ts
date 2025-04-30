@@ -7,7 +7,10 @@ export const defaultNS = "native"
 export const i18n = i18next.createInstance() as typeof i18next
 
 i18n.init({
-  fallbackLng: "en",
+  fallbackLng: {
+    default: ["en"],
+    "zh-TW": ["zh-CN", "en"],
+  },
   defaultNS,
   resources,
 })

@@ -34,7 +34,10 @@ export async function initializeI18n() {
       resources: defaultResources,
 
       lng: language,
-      fallbackLng: fallbackLanguage,
+      fallbackLng: {
+        default: [fallbackLanguage],
+        "zh-TW": ["zh-CN", fallbackLanguage],
+      },
 
       interpolation: {
         escapeValue: false,
