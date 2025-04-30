@@ -260,8 +260,6 @@
   "new_user_guide.step.power.description": "Folo 使用区块链技术作为活跃用户和优秀创作者的激励机制。用户可以通过持有和使用 Power 来获得更多服务和福利。创作者可以通过提供高质量的内容和服务来获得更多奖励。",
   "new_user_guide.step.profile.description": "你也可以稍后在“设置”中设置它。",
   "new_user_guide.step.profile.title": "设置你的个人资料",
-  "new_user_guide.step.rsshub.info": "一切皆可 RSS。我们的 RSSHub 社区由超过 1,000 名开发者组成，经过六年的努力，适配了近千个网站，以提供几乎所有你需要的内容。这包括 X（Twitter）、Instagram、PlayStation、Spotify、Telegram、YouTube 等平台。你还可以编写自己的脚本来适配其他网站。",
-  "new_user_guide.step.rsshub.title": "从 RSSHub 订阅",
   "new_user_guide.step.shortcuts.description1": "快捷键让你更方便、高效地使用 Folo",
   "new_user_guide.step.shortcuts.description2": "随时按 <kbd /> 快速查看所有快捷键。",
   "new_user_guide.step.shortcuts.title": "快捷键",

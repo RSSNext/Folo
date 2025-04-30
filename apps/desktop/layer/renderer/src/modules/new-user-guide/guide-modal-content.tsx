@@ -8,8 +8,6 @@ import type { ComponentProps, FunctionComponentElement } from "react"
 import { createElement, useEffect, useMemo, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
-import RSSHubIconUrl from "~/assets/rsshub-icon.png?url"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { mountLottie } from "~/components/ui/lottie-container"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useI18n } from "~/hooks/common"
@@ -21,9 +19,7 @@ import { ProfileSettingForm } from "../profile/profile-setting-form"
 import { settingSyncQueue } from "../settings/helper/sync-queue"
 import { LanguageSelector } from "../settings/tabs/general"
 import { BehaviorGuide } from "./steps/behavior"
-import { RSSHubGuide } from "./steps/rsshub"
 
-const RSSHubIcon = new URL(RSSHubIconUrl, import.meta.url).href
 const containerWidth = 600
 const variants = {
   enter: (direction: number) => {
@@ -86,8 +82,6 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   const t = useI18n()
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState(1)
-  const lang = useGeneralSettingKey("language")
-  const defaultLang = ["zh-CN", "zh-HK", "zh-TW"].includes(lang ?? "") ? "zh-CN" : "en"
 
   const guideSteps = useMemo(
     () =>
@@ -115,22 +109,13 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           content: createElement(BehaviorGuide),
           icon: tw`i-mgc-cursor-3-cute-re`,
         },
-        {
-          title: t.app("new_user_guide.step.rsshub.title"),
-          description: t.app("new_user_guide.step.rsshub.info"),
-          content: createElement(RSSHubGuide, {
-            categories: "popular",
-            lang: defaultLang,
-          }),
-          icon: <img src={RSSHubIcon} className="size-[22px]" />,
-        },
       ].filter((i) => !!i) as {
         title: string
         icon: React.ReactNode
         content: FunctionComponentElement<object>
         description?: string
       }[],
-    [t, defaultLang],
+    [t],
   )
 
   const totalSteps = useMemo(() => guideSteps.length, [guideSteps])

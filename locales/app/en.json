@@ -262,8 +262,6 @@
   "new_user_guide.step.power.description": "Folo uses blockchain technology as an incentive mechanism for active users and outstanding creators. Users can obtain more services and benefits by holding and using Power Token. Creators can obtain more rewards by providing high-quality content and services.",
   "new_user_guide.step.profile.description": "You can also set it up later in Preferences.",
   "new_user_guide.step.profile.title": "Setup your profile",
-  "new_user_guide.step.rsshub.info": "Everything is RSSible. Our [RSSHub](https://github.com/DIYgod/RSSHub) community, comprising over 1,000 developers, has spent six years adapting nearly a thousand websites to provide almost all the content you need. This includes platforms like X (Twitter), Instagram, PlayStation, Spotify, Telegram, YouTube, and more. You can also write your own scripts to adapt additional websites.",
-  "new_user_guide.step.rsshub.title": "Subscribe from RSSHub",
   "new_user_guide.step.shortcuts.description1": "Shortcut keys allow you to use Folo more conveniently and efficiently.",
   "new_user_guide.step.shortcuts.description2": "Press <kbd /> to quickly view all shortcut keys at any time.",
   "new_user_guide.step.shortcuts.title": "Shortcuts",

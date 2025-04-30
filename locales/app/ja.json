@@ -229,8 +229,6 @@
   "new_user_guide.step.features.integration.description": "統合により、他のサービスにエントリーを保存することができます。現在対応しているサービスは以下のとおりです:\n- Eagle \n- Readwise \n- Instapaper \n- Obsidian \n- Outline \n- Readeck",
   "new_user_guide.step.migrate.title": "OPML ファイルを構成する",
   "new_user_guide.step.power.description": "Folo はアクティブなユーザーや優れたクリエイターに対するインセンティブ メカニズムとしてブロックチェーン技術を利用しています。ユーザーは Power トークンを保有・利用することで、より多くのサービスや特典を得ることができます。クリエイターは、質の高いコンテンツやサービスを提供することで、より多くの報酬を得ることができます。",
-  "new_user_guide.step.rsshub.info": "すべてを RSSible（RSS化） わたしたちの [RSSHub](https://github.com/DIYgod/RSSHub) コミュニティです。1,000人以上の開発者で構成され、6年間かけて約1,000のウェブサイトを適応させ、あなたが必要とするほぼすべてのコンテンツを提供してきました。これにはX（Twitter）、Instagram、PlayStation、Spotify、Telegram、YouTubeなどのプラットフォームが含まれます。また独自のスクリプトを記述して、追加のウェブサイトを適応させることもできます。",
-  "new_user_guide.step.rsshub.title": "RSSHub を購読",
   "new_user_guide.step.shortcuts.description1": "ショートカットキーを利用すると Folo をより便利に、より効率的に使えます。",
   "new_user_guide.step.shortcuts.description2": " <kbd /> を押すと素早くすべてのショートカットキーにアクセスできます。",
   "new_user_guide.step.shortcuts.title": "ショートカット",

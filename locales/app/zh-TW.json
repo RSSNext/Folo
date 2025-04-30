@@ -242,8 +242,6 @@
   "new_user_guide.step.features.integration.description": "整合功能允許您將項目儲存到其他服務。目前支持的服務有：\n- Eagle\n- Readwise\n- Instapaper\n- Obsidian\n- Outline\n- Readeck",
   "new_user_guide.step.migrate.title": "從 OPML 文件導入",
   "new_user_guide.step.power.description": "Folo 使用區塊鏈技術來獎勵活躍使用者和優秀創作者。使用者可以透過 Power Token 獲得更多服務和福利，創作者可以透過提供高品質的內容和服務獲得更多獎勵。",
-  "new_user_guide.step.rsshub.info": "萬物皆可 RSS 我們的 [RSSHub](https://github.com/DIYgod/RSSHub) 社群由超過 1,000 名開發者組成，花了六年時間支援了近千個網站，為您提供幾乎所有需要的內容。這些網站包括 X（Twitter）、Instagram、PlayStation、Spotify、Telegram、YouTube 等平台。您也可以撰寫自己的腳本來新增更多網站支援。",
-  "new_user_guide.step.rsshub.title": "從 RSSHub 訂閱",
   "new_user_guide.step.shortcuts.description1": "快捷鍵讓您更方便且有效率的使用 Folo。",
   "new_user_guide.step.shortcuts.description2": "按 <kbd /> 隨時快速查看所有快捷鍵。",
   "new_user_guide.step.shortcuts.title": "快捷鍵",
