@@ -9,16 +9,13 @@ import { createElement, useEffect, useMemo, useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import RSSHubIconUrl from "~/assets/rsshub-icon.png?url"
-import { useIsInMASReview } from "~/atoms/server-configs"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { mountLottie } from "~/components/ui/lottie-container"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useI18n } from "~/hooks/common"
 import confettiUrl from "~/lottie/confetti.lottie?url"
-import { MyWalletSection } from "~/modules/power/my-wallet-section"
 import { settings } from "~/queries/settings"
 
-import { ActivationModalContent } from "../activation/ActivationModalContent"
 import { DiscoverImport } from "../discover/import"
 import { ProfileSettingForm } from "../profile/profile-setting-form"
 import { settingSyncQueue } from "../settings/helper/sync-queue"
@@ -52,9 +49,9 @@ const variants = {
 function Intro() {
   const { t } = useTranslation("app")
   return (
-    <div className="max-w-[50ch] space-y-4 text-balance text-center">
+    <div className="max-w-[50ch] space-y-8 text-balance text-center">
       <Logo className="mx-auto size-20" />
-      <p className="mt-5 text-xl font-bold">{t("new_user_guide.intro.title")}</p>
+      <p className="mt-5 text-2xl font-bold">{t("new_user_guide.intro.title")}</p>
       <p className="text-lg">{t("new_user_guide.intro.description")}</p>
       <LanguageSelector contentClassName="z-10" />
     </div>
@@ -64,9 +61,9 @@ function Intro() {
 function Outtro() {
   const { t } = useTranslation("app")
   return (
-    <div className="max-w-[50ch] space-y-4 text-balance text-center">
+    <div className="max-w-[50ch] space-y-8 text-balance text-center">
       <Logo className="mx-auto size-20" />
-      <p className="mt-5 text-xl font-semibold">{t("new_user_guide.outro.title")}</p>
+      <p className="mt-5 text-2xl font-semibold">{t("new_user_guide.outro.title")}</p>
       <p className="text-lg">{t("new_user_guide.outro.description")}</p>
 
       <div className="space-y-2 text-sm opacity-80">
@@ -91,13 +88,19 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   const [direction, setDirection] = useState(1)
   const lang = useGeneralSettingKey("language")
   const defaultLang = ["zh-CN", "zh-HK", "zh-TW"].includes(lang ?? "") ? "zh-CN" : "en"
-  const isInMASReview = useIsInMASReview()
 
   const guideSteps = useMemo(
     () =>
       [
         {
-          title: t.app("new_user_guide.step.migrate.profile"),
+          title: t.app("new_user_guide.step.migrate.title"),
+          description: t.app("new_user_guide.step.migrate.description"),
+          content: createElement(DiscoverImport),
+          icon: "i-mgc-file-import-cute-re",
+        },
+        {
+          title: t.app("new_user_guide.step.profile.title"),
+          description: t.app("new_user_guide.step.profile.description"),
           content: (
             <ProfileSettingForm
               className="w-[500px] max-w-full"
@@ -106,35 +109,11 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           ),
           icon: "i-mgc-user-setting-cute-re",
         },
-        ...(!isInMASReview
-          ? [
-              {
-                title: t.app("new_user_guide.step.activation.title"),
-                description: t.app("new_user_guide.step.activation.description"),
-                content: (
-                  <ActivationModalContent className="w-full max-w-[500px]" hideDescription />
-                ),
-                icon: "i-mgc-love-cute-re",
-              },
-              {
-                title: t.app("new_user_guide.step.migrate.wallet"),
-                content: <MyWalletSection className="w-full max-w-[600px]" />,
-                icon: <i className="i-mgc-power text-accent" />,
-              },
-            ]
-          : []),
         {
           title: t.app("new_user_guide.step.behavior.unread_question.content"),
-          description: t.app("new_user_guide.step.behavior.unread_question.description"),
+          description: t.app("new_user_guide.step.profile.description"),
           content: createElement(BehaviorGuide),
           icon: tw`i-mgc-cursor-3-cute-re`,
-        },
-        {
-          title: t.app("new_user_guide.step.migrate.title"),
-          content: createElement(DiscoverImport, {
-            isInit: true,
-          }),
-          icon: "i-mgc-file-import-cute-re",
         },
         {
           title: t.app("new_user_guide.step.rsshub.title"),
@@ -180,7 +159,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   return (
     <m.div
       layout
-      className="bg-theme-background relative flex min-h-full w-full flex-col items-center justify-center overflow-hidden sm:min-h-[80%] sm:w-4/5 sm:rounded-xl sm:shadow-xl"
+      className="bg-theme-background relative flex min-h-full w-full flex-col items-center justify-center overflow-hidden pb-14 sm:min-h-[80%] sm:w-4/5 sm:rounded-xl sm:shadow-xl"
     >
       <div className="center relative mx-auto w-full">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
@@ -198,10 +177,10 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
             className="min-w-0 px-6 sm:mt-12"
           >
             {!!title && (
-              <div className="mb-6">
-                <h1 className="mb-2 flex w-full items-center justify-center gap-2 text-xl font-bold">
+              <div className="mb-8">
+                <h1 className="mb-2 flex w-full items-center justify-center gap-2 text-2xl font-bold">
                   {typeof guideSteps[step - 1]!.icon === "string" ? (
-                    <i className={cn(guideSteps[step - 1]!.icon, "size-[22px]")} />
+                    <i className={cn(guideSteps[step - 1]!.icon, "text-accent")} />
                   ) : (
                     guideSteps[step - 1]!.icon
                   )}
@@ -237,7 +216,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
         ))}
       </div>
 
-      <div className="absolute inset-x-0 bottom-4 z-[1] flex w-full items-center justify-between px-6">
+      <div className="absolute inset-x-0 bottom-8 z-[1] flex w-full items-center justify-between px-8">
         <div className={cn("flex h-fit gap-3 max-sm:hidden", step === 0 && "invisible")}>
           {Array.from({ length: totalSteps }, (_, i) => i + 1).map((i) => (
             <Step key={i} step={i} currentStep={step} />
@@ -247,6 +226,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
         <div className="flex gap-2">
           {step !== 0 && (
             <Button
+              size="lg"
               onClick={() => {
                 if (step > 0) {
                   setStep((prev) => prev - 1)
@@ -259,6 +239,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
             </Button>
           )}
           <Button
+            size="lg"
             disabled={isLottieAnimating}
             onClick={(e) => {
               if (step <= totalSteps) {

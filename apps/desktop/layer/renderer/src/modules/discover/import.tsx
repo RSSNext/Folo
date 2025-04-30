@@ -1,3 +1,9 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@follow/components/ui/accordion/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import {
@@ -5,7 +11,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
@@ -18,6 +23,7 @@ import { Trans, useTranslation } from "react-i18next"
 import { z } from "zod"
 
 import { DropZone } from "~/components/ui/drop-zone"
+import { Media } from "~/components/ui/media"
 import { apiFetch } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
 import { Queries } from "~/queries"
@@ -65,7 +71,7 @@ const list: {
   },
 ]
 
-export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
+export function DiscoverImport() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   })
@@ -104,7 +110,86 @@ export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
   const { t } = useTranslation()
 
   return (
-    <>
+    <div className="flex flex-col">
+      <div className="mb-2 font-medium">1. {t("discover.import.opml_step1")}</div>
+      <Accordion type="single" collapsible className="mb-6 w-[500px]">
+        <AccordionItem value="inoreader">
+          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
+            <Media
+              className="size-5"
+              src="https://inoreader.com/favicon.ico"
+              alt="inoreader"
+              type="photo"
+            />
+            {t("discover.import.opml_step1_inoreader")}
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <p>
+              <Trans
+                ns="app"
+                i18nKey="discover.import.opml_step1_inoreader_step1"
+                components={{
+                  Link: (
+                    <a
+                      href="https://www.inoreader.com/preferences/content"
+                      className="underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      inoreader.com/preferences/content
+                    </a>
+                  ),
+                }}
+              />
+            </p>
+            <p>{t("discover.import.opml_step1_inoreader_step2")}</p>
+            <p>{t("discover.import.opml_step1_inoreader_step3")}</p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="feedly">
+          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
+            <Media
+              className="size-5"
+              src="https://feedly.com/favicon.ico"
+              alt="feedly"
+              type="photo"
+            />
+            {t("discover.import.opml_step1_feedly")}
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <p>
+              <Trans
+                ns="app"
+                i18nKey="discover.import.opml_step1_feedly_step1"
+                components={{
+                  Link: (
+                    <a
+                      href="https://feedly.com/i/opml"
+                      className="underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      feedly.com/i/opml
+                    </a>
+                  ),
+                }}
+              />
+            </p>
+            <p>{t("discover.import.opml_step1_feedly_step2")}</p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="other" className="border-b-0">
+          <AccordionTrigger className="justify-normal gap-2 hover:no-underline">
+            <i className="i-mgc-rss-cute-fi -ml-[0.14rem] size-6 text-orange-500" />
+            {t("discover.import.opml_step1_other")}
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            {t("discover.import.opml_step1_other_step1")}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <div className="mb-4 font-medium">2. {t("discover.import.opml_step2")}</div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-[540px] space-y-8">
           <FormField
@@ -112,9 +197,6 @@ export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
             name="file"
             render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>
-                  {isInit ? t("discover.import.new_import_opml") : t("discover.import.opml")}
-                </FormLabel>
                 <FormControl>
                   <DropZone onDrop={(fileList) => onChange(fileList[0])}>
                     {form.formState.dirtyFields.file ? (
@@ -189,6 +271,6 @@ export function DiscoverImport({ isInit = false }: { isInit?: boolean }) {
           </Card>
         </div>
       )}
-    </>
+    </div>
   )
 }
