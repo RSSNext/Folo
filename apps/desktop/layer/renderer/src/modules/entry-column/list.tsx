@@ -114,24 +114,25 @@ export const EntryList: FC<EntryListProps> = memo(
       [groupCounts],
     )
 
+    const cacheKey = `${view}-${feedId}`
     const rowVirtualizer = useVirtualizer({
       count: entriesIds.length + 1,
       estimateSize: () => 112,
       overscan: 5,
       gap,
       getScrollElement: () => scrollRef,
-      initialOffset: offsetCache.get(feedId) ?? 0,
-      initialMeasurementsCache: measurementsCache.get(feedId) ?? [],
+      initialOffset: offsetCache.get(cacheKey) ?? 0,
+      initialMeasurementsCache: measurementsCache.get(cacheKey) ?? [],
       onChange: useTypeScriptHappyCallback(
         (virtualizer: Virtualizer<HTMLElement, Element>) => {
           if (!virtualizer.isScrolling) {
-            measurementsCache.put(feedId, virtualizer.measurementsCache)
-            offsetCache.put(feedId, virtualizer.scrollOffset ?? 0)
+            measurementsCache.put(cacheKey, virtualizer.measurementsCache)
+            offsetCache.put(cacheKey, virtualizer.scrollOffset ?? 0)
           }
 
           onRangeChange?.(virtualizer.range as Range)
         },
-        [feedId],
+        [cacheKey],
       ),
       rangeExtractor: useTypeScriptHappyCallback(
         (range: Range) => {
