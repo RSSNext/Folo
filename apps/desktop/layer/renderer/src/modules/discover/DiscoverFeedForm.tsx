@@ -1,6 +1,6 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
-import { Form, FormItem, FormLabel } from "@follow/components/ui/form/index.jsx"
+import { Form, FormField, FormItem, FormLabel } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
@@ -150,7 +150,7 @@ export const DiscoverFeedForm = ({
     for (const key in route.parameters) {
       const params = normalizeRSSHubParameters(route.parameters[key]!)
       if (!params) continue
-      ret[key] = params.default
+      ret[key] = params.default || ""
     }
     return ret
   }, [route.parameters])
@@ -251,64 +251,72 @@ export const DiscoverFeedForm = ({
                   routePrefix={`rsshub://${routePrefix}`}
                 />
               )}
-              <form className="flex flex-col gap-4 px-1" ref={formElRef}>
+              <form
+                id="discover-feed-form"
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4 px-1"
+                ref={formElRef}
+              >
                 {keys.map((keyItem) => {
                   const parameters = normalizeRSSHubParameters(route.parameters?.[keyItem.name]!)
 
-                  const { ref, ...formRegister } = form.register(keyItem.name)
+                  const { ref } = form.register(keyItem.name)
 
                   return (
-                    <FormItem key={keyItem.name} className="flex flex-col space-y-2">
-                      <FormLabel className="text-text text-headline pl-3 capitalize">
-                        {keyItem.name}
-                        {!keyItem.optional && <sup className="text-red ml-1 align-sub">*</sup>}
-                      </FormLabel>
-                      {parameters?.options ? (
-                        <Select
-                          {...formRegister}
-                          onValueChange={(value) => {
-                            form.setValue(keyItem.name, value)
-                          }}
-                          defaultValue={parameters.default || void 0}
-                        >
-                          <SelectTrigger ref={ref}>
-                            <SelectValue placeholder={t("discover.select_placeholder")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {parameters.options.map((option) => (
-                              <SelectItem key={option.value} value={option.value || ""}>
-                                {option.label}
-                                {parameters.default === option.value &&
-                                  t("discover.default_option")}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          {...formRegister}
-                          onBlur={(e) => {
-                            nextFrame(() => {
-                              formRegister.onBlur(e)
-                            })
-                          }}
-                          onChange={(e) => {
-                            form.setValue(keyItem.name, e.target.value)
-                          }}
-                          defaultValue={parameters?.default ?? ""}
-                          placeholder={
-                            (parameters?.default ?? formPlaceholder[keyItem.name])
-                              ? `e.g. ${formPlaceholder[keyItem.name]}`
-                              : void 0
-                          }
-                        />
+                    <FormField
+                      control={form.control}
+                      key={keyItem.name}
+                      name={keyItem.name}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col space-y-2">
+                          <FormLabel className="text-text text-headline pl-3 capitalize">
+                            {keyItem.name}
+                            {!keyItem.optional && <sup className="text-red ml-1 align-sub">*</sup>}
+                          </FormLabel>
+                          {parameters?.options ? (
+                            <Select
+                              {...field}
+                              onValueChange={(value) => {
+                                field.onChange(value)
+                              }}
+                              defaultValue={parameters.default || void 0}
+                            >
+                              <SelectTrigger ref={ref}>
+                                <SelectValue placeholder={t("discover.select_placeholder")} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {parameters.options.map((option) => (
+                                  <SelectItem key={option.value} value={option.value || ""}>
+                                    {option.label}
+                                    {parameters.default === option.value &&
+                                      t("discover.default_option")}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              {...field}
+                              onBlur={() => {
+                                nextFrame(() => {
+                                  field.onBlur()
+                                })
+                              }}
+                              placeholder={
+                                (parameters?.default ?? formPlaceholder[keyItem.name])
+                                  ? `e.g. ${formPlaceholder[keyItem.name]}`
+                                  : void 0
+                              }
+                            />
+                          )}
+                          {!!parameters && (
+                            <Markdown className="text-text-secondary text-footnote w-full max-w-full whitespace-normal break-all pl-3">
+                              {parameters.description}
+                            </Markdown>
+                          )}
+                        </FormItem>
                       )}
-                      {!!parameters && (
-                        <Markdown className="text-text-secondary text-footnote w-full max-w-full whitespace-normal break-all pl-3">
-                          {parameters.description}
-                        </Markdown>
-                      )}
-                    </FormItem>
+                    />
                   )
                 })}
                 {routeParams && (
@@ -340,15 +348,18 @@ export const DiscoverFeedForm = ({
                     <FeedMaintainers maintainers={route.maintainers} />
                   </>
                 )}
+
+                <RootPortal to={rootContainerRef.current}>
+                  <div className="flex items-center justify-end gap-4 pt-2">
+                    <Button form="discover-feed-form" type="submit">
+                      {t("discover.preview")}
+                    </Button>
+                  </div>
+                </RootPortal>
               </form>
             </div>
           </div>
         </ScrollArea.ScrollArea>
-        <RootPortal to={rootContainerRef.current}>
-          <div className="flex items-center justify-end gap-4 pt-2">
-            <Button onClick={form.handleSubmit(onSubmit)}>{t("discover.preview")}</Button>
-          </div>
-        </RootPortal>
       </Form>
 
       <ReadmeAside description={route.description} />
