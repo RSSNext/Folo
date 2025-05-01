@@ -36,3 +36,11 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+
+
+ios/Pods
+android
+Podfile.lock
+
+buildServer.json

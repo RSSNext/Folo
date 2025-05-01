@@ -21,6 +21,4 @@ vite.config.*.mjs
 
 apps/desktop/src/renderer/dev-dist
 tsconfig.tsbuildinfo
-
-apps/mobile/ios
-apps/mobile/android
+buildServer.json

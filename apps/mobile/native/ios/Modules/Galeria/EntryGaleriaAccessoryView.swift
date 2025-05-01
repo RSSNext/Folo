@@ -9,7 +9,7 @@ import ExpoModulesCore
 import SwiftUI
 import UIKit
 
-class ExpoEntryGaleriaAccessoryViewProps: ExpoSwiftUI.ViewProps {
+final class ExpoEntryGaleriaAccessoryViewProps: ExpoSwiftUI.ViewProps {
   @Field var author: String = ""
   @Field var avatarUrl: URL?
   @Field var publishedAt: Date = .now
@@ -18,7 +18,7 @@ class ExpoEntryGaleriaAccessoryViewProps: ExpoSwiftUI.ViewProps {
 
 struct ExpoEntryGaleriaAccessoryView: ExpoSwiftUI.View {
 
-  @EnvironmentObject var props: ExpoEntryGaleriaAccessoryViewProps
+  @ObservedObject var props: ExpoEntryGaleriaAccessoryViewProps
 
   var body: some View {
     let author = props.author
@@ -82,7 +82,7 @@ struct EntryGaleriaAccessoryView: View {
       }
       .padding(.horizontal, 16)
       .padding(.top, 16)
-//      Spacer()
+      //      Spacer()
 
       ScrollView {
         WebViewManager.swiftUIView.frame(height: WebViewManager.state.contentHeight)
@@ -117,5 +117,3 @@ struct EntryGaleriaAccessoryView: View {
     .edgesIgnoringSafeArea(.all)
   }
 }
-
-
