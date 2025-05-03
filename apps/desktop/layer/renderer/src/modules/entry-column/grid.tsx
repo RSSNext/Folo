@@ -178,7 +178,6 @@ const VirtualGridImpl: FC<
   })
 
   useEffect(() => {
-    rowVirtualizer.measure()
     if (!listRef) return
     listRef.current = rowVirtualizer
   }, [rowVirtualizer, listRef])
@@ -188,6 +187,7 @@ const VirtualGridImpl: FC<
       rowVirtualizer.measure()
       columnVirtualizer.measure()
     }
+    measureRef.current?.()
   }, [columnVirtualizer, measureRef, rowVirtualizer])
 
   const virtualItems = rowVirtualizer.getVirtualItems()
