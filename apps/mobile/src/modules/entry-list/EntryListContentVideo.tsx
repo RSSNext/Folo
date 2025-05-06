@@ -58,7 +58,6 @@ export const EntryListContentVideo = ({
       onScroll={onScroll}
       onEndReached={fetchNextPage}
       numColumns={2}
-      estimatedItemSize={100}
       ListFooterComponent={ListFooterComponent}
       {...rest}
       onRefresh={refetch}

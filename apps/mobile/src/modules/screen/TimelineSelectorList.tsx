@@ -1,13 +1,8 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { nextFrame } from "@follow/utils"
-import type {
-  FlashListProps,
-  MasonryFlashListProps,
-  MasonryFlashListRef,
-} from "@shopify/flash-list"
-import { FlashList, MasonryFlashList } from "@shopify/flash-list"
+import type { FlashListProps } from "@shopify/flash-list"
+import { FlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
-import type { ElementRef, RefObject } from "react"
 import { use, useCallback, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { RefreshControl, View } from "react-native"
@@ -118,8 +113,8 @@ export const TimelineSelectorMasonryList = ({
   isRefetching,
   ...props
 }: Props &
-  Omit<MasonryFlashListProps<any>, "onRefresh"> & {
-    ref?: React.Ref<ElementRef<typeof MasonryFlashList> | null>
+  Omit<FlashListProps<any>, "onRefresh"> & {
+    ref?: React.Ref<FlashList<any> | null>
   }) => {
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
@@ -147,8 +142,9 @@ export const TimelineSelectorMasonryList = ({
   }
 
   return (
-    <MasonryFlashList
-      ref={ref as RefObject<MasonryFlashListRef<any>>}
+    <FlashList
+      masonry
+      ref={ref}
       refreshControl={
         <RefreshControl
           progressViewOffset={headerHeight}

@@ -58,7 +58,6 @@ export const EntryListContentArticle = ({
       data={entryIds}
       extraData={playingAudioUrl}
       keyExtractor={defaultKeyExtractor}
-      estimatedItemSize={100}
       renderItem={renderItem}
       onEndReached={fetchNextPage}
       onScroll={onScroll}

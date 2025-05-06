@@ -246,7 +246,6 @@ export const RecommendationTab: TabComponent<{
           }
         }}
         scrollEventThrottle={16}
-        estimatedItemSize={150}
         ref={listRef}
         data={alphabetGroups}
         keyExtractor={keyExtractor}

@@ -51,7 +51,6 @@ export const EntryListContentSocial = ({
       isRefetching={isRefetching}
       data={entryIds}
       keyExtractor={(id) => id}
-      estimatedItemSize={100}
       renderItem={renderItem}
       onEndReached={fetchNextPage}
       onViewableItemsChanged={onViewableItemsChanged}

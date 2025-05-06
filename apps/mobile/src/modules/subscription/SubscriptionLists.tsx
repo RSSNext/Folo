@@ -118,7 +118,6 @@ const SubscriptionListImpl = ({
       }}
       isRefetching={refreshing}
       data={data}
-      estimatedItemSize={50}
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
       extraData={extraData}

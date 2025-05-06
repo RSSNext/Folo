@@ -48,7 +48,6 @@ export const EntryListContentPicture = ({
       onEndReached={fetchNextPage}
       numColumns={2}
       style={hackStyle}
-      estimatedItemSize={100}
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
