@@ -149,7 +149,7 @@ export function Recommendations() {
         </div>
         <div className="center flex justify-center">
           <div className="flex items-center gap-2">
-            <span className="text-text text-sm font-medium">Language:</span>
+            <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}</span>
             <ResponsiveSelect
               value={selectedLang}
               onValueChange={handleLangChange}

@@ -92,7 +92,7 @@ export const FeedCard: FC<{
             )}
             <CardFooter className="flex justify-between gap-4 px-4 pb-3">
               <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-                {item.analytics?.subscriptionCount && (
+                {!!item.analytics?.subscriptionCount && (
                   <div className="flex items-center gap-1.5">
                     <i className="i-mgc-user-3-cute-re" />
 
@@ -141,6 +141,7 @@ export const FeedCard: FC<{
                 )}
                 <Button
                   variant={isSubscribed ? followedButtonVariant : followButtonVariant}
+                  disabled={isSubscribed}
                   onClick={() => {
                     follow({
                       isList: !!item.list?.id,
