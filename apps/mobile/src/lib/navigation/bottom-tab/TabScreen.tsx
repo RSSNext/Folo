@@ -1,18 +1,18 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { use, useEffect, useMemo } from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet } from "react-native"
 
 import { WrappedScreenItem } from "../WrappedScreenItem"
 import { BottomTabContext } from "./BottomTabContext"
-import { LifecycleEvents, ScreenNameRegister, TabScreenIdentifierRegister } from "./shared"
+import { TabScreenWrapper } from "./native"
+import { LifecycleEvents, ScreenNameRegister } from "./shared"
 import type { TabScreenContextType } from "./TabScreenContext"
 import { TabScreenContext } from "./TabScreenContext"
 import type { TabScreenComponent, TabScreenProps } from "./types"
 
 export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenIndex">>> = ({
   children,
-  identifier,
   ...props
 }) => {
   const { tabScreenIndex } = props as any as TabScreenProps
@@ -24,7 +24,8 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   } = use(BottomTabContext)
 
   const setTabScreens = useSetAtom(tabScreens)
-  useEffect(() => {
+
+  const mergedProps = useMemo(() => {
     const propsFromChildren: Partial<TabScreenProps> = {}
     if (children && typeof children === "object") {
       const childType = (children as any).type as TabScreenComponent
@@ -34,18 +35,24 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
       if ("title" in childType) {
         propsFromChildren.title = childType.title
       }
+      if ("lazy" in childType) {
+        propsFromChildren.lazy = childType.lazy
+      }
       if ("identifier" in childType && typeof childType.identifier === "string") {
         propsFromChildren.identifier = childType.identifier
       }
     }
-
+    return {
+      ...propsFromChildren,
+      ...props,
+    }
+  }, [children, props])
+  useEffect(() => {
     setTabScreens((prev) => [
       ...prev,
       {
-        ...propsFromChildren,
-        ...props,
+        ...mergedProps,
         tabScreenIndex,
-        identifier,
       },
     ])
 
@@ -54,7 +61,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
         prev.filter((tabScreen) => tabScreen.tabScreenIndex !== tabScreenIndex),
       )
     }
-  }, [setTabScreens, props, tabScreenIndex, children, identifier])
+  }, [mergedProps, setTabScreens, tabScreenIndex])
 
   const currentSelectedIndex = useAtomValue(currentIndexAtom)
 
@@ -78,26 +85,25 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   const ctxValue = useMemo<TabScreenContextType>(
     () => ({
       tabScreenIndex,
-      titleAtom: atom(props.title),
-      identifierAtom: atom(identifier ?? ""),
+      identifierAtom: atom(mergedProps.identifier ?? ""),
+      titleAtom: atom(mergedProps.title),
     }),
-    [tabScreenIndex, props.title, identifier],
+    [tabScreenIndex, mergedProps.identifier, mergedProps.title],
   )
-  const shouldLoadReact = isSelected || isLoadedBefore
+  const shouldLoadReact = mergedProps.lazy ? isSelected || isLoadedBefore : true
 
+  const render = __DEV__ ? isSelected : true
   return (
-    <View className={isSelected ? "flex-1" : "hidden"} style={StyleSheet.absoluteFill}>
+    <TabScreenWrapper style={StyleSheet.absoluteFill}>
       <TabScreenContext value={ctxValue}>
-        {shouldLoadReact && (
+        {shouldLoadReact && render && (
           <WrappedScreenItem screenId={`tab-screen-${tabScreenIndex}`}>
             {children}
             <ScreenNameRegister />
-            <TabScreenIdentifierRegister />
             <LifecycleEvents isSelected={isSelected} />
-            {/* <CalculateTabBarOpacity /> */}
           </WrappedScreenItem>
         )}
       </TabScreenContext>
-    </View>
+    </TabScreenWrapper>
   )
 }

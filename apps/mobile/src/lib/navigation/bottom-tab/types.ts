@@ -1,4 +1,5 @@
 import type { FC } from "react"
+import type { NativeSyntheticEvent, ViewProps } from "react-native"
 
 export type TabbarIconProps = {
   focused: boolean
@@ -18,3 +19,8 @@ export interface TabScreenProps {
   lazy?: boolean
   identifier?: string
 }
+
+export type TabBarRootWrapperProps = {
+  onTabIndexChange: (e: NativeSyntheticEvent<{ index: number }>) => void
+  selectedIndex: number
+} & ViewProps
