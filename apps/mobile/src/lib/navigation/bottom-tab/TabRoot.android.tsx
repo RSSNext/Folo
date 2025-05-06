@@ -26,7 +26,7 @@ export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
       if (typeof child === "object" && child && "type" in child && child.type === TabScreen) {
         return React.cloneElement(child, {
           tabScreenIndex: cnt++,
-        })
+        } as any)
       }
       return child
     })
