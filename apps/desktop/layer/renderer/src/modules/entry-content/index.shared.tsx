@@ -249,7 +249,7 @@ const useReadPercent = () => {
 }
 
 export const ContainerToc = memo(
-  ({ ref, ..._ }: ComponentType & { ref?: React.RefObject<TocRef | null> }) => {
+  ({ ref, ..._ }: ComponentType & { ref?: React.Ref<TocRef | null> }) => {
     const wrappedElement = useWrappedElement()
 
     return (

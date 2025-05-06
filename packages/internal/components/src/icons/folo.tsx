@@ -1,7 +1,7 @@
 export const Folo = ({
   ref,
   ...props
-}: React.SVGProps<SVGSVGElement> & { ref?: React.RefObject<SVGSVGElement | null> }) => (
+}: React.SVGProps<SVGSVGElement> & { ref?: React.Ref<SVGSVGElement | null> }) => (
   <svg
     {...props}
     ref={ref}

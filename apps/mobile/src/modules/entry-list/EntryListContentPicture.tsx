@@ -22,7 +22,7 @@ export const EntryListContentPicture = ({
 }: { entryIds: string[] | null; active?: boolean } & Omit<
   MasonryFlashListProps<string>,
   "data" | "renderItem"
-> & { ref?: React.RefObject<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
+> & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching } =

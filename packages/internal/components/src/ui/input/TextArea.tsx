@@ -24,7 +24,7 @@ export const TextArea = ({
     onCmdEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
     rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
     bordered?: boolean
-  }> & { ref?: React.RefObject<HTMLTextAreaElement | null> }) => {
+  }> & { ref?: React.Ref<HTMLTextAreaElement | null> }) => {
   const {
     className,
     wrapperClassName,

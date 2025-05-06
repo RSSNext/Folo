@@ -14,6 +14,6 @@ export const Label = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
   VariantProps<typeof labelVariants> & {
-    ref?: React.RefObject<React.ElementRef<typeof LabelPrimitive.Root> | null>
+    ref?: React.Ref<React.ElementRef<typeof LabelPrimitive.Root> | null>
   }) => <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
 Label.displayName = LabelPrimitive.Root.displayName

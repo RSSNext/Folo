@@ -7,6 +7,6 @@ export const FeedList = withResponsiveSyncComponent(FeedListDesktop, FeedListMob
 
 export type FeedListProps = ComponentType<
   { className?: string; view: number } & {
-    ref?: React.RefObject<HTMLDivElement | null> | ((node: HTMLDivElement | null) => void)
+    ref?: React.Ref<HTMLDivElement | null> | ((node: HTMLDivElement | null) => void)
   }
 >

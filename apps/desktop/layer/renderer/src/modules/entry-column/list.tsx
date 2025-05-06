@@ -26,7 +26,7 @@ import { EntryVirtualListItem } from "./item"
 export const EntryEmptyList = ({
   ref,
   ...props
-}: HTMLMotionProps<"div"> & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+}: HTMLMotionProps<"div"> & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { t } = useTranslation()
   return (

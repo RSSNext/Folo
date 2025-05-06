@@ -10,7 +10,7 @@ export const Slider = ({
 }: React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
   variant?: "primary" | "secondary"
 } & {
-  ref?: React.RefObject<
+  ref?: React.Ref<
     | (React.ElementRef<typeof SliderPrimitive.Root> & {
         variant?: "primary" | "secondary"
       })

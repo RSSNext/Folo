@@ -64,7 +64,7 @@ export const VideoPlayer = ({
   variant = "player",
   ...rest
 }: VideoPlayerProps & {
-  ref?: React.RefObject<VideoPlayerRef | null> | ((ref: VideoPlayerRef) => void)
+  ref?: React.Ref<VideoPlayerRef | null> | ((ref: VideoPlayerRef) => void)
 }) => {
   const isPlayer = variant === "player"
   const [clickToStatus, setClickToStatus] = useState(null as "play" | "pause" | null)

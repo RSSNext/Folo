@@ -55,7 +55,7 @@ export const SafeNavigationScrollView = ({
   contentViewStyle,
   Header,
   ...props
-}: SafeNavigationScrollViewProps & { ref?: React.RefObject<ScrollView | null> }) => {
+}: SafeNavigationScrollViewProps & { ref?: React.Ref<ScrollView | null> }) => {
   const insets = useSafeAreaInsets()
   const tabBarHeight = useBottomTabBarHeight()
 

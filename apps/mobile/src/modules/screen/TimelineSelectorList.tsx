@@ -32,8 +32,7 @@ export const TimelineSelectorList = ({
   onRefresh,
   isRefetching,
   ...props
-}: Props &
-  Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.RefObject<FlashList<any> | null> }) => {
+}: Props & Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.Ref<FlashList<any> | null> }) => {
   const ref = useRef<FlashList<any>>(null)
   useImperativeHandle(forwardedRef, () => ref.current!)
   const { refetch: unreadRefetch } = usePrefetchUnread()
@@ -120,7 +119,7 @@ export const TimelineSelectorMasonryList = ({
   ...props
 }: Props &
   Omit<MasonryFlashListProps<any>, "onRefresh"> & {
-    ref?: React.RefObject<ElementRef<typeof MasonryFlashList> | null>
+    ref?: React.Ref<ElementRef<typeof MasonryFlashList> | null>
   }) => {
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()

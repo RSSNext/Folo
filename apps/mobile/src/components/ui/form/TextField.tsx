@@ -32,7 +32,7 @@ const BaseField = ({
   required,
   inputPostfixElement,
   ...rest
-}: TextInputProps & BaseFieldProps & { ref?: React.RefObject<TextInput | null> }) => {
+}: TextInputProps & BaseFieldProps & { ref?: React.Ref<TextInput | null> }) => {
   return (
     <View className="w-full flex-1">
       {!!label && <FormLabel className="pl-2.5" label={label} optional={!required} />}
@@ -62,7 +62,7 @@ const BaseField = ({
 export const TextField = ({
   ref,
   ...props
-}: TextInputProps & BaseFieldProps & { ref?: React.RefObject<TextInput | null> }) => (
+}: TextInputProps & BaseFieldProps & { ref?: React.Ref<TextInput | null> }) => (
   <BaseField {...props} ref={ref} />
 )
 
@@ -79,7 +79,7 @@ export const NumberField = ({
   defaultValue,
   ...rest
 }: Omit<TextInputProps, "keyboardType" | "value" | "onChangeText" | "defaultValue"> &
-  NumberFieldProps & { ref?: React.RefObject<TextInput | null> }) => (
+  NumberFieldProps & { ref?: React.Ref<TextInput | null> }) => (
   <BaseField
     {...rest}
     ref={ref}
@@ -93,7 +93,7 @@ export const NumberField = ({
 export const PlainTextField = ({
   ref,
   ...props
-}: TextInputProps & { ref?: React.RefObject<TextInput | null> }) => {
+}: TextInputProps & { ref?: React.Ref<TextInput | null> }) => {
   const secondaryLabelColor = useColor("secondaryLabel")
 
   const [isFocused, setIsFocused] = useState(false)

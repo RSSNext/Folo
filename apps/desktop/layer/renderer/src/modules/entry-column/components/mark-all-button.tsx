@@ -26,7 +26,7 @@ export const MarkAllReadButton = ({
   className,
   which = "all",
   shortcut,
-}: MarkAllButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+}: MarkAllButtonProps & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
 

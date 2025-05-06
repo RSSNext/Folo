@@ -4,5 +4,5 @@ export const animationStyles = tw`duration-300 ease-in-out animate-in fade-in sl
 export interface EntryColumnWrapperProps extends ComponentType {
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
   onPullToRefresh?: () => Promise<any>
-  ref?: React.RefObject<HTMLDivElement | null>
+  ref?: React.Ref<HTMLDivElement | null>
 }

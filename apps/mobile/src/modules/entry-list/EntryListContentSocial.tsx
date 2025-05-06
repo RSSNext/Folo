@@ -17,7 +17,7 @@ export const EntryListContentSocial = ({
   entryIds,
   active,
 }: { entryIds: string[] | null; active?: boolean } & {
-  ref?: React.RefObject<ElementRef<typeof TimelineSelectorList> | null>
+  ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()

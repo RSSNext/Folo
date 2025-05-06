@@ -19,7 +19,7 @@ const SelectTrigger = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
   size?: "default" | "sm"
-} & { ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.Trigger> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger> | null> }) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -48,7 +48,7 @@ const SelectScrollUpButton = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton> & {
-  ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.ScrollUpButton> | null>
+  ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollUpButton> | null>
 }) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
@@ -65,7 +65,7 @@ const SelectScrollDownButton = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton> & {
-  ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.ScrollDownButton> | null>
+  ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollDownButton> | null>
 }) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
@@ -84,7 +84,7 @@ const SelectContent = ({
   position = "popper",
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
-  ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.Content> | null>
+  ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Content> | null>
 }) => (
   <RootPortal>
     <SelectPrimitive.Content
@@ -121,7 +121,7 @@ const SelectLabel = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.Label> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Label> | null> }) => (
   <SelectPrimitive.Label
     ref={ref}
     className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
@@ -138,7 +138,7 @@ const SelectItem = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.Item> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Item> | null> }) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
@@ -164,7 +164,7 @@ const SelectSeparator = ({
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator> & {
-  ref?: React.RefObject<React.ElementRef<typeof SelectPrimitive.Separator> | null>
+  ref?: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator> | null>
 }) => (
   <SelectPrimitive.Separator
     className="backdrop-blur-background mx-2 my-1 h-px"

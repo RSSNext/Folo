@@ -18,7 +18,7 @@ const ContextMenuSubTrigger = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.SubTrigger> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.SubTrigger> | null> }) => (
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
@@ -41,7 +41,7 @@ const ContextMenuSubContent = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent> & {
-  ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.SubContent> | null>
+  ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.SubContent> | null>
 }) => (
   <RootPortal>
     <ContextMenuPrimitive.SubContent
@@ -65,7 +65,7 @@ const ContextMenuContent = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content> & {
-  ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.Content> | null>
+  ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Content> | null>
 }) => (
   <RootPortal>
     <ContextMenuPrimitive.Content
@@ -88,7 +88,7 @@ const ContextMenuItem = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.Item> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Item> | null> }) => (
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -110,7 +110,7 @@ const ContextMenuCheckboxItem = ({
   checked,
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.CheckboxItem> & {
-  ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem> | null>
+  ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem> | null>
 }) => (
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
@@ -140,7 +140,7 @@ const ContextMenuLabel = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Label> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.Label> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Label> | null> }) => (
   <ContextMenuPrimitive.Label
     ref={ref}
     className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
@@ -153,7 +153,7 @@ const ContextMenuSeparator = ({
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Separator> & {
-  ref?: React.RefObject<React.ElementRef<typeof ContextMenuPrimitive.Separator> | null>
+  ref?: React.Ref<React.ElementRef<typeof ContextMenuPrimitive.Separator> | null>
 }) => (
   <ContextMenuPrimitive.Separator
     className="backdrop-blur-background mx-2 my-1 h-px"

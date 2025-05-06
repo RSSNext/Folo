@@ -21,11 +21,12 @@ const TabIndicatorContext = React.createContext<{
   x: number
 } | null>(null)
 
-const Tabs: React.ForwardRefExoticComponent<
+const Tabs: ComponentWithRef<
   TabsProps &
     React.RefAttributes<HTMLDivElement> & {
       variant?: "default" | "rounded"
-    }
+    },
+  HTMLDivElement
 > = ({ ref, ...props }) => {
   const { children, variant, ...rest } = props
   const [indicator, setIndicator] = React.useState({
@@ -53,7 +54,7 @@ const TabsList = ({
   className,
   ...props
 }: TabsListProps & {
-  ref?: React.RefObject<React.ElementRef<typeof TabsPrimitive.List> | null>
+  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.List> | null>
 }) => {
   const indicator = React.use(TabIndicatorContext)
   const variant = React.use(TabVariantContext)
@@ -105,7 +106,7 @@ const TabsTrigger = ({
   className,
   children,
   ...props
-}: TabsTriggerProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+}: TabsTriggerProps & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const variant = React.use(TabVariantContext)
   const triggerRef = React.useRef<HTMLDivElement>(null)
   React.useImperativeHandle(ref, () => triggerRef.current!, [])
@@ -160,7 +161,7 @@ const TabsContent = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> & {
-  ref?: React.RefObject<React.ElementRef<typeof TabsPrimitive.Content> | null>
+  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.Content> | null>
 }) => (
   <TabsPrimitive.Content
     ref={ref}

@@ -20,7 +20,7 @@ export const EntryListContentArticle = ({
   active,
   view,
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
-  ref?: React.RefObject<ElementRef<typeof TimelineSelectorList> | null>
+  ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const playingAudioUrl = usePlayingUrl()
 

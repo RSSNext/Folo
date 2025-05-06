@@ -18,7 +18,7 @@ const PopoverContent = ({
   sideOffset = 4,
   ...props
 }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
-  ref?: React.RefObject<React.ElementRef<typeof PopoverPrimitive.Content> | null>
+  ref?: React.Ref<React.ElementRef<typeof PopoverPrimitive.Content> | null>
 }) => (
   <RootPortal>
     <PopoverPrimitive.Content

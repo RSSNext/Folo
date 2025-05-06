@@ -29,7 +29,7 @@ export const LazyImage = ({
   width,
   proxy,
   onClick,
-}: LazyImageProps & { ref?: React.RefObject<HTMLImageElement | null> }) => {
+}: LazyImageProps & { ref?: React.Ref<HTMLImageElement | null> }) => {
   const nextSrc = useMemo(() => {
     if (!src) return src
 

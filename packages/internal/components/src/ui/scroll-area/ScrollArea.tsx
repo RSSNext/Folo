@@ -11,7 +11,7 @@ const Corner = ({
   className,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Corner> & {
-  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Corner> | null>
+  ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Corner> | null>
 }) => <ScrollAreaBase.Corner {...rest} ref={forwardedRef} className={cn("bg-accent", className)} />
 
 Corner.displayName = "ScrollArea.Corner"
@@ -21,7 +21,7 @@ const Thumb = ({
   className,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Thumb> & {
-  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Thumb> | null>
+  ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Thumb> | null>
 }) => (
   <ScrollAreaBase.Thumb
     {...rest}
@@ -50,7 +50,7 @@ const Scrollbar = ({
   children,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Scrollbar> & {
-  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Scrollbar> | null>
+  ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Scrollbar> | null>
 }) => {
   const { orientation = "vertical" } = rest
   return (
@@ -78,7 +78,7 @@ const Viewport = ({
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {
   mask?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Viewport> | null> }) => {
+} & { ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Viewport> | null> }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const [shouldAddMask, setShouldAddMask] = React.useState(false)
   React.useLayoutEffect(() => {
@@ -118,7 +118,7 @@ const Root = ({
   children,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Root> & {
-  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Root> | null>
+  ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Root> | null>
 }) => (
   <ScrollAreaBase.Root
     {...rest}
@@ -152,7 +152,7 @@ export const ScrollArea = ({
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
-} & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+} & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 

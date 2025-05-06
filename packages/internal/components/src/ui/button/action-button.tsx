@@ -65,7 +65,7 @@ export const ActionButton = ({
   ...rest
 }: ComponentType<ActionButtonProps> &
   React.HTMLAttributes<HTMLButtonElement> & {
-    ref?: React.RefObject<HTMLButtonElement | null>
+    ref?: React.Ref<HTMLButtonElement | null>
   }) => {
   const finalShortcut =
     getOS() === "Windows" ? shortcut?.replace("meta", "ctrl").replace("Meta", "Ctrl") : shortcut

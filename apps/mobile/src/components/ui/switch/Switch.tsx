@@ -38,7 +38,7 @@ export const Switch = ({
   onValueChange,
   onChange,
   size = "default",
-}: SwitchProps & { ref?: React.RefObject<SwitchRef | null> }) => {
+}: SwitchProps & { ref?: React.Ref<SwitchRef | null> }) => {
   const progress = useSharedValue(value ? 1 : 0)
   const scale = useSharedValue(1)
   const translateX = useSharedValue(0)

@@ -11,7 +11,7 @@ export const withSettingEnabled =
     IfComponent: FC<P> | keyof JSX.IntrinsicElements,
     ElseComponent: FC<P> | keyof JSX.IntrinsicElements,
   ) =>
-  ({ ref, ...props }: P & { ref?: React.RefObject<any | null> }) => {
+  ({ ref, ...props }: P & { ref?: React.Ref<any | null> }) => {
     const res = useSettings.select(condition)
     return res
       ? // @ts-expect-error

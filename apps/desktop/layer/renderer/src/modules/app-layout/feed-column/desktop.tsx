@@ -159,7 +159,7 @@ export function MainDestopLayout() {
 const RootContainer = ({
   ref,
   children,
-}: PropsWithChildren & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+}: PropsWithChildren & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const feedColWidth = useUISettingKey("feedColWidth")
 
   const [elementRef, _setElementRef] = useState<HTMLDivElement | null>(null)

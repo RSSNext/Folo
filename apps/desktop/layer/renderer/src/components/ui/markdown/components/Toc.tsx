@@ -38,7 +38,7 @@ export const Toc = ({
   ref,
   className,
   onItemClick,
-}: ComponentType<TocProps> & { ref?: React.RefObject<TocRef | null> }) => {
+}: ComponentType<TocProps> & { ref?: React.Ref<TocRef | null> }) => {
   const markdownElement = use(MarkdownRenderContainerRefContext)
   const { toc, rootDepth, refreshItems } = useTocItems(markdownElement)
   const { currentScrollRange, handleScrollTo } = useScrollTracking(toc, {

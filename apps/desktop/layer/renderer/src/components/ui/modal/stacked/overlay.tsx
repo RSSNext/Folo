@@ -1,10 +1,17 @@
 import { cn } from "@follow/utils/utils"
 import * as Dialog from "@radix-ui/react-dialog"
 import { AnimatePresence } from "motion/react"
+import type { FC } from "react"
 
 import { m } from "~/components/common/Motion"
 
-export const ModalOverlay = ({ ref, zIndex, blur, className, hidden }) => (
+export const ModalOverlay: FC<{
+  ref?: React.Ref<HTMLDivElement | null>
+  zIndex?: number
+  blur?: boolean
+  className?: string
+  hidden?: boolean
+}> = ({ ref, zIndex, blur, className, hidden }) => (
   <Dialog.Overlay>
     <AnimatePresence>
       {!hidden && (

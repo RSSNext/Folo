@@ -1,7 +1,7 @@
 export const Logo = ({
   ref,
   ...props
-}: React.SVGProps<SVGSVGElement> & { ref?: React.RefObject<SVGSVGElement | null> }) => (
+}: React.SVGProps<SVGSVGElement> & { ref?: React.Ref<SVGSVGElement | null> }) => (
   <svg {...props} ref={ref} viewBox="0 0 145 145" fill="none" xmlns="http://www.w3.org/2000/svg">
     <mask id="mask0_54_296" maskUnits="userSpaceOnUse" x="0" y="0" width="145" height="145">
       <path

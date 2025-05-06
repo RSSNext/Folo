@@ -18,7 +18,8 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
   const componentId = useId()
 
   return (
-    <SegmentGroupContext
+    // eslint-disable-next-line @eslint-react/no-context-provider
+    <SegmentGroupContext.Provider
       value={useMemo(
         () => ({
           value: currentValue,
@@ -42,7 +43,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       >
         {props.children}
       </div>
-    </SegmentGroupContext>
+    </SegmentGroupContext.Provider>
   )
 }
 

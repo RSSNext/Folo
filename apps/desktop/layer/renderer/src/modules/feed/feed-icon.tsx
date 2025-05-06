@@ -46,7 +46,7 @@ const FallbackableImage = function FallbackableImage({
 }: {
   fallbackUrl: string
 } & React.ImgHTMLAttributes<HTMLImageElement> & {
-    ref?: React.RefObject<HTMLImageElement | null>
+    ref?: React.Ref<HTMLImageElement | null>
   }) {
   return (
     <img

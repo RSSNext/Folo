@@ -226,7 +226,7 @@ const TransitionAvatar = ({
 }: {
   stage: "zoom-in" | ""
 } & React.HTMLAttributes<HTMLButtonElement> & {
-    ref?: React.RefObject<HTMLButtonElement | null>
+    ref?: React.Ref<HTMLButtonElement | null>
   }) => {
   const [ref, { x, y }, forceRefresh] = useMeasure()
   const [avatarHovered, setAvatarHovered] = useState(false)

@@ -46,7 +46,7 @@ const WarnGoToExternalLinkImpl = ({
   ref,
   ...rest
 }: React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> & {
-  ref?: React.RefObject<HTMLAnchorElement | null>
+  ref?: React.Ref<HTMLAnchorElement | null>
 }) => {
   const [open, setOpen] = useState(false)
   const [checked, setChecked] = useState<boolean | "indeterminate">(false)

@@ -29,7 +29,7 @@ export const UserAvatar = ({
   userId?: string
   enableModal?: boolean
 } & LoginProps &
-  React.HTMLAttributes<HTMLDivElement> & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+  React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const { session, status } = useSession({
     enabled: !userId,
   })

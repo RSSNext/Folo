@@ -28,7 +28,7 @@ export function withResponsiveSyncComponent<P extends object, R = any>(
   return function ResponsiveLayout({
     ref,
     ...props
-  }: P & { ref?: React.RefObject<R | null> | ((node: R | null) => void) }) {
+  }: P & { ref?: React.Ref<R | null> | ((node: R | null) => void) }) {
     const isMobile = useMobile()
     const componentProps = { ...props } as P & RefAttributes<R>
 

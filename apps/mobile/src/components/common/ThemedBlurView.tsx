@@ -8,7 +8,7 @@ export const ThemedBlurView = ({
   ref,
   tint,
   ...rest
-}: BlurViewProps & { ref?: React.RefObject<BlurView | null> }) => {
+}: BlurViewProps & { ref?: React.Ref<BlurView | null> }) => {
   const { colorScheme } = useColorScheme()
 
   const background = useColor("systemBackground")

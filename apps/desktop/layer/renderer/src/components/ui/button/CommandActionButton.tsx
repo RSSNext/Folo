@@ -11,7 +11,7 @@ export interface CommandActionButtonProps extends ActionButtonProps {
 export const CommandActionButton = ({
   ref,
   ...props
-}: CommandActionButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+}: CommandActionButtonProps & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const { commandId, ...rest } = props
   const command = useCommand(commandId)
   if (!command) return null

@@ -44,7 +44,7 @@ export const TabBar = ({
   onTabItemPress,
   currentTab: tab,
   tabScrollContainerAnimatedX: pagerOffsetX,
-}: TabBarProps & { ref?: React.RefObject<ScrollView | null> }) => {
+}: TabBarProps & { ref?: React.Ref<ScrollView | null> }) => {
   const [currentTab, setCurrentTab] = useState(tab || 0)
   const [tabWidths, setTabWidths] = useState<number[]>([])
   const [tabPositions, setTabPositions] = useState<number[]>([])

@@ -10,7 +10,7 @@ export const Input = ({
   className,
   ...props
 }: Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & {
-  ref?: React.RefObject<HTMLInputElement | null>
+  ref?: React.Ref<HTMLInputElement | null>
 }) => {
   const inputProps = useInputComposition(props)
   return (

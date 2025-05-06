@@ -31,7 +31,7 @@ export const Image = ({
   aspectRatio,
   hideOnError,
   ...rest
-}: ImageProps & { ref?: React.RefObject<ExpoImage | null> }) => {
+}: ImageProps & { ref?: React.Ref<ExpoImage | null> }) => {
   const [safeSource, proxiesSafeSource] = useMemo(
     () => getAllSources(source, proxy),
     [source, proxy],

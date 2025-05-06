@@ -28,7 +28,7 @@ export const MotionButtonBase = ({
   ref,
   children,
   ...rest
-}: HTMLMotionProps<"button"> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+}: HTMLMotionProps<"button"> & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const isMobile = useMobile()
   return (
     <m.button
@@ -61,7 +61,7 @@ export const Button = ({
     VariantProps<typeof styledButtonVariant> & {
       buttonClassName?: string
     }
-> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+> & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = React.useCallback(
     (e) => {
       if (isLoading || disabled) {
@@ -112,7 +112,7 @@ export const IconButton = ({
 }: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> &
   React.PropsWithChildren<{
     icon: React.JSX.Element
-  }> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+  }> & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const { icon, ...rest } = props
   return (
     <button

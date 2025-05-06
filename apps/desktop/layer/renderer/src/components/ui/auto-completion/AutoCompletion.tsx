@@ -36,7 +36,7 @@ export const Autocomplete = ({
   searchKeys = defaultSearchKeys,
   defaultValue,
   ...inputProps
-}: AutocompleteProps & { ref?: React.RefObject<HTMLInputElement | null> }) => {
+}: AutocompleteProps & { ref?: React.Ref<HTMLInputElement | null> }) => {
   const [selectedOptions, setSelectedOptions] = useState<NoInfer<Suggestion> | null>(
     () => suggestions.find((suggestion) => suggestion.value === value) || null,
   )

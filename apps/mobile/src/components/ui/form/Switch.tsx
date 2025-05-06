@@ -23,7 +23,7 @@ export const FormSwitch = ({
   description,
   size = "default",
   ...rest
-}: Props & SwitchProps & { ref?: React.RefObject<SwitchRef | null> }) => {
+}: Props & SwitchProps & { ref?: React.Ref<SwitchRef | null> }) => {
   const Trigger = <Switch size={size} ref={ref} {...rest} />
 
   if (!label) {

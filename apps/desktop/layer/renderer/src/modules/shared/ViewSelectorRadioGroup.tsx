@@ -22,7 +22,7 @@ export const ViewSelectorRadioGroup = ({
   feed?: FeedModel
   view?: number
 } & React.InputHTMLAttributes<HTMLInputElement> & {
-    ref?: React.RefObject<HTMLInputElement | null>
+    ref?: React.Ref<HTMLInputElement | null>
   }) => {
   const t = useI18n()
 

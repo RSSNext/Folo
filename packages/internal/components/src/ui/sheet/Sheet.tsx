@@ -32,7 +32,7 @@ const MODAL_STACK_Z_INDEX = 1001
 export const PresentSheet = ({
   ref,
   ...props
-}: PropsWithChildren<PresentSheetProps> & { ref?: React.RefObject<SheetRef | null> }) => {
+}: PropsWithChildren<PresentSheetProps> & { ref?: React.Ref<SheetRef | null> }) => {
   const {
     content,
     children,

@@ -62,7 +62,7 @@ const FormItem = ({
   ref,
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const id = React.useId()
 
   return (
@@ -78,7 +78,7 @@ const FormLabel = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
-  ref?: React.RefObject<React.ElementRef<typeof LabelPrimitive.Root> | null>
+  ref?: React.Ref<React.ElementRef<typeof LabelPrimitive.Root> | null>
 }) => {
   const { error, formItemId } = useFormField()
 
@@ -97,7 +97,7 @@ const FormControl = ({
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof Slot> & {
-  ref?: React.RefObject<React.ElementRef<typeof Slot> | null>
+  ref?: React.Ref<React.ElementRef<typeof Slot> | null>
 }) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
@@ -118,7 +118,7 @@ const FormDescription = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement> & {
-  ref?: React.RefObject<HTMLParagraphElement | null>
+  ref?: React.Ref<HTMLParagraphElement | null>
 }) => {
   const { formDescriptionId } = useFormField()
 
@@ -139,7 +139,7 @@ const FormMessage = ({
   children,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement> & {
-  ref?: React.RefObject<HTMLParagraphElement | null>
+  ref?: React.Ref<HTMLParagraphElement | null>
 }) => {
   const { error, formMessageId } = useFormField()
   const body = error ? String(error?.message) : children

@@ -40,7 +40,7 @@ const DropdownMenuSubTrigger = ({
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean
 } & {
-  ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger> | null>
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger> | null>
 }) => (
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
@@ -64,7 +64,7 @@ const DropdownMenuSubContent = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent> & {
-  ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.SubContent> | null>
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubContent> | null>
 }) => (
   <RootPortal>
     <DropdownMenuPrimitive.SubContent
@@ -89,7 +89,7 @@ const DropdownMenuContent = ({
   sideOffset = 4,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> & {
-  ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.Content> | null>
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Content> | null>
 }) => {
   return (
     <RootPortal>
@@ -121,7 +121,7 @@ const DropdownMenuItem = ({
   icon?: React.ReactNode | ((props?: { isActive?: boolean }) => React.ReactNode)
   active?: boolean
   highlightColor?: "accent" | "gray"
-} & { ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.Item> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item> | null> }) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -156,7 +156,7 @@ const DropdownMenuCheckboxItem = ({
   checked,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
-  ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem> | null>
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem> | null>
 }) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
@@ -186,7 +186,7 @@ const DropdownMenuLabel = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
   inset?: boolean
-} & { ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.Label> | null> }) => (
+} & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Label> | null> }) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn("text-text px-2 py-1.5 font-semibold", inset && "pl-8", className)}
@@ -199,7 +199,7 @@ const DropdownMenuSeparator = ({
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator> & {
-  ref?: React.RefObject<React.ElementRef<typeof DropdownMenuPrimitive.Separator> | null>
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Separator> | null>
 }) => (
   <DropdownMenuPrimitive.Separator
     className="backdrop-blur-background mx-2 my-1 h-px"

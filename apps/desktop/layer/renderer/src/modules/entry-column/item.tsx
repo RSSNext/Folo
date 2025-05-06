@@ -41,7 +41,7 @@ export const EntryVirtualListItem = ({
   ...props
 }: EntryItemProps &
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-    ref?: React.RefObject<HTMLDivElement | null>
+    ref?: React.Ref<HTMLDivElement | null>
   }) => {
   const entry = useEntry(entryId)
 

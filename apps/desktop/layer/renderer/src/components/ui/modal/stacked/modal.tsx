@@ -64,7 +64,7 @@ export const ModalInternal = memo(function Modal({
   isBottom?: boolean
   overlayOptions?: ModalOverlayOptions
   onClose?: (open: boolean) => void
-} & PropsWithChildren & { ref?: React.RefObject<HTMLDivElement | null> }) {
+} & PropsWithChildren & { ref?: React.Ref<HTMLDivElement | null> }) {
   const {
     CustomModalComponent,
     content,

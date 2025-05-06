@@ -8,7 +8,7 @@ export const Avatar = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
-  ref?: React.RefObject<React.ElementRef<typeof AvatarPrimitive.Root> | null>
+  ref?: React.Ref<React.ElementRef<typeof AvatarPrimitive.Root> | null>
 }) => (
   <AvatarPrimitive.Root
     ref={ref}
@@ -23,7 +23,7 @@ export const AvatarImage = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & {
-  ref?: React.RefObject<React.ElementRef<typeof AvatarPrimitive.Image> | null>
+  ref?: React.Ref<React.ElementRef<typeof AvatarPrimitive.Image> | null>
 }) => (
   <AvatarPrimitive.Image
     ref={ref}
@@ -39,7 +39,7 @@ export const AvatarFallback = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> & {
-  ref?: React.RefObject<React.ElementRef<typeof AvatarPrimitive.Fallback> | null>
+  ref?: React.Ref<React.ElementRef<typeof AvatarPrimitive.Fallback> | null>
 }) => (
   <AvatarPrimitive.Fallback
     ref={ref}

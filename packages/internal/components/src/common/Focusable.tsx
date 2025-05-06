@@ -3,7 +3,9 @@ import { createContext, use, useCallback, useState } from "react"
 
 // const
 const FocusableContext = createContext(false)
-export const Focusable = function Focusable({ ref, ...props }) {
+export const Focusable: Component<
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+> = ({ ref, ...props }) => {
   const { onBlur, onFocus, ...rest } = props
   const [isFocusWithIn, setIsFocusWithIn] = useState(false)
   const handleFocus = useCallback(
