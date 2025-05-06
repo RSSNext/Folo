@@ -5,7 +5,7 @@ import * as React from "react"
 import { useEffect, useImperativeHandle, useMemo, useState } from "react"
 import { Drawer } from "vaul"
 
-import { RootPortalProvider } from "../portal/provider"
+import { RootPortalContext } from "../portal/provider"
 import { SheetContext, sheetStackAtom } from "./context"
 
 export interface PresentSheetProps {
@@ -150,7 +150,7 @@ export const PresentSheet = ({
               [setIsOpen],
             )}
           >
-            <RootPortalProvider value={contentInnerRef.current!}>
+            <RootPortalContext value={contentInnerRef.current!}>
               <div
                 className={cn(
                   "pb-safe-offset-4 flex grow flex-col overflow-auto px-4",
@@ -159,7 +159,7 @@ export const PresentSheet = ({
               >
                 {typeof content === "function" ? React.createElement(content) : content}
               </div>
-            </RootPortalProvider>
+            </RootPortalContext>
           </SheetContext>
           <div ref={setHolderRef} />
         </Drawer.Content>
