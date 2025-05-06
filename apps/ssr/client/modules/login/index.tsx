@@ -29,7 +29,10 @@ import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 
-function closeRecaptcha(recaptchaRef: React.RefObject<ReCAPTCHA>, resetLoadingState: () => void) {
+function closeRecaptcha(
+  recaptchaRef: React.RefObject<ReCAPTCHA | null>,
+  resetLoadingState: () => void,
+) {
   const handleClick = (e: MouseEvent) => {
     const recaptchaIframeSelector =
       'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'

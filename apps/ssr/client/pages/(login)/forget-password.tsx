@@ -28,7 +28,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 function closeRecaptcha(
-  recaptchaRef: React.RefObject<ReCAPTCHA>,
+  recaptchaRef: React.RefObject<ReCAPTCHA | null>,
   mutation?: { reset: () => void },
 ) {
   const handleClick = (e: MouseEvent) => {
