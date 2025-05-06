@@ -1,14 +1,7 @@
 import { cn } from "@follow/utils"
 import { cssInterop } from "nativewind"
-import type {
-  FC,
-  ForwardRefExoticComponent,
-  PropsWithoutRef,
-  ReactNode,
-  Ref,
-  RefAttributes,
-} from "react"
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import type { FC, ReactNode, Ref } from "react"
+import { useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet } from "react-native"
 
@@ -36,7 +29,7 @@ interface PagerViewProps {
   initialPageIndex?: number
   ref?: Ref<PagerRef>
 }
-const PagerViewImpl: FC<PagerViewProps> = ({
+export const PagerView: FC<PagerViewProps> = ({
   pageContainerStyle,
   pageContainerClassName,
   renderPage,
@@ -110,7 +103,3 @@ const PagerViewImpl: FC<PagerViewProps> = ({
     </EnhancePagerView>
   )
 }
-
-export const PagerView = forwardRef(PagerViewImpl as any) as ForwardRefExoticComponent<
-  PropsWithoutRef<PagerViewProps> & RefAttributes<PagerRef>
->

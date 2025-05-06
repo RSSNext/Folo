@@ -1,4 +1,3 @@
-import { forwardRef } from "react"
 import type { TextProps } from "react-native"
 import { Text } from "react-native"
 import type { StackPresentationTypes } from "react-native-screens"
@@ -10,11 +9,16 @@ interface NavigationLinkProps<T> extends TextProps {
   destination: NavigationControllerView<T>
   stackPresentation?: StackPresentationTypes
   props?: T
+  ref?: React.Ref<Text>
 }
-function NavigationLinkImpl<T>(
-  { destination, children, stackPresentation = "push", props, ...rest }: NavigationLinkProps<T>,
-  ref: React.Ref<Text>,
-) {
+export function NavigationLink<T>({
+  destination,
+  children,
+  stackPresentation = "push",
+  props,
+  ref,
+  ...rest
+}: NavigationLinkProps<T>) {
   const navigation = useNavigation()
 
   return (
@@ -33,7 +37,3 @@ function NavigationLinkImpl<T>(
     </Text>
   )
 }
-
-export const NavigationLink = forwardRef(NavigationLinkImpl) as <T>(
-  props: NavigationLinkProps<T> & { ref?: React.Ref<Text> },
-) => ReturnType<typeof NavigationLinkImpl>

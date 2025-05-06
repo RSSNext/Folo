@@ -2,7 +2,7 @@ import type { FlashList } from "@shopify/flash-list"
 import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
 import type { RefObject } from "react"
 import { use, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
-import type { NativeScrollEvent, NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
+import type { NativeScrollEvent, NativeSyntheticEvent, ViewStyle } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -137,7 +137,7 @@ export const usePagerListPerformanceHack = (provideRef?: RefObject<FlashList<any
   const ref = useRef<FlashList<any>>(null)
 
   const usingRef = provideRef ?? ref
-  const [style, setStyle] = useState<StyleProp<ViewStyle>>({})
+  const [style, setStyle] = useState<ViewStyle>({})
   useEffect(() => {
     setStyle({ display: nextVisible ? "flex" : "none" })
     if (nextVisible && lastY.current > 0) {

@@ -1,12 +1,6 @@
 import { requireNativeView } from "expo"
-import type {
-  FC,
-  ForwardRefExoticComponent,
-  PropsWithoutRef,
-  ReactNode,
-  RefAttributes,
-} from "react"
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import type { FC, ReactNode } from "react"
+import { useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { NativeSyntheticEvent, ViewProps, ViewStyle } from "react-native"
 
 const EnhancePagerView = requireNativeView<ViewProps & PagerProps>("EnhancePagerView")
@@ -42,25 +36,24 @@ type PagerViewProps = {
   onPageWillAppear?: (index: number) => void
   containerStyle?: ViewStyle
   containerClassName?: string
+  ref?: React.Ref<PagerRef>
 }
-const PagerViewImpl: FC<PagerViewProps> = (
-  {
-    pageContainerStyle,
-    renderPage,
-    pageTotal,
-    pageGap,
-    transitionStyle,
-    containerStyle,
-    containerClassName,
-    page,
-    onPageChange,
-    onScroll,
-    onScrollBegin,
-    onScrollEnd,
-    onPageWillAppear,
-  },
-  ref: any,
-) => {
+export const PagerView: FC<PagerViewProps> = ({
+  pageContainerStyle,
+  renderPage,
+  pageTotal,
+  pageGap,
+  transitionStyle,
+  containerStyle,
+  containerClassName,
+  page,
+  onPageChange,
+  onScroll,
+  onScrollBegin,
+  onScrollEnd,
+  onPageWillAppear,
+  ref,
+}) => {
   const [currentPage, setCurrentPage] = useState(page ?? 0)
 
   const nativeRef = useRef<PagerRef>(null)
@@ -72,7 +65,7 @@ const PagerViewImpl: FC<PagerViewProps> = (
       }
     }
   }, [currentPage])
-  useImperativeHandle(ref, () => nativeRef.current)
+  useImperativeHandle(ref, () => nativeRef.current!)
   return (
     <EnhancePagerView
       transitionStyle={transitionStyle}
@@ -106,7 +99,3 @@ const PagerViewImpl: FC<PagerViewProps> = (
     </EnhancePagerView>
   )
 }
-
-export const PagerView = forwardRef(PagerViewImpl as any) as ForwardRefExoticComponent<
-  PropsWithoutRef<PagerViewProps> & RefAttributes<PagerRef>
->

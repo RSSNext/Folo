@@ -1,5 +1,5 @@
-import type { ForwardedRef } from "react"
-import { forwardRef, useEffect, useMemo } from "react"
+import type { Ref } from "react"
+import { useEffect, useMemo } from "react"
 import type { SvgProps } from "react-native-svg"
 import { Defs, G, Svg } from "react-native-svg"
 
@@ -58,11 +58,11 @@ export interface SVGQRCodeStyledProps
   renderCustomPieceItem?: RenderCustomPieceItem
   isPiecesGlued?: boolean
   padding?: number
-
+  ref?: Ref<Svg | null>
   children?: (pieceSize: number, bitMatrix: BitMatrix) => SvgProps["children"]
 }
 
-function SVGQRCodeStyled(
+export function QRCode(
   {
     data = "",
     onChangeSize,
@@ -88,9 +88,10 @@ function SVGQRCodeStyled(
     errorCorrectionLevel = "M",
     children,
 
+    ref,
     ...props
   }: SVGQRCodeStyledProps,
-  ref?: ForwardedRef<Svg> | null,
+  // ref?: ForwardedRef<Svg> | null,
 ) {
   const qrCodeOptions = useMemo(
     () => ({
@@ -190,6 +191,3 @@ function SVGQRCodeStyled(
     </Svg>
   )
 }
-
-export const QRCode = forwardRef(SVGQRCodeStyled)
-QRCode.displayName = "QRCode"
