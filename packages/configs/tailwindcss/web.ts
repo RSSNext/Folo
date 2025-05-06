@@ -12,7 +12,7 @@ import type { Config } from "tailwindcss/types/config"
 import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
 import { workspaceRootSync } from "workspace-root"
 
-const workspaceRoot = workspaceRootSync()
+const workspaceRoot = workspaceRootSync(__dirname)
 const twConfig = {
   darkMode: ["class", '[data-theme="dark"]'],
   content: [],

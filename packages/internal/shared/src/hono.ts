@@ -2747,6 +2747,121 @@ declare const urlReadsOpenAPISchema: z.ZodObject<{
     count: number;
 }>;
 
+declare const feedAnalytics: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "feed_analytics";
+    schema: undefined;
+    columns: {
+        feedId: drizzle_orm_pg_core.PgColumn<{
+            name: "feed_id";
+            tableName: "feed_analytics";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        updatesPerWeek: drizzle_orm_pg_core.PgColumn<{
+            name: "updates_per_week";
+            tableName: "feed_analytics";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        subscriptionCount: drizzle_orm_pg_core.PgColumn<{
+            name: "subscription_count";
+            tableName: "feed_analytics";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        latestEntryPublishedAt: drizzle_orm_pg_core.PgColumn<{
+            name: "latest_entry_published_at";
+            tableName: "feed_analytics";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        view: drizzle_orm_pg_core.PgColumn<{
+            name: "view";
+            tableName: "feed_analytics";
+            dataType: "number";
+            columnType: "PgSmallInt";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const feedAnalyticsOpenAPISchema: zod.ZodObject<{
+    feedId: zod.ZodString;
+    updatesPerWeek: zod.ZodNullable<zod.ZodNumber>;
+    subscriptionCount: zod.ZodNullable<zod.ZodNumber>;
+    latestEntryPublishedAt: zod.ZodNullable<zod.ZodString>;
+    view: zod.ZodNullable<zod.ZodNumber>;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    view: number | null;
+    feedId: string;
+    updatesPerWeek: number | null;
+    subscriptionCount: number | null;
+    latestEntryPublishedAt: string | null;
+}, {
+    view: number | null;
+    feedId: string;
+    updatesPerWeek: number | null;
+    subscriptionCount: number | null;
+    latestEntryPublishedAt: string | null;
+}>;
+declare const feedAnalyticsRelations: drizzle_orm.Relations<"feed_analytics", {
+    feed: drizzle_orm.One<"feeds", true>;
+}>;
+
 declare const feeds: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "feeds";
     schema: undefined;
@@ -3063,6 +3178,7 @@ declare const feedsRelations: drizzle_orm.Relations<"feeds", {
     entries: drizzle_orm.Many<"entries">;
     owner: drizzle_orm.One<"user", false>;
     migrateTo: drizzle_orm.One<"feeds", false>;
+    trendingFeeds: drizzle_orm.Many<"trendings_feeds">;
 }>;
 type FeedModel = InferInsertModel<typeof feeds>;
 
@@ -5468,6 +5584,181 @@ declare const timelineRelations: drizzle_orm.Relations<"timeline", {
     feeds: drizzle_orm.One<"feeds", true>;
     collections: drizzle_orm.One<"collections", true>;
     subscriptions: drizzle_orm.One<"subscriptions", true>;
+}>;
+
+declare const trendingFeeds: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "trendings_feeds";
+    schema: undefined;
+    columns: {
+        feedId: drizzle_orm_pg_core.PgColumn<{
+            name: "feed_id";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        rankedAt: drizzle_orm_pg_core.PgColumn<{
+            name: "ranked_at";
+            tableName: "trendings_feeds";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        score1d: drizzle_orm_pg_core.PgColumn<{
+            name: "score_1d";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgNumeric";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        score3d: drizzle_orm_pg_core.PgColumn<{
+            name: "score_3d";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgNumeric";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        score7d: drizzle_orm_pg_core.PgColumn<{
+            name: "score_7d";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgNumeric";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        score30d: drizzle_orm_pg_core.PgColumn<{
+            name: "score_30d";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgNumeric";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        view: drizzle_orm_pg_core.PgColumn<{
+            name: "view";
+            tableName: "trendings_feeds";
+            dataType: "number";
+            columnType: "PgSmallInt";
+            data: number;
+            driverParam: string | number;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        language: drizzle_orm_pg_core.PgColumn<{
+            name: "language";
+            tableName: "trendings_feeds";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const trendingFeedsRelations: drizzle_orm.Relations<"trendings_feeds", {
+    feed: drizzle_orm.One<"feeds", true>;
+}>;
+declare const trendingFeedsOpenAPISchema: zod.ZodObject<{
+    feedId: zod.ZodString;
+    rankedAt: zod.ZodString;
+    score1d: zod.ZodString;
+    score3d: zod.ZodString;
+    score7d: zod.ZodString;
+    score30d: zod.ZodString;
+    view: zod.ZodNumber;
+    language: zod.ZodString;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    view: number;
+    language: string;
+    feedId: string;
+    rankedAt: string;
+    score1d: string;
+    score3d: string;
+    score7d: string;
+    score30d: string;
+}, {
+    view: number;
+    language: string;
+    feedId: string;
+    rankedAt: string;
+    score1d: string;
+    score3d: string;
+    score7d: string;
+    score30d: string;
 }>;
 
 declare enum UploadType {
@@ -13535,6 +13826,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             }[] | null | undefined;
                         } | null | undefined;
                     }[] | undefined;
+                    updatesPerWeek?: number | undefined;
+                    subscriptionCount?: number | undefined;
                     feed?: {
                         id: string;
                         type: "feed";
@@ -13622,9 +13915,13 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         } | null | undefined;
                     } | undefined;
                     docs?: string | undefined;
-                    isSubscribed?: boolean | undefined;
-                    subscriptionCount?: number | undefined;
-                    updatesPerWeek?: number | undefined;
+                    analytics?: {
+                        view: number | null;
+                        feedId: string;
+                        updatesPerWeek: number | null;
+                        subscriptionCount: number | null;
+                        latestEntryPublishedAt: string | null;
+                    } | undefined;
                 }[];
             };
             outputFormat: "json";
@@ -14272,6 +14569,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data: {
+                    subscriptionCount: number;
                     feed: {
                         id: string;
                         type: "feed";
@@ -14304,7 +14602,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
-                    subscriptionCount: number;
                     tipAmount: number;
                 }[];
             };
@@ -14358,6 +14655,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             }[] | null | undefined;
                         } | null | undefined;
                     }[];
+                    subscriptionCount: number;
                     feed: {
                         id: string;
                         type: "feed";
@@ -14390,8 +14688,14 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
-                    subscriptionCount: number;
                     readCount: number;
+                    analytics?: {
+                        view: number | null;
+                        feedId: string;
+                        updatesPerWeek: number | null;
+                        subscriptionCount: number | null;
+                        latestEntryPublishedAt: string | null;
+                    } | undefined;
                     subscription?: {
                         createdAt: string;
                         userId: string;
@@ -15386,6 +15690,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             }[] | null | undefined;
                         } | null | undefined;
                     }[];
+                    subscriptionCount: number;
                     list: {
                         id: string;
                         type: "list";
@@ -15440,7 +15745,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             suspended: boolean | null;
                         } | null | undefined;
                     };
-                    subscriptionCount: number;
                     readCount: number;
                     feedCount: number;
                     subscription?: {
@@ -15614,6 +15918,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
+                    subscriptionCount?: number | undefined;
                     owner?: {
                         id: string;
                         name: string | null;
@@ -15624,7 +15929,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         updatedAt: string;
                         suspended: boolean | null;
                     } | null | undefined;
-                    subscriptionCount?: number | undefined;
                     purchaseAmount?: number | undefined;
                 }[];
             };
@@ -16274,7 +16578,68 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
-}, "/upload">, "/">;
+}, "/upload"> | hono_types.MergeSchemaPath<{
+    "/feeds": {
+        $get: {
+            input: {
+                query: {
+                    view?: number | undefined;
+                    language?: "eng" | "cmn" | undefined;
+                    limit?: number | undefined;
+                    range?: "1d" | "3d" | "7d" | "30d" | undefined;
+                };
+            };
+            output: {
+                code: 0;
+                data: {
+                    view: number | null;
+                    feedId: string;
+                    feed: {
+                        id: string;
+                        type: "feed";
+                        url: string;
+                        image?: string | null | undefined;
+                        description?: string | null | undefined;
+                        title?: string | null | undefined;
+                        siteUrl?: string | null | undefined;
+                        errorMessage?: string | null | undefined;
+                        errorAt?: string | null | undefined;
+                        ownerUserId?: string | null | undefined;
+                        owner?: {
+                            id: string;
+                            name: string | null;
+                            emailVerified: boolean | null;
+                            image: string | null;
+                            handle: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            suspended: boolean | null;
+                        } | null | undefined;
+                        tipUsers?: {
+                            id: string;
+                            name: string | null;
+                            emailVerified: boolean | null;
+                            image: string | null;
+                            handle: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            suspended: boolean | null;
+                        }[] | null | undefined;
+                    } | null;
+                    analytics: {
+                        view: number | null;
+                        feedId: string;
+                        updatesPerWeek: number | null;
+                        subscriptionCount: number | null;
+                        latestEntryPublishedAt: string | null;
+                    } | null;
+                }[];
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
+}, "/trending">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

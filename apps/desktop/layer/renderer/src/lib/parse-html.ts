@@ -147,10 +147,14 @@ export const parseHtml = (
         }
 
         if (!codeString) return createElement("pre", props, props.children)
+        // Workaround for Hugo's code block
+        // Code line number in Hugo will render inside <pre> tag
+        const isLineNumberInHugo = codeString.slice(0, 15).split(" ").join("").startsWith("1\n2\n3")
 
         return createElement(ShikiHighLighter, {
           code: codeString.trimEnd(),
           language: language.toLowerCase(),
+          showCopy: !isLineNumberInHugo,
         })
       },
       figure: ({ node, ...props }) =>
@@ -173,6 +177,9 @@ export const parseHtml = (
             className: tw`w-full my-0`,
           }),
         ),
+      td: ({ node, ...props }) =>
+        // Workaround for Hugo's table code
+        createElement("td", { ...props, className: tw`p-0` }, props.children),
     },
   })
 }

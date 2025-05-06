@@ -18,6 +18,7 @@ import { DiscoverImport } from "../discover/import"
 import { ProfileSettingForm } from "../profile/profile-setting-form"
 import { settingSyncQueue } from "../settings/helper/sync-queue"
 import { LanguageSelector } from "../settings/tabs/general"
+import { Trending } from "../trending"
 import { BehaviorGuide } from "./steps/behavior"
 
 const containerWidth = 600
@@ -93,6 +94,16 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           icon: "i-mgc-file-import-cute-re",
         },
         {
+          title: t.app("new_user_guide.step.discover.title"),
+          description: t.app("new_user_guide.step.discover.description"),
+          content: (
+            <div className="overflow-scroll">
+              <Trending center limit={50} />
+            </div>
+          ),
+          icon: "i-mgc-emoji-2-cute-re",
+        },
+        {
           title: t.app("new_user_guide.step.profile.title"),
           description: t.app("new_user_guide.step.profile.description"),
           content: (
@@ -144,9 +155,9 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   return (
     <m.div
       layout
-      className="bg-theme-background relative flex min-h-full w-full flex-col items-center justify-center overflow-hidden pb-14 sm:min-h-[80%] sm:w-4/5 sm:rounded-xl sm:shadow-xl"
+      className="bg-theme-background center relative flex size-full flex-col items-center justify-center overflow-scroll pb-14 sm:size-4/5 sm:rounded-xl sm:shadow-xl"
     >
-      <div className="center relative mx-auto w-full">
+      <div className="relative mx-auto flex max-h-full w-full justify-center">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <m.div
             key={step - 1}
@@ -159,7 +170,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
               x: { type: "spring", stiffness: 300, damping: 30 },
               opacity: { duration: 0.1 },
             }}
-            className="min-w-0 px-6 sm:mt-12"
+            className="flex min-w-0 flex-col px-6 sm:mt-12"
           >
             {!!title && (
               <div className="mb-8">

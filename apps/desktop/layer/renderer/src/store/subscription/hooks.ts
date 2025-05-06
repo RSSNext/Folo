@@ -68,9 +68,12 @@ export const useCategoriesByView = (view: FeedViewType) =>
     ),
   )
 
-export const useSubscriptionByFeedId = (feedId: FeedId) =>
+export const useSubscriptionByFeedId = (feedId?: FeedId) =>
   useSubscriptionStore(
-    useCallback((state) => subscriptionByFeedIdSelector(feedId)(state) || null, [feedId]),
+    useCallback(
+      (state) => (feedId ? subscriptionByFeedIdSelector(feedId)(state) || null : null),
+      [feedId],
+    ),
   )
 export const useSubscriptionsByFeedIds = (feedIds: FeedId[]) =>
   useSubscriptionStore(

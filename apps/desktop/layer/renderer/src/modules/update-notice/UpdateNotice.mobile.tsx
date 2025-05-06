@@ -27,7 +27,7 @@ export const UpdateNotice = () => {
   return (
     <m.div
       className={
-        "border-theme-border bg-theme-modal-background bottom-safe-offset-3 group absolute inset-x-3 cursor-pointer overflow-hidden rounded-lg border py-3 text-center text-sm shadow backdrop-blur"
+        "border-border bg-fill bottom-safe-offset-3 backdrop-blur-background group absolute inset-x-3 cursor-pointer overflow-hidden rounded-lg border py-3 text-center text-sm shadow"
       }
       onClick={handleClick}
       initial={{ y: 50, opacity: 0 }}

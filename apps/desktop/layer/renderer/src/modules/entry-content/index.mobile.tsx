@@ -11,6 +11,7 @@ import { useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery, usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
@@ -104,21 +105,7 @@ export const EntryContent: Component<{
 
   const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
 
-  const contentLineHeight = useUISettingKey("contentLineHeight")
-  const contentFontSize = useUISettingKey("contentFontSize")
-
-  const stableRenderStyle = useMemo(() => {
-    const css = {} as React.CSSProperties
-
-    if (contentLineHeight) {
-      css.lineHeight = contentLineHeight
-    }
-    if (contentFontSize) {
-      css.fontSize = contentFontSize
-    }
-
-    return css
-  }, [contentLineHeight, contentFontSize])
+  const stableRenderStyle = useRenderStyle()
 
   if (!entry) return null
 

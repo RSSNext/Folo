@@ -1,13 +1,11 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
-import type { FeedModel } from "@follow/models/types"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { memo, useCallback, useEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { FeedFoundCanBeFollowError } from "~/components/errors/FeedFoundCanBeFollowErrorFallback"
 import { FeedNotFound } from "~/components/errors/FeedNotFound"
 import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -193,12 +191,6 @@ const AddFeedHelper = () => {
   if (feedQuery.error && feedQuery.error.statusCode === 404) {
     throw new FeedNotFound()
   }
-
-  if (!feedQuery.data) {
-    return null
-  }
-
-  throw new FeedFoundCanBeFollowError(feedQuery.data.feed as FeedModel)
 }
 
 export const EntryColumn = memo(EntryColumnImpl)

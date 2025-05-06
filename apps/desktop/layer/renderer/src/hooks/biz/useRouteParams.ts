@@ -4,6 +4,7 @@ import {
   useReadonlyRouteSelector,
 } from "@follow/components/atoms/route.js"
 import { FeedViewType } from "@follow/constants"
+import { isBizId } from "@follow/utils/utils"
 import { useMemo } from "react"
 import type { Params } from "react-router"
 import { useParams } from "react-router"
@@ -18,6 +19,7 @@ import {
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
 import { getListById } from "~/store/list"
+import { getSubscriptionByFeedId } from "~/store/subscription"
 
 export const useRouteEntryId = () => {
   const { entryId } = useParams()
@@ -40,6 +42,7 @@ export interface BizRouteParams {
   inboxId?: string
   listId?: string
   timelineId?: string
+  isPreview?: boolean
 }
 
 const parseRouteParams = (params: Params<any>): BizRouteParams => {
@@ -47,6 +50,13 @@ const parseRouteParams = (params: Params<any>): BizRouteParams => {
     ? params.feedId.slice(ROUTE_FEED_IN_LIST.length)
     : undefined
   const list = listId ? getListById(listId) : undefined
+
+  let isPreview = false
+  if (listId) {
+    isPreview = !getSubscriptionByFeedId(listId)
+  } else if (params.feedId) {
+    isPreview = isBizId(params.feedId) && !getSubscriptionByFeedId(params.feedId)
+  }
 
   return {
     view: params.timelineId?.startsWith(ROUTE_TIMELINE_OF_VIEW)
@@ -69,6 +79,7 @@ const parseRouteParams = (params: Params<any>): BizRouteParams => {
       : undefined,
     listId,
     timelineId: params.timelineId,
+    isPreview,
   }
 }
 

@@ -54,15 +54,7 @@ const CmdNPanel = () => {
     present({
       title: t("feed_form.add_feed"),
       modalContentClassName: "overflow-visible",
-      content: () => (
-        <FeedForm
-          url={url}
-          defaultValues={{
-            view: defaultView.toString(),
-          }}
-          onSuccess={dismissAll}
-        />
-      ),
+      content: () => <FeedForm url={url} onSuccess={dismissAll} />,
     })
   }
 

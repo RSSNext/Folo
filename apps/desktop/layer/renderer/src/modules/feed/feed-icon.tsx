@@ -142,7 +142,7 @@ export function FeedIcon({
     <span
       style={colorfulStyle}
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-sm",
+        "mask-squircle mask flex shrink-0 items-center justify-center",
         "text-white",
         marginClassName,
         className,
@@ -169,7 +169,11 @@ export function FeedIcon({
       isIconLoadedSet.add(src!)
 
       ImageElement = (
-        <PlatformIcon url={siteUrl} style={sizeStyle} className={cn("center", className)}>
+        <PlatformIcon
+          url={siteUrl}
+          style={sizeStyle}
+          className={cn("center mask-squircle mask", className)}
+        >
           <m.img style={sizeStyle} {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)} />
         </PlatformIcon>
       )
@@ -185,7 +189,11 @@ export function FeedIcon({
       isIconLoadedSet.add(finalSrc)
 
       ImageElement = (
-        <PlatformIcon url={image} style={sizeStyle} className={cn("center", className)}>
+        <PlatformIcon
+          url={image}
+          style={sizeStyle}
+          className={cn("center mask-squircle mask", className)}
+        >
           <m.img
             className={cn(marginClassName, className)}
             style={sizeStyle}
@@ -211,7 +219,7 @@ export function FeedIcon({
         <PlatformIcon
           url={(feed as FeedModel)?.siteUrl || fallbackUrl}
           style={sizeStyle}
-          className={cn("center", className)}
+          className={cn("center mask-squircle mask", className)}
         >
           <FallbackableImage
             className={cn(marginClassName, className)}

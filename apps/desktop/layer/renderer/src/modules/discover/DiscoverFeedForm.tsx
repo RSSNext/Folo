@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@follow/components/ui/select/index.jsx"
-import { FeedViewType } from "@follow/constants"
 import { nextFrame } from "@follow/utils/dom"
 import {
   MissingOptionalParamError,
@@ -38,7 +37,6 @@ import {
   useIsTopModal,
   useModalStack,
 } from "~/components/ui/modal/stacked/hooks"
-import { getViewFromRoute } from "~/lib/utils"
 
 import { FeedForm } from "./feed-form"
 import type { RSSHubRoute } from "./types"
@@ -190,20 +188,10 @@ export const DiscoverFeedForm = ({
 
         const finalUrl = routeParams && routeParamsPath ? `${url}/${routeParamsPath}` : url
 
-        const defaultView = getViewFromRoute(route) || FeedViewType.Articles
-
         present({
           title: t("feed_form.add_feed"),
           modalContentClassName: "overflow-visible",
-          content: () => (
-            <FeedForm
-              url={finalUrl}
-              defaultValues={{
-                view: defaultView.toString(),
-              }}
-              onSuccess={dismissAll}
-            />
-          ),
+          content: () => <FeedForm url={finalUrl} onSuccess={dismissAll} />,
         })
       } catch (err: unknown) {
         if (err instanceof MissingOptionalParamError) {

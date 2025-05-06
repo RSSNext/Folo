@@ -2,7 +2,6 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { EmptyIcon } from "@follow/components/icons/empty.js"
 import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import { Card, CardContent } from "@follow/components/ui/card/index.jsx"
-import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
@@ -20,7 +19,6 @@ import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/ho
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 
-import { TrendingButton } from "../trending"
 import { RecommendationCard } from "./recommendations-card"
 
 const LanguageOptions = [
@@ -69,7 +67,7 @@ export function Recommendations() {
 
   firstLoad = false
 
-  const { data, isLoading, isFetching } = rsshubPopular
+  const { data, isLoading } = rsshubPopular
 
   const keys = useMemo(() => {
     if (!data) {
@@ -143,31 +141,27 @@ export function Recommendations() {
   }
 
   return (
-    <div className="mt-12 w-full max-w-[1200px]">
-      <div className="center relative flex">
-        <div className="absolute bottom-0 right-0 flex items-center gap-2">
-          <span className="text-headline text-text font-medium">Preferred language:</span>
-          <ResponsiveSelect
-            value={selectedLang}
-            onValueChange={handleLangChange}
-            triggerClassName="w-32 h-8 rounded"
-            size="sm"
-            items={LanguageOptions as any}
-          />
-          <TrendingButton language={selectedLang} />
+    <div className="mt-4 w-full max-w-[800px] space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center gap-2 text-center text-xl font-bold">
+          <i className="i-mgc-grid-2-cute-re text-xl" />
+          <span>{t("words.categories")}</span>
         </div>
-        {isFetching && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center gap-8">
-            <span className="opacity-0" aria-hidden>
-              {t("discover.popular")}
-            </span>
-
-            <LoadingCircle size="small" className="center flex" />
+        <div className="center flex justify-center">
+          <div className="flex items-center gap-2">
+            <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}</span>
+            <ResponsiveSelect
+              value={selectedLang}
+              onValueChange={handleLangChange}
+              triggerClassName="h-8 rounded border-0"
+              size="sm"
+              items={LanguageOptions as any}
+            />
           </div>
-        )}
+        </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {RSSHubCategories.map((cat) => (
           <Card
             key={cat}
@@ -177,10 +171,17 @@ export function Recommendations() {
             }}
             onClick={() => handleShowCategoryContent(cat)}
           >
-            <CardContent className="flex min-h-[100px] flex-col items-center justify-center p-4 text-center">
-              <div className="mb-2 text-2xl">{CategoryMap[cat]?.emoji}</div>
-              <div className="font-medium text-white">
-                {t(`discover.category.${cat}`, { ns: "common" })}
+            <CardContent className="group relative flex aspect-square flex-col overflow-hidden p-0">
+              <div className="absolute right-2 top-2 size-12 rotate-12 opacity-20">
+                <div className="text-5xl">{CategoryMap[cat]?.emoji}</div>
+              </div>
+              <div className="flex size-full flex-col items-start justify-end p-6 text-left">
+                <div className="mb-3 text-4xl transition-transform duration-300 group-hover:scale-[1.2]">
+                  {CategoryMap[cat]?.emoji}
+                </div>
+                <div className="text-lg font-bold text-white drop-shadow-sm">
+                  {t(`discover.category.${cat}`, { ns: "common" })}
+                </div>
               </div>
             </CardContent>
           </Card>

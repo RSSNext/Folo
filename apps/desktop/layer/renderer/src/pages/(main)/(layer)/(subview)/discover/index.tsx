@@ -1,3 +1,4 @@
+import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
 import { UserRole } from "@follow/constants"
@@ -17,6 +18,7 @@ import { DiscoverInboxList } from "~/modules/discover/inbox-list-form"
 import { Recommendations } from "~/modules/discover/recommendations"
 import { DiscoverTransform } from "~/modules/discover/transform-form"
 import { DiscoverUser } from "~/modules/discover/user-form"
+import { Trending } from "~/modules/trending"
 
 const tabs: {
   name: I18nKeys
@@ -114,6 +116,9 @@ export function Component() {
           </TabsContent>
         ))}
       </Tabs>
+      <Divider className="w-full max-w-[800px]" />
+      <Trending center />
+      <Divider className="w-full max-w-[800px]" />
       <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
         <Recommendations />
       </AppErrorBoundary>

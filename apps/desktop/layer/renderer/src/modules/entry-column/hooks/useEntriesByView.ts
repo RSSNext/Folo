@@ -46,7 +46,7 @@ const fallbackReturn: UseEntriesReturn = {
   error: null,
 }
 const useRemoteEntries = (): UseEntriesReturn => {
-  const { feedId, view, inboxId, listId } = useRouteParams()
+  const { feedId, view, inboxId, listId, isPreview } = useRouteParams()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
 
@@ -61,7 +61,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       inboxId,
       listId,
       view,
-      ...(unreadOnly === true && { read: false }),
+      ...(unreadOnly === true && !isPreview && { read: false }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -69,7 +69,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     }
 
     return params
-  }, [feedId, folderIds, inboxId, listId, unreadOnly, view])
+  }, [feedId, folderIds, inboxId, listId, unreadOnly, view, isPreview])
   const query = useEntries(entriesOptions)
 
   const [fetchedTime, setFetchedTime] = useState<number>()

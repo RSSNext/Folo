@@ -18,6 +18,7 @@ import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
+import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
@@ -237,25 +238,9 @@ const Renderer: React.FC<{
     ),
   )
 
-  const contentLineHeight = useUISettingKey("contentLineHeight")
-  const contentFontSize = useUISettingKey("contentFontSize")
-  const readerFontFamily = useUISettingKey("readerFontFamily")
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
 
-  const stableRenderStyle = useMemo(() => {
-    const css = {} as React.CSSProperties
-    if (readerFontFamily) {
-      css.fontFamily = readerFontFamily
-    }
-    if (contentLineHeight) {
-      css.lineHeight = contentLineHeight
-    }
-    if (contentFontSize) {
-      css.fontSize = contentFontSize
-    }
-
-    return css
-  }, [readerFontFamily, contentLineHeight, contentFontSize])
+  const stableRenderStyle = useRenderStyle()
   const isInPeekModal = useInPeekModal()
 
   const tocRef = useRef<TocRef | null>(null)

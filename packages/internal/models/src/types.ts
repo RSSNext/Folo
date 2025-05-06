@@ -34,6 +34,10 @@ export type TransactionModel = ExtractBizResponse<
 
 export type FeedModel = ExtractBizResponse<typeof _apiClient.feeds.$get>["data"]["feed"]
 
+export type FeedAnalyticsModel = ExtractBizResponse<
+  typeof _apiClient.feeds.$get
+>["data"]["analytics"]
+
 export type ListModel = Omit<ListModelPoplutedFeeds, "feeds">
 export type ListModelPoplutedFeeds = ExtractBizResponse<
   typeof _apiClient.lists.$get

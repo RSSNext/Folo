@@ -1,5 +1,6 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { OouiUserAnonymous } from "@follow/components/icons/OouiUserAnonymous.jsx"
+import { Button } from "@follow/components/ui/button/index.js"
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +18,7 @@ import { useTranslation } from "react-i18next"
 import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
 import { getMainContainerElement } from "~/atoms/dom"
 import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/useFeedActions"
+import { useFollow } from "~/hooks/biz/useFollow"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
@@ -40,6 +42,7 @@ interface FeedItemProps {
   feedId: string
   view?: number
   className?: string
+  isPreview?: boolean
 }
 
 const DraggableItemWrapper: Component<
@@ -61,9 +64,9 @@ const DraggableItemWrapper: Component<
     </div>
   )
 }
-const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
+const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => {
   const { t } = useTranslation()
-  const subscription = useSubscriptionByFeedId(feedId)!
+  const subscription = useSubscriptionByFeedId(feedId)
   const navigate = useNavigateEntry()
   const feed = useFeedById(feedId, (feed) => {
     return {
@@ -153,6 +156,8 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
       setIsContextMenuOpen(false)
     },
   })
+  const follow = useFollow()
+
   if (!feed) return null
 
   const isFeed = feed.type === "feed" || !feed.type
@@ -205,7 +210,7 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
             </TooltipPortal>
           </Tooltip>
         )}
-        {subscription.isPrivate && (
+        {subscription?.isPrivate && (
           <Tooltip delayDuration={300}>
             <TooltipTrigger>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />
@@ -216,6 +221,21 @@ const FeedItemImpl = ({ view, feedId, className }: FeedItemProps) => {
           </Tooltip>
         )}
       </div>
+      {isPreview && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            follow({
+              isList: false,
+              id: feedId,
+              url: feed.url,
+            })
+          }}
+        >
+          <i className="i-mgc-add-cute-re text-accent text-base" />
+        </Button>
+      )}
       <UnreadNumber unread={feedUnread} className="ml-2" />
     </DraggableItemWrapper>
   )
@@ -227,7 +247,8 @@ const ListItemImpl: Component<{
   listId: string
   view: FeedViewType
   iconSize?: number
-}> = ({ view, listId, className, iconSize = 22 }) => {
+  isPreview?: boolean
+}> = ({ view, listId, className, iconSize = 22, isPreview }) => {
   const list = useListById(listId)
 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.listId === listId)
@@ -264,6 +285,8 @@ const ListItemImpl: Component<{
       setIsContextMenuOpen(false)
     },
   })
+  const follow = useFollow()
+
   if (!list) return null
   return (
     <div
@@ -282,7 +305,7 @@ const ListItemImpl: Component<{
           {getPreferredTitle(list)}
         </EllipsisHorizontalTextWithTooltip>
 
-        {subscription.isPrivate && (
+        {subscription?.isPrivate && (
           <Tooltip delayDuration={300}>
             <TooltipTrigger>
               <OouiUserAnonymous className="ml-1 shrink-0 text-base" />
@@ -293,6 +316,20 @@ const ListItemImpl: Component<{
           </Tooltip>
         )}
       </div>
+      {isPreview && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            follow({
+              isList: true,
+              id: listId,
+            })
+          }}
+        >
+          <i className="i-mgc-add-cute-re text-accent text-base" />
+        </Button>
+      )}
       <UnreadNumber unread={listUnread} className="ml-2" />
     </div>
   )

@@ -6,6 +6,7 @@ import { useShowAISummary } from "~/atoms/ai-summary"
 import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { CopyButton } from "~/components/ui/button/CopyButton"
+import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import { useEntry } from "~/store/entry"
@@ -116,7 +117,9 @@ export function AISummary({ entryId }: { entryId: string }) {
             <div className="bg-material-ultra-thick h-3 w-[85%] rounded-lg" />
           </div>
         ) : (
-          <div className="animate-in fade-in-0 duration-500">{summary.data}</div>
+          <div className="animate-in fade-in-0 duration-500">
+            <Markdown className="prose-sm prose-p:m-0 max-w-none">{String(summary.data)}</Markdown>
+          </div>
         )}
       </AutoResizeHeight>
     </div>

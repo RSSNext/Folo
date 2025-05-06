@@ -115,6 +115,7 @@ export default ({ mode }) => {
         "/forget-password": proxyConfig,
         "/reset-password": proxyConfig,
         "/register": proxyConfig,
+        "/share": proxyConfig,
 
         ...(env.VITE_DEV_PROXY
           ? {

@@ -70,7 +70,7 @@ export const UpdateNotice = () => {
     <m.div
       onMouseMove={handleMouseMove}
       className={cn(
-        "bg-theme-modal-background group absolute inset-x-3 bottom-3 cursor-pointer overflow-hidden rounded-lg py-3 text-center text-sm shadow backdrop-blur",
+        "bg-fill backdrop-blur-background group absolute inset-x-3 bottom-3 cursor-pointer overflow-hidden rounded-lg py-3 text-center text-sm shadow",
         playerIsShow && "bottom-28",
       )}
       onClick={handleClick}

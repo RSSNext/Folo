@@ -187,6 +187,7 @@ const VirtualGridImpl: FC<
       rowVirtualizer.measure()
       columnVirtualizer.measure()
     }
+    measureRef.current?.()
   }, [columnVirtualizer, measureRef, rowVirtualizer])
 
   const virtualItems = rowVirtualizer.getVirtualItems()

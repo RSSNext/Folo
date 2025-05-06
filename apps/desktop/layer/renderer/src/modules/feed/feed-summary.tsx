@@ -11,31 +11,25 @@ export function FollowSummary({
   feed,
   docs,
   className,
+  simple,
 }: {
   feed: FeedOrListRespModel
   docs?: string
   className?: string
+  simple?: boolean
 }) {
-  let siteLink: string | undefined
-  let feedLink: string | undefined
   let feedText: string | undefined
 
   switch (feed.type) {
     case "list": {
-      siteLink = UrlBuilder.shareList(feed.id)
-      feedLink = siteLink
       feedText = UrlBuilder.shareList(feed.id)
       break
     }
     case "inbox": {
-      siteLink = void 0
-      feedLink = siteLink
       feedText = `${feed.id}${env.VITE_INBOXES_EMAIL}`
       break
     }
     default: {
-      siteLink = feed.siteUrl || void 0
-      feedLink = feed.url || docs
       feedText = feed.url || docs
       break
     }
@@ -43,26 +37,25 @@ export function FollowSummary({
 
   return (
     <div className={cn("flex select-text flex-col gap-2 text-sm", className)}>
-      <a href={siteLink} target="_blank" className="flex items-center" rel="noreferrer">
+      <div className="flex items-center">
         <FeedIcon
           feed={feed}
           fallbackUrl={docs}
-          className="mask-squircle mask mr-3 shrink-0 rounded-none"
+          className="mask-squircle mask shrink-0 rounded-none"
           size={32}
         />
         <div className="min-w-0 leading-tight">
-          <FeedTitle feed={feed} className="text-base font-semibold" />
+          <FeedTitle feed={feed} className="mb-0.5 text-[15px] font-semibold" />
           <EllipsisHorizontalTextWithTooltip className="truncate text-xs font-normal text-zinc-500">
-            {feed.description}
+            {feedText}
           </EllipsisHorizontalTextWithTooltip>
         </div>
-      </a>
-      <div className="flex items-center gap-1 truncate text-zinc-500">
-        <i className="i-mgc-right-cute-re shrink-0" />
-        <a href={feedLink} target="_blank" rel="noreferrer" className="truncate">
-          <EllipsisHorizontalTextWithTooltip>{feedText}</EllipsisHorizontalTextWithTooltip>
-        </a>
       </div>
+      {!simple && (
+        <EllipsisHorizontalTextWithTooltip className="truncate text-sm font-normal text-zinc-500">
+          {feed.description}
+        </EllipsisHorizontalTextWithTooltip>
+      )}
     </div>
   )
 }

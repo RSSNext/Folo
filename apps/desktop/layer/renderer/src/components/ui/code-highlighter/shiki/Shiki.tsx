@@ -27,6 +27,7 @@ export interface ShikiProps {
   className?: string
 
   transparent?: boolean
+  showCopy?: boolean
 
   theme?: string
 }
@@ -158,7 +159,7 @@ const ShikiCode: FC<
   ShikiProps & {
     codeTheme: string
   }
-> = ({ code, language, codeTheme, className, transparent }) => {
+> = ({ code, language, codeTheme, className, transparent, showCopy = true }) => {
   const rendered = useMemo(() => {
     try {
       return shiki.codeToHtml(code, {
@@ -198,7 +199,7 @@ const ShikiCode: FC<
             <span>{language}</span>
           </span>
         )}
-        <CopyButton variant="outline" value={code} />
+        <CopyButton variant="outline" value={code} className={showCopy ? "" : "invisible"} />
       </div>
       <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
     </div>

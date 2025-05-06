@@ -17,6 +17,7 @@ import type { ModalContentComponent } from "~/components/ui/modal"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
@@ -152,6 +153,8 @@ const PreviewVideoModalContent: ModalContentComponent<{
   const translation = useEntryTranslation({ entry, extraFields: ["content"] })
   const content = translation.data?.content || entry?.entries.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
+
+  const renderStyle = useRenderStyle()
   useEffect(() => {
     const currentValue = currentAudioPlayerIsPlay.current
     if (currentValue) {
@@ -179,7 +182,12 @@ const PreviewVideoModalContent: ModalContentComponent<{
       <ViewTag src={src} className="size-full" />
       {!!content && (
         <div className="bg-background p-10 pt-5 backdrop-blur-sm">
-          <HTML as="div" className="prose dark:prose-invert !max-w-full" noMedia>
+          <HTML
+            as="div"
+            className="prose dark:prose-invert !max-w-full"
+            noMedia
+            style={renderStyle}
+          >
             {content}
           </HTML>
         </div>

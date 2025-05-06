@@ -5,9 +5,6 @@ import { ErrorComponentType } from "./enum"
 const ErrorFallbackMap = {
   [ErrorComponentType.Modal]: lazy(() => import("./ModalError")),
   [ErrorComponentType.Page]: lazy(() => import("./PageError")),
-  [ErrorComponentType.FeedFoundCanBeFollow]: lazy(
-    () => import("./FeedFoundCanBeFollowErrorFallback"),
-  ),
   [ErrorComponentType.FeedNotFound]: lazy(() => import("./FeedNotFound")),
   [ErrorComponentType.RSSHubDiscoverError]: lazy(() => import("./RSSHubError")),
 }

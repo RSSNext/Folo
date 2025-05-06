@@ -1,5 +1,4 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Card, CardHeader } from "@follow/components/ui/card/index.jsx"
 import {
   Form,
   FormControl,
@@ -15,7 +14,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { EntryModelSimple, FeedModel } from "@follow/models/types"
+import type { EntryModelSimple, FeedAnalyticsModel, FeedModel } from "@follow/models/types"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,11 +27,11 @@ import { z } from "zod"
 
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { toastFetchError } from "~/lib/error-parser"
-import { FollowSummary } from "~/modules/feed/feed-summary"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useFeedByIdOrUrl } from "~/store/feed"
@@ -40,6 +39,7 @@ import { useSubscriptionByFeedId } from "~/store/subscription"
 import { feedUnreadActions } from "~/store/unread"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
+import { FeedCard } from "./feed-card"
 
 const formSchema = z.object({
   view: z.string(),
@@ -49,15 +49,13 @@ const formSchema = z.object({
 })
 export type FeedFormDataValuesType = z.infer<typeof formSchema>
 
-const defaultValue = { view: FeedViewType.Articles.toString() } as FeedFormDataValuesType
-
 export const FeedForm: Component<{
   url?: string
   id?: string
   defaultValues?: FeedFormDataValuesType
 
   onSuccess?: () => void
-}> = ({ id: _id, defaultValues = defaultValue, url, onSuccess }) => {
+}> = ({ id: _id, defaultValues, url, onSuccess }) => {
   const queryParams = { id: _id, url }
 
   const feedQuery = useFeedQuery(queryParams)
@@ -86,7 +84,7 @@ export const FeedForm: Component<{
             return (
               <ScrollArea.ScrollArea
                 flex
-                rootClassName={cn(isInModal && "-mx-4 px-4 -mt-4", "h-0 grow")}
+                rootClassName={cn(isInModal && "-mx-4 px-4 -mt-4", "h-[500px] grow")}
                 viewportClassName="pt-4"
               >
                 {/* // Workaround for the issue with the scroll area viewport setting the display to
@@ -106,6 +104,7 @@ export const FeedForm: Component<{
                         subscriptionData: feedQuery.data?.subscription,
                         entries: feedQuery.data?.entries,
                         feed,
+                        analytics: feedQuery.data?.analytics,
                         placeholderRef,
                       }}
                     />
@@ -164,6 +163,7 @@ const FeedInnerForm = ({
   subscriptionData,
   feed,
   entries,
+  analytics,
 
   placeholderRef,
 }: {
@@ -179,6 +179,7 @@ const FeedInnerForm = ({
   }
   feed: FeedModel
   entries?: EntryModelSimple[]
+  analytics?: FeedAnalyticsModel
 
   placeholderRef: React.RefObject<HTMLDivElement | null>
 }) => {
@@ -187,7 +188,9 @@ const FeedInnerForm = ({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: defaultValues || {
+      view: getRouteParams().view.toString() || FeedViewType.Articles.toString(),
+    },
   })
 
   const { setClickOutSideToDismiss, dismiss } = useCurrentModal()
@@ -204,6 +207,12 @@ const FeedInnerForm = ({
       form.setValue("title", subscription?.title || "")
     }
   }, [subscription])
+
+  useEffect(() => {
+    if (analytics?.view !== undefined && !subscription && defaultValues?.view === undefined) {
+      form.setValue("view", `${analytics.view}`)
+    }
+  }, [analytics, subscription, defaultValues?.view])
 
   const followMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -275,11 +284,14 @@ const FeedInnerForm = ({
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <Card>
-        <CardHeader>
-          <FollowSummary feed={feed} />
-        </CardHeader>
-      </Card>
+      <FeedCard
+        item={{
+          feed,
+          analytics,
+        }}
+        hideButtons
+        className="px-1 pb-5 pt-2"
+      />
       <Form {...form}>
         <form
           id="feed-form"

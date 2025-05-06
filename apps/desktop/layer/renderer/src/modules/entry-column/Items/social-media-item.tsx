@@ -19,6 +19,7 @@ import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
+import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { jotaiStore } from "~/lib/jotai"
 import { parseSocialMedia } from "~/lib/parsers"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -54,6 +55,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
     }
   }, [])
   const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
+  const renderStyle = useRenderStyle({ baseFontSize: 14, baseLineHeight: 1.625 })
 
   const titleRef = useRef<HTMLDivElement>(null)
   if (!entry || !feed) return null
@@ -111,6 +113,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
                   "prose-blockquote:mt-0 cursor-auto select-text text-sm leading-relaxed",
                 )}
                 noMedia
+                style={renderStyle}
               >
                 {translation?.content || content}
               </HTML>
