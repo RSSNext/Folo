@@ -31,11 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     updates: {
       url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
     },
-    runtimeVersion: isDev
-      ? "0.0.0-dev"
-      : {
-          policy: "sdkVersion" as const,
-        },
+    runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
 
     name: "Folo",
     slug: "follow",
