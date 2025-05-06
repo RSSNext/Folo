@@ -1,5 +1,5 @@
 import { getStableRouterNavigate } from "@follow/components/atoms/route.js"
-import { RootPortalProvider } from "@follow/components/ui/portal/provider.js"
+import { RootPortalContext } from "@follow/components/ui/portal/provider.js"
 import type { PropsWithChildren, ReactNode } from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -29,7 +29,7 @@ export const PeekModal = (
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
 
   return (
-    <RootPortalProvider value={rootRef as HTMLElement}>
+    <RootPortalContext value={rootRef as HTMLElement}>
       <div
         className="scrollbar-none relative mx-auto mt-[10vh] max-w-full overflow-hidden px-2 lg:max-w-[65rem] lg:p-0"
         ref={setRootRef}
@@ -70,6 +70,6 @@ export const PeekModal = (
           <FixedModalCloseButton onClick={dismiss} />
         </m.div>
       </div>
-    </RootPortalProvider>
+    </RootPortalContext>
   )
 }

@@ -1,4 +1,4 @@
-import { RootPortalProvider } from "@follow/components/ui/portal/provider.js"
+import { RootPortalContext } from "@follow/components/ui/portal/provider.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { ZIndexProvider } from "@follow/components/ui/z-index/index.js"
 import { useRefValue } from "@follow/hooks"
@@ -177,9 +177,9 @@ export const ModalInternal = memo(function Modal({
   const finalChildren = useMemo(
     () => (
       <AppErrorBoundary errorType={ErrorComponentType.Modal}>
-        <RootPortalProvider value={edgeElementRef as HTMLElement}>
+        <RootPortalContext value={edgeElementRef as HTMLElement}>
           {children ?? createElement(content, ModalProps)}
-        </RootPortalProvider>
+        </RootPortalContext>
       </AppErrorBoundary>
     ),
     [ModalProps, children, content, edgeElementRef],
