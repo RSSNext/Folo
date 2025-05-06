@@ -71,7 +71,7 @@ export const FeedForm: Component<{
   const { t } = useTranslation()
 
   const isInModal = useIsInModal()
-  const placeholderRef = useRef<HTMLDivElement>(null)
+  const placeholderRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <div
@@ -180,7 +180,7 @@ const FeedInnerForm = ({
   feed: FeedModel
   entries?: EntryModelSimple[]
 
-  placeholderRef: React.RefObject<HTMLDivElement>
+  placeholderRef: React.RefObject<HTMLDivElement | null>
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
   const isSubscribed = !!subscription

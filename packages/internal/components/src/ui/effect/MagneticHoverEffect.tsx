@@ -5,12 +5,15 @@ import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
 type MagneticHoverEffectProps<T extends React.ElementType> = {
   as?: T
   children: React.ReactNode
+  ref?: React.ForwardedRef<T>
 } & Omit<React.ComponentPropsWithoutRef<T>, "as" | "children">
 
-const MagneticHoverEffect = <T extends React.ElementType = "div">(
-  { as, children, ...rest }: MagneticHoverEffectProps<T>,
-  ref: React.ForwardedRef<T>,
-) => {
+const MagneticHoverEffect = <T extends React.ElementType = "div">({
+  as,
+  children,
+  ref,
+  ...rest
+}: MagneticHoverEffectProps<T>) => {
   const Component = as || "div"
 
   const itemRef = useRef<HTMLElement>(null)

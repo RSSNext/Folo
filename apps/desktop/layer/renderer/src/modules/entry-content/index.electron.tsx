@@ -74,7 +74,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const isInReadabilityMode = useEntryIsInReadability(entryId)
   const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
-  const scrollerRef = useRef<HTMLDivElement>(null)
+  const scrollerRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     scrollerRef.current?.scrollTo(0, 0)
     scrollerRef.current?.focus()
@@ -193,7 +193,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 }
 
 const EntryScrollArea: Component<{
-  scrollerRef: React.RefObject<HTMLDivElement>
+  scrollerRef: React.RefObject<HTMLDivElement | null>
 }> = ({ children, className, scrollerRef }) => {
   const isInPeekModal = useInPeekModal()
 

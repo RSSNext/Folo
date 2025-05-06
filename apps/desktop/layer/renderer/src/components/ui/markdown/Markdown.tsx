@@ -20,7 +20,7 @@ export const Markdown: Component<
   const [refElement, setRefElement] = useState<HTMLElement | null>(null)
 
   return (
-    <MarkdownRenderContainerRefContext.Provider value={refElement}>
+    <MarkdownRenderContainerRefContext value={refElement}>
       <article
         className={cn(
           "prose dark:prose-invert prose-th:text-left relative cursor-auto select-text",
@@ -30,6 +30,6 @@ export const Markdown: Component<
       >
         {markdownElement}
       </article>
-    </MarkdownRenderContainerRefContext.Provider>
+    </MarkdownRenderContainerRefContext>
   )
 }

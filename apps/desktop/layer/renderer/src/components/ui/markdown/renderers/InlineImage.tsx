@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { useContext } from "react"
+import { use } from "react"
 import { useContextSelector } from "use-context-selector"
 
 import { Media } from "../../media"
@@ -13,7 +13,7 @@ export const MarkdownInlineImage = (
     }
   },
 ) => {
-  const { transformUrl } = useContext(MarkdownRenderActionContext)
+  const { transformUrl } = use(MarkdownRenderActionContext)
   const populatedUrl = transformUrl(props.src)
   const media = useContextSelector(MarkdownImageRecordContext, (record) =>
     props.src ? record[props.src] : null,

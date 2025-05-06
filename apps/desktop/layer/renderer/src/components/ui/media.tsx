@@ -3,7 +3,7 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
-import { createContext, memo, useContext, useMemo, useState } from "react"
+import { createContext, memo, use, useMemo, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { useEventCallback } from "usehooks-ts"
 
@@ -71,7 +71,7 @@ const MediaImpl: FC<MediaProps> = ({
     ...rest
   } = props
 
-  const ctxMediaInfo = useContext(MediaInfoRecordContext)
+  const ctxMediaInfo = use(MediaInfoRecordContext)
   const ctxHeight = ctxMediaInfo[src!]?.height
   const ctxWidth = ctxMediaInfo[src!]?.width
 
@@ -460,15 +460,11 @@ export const MediaContainerWidthProvider = ({
   children: React.ReactNode
   width: number
 }) => {
-  return (
-    <MediaContainerWidthContext.Provider value={width}>
-      {children}
-    </MediaContainerWidthContext.Provider>
-  )
+  return <MediaContainerWidthContext value={width}>{children}</MediaContainerWidthContext>
 }
 
 const useMediaContainerWidth = () => {
-  return useContext(MediaContainerWidthContext)
+  return use(MediaContainerWidthContext)
 }
 
 export type MediaInfoRecord = Record<string, { width?: number; height?: number }>
@@ -482,9 +478,5 @@ export const MediaInfoRecordProvider = ({
   children: React.ReactNode
   mediaInfo?: Nullable<MediaInfoRecord>
 }) => {
-  return (
-    <MediaInfoRecordContext.Provider value={mediaInfo || noop}>
-      {children}
-    </MediaInfoRecordContext.Provider>
-  )
+  return <MediaInfoRecordContext value={mediaInfo || noop}>{children}</MediaInfoRecordContext>
 }

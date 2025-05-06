@@ -1,7 +1,7 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FC, PropsWithChildren } from "react"
-import { createContext, useCallback, useContext, useState } from "react"
+import { createContext, use, useCallback, useState } from "react"
 
 const Provider = createContext<(id: string, styles: string) => () => void>(() => () => {})
 export const PortalInjectStylesProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -20,7 +20,7 @@ export const PortalInjectStylesProvider: FC<PropsWithChildren> = ({ children }) 
     return dispose
   }, [])
   return (
-    <Provider.Provider value={injectStyles}>
+    <Provider value={injectStyles}>
       <RootPortal to={document.head}>
         {Object.entries(styles).map(([id, style]) => (
           <MemoedDangerousHTMLStyle key={id} id={`inject-${id}`}>
@@ -29,10 +29,10 @@ export const PortalInjectStylesProvider: FC<PropsWithChildren> = ({ children }) 
         ))}
       </RootPortal>
       {children}
-    </Provider.Provider>
+    </Provider>
   )
 }
 
 export const useInjectStyles = () => {
-  return useContext(Provider)
+  return use(Provider)
 }

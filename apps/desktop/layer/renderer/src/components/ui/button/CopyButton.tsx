@@ -9,7 +9,7 @@ export const CopyButton: Component<{
   style?: React.CSSProperties
   variant?: "solid" | "outline" | "ghost"
 }> = ({ value, className, style, variant = "solid" }) => {
-  const copiedTimerRef = useRef<any>()
+  const copiedTimerRef = useRef<any>(undefined)
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(value)
 

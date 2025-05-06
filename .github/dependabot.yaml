@@ -9,15 +9,6 @@ updates:
       timezone: Asia/Singapore
     target-branch: dev
     ignore:
-      # Stuck by react 19
-      - dependency-name: react
-        versions: [">=19.0.0"]
-      - dependency-name: react-dom
-        versions: [">=19.0.0"]
-      - dependency-name: "@types/react"
-        versions: [">=19.0.0"]
-      - dependency-name: "@types/react-dom"
-        versions: [">=19.0.0"]
       - dependency-name: "@shopify/flash-list"
         versions: [">1.7.3"]
 

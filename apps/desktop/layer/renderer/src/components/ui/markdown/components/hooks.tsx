@@ -78,7 +78,7 @@ export const useScrollTracking = (
 
   const headingTopsRef = useRef<number[]>([])
   const [headingTopsVersion, setHeadingTopsVersion] = useState(0)
-  const throttleCallerRef = useRef<DebouncedFuncLeading<() => void>>()
+  const throttleCallerRef = useRef<DebouncedFuncLeading<() => void>>(undefined)
   const store = useStore()
 
   useLayoutEffect(() => {

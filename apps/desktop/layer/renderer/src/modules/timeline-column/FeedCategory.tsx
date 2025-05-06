@@ -393,9 +393,9 @@ const RenameCategoryForm: FC<{
       toast.success(t("sidebar.feed_column.context_menu.rename_category_success"))
     },
   })
-  const formRef = useRef<HTMLFormElement>(null)
+  const formRef = useRef<HTMLFormElement | null>(null)
   useOnClickOutside(
-    formRef,
+    formRef as React.RefObject<HTMLElement>,
     () => {
       onFinished()
     },

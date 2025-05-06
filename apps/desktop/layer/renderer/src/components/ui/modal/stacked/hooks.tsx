@@ -3,7 +3,7 @@ import { nextFrame } from "@follow/utils/dom"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { useContext, useId, useRef, useState } from "react"
+import { use, useId, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
@@ -98,12 +98,12 @@ const actions = {
   },
 }
 
-export const useCurrentModal = () => useContext(CurrentModalContext)
+export const useCurrentModal = () => use(CurrentModalContext)
 
 export const useIsInModal = () => useContextSelector(CurrentModalStateContext, (v) => v.isInModal)
 
 export const useResizeableModal = (
-  modalElementRef: React.RefObject<HTMLDivElement>,
+  modalElementRef: React.RefObject<HTMLDivElement | null>,
   {
     enableResizeable,
     dragControls,

@@ -59,13 +59,14 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
     }
   }, [feedId, view])
   return (
+    // eslint-disable-next-line @eslint-react/no-context-provider
     <MarkdownImageRecordContext.Provider value={images}>
-      <MarkdownRenderActionContext.Provider value={actions}>
-        <EntryInfoContext.Provider value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>
+      <MarkdownRenderActionContext value={actions}>
+        <EntryInfoContext value={useMemo(() => ({ feedId, entryId }), [feedId, entryId])}>
           {/*  @ts-expect-error */}
           <HTML {...props}>{children}</HTML>
-        </EntryInfoContext.Provider>
-      </MarkdownRenderActionContext.Provider>
+        </EntryInfoContext>
+      </MarkdownRenderActionContext>
     </MarkdownImageRecordContext.Provider>
   )
 }

@@ -8,7 +8,7 @@ import { useResizeableModal } from "../hooks"
  * @internal
  */
 export const useModalResizeAndDrag = (
-  modalElementRef: RefObject<HTMLDivElement>,
+  modalElementRef: RefObject<HTMLDivElement | null>,
   {
     resizeable,
     draggable,

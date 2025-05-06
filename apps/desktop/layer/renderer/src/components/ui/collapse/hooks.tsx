@@ -1,5 +1,5 @@
 import type { PrimitiveAtom } from "jotai"
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 
 export interface CollapseContextValue {
   currentOpenCollapseIdAtom: PrimitiveAtom<string | null>
@@ -7,7 +7,7 @@ export interface CollapseContextValue {
 }
 export const CollaspeContext = createContext<CollapseContextValue>(null!)
 export const useCollapseContext = () => {
-  const ctx = useContext(CollaspeContext)
+  const ctx = use(CollaspeContext)
   if (!ctx) {
     throw new Error("CollapseContext not found")
   }

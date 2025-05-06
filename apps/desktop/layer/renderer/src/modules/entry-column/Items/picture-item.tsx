@@ -8,7 +8,7 @@ import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { PropsWithChildren } from "react"
-import { memo, useContext, useEffect, useMemo, useState } from "react"
+import { memo, use, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
@@ -78,7 +78,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   const itemWidth = useMasonryItemWidth()
 
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
-  const intersectionObserver = useContext(MasonryIntersectionContext)
+  const intersectionObserver = use(MasonryIntersectionContext)
 
   useEffect(() => {
     if (!ref || !intersectionObserver) return

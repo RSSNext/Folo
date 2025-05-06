@@ -41,7 +41,7 @@ export const CollapseGroup: FC<
       onOpenChange?.(state)
     })
   }, [defaultOpenId])
-  return <CollaspeContext.Provider value={ctxValue}>{children}</CollaspeContext.Provider>
+  return <CollaspeContext value={ctxValue}>{children}</CollaspeContext>
 }
 
 export const Collapse: Component<CollapseProps> = ({ onOpenChange, ...props }) => {

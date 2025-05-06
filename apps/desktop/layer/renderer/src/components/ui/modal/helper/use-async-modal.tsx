@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useOnce, useTypeScriptHappyCallback } from "@follow/hooks"
 import type { FC } from "react"
-import { createContext, createElement, useContext } from "react"
+import { createContext, createElement, use } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import type { ModalActionsInternal } from "~/components/ui/modal"
@@ -29,9 +29,9 @@ export const useAsyncModal = () => {
     present({
       id: options.id,
       content: () => (
-        <AsyncModalContext.Provider value={options}>
+        <AsyncModalContext value={options}>
           <LazyContent />
-        </AsyncModalContext.Provider>
+        </AsyncModalContext>
       ),
       title: "Loading...",
       CustomModalComponent: NoopChildren,
@@ -41,7 +41,7 @@ export const useAsyncModal = () => {
 }
 
 const LazyContent = () => {
-  const ctx = useContext(AsyncModalContext)
+  const ctx = use(AsyncModalContext)
   const queryResult = ctx.useDataFetcher()
 
   return (
@@ -61,7 +61,7 @@ const Presentable: FC<{
   data: any
 }> = ({ data }) => {
   const { present, dismissTop } = useModalStack()
-  const ctx = useContext(AsyncModalContext)
+  const ctx = use(AsyncModalContext)
 
   useOnce(() => {
     dismissTop()

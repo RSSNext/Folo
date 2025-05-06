@@ -1,7 +1,7 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { cn } from "@follow/utils/utils"
 import { Slot } from "@radix-ui/react-slot"
-import { useContext } from "react"
+import { use } from "react"
 import { useTranslation } from "react-i18next"
 import { useLoaderData } from "react-router"
 
@@ -44,7 +44,7 @@ export const SettingsTitle = ({
   } = (useLoaderData() || loader || {}) as SettingPageConfig
 
   const usedIcon = headerIcon || iconName
-  const isInSettingIndependentWindow = useContext(IsInSettingIndependentWindowContext)
+  const isInSettingIndependentWindow = use(IsInSettingIndependentWindowContext)
   if (!title) {
     return null
   }

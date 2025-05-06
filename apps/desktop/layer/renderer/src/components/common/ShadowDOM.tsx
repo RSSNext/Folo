@@ -2,7 +2,7 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import { useIsDark } from "@follow/hooks"
 import { nanoid } from "nanoid"
 import type { FC, PropsWithChildren, ReactNode } from "react"
-import { createContext, createElement, useContext, useLayoutEffect, useMemo, useState } from "react"
+import { createContext, createElement, use, useLayoutEffect, useMemo, useState } from "react"
 import root from "react-shadow"
 
 import { useUISettingKeys } from "~/atoms/settings/ui"
@@ -90,7 +90,7 @@ export const ShadowDOM: FC<
   return (
     // @ts-expect-error
     <root.div {...rest}>
-      <ShadowDOMContext.Provider value={true}>
+      <ShadowDOMContext value={true}>
         <div
           style={useMemo(
             () => ({
@@ -107,12 +107,12 @@ export const ShadowDOM: FC<
           {injectHostStyles ? stylesElements : null}
           {props.children}
         </div>
-      </ShadowDOMContext.Provider>
+      </ShadowDOMContext>
     </root.div>
   )
 }
 
-ShadowDOM.useIsShadowDOM = () => useContext(ShadowDOMContext)
+ShadowDOM.useIsShadowDOM = () => use(ShadowDOMContext)
 
 const cacheCssTextMap = {} as Record<string, string>
 

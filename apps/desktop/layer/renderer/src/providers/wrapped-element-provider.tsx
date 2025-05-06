@@ -5,7 +5,7 @@ import { createContextState } from "foxact/create-context-state"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
-import { createContext, memo, useCallback, useContext, useEffect, useRef } from "react"
+import { createContext, memo, use, useCallback, useEffect, useRef } from "react"
 
 import { ProviderComposer } from "~/components/common/ProviderComposer"
 import { jotaiStore } from "~/lib/jotai"
@@ -32,7 +32,7 @@ const [IsStartOfElementProviderInternal, useIsSoFWrappedElement, useSetIsSOfElem
 const Providers = [
   <WrappedElementProviderInternal key="ArticleElementProviderInternal" />,
   <ElementSizeProviderInternal key="ElementSizeProviderInternal" />,
-  <ElementPositionProviderInternal.Provider
+  <ElementPositionProviderInternal
     key="ElementPositionProviderInternal"
     value={atom({
       x: 0,
@@ -63,7 +63,7 @@ export const WrappedElementProvider: Component<WrappedElementProviderProps> = ({
 const ArticleElementResizeObserver = () => {
   const setSize = useSetWrappedElementSize()
 
-  const setPosition = useSetAtom(useContext(ElementPositionProviderInternal))
+  const setPosition = useSetAtom(use(ElementPositionProviderInternal))
   const $element = useWrappedElement()
   useIsomorphicLayoutEffect(() => {
     if (!$element) return
@@ -140,11 +140,10 @@ const BoundingDetection: Component<{
   return <div ref={ref} />
 }
 
-export const useWrappedElementPosition = () =>
-  useAtomValue(useContext(ElementPositionProviderInternal))
+export const useWrappedElementPosition = () => useAtomValue(use(ElementPositionProviderInternal))
 
 export const useGetWrappedElementPosition = () => {
-  const atom = useContext(ElementPositionProviderInternal)
+  const atom = use(ElementPositionProviderInternal)
   return useCallback(() => jotaiStore.get(atom), [atom])
 }
 

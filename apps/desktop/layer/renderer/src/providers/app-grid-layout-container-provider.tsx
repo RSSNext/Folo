@@ -1,6 +1,6 @@
 import { throttle } from "es-toolkit/compat"
 import type { FC, PropsWithChildren } from "react"
-import { createContext, useContext, useLayoutEffect, useRef, useState } from "react"
+import { createContext, use, useLayoutEffect, useRef, useState } from "react"
 
 import { APP_GRID_CONTAINER_ID } from "~/constants/dom"
 
@@ -29,12 +29,12 @@ export const AppLayoutGridContainerProvider: FC<PropsWithChildren> = ({ children
   }, [])
 
   return (
-    <AppLayoutGridContainerWidthContext.Provider value={width}>
+    <AppLayoutGridContainerWidthContext value={width}>
       <div ref={ref} className="relative z-0 contents" id={APP_GRID_CONTAINER_ID}>
         {children}
       </div>
-    </AppLayoutGridContainerWidthContext.Provider>
+    </AppLayoutGridContainerWidthContext>
   )
 }
 
-export const useAppLayoutGridContainerWidth = () => useContext(AppLayoutGridContainerWidthContext)
+export const useAppLayoutGridContainerWidth = () => use(AppLayoutGridContainerWidthContext)

@@ -75,7 +75,7 @@ const VirtualGrid: FC<EntryListProps> = (props) => {
     }
   }, [scrollRef])
 
-  const measureRef = useRef<() => void>()
+  const measureRef = useRef<() => void>(undefined)
 
   if (!containerWidth) return null
 

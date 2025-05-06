@@ -35,7 +35,7 @@ export const AnimatedCommandButton: FC<AnimatedCommandButtonProps & HTMLMotionPr
   ...props
 }) => {
   const [pressed, setPressed] = useState(false)
-  const timerRef = useRef<any>()
+  const timerRef = useRef<any>(undefined)
 
   return (
     <MotionButtonBase

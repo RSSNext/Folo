@@ -16,8 +16,8 @@ import type { FC, ReactNode } from "react"
 import {
   createContext,
   startTransition,
+  use,
   useCallback,
-  useContext,
   useDeferredValue,
   useEffect,
   useLayoutEffect,
@@ -115,7 +115,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     threshold: 3,
   })
 
-  const currentRange = useRef<{ start: number; end: number }>()
+  const currentRange = useRef<{ start: number; end: number }>(undefined)
   const handleRender = useCallback(
     (startIndex: number, stopIndex: number, items: any[]) => {
       currentRange.current = { start: startIndex, end: stopIndex }
@@ -212,12 +212,13 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
   return (
     <div ref={containerRef} className="mx-4 pt-2">
       {isInitDim && deferIsInitLayout && (
-        <MasonryItemWidthContext.Provider value={finalItemWidth}>
+        <MasonryItemWidthContext value={finalItemWidth}>
+          {/* eslint-disable-next-line @eslint-react/no-context-provider */}
           <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
-            <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
-              <MasonryIntersectionContext.Provider value={intersectionObserver}>
+            <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
+              <MasonryIntersectionContext value={intersectionObserver}>
                 <MediaContainerWidthProvider width={finalItemWidth}>
-                  <FirstScreenReadyContext.Provider value={firstScreenReady}>
+                  <FirstScreenReadyContext value={firstScreenReady}>
                     <Masonry
                       items={firstScreenReady ? items : items.slice(0, FirstScreenItemCount)}
                       columnGutter={gutter}
@@ -237,12 +238,12 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
                         <div className="mb-4">{props.Footer}</div>
                       )
                     ) : null}
-                  </FirstScreenReadyContext.Provider>
+                  </FirstScreenReadyContext>
                 </MediaContainerWidthProvider>
-              </MasonryIntersectionContext.Provider>
-            </MasonryItemsAspectRatioSetterContext.Provider>
+              </MasonryIntersectionContext>
+            </MasonryItemsAspectRatioSetterContext>
           </MasonryItemsAspectRatioContext.Provider>
-        </MasonryItemWidthContext.Provider>
+        </MasonryItemWidthContext>
       )}
     </div>
   )
@@ -254,7 +255,7 @@ const MasonryRender: React.ComponentType<
     entryId: string
   }>
 > = ({ data, index }) => {
-  const firstScreenReady = useContext(FirstScreenReadyContext)
+  const firstScreenReady = use(FirstScreenReadyContext)
   const entry = useEntry(data.entryId)
   const translation = useEntryTranslation({ entry })
 

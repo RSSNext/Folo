@@ -54,9 +54,10 @@ export function PictureItemStateLess({ entry }: EntryItemStatelessProps) {
 
   return (
     <div className="text-text relative w-full select-none rounded-md transition-colors" ref={ref}>
-      <MasonryItemWidthContext.Provider value={currentItemWidth}>
+      <MasonryItemWidthContext value={currentItemWidth}>
+        {/* eslint-disable-next-line @eslint-react/no-context-provider */}
         <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
-          <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
+          <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
             <MediaContainerWidthProvider width={currentItemWidth}>
               <Masonry
                 items={mediaItems}
@@ -67,9 +68,9 @@ export function PictureItemStateLess({ entry }: EntryItemStatelessProps) {
                 render={MasonryRender}
               />
             </MediaContainerWidthProvider>
-          </MasonryItemsAspectRatioSetterContext.Provider>
+          </MasonryItemsAspectRatioSetterContext>
         </MasonryItemsAspectRatioContext.Provider>
-      </MasonryItemWidthContext.Provider>
+      </MasonryItemWidthContext>
     </div>
   )
 }

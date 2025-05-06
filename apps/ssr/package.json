@@ -66,6 +66,7 @@
     "path-to-regexp": "8.2.0",
     "tsup": "8.4.0",
     "tsx": "4.19.3",
+    "typescript": "catalog:",
     "vite": "6.3.3"
   }
 }

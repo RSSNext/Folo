@@ -6,7 +6,7 @@ import { IsInParagraphContext } from "./ctx"
 export const MarkdownP: Component<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>
 > = ({ children, ...props }) => {
-  const { isAudio, ensureAndRenderTimeStamp } = React.useContext(MarkdownRenderActionContext)
+  const { isAudio, ensureAndRenderTimeStamp } = React.use(MarkdownRenderActionContext)
   const parseTimeline = isAudio()
   if (parseTimeline && typeof children === "string") {
     const renderer = ensureAndRenderTimeStamp(children)
@@ -29,7 +29,7 @@ export const MarkdownP: Component<
 
   return (
     <p {...props}>
-      <IsInParagraphContext.Provider value={true}>{children}</IsInParagraphContext.Provider>
+      <IsInParagraphContext value={true}>{children}</IsInParagraphContext>
     </p>
   )
 }

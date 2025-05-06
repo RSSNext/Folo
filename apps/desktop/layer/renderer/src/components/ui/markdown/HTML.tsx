@@ -55,7 +55,7 @@ const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProp
 
   if (!markdownElement) return null
   return (
-    <MarkdownRenderContainerRefContext.Provider value={refElement}>
+    <MarkdownRenderContainerRefContext value={refElement}>
       <MediaContainerWidthProvider width={containerWidth}>
         <MediaInfoRecordProvider mediaInfo={mediaInfo}>
           <MemoedDangerousHTMLStyle>{katexStyle}</MemoedDangerousHTMLStyle>
@@ -71,7 +71,7 @@ const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProp
         </MediaInfoRecordProvider>
       </MediaContainerWidthProvider>
       {!!accessory && <Fragment key={shouldForceReMountKey}>{accessory}</Fragment>}
-    </MarkdownRenderContainerRefContext.Provider>
+    </MarkdownRenderContainerRefContext>
   )
 }
 

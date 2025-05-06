@@ -217,7 +217,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
   const { t } = useTranslation("settings")
 
   const [feedSearchFor, setFeedSearchFor] = useState("")
-  const selectedFeedIdRef = useRef<string | null>()
+  const selectedFeedIdRef = useRef<string | null>(undefined)
   const addMutation = useAddFeedToFeedList({
     onSuccess: () => {
       setFeedSearchFor("")

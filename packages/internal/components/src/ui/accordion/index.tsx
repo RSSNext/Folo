@@ -15,7 +15,7 @@ type AccordionItemContextType = {
 const AccordionItemContext = React.createContext<AccordionItemContextType | undefined>(undefined)
 
 const useAccordionItem = (): AccordionItemContextType => {
-  const context = React.useContext(AccordionItemContext)
+  const context = React.use(AccordionItemContext)
   if (!context) {
     throw new Error("useAccordionItem must be used within an AccordionItem")
   }
@@ -36,7 +36,7 @@ function AccordionItem({ className, children, ...props }: AccordionItemProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   return (
-    <AccordionItemContext.Provider
+    <AccordionItemContext
       value={React.useMemo(
         () => ({
           isOpen,
@@ -52,7 +52,7 @@ function AccordionItem({ className, children, ...props }: AccordionItemProps) {
       >
         {children}
       </AccordionPrimitive.Item>
-    </AccordionItemContext.Provider>
+    </AccordionItemContext>
   )
 }
 
@@ -70,7 +70,7 @@ function AccordionTrigger({
   ...props
 }: AccordionTriggerProps) {
   const triggerRef = React.useRef<HTMLButtonElement | null>(null)
-  // @ts-expect-error
+
   React.useImperativeHandle(ref, () => triggerRef.current as HTMLButtonElement)
   const { isOpen, setIsOpen } = useAccordionItem()
 

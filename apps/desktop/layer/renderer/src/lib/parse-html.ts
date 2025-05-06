@@ -39,27 +39,27 @@ export const parseHtml = (
       },
       img: Img,
 
-      h1: (props) => {
+      h1: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(1)(props)
       },
-      h2: (props) => {
+      h2: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(2)(props)
       },
-      h3: (props) => {
+      h3: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(3)(props)
       },
-      h4: (props) => {
+      h4: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(4)(props)
       },
-      h5: (props) => {
+      h5: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(5)(props)
       },
-      h6: (props) => {
+      h6: ({ ref, ...props }) => {
         markInlineImage(props.node)
         return createHeadingRenderer(6)(props)
       },
@@ -67,7 +67,7 @@ export const parseHtml = (
 
       video: ({ node, ...props }) =>
         createElement(Media, { ...props, popper: true, type: "video" }),
-      p: ({ node, ...props }) => {
+      p: ({ node, ref, ...props }) => {
         if (node?.children && node.children.length !== 1) {
           for (const item of node.children) {
             item.type === "element" &&

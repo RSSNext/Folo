@@ -6,15 +6,13 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
-import { useContext } from "react"
+import { use } from "react"
 
 import type { LinkProps } from "../../link"
 import { MarkdownRenderActionContext } from "../context"
 
 export const MarkdownLink = (props: LinkProps) => {
-  const { transformUrl, isAudio, ensureAndRenderTimeStamp } = useContext(
-    MarkdownRenderActionContext,
-  )
+  const { transformUrl, isAudio, ensureAndRenderTimeStamp } = use(MarkdownRenderActionContext)
 
   const populatedFullHref = transformUrl(props.href)
 

@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import { useSetAtom } from "jotai"
 import type { FC } from "react"
-import { useContext } from "react"
+import { use } from "react"
 
 import { EntryContentPlaceholderContext } from "~/modules/app-layout/entry-content/EntryContentPlaceholderContext"
 
@@ -26,7 +26,7 @@ export const EntryPlaceholderDaily = ({
 const NormalDailyReportTitle: FC<DailyItemProps> = ({ day }) => {
   const { title, startDate, endDate } = useParseDailyDate(day)
 
-  const setOpenedSummary = useSetAtom(useContext(EntryContentPlaceholderContext).openedSummary)
+  const setOpenedSummary = useSetAtom(use(EntryContentPlaceholderContext).openedSummary)
 
   return (
     <button

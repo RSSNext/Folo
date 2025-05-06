@@ -39,11 +39,13 @@ export const SettingItemGroup: FC<PropsWithChildren> = ({ children }) => {
       switch (prevType) {
         case SettingSwitch: {
           return cloneElement(child as React.ReactElement, {
+            // @ts-expect-error
             className: "!-mt-2",
           })
         }
         case SettingActionItem: {
           return cloneElement(child as React.ReactElement, {
+            // @ts-expect-error
             className: "!-mt-2",
           })
         }

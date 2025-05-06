@@ -25,3 +25,6 @@ onlyBuiltDependencies:
   - sharp
   - simple-git-hooks
   - utf-8-validate
+
+catalog:
+  typescript: "5.8.3"

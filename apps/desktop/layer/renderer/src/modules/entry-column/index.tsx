@@ -27,7 +27,7 @@ import { EntryEmptyList, EntryList } from "./list"
 import { EntryColumnWrapper } from "./wrapper"
 
 function EntryColumnImpl() {
-  const listRef = useRef<Virtualizer<HTMLElement, Element>>()
+  const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)
   const entries = useEntriesByView({
     onReset: useCallback(() => {
       listRef.current?.scrollToIndex(0)

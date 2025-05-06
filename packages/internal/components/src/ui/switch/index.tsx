@@ -44,7 +44,6 @@ function Switch({
   )
 
   return (
-    // @ts-expect-error
     <SwitchPrimitive
       data-slot="switch"
       checked={isChecked}

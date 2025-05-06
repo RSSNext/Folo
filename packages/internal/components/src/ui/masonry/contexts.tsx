@@ -1,11 +1,11 @@
 import { noop } from "foxact/noop"
 import type { Dispatch, SetStateAction } from "react"
-import { createContext, useCallback, useContext } from "react"
+import { createContext, use, useCallback } from "react"
 import { createContext as createContextSelector, useContextSelector } from "use-context-selector"
 
 export const MasonryItemWidthContext = createContext(0)
 
-export const useMasonryItemWidth = () => useContext(MasonryItemWidthContext)
+export const useMasonryItemWidth = () => use(MasonryItemWidthContext)
 
 export const MasonryItemsAspectRatioContext = createContextSelector({} as Record<string, number>)
 
@@ -18,10 +18,10 @@ export const MasonryItemsAspectRatioSetterContext =
   createContext<Dispatch<SetStateAction<Record<string, number>>>>(noop)
 
 export const useSetStableMasonryItemRatio = () => {
-  const ctx = useContext(MasonryItemsAspectRatioSetterContext)
+  const ctx = use(MasonryItemsAspectRatioSetterContext)
   return useCallback(
     (url: string, ratio: number) => {
-      ctx((prev) => {
+      ctx((prev: Record<string, number>) => {
         // Skip if the ratio is already set, make it stable
         if (prev[url]) return prev
 

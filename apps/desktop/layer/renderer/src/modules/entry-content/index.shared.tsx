@@ -11,7 +11,7 @@ import { cn } from "@follow/utils/utils"
 import type { FallbackRender } from "@sentry/react"
 import { useStore } from "jotai"
 import type { FC } from "react"
-import { forwardRef, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -249,7 +249,7 @@ const useReadPercent = () => {
 }
 
 export const ContainerToc = memo(
-  forwardRef<TocRef, ComponentType>((_, ref) => {
+  ({ ref, ..._ }: ComponentType & { ref?: React.RefObject<TocRef | null> }) => {
     const wrappedElement = useWrappedElement()
 
     return (
@@ -277,7 +277,7 @@ export const ContainerToc = memo(
         </div>
       </RootPortal>
     )
-  }),
+  },
 )
 const BackTopIndicator: Component = memo(({ className }) => {
   const [readPercent] = useReadPercent()

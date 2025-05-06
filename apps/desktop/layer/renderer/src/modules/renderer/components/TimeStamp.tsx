@@ -1,6 +1,6 @@
 import { nextFrame } from "@follow/utils/dom"
 import { formatTimeToSeconds } from "@follow/utils/utils"
-import { useContext } from "react"
+import { use } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
 import { useEntry } from "~/store/entry"
@@ -8,7 +8,7 @@ import { useEntry } from "~/store/entry"
 import { EntryInfoContext } from "../context"
 
 export const TimeStamp = (props: { time: string }) => {
-  const { entryId } = useContext(EntryInfoContext)
+  const { entryId } = use(EntryInfoContext)
   const entry = useEntry(entryId)
   const mediaDuration = formatTimeToSeconds(entry?.entries.attachments?.[0]?.duration_in_seconds)
 

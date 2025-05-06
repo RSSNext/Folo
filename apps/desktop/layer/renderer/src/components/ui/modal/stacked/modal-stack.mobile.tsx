@@ -89,9 +89,9 @@ const ModalToSheet = (props: ModalProps & { index: number; id: string }) => {
   )
 
   const finalChildren = (
-    <CurrentModalContext.Provider value={ModalContextProps}>
+    <CurrentModalContext value={ModalContextProps}>
       {createElement(content, ModalProps)}
-    </CurrentModalContext.Provider>
+    </CurrentModalContext>
   )
 
   return (

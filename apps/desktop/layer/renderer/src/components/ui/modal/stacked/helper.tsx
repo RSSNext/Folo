@@ -1,12 +1,10 @@
 import type { Enable } from "re-resizable"
 import type { Context, PropsWithChildren } from "react"
-import { memo, useContext } from "react"
+import { memo, use } from "react"
 
-export const InjectContext = (context: Context<any>) => {
-  const ctxValue = useContext(context)
-  return memo(({ children }: PropsWithChildren) => (
-    <context.Provider value={ctxValue}>{children}</context.Provider>
-  ))
+export const InjectContext = (Context: Context<any>) => {
+  const ctxValue = use(Context)
+  return memo(({ children }: PropsWithChildren) => <Context value={ctxValue}>{children}</Context>)
 }
 
 export function resizableOnly(...positions: (keyof Enable)[]) {

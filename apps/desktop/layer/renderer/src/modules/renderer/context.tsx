@@ -18,6 +18,7 @@ const defaultContextValue: EntryContentContext = {
 export const EntryContentContext = createContext<EntryContentContext>(defaultContextValue)
 
 export const EntryContentProvider: Component<EntryContentContext> = ({ children, ...value }) => (
+  // eslint-disable-next-line @eslint-react/no-context-provider
   <EntryContentContext.Provider value={value}>{children}</EntryContentContext.Provider>
 )
 

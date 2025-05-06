@@ -78,7 +78,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
   const [isHeaderSimple, setHeaderSimple] = useState(false)
 
-  const currentVisibleRef = useRef<Set<string>>()
+  const currentVisibleRef = useRef<Set<string>>(undefined)
   useEffect(() => {
     const $ref = scrollerRef
 

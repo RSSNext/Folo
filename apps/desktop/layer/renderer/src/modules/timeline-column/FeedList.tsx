@@ -4,3 +4,9 @@ import { FeedList as FeedListDesktop } from "./FeedList.electron"
 import { FeedList as FeedListMobile } from "./FeedList.mobile"
 
 export const FeedList = withResponsiveSyncComponent(FeedListDesktop, FeedListMobile)
+
+export type FeedListProps = ComponentType<
+  { className?: string; view: number } & {
+    ref?: React.RefObject<HTMLDivElement | null> | ((node: HTMLDivElement | null) => void)
+  }
+>

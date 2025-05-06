@@ -129,7 +129,7 @@ export const SearchCmdK: React.FC = () => {
   const canLoadMore = totalCount > renderedTotalCount && renderedTotalCount > 0
 
   return (
-    <SearchCmdKContext.Provider value={searchInstance}>
+    <SearchCmdKContext value={searchInstance}>
       <Command.Dialog
         ref={dialogRef}
         shouldFilter={false}
@@ -224,7 +224,7 @@ export const SearchCmdK: React.FC = () => {
           </div>
         </div>
       </Command.Dialog>
-    </SearchCmdKContext.Provider>
+    </SearchCmdKContext>
   )
 }
 
@@ -293,7 +293,7 @@ const SearchResultCount: FC<{
   count?: number
 }> = ({ count }) => {
   const t = useI18n()
-  const searchInstance = React.useContext(SearchCmdKContext)
+  const searchInstance = React.use(SearchCmdKContext)
   const hasKeyword = useSearchStore((s) => !!s.keyword)
   const searchType = useSearchType()
 
@@ -345,7 +345,7 @@ const SearchOptions: Component = memo(({ children }) => {
   const { t } = useTranslation()
   const searchType = useSearchType()
 
-  const searchInstance = React.useContext(SearchCmdKContext)
+  const searchInstance = React.use(SearchCmdKContext)
 
   return (
     <div className="text-text flex items-center gap-2 text-sm">

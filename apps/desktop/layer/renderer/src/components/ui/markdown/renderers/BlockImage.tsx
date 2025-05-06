@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils/utils"
-import { useContext } from "react"
+import { use } from "react"
 import { useContextSelector } from "use-context-selector"
 
 import { useWrappedElementSize } from "~/providers/wrapped-element-provider"
@@ -17,7 +17,7 @@ export const MarkdownBlockImage = (
 ) => {
   const size = useWrappedElementSize()
 
-  const { transformUrl } = useContext(MarkdownRenderActionContext)
+  const { transformUrl } = use(MarkdownRenderActionContext)
   const src = transformUrl(props.src)
 
   const media = useContextSelector(MarkdownImageRecordContext, (record) =>

@@ -14,11 +14,12 @@ import {
   useListsGroupedData,
 } from "~/store/subscription"
 
+import type { FeedListProps } from "./FeedList"
 import { EmptyFeedList, ListHeader, StarredItem } from "./FeedList.shared"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
 import { feedColumnStyles } from "./styles"
 
-const FeedListImpl = ({ className, view }: { className?: string; view: number }) => {
+const FeedListImpl = ({ className, view }: FeedListProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
   const inboxesData = useInboxesGroupedData(view)

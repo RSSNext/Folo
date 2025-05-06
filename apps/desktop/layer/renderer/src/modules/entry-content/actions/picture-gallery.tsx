@@ -52,9 +52,10 @@ export const ImageGallery = ({ images }: { images: MediaModel }) => {
   const [masonryItemsRadio, setMasonryItemsRadio] = useState<Record<string, number>>({})
   return (
     <div ref={containerRef}>
-      <MasonryItemWidthContext.Provider value={currentItemWidth}>
+      <MasonryItemWidthContext value={currentItemWidth}>
+        {/* eslint-disable-next-line @eslint-react/no-context-provider */}
         <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
-          <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
+          <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
             <MediaContainerWidthProvider width={currentItemWidth}>
               <Masonry
                 items={images ?? []}
@@ -65,9 +66,9 @@ export const ImageGallery = ({ images }: { images: MediaModel }) => {
                 render={Render}
               />
             </MediaContainerWidthProvider>
-          </MasonryItemsAspectRatioSetterContext.Provider>
+          </MasonryItemsAspectRatioSetterContext>
         </MasonryItemsAspectRatioContext.Provider>
-      </MasonryItemWidthContext.Provider>
+      </MasonryItemWidthContext>
     </div>
   )
 }

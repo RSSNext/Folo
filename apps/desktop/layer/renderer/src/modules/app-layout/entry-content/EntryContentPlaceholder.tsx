@@ -30,7 +30,7 @@ export const EntryContentPlaceholder = () => {
   const openedSummary = useAtomValue(ctxValue.openedSummary)
   return (
     <LayoutGroup>
-      <EntryContentPlaceholderContext.Provider value={ctxValue}>
+      <EntryContentPlaceholderContext value={ctxValue}>
         <AnimatePresence>
           {openedSummary === null ? (
             <m.div
@@ -47,14 +47,14 @@ export const EntryContentPlaceholder = () => {
             <SummaryDetailContent />
           )}
         </AnimatePresence>
-      </EntryContentPlaceholderContext.Provider>
+      </EntryContentPlaceholderContext>
     </LayoutGroup>
   )
 }
 
 const SummaryDetailContent = () => {
   const { view } = useRouteParams()
-  const ctxValue = React.useContext(EntryContentPlaceholderContext)
+  const ctxValue = React.use(EntryContentPlaceholderContext)
   const openedSummary = useAtomValue(ctxValue.openedSummary)
   const setOpenedSummary = useSetAtom(ctxValue.openedSummary)
 

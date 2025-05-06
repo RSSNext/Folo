@@ -7,9 +7,8 @@ import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { clsx, cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import { m, useDragControls, useSpring } from "motion/react"
-import type { PropsWithChildren } from "react"
+import type { PropsWithChildren, RefObject } from "react"
 import {
-  forwardRef,
   memo,
   startTransition,
   useEffect,
@@ -47,122 +46,126 @@ export type VideoPlayerRef = {
     unmute: () => void
   }
 
-  wrapperRef: React.RefObject<HTMLDivElement>
+  wrapperRef: RefObject<HTMLDivElement | null>
 }
 
 interface VideoPlayerContextValue {
   state: HTMLMediaState
   controls: VideoPlayerRef["controls"]
-  wrapperRef: React.RefObject<HTMLDivElement>
+  wrapperRef: RefObject<HTMLDivElement | null>
   src: string
   variant: "preview" | "player" | "thumbnail"
 }
 const VideoPlayerContext = createContext<VideoPlayerContextValue>(null!)
-export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
-  ({ src, className, variant = "player", ...rest }, ref) => {
-    const isPlayer = variant === "player"
-    const [clickToStatus, setClickToStatus] = useState(null as "play" | "pause" | null)
+export const VideoPlayer = ({
+  ref,
+  src,
+  className,
+  variant = "player",
+  ...rest
+}: VideoPlayerProps & {
+  ref?: React.RefObject<VideoPlayerRef | null> | ((ref: VideoPlayerRef) => void)
+}) => {
+  const isPlayer = variant === "player"
+  const [clickToStatus, setClickToStatus] = useState(null as "play" | "pause" | null)
 
-    const scaleValue = useSpring(1, Spring.presets.softSpring)
-    const opacityValue = useSpring(0, Spring.presets.softSpring)
-    const handleClick = useEventCallback((e?: any) => {
+  const scaleValue = useSpring(1, Spring.presets.softSpring)
+  const opacityValue = useSpring(0, Spring.presets.softSpring)
+  const handleClick = useEventCallback((e?: any) => {
+    if (!isPlayer) return
+    e?.stopPropagation()
+
+    if (state.playing) {
+      controls.pause()
+      setClickToStatus("pause")
+    } else {
+      controls.play()
+      setClickToStatus("play")
+    }
+
+    opacityValue.jump(1)
+    scaleValue.jump(1)
+
+    nextFrame(() => {
+      scaleValue.set(1.3)
+      opacityValue.set(0)
+    })
+  })
+
+  const [element, state, controls, videoRef] = useVideo({
+    src,
+    className,
+    playsInline: true,
+    ...rest,
+    controls: false,
+    onClick(e) {
+      rest.onClick?.(e)
+      handleClick(e)
+    },
+    muted: isPlayer ? false : true,
+    onDoubleClick(e) {
+      rest.onDoubleClick?.(e)
       if (!isPlayer) return
-      e?.stopPropagation()
-
-      if (state.playing) {
-        controls.pause()
-        setClickToStatus("pause")
-      } else {
-        controls.play()
-        setClickToStatus("play")
-      }
-
-      opacityValue.jump(1)
-      scaleValue.jump(1)
-
-      nextFrame(() => {
-        scaleValue.set(1.3)
-        opacityValue.set(0)
-      })
-    })
-
-    const [element, state, controls, videoRef] = useVideo({
-      src,
-      className,
-      playsInline: true,
-      ...rest,
-      controls: false,
-      onClick(e) {
-        rest.onClick?.(e)
-        handleClick(e)
-      },
-      muted: isPlayer ? false : true,
-      onDoubleClick(e) {
-        rest.onDoubleClick?.(e)
-        if (!isPlayer) return
-        e.preventDefault()
-        e.stopPropagation()
-        if (!document.fullscreenElement) {
-          wrapperRef.current?.requestFullscreen()
-        } else {
-          document.exitFullscreen()
-        }
-      },
-    })
-
-    useHotkeys("space", (e) => {
       e.preventDefault()
-      handleClick()
-    })
+      e.stopPropagation()
+      if (!document.fullscreenElement) {
+        wrapperRef.current?.requestFullscreen()
+      } else {
+        document.exitFullscreen()
+      }
+    },
+  })
 
-    const stateRef = useRefValue(state)
-    const memoedControls = useState(controls)[0]
-    const wrapperRef = useRef<HTMLDivElement>(null)
-    useImperativeHandle(
-      ref,
-      () => ({
-        getElement: () => videoRef.current,
-        getState: () => stateRef.current,
-        controls: memoedControls,
-        wrapperRef,
-      }),
+  useHotkeys("space", (e) => {
+    e.preventDefault()
+    handleClick()
+  })
 
-      [stateRef, videoRef, memoedControls],
-    )
+  const stateRef = useRefValue(state)
+  const memoedControls = useState(controls)[0]
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  useImperativeHandle(
+    ref,
+    () => ({
+      getElement: () => videoRef.current,
+      getState: () => stateRef.current,
+      controls: memoedControls,
+      wrapperRef,
+    }),
 
-    return (
-      <Focusable className="center group relative size-full" ref={wrapperRef}>
-        {element}
+    [stateRef, videoRef, memoedControls],
+  )
 
-        <div className="center pointer-events-none absolute inset-0">
-          <m.div
-            className="center flex size-20 rounded-full bg-black p-3"
-            style={{ scale: scaleValue, opacity: opacityValue }}
-          >
-            <i
-              className={cn(
-                "size-8 text-white",
-                clickToStatus === "play" ? "i-mgc-play-cute-fi" : "i-mgc-pause-cute-fi",
-              )}
-            />
-          </m.div>
-        </div>
-
-        {state.hasAudio && !state.muted && state.playing && <BizControlOutsideMedia />}
-
-        <VideoPlayerContext.Provider
-          value={useMemo(
-            () => ({ state, controls, wrapperRef, src, variant }),
-            [state, controls, src, variant],
-          )}
+  return (
+    <Focusable className="center group relative size-full" ref={wrapperRef}>
+      {element}
+      <div className="center pointer-events-none absolute inset-0">
+        <m.div
+          className="center flex size-20 rounded-full bg-black p-3"
+          style={{ scale: scaleValue, opacity: opacityValue }}
         >
-          {variant === "preview" && state.hasAudio && <FloatMutedButton />}
-          {isPlayer && <ControlBar />}
-        </VideoPlayerContext.Provider>
-      </Focusable>
-    )
-  },
-)
+          <i
+            className={cn(
+              "size-8 text-white",
+              clickToStatus === "play" ? "i-mgc-play-cute-fi" : "i-mgc-pause-cute-fi",
+            )}
+          />
+        </m.div>
+      </div>
+      {state.hasAudio && !state.muted && state.playing && <BizControlOutsideMedia />}
+      {/* eslint-disable-next-line @eslint-react/no-context-provider */}
+      <VideoPlayerContext.Provider
+        value={useMemo(
+          () => ({ state, controls, wrapperRef, src, variant }),
+          [state, controls, src, variant],
+        )}
+      >
+        {variant === "preview" && state.hasAudio && <FloatMutedButton />}
+        {isPlayer && <ControlBar />}
+      </VideoPlayerContext.Provider>
+    </Focusable>
+  )
+}
 const BizControlOutsideMedia = () => {
   const currentAudioPlayerIsPlayRef = useMemo(() => AudioPlayer.get().status === "playing", [])
   useEffect(() => {
@@ -181,6 +184,7 @@ const BizControlOutsideMedia = () => {
 }
 
 const FloatMutedButton = () => {
+  // eslint-disable-next-line @eslint-react/no-use-context
   const ctx = useContext(VideoPlayerContext)
   const isMuted = ctx.state.muted
   return (
@@ -363,6 +367,7 @@ const VolumeControl = () => {
 }
 
 const PlayProgressBar = () => {
+  // eslint-disable-next-line @eslint-react/no-use-context
   const { state, controls } = useContext(VideoPlayerContext)
   const [currentDragging, setCurrentDragging] = useState(false)
   const [dragTime, setDragTime] = useState(0)

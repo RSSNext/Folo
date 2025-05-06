@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 
 /**
  * @internal
@@ -6,5 +6,5 @@ import { createContext, useContext } from "react"
 export const IsInParagraphContext = createContext<boolean>(false)
 
 export const useIsInParagraphContext = () => {
-  return useContext(IsInParagraphContext)
+  return use(IsInParagraphContext)
 }

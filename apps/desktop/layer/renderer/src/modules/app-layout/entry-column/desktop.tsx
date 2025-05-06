@@ -31,7 +31,7 @@ export function CenterColumnDesktop() {
     min: isSafari() ? 356 : 300,
     max: Math.max((window.innerWidth - feedColumnWidth) / 2, 600),
     initial: entryColWidth,
-    containerRef,
+    containerRef: containerRef as React.RefObject<HTMLElement>,
     onResizeEnd({ position }) {
       setUISetting("entryColWidth", position)
       // TODO: Remove this after useMeasure can get bounds in time

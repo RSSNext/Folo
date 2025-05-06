@@ -1,7 +1,7 @@
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { springScrollToElement } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
-import { useContext, useId, useRef } from "react"
+import { use, useId, useRef } from "react"
 
 import { MarkdownRenderContainerRefContext } from "../context"
 
@@ -16,7 +16,7 @@ export const createHeadingRenderer =
     const { node, ...rest } = props as any
 
     const scroller = useScrollViewElement()
-    const renderContainer = useContext(MarkdownRenderContainerRefContext)
+    const renderContainer = use(MarkdownRenderContainerRefContext)
     const ref = useRef<HTMLHeadingElement>(null)
 
     return (
