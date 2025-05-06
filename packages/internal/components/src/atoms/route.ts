@@ -32,6 +32,7 @@ export const useReadonlyRouteSelector = <T>(
   deps: any[] = noop,
 ): T =>
   useAtomValue(useMemo(() => selectAtom(routeAtom, (route) => selector(route), shallow), deps))
+export const useReadonlyRoute = () => useAtomValue(routeAtom)
 
 // Vite HMR will create new router instance, but RouterProvider always stable
 

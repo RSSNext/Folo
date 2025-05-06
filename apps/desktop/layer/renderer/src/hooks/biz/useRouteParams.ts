@@ -1,5 +1,10 @@
-import { getReadonlyRoute, useReadonlyRouteSelector } from "@follow/components/atoms/route.js"
+import {
+  getReadonlyRoute,
+  useReadonlyRoute,
+  useReadonlyRouteSelector,
+} from "@follow/components/atoms/route.js"
 import { FeedViewType } from "@follow/constants"
+import { useMemo } from "react"
 import type { Params } from "react-router"
 import { useParams } from "react-router"
 
@@ -68,7 +73,8 @@ const parseRouteParams = (params: Params<any>): BizRouteParams => {
 }
 
 export const useRouteParams = () => {
-  return useRouteParamsSelector((s) => s)
+  const route = useReadonlyRoute()
+  return useMemo(() => parseRouteParams(route.params), [route.params])
 }
 
 const noop = [] as any[]

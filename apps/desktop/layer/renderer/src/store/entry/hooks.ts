@@ -86,7 +86,7 @@ export const useEntryIdsByView = (view: FeedViewType, filter?: EntryFilter) => {
 
   return useEntryStore(
     useCallback(
-      () => getFilteredFeedIds([...feedIds, ...listFeedIds], filter) || [],
+      () => getFilteredFeedIds(Array.from(new Set([...feedIds, ...listFeedIds])), filter) || [],
       [feedIds, listFeedIds, filter],
     ),
   )
@@ -108,6 +108,7 @@ export const useEntryIdsByFeedIdOrView = (
   const byView = useEntryIdsByView(feedIdOrView as FeedViewType, filter)
   const byId = useEntryIdsByFeedId(feedIdOrView as string, filter)
   const byFolder = useEntryIdsByFeedIds(feedIdOrView as string[], filter)
+
   if (Array.isArray(feedIdOrView)) {
     return byFolder
   } else if (typeof feedIdOrView === "string") {

@@ -1,7 +1,9 @@
 import { views } from "@follow/constants"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
+import { debounce } from "es-toolkit/compat"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { toast } from "sonner"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
@@ -12,9 +14,39 @@ import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry
 import { useFolderFeedsByFeedId } from "~/store/subscription"
 import { feedUnreadActions } from "~/store/unread"
 
-const anyString = [] as string[]
-export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
-  const { feedId, isAllFeeds, view, isCollection, inboxId, listId } = useRouteParams()
+interface UseEntriesReturn {
+  entriesIds: string[]
+  hasNext: boolean
+  hasUpdate: boolean
+  refetch: () => Promise<void>
+
+  fetchNextPage: () => Promise<void>
+  isLoading: boolean
+  isReady: boolean
+  isFetching: boolean
+  isFetchingNextPage: boolean
+
+  hasNextPage: boolean
+  error: Error | null
+}
+
+const fallbackReturn: UseEntriesReturn = {
+  entriesIds: [],
+  hasNext: false,
+  hasUpdate: false,
+  refetch: async () => {},
+
+  fetchNextPage: async () => {},
+
+  isLoading: true,
+  isReady: false,
+  isFetching: false,
+  isFetchingNextPage: false,
+  hasNextPage: false,
+  error: null,
+}
+const useRemoteEntries = (): UseEntriesReturn => {
+  const { feedId, view, inboxId, listId } = useRouteParams()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
 
@@ -68,25 +100,110 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     setPauseQuery(hasUpdate)
   }, [hasUpdate])
 
-  const remoteEntryIds = useMemo(() => {
-    if (!query.data?.pages) return void 0
-    // FIXME The back end should not return duplicate data, and the front end the unique id here.
-    return [
-      ...new Set(
-        query.data?.pages?.map((page) => page.data?.map((entry) => entry.entries.id)).flat(),
-      ).values(),
-    ] as string[]
-  }, [query.data?.pages])
+  useEffect(() => {
+    if (query.isError) {
+      toast.error(query.error.message)
+    }
+  }, [query.isError])
 
-  useFetchEntryContentByStream(remoteEntryIds)
+  const refetch = useCallback(async () => void query.refetch(), [query])
+  const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
+  const entriesIds = useMemo(() => {
+    if (!query.data || query.isLoading || query.isError) {
+      return []
+    }
+    return query.data?.pages?.map((page) => page.data?.map((entry) => entry.entries.id)).flat()
+  }, [query.data, query.isLoading, query.isError])
 
-  const currentEntries = useEntryIdsByFeedIdOrView(
-    listId || inboxId || (isAllFeeds ? view : folderIds || feedId!),
+  if (!query.data || query.isLoading) {
+    return fallbackReturn
+  }
+  return {
+    entriesIds,
+    hasNext: query.hasNextPage,
+    hasUpdate,
+    refetch,
+
+    fetchNextPage,
+    isLoading: query.isFetching,
+    isReady: query.isSuccess,
+    isFetchingNextPage: query.isFetchingNextPage,
+    isFetching: query.isFetching,
+    hasNextPage: query.hasNextPage,
+    error: query.isError ? query.error : null,
+  }
+}
+
+const useLocalEntries = (): UseEntriesReturn => {
+  const { feedId, view, inboxId, listId, isAllFeeds } = useRouteParams()
+
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+
+  const folderIds = useFolderFeedsByFeedId({
+    feedId,
+    view,
+  })
+
+  const allEntries = useEntryIdsByFeedIdOrView(
+    listId || inboxId || (isAllFeeds ? view : folderIds.length > 0 ? folderIds : feedId!),
     {
       unread: unreadOnly,
       view,
     },
   )
+
+  const [page, setPage] = useState(0)
+  const pageSize = 30
+  const totalPage = useMemo(
+    () => (allEntries ? Math.ceil(allEntries.length / pageSize) : 0),
+    [allEntries],
+  )
+
+  const entries = useMemo(() => {
+    return allEntries?.slice(0, (page + 1) * pageSize) || []
+  }, [allEntries, page, pageSize])
+
+  const hasNext = useMemo(() => {
+    return entries.length < (allEntries?.length || 0)
+  }, [entries.length, allEntries])
+
+  const refetch = useCallback(async () => {
+    setPage(0)
+  }, [])
+
+  const fetchNextPage = useCallback(
+    debounce(async () => {
+      setPage(page + 1)
+    }, 300),
+    [page],
+  )
+
+  useEffect(() => {
+    setPage(0)
+  }, [view, feedId])
+
+  return {
+    entriesIds: entries,
+    hasNext,
+    hasUpdate: false,
+    refetch,
+    fetchNextPage: fetchNextPage as () => Promise<void>,
+    isLoading: false,
+    isReady: true,
+    isFetchingNextPage: false,
+    isFetching: false,
+    hasNextPage: page < totalPage,
+    error: null,
+  }
+}
+
+export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
+  const { feedId, view, isCollection, listId } = useRouteParams()
+
+  const remoteQuery = useRemoteEntries()
+  const localQuery = useLocalEntries()
+
+  useFetchEntryContentByStream(remoteQuery.entriesIds)
 
   // If remote data is not available, we use the local data, get the local data length
   // FIXME: remote first, then local store data
@@ -95,7 +212,8 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   // then we have no way to incrementally update the data.
   // We need to add an interface to incrementally update the data based on the version hash.
 
-  const entryIds: string[] = remoteEntryIds || currentEntries || anyString
+  const query = remoteQuery.isReady ? remoteQuery : localQuery
+  const entryIds: string[] = query.entriesIds
 
   // in unread only entries only can grow the data, but not shrink
   // so we memo this previous data to avoid the flicker
@@ -167,7 +285,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   return {
     ...query,
 
-    hasUpdate,
+    hasUpdate: query.hasUpdate,
     refetch: useCallback(() => {
       const promise = query.refetch()
       feedUnreadActions.fetchUnreadByView(view)
