@@ -1,12 +1,11 @@
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { clsx, cn } from "@follow/utils/utils"
-import { typescriptHappyForwardRef } from "foxact/typescript-happy-forward-ref"
 import { atom, useAtomValue } from "jotai"
 import type { HTMLMotionProps } from "motion/react"
 import { AnimatePresence } from "motion/react"
 import type * as React from "react"
-import type { JSX, PropsWithChildren, ReactNode } from "react"
+import type { FC, JSX, PropsWithChildren, ReactNode } from "react"
 import { useId } from "react"
 
 import { m } from "~/components/common/Motion"
@@ -20,77 +19,73 @@ export interface FABConfig {
   onClick: () => void
 }
 
-export const FABBase = typescriptHappyForwardRef(
-  (
-    props: PropsWithChildren<
-      {
-        id: string
-        show?: boolean
-        children: JSX.Element
-      } & HTMLMotionProps<"button">
-    >,
-    ref: React.ForwardedRef<HTMLButtonElement>,
-  ) => {
-    const { children, show = true, ...extra } = props
-    const { className, ...rest } = extra
-
-    return (
-      <AnimatePresence>
-        {show && (
-          <m.button
-            type="button"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{
-              duration: 0.2,
-              ease: "easeInOut",
-            }}
-            ref={ref}
-            aria-label="Floating action button"
-            className={cn(
-              "mt-2 flex items-center justify-center",
-              "size-9 text-lg md:text-base",
-              "outline-accent hover:opacity-100 focus:opacity-100 focus:outline-none",
-              "hover:border-border bg-background relative rounded-xl border border-transparent",
-              "group duration-200",
-              className,
-            )}
-            {...rest}
-          >
-            <div className="shadow-perfect border-border/50 pointer-events-none absolute inset-0 rounded-xl border shadow-xl duration-200 group-hover:opacity-0" />
-            {children}
-          </m.button>
-        )}
-      </AnimatePresence>
-    )
-  },
-)
-
-export const FABPortable = typescriptHappyForwardRef(
-  (
-    props: {
-      children: React.JSX.Element
-      onClick: () => void
+export const FABBase: FC<
+  PropsWithChildren<
+    {
+      id: string
       show?: boolean
-    },
-    ref: React.ForwardedRef<HTMLButtonElement>,
-  ) => {
-    const { onClick, children, show = true } = props
-    const id = useId()
-    const portalElement = useAtomValue(fabContainerElementAtom)
+      children: JSX.Element
+      ref?: React.Ref<HTMLButtonElement>
+    } & HTMLMotionProps<"button">
+  >
+> = (props) => {
+  const { children, show = true, ref, ...extra } = props
+  const { className, ...rest } = extra
 
-    if (!portalElement) return null
-
-    return (
-      <RootPortal to={portalElement}>
-        <FABBase ref={ref} id={id} show={show} onClick={onClick}>
+  return (
+    <AnimatePresence>
+      {show && (
+        <m.button
+          type="button"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+          transition={{
+            duration: 0.2,
+            ease: "easeInOut",
+          }}
+          ref={ref}
+          aria-label="Floating action button"
+          className={cn(
+            "mt-2 flex items-center justify-center",
+            "size-9 text-lg md:text-base",
+            "outline-accent hover:opacity-100 focus:opacity-100 focus:outline-none",
+            "hover:border-border bg-background relative rounded-xl border border-transparent",
+            "group duration-200",
+            className,
+          )}
+          {...rest}
+        >
+          <div className="shadow-perfect border-border/50 pointer-events-none absolute inset-0 rounded-xl border shadow-xl duration-200 group-hover:opacity-0" />
           {children}
-        </FABBase>
-      </RootPortal>
-    )
-  },
-)
+        </m.button>
+      )}
+    </AnimatePresence>
+  )
+}
+
+export const FABPortable: FC<
+  PropsWithChildren<{
+    children: React.JSX.Element
+    onClick: () => void
+    show?: boolean
+    ref?: React.Ref<HTMLButtonElement>
+  }>
+> = (props) => {
+  const { onClick, children, show = true, ref } = props
+  const id = useId()
+  const portalElement = useAtomValue(fabContainerElementAtom)
+
+  if (!portalElement) return null
+
+  return (
+    <RootPortal to={portalElement}>
+      <FABBase ref={ref} id={id} show={show} onClick={onClick}>
+        {children}
+      </FABBase>
+    </RootPortal>
+  )
+}
 
 export const FABContainer = (props: { children?: ReactNode }) => {
   return (
