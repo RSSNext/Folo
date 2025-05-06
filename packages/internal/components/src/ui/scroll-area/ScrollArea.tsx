@@ -6,19 +6,23 @@ import * as React from "react"
 import { ScrollElementContext } from "./ctx"
 import styles from "./index.module.css"
 
-const Corner = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaBase.Corner>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Corner>
->(({ className, ...rest }, forwardedRef) => (
-  <ScrollAreaBase.Corner {...rest} ref={forwardedRef} className={cn("bg-accent", className)} />
-))
+const Corner = ({
+  ref: forwardedRef,
+  className,
+  ...rest
+}: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Corner> & {
+  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Corner> | null>
+}) => <ScrollAreaBase.Corner {...rest} ref={forwardedRef} className={cn("bg-accent", className)} />
 
 Corner.displayName = "ScrollArea.Corner"
 
-const Thumb = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaBase.Thumb>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Thumb>
->(({ className, ...rest }, forwardedRef) => (
+const Thumb = ({
+  ref: forwardedRef,
+  className,
+  ...rest
+}: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Thumb> & {
+  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Thumb> | null>
+}) => (
   <ScrollAreaBase.Thumb
     {...rest}
     onClick={(e) => {
@@ -37,13 +41,17 @@ const Thumb = React.forwardRef<
       className,
     )}
   />
-))
+)
 Thumb.displayName = "ScrollArea.Thumb"
 
-const Scrollbar = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaBase.Scrollbar>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Scrollbar>
->(({ className, children, ...rest }, forwardedRef) => {
+const Scrollbar = ({
+  ref: forwardedRef,
+  className,
+  children,
+  ...rest
+}: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Scrollbar> & {
+  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Scrollbar> | null>
+}) => {
   const { orientation = "vertical" } = rest
   return (
     <ScrollAreaBase.Scrollbar
@@ -60,15 +68,17 @@ const Scrollbar = React.forwardRef<
       <Thumb />
     </ScrollAreaBase.Scrollbar>
   )
-})
+}
 Scrollbar.displayName = "ScrollArea.Scrollbar"
 
-const Viewport = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaBase.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {
-    mask?: boolean
-  }
->(({ className, mask = false, ...rest }, forwardedRef) => {
+const Viewport = ({
+  ref: forwardedRef,
+  className,
+  mask = false,
+  ...rest
+}: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {
+  mask?: boolean
+} & { ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Viewport> | null> }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const [shouldAddMask, setShouldAddMask] = React.useState(false)
   React.useLayoutEffect(() => {
@@ -99,13 +109,17 @@ const Viewport = React.forwardRef<
       className={cn("block size-full", shouldAddMask && styles["mask-scroller"], className)}
     />
   )
-})
+}
 Viewport.displayName = "ScrollArea.Viewport"
 
-const Root = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaBase.Root>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Root>
->(({ className, children, ...rest }, forwardedRef) => (
+const Root = ({
+  ref: forwardedRef,
+  className,
+  children,
+  ...rest
+}: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Root> & {
+  ref?: React.RefObject<React.ElementRef<typeof ScrollAreaBase.Root> | null>
+}) => (
   <ScrollAreaBase.Root
     {...rest}
     scrollHideDelay={0}
@@ -115,55 +129,48 @@ const Root = React.forwardRef<
     {children}
     <Corner />
   </ScrollAreaBase.Root>
-))
+)
 
 Root.displayName = "ScrollArea.Root"
-export const ScrollArea = React.forwardRef<
-  HTMLDivElement,
-  React.PropsWithChildren & {
-    rootClassName?: string
-    viewportClassName?: string
-    scrollbarClassName?: string
-    flex?: boolean
-    mask?: boolean
-    onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
-    orientation?: "vertical" | "horizontal"
-    asChild?: boolean
-  }
->(
-  (
-    {
-      flex,
-      children,
-      rootClassName,
-      viewportClassName,
-      scrollbarClassName,
-      mask = false,
-      onScroll,
-      orientation = "vertical",
-      asChild = false,
-    },
-    ref,
-  ) => {
-    const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
-    React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
+export const ScrollArea = ({
+  ref,
+  flex,
+  children,
+  rootClassName,
+  viewportClassName,
+  scrollbarClassName,
+  mask = false,
+  onScroll,
+  orientation = "vertical",
+  asChild = false,
+}: React.PropsWithChildren & {
+  rootClassName?: string
+  viewportClassName?: string
+  scrollbarClassName?: string
+  flex?: boolean
+  mask?: boolean
+  onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
+  orientation?: "vertical" | "horizontal"
+  asChild?: boolean
+} & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+  const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
+  React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
-    return (
-      <ScrollElementContext.Provider value={viewportRef}>
-        <Root className={rootClassName}>
-          <Viewport
-            ref={setViewportRef}
-            onWheel={stopPropagation}
-            className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
-            mask={mask}
-            asChild={asChild}
-            onScroll={onScroll}
-          >
-            {children}
-          </Viewport>
-          <Scrollbar orientation={orientation} className={scrollbarClassName} />
-        </Root>
-      </ScrollElementContext.Provider>
-    )
-  },
-)
+  return (
+    <ScrollElementContext value={viewportRef}>
+      <Root className={rootClassName}>
+        <Viewport
+          ref={setViewportRef}
+          onWheel={stopPropagation}
+          className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
+          mask={mask}
+          asChild={asChild}
+          onScroll={onScroll}
+        >
+          {children}
+        </Viewport>
+        <Scrollbar orientation={orientation} className={scrollbarClassName} />
+      </Root>
+    </ScrollElementContext>
+  )
+}

@@ -1,6 +1,7 @@
-import { forwardRef } from "react"
-
-export const Folo = forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((props, ref) => (
+export const Folo = ({
+  ref,
+  ...props
+}: React.SVGProps<SVGSVGElement> & { ref?: React.RefObject<SVGSVGElement | null> }) => (
   <svg
     {...props}
     ref={ref}
@@ -27,4 +28,4 @@ export const Folo = forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((pr
       fill="currentColor"
     />
   </svg>
-))
+)

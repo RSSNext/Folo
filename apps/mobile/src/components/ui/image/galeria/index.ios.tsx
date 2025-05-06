@@ -1,5 +1,5 @@
 import { requireNativeView } from "expo"
-import { useContext, useMemo } from "react"
+import { use, useMemo } from "react"
 import { Image } from "react-native"
 
 import { GaleriaContext } from "./context"
@@ -23,7 +23,7 @@ const Galeria = Object.assign(
     children: React.ReactNode
   } & Partial<Pick<GaleriaContext, "theme" | "ids" | "urls">>) {
     return (
-      <GaleriaContext.Provider
+      <GaleriaContext
         value={useMemo(
           () => ({
             urls,
@@ -38,12 +38,12 @@ const Galeria = Object.assign(
         )}
       >
         {children}
-      </GaleriaContext.Provider>
+      </GaleriaContext>
     )
   },
   {
     Image(props: GaleriaViewProps) {
-      const { urls, initialIndex } = useContext(GaleriaContext)
+      const { urls, initialIndex } = use(GaleriaContext)
       return (
         <NativeImage
           onPreview={props.onPreview}

@@ -178,9 +178,9 @@ export const PictureList: FC<{
           <MemoedDangerousHTMLStyle>{inlineStyle}</MemoedDangerousHTMLStyle>
           <div className="flex w-full flex-wrap" ref={containerRef}>
             {isInitLayout && (
-              <MasonryItemWidthContext.Provider value={currentItemWidth}>
-                <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
-                  <MasonryItemsAspectRatioSetterContext.Provider value={setMasonryItemsRadio}>
+              <MasonryItemWidthContext value={currentItemWidth}>
+                <MasonryItemsAspectRatioContext value={masonryItemsRadio}>
+                  <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
                     <div className="relative w-full">
                       <Masonry
                         items={items}
@@ -192,9 +192,9 @@ export const PictureList: FC<{
                         itemKey={itemKey}
                       />
                     </div>
-                  </MasonryItemsAspectRatioSetterContext.Provider>
-                </MasonryItemsAspectRatioContext.Provider>
-              </MasonryItemWidthContext.Provider>
+                  </MasonryItemsAspectRatioSetterContext>
+                </MasonryItemsAspectRatioContext>
+              </MasonryItemWidthContext>
             )}
           </div>
         </div>

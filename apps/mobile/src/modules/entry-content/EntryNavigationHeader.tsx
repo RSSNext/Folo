@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
-import { useContext, useState } from "react"
+import { use, useState } from "react"
 import { useWindowDimensions, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, {
@@ -37,9 +37,9 @@ export const EntryNavigationHeader: FC<{
 
   const [isHeaderTitleVisible, setIsHeaderTitleVisible] = useState(true)
 
-  const reanimatedScrollY = useContext(ScreenItemContext).reAnimatedScrollY
+  const reanimatedScrollY = use(ScreenItemContext).reAnimatedScrollY
 
-  const ctxValue = useContext(EntryContentContext)
+  const ctxValue = use(EntryContentContext)
   const titleHeight = useAtomValue(ctxValue.titleHeightAtom)
   useAnimatedReaction(
     () => reanimatedScrollY.value,
@@ -69,13 +69,13 @@ export const EntryNavigationHeader: FC<{
         [entryId],
       )}
       headerRight={
-        <EntryContentContext.Provider value={ctxValue}>
+        <EntryContentContext value={ctxValue}>
           <EntryContentHeaderRightActions
             entryId={entryId}
             titleOpacityShareValue={opacityAnimatedValue}
             isHeaderTitleVisible={isHeaderTitleVisible}
           />
-        </EntryContentContext.Provider>
+        </EntryContentContext>
       }
       headerTitle={
         <View

@@ -7,7 +7,7 @@ import { useMeasure } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
-import { forwardRef, memo, useCallback, useLayoutEffect, useState } from "react"
+import { memo, useCallback, useLayoutEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
@@ -219,12 +219,15 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 })
 ProfileButton.displayName = "ProfileButton"
 
-const TransitionAvatar = forwardRef<
-  HTMLButtonElement,
-  {
-    stage: "zoom-in" | ""
-  } & React.HTMLAttributes<HTMLButtonElement>
->(({ stage, ...props }, forwardRef) => {
+const TransitionAvatar = ({
+  ref: forwardRef,
+  stage,
+  ...props
+}: {
+  stage: "zoom-in" | ""
+} & React.HTMLAttributes<HTMLButtonElement> & {
+    ref?: React.RefObject<HTMLButtonElement | null>
+  }) => {
   const [ref, { x, y }, forceRefresh] = useMeasure()
   const [avatarHovered, setAvatarHovered] = useState(false)
 
@@ -274,4 +277,4 @@ const TransitionAvatar = forwardRef<
       )}
     </>
   )
-})
+}

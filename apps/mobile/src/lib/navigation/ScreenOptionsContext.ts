@@ -1,6 +1,6 @@
 import type { PrimitiveAtom } from "jotai"
 import { useStore } from "jotai"
-import { createContext, useCallback, useContext } from "react"
+import { createContext, use, useCallback } from "react"
 
 export interface ScreenOptionsContextType {
   gestureEnabled?: boolean
@@ -14,7 +14,7 @@ export interface ScreenOptionsContextType {
 export const ScreenOptionsContext = createContext<PrimitiveAtom<ScreenOptionsContextType>>(null!)
 
 export const useSetScreenOptions = () => {
-  const ctx = useContext(ScreenOptionsContext)
+  const ctx = use(ScreenOptionsContext)
   if (!ctx) {
     throw new Error("ScreenOptionsContext not found")
   }
@@ -34,7 +34,7 @@ export const ModalScreenItemOptionsContext = createContext<PrimitiveAtom<ScreenO
 )
 
 export const useSetModalScreenOptions = () => {
-  const ctx = useContext(ModalScreenItemOptionsContext)
+  const ctx = use(ModalScreenItemOptionsContext)
 
   const store = useStore()
   return useCallback(

@@ -2,14 +2,16 @@ import { useInputComposition } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react"
-import { forwardRef } from "react"
 
 // This composition handler is not perfect
 // @see https://foxact.skk.moe/use-composition-input
-export const Input = forwardRef<
-  HTMLInputElement,
-  Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref">
->(({ className, ...props }, ref) => {
+export const Input = ({
+  ref,
+  className,
+  ...props
+}: Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & {
+  ref?: React.RefObject<HTMLInputElement | null>
+}) => {
   const inputProps = useInputComposition(props)
   return (
     <input
@@ -31,5 +33,5 @@ export const Input = forwardRef<
       {...inputProps}
     />
   )
-})
+}
 Input.displayName = "Input"

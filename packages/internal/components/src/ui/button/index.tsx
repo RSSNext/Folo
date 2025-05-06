@@ -24,35 +24,44 @@ const motionBaseMap = {
     whileTap: { opacity: 0.2 },
   },
 } as const
-export const MotionButtonBase = React.forwardRef<HTMLButtonElement, HTMLMotionProps<"button">>(
-  ({ children, ...rest }, ref) => {
-    const isMobile = useMobile()
-    return (
-      <m.button
-        layout="size"
-        initial
-        {...motionBaseMap[isMobile ? "mobile" : "pc"]}
-        {...rest}
-        ref={ref}
-      >
-        {children}
-      </m.button>
-    )
-  },
-)
+export const MotionButtonBase = ({
+  ref,
+  children,
+  ...rest
+}: HTMLMotionProps<"button"> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+  const isMobile = useMobile()
+  return (
+    <m.button
+      layout="size"
+      initial
+      {...motionBaseMap[isMobile ? "mobile" : "pc"]}
+      {...rest}
+      ref={ref}
+    >
+      {children}
+    </m.button>
+  )
+}
 
 MotionButtonBase.displayName = "MotionButtonBase"
 
-export const Button = React.forwardRef<
-  HTMLButtonElement,
-  React.PropsWithChildren<
-    Omit<HTMLMotionProps<"button">, "children"> &
-      BaseButtonProps &
-      VariantProps<typeof styledButtonVariant> & {
-        buttonClassName?: string
-      }
-  >
->(({ className, buttonClassName, disabled, isLoading, variant, status, size, ...props }, ref) => {
+export const Button = ({
+  ref,
+  className,
+  buttonClassName,
+  disabled,
+  isLoading,
+  variant,
+  status,
+  size,
+  ...props
+}: React.PropsWithChildren<
+  Omit<HTMLMotionProps<"button">, "children"> &
+    BaseButtonProps &
+    VariantProps<typeof styledButtonVariant> & {
+      buttonClassName?: string
+    }
+> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = React.useCallback(
     (e) => {
       if (isLoading || disabled) {
@@ -95,15 +104,15 @@ export const Button = React.forwardRef<
       </span>
     </MotionButtonBase>
   )
-})
+}
 
-export const IconButton = React.forwardRef<
-  HTMLButtonElement,
-  React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> &
-    React.PropsWithChildren<{
-      icon: React.JSX.Element
-    }>
->((props, ref) => {
+export const IconButton = ({
+  ref,
+  ...props
+}: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> &
+  React.PropsWithChildren<{
+    icon: React.JSX.Element
+  }> & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
   const { icon, ...rest } = props
   return (
     <button
@@ -134,6 +143,6 @@ export const IconButton = React.forwardRef<
       <span className="duration-200 group-hover:opacity-0">{props.children}</span>
     </button>
   )
-})
+}
 
 export { ActionButton, type ActionButtonProps } from "./action-button"

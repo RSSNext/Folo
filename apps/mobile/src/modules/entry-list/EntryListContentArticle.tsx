@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { forwardRef, useCallback, useImperativeHandle, useMemo } from "react"
+import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { usePlayingUrl } from "@/src/lib/player"
@@ -14,10 +14,14 @@ import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparator } from "./ItemSeparator"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 
-export const EntryListContentArticle = forwardRef<
-  ElementRef<typeof TimelineSelectorList>,
-  { entryIds: string[] | null; active?: boolean; view: FeedViewType }
->(({ entryIds, active, view }, forwardRef) => {
+export const EntryListContentArticle = ({
+  ref: forwardRef,
+  entryIds,
+  active,
+  view,
+}: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
+  ref?: React.RefObject<ElementRef<typeof TimelineSelectorList> | null>
+}) => {
   const playingAudioUrl = usePlayingUrl()
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
@@ -64,7 +68,7 @@ export const EntryListContentArticle = forwardRef<
       style={hackStyle}
     />
   )
-})
+}
 
 const defaultKeyExtractor = (id: string) => id
 

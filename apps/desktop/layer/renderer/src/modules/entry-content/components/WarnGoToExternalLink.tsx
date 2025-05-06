@@ -6,7 +6,7 @@ import { parseSafeUrl } from "@follow/utils/utils"
 import { Label } from "@radix-ui/react-label"
 import { PopoverPortal } from "@radix-ui/react-popover"
 import { atomWithStorage } from "jotai/utils"
-import { forwardRef, useState } from "react"
+import { useState } from "react"
 
 import { useGeneralSettingKey, useGeneralSettingValue } from "~/atoms/settings/general"
 import { jotaiStore } from "~/lib/jotai"
@@ -42,10 +42,12 @@ const getURLDomain = (url: string) => {
   return urlObj?.hostname ?? null
 }
 
-const WarnGoToExternalLinkImpl = forwardRef<
-  HTMLAnchorElement,
-  React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
->(({ ...rest }, ref) => {
+const WarnGoToExternalLinkImpl = ({
+  ref,
+  ...rest
+}: React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> & {
+  ref?: React.RefObject<HTMLAnchorElement | null>
+}) => {
   const [open, setOpen] = useState(false)
   const [checked, setChecked] = useState<boolean | "indeterminate">(false)
 
@@ -113,7 +115,7 @@ const WarnGoToExternalLinkImpl = forwardRef<
       </PopoverPortal>
     </Popover>
   )
-})
+}
 
 export const WarnGoToExternalLink = withSettingEnabled(
   useGeneralSettingValue,

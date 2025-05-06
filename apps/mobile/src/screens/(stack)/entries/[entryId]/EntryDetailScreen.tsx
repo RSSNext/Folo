@@ -64,9 +64,9 @@ export const EntryDetailScreen: NavigationControllerView<{
   }, [entry?.settings?.readability, entryId])
 
   return (
-    <EntryContentContext.Provider value={ctxValue}>
+    <EntryContentContext value={ctxValue}>
       <PortalProvider>
-        <BottomTabBarHeightContext.Provider value={insets.bottom}>
+        <BottomTabBarHeightContext value={insets.bottom}>
           <SafeNavigationScrollView
             Header={<EntryNavigationHeader entryId={entryId} />}
             automaticallyAdjustContentInsets={false}
@@ -98,9 +98,9 @@ export const EntryDetailScreen: NavigationControllerView<{
               </View>
             )}
           </SafeNavigationScrollView>
-        </BottomTabBarHeightContext.Provider>
+        </BottomTabBarHeightContext>
       </PortalProvider>
-    </EntryContentContext.Provider>
+    </EntryContentContext>
   )
 }
 

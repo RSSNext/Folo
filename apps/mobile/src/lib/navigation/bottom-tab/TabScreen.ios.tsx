@@ -1,7 +1,7 @@
 import { requireNativeView } from "expo"
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
-import { useContext, useEffect, useMemo } from "react"
+import { use, useEffect, useMemo } from "react"
 import type { ViewProps } from "react-native"
 import { StyleSheet } from "react-native"
 
@@ -24,7 +24,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
     loadedableIndexAtom,
     currentIndexAtom,
     tabScreensAtom: tabScreens,
-  } = useContext(BottomTabContext)
+  } = use(BottomTabContext)
 
   const setTabScreens = useSetAtom(tabScreens)
 
@@ -98,7 +98,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   const render = __DEV__ ? isSelected : true
   return (
     <TabScreenNative style={StyleSheet.absoluteFill}>
-      <TabScreenContext.Provider value={ctxValue}>
+      <TabScreenContext value={ctxValue}>
         {shouldLoadReact && render && (
           <WrappedScreenItem screenId={`tab-screen-${tabScreenIndex}`}>
             {children}
@@ -106,7 +106,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
             <LifecycleEvents isSelected={isSelected} />
           </WrappedScreenItem>
         )}
-      </TabScreenContext.Provider>
+      </TabScreenContext>
     </TabScreenNative>
   )
 }

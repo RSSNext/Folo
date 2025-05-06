@@ -8,10 +8,8 @@ export const BottomTabHeightProvider = ({ children }: { children: React.ReactNod
   const [height, setHeight] = useState(0)
 
   return (
-    <BottomTabBarHeightContext.Provider value={height}>
-      <SetBottomTabBarHeightContext.Provider value={setHeight}>
-        {children}
-      </SetBottomTabBarHeightContext.Provider>
-    </BottomTabBarHeightContext.Provider>
+    <BottomTabBarHeightContext value={height}>
+      <SetBottomTabBarHeightContext value={setHeight}>{children}</SetBottomTabBarHeightContext>
+    </BottomTabBarHeightContext>
   )
 }

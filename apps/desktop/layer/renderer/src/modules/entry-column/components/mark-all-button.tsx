@@ -3,7 +3,7 @@ import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { useCountdown } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
-import { forwardRef, useState } from "react"
+import { useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -21,76 +21,79 @@ interface MarkAllButtonProps {
   shortcut?: boolean
 }
 
-export const MarkAllReadButton = forwardRef<HTMLButtonElement, MarkAllButtonProps>(
-  ({ className, which = "all", shortcut }, ref) => {
-    const { t } = useTranslation()
-    const { t: commonT } = useTranslation("common")
+export const MarkAllReadButton = ({
+  ref,
+  className,
+  which = "all",
+  shortcut,
+}: MarkAllButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+  const { t } = useTranslation()
+  const { t: commonT } = useTranslation("common")
 
-    useHotkeys(
-      shortcuts.entries.markAllAsRead.key,
-      () => {
-        let cancel = false
-        const undo = () => {
-          toast.dismiss(id)
+  useHotkeys(
+    shortcuts.entries.markAllAsRead.key,
+    () => {
+      let cancel = false
+      const undo = () => {
+        toast.dismiss(id)
+        if (cancel) return
+        cancel = true
+      }
+      const id = toast("", {
+        description: <ConfirmMarkAllReadInfo undo={undo} />,
+        duration: 3000,
+        onAutoClose() {
           if (cancel) return
-          cancel = true
-        }
-        const id = toast("", {
-          description: <ConfirmMarkAllReadInfo undo={undo} />,
-          duration: 3000,
-          onAutoClose() {
-            if (cancel) return
-            markAllByRoute()
-          },
-          action: {
-            label: (
-              <span className="flex items-center gap-1">
-                {t("mark_all_read_button.undo")}
-                <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
-                  Meta+Z
-                </Kbd>
-              </span>
-            ),
-            onClick: undo,
-          },
-        })
-      },
-      {
-        preventDefault: true,
-        scopes: HotKeyScopeMap.Home,
-      },
-    )
-
-    return (
-      <ActionButton
-        tooltip={
-          <>
-            <Trans
-              i18nKey="mark_all_read_button.mark_as_read"
-              components={{
-                which: <>{commonT(`words.which.${which}` as any)}</>,
-              }}
-            />
-            {shortcut && (
-              <div className="ml-1">
-                <KbdCombined className="text-text-secondary">
-                  {shortcuts.entries.markAllAsRead.key}
-                </KbdCombined>
-              </div>
-            )}
-          </>
-        }
-        className={className}
-        ref={ref}
-        onClick={() => {
           markAllByRoute()
-        }}
-      >
-        <i className="i-mgc-check-circle-cute-re" />
-      </ActionButton>
-    )
-  },
-)
+        },
+        action: {
+          label: (
+            <span className="flex items-center gap-1">
+              {t("mark_all_read_button.undo")}
+              <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
+                Meta+Z
+              </Kbd>
+            </span>
+          ),
+          onClick: undo,
+        },
+      })
+    },
+    {
+      preventDefault: true,
+      scopes: HotKeyScopeMap.Home,
+    },
+  )
+
+  return (
+    <ActionButton
+      tooltip={
+        <>
+          <Trans
+            i18nKey="mark_all_read_button.mark_as_read"
+            components={{
+              which: <>{commonT(`words.which.${which}` as any)}</>,
+            }}
+          />
+          {shortcut && (
+            <div className="ml-1">
+              <KbdCombined className="text-text-secondary">
+                {shortcuts.entries.markAllAsRead.key}
+              </KbdCombined>
+            </div>
+          )}
+        </>
+      }
+      className={className}
+      ref={ref}
+      onClick={() => {
+        markAllByRoute()
+      }}
+    >
+      <i className="i-mgc-check-circle-cute-re" />
+    </ActionButton>
+  )
+}
 
 const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const { t } = useTranslation()

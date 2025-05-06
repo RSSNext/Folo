@@ -20,7 +20,7 @@ export default function Subscriptions() {
   const systemGroupedBackground = useColor("systemGroupedBackground")
   useResetTabOpacityWhenFocused()
   return (
-    <EntryListContext.Provider value={useMemo(() => ({ type: "subscriptions" }), [])}>
+    <EntryListContext value={useMemo(() => ({ type: "subscriptions" }), [])}>
       <TimelineHeader />
       {whoami ? (
         <PagerList
@@ -32,7 +32,7 @@ export default function Subscriptions() {
       ) : (
         <NoLoginInfo target="subscriptions" />
       )}
-    </EntryListContext.Provider>
+    </EntryListContext>
   )
 }
 

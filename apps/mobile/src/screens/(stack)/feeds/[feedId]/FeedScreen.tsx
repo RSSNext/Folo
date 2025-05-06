@@ -43,15 +43,15 @@ export const FeedScreen: NavigationControllerView<{
       )
 
   return (
-    <EntryListContext.Provider value={useMemo(() => ({ type: "feed" }), [])}>
+    <EntryListContext value={useMemo(() => ({ type: "feed" }), [])}>
       <RootSiblingParent>
-        <BottomTabBarHeightContext.Provider value={insets.bottom}>
+        <BottomTabBarHeightContext value={insets.bottom}>
           <TimelineHeader feedId={feed?.id} />
 
           <EntryListSelector entryIds={entryIds} viewId={view} />
-        </BottomTabBarHeightContext.Provider>
+        </BottomTabBarHeightContext>
       </RootSiblingParent>
-    </EntryListContext.Provider>
+    </EntryListContext>
   )
 }
 

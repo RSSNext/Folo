@@ -4,7 +4,7 @@ import { cn } from "@follow/utils/utils"
 import clsx from "clsx"
 import { useMotionValue } from "motion/react"
 import type { DetailedHTMLProps, PropsWithChildren, TextareaHTMLAttributes } from "react"
-import { forwardRef, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 const roundedMap = {
   sm: "rounded-sm",
@@ -15,16 +15,16 @@ const roundedMap = {
   "3xl": "rounded-3xl",
   default: "rounded",
 }
-export const TextArea = forwardRef<
-  HTMLTextAreaElement,
-  DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> &
-    PropsWithChildren<{
-      wrapperClassName?: string
-      onCmdEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
-      rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
-      bordered?: boolean
-    }>
->((props, ref) => {
+export const TextArea = ({
+  ref,
+  ...props
+}: DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> &
+  PropsWithChildren<{
+    wrapperClassName?: string
+    onCmdEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+    rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
+    bordered?: boolean
+  }> & { ref?: React.RefObject<HTMLTextAreaElement | null> }) => {
   const {
     className,
     wrapperClassName,
@@ -104,5 +104,5 @@ export const TextArea = forwardRef<
       {children}
     </div>
   )
-})
+}
 TextArea.displayName = "TextArea"

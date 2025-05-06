@@ -1,12 +1,12 @@
 import { jotaiStore } from "@follow/utils"
 import { useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
-import { useContext, useEffect } from "react"
+import { use, useEffect } from "react"
 
 import { ScreenItemContext } from "./ScreenItemContext"
 
 export const StackScreenHeaderPortal: FC<PropsWithChildren> = ({ children }) => {
-  const ctxValue = useContext(ScreenItemContext)
+  const ctxValue = use(ScreenItemContext)
 
   const store = useStore()
   useEffect(() => {

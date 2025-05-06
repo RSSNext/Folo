@@ -17,7 +17,7 @@ const TabBarRoot = requireNativeView<
 >("TabBarRoot")
 
 export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
-  const { currentIndexAtom } = React.useContext(BottomTabContext)
+  const { currentIndexAtom } = React.use(BottomTabContext)
   const [tabIndex, setTabIndex] = useAtom(currentIndexAtom)
 
   const MapChildren = useMemo(() => {

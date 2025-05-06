@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { useContext, useEffect, useRef, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { StyleSheet, Text, TextInput, View } from "react-native"
 import Animated, {
@@ -23,7 +23,7 @@ import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./c
 import { SearchTabBar } from "./SearchTabBar"
 
 const DynamicBlurEffect = () => {
-  const { reAnimatedScrollY } = useContext(ScreenItemContext)
+  const { reAnimatedScrollY } = use(ScreenItemContext)
   const blurStyle = useAnimatedStyle(() => ({
     opacity: Math.max(0, Math.min(1, reAnimatedScrollY.value / 50)),
   }))
@@ -44,7 +44,7 @@ export const DiscoverHeader = () => {
   const { searchFocusedAtom } = useSearchPageContext()
   const isFocused = useAtomValue(searchFocusedAtom)
 
-  const setHeaderHeight = useContext(SetNavigationHeaderHeightContext)
+  const setHeaderHeight = use(SetNavigationHeaderHeightContext)
 
   return (
     <View

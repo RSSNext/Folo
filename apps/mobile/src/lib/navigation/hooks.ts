@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { use } from "react"
 import type { StackPresentationTypes } from "react-native-screens"
 
 import { GroupedNavigationRouteContext } from "./GroupedNavigationRouteContext"
@@ -6,9 +6,9 @@ import { NavigationInstanceContext } from "./NavigationInstanceContext"
 import { ScreenItemContext } from "./ScreenItemContext"
 
 export const useCanBack = () => {
-  const { screenId } = useContext(ScreenItemContext)
+  const { screenId } = use(ScreenItemContext)
 
-  const routeGroups = useContext(GroupedNavigationRouteContext)
+  const routeGroups = use(GroupedNavigationRouteContext)
   if (!routeGroups) return false
 
   const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
@@ -27,9 +27,9 @@ export const useCanBack = () => {
  * If screen present as a modal, then we can dismiss it.
  */
 export const useCanDismiss = () => {
-  const { screenId } = useContext(ScreenItemContext)
+  const { screenId } = use(ScreenItemContext)
 
-  const routeGroups = useContext(GroupedNavigationRouteContext)
+  const routeGroups = use(GroupedNavigationRouteContext)
   if (!routeGroups) return false
 
   const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
@@ -39,7 +39,7 @@ export const useCanDismiss = () => {
 }
 
 export const useNavigation = () => {
-  const navigation = useContext(NavigationInstanceContext)
+  const navigation = use(NavigationInstanceContext)
   if (!navigation) {
     throw new Error("Navigation not found")
   }
@@ -50,9 +50,9 @@ export const useScreenIsInModal = useCanDismiss
 
 const sheetTypes = new Set<StackPresentationTypes>(["formSheet", "modal"])
 export const useScreenIsInSheetModal = () => {
-  const { screenId } = useContext(ScreenItemContext)
+  const { screenId } = use(ScreenItemContext)
 
-  const routeGroups = useContext(GroupedNavigationRouteContext)
+  const routeGroups = use(GroupedNavigationRouteContext)
   if (!routeGroups) return false
 
   const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
@@ -63,9 +63,9 @@ export const useScreenIsInSheetModal = () => {
 }
 
 export const useIsSingleRouteInGroup = () => {
-  const { screenId } = useContext(ScreenItemContext)
+  const { screenId } = use(ScreenItemContext)
 
-  const routeGroups = useContext(GroupedNavigationRouteContext)
+  const routeGroups = use(GroupedNavigationRouteContext)
   if (!routeGroups) return false
 
   const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
@@ -74,9 +74,9 @@ export const useIsSingleRouteInGroup = () => {
 }
 
 export const useIsTopRouteInGroup = () => {
-  const { screenId } = useContext(ScreenItemContext)
+  const { screenId } = use(ScreenItemContext)
 
-  const routeGroups = useContext(GroupedNavigationRouteContext)
+  const routeGroups = use(GroupedNavigationRouteContext)
   if (!routeGroups) return false
   const routeGroup = routeGroups.find((group) => group.some((r) => r.id === screenId))
 

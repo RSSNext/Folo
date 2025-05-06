@@ -1,11 +1,11 @@
 import { useSetAtom } from "jotai"
-import { useContext } from "react"
+import { use } from "react"
 import { StyleSheet, View } from "react-native"
 
 import { BottomTabContext } from "./BottomTabContext"
 
 export const TabBarPortal = ({ children }: { children: React.ReactNode }) => {
-  const { tabHeightAtom } = useContext(BottomTabContext)
+  const { tabHeightAtom } = use(BottomTabContext)
   const setTabHeight = useSetAtom(tabHeightAtom)
   return (
     <View style={styles.container}>

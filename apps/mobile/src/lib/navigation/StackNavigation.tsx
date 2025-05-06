@@ -1,7 +1,7 @@
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { memo, use, useEffect, useMemo, useRef, useState } from "react"
 import type { ScrollView } from "react-native"
 import { StyleSheet } from "react-native"
 import {
@@ -40,11 +40,9 @@ export const RootStackNavigation = ({ children, headerConfig }: RootStackNavigat
   return (
     <SafeAreaProvider>
       <AttachNavigationScrollViewProvider>
-        <ScreenNameContext.Provider value={useMemo(() => atom(""), [])}>
-          <ChainNavigationContext.Provider
-            value={Navigation.rootNavigation.__dangerous_getCtxValue()}
-          >
-            <NavigationInstanceContext.Provider value={Navigation.rootNavigation}>
+        <ScreenNameContext value={useMemo(() => atom(""), [])}>
+          <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
+            <NavigationInstanceContext value={Navigation.rootNavigation}>
               <ScreenStack style={StyleSheet.absoluteFill}>
                 <WrappedScreenItem headerConfig={headerConfig} screenId="root">
                   {children}
@@ -53,9 +51,9 @@ export const RootStackNavigation = ({ children, headerConfig }: RootStackNavigat
                 <ScreenItemsMapper />
                 <StateHandler />
               </ScreenStack>
-            </NavigationInstanceContext.Provider>
-          </ChainNavigationContext.Provider>
-        </ScreenNameContext.Provider>
+            </NavigationInstanceContext>
+          </ChainNavigationContext>
+        </ScreenNameContext>
       </AttachNavigationScrollViewProvider>
     </SafeAreaProvider>
   )
@@ -66,17 +64,17 @@ const AttachNavigationScrollViewProvider: FC<PropsWithChildren> = ({ children })
     useState<React.RefObject<ScrollView> | null>(null)
 
   return (
-    <AttachNavigationScrollViewContext.Provider value={attachNavigationScrollViewRef}>
-      <SetAttachNavigationScrollViewContext.Provider value={setAttachNavigationScrollViewRef}>
+    <AttachNavigationScrollViewContext value={attachNavigationScrollViewRef}>
+      <SetAttachNavigationScrollViewContext value={setAttachNavigationScrollViewRef}>
         {children}
-      </SetAttachNavigationScrollViewContext.Provider>
-    </AttachNavigationScrollViewContext.Provider>
+      </SetAttachNavigationScrollViewContext>
+    </AttachNavigationScrollViewContext>
   )
 }
 const StateHandler = () => {
   const navigation = useNavigation()
-  const nameAtom = useContext(ScreenNameContext)
-  const navigationInstance = useContext(NavigationInstanceContext)
+  const nameAtom = use(ScreenNameContext)
+  const navigationInstance = use(NavigationInstanceContext)
   const jotaiStore = useStore()
   const previousName = useRef(jotaiStore.get(nameAtom))
   useEffect(() => {
@@ -108,7 +106,7 @@ const StateHandler = () => {
   return null
 }
 const ScreenItemsMapper = () => {
-  const chainCtxValue = useContext(ChainNavigationContext)
+  const chainCtxValue = use(ChainNavigationContext)
   const routes = useAtomValue(chainCtxValue.routesAtom)
 
   const routeGroups = useMemo(() => {
@@ -139,7 +137,7 @@ const ScreenItemsMapper = () => {
   }, [routes])
 
   return (
-    <GroupedNavigationRouteContext.Provider value={routeGroups}>
+    <GroupedNavigationRouteContext value={routeGroups}>
       {routeGroups.map((group) => {
         const isPushGroup = group.at(0)?.type === "push"
         if (!isPushGroup) {
@@ -147,7 +145,7 @@ const ScreenItemsMapper = () => {
         }
         return <MapScreenStackItems key={group.at(0)?.id} routes={group} />
       })}
-    </GroupedNavigationRouteContext.Provider>
+    </GroupedNavigationRouteContext>
   )
 }
 
@@ -191,7 +189,7 @@ const ModalScreenStackItems: FC<{
 
   if (isStackModal) {
     return (
-      <ModalScreenItemOptionsContext.Provider value={modalScreenOptionsCtxValue}>
+      <ModalScreenItemOptionsContext value={modalScreenOptionsCtxValue}>
         <WrappedScreenItem
           stackPresentation={rootModalRoute?.type}
           key={rootModalRoute.id}
@@ -230,13 +228,13 @@ const ModalScreenStackItems: FC<{
             </ScreenStack>
           </ModalSafeAreaInsetsContext>
         </WrappedScreenItem>
-      </ModalScreenItemOptionsContext.Provider>
+      </ModalScreenItemOptionsContext>
     )
   }
 
   return routes.map((route) => {
     return (
-      <ModalScreenItemOptionsContext.Provider value={modalScreenOptionsCtxValue} key={route.id}>
+      <ModalScreenItemOptionsContext value={modalScreenOptionsCtxValue} key={route.id}>
         <ModalSafeAreaInsetsContext hasTopInset={!isFormSheet}>
           <WrappedScreenItem
             screenId={route.id}
@@ -246,7 +244,7 @@ const ModalScreenStackItems: FC<{
             <ResolveView comp={route.Component} element={route.element} props={route.props} />
           </WrappedScreenItem>
         </ModalSafeAreaInsetsContext>
-      </ModalScreenItemOptionsContext.Provider>
+      </ModalScreenItemOptionsContext>
     )
   })
 })
@@ -273,8 +271,8 @@ const ModalSafeAreaInsetsContext: FC<{
   const rootFrame = useSafeAreaFrame()
 
   return (
-    <SafeAreaFrameContext.Provider value={rootFrame}>
-      <SafeAreaInsetsContext.Provider
+    <SafeAreaFrameContext value={rootFrame}>
+      <SafeAreaInsetsContext
         value={useMemo(
           () => ({
             ...rootInsets,
@@ -284,7 +282,7 @@ const ModalSafeAreaInsetsContext: FC<{
         )}
       >
         {children}
-      </SafeAreaInsetsContext.Provider>
-    </SafeAreaFrameContext.Provider>
+      </SafeAreaInsetsContext>
+    </SafeAreaFrameContext>
   )
 }

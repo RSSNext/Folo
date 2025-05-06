@@ -1,11 +1,11 @@
 import type { PrimitiveAtom } from "jotai"
 import { useAtomValue } from "jotai"
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 
 export const ScreenNameContext = createContext<PrimitiveAtom<string>>(null!)
 
 export const useScreenName = () => {
-  const name = useContext(ScreenNameContext)
+  const name = use(ScreenNameContext)
   if (!name) {
     throw new Error("ScreenNameContext not mounted")
   }

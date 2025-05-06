@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils"
-import { memo, useContext } from "react"
+import { memo, use } from "react"
 import { Text, View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
@@ -31,7 +31,7 @@ export const SubscriptionItem = memo(
     const subscription = useSubscription(id)
     const unreadCount = useUnreadCount(id)
     const feed = useFeed(id)!
-    const inGrouped = !!useContext(GroupedContext)
+    const inGrouped = !!use(GroupedContext)
     const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
 
     const navigation = useNavigation()

@@ -7,7 +7,7 @@ export const MarkdownP: Component<
 > = ({ children, ...props }) => {
   return (
     <p {...props}>
-      <IsInParagraphContext.Provider value={true}>{children}</IsInParagraphContext.Provider>
+      <IsInParagraphContext value={true}>{children}</IsInParagraphContext>
     </p>
   )
 }

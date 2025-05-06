@@ -36,14 +36,14 @@ export const BottomTabProvider = ({
   )
 
   return (
-    <BottomTabContext.Provider value={ctxValue}>
-      <BottomTabBarBackgroundContext.Provider value={useMemo(() => ({ opacity }), [opacity])}>
-        <SetBottomTabBarVisibleContext.Provider value={setTabBarVisible}>
-          <BottomTabBarVisibleContext.Provider value={tabBarVisible}>
+    <BottomTabContext value={ctxValue}>
+      <BottomTabBarBackgroundContext value={useMemo(() => ({ opacity }), [opacity])}>
+        <SetBottomTabBarVisibleContext value={setTabBarVisible}>
+          <BottomTabBarVisibleContext value={tabBarVisible}>
             <BottomTabHeightProvider>{children}</BottomTabHeightProvider>
-          </BottomTabBarVisibleContext.Provider>
-        </SetBottomTabBarVisibleContext.Provider>
-      </BottomTabBarBackgroundContext.Provider>
-    </BottomTabContext.Provider>
+          </BottomTabBarVisibleContext>
+        </SetBottomTabBarVisibleContext>
+      </BottomTabBarBackgroundContext>
+    </BottomTabContext>
   )
 }

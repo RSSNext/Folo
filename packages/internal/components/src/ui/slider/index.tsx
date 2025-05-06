@@ -2,14 +2,21 @@ import { cn } from "@follow/utils/utils"
 import * as SliderPrimitive from "@radix-ui/react-slider"
 import * as React from "react"
 
-export const Slider = React.forwardRef<
-  React.ElementRef<typeof SliderPrimitive.Root> & {
-    variant?: "primary" | "secondary"
-  },
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
-    variant?: "primary" | "secondary"
-  }
->(({ className, variant = "primary", ...props }, ref) => (
+export const Slider = ({
+  ref,
+  className,
+  variant = "primary",
+  ...props
+}: React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
+  variant?: "primary" | "secondary"
+} & {
+  ref?: React.RefObject<
+    | (React.ElementRef<typeof SliderPrimitive.Root> & {
+        variant?: "primary" | "secondary"
+      })
+    | null
+  >
+}) => (
   <SliderPrimitive.Root
     ref={ref}
     className={cn("relative flex w-full touch-none select-none items-center", className)}
@@ -37,5 +44,5 @@ export const Slider = React.forwardRef<
       )}
     />
   </SliderPrimitive.Root>
-))
+)
 Slider.displayName = SliderPrimitive.Root.displayName

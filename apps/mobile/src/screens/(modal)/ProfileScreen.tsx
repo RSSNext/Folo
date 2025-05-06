@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useQuery } from "@tanstack/react-query"
-import { createContext, Fragment, useCallback, useContext, useEffect, useMemo } from "react"
+import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Alert, FlatList, Image, Share, Text, TouchableOpacity, View } from "react-native"
 import Animated, {
@@ -156,11 +156,11 @@ function ProfileScreenImpl(props: { userId: string }) {
         <UserHeaderBanner scrollY={scrollY} userId={props.userId} />
 
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
-        <IsMyProfileContext.Provider value={isMyProfile}>
-          <ActionContext.Provider value={actionCtx}>
+        <IsMyProfileContext value={isMyProfile}>
+          <ActionContext value={actionCtx}>
             {!isLoading && subscriptions && <SubscriptionList subscriptions={subscriptions.data} />}
-          </ActionContext.Provider>
-        </IsMyProfileContext.Provider>
+          </ActionContext>
+        </IsMyProfileContext>
       </ReAnimatedScrollView>
 
       <Animated.View
@@ -365,9 +365,9 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
 )
 
 const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNode }) => {
-  const isMyProfile = useContext(IsMyProfileContext)
+  const isMyProfile = use(IsMyProfileContext)
   const { t } = useTranslation()
-  const { removeItemById } = useContext(ActionContext)
+  const { removeItemById } = use(ActionContext)
   if (!isMyProfile) {
     return children
   }

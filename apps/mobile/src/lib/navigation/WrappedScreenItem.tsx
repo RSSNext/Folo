@@ -2,7 +2,7 @@ import { isUndefined } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { FC, ReactNode } from "react"
-import { memo, useCallback, useContext, useMemo, useRef } from "react"
+import { memo, use, useCallback, useMemo, useRef } from "react"
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native"
 import { StyleSheet, View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
@@ -132,8 +132,8 @@ export const WrappedScreenItem: FC<
     const ref = useRef<View>(null)
 
     return (
-      <ScreenItemContext.Provider value={ctxValue}>
-        <ScreenOptionsContext.Provider value={screenOptionsCtxValue}>
+      <ScreenItemContext value={ctxValue}>
+        <ScreenOptionsContext value={screenOptionsCtxValue}>
           <ScreenStackItem
             {...combinedLifecycleEvents}
             headerConfig={{
@@ -157,13 +157,13 @@ export const WrappedScreenItem: FC<
             <Header />
             <ErrorBoundary fallbackRender={ScreenErrorScreen}>{children}</ErrorBoundary>
           </ScreenStackItem>
-        </ScreenOptionsContext.Provider>
-      </ScreenItemContext.Provider>
+        </ScreenOptionsContext>
+      </ScreenItemContext>
     )
   },
 )
 const Header = () => {
-  const ctxValue = useContext(ScreenItemContext)
+  const ctxValue = use(ScreenItemContext)
 
   const Slot = useAtomValue(ctxValue.Slot)
 

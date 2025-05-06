@@ -1,5 +1,5 @@
 import type { RefObject } from "react"
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react"
+import { use, useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import type { FlatList, ScrollView } from "react-native"
 import { findNodeHandle, Platform } from "react-native"
 
@@ -14,7 +14,7 @@ import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackground
 import { BottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
 
 export const useBottomTabBarHeight = () => {
-  const height = useContext(BottomTabBarHeightContext)
+  const height = use(BottomTabBarHeightContext)
   return height
 }
 
@@ -57,7 +57,7 @@ export const useNavigationScrollToTop = (
 export const useRegisterNavigationScrollView = <T = unknown>(active = true) => {
   const scrollViewRef = useRef<T>(null)
   const tabScreenIsFocused = useScreenIsAppeared()
-  const setAttachNavigationScrollViewRef = useContext(SetAttachNavigationScrollViewContext)
+  const setAttachNavigationScrollViewRef = use(SetAttachNavigationScrollViewContext)
 
   useEffect(() => {
     if (!active) return
@@ -78,7 +78,7 @@ export const useRegisterNavigationScrollView = <T = unknown>(active = true) => {
 }
 
 export const useResetTabOpacityWhenFocused = () => {
-  const { opacity } = useContext(BottomTabBarBackgroundContext)
+  const { opacity } = use(BottomTabBarBackgroundContext)
   const tabScreenIsFocus = useTabScreenIsFocused()
   useLayoutEffect(() => {
     if (tabScreenIsFocus) {

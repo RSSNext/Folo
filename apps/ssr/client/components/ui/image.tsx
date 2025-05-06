@@ -2,7 +2,7 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import * as Avatar from "@radix-ui/react-avatar"
 import type { MouseEvent, PropsWithChildren } from "react"
-import { forwardRef, useMemo } from "react"
+import { useMemo } from "react"
 import { Blurhash } from "react-blurhash"
 
 type LazyImageProps = PropsWithChildren<{
@@ -20,50 +20,57 @@ type LazyImageProps = PropsWithChildren<{
   }
   onClick?: (e: MouseEvent) => void
 }>
-export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
-  ({ src, blurhash, className, height, width, proxy, onClick }, ref) => {
-    const nextSrc = useMemo(() => {
-      if (!src) return src
+export const LazyImage = ({
+  ref,
+  src,
+  blurhash,
+  className,
+  height,
+  width,
+  proxy,
+  onClick,
+}: LazyImageProps & { ref?: React.RefObject<HTMLImageElement | null> }) => {
+  const nextSrc = useMemo(() => {
+    if (!src) return src
 
-      if (!proxy?.height && !proxy?.width) {
-        return src
-      }
-      return getImageProxyUrl({
-        url: src,
-        width: proxy?.width,
-        height: proxy?.height,
-      })
-    }, [src, proxy?.height, proxy?.width])
-    return (
-      <Avatar.Root className="relative">
-        <Avatar.Image
-          ref={ref}
-          src={nextSrc}
-          height={height}
-          width={width}
-          className={cn("size-full", className)}
-          onClick={onClick}
-          tabIndex={1}
-        />
-        <Avatar.Fallback asChild>
-          <div
-            className={cn(
-              "center size-full max-w-full",
+    if (!proxy?.height && !proxy?.width) {
+      return src
+    }
+    return getImageProxyUrl({
+      url: src,
+      width: proxy?.width,
+      height: proxy?.height,
+    })
+  }, [src, proxy?.height, proxy?.width])
+  return (
+    <Avatar.Root className="relative">
+      <Avatar.Image
+        ref={ref}
+        src={nextSrc}
+        height={height}
+        width={width}
+        className={cn("size-full", className)}
+        onClick={onClick}
+        tabIndex={1}
+      />
+      <Avatar.Fallback asChild>
+        <div
+          className={cn(
+            "center size-full max-w-full",
 
-              !blurhash && "bg-theme-inactive/50",
-              className,
-            )}
-            style={{
-              aspectRatio: height && width ? height / width : undefined,
-              width,
-            }}
-          >
-            {blurhash && (
-              <Blurhash hash={blurhash} resolutionX={32} resolutionY={32} className="!size-full" />
-            )}
-          </div>
-        </Avatar.Fallback>
-      </Avatar.Root>
-    )
-  },
-)
+            !blurhash && "bg-theme-inactive/50",
+            className,
+          )}
+          style={{
+            aspectRatio: height && width ? height / width : undefined,
+            width,
+          }}
+        >
+          {blurhash && (
+            <Blurhash hash={blurhash} resolutionX={32} resolutionY={32} className="!size-full" />
+          )}
+        </div>
+      </Avatar.Fallback>
+    </Avatar.Root>
+  )
+}

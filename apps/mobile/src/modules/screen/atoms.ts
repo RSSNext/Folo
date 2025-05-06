@@ -3,7 +3,7 @@ import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { createContext, useCallback, useContext, useMemo, useState } from "react"
+import { createContext, use, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { views } from "@/src/constants/views"
@@ -79,7 +79,7 @@ export const EntryListContext = createContext<{ type: "timeline" | "feed" | "sub
   type: "timeline",
 })
 export const useEntryListContext = () => {
-  return useContext(EntryListContext)
+  return use(EntryListContext)
 }
 
 export function useSelectedView() {

@@ -6,7 +6,7 @@ import { cn, getUrlIcon } from "@follow/utils/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
-import { forwardRef, useMemo } from "react"
+import { useMemo } from "react"
 
 const getFeedIconSrc = ({
   src,
@@ -39,12 +39,15 @@ const getFeedIconSrc = ({
   return [ret.src, ret.fallbackUrl]
 }
 
-const FallbackableImage = forwardRef<
-  HTMLImageElement,
-  {
-    fallbackUrl: string
-  } & React.ImgHTMLAttributes<HTMLImageElement>
->(function FallbackableImage({ fallbackUrl, ...rest }, ref) {
+const FallbackableImage = function FallbackableImage({
+  ref,
+  fallbackUrl,
+  ...rest
+}: {
+  fallbackUrl: string
+} & React.ImgHTMLAttributes<HTMLImageElement> & {
+    ref?: React.RefObject<HTMLImageElement | null>
+  }) {
   return (
     <img
       onError={(e) => {
@@ -61,7 +64,7 @@ const FallbackableImage = forwardRef<
       ref={ref}
     />
   )
-})
+}
 
 type FeedIconFeed =
   | (Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image"> & {

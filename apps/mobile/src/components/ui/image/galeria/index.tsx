@@ -16,7 +16,7 @@ const Galeria: typeof GaleriaInterface = Object.assign(
     children: React.ReactNode
   } & Partial<Pick<GaleriaContext, "theme" | "ids" | "urls">>) {
     return (
-      <GaleriaContext.Provider
+      <GaleriaContext
         value={useMemo(
           () => ({
             urls,
@@ -31,7 +31,7 @@ const Galeria: typeof GaleriaInterface = Object.assign(
         )}
       >
         {children}
-      </GaleriaContext.Provider>
+      </GaleriaContext>
     )
   },
   {

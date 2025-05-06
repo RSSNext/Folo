@@ -61,7 +61,7 @@ export const PlayerScreen: NavigationControllerView = () => {
 
   return (
     <SheetScreen onClose={() => navigation.dismiss()}>
-      <PlayerScreenContext.Provider value={playerScreenContextValue}>
+      <PlayerScreenContext value={playerScreenContextValue}>
         <LinearGradient
           style={StyleSheet.absoluteFill}
           colors={gradientColors}
@@ -98,7 +98,7 @@ export const PlayerScreen: NavigationControllerView = () => {
             </View>
           </View>
         </SafeAreaView>
-      </PlayerScreenContext.Provider>
+      </PlayerScreenContext>
     </SheetScreen>
   )
 }

@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 import type { ScrollView } from "react-native"
 import type { AnimatedRef, SharedValue } from "react-native-reanimated"
 
@@ -9,7 +9,7 @@ interface ModalScrollViewContextType {
 export const ModalScrollViewContext = createContext<ModalScrollViewContextType>(null!)
 
 export const useModalScrollViewContext = () => {
-  const context = useContext(ModalScrollViewContext)
+  const context = use(ModalScrollViewContext)
   if (!context) {
     throw new Error("ModalScrollViewContext not found")
   }

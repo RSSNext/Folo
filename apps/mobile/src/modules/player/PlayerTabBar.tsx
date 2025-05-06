@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
-import { useContext, useEffect } from "react"
+import { use, useEffect } from "react"
 import { Pressable, Text, View } from "react-native"
 import Animated, {
   interpolate,
@@ -22,7 +22,7 @@ const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen
 
 export function PlayerTabBar({ className }: { className?: string }) {
   const activeTrack = useActiveTrack()
-  const tabRootCtx = useContext(BottomTabContext)
+  const tabRootCtx = use(BottomTabContext)
   const tabScreens = useAtomValue(tabRootCtx.tabScreensAtom)
   const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
   const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)

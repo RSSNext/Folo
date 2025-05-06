@@ -105,13 +105,13 @@ export function PagerList({
       {useMemo(
         () =>
           activeViews.map((view, index) => (
-            <PagerListVisibleContext.Provider value={index === activeViewIndex} key={view.view}>
-              <PagerListWillVisibleContext.Provider
+            <PagerListVisibleContext value={index === activeViewIndex} key={view.view}>
+              <PagerListWillVisibleContext
                 value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
               >
                 {renderItem(view.view, index === activeViewIndex)}
-              </PagerListWillVisibleContext.Provider>
-            </PagerListVisibleContext.Provider>
+              </PagerListWillVisibleContext>
+            </PagerListVisibleContext>
           )),
         [activeViews, activeViewIndex, dragging, renderItem],
       )}

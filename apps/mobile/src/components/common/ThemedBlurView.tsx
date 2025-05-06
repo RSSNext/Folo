@@ -1,11 +1,14 @@
 import type { BlurViewProps } from "expo-blur"
 import { BlurView } from "expo-blur"
 import { useColorScheme } from "nativewind"
-import { forwardRef } from "react"
 import { Platform, StyleSheet, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
-export const ThemedBlurView = forwardRef<BlurView, BlurViewProps>(({ tint, ...rest }, ref) => {
+export const ThemedBlurView = ({
+  ref,
+  tint,
+  ...rest
+}: BlurViewProps & { ref?: React.RefObject<BlurView | null> }) => {
   const { colorScheme } = useColorScheme()
 
   const background = useColor("systemBackground")
@@ -30,4 +33,4 @@ export const ThemedBlurView = forwardRef<BlurView, BlurViewProps>(({ tint, ...re
       ])}
     />
   )
-})
+}

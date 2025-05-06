@@ -3,21 +3,27 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { FeedViewType, views } from "@follow/constants"
 import type { EntryModelSimple, FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
-import { cloneElement, forwardRef } from "react"
+import { cloneElement } from "react"
 
 import { useI18n } from "~/hooks/common"
 
 import { EntryItemSkeleton } from "../entry-column/EntryItemSkeleton"
 import { EntryItemStateless } from "../entry-column/item-stateless"
 
-export const ViewSelectorRadioGroup = forwardRef<
-  HTMLInputElement,
-  {
-    entries?: EntryModelSimple[]
-    feed?: FeedModel
-    view?: number
-  } & React.InputHTMLAttributes<HTMLInputElement>
->(({ entries, feed, view, className, ...rest }, ref) => {
+export const ViewSelectorRadioGroup = ({
+  ref,
+  entries,
+  feed,
+  view,
+  className,
+  ...rest
+}: {
+  entries?: EntryModelSimple[]
+  feed?: FeedModel
+  view?: number
+} & React.InputHTMLAttributes<HTMLInputElement> & {
+    ref?: React.RefObject<HTMLInputElement | null>
+  }) => {
   const t = useI18n()
 
   const showPreview = feed && entries && entries.length > 0
@@ -71,4 +77,4 @@ export const ViewSelectorRadioGroup = forwardRef<
       {showLoading && <EntryItemSkeleton view={view ?? FeedViewType.Articles} count={2} />}
     </Card>
   )
-})
+}

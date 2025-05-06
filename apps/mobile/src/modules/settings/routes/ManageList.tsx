@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import type { MutableRefObject } from "react"
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { createContext, use, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { PixelRatio, StyleSheet, Text, View } from "react-native"
 
@@ -88,9 +88,9 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
       }
     >
       {!!list && (
-        <ManageListContext.Provider value={ctxValue}>
+        <ManageListContext value={ctxValue}>
           <ListImpl id={list.id} />
-        </ManageListContext.Provider>
+        </ManageListContext>
       )}
     </SafeNavigationScrollView>
   )
@@ -130,7 +130,7 @@ const SeparatorComponent = () => {
 const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
   const feed = useFeed(props.feedId)
 
-  const { nextSelectedFeedIdRef } = useContext(ManageListContext)
+  const { nextSelectedFeedIdRef } = use(ManageListContext)
 
   const [currentSelected, setCurrentSelected] = useState(props.isSelected)
 

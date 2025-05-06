@@ -85,9 +85,9 @@ export const CategoryGrouped = memo(
 
         {!isLast && <ItemSeparator />}
         {expanded && (
-          <GroupedContext.Provider value={category}>
+          <GroupedContext value={category}>
             <UnGroupedList subscriptionIds={subscriptionIds} isGroupLast={isLast} />
-          </GroupedContext.Provider>
+          </GroupedContext>
         )}
       </>
     )

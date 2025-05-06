@@ -1,14 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useSetAtom, useStore } from "jotai"
 import type { PropsWithChildren } from "react"
-import {
-  forwardRef,
-  useContext,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { use, useImperativeHandle, useLayoutEffect, useRef, useState } from "react"
 import type { ScrollView, ScrollViewProps, StyleProp, ViewStyle } from "react-native"
 import { findNodeHandle, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
@@ -51,104 +44,100 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
 export interface ForwardedSafeNavigationScrollView extends ScrollView {
   checkScrollToBottom: () => void
 }
-export const SafeNavigationScrollView = forwardRef<ScrollView, SafeNavigationScrollViewProps>(
-  (
-    {
-      children,
-      onScroll,
-      withBottomInset = false,
-      withTopInset = false,
-      reanimatedScrollY,
-      contentViewClassName,
-      contentViewStyle,
-      Header,
-      ...props
-    },
-    forwardedRef,
-  ) => {
-    const insets = useSafeAreaInsets()
-    const tabBarHeight = useBottomTabBarHeight()
+export const SafeNavigationScrollView = ({
+  ref: forwardedRef,
+  children,
+  onScroll,
+  withBottomInset = false,
+  withTopInset = false,
+  reanimatedScrollY,
+  contentViewClassName,
+  contentViewStyle,
+  Header,
+  ...props
+}: SafeNavigationScrollViewProps & { ref?: React.RefObject<ScrollView | null> }) => {
+  const insets = useSafeAreaInsets()
+  const tabBarHeight = useBottomTabBarHeight()
 
-    const frame = useSafeAreaFrame()
-    const sheetModal = useScreenIsInSheetModal()
-    const [headerHeight, setHeaderHeight] = useState(() =>
-      getDefaultHeaderHeight(frame, sheetModal, insets.top),
-    )
-    const screenCtxValue = useContext(ScreenItemContext)
+  const frame = useSafeAreaFrame()
+  const sheetModal = useScreenIsInSheetModal()
+  const [headerHeight, setHeaderHeight] = useState(() =>
+    getDefaultHeaderHeight(frame, sheetModal, insets.top),
+  )
+  const screenCtxValue = use(ScreenItemContext)
 
-    const ref = useRef<ScrollView>(null)
-    useImperativeHandle(forwardedRef, () => {
-      return Object.assign({}, ref.current!, {
-        checkScrollToBottom,
-      })
+  const ref = useRef<ScrollView>(null)
+  useImperativeHandle(forwardedRef, () => {
+    return Object.assign({}, ref.current!, {
+      checkScrollToBottom,
     })
-    const { opacity } = useContext(BottomTabBarBackgroundContext)
+  })
+  const { opacity } = use(BottomTabBarBackgroundContext)
 
-    const inTabScreen = useInTabScreen()
+  const inTabScreen = useInTabScreen()
 
-    function checkScrollToBottom() {
-      if (!inTabScreen) {
-        return
-      }
-      const handle = findNodeHandle(ref.current!)
-      if (!handle) {
-        return
-      }
-
-      isScrollToEnd(handle).then((isEnd) => {
-        opacity.value = isEnd ? 0 : 1
-      })
+  function checkScrollToBottom() {
+    if (!inTabScreen) {
+      return
     }
-    const scrollHandler = useAnimatedScrollHandler({
-      onScroll: (event) => {
-        if (reanimatedScrollY) {
-          reanimatedScrollY.value = event.contentOffset.y
-        }
+    const handle = findNodeHandle(ref.current!)
+    if (!handle) {
+      return
+    }
 
-        runOnJS(checkScrollToBottom)()
-        screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
-      },
+    isScrollToEnd(handle).then((isEnd) => {
+      opacity.value = isEnd ? 0 : 1
     })
+  }
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      if (reanimatedScrollY) {
+        reanimatedScrollY.value = event.contentOffset.y
+      }
 
-    return (
-      <NavigationHeaderHeightContext.Provider value={headerHeight}>
-        <SetNavigationHeaderHeightContext.Provider value={setHeaderHeight}>
-          {Header}
-          <ReAnimatedScrollView
-            ref={ref}
-            onScroll={scrollHandler}
-            onContentSizeChange={useTypeScriptHappyCallback(
-              (w, h) => {
-                screenCtxValue.scrollViewContentHeight.value = h
-              },
-              [screenCtxValue.scrollViewContentHeight],
-            )}
-            onLayout={useTypeScriptHappyCallback(
-              (e) => {
-                screenCtxValue.scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight
-                checkScrollToBottom()
-              },
-              [screenCtxValue.scrollViewHeight, headerHeight],
-            )}
-            automaticallyAdjustContentInsets={false}
-            automaticallyAdjustsScrollIndicatorInsets={false}
-            scrollIndicatorInsets={{
-              top: headerHeight,
-              bottom: tabBarHeight,
-            }}
-            {...props}
-          >
-            <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
-            <View style={contentViewStyle} className={contentViewClassName}>
-              {children}
-            </View>
-            <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
-          </ReAnimatedScrollView>
-        </SetNavigationHeaderHeightContext.Provider>
-      </NavigationHeaderHeightContext.Provider>
-    )
-  },
-)
+      runOnJS(checkScrollToBottom)()
+      screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
+    },
+  })
+
+  return (
+    <NavigationHeaderHeightContext value={headerHeight}>
+      <SetNavigationHeaderHeightContext value={setHeaderHeight}>
+        {Header}
+        <ReAnimatedScrollView
+          ref={ref}
+          onScroll={scrollHandler}
+          onContentSizeChange={useTypeScriptHappyCallback(
+            (w, h) => {
+              screenCtxValue.scrollViewContentHeight.value = h
+            },
+            [screenCtxValue.scrollViewContentHeight],
+          )}
+          onLayout={useTypeScriptHappyCallback(
+            (e) => {
+              screenCtxValue.scrollViewHeight.value = e.nativeEvent.layout.height - headerHeight
+              checkScrollToBottom()
+            },
+            [screenCtxValue.scrollViewHeight, headerHeight],
+          )}
+          automaticallyAdjustContentInsets={false}
+          automaticallyAdjustsScrollIndicatorInsets={false}
+          scrollIndicatorInsets={{
+            top: headerHeight,
+            bottom: tabBarHeight,
+          }}
+          {...props}
+        >
+          <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
+          <View style={contentViewStyle} className={contentViewClassName}>
+            {children}
+          </View>
+          <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
+        </ReAnimatedScrollView>
+      </SetNavigationHeaderHeightContext>
+    </NavigationHeaderHeightContext>
+  )
+}
 
 export const NavigationBlurEffectHeaderView = ({
   headerHideableBottom,
@@ -197,10 +186,10 @@ export const NavigationBlurEffectHeader = ({
   headerHideableBottom?: () => React.ReactNode
   headerTitleAbsolute?: boolean
 }) => {
-  const setHeaderHeight = useContext(SetNavigationHeaderHeightContext)
+  const setHeaderHeight = use(SetNavigationHeaderHeightContext)
 
   const hideableBottom = headerHideableBottom?.()
-  const screenCtxValue = useContext(ScreenItemContext)
+  const screenCtxValue = use(ScreenItemContext)
 
   const setSlot = useSetAtom(screenCtxValue.Slot)
   const store = useStore()
@@ -208,7 +197,7 @@ export const NavigationBlurEffectHeader = ({
     setSlot({
       ...store.get(screenCtxValue.Slot),
       header: (
-        <SetNavigationHeaderHeightContext.Provider value={setHeaderHeight}>
+        <SetNavigationHeaderHeightContext value={setHeaderHeight}>
           <InternalNavigationHeader
             title={props.title}
             headerRight={props.headerRight}
@@ -220,7 +209,7 @@ export const NavigationBlurEffectHeader = ({
             promptBeforeLeave={props.promptBeforeLeave}
             isLoading={props.isLoading}
           />
-        </SetNavigationHeaderHeightContext.Provider>
+        </SetNavigationHeaderHeightContext>
       ),
     })
   }, [

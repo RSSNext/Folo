@@ -1,4 +1,4 @@
-import { createContext, createElement, useCallback, useContext, useMemo } from "react"
+import { createContext, createElement, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
 import { Image, StyleSheet, Text, View } from "react-native"
@@ -66,7 +66,7 @@ export const ListsScreen = () => {
           />
         </GroupedInsetListCard>
       </View>
-      <ListContext.Provider
+      <ListContext
         value={useMemo(
           () =>
             data?.reduce(
@@ -100,7 +100,7 @@ export const ListsScreen = () => {
             )}
           </GroupedInsetListCard>
         </View>
-      </ListContext.Provider>
+      </ListContext>
     </SafeNavigationScrollView>
   )
 }
@@ -137,7 +137,7 @@ const ListItemCell: ListRenderItem<ListModel> = (props) => {
 const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
   const { t } = useTranslation("common")
   const { title, description } = list
-  const listData = useContext(ListContext)[list.id]
+  const listData = use(ListContext)[list.id]
 
   const navigation = useNavigation()
   const colors = useColors()

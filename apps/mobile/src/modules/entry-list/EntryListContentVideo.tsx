@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { forwardRef, useImperativeHandle, useMemo } from "react"
+import { useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
@@ -12,13 +12,15 @@ import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
-export const EntryListContentVideo = forwardRef<
-  ElementRef<typeof TimelineSelectorMasonryList>,
-  { entryIds: string[] | null; active?: boolean } & Omit<
-    MasonryFlashListProps<string>,
-    "data" | "renderItem"
-  >
->(({ entryIds, active, ...rest }, forwardRef) => {
+export const EntryListContentVideo = ({
+  ref: forwardRef,
+  entryIds,
+  active,
+  ...rest
+}: { entryIds: string[] | null; active?: boolean } & Omit<
+  MasonryFlashListProps<string>,
+  "data" | "renderItem"
+> & { ref?: React.RefObject<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage } =
@@ -63,7 +65,7 @@ export const EntryListContentVideo = forwardRef<
       style={hackStyle}
     />
   )
-})
+}
 
 const defaultKeyExtractor = (item: string) => {
   return item

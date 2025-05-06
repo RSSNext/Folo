@@ -8,16 +8,7 @@ import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
 import type { HTMLMotionProps } from "motion/react"
 import type { FC, MutableRefObject, ReactNode } from "react"
-import {
-  forwardRef,
-  Fragment,
-  memo,
-  startTransition,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { Fragment, memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
@@ -32,7 +23,10 @@ import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryVirtualListItem } from "./item"
 
-export const EntryEmptyList = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>((props, ref) => {
+export const EntryEmptyList = ({
+  ref,
+  ...props
+}: HTMLMotionProps<"div"> & { ref?: React.RefObject<HTMLDivElement | null> }) => {
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const { t } = useTranslation()
   return (
@@ -54,7 +48,7 @@ export const EntryEmptyList = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>
       )}
     </m.div>
   )
-})
+}
 
 export type EntryListProps = {
   feedId: string

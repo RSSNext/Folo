@@ -4,10 +4,14 @@ import * as React from "react"
 
 import { navigationMenuTriggerStyle } from "./style"
 
-const NavigationMenu = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
->(({ className, children, ...props }, ref) => (
+const NavigationMenu = ({
+  ref,
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.Root> | null>
+}) => (
   <NavigationMenuPrimitive.Root
     ref={ref}
     className={cn("relative z-10 flex max-w-max flex-1 items-center justify-center", className)}
@@ -16,27 +20,34 @@ const NavigationMenu = React.forwardRef<
     {children}
     <NavigationMenuViewport />
   </NavigationMenuPrimitive.Root>
-))
+)
 NavigationMenu.displayName = NavigationMenuPrimitive.Root.displayName
 
-const NavigationMenuList = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>
->(({ className, ...props }, ref) => (
+const NavigationMenuList = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.List> | null>
+}) => (
   <NavigationMenuPrimitive.List
     ref={ref}
     className={cn("group flex flex-1 list-none items-center justify-center space-x-1", className)}
     {...props}
   />
-))
+)
 NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName
 
 const NavigationMenuItem = NavigationMenuPrimitive.Item
 
-const NavigationMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+const NavigationMenuTrigger = ({
+  ref,
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.Trigger> | null>
+}) => (
   <NavigationMenuPrimitive.Trigger
     ref={ref}
     className={cn(navigationMenuTriggerStyle(), "group", className)}
@@ -45,13 +56,16 @@ const NavigationMenuTrigger = React.forwardRef<
     {children}{" "}
     <i className="i-mingcute-down-line ml-1 size-3 opacity-50 duration-200 group-data-[state=open]:rotate-180" />
   </NavigationMenuPrimitive.Trigger>
-))
+)
 NavigationMenuTrigger.displayName = NavigationMenuPrimitive.Trigger.displayName
 
-const NavigationMenuContent = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>
->(({ className, ...props }, ref) => (
+const NavigationMenuContent = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.Content> | null>
+}) => (
   <NavigationMenuPrimitive.Content
     ref={ref}
     className={cn(
@@ -60,15 +74,18 @@ const NavigationMenuContent = React.forwardRef<
     )}
     {...props}
   />
-))
+)
 NavigationMenuContent.displayName = NavigationMenuPrimitive.Content.displayName
 
 const NavigationMenuLink = NavigationMenuPrimitive.Link
 
-const NavigationMenuViewport = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Viewport>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
->(({ className, ...props }, ref) => (
+const NavigationMenuViewport = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.Viewport> | null>
+}) => (
   <div className={cn("absolute left-0 top-full flex justify-center")}>
     <NavigationMenuPrimitive.Viewport
       className={cn(
@@ -79,13 +96,16 @@ const NavigationMenuViewport = React.forwardRef<
       {...props}
     />
   </div>
-))
+)
 NavigationMenuViewport.displayName = NavigationMenuPrimitive.Viewport.displayName
 
-const NavigationMenuIndicator = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Indicator>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator>
->(({ className, ...props }, ref) => (
+const NavigationMenuIndicator = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator> & {
+  ref?: React.RefObject<React.ElementRef<typeof NavigationMenuPrimitive.Indicator> | null>
+}) => (
   <NavigationMenuPrimitive.Indicator
     ref={ref}
     className={cn(
@@ -96,7 +116,7 @@ const NavigationMenuIndicator = React.forwardRef<
   >
     <div className="bg-border relative top-[60%] size-2 rotate-45 rounded-tl-sm shadow-md" />
   </NavigationMenuPrimitive.Indicator>
-))
+)
 NavigationMenuIndicator.displayName = NavigationMenuPrimitive.Indicator.displayName
 
 export {

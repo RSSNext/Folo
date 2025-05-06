@@ -42,11 +42,11 @@ export class ToastManager {
       (
         <FullWindowOverlay>
           <Provider store={jotaiStore}>
-            <ToastContainerContext.Provider value={this.stackAtom}>
-              <ToastActionContext.Provider value={{ register: this.register.bind(this) }}>
+            <ToastContainerContext value={this.stackAtom}>
+              <ToastActionContext value={{ register: this.register.bind(this) }}>
                 <ToastContainer />
-              </ToastActionContext.Provider>
-            </ToastContainerContext.Provider>
+              </ToastActionContext>
+            </ToastContainerContext>
           </Provider>
         </FullWindowOverlay>
       ),

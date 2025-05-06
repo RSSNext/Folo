@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { use } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -13,7 +13,7 @@ export const RecommendationCategoryScreen: NavigationControllerView<{
   category: string
 }> = ({ category }) => {
   const { t } = useTranslation("common")
-  const { reAnimatedScrollY } = useContext(ScreenItemContext)!
+  const { reAnimatedScrollY } = use(ScreenItemContext)!
   const defaultHeaderHeight = useDefaultHeaderHeight()
   const insets = useSafeAreaInsets()
   return (

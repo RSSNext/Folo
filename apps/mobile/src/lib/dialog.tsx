@@ -6,7 +6,7 @@ import {
   createContext,
   createElement,
   isValidElement,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useState,
@@ -79,7 +79,7 @@ export type DialogComponent<Ctx = unknown> = FC<{ ctx: Ctx }> & Omit<DialogProps
 class DialogStatic {
   useDialogContext = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useContext(DialogContext)
+    return use(DialogContext)
   }
 
   private currentStackedDialogs = new Set<string>()
@@ -87,7 +87,7 @@ class DialogStatic {
   // Components
   DialogConfirm: FC<{ onPress: () => void }> = ({ onPress }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { setOnConfirm } = useContext(SetDialogDynamicButtonActionContext)
+    const { setOnConfirm } = use(SetDialogDynamicButtonActionContext)
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
@@ -100,9 +100,9 @@ class DialogStatic {
 
   DialogCancel: FC<{ onPress: () => void }> = ({ onPress }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { setOnCancel } = useContext(SetDialogDynamicButtonActionContext)
+    const { setOnCancel } = use(SetDialogDynamicButtonActionContext)
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { dismiss } = useContext(DialogContext)!
+    const { dismiss } = use(DialogContext)!
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
@@ -195,7 +195,7 @@ class DialogStatic {
 
     const siblings = new RootSiblings(
       (
-        <NavigationInstanceContext.Provider value={Navigation.rootNavigation}>
+        <NavigationInstanceContext value={Navigation.rootNavigation}>
           <FullWindowOverlay>
             <Overlay onPress={handleClose} />
             <Animated.View
@@ -207,7 +207,7 @@ class DialogStatic {
               <DialogDynamicButtonActionProvider>
                 {Header}
                 <View className={cn("px-6 pb-4", Header ? "pt-4" : "pt-0")}>
-                  <DialogContext.Provider value={reactCtx}>{children}</DialogContext.Provider>
+                  <DialogContext value={reactCtx}>{children}</DialogContext>
                 </View>
 
                 <View className="flex-row gap-4 px-6 pb-4">
@@ -229,7 +229,7 @@ class DialogStatic {
               </DialogDynamicButtonActionProvider>
             </Animated.View>
           </FullWindowOverlay>
-        </NavigationInstanceContext.Provider>
+        </NavigationInstanceContext>
       ),
     )
 
@@ -275,7 +275,7 @@ const DialogDynamicButtonAction = (props: {
   className?: string
   textClassName?: string
 }) => {
-  const { onConfirm, onCancel } = useContext(DialogDynamicButtonActionContext)
+  const { onConfirm, onCancel } = use(DialogDynamicButtonActionContext)
   const caller =
     {
       confirm: onConfirm,
@@ -303,10 +303,10 @@ const DialogDynamicButtonActionProvider = (props: { children: ReactNode }) => {
   const ctx1 = useMemo(() => ({ onConfirm, onCancel }), [onConfirm, onCancel])
   const ctx2 = useMemo(() => ({ setOnConfirm, setOnCancel }), [setOnConfirm, setOnCancel])
   return (
-    <DialogDynamicButtonActionContext.Provider value={ctx1}>
-      <SetDialogDynamicButtonActionContext.Provider value={ctx2}>
+    <DialogDynamicButtonActionContext value={ctx1}>
+      <SetDialogDynamicButtonActionContext value={ctx2}>
         {props.children}
-      </SetDialogDynamicButtonActionContext.Provider>
-    </DialogDynamicButtonActionContext.Provider>
+      </SetDialogDynamicButtonActionContext>
+    </DialogDynamicButtonActionContext>
   )
 }

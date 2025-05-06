@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 import type { ScrollView } from "react-native"
 
 export const AttachNavigationScrollViewContext = createContext<React.RefObject<ScrollView> | null>(
@@ -10,5 +10,5 @@ export const SetAttachNavigationScrollViewContext = createContext<
 >(null!)
 
 export const useAttachNavigationScrollView = () => {
-  return useContext(AttachNavigationScrollViewContext)
+  return use(AttachNavigationScrollViewContext)
 }

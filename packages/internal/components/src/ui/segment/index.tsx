@@ -18,7 +18,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
   const componentId = useId()
 
   return (
-    <SegmentGroupContext.Provider
+    <SegmentGroupContext
       value={useMemo(
         () => ({
           value: currentValue,
@@ -42,7 +42,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       >
         {props.children}
       </div>
-    </SegmentGroupContext.Provider>
+    </SegmentGroupContext>
   )
 }
 

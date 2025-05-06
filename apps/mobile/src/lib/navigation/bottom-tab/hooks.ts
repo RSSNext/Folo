@@ -1,28 +1,28 @@
 import { useAtomValue, useSetAtom } from "jotai"
-import { useCallback, useContext } from "react"
+import { use, useCallback } from "react"
 
 import { ScreenItemContext } from "../ScreenItemContext"
 import { BottomTabContext } from "./BottomTabContext"
 import { TabScreenContext } from "./TabScreenContext"
 
 export const useScreenIsAppeared = () => {
-  const { isAppearedAtom } = useContext(ScreenItemContext)
+  const { isAppearedAtom } = use(ScreenItemContext)
 
   return useAtomValue(isAppearedAtom)
 }
 
 export const useTabScreenIsFocused = () => {
-  const { currentIndexAtom } = useContext(BottomTabContext)
+  const { currentIndexAtom } = use(BottomTabContext)
   const currentIndex = useAtomValue(currentIndexAtom)
-  const { isFocusedAtom } = useContext(ScreenItemContext)
+  const { isFocusedAtom } = use(ScreenItemContext)
   const isFocused = useAtomValue(isFocusedAtom)
-  const { tabScreenIndex } = useContext(TabScreenContext)
+  const { tabScreenIndex } = use(TabScreenContext)
 
   return currentIndex === tabScreenIndex && isFocused
 }
 
 export const useSwitchTab = () => {
-  const { currentIndexAtom } = useContext(BottomTabContext)
+  const { currentIndexAtom } = use(BottomTabContext)
   const setCurrentIndex = useSetAtom(currentIndexAtom)
   return useCallback(
     (index: number) => {
@@ -33,15 +33,15 @@ export const useSwitchTab = () => {
 }
 
 export const useBottomTabHeight = () => {
-  const { tabHeightAtom } = useContext(BottomTabContext)
+  const { tabHeightAtom } = use(BottomTabContext)
   return useAtomValue(tabHeightAtom)
 }
 
 export const useTabScreenIdentifier = () => {
-  const { identifierAtom } = useContext(TabScreenContext)
+  const { identifierAtom } = use(TabScreenContext)
   return useAtomValue(identifierAtom)
 }
 
 export const useInTabScreen = () => {
-  return !!useContext(TabScreenContext)
+  return !!use(TabScreenContext)
 }

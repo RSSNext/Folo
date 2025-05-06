@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react"
+import { use, useRef } from "react"
 
 import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackgroundContext"
 import { useNavigationScrollToTop } from "./hooks"
@@ -7,7 +7,7 @@ import { Tabbar } from "./Tabbar"
 export const BottomTabs = () => {
   const currentIndex = useRef<number | undefined>(undefined)
   const scrollToTop = useNavigationScrollToTop()
-  const { opacity } = useContext(BottomTabBarBackgroundContext)
+  const { opacity } = use(BottomTabBarBackgroundContext)
   return (
     <Tabbar
       onPress={(index) => {

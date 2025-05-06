@@ -3,8 +3,8 @@ import { EventBus } from "@follow/utils/src/event-bus"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import {
   createElement,
+  use,
   useCallback,
-  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -84,7 +84,7 @@ const useHideableBottom = (
     })
   }, [hideableBottomRef, largeHeaderHeight, originalDefaultHeaderHeight])
 
-  const { reAnimatedScrollY } = useContext(ScreenItemContext)!
+  const { reAnimatedScrollY } = use(ScreenItemContext)!
   useAnimatedReaction(
     () => reAnimatedScrollY.value,
     (value) => {
@@ -192,9 +192,9 @@ export const InternalNavigationHeader = ({
 
   const border = useColor("opaqueSeparator")
   const opacityAnimated = useSharedValue(0)
-  const { reAnimatedScrollY } = useContext(ScreenItemContext)!
+  const { reAnimatedScrollY } = use(ScreenItemContext)!
 
-  const setHeaderHeight = useContext(SetNavigationHeaderHeightContext)
+  const setHeaderHeight = use(SetNavigationHeaderHeightContext)
 
   useAnimatedReaction(
     () => reAnimatedScrollY.value,

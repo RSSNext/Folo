@@ -148,7 +148,7 @@ export const SwipeableItem: React.FC<SwipeableItemProps> = ({
   }
 
   const id = React.useId()
-  const { swipeableOpenedId } = React.useContext(SwipeableGroupContext)
+  const { swipeableOpenedId } = React.use(SwipeableGroupContext)
 
   const setAtom = useSetAtom(swipeableOpenedId)
   const isOpened = useAtomValue(
@@ -204,7 +204,7 @@ export const SwipeableGroupProvider = ({ children }: { children: React.ReactNode
     [],
   )
 
-  return <SwipeableGroupContext.Provider value={ctx}>{children}</SwipeableGroupContext.Provider>
+  return <SwipeableGroupContext value={ctx}>{children}</SwipeableGroupContext>
 }
 
 const rightActionThreshold = -100

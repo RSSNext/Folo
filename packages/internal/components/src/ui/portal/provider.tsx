@@ -1,7 +1,7 @@
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 
 export const useRootPortal = () => {
-  const ctx = useContext(RootPortalContext)
+  const ctx = use(RootPortalContext)
 
   return ctx || document.body
 }

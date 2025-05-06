@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom, useStore } from "jotai"
-import { useContext, useEffect } from "react"
+import { use, useEffect } from "react"
 
 import { ScreenItemContext } from "../ScreenItemContext"
 import { ScreenNameContext } from "../ScreenNameContext"
@@ -7,8 +7,8 @@ import { useTabScreenIsFocused } from "./hooks"
 import { TabScreenContext } from "./TabScreenContext"
 
 export const ScreenNameRegister = () => {
-  const nameAtom = useContext(ScreenNameContext)
-  const { titleAtom } = useContext(TabScreenContext)
+  const nameAtom = use(ScreenNameContext)
+  const { titleAtom } = use(TabScreenContext)
   const isFocused = useTabScreenIsFocused()
   const title = useAtomValue(titleAtom)
   const store = useStore()
@@ -21,7 +21,7 @@ export const ScreenNameRegister = () => {
 }
 
 export const TabScreenIdentifierRegister = () => {
-  const { identifierAtom } = useContext(TabScreenContext)
+  const { identifierAtom } = use(TabScreenContext)
   const identifier = useAtomValue(identifierAtom)
   const store = useStore()
   const isFocused = useTabScreenIsFocused()
@@ -34,7 +34,7 @@ export const TabScreenIdentifierRegister = () => {
 }
 
 export const LifecycleEvents = ({ isSelected }: { isSelected: boolean }) => {
-  const { isFocusedAtom, isAppearedAtom, isDisappearedAtom } = useContext(ScreenItemContext)
+  const { isFocusedAtom, isAppearedAtom, isDisappearedAtom } = use(ScreenItemContext)
   const setIsFocused = useSetAtom(isFocusedAtom)
   const setIsAppeared = useSetAtom(isAppearedAtom)
   const setIsDisappeared = useSetAtom(isDisappearedAtom)

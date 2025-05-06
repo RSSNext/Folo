@@ -39,7 +39,7 @@ export const PeekModal = (
           transition={{ duration: 0.2 }}
           className="motion-preset-slide-up motion-duration-200 motion-ease-spring-smooth scrollbar-none overflow-hidden"
         >
-          <InPeekModal.Provider value={true}>{children}</InPeekModal.Provider>
+          <InPeekModal value={true}>{children}</InPeekModal>
         </m.div>
         <m.div
           initial={true}

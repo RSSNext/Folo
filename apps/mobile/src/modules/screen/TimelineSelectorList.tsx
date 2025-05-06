@@ -8,7 +8,7 @@ import type {
 import { FlashList, MasonryFlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
 import type { ElementRef, RefObject } from "react"
-import { forwardRef, useCallback, useContext, useImperativeHandle, useRef } from "react"
+import { use, useCallback, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { RefreshControl, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -27,18 +27,20 @@ type Props = {
   isRefetching: boolean
 }
 
-export const TimelineSelectorList = forwardRef<
-  FlashList<any>,
-  Props & Omit<FlashListProps<any>, "onRefresh">
->(({ onRefresh, isRefetching, ...props }, forwardedRef) => {
+export const TimelineSelectorList = ({
+  ref: forwardedRef,
+  onRefresh,
+  isRefetching,
+  ...props
+}: Props &
+  Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.RefObject<FlashList<any> | null> }) => {
   const ref = useRef<FlashList<any>>(null)
   useImperativeHandle(forwardedRef, () => ref.current!)
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
 
   const headerHeight = useHeaderHeight()
-  const { scrollViewHeight, scrollViewContentHeight, reAnimatedScrollY } =
-    useContext(ScreenItemContext)!
+  const { scrollViewHeight, scrollViewContentHeight, reAnimatedScrollY } = use(ScreenItemContext)!
 
   const tabBarHeight = useBottomTabBarHeight()
   const onScroll = useCallback(
@@ -109,12 +111,17 @@ export const TimelineSelectorList = forwardRef<
       />
     </View>
   )
-})
+}
 
-export const TimelineSelectorMasonryList = forwardRef<
-  ElementRef<typeof MasonryFlashList>,
-  Props & Omit<MasonryFlashListProps<any>, "onRefresh">
->(({ onRefresh, isRefetching, ...props }, ref) => {
+export const TimelineSelectorMasonryList = ({
+  ref,
+  onRefresh,
+  isRefetching,
+  ...props
+}: Props &
+  Omit<MasonryFlashListProps<any>, "onRefresh"> & {
+    ref?: React.RefObject<ElementRef<typeof MasonryFlashList> | null>
+  }) => {
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
 
@@ -122,7 +129,7 @@ export const TimelineSelectorMasonryList = forwardRef<
 
   const headerHeight = useHeaderHeight()
 
-  const { reAnimatedScrollY } = useContext(ScreenItemContext)!
+  const { reAnimatedScrollY } = use(ScreenItemContext)!
 
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -168,4 +175,4 @@ export const TimelineSelectorMasonryList = forwardRef<
       onScroll={onScroll}
     />
   )
-})
+}

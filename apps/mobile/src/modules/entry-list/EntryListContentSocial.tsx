@@ -1,6 +1,6 @@
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { forwardRef, useCallback, useImperativeHandle, useMemo } from "react"
+import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
@@ -12,10 +12,13 @@ import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
 
-export const EntryListContentSocial = forwardRef<
-  ElementRef<typeof TimelineSelectorList>,
-  { entryIds: string[] | null; active?: boolean }
->(({ entryIds, active }, forwardRef) => {
+export const EntryListContentSocial = ({
+  ref: forwardRef,
+  entryIds,
+  active,
+}: { entryIds: string[] | null; active?: boolean } & {
+  ref?: React.RefObject<ElementRef<typeof TimelineSelectorList> | null>
+}) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()
 
@@ -58,7 +61,7 @@ export const EntryListContentSocial = forwardRef<
       style={hackStyle}
     />
   )
-})
+}
 
 export function EntryItemSkeleton() {
   return (

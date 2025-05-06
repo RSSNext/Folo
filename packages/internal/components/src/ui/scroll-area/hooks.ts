@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
-import { useCallback, useContext, useRef, useState } from "react"
+import { use, useCallback, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { ScrollElementContext } from "./ctx"
@@ -100,4 +100,4 @@ export const useMaskScrollArea = <T extends HTMLElement = HTMLElement>({
  * Get the scroll area element when in radix scroll area
  * @returns
  */
-export const useScrollViewElement = () => useContext(ScrollElementContext)
+export const useScrollViewElement = () => use(ScrollElementContext)

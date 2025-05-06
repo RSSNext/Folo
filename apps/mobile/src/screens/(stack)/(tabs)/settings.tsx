@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import { Text, TouchableOpacity, View } from "react-native"
@@ -23,7 +23,7 @@ import { useWhoami } from "@/src/store/user/hooks"
 export function Settings() {
   const insets = useSafeAreaInsets()
 
-  const screenContext = useContext(ScreenItemContext)
+  const screenContext = use(ScreenItemContext)
 
   const whoami = useWhoami()
 

@@ -1,12 +1,9 @@
-import type { FocusEvent, Ref } from "react"
-import { createContext, forwardRef, useCallback, useContext, useState } from "react"
+import type { FocusEvent } from "react"
+import { createContext, use, useCallback, useState } from "react"
 
 // const
 const FocusableContext = createContext(false)
-export const Focusable = forwardRef(function Focusable(
-  props: React.ComponentPropsWithoutRef<"div">,
-  ref: Ref<HTMLDivElement>,
-) {
+export const Focusable = function Focusable({ ref, ...props }) {
   const { onBlur, onFocus, ...rest } = props
   const [isFocusWithIn, setIsFocusWithIn] = useState(false)
   const handleFocus = useCallback(
@@ -25,7 +22,7 @@ export const Focusable = forwardRef(function Focusable(
   )
 
   return (
-    <FocusableContext.Provider value={isFocusWithIn}>
+    <FocusableContext value={isFocusWithIn}>
       <div
         tabIndex={-1}
         role="region"
@@ -36,10 +33,10 @@ export const Focusable = forwardRef(function Focusable(
         onBlurCapture={handleBlur}
         onFocus={handleFocus}
       />
-    </FocusableContext.Provider>
+    </FocusableContext>
   )
-})
+}
 
 export const useFocusable = () => {
-  return useContext(FocusableContext)
+  return use(FocusableContext)
 }

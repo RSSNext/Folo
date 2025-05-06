@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FC } from "react"
-import { forwardRef, memo } from "react"
+import { memo } from "react"
 
 import { useEntryTranslation } from "~/store/ai/hook"
 import type { FlatEntryModel } from "~/store/entry"
@@ -33,10 +33,16 @@ export const EntryItem: FC<EntryItemProps> = memo(({ entryId, view }) => {
   return <EntryItemImpl entry={entry} view={view} />
 })
 
-export const EntryVirtualListItem = forwardRef<
-  HTMLDivElement,
-  EntryItemProps & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
->(({ entryId, view, className, ...props }, ref) => {
+export const EntryVirtualListItem = ({
+  ref,
+  entryId,
+  view,
+  className,
+  ...props
+}: EntryItemProps &
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
+    ref?: React.RefObject<HTMLDivElement | null>
+  }) => {
   const entry = useEntry(entryId)
 
   if (!entry) return <div ref={ref} {...props} style={undefined} />
@@ -46,4 +52,4 @@ export const EntryVirtualListItem = forwardRef<
       <EntryItemImpl entry={entry} view={view} />
     </div>
   )
-})
+}

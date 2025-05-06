@@ -1,8 +1,8 @@
-import { createContext, useContext } from "react"
+import { createContext, use } from "react"
 
 export const PlayerScreenContext = createContext<PlayerScreenContextValue | null>(null)
 export const usePlayerScreenContext = () => {
-  const context = useContext(PlayerScreenContext)
+  const context = use(PlayerScreenContext)
   if (!context) {
     throw new Error("usePlayerScreenContext must be used within a PlayerScreenContextProvider")
   }

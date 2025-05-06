@@ -53,16 +53,13 @@ export function PagerList({
       }}
       renderPage={useTypeScriptHappyCallback(
         (index) => (
-          <PagerListVisibleContext.Provider
-            value={index === activeViewIndex}
-            key={activeViews[index]!.view}
-          >
-            <PagerListWillVisibleContext.Provider
+          <PagerListVisibleContext value={index === activeViewIndex} key={activeViews[index]!.view}>
+            <PagerListWillVisibleContext
               value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
             >
               {renderItem(activeViews[index]!.view, index === activeViewIndex)}
-            </PagerListWillVisibleContext.Provider>
-          </PagerListVisibleContext.Provider>
+            </PagerListWillVisibleContext>
+          </PagerListVisibleContext>
         ),
         [activeViews, activeViewIndex, dragging, renderItem],
       )}

@@ -57,7 +57,7 @@ export const HTML = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLP
 
   if (!markdownElement) return <div className="h-px" />
   return (
-    <MarkdownRenderContainerRefContext.Provider value={refElement}>
+    <MarkdownRenderContainerRefContext value={refElement}>
       <MemoedDangerousHTMLStyle>{katexStyle}</MemoedDangerousHTMLStyle>
       <WrappedElementProvider>
         {createElement(
@@ -72,6 +72,6 @@ export const HTML = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLP
       </WrappedElementProvider>
 
       {!!accessory && <Fragment key={shouldForceReMountKey}>{accessory}</Fragment>}
-    </MarkdownRenderContainerRefContext.Provider>
+    </MarkdownRenderContainerRefContext>
   )
 }
