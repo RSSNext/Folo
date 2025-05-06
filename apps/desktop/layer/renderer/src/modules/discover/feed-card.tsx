@@ -141,7 +141,6 @@ export const FeedCard: FC<{
                 )}
                 <Button
                   variant={isSubscribed ? followedButtonVariant : followButtonVariant}
-                  disabled={isSubscribed}
                   onClick={() => {
                     follow({
                       isList: !!item.list?.id,
