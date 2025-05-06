@@ -108,7 +108,7 @@ export const Masonry = <Item,>(props: MasonryProps<Item>) => {
     if (index !== void 0) scrollToIndex(index)
   }, [index, scrollToIndex])
 
-  return React.createElement(MasonryScroller, nextProps)
+  return <MasonryScroller {...nextProps} />
 }
 
 function MasonryScroller<Item>(
