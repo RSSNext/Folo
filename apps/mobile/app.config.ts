@@ -149,6 +149,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   }
 
   if (process.env.PROFILE !== "production") {
+    result.plugins ||= []
     result.plugins.push(require("./plugins/android-trust-user-certs.js"))
   }
 

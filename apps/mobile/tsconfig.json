@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "moduleResolution": "node",
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
