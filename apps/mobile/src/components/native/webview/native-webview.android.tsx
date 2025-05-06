@@ -71,7 +71,7 @@ export const NativeWebView: React.ComponentType<
   )
 }
 
-const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebView> }) => {
+const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebView | null> }) => {
   const onNavigationStateChange = useCallback(
     (newNavState: WebViewNavigation) => {
       const { url: urlStr } = newNavState

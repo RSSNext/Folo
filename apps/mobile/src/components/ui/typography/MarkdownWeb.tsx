@@ -43,7 +43,7 @@ body, html {
         () =>
           parseMarkdown(value, {
             components: {
-              a: ({ children, ...props }) => (
+              a: ({ children, ref, ...props }) => (
                 <a
                   onClick={(e) => {
                     if (!props.href) return

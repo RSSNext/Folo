@@ -15,6 +15,7 @@ import { Text, TouchableOpacity, View } from "react-native"
 import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated"
 import RootSiblings from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import type { ImageProps } from "react-native-svg"
 import { useColor } from "react-native-uikit-colors"
 
 import { FullWindowOverlay } from "../components/common/FullWindowOverlay"
@@ -257,11 +258,14 @@ const DefaultHeader = (props: { title?: string; headerIcon?: ReactNode }) => {
       {isValidElement(props.headerIcon) &&
         props.headerIcon &&
         typeof props.headerIcon === "object" &&
-        cloneElement(props.headerIcon as ReactElement, {
-          color: label,
-          height: 20,
-          width: 20,
-        })}
+        cloneElement(
+          props.headerIcon as ReactElement,
+          {
+            color: label,
+            height: 20,
+            width: 20,
+          } as Partial<ImageProps>,
+        )}
       <Text className="text-label text-lg font-semibold">{props.title}</Text>
     </View>
   )

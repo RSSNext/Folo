@@ -294,7 +294,7 @@ const ItemRenderer = ({
 
 const NavigationSidebar: FC<{
   alphabetGroups: (string | { key: string; data: RSSHubRouteDeclaration })[]
-  listRef: React.RefObject<FlashList<string | { key: string; data: RSSHubRouteDeclaration }>>
+  listRef: React.RefObject<FlashList<string | { key: string; data: RSSHubRouteDeclaration }> | null>
 }> = memo(({ alphabetGroups, listRef }) => {
   const scrollToLetter = useCallback(
     (letter: string, animated = true) => {

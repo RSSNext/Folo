@@ -102,7 +102,7 @@ const SubscriptionListImpl = ({
     return subscriptionSyncService.fetch(view)
   })
 
-  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any>>(active)
+  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any> | null>(active)
 
   const { onScroll, style } = usePagerListPerformanceHack(scrollViewRef)
 

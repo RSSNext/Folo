@@ -120,7 +120,7 @@ function useNonReactiveCallback<T extends (...args: any[]) => any>(fn: T): T {
   ) as unknown as T
 }
 
-export const usePagerListPerformanceHack = (provideRef?: RefObject<FlashList<any>>) => {
+export const usePagerListPerformanceHack = (provideRef?: RefObject<FlashList<any> | null>) => {
   const lastY = useRef(0)
 
   const onScroll = useEventCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {

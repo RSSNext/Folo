@@ -4,7 +4,7 @@ import type { NativeSyntheticEvent, ViewProps } from "react-native"
 export const EnhancePagerView = requireNativeView<
   ViewProps &
     PagerProps & {
-      ref: React.RefObject<PagerRef>
+      ref: React.RefObject<PagerRef | null>
     }
 >("EnhancePagerView")
 export const EnhancePageView = requireNativeView("EnhancePageView")

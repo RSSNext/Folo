@@ -22,7 +22,7 @@ const INACTIVE_WIDTH = 48
 
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
-  const scrollViewRef = React.useRef<ScrollView>(null)
+  const scrollViewRef = React.useRef<ScrollView | null>(null)
   const selectedFeed = useSelectedFeed()
 
   return (
@@ -112,7 +112,7 @@ function ViewItem({
   isActive,
 }: {
   view: ViewDefinition
-  scrollViewRef: React.RefObject<ScrollView>
+  scrollViewRef: React.RefObject<ScrollView | null>
   isActive: boolean
 }) {
   const textColor = useColor("gray")

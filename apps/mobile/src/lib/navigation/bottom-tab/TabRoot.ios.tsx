@@ -8,6 +8,7 @@ import { StyleSheet } from "react-native"
 
 import { BottomTabContext } from "./BottomTabContext"
 import { TabScreen } from "./TabScreen.ios"
+import type { TabScreenProps } from "./types"
 
 const TabBarRoot = requireNativeView<
   {
@@ -26,7 +27,7 @@ export const TabRoot: FC<PropsWithChildren> = ({ children }) => {
       if (typeof child === "object" && child && "type" in child && child.type === TabScreen) {
         return React.cloneElement(child, {
           tabScreenIndex: cnt++,
-        })
+        } as Partial<TabScreenProps>)
       }
       return child
     })

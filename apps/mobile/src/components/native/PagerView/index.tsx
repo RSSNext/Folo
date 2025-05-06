@@ -5,6 +5,7 @@ import type {
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
+  Ref,
   RefAttributes,
 } from "react"
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
@@ -33,27 +34,26 @@ interface PagerViewProps {
   containerStyle?: StyleProp<ViewStyle>
   containerClassName?: string
   initialPageIndex?: number
+  ref?: Ref<PagerRef>
 }
-const PagerViewImpl: FC<PagerViewProps> = (
-  {
-    pageContainerStyle,
-    pageContainerClassName,
-    renderPage,
-    pageTotal,
-    pageGap,
-    transitionStyle,
-    containerStyle,
-    containerClassName,
-    page,
-    onPageChange,
-    onScroll,
-    onScrollBegin,
-    onScrollEnd,
-    onPageWillAppear,
-    initialPageIndex,
-  },
-  ref: any,
-) => {
+const PagerViewImpl: FC<PagerViewProps> = ({
+  pageContainerStyle,
+  pageContainerClassName,
+  renderPage,
+  pageTotal,
+  pageGap,
+  transitionStyle,
+  containerStyle,
+  containerClassName,
+  page,
+  onPageChange,
+  onScroll,
+  onScrollBegin,
+  onScrollEnd,
+  onPageWillAppear,
+  initialPageIndex,
+  ref,
+}) => {
   const [currentPage, setCurrentPage] = useState(page ?? 0)
 
   const nativeRef = useRef<PagerRef>(null)
@@ -71,7 +71,7 @@ const PagerViewImpl: FC<PagerViewProps> = (
       nativeRef.current?.setPage(index)
     },
     getPage: () => currentPage,
-    getState: () => nativeRef.current?.getState(),
+    getState: () => nativeRef.current?.getState() ?? "idle",
   }))
   return (
     <EnhancePagerView

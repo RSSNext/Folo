@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
     "noImplicitOverride": true,
     "module": "commonjs",
     "baseUrl": ".",

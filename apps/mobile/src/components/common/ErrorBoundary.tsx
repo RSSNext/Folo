@@ -1,5 +1,6 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { getCrashlytics, recordError } from "@react-native-firebase/crashlytics"
+import type { FC } from "react"
 import { createElement, useEffect } from "react"
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary"
 import { Text, View } from "react-native"
@@ -9,7 +10,7 @@ export const ErrorBoundary = ({
   fallbackRender,
 }: {
   children: React.ReactNode
-  fallbackRender?: (props: { error: Error; resetError: () => void }) => React.ReactNode
+  fallbackRender: FC<{ error: Error; resetError: () => void }>
 }) => {
   return (
     <ReactErrorBoundary
