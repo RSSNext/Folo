@@ -58,6 +58,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       package: "is.follow",
+      // @ts-expect-error suppress warning about EDGE_TO_EDGE_PLUGIN
+      // Learn more: https://expo.dev/blog/edge-to-edge-display-now-streamlined-for-android
+      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
