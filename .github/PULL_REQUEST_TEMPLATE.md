@@ -24,6 +24,10 @@ Before submitting the PR, please make sure you do the following:
 - [ ] Hotfix
 - [ ] Other (please describe):
 
+### Screenshots (if UI change)
+
+### Demo Video (if new feature)
+
 ### Linked Issues
 
 ### Additional context

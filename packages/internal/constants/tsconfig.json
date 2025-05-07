@@ -1,0 +1,13 @@
+{
+  "extends": "@follow/configs/tsconfig.extend.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "types": ["@follow/types/react", "@follow/types/global", "vite/client"],
+    "paths": {
+      "@follow/constants/*": ["./src/*"],
+      "@pkg": ["../../package.json"]
+    }
+  },
+  "include": ["src/**/*", "../../../../locales/**/*.json"]
+}

@@ -1,200 +1,0 @@
-{
-  "ai_daily.title": "أهم الأخبار - {{title}}",
-  "ai_daily.tooltip.content": "إليك الأخبار التي تم اختيارها من قِبل الذكاء الاصطناعي من جدولك الزمني (<From /> - <To />) والتي قد تكون مهمة بالنسبة لك.",
-  "ai_daily.tooltip.update_schedule": "تحديث يومي في الساعة 8 صباحًا و 8 مساءً.",
-  "app.copy_logo_svg": "نسخ شعار SVG",
-  "app.toggle_sidebar": "تبديل الشريط الجانبي",
-  "discover.any_url_or_keyword": "أي رابط أو كلمة مفتاحية",
-  "discover.default_option": " (افتراضي)",
-  "discover.feed_description": "وصف هذه التغذية كما يلي، ويمكنك تعبئة نموذج المعايير بالمعلومات ذات الصلة.",
-  "discover.feed_maintainers": "يتم تقديم هذه التغذية من قبل RSSHub، مع شكر <maintainers />",
-  "discover.import.click_to_upload": "انقر لتحميل ملف OPML",
-  "discover.popular": "شائع",
-  "discover.preview": "معاينة",
-  "discover.rss_hub_route": "مسار RSSHub",
-  "discover.rss_url": "رابط RSS",
-  "discover.select_placeholder": "اختر",
-  "entry_actions.copy_link": "نسخ الرابط",
-  "entry_actions.failed_to_save_to_eagle": "فشل الحفظ إلى Eagle.",
-  "entry_actions.failed_to_save_to_instapaper": "فشل الحفظ إلى Instapaper.",
-  "entry_actions.failed_to_save_to_obsidian": "فشل الحفظ في Obsidian",
-  "entry_actions.failed_to_save_to_readwise": "فشل الحفظ إلى Readwise.",
-  "entry_actions.mark_as_read": "وضع علامة كمقروء",
-  "entry_actions.mark_as_unread": "وضع علامة كغير مقروء",
-  "entry_actions.open_in_browser": "فتح في المتصفح",
-  "entry_actions.save_media_to_eagle": "حفظ الوسائط إلى Eagle",
-  "entry_actions.save_to_instapaper": "حفظ إلى Instapaper",
-  "entry_actions.save_to_obsidian": "حفظ في Obsidian",
-  "entry_actions.save_to_readwise": "حفظ إلى Readwise",
-  "entry_actions.saved_to_eagle": "تم الحفظ إلى Eagle.",
-  "entry_actions.saved_to_instapaper": "تم الحفظ إلى Instapaper.",
-  "entry_actions.saved_to_obsidian": "تم الحفظ في Obsidian",
-  "entry_actions.saved_to_readwise": "تم الحفظ في Readwise.",
-  "entry_actions.share": "مشاركة",
-  "entry_actions.star": "إضافة إلى المفضلة",
-  "entry_actions.starred": "مضاف إلى المفضلة.",
-  "entry_actions.tip": "إكرامية",
-  "entry_actions.unstar": "إزالة من المفضلة",
-  "entry_actions.unstarred": "تمت إزالته من المفضلة.",
-  "entry_column.refreshing": "تحديث الإدخالات الجديدة...",
-  "entry_content.ai_summary": "ملخص الذكاء الاصطناعي",
-  "entry_content.fetching_content": "جاري جلب المحتوى الأصلي ومعالجته...",
-  "entry_content.header.play_tts": "تشغيل النص إلى كلام",
-  "entry_content.header.readability": "سهولة القراءة",
-  "entry_content.no_content": "لا يوجد محتوى",
-  "entry_content.readability_notice": "تم توفير هذا المحتوى من قِبل Readability. إذا وجدت أي أخطاء في النص، يرجى زيارة الموقع المصدر لعرض المحتوى الأصلي.",
-  "entry_content.render_error": "خطأ في العرض:",
-  "entry_content.report_issue": "الإبلاغ عن مشكلة",
-  "entry_content.web_app_notice": "قد لا يدعم التطبيق الويب هذا النوع من المحتويات. ولكن يمكنك تحميل تطبيق سطح المكتب.",
-  "entry_list.zero_unread": "لا يوجد غير مقروء",
-  "entry_list_header.daily_report": "التقرير اليومي",
-  "entry_list_header.hide_no_image_items": "إخفاء الإدخالات التي لا تحتوي على صور",
-  "entry_list_header.items": "إدخالات",
-  "entry_list_header.new_entries_available": "إدخالات جديدة متاحة",
-  "entry_list_header.refetch": "إعادة التحميل",
-  "entry_list_header.refresh": "تحديث",
-  "entry_list_header.show_all": "عرض الكل",
-  "entry_list_header.show_all_items": "عرض جميع الإدخالات",
-  "entry_list_header.show_unread_only": "عرض غير المقروء فقط",
-  "entry_list_header.unread": "غير مقروء",
-  "feed_claim_modal.choose_verification_method": "هناك ثلاث طرق للتحقق، يمكنك اختيار واحدة منها.",
-  "feed_claim_modal.claim_button": "المطالبة",
-  "feed_claim_modal.content_instructions": "انسخ المحتوى أدناه وقم بنشره في أحدث موجز RSS الخاص بك.",
-  "feed_claim_modal.description_current": "الوصف الحالي:",
-  "feed_claim_modal.description_instructions": "انسخ المحتوى التالي والصقه في حقل <code /> من موجز RSS الخاص بك.",
-  "feed_claim_modal.failed_to_load": "فشل في تحميل رسالة المطالبة",
-  "feed_claim_modal.rss_format_choice": "عادةً ما تكون هناك صيغان لتوليد RSS. يرجى نسخ صيغ XML و JSON أدناه حسب الحاجة.",
-  "feed_claim_modal.rss_instructions": "انسخ الكود أدناه والصقه في مولد RSS الخاص بك.",
-  "feed_claim_modal.rss_json_format": "تنسيق JSON",
-  "feed_claim_modal.rss_xml_format": "تنسيق XML",
-  "feed_claim_modal.rsshub_notice": "يتم توفير هذا الموجز من قبل RSSHub مع مدة تخزين مؤقت تبلغ ساعة واحدة. يرجى الانتظار حتى ساعة لرؤية التغييرات بعد نشر المحتوى.",
-  "feed_claim_modal.tab_content": "المحتوى",
-  "feed_claim_modal.tab_description": "الوصف",
-  "feed_claim_modal.tab_rss": "علامة RSS",
-  "feed_claim_modal.verify_ownership": "للمطالبة بهذا الموجز على أنه ملكك، تحتاج إلى التحقق من الملكية.",
-  "feed_form.add_follow": "إضافة متابعة",
-  "feed_form.category": "فئة",
-  "feed_form.category_description": "افتراضيًا، سيتم تجميع متابعاتك حسب الموقع.",
-  "feed_form.error_fetching_feed": "حدث خطأ في جلب الموجز.",
-  "feed_form.feed_not_found": "الموجز غير موجود.",
-  "feed_form.feedback": "التغذية الراجعة",
-  "feed_form.follow": "متابعة",
-  "feed_form.followed": "🎉 تم المتابعة.",
-  "feed_form.private_follow": "متابعة خاصة",
-  "feed_form.private_follow_description": "ما إذا كانت هذه المتابعة مرئية علنًا في صفحة ملفك الشخصي.",
-  "feed_form.retry": "إعادة المحاولة",
-  "feed_form.title": "العنوان",
-  "feed_form.title_description": "العنوان المخصص لهذا الموجز. اتركه فارغًا لاستخدام الافتراضي.",
-  "feed_form.unfollow": "إلغاء المتابعة",
-  "feed_form.update": "تحديث",
-  "feed_form.update_follow": "تحديث المتابعة",
-  "feed_form.updated": "🎉 تم التحديث.",
-  "feed_form.view": "عرض",
-  "feed_item.claimed_by_owner": "تمت المطالبة بهذا الموجز من قبل",
-  "feed_item.claimed_by_unknown": "صاحبه.",
-  "feed_item.claimed_by_you": "تمت المطالبة به من قبلك",
-  "feed_item.claimed_feed": "الموجز المُطالب به",
-  "feed_item.error_since": "خطأ منذ",
-  "feed_item.not_publicly_visible": "غير مرئي علنًا في صفحة ملفك الشخصي",
-  "feed_view_type.articles": "مقالات",
-  "feed_view_type.audios": "ملفات صوتية",
-  "feed_view_type.notifications": "إشعارات",
-  "feed_view_type.pictures": "صور",
-  "feed_view_type.social_media": "وسائل التواصل الاجتماعي",
-  "feed_view_type.videos": "فيديوهات",
-  "mark_all_read_button.auto_confirm_info": "سيتم التأكيد تلقائيًا بعد {{countdown}} ثوانٍ.",
-  "mark_all_read_button.confirm": "تأكيد",
-  "mark_all_read_button.confirm_mark_all": "وضع علامة على <which /> كمقروء؟",
-  "mark_all_read_button.confirm_mark_all_info": "تأكيد وضع علامة على الكل كمقروء؟",
-  "mark_all_read_button.mark_all_as_read": "وضع علامة على الكل كمقروء",
-  "mark_all_read_button.mark_as_read": "وضع علامة على <which /> كمقروء",
-  "mark_all_read_button.undo": "تراجع",
-  "player.back_10s": "العودة 10 ثوانٍ",
-  "player.close": "إغلاق",
-  "player.download": "تحميل",
-  "player.exit_full_screen": "الخروج من وضع ملء الشاشة",
-  "player.forward_10s": "التقديم 10 ثوانٍ",
-  "player.full_screen": "ملء الشاشة",
-  "player.mute": "كتم الصوت",
-  "player.open_entry": "فتح الإدخال",
-  "player.pause": "إيقاف مؤقت",
-  "player.play": "تشغيل",
-  "player.playback_rate": "معدل التشغيل",
-  "player.unmute": "إلغاء كتم الصوت",
-  "player.volume": "الصوت",
-  "search.empty.no_results": "لم يتم العثور على نتائج.",
-  "search.group.entries": "إدخالات",
-  "search.group.feeds": "موجزات",
-  "search.options.all": "الكل",
-  "search.options.search_type": "نوع البحث",
-  "search.placeholder": "بحث...",
-  "search.result_count_local_mode": "(الوضع المحلي)",
-  "search.tooltip.local_search": "يغطي هذا البحث البيانات المتاحة محليًا. جرب إعادة التحميل لتضمين أحدث البيانات.",
-  "shortcuts.guide.title": "دليل الاختصارات",
-  "sidebar.category_remove_dialog.cancel": "إلغاء",
-  "sidebar.category_remove_dialog.continue": "متابعة",
-  "sidebar.category_remove_dialog.description": "ستؤدي هذه العملية إلى حذف الفئة الخاصة بك، ولكن ستظل الموجزات التي تحتويها محفوظة ومجمعة حسب الموقع.",
-  "sidebar.category_remove_dialog.title": "إزالة الفئة",
-  "sidebar.feed_actions.claim": "المطالبة",
-  "sidebar.feed_actions.claim_feed": "المطالبة بالموجز",
-  "sidebar.feed_actions.copy_feed_id": "نسخ معرف الموجز",
-  "sidebar.feed_actions.copy_feed_url": "نسخ رابط الموجز",
-  "sidebar.feed_actions.edit": "تعديل",
-  "sidebar.feed_actions.edit_feed": "تعديل الموجز",
-  "sidebar.feed_actions.feed_owned_by_you": "هذا الموجز مملوك لك",
-  "sidebar.feed_actions.mark_all_as_read": "وضع علامة على الكل كمقروء",
-  "sidebar.feed_actions.navigate_to_feed": "التنقل إلى الموجز",
-  "sidebar.feed_actions.open_feed_in_browser": "فتح الموجز في المتصفح",
-  "sidebar.feed_actions.open_site_in_browser": "فتح الموقع في المتصفح",
-  "sidebar.feed_actions.unfollow": "إلغاء المتابعة",
-  "sidebar.feed_actions.unfollow_feed": "إلغاء متابعة الموجز",
-  "sidebar.feed_column.context_menu.change_to_other_view": "تغيير إلى عرض آخر",
-  "sidebar.feed_column.context_menu.delete_category": "حذف الفئة",
-  "sidebar.feed_column.context_menu.delete_category_confirmation": "هل تريد حذف الفئة {{folderName}}؟",
-  "sidebar.feed_column.context_menu.mark_as_read": "وضع علامة كمقروء",
-  "sidebar.feed_column.context_menu.rename_category": "إعادة تسمية الفئة",
-  "sidebar.select_sort_method": "اختر طريقة الترتيب",
-  "signin.sign_in_to": "تسجيل الدخول إلى",
-  "sync_indicator.disabled": "بسبب الأسباب الأمنية، تم تعطيل المزامنة.",
-  "sync_indicator.offline": "غير متصل",
-  "sync_indicator.synced": "تمت المزامنة مع الخادم",
-  "tip_modal.amount": "المبلغ",
-  "tip_modal.claim_feed": "المطالبة بهذا الموجز",
-  "tip_modal.create_wallet": "إنشاء مجانًا",
-  "tip_modal.feed_owner": "مالك الموجز",
-  "tip_modal.low_balance": "رصيدك غير كاف لتغطية هذه الإكرامية. يرجى تعديل المبلغ.",
-  "tip_modal.no_wallet": "ليس لديك محفظة بعد. يرجى إنشاء محفظة لإكرامية.",
-  "tip_modal.tip_amount_sent": "تم إرسال المبلغ إلى المؤلف.",
-  "tip_modal.tip_now": "إكرامية الآن",
-  "tip_modal.tip_sent": "تم إرسال الإكرامية بنجاح! شكرًا على دعمك.",
-  "tip_modal.tip_support": "⭐ إكرامية لدعمك!",
-  "tip_modal.unclaimed_feed": "لم يطالب أحد بهذا الموجز بعد. سيتم الاحتفاظ بالمبلغ المستلم بأمان في عقد البلوكشين حتى يتم المطالبة به.",
-  "user_button.account": "الحساب",
-  "user_button.download_desktop_app": "تحميل تطبيق سطح المكتب",
-  "user_button.log_out": "تسجيل الخروج",
-  "user_button.power": "الطاقة",
-  "user_button.preferences": "التفضيلات",
-  "user_button.profile": "الملف الشخصي",
-  "user_profile.close": "إغلاق",
-  "user_profile.edit": "تعديل",
-  "user_profile.loading": "جار التحميل",
-  "user_profile.share": "مشاركة",
-  "user_profile.toggle_item_style": "تبديل نمط الإدخال",
-  "words.add": "إضافة",
-  "words.confirm": "تأكيد",
-  "words.discover": "استكشاف",
-  "words.import": "استيراد",
-  "words.items": "عناصر",
-  "words.language": "اللغة",
-  "words.load_archived_entries": "تحميل الإدخالات المؤرشفة",
-  "words.login": "تسجيل الدخول",
-  "words.rss": "RSS",
-  "words.rss3": "RSS3",
-  "words.rsshub": "RSSHub",
-  "words.search": "بحث",
-  "words.starred": "المفضلة",
-  "words.unread": "غير مقروء",
-  "words.user": "المستخدم",
-  "words.which.all": "الكل",
-  "words.zero_items": "صفر عناصر"
-}

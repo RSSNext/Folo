@@ -1,0 +1,41 @@
+:root {
+  --fo-selection-active: theme(colors.accent/90);
+  --fo-selection-hover: theme(colors.accent/80);
+  --fo-selection-foreground: theme(colors.white);
+}
+[data-theme="light"] {
+  --fo-a: 21.6 100% 50%;
+
+  --fo-text-primary: 0 0% 10%;
+
+  --fo-item-active: theme(colors.zinc.400/0.3);
+  --fo-item-hover: theme(colors.zinc.400/0.2);
+
+  --fo-inactive: 0 0% 80%;
+  --fo-disabled: 0 0% 70%;
+
+  --fo-background: theme(colors.background);
+}
+
+[data-theme="dark"] {
+  --fo-a: 21.6 100% 50%;
+
+  --fo-text-primary: 0 0% 80%;
+
+  --fo-item-active: theme(colors.neutral.600/0.4);
+  --fo-item-hover: theme(colors.neutral.700/0.3);
+
+  --fo-inactive: 0 0% 50%;
+  --fo-disabled: 0 0% 35%;
+
+  --fo-background: theme(colors.background);
+}
+
+[data-theme="light"] {
+  --fo-sidebar: 240 4.8% 95.9%;
+  --fo-sidebar-active: 240 4.9% 83.9%;
+}
+[data-theme="dark"] {
+  --fo-sidebar: 220 8.1% 14.5%;
+  --fo-sidebar-active: 198 31.3% 6.3%;
+}

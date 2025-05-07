@@ -1,0 +1,64 @@
+{
+  "name": "@follow/electron-main",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "exports": {
+    ".": {
+      "types": "./export.d.ts",
+      "import": "./export.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@egoist/tipc": "0.3.2",
+    "@electron-toolkit/preload": "3.0.2",
+    "@electron-toolkit/utils": "4.0.0",
+    "@eneris/push-receiver": "4.3.0",
+    "@follow-app/readability": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "@openpanel/web": "1.0.1",
+    "@sentry/electron": "6.5.0",
+    "builder-util-runtime": "9.3.1",
+    "cookie-es": "2.0.0",
+    "electron-context-menu": "4.0.5",
+    "electron-log": "5.3.4",
+    "electron-squirrel-startup": "1.0.1",
+    "electron-store": "10.0.1",
+    "electron-updater": "6.6.2",
+    "es-toolkit": "1.36.0",
+    "fast-folder-size": "2.4.0",
+    "font-list": "1.5.1",
+    "i18next": "25.0.1",
+    "js-yaml": "4.1.0",
+    "linkedom": "0.18.10",
+    "lowdb": "7.0.1",
+    "msedge-tts": "2.0.0",
+    "node-machine-id": "1.1.12",
+    "ofetch": "1.4.1",
+    "semver": "7.7.1",
+    "tar": "7.4.3",
+    "vscode-languagedetection": "npm:@vscode/vscode-languagedetection@1.0.22"
+  },
+  "devDependencies": {
+    "@follow/models": "workspace:*",
+    "@follow/types": "workspace:*",
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "22.15.3",
+    "electron": "35.1.5",
+    "electron-devtools-installer": "4.0.0",
+    "hono": "4.7.7",
+    "typescript": "catalog:"
+  }
+}

@@ -65,35 +65,50 @@ async function purgeCloudflareCache() {
     `https://app.follow.is/assets/manifest.txt?t=${Date.now()}`,
   ).then((res) => res.text())
 
-  const allPath = manifestPath.split("\n").map((path) => `https://app.follow.is/${path}`)
-
-  // Function to delay execution
-  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-  const taskPromise = [] as Promise<Response>[]
-  // Batch processing
-  for (let i = 0; i < allPath.length; i += 30) {
-    const batch = allPath.slice(i, i + 30)
-
-    const r = fetch(apiUrl, {
+  try {
+    await fetch(apiUrl, {
       method: "POST",
       headers: {
         Authorization: CF_TOKEN,
       },
       body: JSON.stringify({
-        files: batch,
+        tags: ["follow-assets"],
       }),
     })
 
-    taskPromise.push(r)
+    console.info("Successfully purged Cloudflare cache")
+  } catch {
+    console.error("Failed to purge Cloudflare cache by tags, fallback to purge by files")
+    const allPath = manifestPath.split("\n").map((path) => `https://app.follow.is/${path}`)
 
-    // Delay for 0.5 seconds between batches
-    if (i + 30 < allPath.length) {
-      await delay(500)
+    // Function to delay execution
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    const taskPromise = [] as Promise<Response>[]
+    // Batch processing
+    for (let i = 0; i < allPath.length; i += 30) {
+      const batch = allPath.slice(i, i + 30)
+
+      const r = fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          Authorization: CF_TOKEN,
+        },
+        body: JSON.stringify({
+          files: batch,
+        }),
+      })
+
+      taskPromise.push(r)
+
+      // Delay for 0.5 seconds between batches
+      if (i + 30 < allPath.length) {
+        await delay(500)
+      }
     }
-  }
 
-  const result = await Promise.allSettled(taskPromise)
-  console.info(`Success: ${result.filter((r) => r.status === "fulfilled").length}`)
-  console.info(`Failed: ${result.filter((r) => r.status === "rejected").length}`)
+    const result = await Promise.allSettled(taskPromise)
+    console.info(`Success: ${result.filter((r) => r.status === "fulfilled").length}`)
+    console.info(`Failed: ${result.filter((r) => r.status === "rejected").length}`)
+  }
 }

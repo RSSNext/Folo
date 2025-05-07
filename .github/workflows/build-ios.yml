@@ -1,0 +1,129 @@
+name: Build iOS
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "apps/mobile/**"
+      - "pnpm-lock.yaml"
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+        description: "Build profile"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
+  cancel-in-progress: true
+
+jobs:
+  check-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner-label: ${{ steps.set-runner.outputs.runner-label }}
+
+    steps:
+      - name: Set runner
+        id: set-runner
+        run: |
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.RUNNER_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          available=$(echo "$runners" | jq '.runners[]? | select(.status == "online" and .busy == false and .labels[] .name == "macOS")')
+          if [ -n "$available" ]; then
+            echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
+          else
+            echo "runner-label=macos-latest" >> $GITHUB_OUTPUT
+          fi
+
+  build-ipa-self-hosted:
+    name: Build iOS IPA (self-hosted)
+    if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'self-hosted'
+    needs: check-runner
+    runs-on: [self-hosted, macOS]
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📱 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: 🔨 Build iOS IPA
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
+        env:
+          CI: true
+
+      # Optional: Upload artifact
+      - name: 📤 Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-ios
+          path: apps/mobile/build.ipa
+          retention-days: 90
+
+      - name: Clear Xcode cache
+        run: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+
+      - name: Submit to App Store
+        if: github.event.inputs.profile == 'production'
+        working-directory: apps/mobile
+        run: eas submit --platform ios --path build.ipa --non-interactive
+
+  build-ipa-github:
+    name: Build iOS IPA (GitHub)
+    if: github.secret_source != 'None' && needs.check-runner.outputs.runner-label == 'macos-latest'
+    needs: check-runner
+    runs-on: macos-latest
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: 📱 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: 🔨 Build iOS IPA
+        working-directory: apps/mobile
+        run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive --local --output=./build.ipa
+        env:
+          CI: true
+
+      # Optional: Upload artifact
+      - name: 📤 Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-ios
+          path: apps/mobile/build.ipa
+          retention-days: 90
+
+      - name: Submit to App Store
+        if: github.event.inputs.profile == 'production'
+        working-directory: apps/mobile
+        run: eas submit --platform ios --path build.ipa --non-interactive

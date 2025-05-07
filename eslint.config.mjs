@@ -1,8 +1,13 @@
 // @ts-check
-import { defineConfig, GLOB_TS_SRC } from "eslint-config-hyoban"
+import path from "node:path"
+
+import { fixupPluginRules } from "@eslint/compat"
+import { defineConfig } from "eslint-config-hyoban"
+import reactNative from "eslint-plugin-react-native"
 
 import checkI18nJson from "./plugins/eslint/eslint-check-i18n-json.js"
 import noDebug from "./plugins/eslint/eslint-no-debug.js"
+import packageJsonExtend from "./plugins/eslint/eslint-package-json.js"
 import recursiveSort from "./plugins/eslint/eslint-recursive-sort.js"
 
 export default defineConfig(
@@ -10,26 +15,16 @@ export default defineConfig(
     formatting: false,
     lessOpinionated: true,
     ignores: [
-      "src/renderer/src/hono.ts",
-      "src/hono.ts",
-      "packages/shared/src/hono.ts",
+      "packages/internal/shared/src/hono.ts",
       "resources/**",
+      "apps/mobile/android/**",
+      "apps/mobile/ios/**",
+      "apps/mobile/.expo",
+      "apps/mobile/native/build/**",
     ],
     preferESM: false,
-    projectService: {
-      allowDefaultProject: ["apps/main/preload/index.d.ts"],
-      defaultProject: "tsconfig.json",
-    },
-    typeChecked: "essential",
-  },
-  {
-    files: GLOB_TS_SRC,
-    rules: {
-      "require-await": "off",
-      "@typescript-eslint/require-await": "warn",
-      "@typescript-eslint/await-thenable": "warn",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/no-misused-promises": "off",
+    tailwindCSS: {
+      order: false,
     },
   },
   {
@@ -45,6 +40,8 @@ export default defineConfig(
       "no-debug/no-debug-stack": "error",
       "@eslint-react/no-clone-element": 0,
       "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": 0,
+      "@eslint-react/dom/no-flush-sync": 1,
+      "@eslint-react/hooks-extra/no-unnecessary-use-callback": "warn",
       // NOTE: Disable this temporarily
       "react-compiler/react-compiler": 0,
       "no-restricted-syntax": 0,
@@ -57,6 +54,30 @@ export default defineConfig(
             "You can use `useLocaltion` or `getReadonlyRoute` to get the route info.",
         },
       ],
+    },
+  },
+  // use correct tailwind config for eslint
+  {
+    settings: {
+      tailwindcss: {
+        config: path.join(import.meta.dirname, "apps/desktop/tailwind.config.ts"),
+      },
+    },
+  },
+  {
+    files: ["apps/ssr/**/*"],
+    settings: {
+      tailwindcss: {
+        config: path.join(import.meta.dirname, "apps/ssr/tailwind.config.ts"),
+      },
+    },
+  },
+  {
+    files: ["apps/mobile/**/*"],
+    settings: {
+      tailwindcss: {
+        config: path.join(import.meta.dirname, "apps/mobile/tailwind.config.ts"),
+      },
     },
   },
   {
@@ -76,6 +97,26 @@ export default defineConfig(
       "recursive-sort/recursive-sort": "error",
       "check-i18n-json/valid-i18n-keys": "error",
       "check-i18n-json/no-extra-keys": "error",
+    },
+  },
+  {
+    files: ["package.json", "apps/**/package.json", "packages/**/package.json"],
+    plugins: {
+      "package-json-extend": packageJsonExtend,
+    },
+    rules: {
+      "package-json-extend/ensure-package-version": "warn",
+      "package-json-extend/no-duplicate-package": "error",
+    },
+  },
+  {
+    plugins: {
+      // @ts-expect-error
+      "react-native": fixupPluginRules(reactNative),
+    },
+    files: ["apps/mobile/**/*"],
+    rules: {
+      "react-native/no-inline-styles": "warn",
     },
   },
 )

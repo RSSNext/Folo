@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* shadcn colors */
+
+  :root,
+  #shadow-html {
+    --radius: 0.5rem;
+  }
+
+  [data-theme="light"] {
+    --background: 0 0% 100%;
+
+    --border: 20 5.9% 90%;
+    --radius: 0.5rem;
+  }
+
+  [data-theme="dark"] {
+    --background: 0 0% 7.1%;
+
+    --border: 0 0% 22.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-text;
+  }
+}
+
+.prose {
+  table * {
+    font-size: 1rem;
+  }
+
+  table table {
+    margin: 0;
+  }
+
+  p {
+    @apply break-words;
+  }
+
+  word-break: break-word;
+}
+
+@layer utilities {
+  [data-hide-in-print] {
+    @apply print:!hidden;
+  }
+}
+
+i {
+  @apply select-none;
+}

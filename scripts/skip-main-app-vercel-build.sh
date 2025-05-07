@@ -6,7 +6,7 @@ CHANGED_FILES=$(git diff --name-only $LAST_DEPLOY_COMMIT HEAD)
 
 ONLY_SERVER_CHANGES=true
 for file in $CHANGED_FILES; do
-  if [[ $file != apps/server/* ]]; then
+  if [[ $file != apps/ssr/* ]]; then
     ONLY_SERVER_CHANGES=false
     break
   fi

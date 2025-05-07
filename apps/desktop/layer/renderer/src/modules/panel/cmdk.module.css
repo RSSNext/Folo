@@ -1,0 +1,17 @@
+.status-bar {
+  @apply relative z-10 h-px w-full shrink-0 scale-y-75 transform;
+
+  &.loading::before {
+    @apply absolute bottom-0 left-0 top-0 z-10 h-px w-full scale-y-75 transform;
+    @apply bg-repeat;
+
+    content: "";
+    background: linear-gradient(90deg, transparent, #bbb, transparent);
+    animation: move 2s steps(60) infinite;
+  }
+}
+
+.content-visually {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38px;
+}

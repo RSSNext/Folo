@@ -1,0 +1,1 @@
+ALTER TABLE `inboxes` DROP COLUMN `user_id`;

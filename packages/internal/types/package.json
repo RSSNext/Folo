@@ -1,0 +1,10 @@
+{
+  "name": "@follow/types",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    "./global": "./global.d.ts",
+    "./react": "./react-global.d.ts",
+    "./vite": "./vite-env.d.ts"
+  }
+}

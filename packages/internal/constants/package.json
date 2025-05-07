@@ -1,0 +1,16 @@
+{
+  "name": "@follow/constants",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@follow/configs": "workspace:*",
+    "@follow/types": "workspace:*"
+  }
+}

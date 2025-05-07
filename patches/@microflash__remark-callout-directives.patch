@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index de27f20188873e2f432fff3aba04bbe5a0a33389..d4926c3f2eb58a65d04354665db3b30c940dd3e5 100644
+--- a/package.json
++++ b/package.json
+@@ -28,6 +28,7 @@
+     "./config/github": "./themes/github/index.js",
+     "./config/vitepress": "./themes/vitepress/index.js",
+     "./theme/github": "./themes/github/index.css",
++    "./themes/*": "./themes/*",
+     "./theme/microflash": "./themes/microflash/index.css",
+     "./theme/vitepress": "./themes/vitepress/index.css"
+   },

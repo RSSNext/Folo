@@ -1,0 +1,11 @@
+{
+  "name": "xcode build server",
+  "version": "0.2",
+  "bspVersion": "2.0",
+  "languages": ["c", "cpp", "objective-c", "objective-cpp", "swift"],
+  "argv": ["/opt/homebrew/bin/xcode-build-server"],
+  "workspace": "/Users/innei/git/work/rss3/follow/apps/mobile/ios/Folo.xcworkspace",
+  "build_root": "/Users/innei/Library/Developer/Xcode/DerivedData/Folo-dtqltpwzjnyxzeeeuvortyjqrpno",
+  "scheme": "Folo",
+  "kind": "xcode"
+}

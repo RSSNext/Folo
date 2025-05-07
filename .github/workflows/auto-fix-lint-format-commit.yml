@@ -28,7 +28,9 @@ jobs:
         run: pnpm install
 
       - name: Run linter and fix issues
-        run: pnpm run lint:fix
+        run: |
+          export NODE_OPTIONS="--max_old_space_size=16384"
+          pnpm run lint:fix
 
       - name: Run formatter
         run: pnpm run format

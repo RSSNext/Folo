@@ -92,7 +92,7 @@ export default {
 
             try {
               currentJson = JSON.parse(sourceCode.text)
-              const englishFilePath = path.join(process.cwd(), "locales", namespace, "en.json")
+              const englishFilePath = path.join(path.dirname(filename), "../", namespace, "en.json")
               englishJson = JSON.parse(fs.readFileSync(englishFilePath, "utf8"))
             } catch (error) {
               context.report({
