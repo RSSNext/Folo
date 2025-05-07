@@ -16,5 +16,5 @@
     "types": ["@follow/types/global"]
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
-  "exclude": ["./native", "./web-app"]
+  "exclude": ["./native", "./web-app", "../../node_modules"]
 }
