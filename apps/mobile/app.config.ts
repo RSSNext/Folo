@@ -144,6 +144,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           enableBackgroundRemoteNotifications: true,
         },
       ],
+      "expo-background-task",
     ],
   }
 
