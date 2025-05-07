@@ -170,6 +170,86 @@
       ]
     },
     {
+      "source": "/share/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr-staging.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr-staging.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
       "source": "/((?!assets|vendor|locales|dist-external|external-dist/).*)",
       "destination": "/index.html"
     }
