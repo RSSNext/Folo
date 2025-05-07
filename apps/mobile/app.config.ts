@@ -4,7 +4,6 @@ import type { ConfigContext, ExpoConfig } from "expo/config"
 
 import PKG from "./package.json"
 
-const isCI = process.env.CI === "true"
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
 const iconPathMap = {
   production: resolve(__dirname, "./assets/icon.png"),
@@ -124,7 +123,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         require("./plugins/with-follow-assets.js"),
         {
           // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
-          assetsPath: !isCI ? resolve(__dirname, "..", "..", "out", "rn-web") : "/tmp/rn-web",
+          assetsPath: resolve(__dirname, "..", "..", "out", "rn-web"),
         },
       ],
 
