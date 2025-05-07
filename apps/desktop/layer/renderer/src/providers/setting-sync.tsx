@@ -24,11 +24,7 @@ const useUISettingSync = () => {
   useInsertionEffect(() => {
     const root = document.documentElement
     // https://developer.mozilla.org/en-US/docs/Web/CSS/font-family#valid_family_names
-    const fontFamily = setting.uiFontFamily.includes(" ")
-      ? `"${setting.uiFontFamily}"`
-      : setting.uiFontFamily
-
-    const fontCss = `${fontFamily}, system-ui, sans-serif`
+    const fontCss = `"${setting.uiFontFamily}", system-ui, sans-serif`
 
     Object.assign(root.style, {
       fontFamily: fontCss,
