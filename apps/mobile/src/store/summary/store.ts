@@ -122,17 +122,12 @@ class SummarySyncService {
       })
       .then((summary) => {
         immerSet((state) => {
-          if (!summary.data) {
-            state.generatingStatus[entryId] = SummaryGeneratingStatus.Error
-            return ""
-          }
-
           state.data[entryId] = {
             lang: actionLanguage,
-            summary: target === "content" ? summary.data : state.data[entryId]?.summary || "",
+            summary: target === "content" ? summary.data || "" : state.data[entryId]?.summary || "",
             readabilitySummary:
               target === "readabilityContent"
-                ? summary.data
+                ? summary.data || ""
                 : state.data[entryId]?.readabilitySummary || null,
             lastAccessed: Date.now(),
           }

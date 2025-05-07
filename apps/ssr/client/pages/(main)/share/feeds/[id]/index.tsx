@@ -2,31 +2,32 @@ import { Item } from "@client/components/items"
 import { MainContainer } from "@client/components/layout/main"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
-import { askOpenInFollowApp } from "@client/lib/helper"
+import { openInFollowApp } from "@client/lib/helper"
 import { useEntriesPreview } from "@client/query/entries"
 import { useFeed } from "@client/query/feed"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
+import { RelativeTime } from "@follow/components/ui/datetime/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 import { useParams, useSearchParams } from "react-router"
-import { toast } from "sonner"
 
 const numberFormatter = new Intl.NumberFormat()
 export function Component() {
   const { id } = useParams()
   const [search] = useSearchParams()
-  const view = Number.parseInt(search.get("view") || "0")
 
   const { t } = useTranslation()
 
   const feed = useFeed({
     id: id!,
   })
+  const view = Number.parseInt(search.get("view") || feed.data?.analytics?.view?.toString() || "0")
 
   const feedData = feed.data?.feed
+  const analytics = feed.data?.analytics
   const isSubscribed = !!feed.data?.subscription
   const entries = useEntriesPreview({
     id,
@@ -40,59 +41,65 @@ export function Component() {
 
   return (
     <MainContainer className="items-center">
-      <FeedIcon fallback feed={feed.data.feed} className="mask-squircle mask shrink-0" size={64} />
-
-      <div className="flex max-w-prose flex-col items-center">
-        <div className="mb-2 mt-4 flex items-center text-2xl font-bold">
-          <h1>{feed.data.feed.title}</h1>
-          <FeedCertification feed={feed.data.feed} />
+      <div className="my-4 flex max-w-prose flex-col items-center space-y-5">
+        <FeedIcon fallback feed={feedData} className="mask-squircle mask shrink-0" size={64} />
+        <div className="flex flex-col items-center space-y-1">
+          <div className="flex items-center text-2xl font-bold">
+            <h1>{feedData.title}</h1>
+            <FeedCertification feed={feedData} />
+          </div>
+          <div className="text-center text-sm text-zinc-500">{feedData.url}</div>
         </div>
-        <div className="mb-8 text-sm text-zinc-500">{feed.data.feed.description}</div>
-      </div>
+        <div className="line-clamp-2 text-balance text-center text-zinc-600">
+          {feedData.description}
+        </div>
 
-      <div className="mb-4 text-sm">
-        {t("feed.followsAndReads", {
-          subscriptionCount: numberFormatter.format(feed.data.subscriptionCount),
-          subscriptionNoun: t("feed.follower", { count: feed.data.subscriptionCount }),
-          readCount: numberFormatter.format(feed.data.readCount),
-          readNoun: t("feed.read", { count: feed.data.readCount }),
-          appName: APP_NAME,
-        })}
-      </div>
+        <div className="flex justify-between gap-4">
+          <div className="flex items-center gap-4 text-base text-zinc-500 dark:text-zinc-400">
+            {!!analytics?.subscriptionCount && (
+              <div className="flex items-center gap-1">
+                <i className="i-mgc-user-3-cute-re" />
 
-      <span className="center mb-8 flex gap-4">
-        {feedData.url.startsWith("https://") ? (
+                <span>
+                  {numberFormatter.format(analytics.subscriptionCount)}{" "}
+                  {t("feed.follower", { count: analytics.subscriptionCount })}
+                </span>
+              </div>
+            )}
+            {analytics?.updatesPerWeek ? (
+              <div className="flex items-center gap-1">
+                <i className="i-mgc-safety-certificate-cute-re" />
+                <span>{t("feed.entry_week", { count: analytics.updatesPerWeek ?? 0 })}</span>
+              </div>
+            ) : analytics?.latestEntryPublishedAt ? (
+              <div className="flex items-center gap-1">
+                <i className="i-mgc-safe-alert-cute-re" />
+                <span>{t("feed.updated_at")}</span>
+                <RelativeTime
+                  date={analytics.latestEntryPublishedAt}
+                  displayAbsoluteTimeAfterDay={Infinity}
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
+        <div className="center flex gap-4">
           <Button
-            variant={"outline"}
+            variant={isSubscribed ? "outline" : undefined}
             onClick={() => {
-              window.open(feedData.siteUrl || feedData.url, "_blank")
+              openInFollowApp({
+                deeplink: `feed?id=${id}&view=${view}`,
+                fallbackUrl: `/timeline/view-${view}/${id}/pending`,
+              })
             }}
           >
-            {t("feed.view_feed_url")}
+            <FollowIcon className="mr-2 size-3" />
+            {isSubscribed
+              ? t("feed.actions.followed")
+              : t("feed.actions.open", { which: APP_NAME })}
           </Button>
-        ) : (
-          <Button
-            variant={"outline"}
-            onClick={() => {
-              toast.success(t("copied_link"))
-              navigator.clipboard.writeText(feedData.url)
-            }}
-          >
-            {t("feed.copy_feed_url")}
-          </Button>
-        )}
-        <Button
-          variant={isSubscribed ? "outline" : undefined}
-          onClick={() => {
-            askOpenInFollowApp(`add?id=${id}`, () => {
-              return `/timeline/view-${view}/all/pending?follow=${id}&follow_type=feed`
-            })
-          }}
-        >
-          <FollowIcon className="mr-1 size-3" />
-          {isSubscribed ? t("feed.actions.followed") : <>{APP_NAME}</>}
-        </Button>
-      </span>
+        </div>
+      </div>
       <div className={cn("w-full pb-12 pt-8", "flex max-w-3xl flex-col gap-2")}>
         {entries.isLoading && !entries.data ? (
           <LoadingCircle size="large" className="center mt-12" />

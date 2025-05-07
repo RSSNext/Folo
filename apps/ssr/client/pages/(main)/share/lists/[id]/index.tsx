@@ -2,7 +2,7 @@ import { Item } from "@client/components/items"
 import { MainContainer } from "@client/components/layout/main"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
-import { askOpenInFollowApp } from "@client/lib/helper"
+import { openInFollowApp } from "@client/lib/helper"
 import type { Feed } from "@client/query/feed"
 import { useList } from "@client/query/list"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
@@ -39,8 +39,9 @@ export function Component() {
   useTitle(list.data?.list.title)
 
   const handleOpenInFollowApp = () => {
-    askOpenInFollowApp(`add?type=list&id=${id!}`, () => {
-      return `/timeline/view-0/all/pending?follow=${id}&follow_type=list`
+    openInFollowApp({
+      deeplink: `add?type=list&id=${id!}`,
+      fallbackUrl: `/timeline/view-0/all/pending?follow=${id}&follow_type=list`,
     })
   }
 

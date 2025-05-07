@@ -158,7 +158,6 @@
   "feed.follower_one": "跟隨者",
   "feed.follower_other": "跟隨者",
   "feed.followsAndFeeds": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}} 和 {{feedsCount}} 個 {{feedsNoun}}",
-  "feed.followsAndReads": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}} 和 {{readCount}} 次近期 {{readNoun}}",
   "feed.read_one": "閱讀",
   "feed.read_other": "閱讀",
   "feed.updated_at": "已更新",

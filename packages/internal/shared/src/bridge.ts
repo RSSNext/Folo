@@ -45,6 +45,7 @@ interface RenderGlobalContext {
   rsshubRoute: (route: string) => void
   // Navigate
   goToDiscover: () => void
+  goToFeed: ({ id, view }: { id: string; view?: number }) => void
 
   // user data
   clearIfLoginOtherAccount: (newUserId: string) => void

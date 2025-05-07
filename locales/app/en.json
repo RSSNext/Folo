@@ -175,7 +175,6 @@
   "feed.follower_one": "follower",
   "feed.follower_other": "followers",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} and {{feedsCount}} {{feedsNoun}} on {{appName}}",
-  "feed.followsAndReads": "{{subscriptionCount}} {{subscriptionNoun}} with {{readCount}} recent {{readNoun}} on {{appName}}",
   "feed.read_one": "read",
   "feed.read_other": "reads",
   "feed.updated_at": "Updated",

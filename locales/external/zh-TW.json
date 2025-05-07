@@ -9,7 +9,6 @@
   "feed.follower_one": "跟隨者",
   "feed.follower_other": "跟隨者",
   "feed.followsAndFeeds": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}} 和 {{feedsCount}} 個 {{feedsNoun}}",
-  "feed.followsAndReads": "在 {{appName}} 上有 {{subscriptionCount}} 個 {{subscriptionNoun}}，{{readCount}} 次近期 {{readNoun}}",
   "feed.madeby": "作者：",
   "feed.preview": "預覽",
   "feed.read_one": "閱讀",

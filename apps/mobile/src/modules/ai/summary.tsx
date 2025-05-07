@@ -20,7 +20,7 @@ import { isAndroid } from "@/src/lib/platform"
 
 export const AISummary: FC<{
   className?: string
-  summary: string
+  summary?: string
   pending?: boolean
   error?: string
   onRetry?: () => void
@@ -59,7 +59,7 @@ export const AISummary: FC<{
 
   const purpleColor = useColor("purple")
 
-  if (pending) return null
+  if (pending || (!summary && !error)) return null
   return (
     <Animated.View
       className={cn(
@@ -89,7 +89,7 @@ export const AISummary: FC<{
           {error ? (
             <View className="mt-3">
               <View className="flex-row items-center gap-2">
-                <Text className="text-red flex-1 text-[15px] leading-[20px]">{error}</Text>
+                <Text className="text-red flex-1 text-[14px] leading-[20px]">{error}</Text>
               </View>
               {onRetry && (
                 <Pressable
@@ -104,8 +104,8 @@ export const AISummary: FC<{
             <TextInput
               readOnly
               multiline
-              className="text-label text-[15px] leading-[22px]"
-              value={summary.trim()}
+              className="text-label text-[14px] leading-[22px]"
+              value={summary?.trim()}
             />
           )}
         </View>
@@ -116,7 +116,7 @@ export const AISummary: FC<{
           {error ? (
             <View className="mt-3">
               <View className="flex-row items-center gap-2">
-                <Text className="text-red flex-1 text-[15px] leading-[20px]">{error}</Text>
+                <Text className="text-red flex-1 text-[14px] leading-[20px]">{error}</Text>
               </View>
               {onRetry && (
                 <View className="bg-quaternary-system-fill mt-3 self-start rounded-full px-4 py-2">
@@ -126,7 +126,7 @@ export const AISummary: FC<{
             </View>
           ) : (
             <Text className="text-label mt-2 text-[14px] leading-[22px]" selectable>
-              {summary.trim()}
+              {summary?.trim()}
             </Text>
           )}
         </View>

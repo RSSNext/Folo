@@ -12,7 +12,7 @@ import { createTransaction, createZustandStore } from "../internal/helper"
 import { getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
 import { getAllUnreadCount } from "./getter"
-import type { PublishAtTimeRangeFilter } from "./types"
+import type { PublishAtTimeRangeFilter, UnreadUpdateOptions } from "./types"
 
 type SubscriptionId = string
 interface UnreadStore {
@@ -29,8 +29,7 @@ class UnreadSyncService {
       query: {},
     })
 
-    await unreadActions.reset()
-    await unreadActions.upsertMany(res.data)
+    await unreadActions.upsertMany(res.data, { reset: true })
     return res.data
   }
 
@@ -184,9 +183,9 @@ class UnreadSyncService {
 }
 
 class UnreadActions {
-  upsertManyInSession(unreads: UnreadSchema[]) {
+  upsertManyInSession(unreads: UnreadSchema[], options?: UnreadUpdateOptions) {
     const state = useUnreadStore.getState()
-    const nextData = { ...state.data }
+    const nextData = options?.reset ? {} : { ...state.data }
     for (const unread of unreads) {
       nextData[unread.subscriptionId] = unread.count
     }
@@ -195,16 +194,17 @@ class UnreadActions {
     })
   }
 
-  async upsertMany(unreads: UnreadSchema[] | Record<SubscriptionId, number>) {
-    const tx = createTransaction()
-
+  async upsertMany(
+    unreads: UnreadSchema[] | Record<SubscriptionId, number>,
+    options?: UnreadUpdateOptions,
+  ) {
     const normalizedUnreads = Array.isArray(unreads)
       ? unreads
       : Object.entries(unreads).map(([subscriptionId, count]) => ({ subscriptionId, count }))
-    tx.store(() => this.upsertManyInSession(normalizedUnreads))
-    tx.persist(() => {
-      return UnreadService.upsertMany(normalizedUnreads)
-    })
+
+    const tx = createTransaction()
+    tx.store(() => this.upsertManyInSession(normalizedUnreads, options))
+    tx.persist(() => UnreadService.upsertMany(normalizedUnreads, options))
     await tx.run()
   }
 

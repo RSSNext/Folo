@@ -26,6 +26,9 @@ export const EntryAISummary: FC<{
       enabled: showAISummary,
     },
   )
+  const summaryToShow = showReadability
+    ? summary?.readabilitySummary || summary?.summary
+    : summary?.summary
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null
@@ -33,11 +36,7 @@ export const EntryAISummary: FC<{
   return (
     <AISummary
       className="my-3"
-      summary={
-        showReadability
-          ? summary?.readabilitySummary || summary?.summary || ""
-          : summary?.summary || ""
-      }
+      summary={summaryToShow}
       pending={status === SummaryGeneratingStatus.Pending}
       error={status === SummaryGeneratingStatus.Error ? "Failed to generate summary" : undefined}
     />

@@ -173,7 +173,6 @@
   "feed.follower_one": "订阅者",
   "feed.follower_other": "订阅者",
   "feed.followsAndFeeds": "在 {{appName}} 上有 {{subscriptionCount}} 个{{subscriptionNoun}}和 {{feedsCount}} 个{{feedsNoun}}",
-  "feed.followsAndReads": "在 {{appName}} 上有 {{subscriptionCount}} 个{{subscriptionNoun}}，{{readCount}} 次近期{{readNoun}}",
   "feed.read_one": "阅读",
   "feed.read_other": "阅读",
   "feed.updated_at": "更新于",

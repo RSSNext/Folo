@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { PortalProvider } from "@gorhom/portal"
-import { atom, useAtomValue } from "jotai"
+import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useEffect, useMemo } from "react"
 import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -33,7 +33,6 @@ export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
   view: FeedViewType
 }> = ({ entryId, view: viewType }) => {
-  usePrefetchEntryDetail(entryId)
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)
@@ -57,12 +56,6 @@ export const EntryDetailScreen: NavigationControllerView<{
     [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
   )
 
-  useEffect(() => {
-    if (entry?.settings?.readability) {
-      entrySyncServices.fetchEntryReadabilityContent(entryId)
-    }
-  }, [entry?.settings?.readability, entryId])
-
   return (
     <EntryContentContext value={ctxValue}>
       <PortalProvider>
@@ -78,15 +71,15 @@ export const EntryDetailScreen: NavigationControllerView<{
               className="relative rounded-xl py-4"
             >
               {viewType === FeedViewType.SocialMedia ? (
-                <EntrySocialTitle entryId={entryId as string} />
+                <EntrySocialTitle entryId={entryId} />
               ) : (
                 <>
-                  <EntryTitle title={entry?.title || ""} entryId={entryId as string} />
-                  <EntryInfo entryId={entryId as string} />
+                  <EntryTitle title={entry?.title || ""} entryId={entryId} />
+                  <EntryInfo entryId={entryId} />
                 </>
               )}
             </ItemPressable>
-            <EntryAISummary entryId={entryId as string} />
+            <EntryAISummary entryId={entryId} />
             {entryWithTranslation && (
               <View className="mt-3">
                 <EntryContentWebViewWithContext entry={entryWithTranslation} />
@@ -94,7 +87,7 @@ export const EntryDetailScreen: NavigationControllerView<{
             )}
             {viewType === FeedViewType.SocialMedia && (
               <View className="mt-2">
-                <EntryInfoSocial entryId={entryId as string} />
+                <EntryInfoSocial entryId={entryId} />
               </View>
             )}
           </SafeNavigationScrollView>
@@ -109,11 +102,28 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   const showReadability = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslation = useAtomValue(showAITranslationAtom)
+  const entryId = entry.id
   usePrefetchEntryTranslation({
-    entryIds: [entry.id],
+    entryIds: [entryId],
     withContent: true,
     target: showReadability && entry.readabilityContent ? "readabilityContent" : "content",
   })
+
+  // Auto toggle readability when content is empty
+  const setShowReadability = useSetAtom(showReadabilityAtom)
+  const { isPending } = usePrefetchEntryDetail(entryId)
+  useEffect(() => {
+    if (!isPending && !entry.content) {
+      setShowReadability(true)
+    }
+  }, [isPending, entry.content, setShowReadability])
+
+  useEffect(() => {
+    if (showReadability) {
+      entrySyncServices.fetchEntryReadabilityContent(entryId)
+    }
+  }, [showReadability, entryId])
+
   return (
     <EntryContentWebView
       entry={entry}

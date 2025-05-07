@@ -8,7 +8,6 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
-import { setPreviewBackPath } from "~/atoms/preview"
 import { Media } from "~/components/ui/media"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -118,10 +117,10 @@ export const FeedCard: FC<{
                         buttonClassName="rounded-lg px-3 font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white"
                         onClick={() => {
                           if (!item.feed?.id) return
-                          setPreviewBackPath(location.pathname)
                           navigateEntry({
                             feedId: item.feed.id,
                             view: item.analytics?.view ?? 0,
+                            backPath: location.pathname,
                           })
                         }}
                       >

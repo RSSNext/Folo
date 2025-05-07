@@ -1,7 +1,7 @@
 import { useWhoami } from "@client/atoms/user"
 import { MainContainer } from "@client/components/layout/main"
 import { FeedIcon } from "@client/components/ui/feed-icon"
-import { askOpenInFollowApp } from "@client/lib/helper"
+import { openInFollowApp } from "@client/lib/helper"
 import { UrlBuilder } from "@client/lib/url-builder"
 import { useUserQuery, useUserSubscriptionsQuery } from "@client/query/users"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
@@ -47,7 +47,10 @@ export const Component = () => {
             {user.data?.id && (
               <Button
                 onClick={() => {
-                  askOpenInFollowApp(`add?url=rsshub://follow/profile/${user.data?.id}`)
+                  openInFollowApp({
+                    deeplink: `add?url=rsshub://follow/profile/${user.data?.id}`,
+                    fallbackUrl: `/timeline/view-0/all/pending?follow=${user.data?.id}&follow_type=user`,
+                  })
                 }}
               >
                 <FollowIcon className="mr-1 size-3" />
@@ -103,8 +106,9 @@ export const Component = () => {
                               <Button
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  askOpenInFollowApp(`add?id=${subscription.feedId}`, () => {
-                                    return `/timeline/view-${subscription.view}/${subscription.feedId}/pending`
+                                  openInFollowApp({
+                                    deeplink: `add?id=${subscription.feedId}`,
+                                    fallbackUrl: `/timeline/view-${subscription.view}/${subscription.feedId}/pending`,
                                   })
                                 }}
                               >

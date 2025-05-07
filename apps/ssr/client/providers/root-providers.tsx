@@ -9,7 +9,6 @@ import type { FC, PropsWithChildren } from "react"
 
 import { queryClient } from "../lib/query-client"
 import { jotaiStore } from "../lib/store"
-import { OpenInAppDetector } from "./open-in-app-provider"
 import { UserProvider } from "./user-provider"
 
 export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
@@ -19,8 +18,6 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
         <EventProvider />
         <StableRouterProvider />
         <ModalStackContainer>
-          <OpenInAppDetector />
-
           <UserProvider />
           <Toaster />
           {children}

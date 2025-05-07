@@ -11,13 +11,14 @@ import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { isHotkeyPressed, useHotkeys } from "react-hotkeys-hook"
+import { useLocation } from "react-router"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import { HotKeyScopeMap } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { navigateEntry, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
@@ -123,6 +124,15 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
 
   useRegisterGlobalContext("goToDiscover", () => {
     window.router.navigate(Routes.Discover)
+  })
+
+  const location = useLocation()
+  useRegisterGlobalContext("goToFeed", ({ id, view }: { id: string; view?: number }) => {
+    navigateEntry({
+      feedId: id,
+      view: view ?? 0,
+      backPath: location.pathname,
+    })
   })
 
   const shouldFreeUpSpace = useShouldFreeUpSpace()

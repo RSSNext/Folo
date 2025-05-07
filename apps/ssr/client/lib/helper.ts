@@ -1,4 +1,3 @@
-import { setOpenInAppDeeplink } from "@client/atoms/app"
 import type { FeedOrListRespModel } from "@follow/models/types"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 
@@ -55,25 +54,13 @@ export type GetHydrateData<T> = T extends (...args: any[]) => Promise<infer R>
         ? ExtractHydrateData<UnwrapMetadataFn<Parameters<T>[0]>>
         : ExtractHydrateData<T>
 
-export const askOpenInFollowApp = (deeplink: string, fallback?: () => string): Promise<boolean> => {
-  return new Promise(() => {
-    const deeplinkUrl = `${DEEPLINK_SCHEME}${deeplink}`
-    setOpenInAppDeeplink({
-      deeplink: deeplinkUrl,
-      fallbackUrl: fallback ? fallback() : undefined,
-    })
-  })
-}
-
 export const openInFollowApp = ({
   deeplink,
   fallback,
-  alwaysFallback,
   fallbackUrl,
 }: {
   deeplink: string
-  fallback: () => void
-  alwaysFallback?: boolean
+  fallback?: () => void
   fallbackUrl?: string
 }): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -98,15 +85,14 @@ export const openInFollowApp = ({
 
     setTimeout(() => {
       cleanup()
-      if (!isAppOpened && !alwaysFallback) {
-        fallback()
+      if (!isAppOpened) {
+        fallback?.()
+        if (fallbackUrl) {
+          window.location.href = fallbackUrl
+        }
         resolve(false)
         return
       }
-      setOpenInAppDeeplink({
-        deeplink: deeplinkUrl,
-        fallbackUrl,
-      })
     }, timeout)
   })
 }

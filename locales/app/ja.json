@@ -151,7 +151,6 @@
   "feed.follower_one": "フォロワー",
   "feed.follower_other": "フォロワー",
   "feed.followsAndFeeds": "{{subscriptionCount}} {{subscriptionNoun}} と {{feedsCount}} {{feedsNoun}} on {{appName}}",
-  "feed.followsAndReads": "{{subscriptionCount}} {{subscriptionNoun}} と {{readCount}} recent {{readNoun}} on {{appName}}",
   "feed.read_one": "読む",
   "feed.read_other": "読む",
   "feed_claim_modal.choose_verification_method": "選択肢は 3 つあります。そのうち 1 つを選んで確認してください。",

@@ -46,6 +46,20 @@ export const handleUrlRouting = (url: string) => {
         })
         return
       }
+      case "/feed": {
+        callMainWindow(url, (mainWindow) => {
+          const caller = callWindowExpose(mainWindow)
+
+          const id = searchParams.get("id") ?? undefined
+          const view = searchParams.get("view") ?? "0"
+          if (!id) return
+          caller.goToFeed({
+            id,
+            view: Number.parseInt(view, 10),
+          })
+        })
+        return
+      }
       case "/": {
         callMainWindow(url, (mainWindow) => {
           mainWindow.restore()

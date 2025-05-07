@@ -81,6 +81,7 @@ const HeaderRightActionsImpl = ({
   const showAISummarySetting = useGeneralSettingKey("summary") || !!entry?.settings?.summary
   const showAITranslationSetting =
     useGeneralSettingKey("translation") || !!entry?.settings?.translation
+  const showReadabilitySetting = !!entry?.settings?.readability
 
   const feed = useFeed(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
   const subscription = useSubscription(feed?.feedId as string)
@@ -172,7 +173,7 @@ const HeaderRightActionsImpl = ({
       active: isStarred,
       iconColor: isStarred ? "#facc15" : undefined,
     },
-    {
+    !showReadabilitySetting && {
       key: "ShowReadability",
       title: "Show Readability",
       icon: <DocmentCuteReIcon />,

@@ -7,6 +7,7 @@ import { useCallback } from "react"
 
 import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
 import { disableShowAITranslationOnce } from "~/atoms/ai-translation"
+import { setPreviewBackPath } from "~/atoms/preview"
 import { resetShowSourceContent } from "~/atoms/source-content"
 import {
   ROUTE_ENTRY_PENDING,
@@ -16,6 +17,7 @@ import {
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
+import { getSubscriptionByFeedId } from "~/store/subscription"
 
 export type NavigateEntryOptions = Partial<{
   timelineId: string
@@ -25,6 +27,7 @@ export type NavigateEntryOptions = Partial<{
   folderName: string
   inboxId: string
   listId: string
+  backPath: string
 }>
 /**
  * @description a hook to navigate to `feedId`, `entryId`, add search for `view`, `level`
@@ -50,11 +53,17 @@ export const useNavigateEntry = () => {
  * entryId: xxx
  */
 export const navigateEntry = (options: NavigateEntryOptions) => {
-  const { entryId, feedId, view, folderName, inboxId, listId, timelineId } = options || {}
+  const { entryId, feedId, view, folderName, inboxId, listId, timelineId, backPath } = options || {}
   const { params } = getReadonlyRoute()
   let finalFeedId = feedId || params.feedId || ROUTE_FEED_PENDING
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
+  const subsctiption = getSubscriptionByFeedId(finalFeedId)
+  const finalView = subsctiption?.view || view
+
+  if (backPath) {
+    setPreviewBackPath(backPath)
+  }
 
   if ("feedId" in options && feedId === null) {
     finalFeedId = ROUTE_FEED_PENDING
@@ -74,8 +83,8 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
   finalFeedId = encodeURIComponent(finalFeedId)
 
-  if (view !== undefined) {
-    finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${view}`
+  if (finalView !== undefined) {
+    finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
   resetShowSourceContent()
