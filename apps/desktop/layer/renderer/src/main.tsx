@@ -4,7 +4,6 @@ import "./styles/main.css"
 
 import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
 import { getOS } from "@follow/utils/utils"
-import { ClickToComponent } from "click-to-react-component"
 import * as React from "react"
 import ReactDOM from "react-dom/client"
 import { RouterProvider } from "react-router/dom"
@@ -48,6 +47,5 @@ if (IN_ELECTRON) {
 ReactDOM.createRoot($container).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <ClickToComponent editor={import.meta.env.VITE_EDITOR} />
   </React.StrictMode>,
 )

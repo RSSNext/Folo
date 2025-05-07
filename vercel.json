@@ -171,7 +171,7 @@
     },
     {
       "source": "/share/:path*",
-      "destination": "https://follow-external-ssr-dev.vercel.app/share/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/share/:path*",
       "has": [
         {
           "type": "host",
@@ -181,7 +181,7 @@
     },
     {
       "source": "/og/:path*",
-      "destination": "https://follow-external-ssr-dev.vercel.app/og/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/og/:path*",
       "has": [
         {
           "type": "host",
@@ -191,7 +191,7 @@
     },
     {
       "source": "/login",
-      "destination": "https://follow-external-ssr-dev.vercel.app/login",
+      "destination": "https://follow-external-ssr-staging.vercel.app/login",
       "has": [
         {
           "type": "host",
@@ -201,7 +201,7 @@
     },
     {
       "source": "/register",
-      "destination": "https://follow-external-ssr-dev.vercel.app/register",
+      "destination": "https://follow-external-ssr-staging.vercel.app/register",
       "has": [
         {
           "type": "host",
@@ -211,7 +211,7 @@
     },
     {
       "source": "/forget-password",
-      "destination": "https://follow-external-ssr-dev.vercel.app/forget-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/forget-password",
       "has": [
         {
           "type": "host",
@@ -221,7 +221,7 @@
     },
     {
       "source": "/reset-password",
-      "destination": "https://follow-external-ssr-dev.vercel.app/reset-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/reset-password",
       "has": [
         {
           "type": "host",
@@ -231,7 +231,7 @@
     },
     {
       "source": "/external-dist/:path*",
-      "destination": "https://follow-external-ssr-dev.vercel.app/external-dist/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/external-dist/:path*",
       "has": [
         {
           "type": "host",
@@ -241,7 +241,7 @@
     },
     {
       "source": "/dist-external/:path*",
-      "destination": "https://follow-external-ssr-dev.vercel.app/dist-external/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/dist-external/:path*",
       "has": [
         {
           "type": "host",

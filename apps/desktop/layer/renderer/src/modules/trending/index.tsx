@@ -141,7 +141,15 @@ export function Trending({
               <div
                 className={cn(
                   "center absolute -left-5 -top-6 size-12 rounded-br-3xl pl-4 pt-5 text-xs",
-                  index < 3 ? "bg-accent text-white" : "bg-zinc-100",
+
+                  index < 3
+                    ? cn(
+                        "bg-accent text-white",
+                        index === 0 && "bg-accent",
+                        index === 1 && "bg-accent/90",
+                        index === 2 && "bg-accent/80",
+                      )
+                    : "bg-material-opaque",
                 )}
               >
                 {index + 1}

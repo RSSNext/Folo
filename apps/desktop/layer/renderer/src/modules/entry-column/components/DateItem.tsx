@@ -2,9 +2,8 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { FeedViewType } from "@follow/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
-import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { cloneElement, memo, useCallback, useId, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { Trans } from "react-i18next"
 import { useDebounceCallback } from "usehooks-ts"
 
@@ -69,16 +68,6 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   Wrapper,
   isSticky,
 }) => {
-  const rid = useId()
-  const RelativeElement = useMemo(
-    () => (
-      <m.span key="b" className="inline-flex items-center" layout layoutId={rid}>
-        <RelativeDay date={date} />
-      </m.span>
-    ),
-    [date, rid],
-  )
-
   const [confirmMark, setConfirmMark] = useState(false)
   const removeConfirm = useDebounceCallback(
     () => {
@@ -96,7 +85,11 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   const { feedId } = useRouteParams()
   const isList = isListSubscription(feedId)
 
-  const tooltipId = useRef(Math.random().toString())
+  const RelativeElement = (
+    <span key="b" className="inline-flex items-center">
+      <RelativeDay date={date} />
+    </span>
+  )
   return (
     <div
       className={cn(className, isSticky && "border-b")}
@@ -111,10 +104,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
               <Trans
                 i18nKey="mark_all_read_button.mark_as_read"
                 components={{
-                  which: useMemo(
-                    () => cloneElement(RelativeElement, { layoutId: tooltipId.current }),
-                    [RelativeElement],
-                  ),
+                  which: RelativeElement,
                 }}
               />
             </span>

@@ -65,6 +65,7 @@
     "async-es": "3.2.6",
     "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
+    "code-inspector-plugin": "0.20.10",
     "cssnano": "7.0.6",
     "dotenv": "16.5.0",
     "drizzle-orm": "0.42.0",

@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import react from "@vitejs/plugin-react"
+import { codeInspectorPlugin } from "code-inspector-plugin"
 import { prerelease } from "semver"
 import type { UserConfig } from "vite"
 
@@ -29,6 +30,7 @@ const getChangelogFileContent = () => {
     return ""
   }
 }
+
 const changelogFile = getChangelogFileContent()
 export const viteRenderBaseConfig = {
   resolve: {
@@ -47,6 +49,11 @@ export const viteRenderBaseConfig = {
     }),
     circularImportRefreshPlugin(),
 
+    codeInspectorPlugin({
+      bundler: "vite",
+      editor: "cursor",
+      hotKeys: ["metaKey"],
+    }),
     sentryVitePlugin({
       org: "follow-rg",
       project: "follow",

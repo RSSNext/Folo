@@ -2,6 +2,7 @@ import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typogra
 import type { FeedOrListRespModel } from "@follow/models/types"
 import { env } from "@follow/shared/env.desktop"
 import { cn } from "@follow/utils/utils"
+import { useMemo } from "react"
 
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -35,6 +36,15 @@ export function FollowSummary({
     }
   }
 
+  const isValidUrl = useMemo(() => {
+    if (!feedText) return false
+    return URL.canParse(feedText)
+  }, [feedText])
+  const FeedDescription = (
+    <EllipsisHorizontalTextWithTooltip className="text-text-secondary truncate text-xs font-normal duration-200">
+      {feedText}
+    </EllipsisHorizontalTextWithTooltip>
+  )
   return (
     <div className={cn("flex select-text flex-col gap-2 text-sm", className)}>
       <div className="flex items-center">
@@ -46,9 +56,18 @@ export function FollowSummary({
         />
         <div className="min-w-0 leading-tight">
           <FeedTitle feed={feed} className="mb-0.5 text-[15px] font-semibold" />
-          <EllipsisHorizontalTextWithTooltip className="truncate text-xs font-normal text-zinc-500">
-            {feedText}
-          </EllipsisHorizontalTextWithTooltip>
+          {isValidUrl ? (
+            <a
+              href={feedText}
+              target="_blank"
+              className="*:hover:text-accent"
+              rel="noopener noreferrer"
+            >
+              {FeedDescription}
+            </a>
+          ) : (
+            FeedDescription
+          )}
         </div>
       </div>
       {!simple && (
