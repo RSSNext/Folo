@@ -16,7 +16,7 @@ const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 
 const isDev = process.env.NODE_ENV === "development"
-//
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const result: ExpoConfig = {
     ...config,
