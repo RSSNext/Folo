@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
 import { handleSessionChanges } from "~/queries/auth"
 
@@ -41,7 +41,6 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
   })
 
   const { present } = useModalStack()
-  const { dismiss } = useCurrentModal()
 
   const recaptchaRef = useRef<ReCAPTCHA>(null)
 
@@ -133,20 +132,6 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
           >
             {t("login.continueWith", { provider: t("words.email") })}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={() => {
-              dismiss()
-              present({
-                content: RegisterForm,
-                title: t("register.label", { app_name: APP_NAME }),
-              })
-            }}
-          >
-            {t("login.signUp")}
-          </Button>
         </div>
       </form>
     </Form>
@@ -164,7 +149,7 @@ const registerFormSchema = z
     path: ["confirmPassword"],
   })
 
-function RegisterForm() {
+export function RegisterForm() {
   const { t } = useTranslation("app")
 
   const form = useForm<z.infer<typeof registerFormSchema>>({

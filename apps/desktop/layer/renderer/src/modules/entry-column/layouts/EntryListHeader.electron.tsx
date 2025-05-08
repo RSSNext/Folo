@@ -1,4 +1,4 @@
-import { ActionButton, Button } from "@follow/components/ui/button/index.js"
+import { ActionButton } from "@follow/components/ui/button/index.js"
 import { DividerVertical } from "@follow/components/ui/divider/index.js"
 import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
@@ -17,12 +17,13 @@ import { useWhoami } from "~/atoms/user"
 import { FEED_COLLECTION_LIST, ROUTE_ENTRY_PENDING } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryHeader } from "~/modules/entry-content/header"
 import { useRefreshFeedMutation } from "~/queries/feed"
-import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
+import { getFeedById, useFeedById, useFeedHeaderTitle } from "~/store/feed"
 
 import { MarkAllReadButton } from "../components/mark-all-button"
+import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import {
   AppendTaildingDivider,
   DailyReportButton,
@@ -37,11 +38,11 @@ export const EntryListHeader: FC<{
 }> = ({ refetch, isRefreshing, hasUpdate }) => {
   const routerParams = useRouteParams()
   const { t } = useTranslation()
-  const { t: tCommon } = useTranslation("common")
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
 
-  const { feedId, entryId, view, isPreview, listId } = routerParams
+  const { feedId, entryId, view } = routerParams
+  const isPreview = useIsPreviewFeed()
 
   const headerTitle = useFeedHeaderTitle()
 
@@ -61,13 +62,8 @@ export const EntryListHeader: FC<{
 
   const feed = useFeedById(feedId)
 
-  const follow = useFollow()
-
   const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
-
   const feedColumnShow = useTimelineColumnShow()
-
-  const navigate = useNavigate()
 
   return (
     <div
@@ -75,109 +71,124 @@ export const EntryListHeader: FC<{
         "mb-2 flex w-full flex-col pr-4 pt-2.5 transition-[padding] duration-300 ease-in-out",
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
+        isPreview && "px-4",
       )}
     >
       <div className={"flex w-full justify-between"}>
-        {titleInfo}
-        <div
-          className={cn(
-            "relative z-[1] flex items-center gap-1 self-baseline text-zinc-500",
-            (isInCollectionList || !headerTitle) && "pointer-events-none opacity-0",
+        {isPreview ? <PreviewHeaderInfoWrapper>{titleInfo}</PreviewHeaderInfoWrapper> : titleInfo}
+        {!isPreview && (
+          <div
+            className={cn(
+              "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
+              (isInCollectionList || !headerTitle) && "pointer-events-none opacity-0",
 
-            "translate-x-[6px]",
-          )}
-          onClick={stopPropagation}
-        >
-          {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
-            <>
-              <EntryHeader view={view} entryId={entryId} />
-              <DividerVertical className="mx-2 w-px" />
-            </>
-          )}
-
-          <AppendTaildingDivider>
-            {!views[view]!.wideMode && <WideModeButton />}
-            {view === FeedViewType.SocialMedia && <DailyReportButton />}
-            {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
-          </AppendTaildingDivider>
-
-          {isOnline &&
-            (feed?.ownerUserId === user?.id &&
-            isBizId(routerParams.feedId!) &&
-            feed?.type === "feed" ? (
-              <ActionButton
-                tooltip="Refresh"
-                onClick={() => {
-                  refreshFeed()
-                }}
-              >
-                <RotatingRefreshIcon isRefreshing={isPending} />
-              </ActionButton>
-            ) : (
-              <ActionButton
-                tooltip={
-                  hasUpdate
-                    ? t("entry_list_header.new_entries_available")
-                    : t("entry_list_header.refetch")
-                }
-                onClick={() => {
-                  refetch()
-                }}
-              >
-                <RotatingRefreshIcon
-                  className={cn(hasUpdate && "text-accent")}
-                  isRefreshing={isRefreshing}
-                />
-              </ActionButton>
-            ))}
-          <ActionButton
-            tooltip={
-              !unreadOnly
-                ? t("entry_list_header.show_unread_only")
-                : t("entry_list_header.show_all")
-            }
-            shortcut={shortcuts.entries.toggleUnreadOnly.key}
-            onClick={() => setGeneralSetting("unreadOnly", !unreadOnly)}
-          >
-            {unreadOnly ? (
-              <i className="i-mgc-round-cute-fi" />
-            ) : (
-              <i className="i-mgc-round-cute-re" />
+              "translate-x-[6px]",
             )}
-          </ActionButton>
-          <MarkAllReadButton shortcut />
-        </div>
-      </div>
-      {isPreview && (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Button
-            size="lg"
-            buttonClassName="flex-1 max-w-72"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation()
-              navigate(previewBackPath() || "/")
-            }}
+            onClick={stopPropagation}
           >
-            {tCommon("words.back")}
-          </Button>
-          <Button
-            size="lg"
-            buttonClassName="flex-1 max-w-72"
-            onClick={() => {
-              follow({
-                isList: !!listId,
-                id: listId ?? feedId,
-                url: feed?.url,
-              })
-            }}
-          >
-            {tCommon("words.follow")}
-          </Button>
-        </div>
-      )}
+            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
+              <>
+                <EntryHeader view={view} entryId={entryId} />
+                <DividerVertical className="mx-2 w-px" />
+              </>
+            )}
 
-      {/* <TimelineTabs /> */}
+            <AppendTaildingDivider>
+              {!views[view]!.wideMode && <WideModeButton />}
+              {view === FeedViewType.SocialMedia && <DailyReportButton />}
+              {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
+            </AppendTaildingDivider>
+
+            {isOnline &&
+              (feed?.ownerUserId === user?.id &&
+              isBizId(routerParams.feedId!) &&
+              feed?.type === "feed" ? (
+                <ActionButton
+                  tooltip="Refresh"
+                  onClick={() => {
+                    refreshFeed()
+                  }}
+                >
+                  <RotatingRefreshIcon isRefreshing={isPending} />
+                </ActionButton>
+              ) : (
+                <ActionButton
+                  tooltip={
+                    hasUpdate
+                      ? t("entry_list_header.new_entries_available")
+                      : t("entry_list_header.refetch")
+                  }
+                  onClick={() => {
+                    refetch()
+                  }}
+                >
+                  <RotatingRefreshIcon
+                    className={cn(hasUpdate && "text-accent")}
+                    isRefreshing={isRefreshing}
+                  />
+                </ActionButton>
+              ))}
+            <ActionButton
+              tooltip={
+                !unreadOnly
+                  ? t("entry_list_header.show_unread_only")
+                  : t("entry_list_header.show_all")
+              }
+              shortcut={shortcuts.entries.toggleUnreadOnly.key}
+              onClick={() => setGeneralSetting("unreadOnly", !unreadOnly)}
+            >
+              {unreadOnly ? (
+                <i className="i-mgc-round-cute-fi" />
+              ) : (
+                <i className="i-mgc-round-cute-re" />
+              )}
+            </ActionButton>
+            <MarkAllReadButton shortcut />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const PreviewHeaderInfoWrapper: Component = ({ children }) => {
+  const { t: tCommon } = useTranslation("common")
+  const follow = useFollow()
+
+  const navigate = useNavigate()
+  return (
+    <div className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-2">
+      <button
+        type="button"
+        className="cursor-button text-text-secondary hover:text-accent inline-flex items-center gap-1 duration-200"
+        onClick={(e) => {
+          e.stopPropagation()
+          navigate(previewBackPath() || "/")
+        }}
+      >
+        <i className="i-mingcute-left-line size-4" />
+        {tCommon("words.back")}
+      </button>
+      <div className="relative flex justify-center">
+        <div className="absolute inset-0 flex items-center justify-center">{children}</div>
+      </div>
+      <button
+        type="button"
+        className="text-accent cursor-button hover:bg-fill-quaternary -mr-2 rounded px-2 py-0.5 font-semibold"
+        onClick={() => {
+          const { feedId, listId } = getRouteParams()
+          if (!feedId) return
+          const feed = getFeedById(feedId)
+          if (!feed) return
+          follow({
+            isList: !!listId,
+            id: listId ?? feedId,
+            url: feed.type === "feed" ? feed.url : undefined,
+          })
+        }}
+      >
+        {tCommon("words.follow")}
+      </button>
     </div>
   )
 }

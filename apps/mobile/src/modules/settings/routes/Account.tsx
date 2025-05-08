@@ -45,6 +45,7 @@ import { ResetPassword } from "./ResetPassword"
 
 type Account = {
   id: string
+  accountId?: string
   provider: string
   profile:
     | {
@@ -137,7 +138,7 @@ const AccountLinker: FC<{
   const unlinkAccountMutation = useMutation({
     mutationFn: async () => {
       if (!account) throw new Error("Account not found")
-      const res = await unlinkAccount({ providerId: provider, accountId: account.id })
+      const res = await unlinkAccount({ providerId: provider, accountId: account.accountId })
       if (res.error) throw new Error(res.error.message)
     },
     onSuccess: () => {

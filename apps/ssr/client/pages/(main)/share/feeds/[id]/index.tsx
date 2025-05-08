@@ -99,6 +99,7 @@ export function Component() {
                   fallbackUrl: `/timeline/view-${view}/${id}/pending`,
                 })
               }}
+              size="lg"
             >
               <FollowIcon className="mr-2 size-3" />
               {isSubscribed

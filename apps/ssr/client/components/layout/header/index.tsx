@@ -2,8 +2,7 @@ import { siteConfig } from "@client/configs"
 import { openInFollowApp } from "@client/lib/helper"
 import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
-import { Button } from "@follow/components/ui/button/index.jsx"
-import { Kbd } from "@follow/components/ui/kbd/Kbd.jsx"
+import { SocialMediaLinks } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { MotionValue } from "motion/react"
 import { useMotionValueEvent, useScroll } from "motion/react"
@@ -78,30 +77,18 @@ export const Header = () => {
               <Folo className="size-10" />
             </a>
           </div>
-          <div className="flex items-center gap-4">
-            <Button
-              className="flex size-9 rounded-full border-neutral-300 bg-transparent hover:border-zinc-400 md:w-auto md:px-2 dark:border-neutral-700 dark:hover:border-zinc-600"
-              variant="outline"
-            >
+          <div className="flex flex-wrap items-center gap-6 text-2xl">
+            {SocialMediaLinks.map((link) => (
               <a
-                href={siteConfig.repoUrl}
-                className="flex items-center gap-2"
+                href={link.url}
+                key={link.url}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noreferrer"
+                className="flex items-center"
               >
-                <span className="i-simple-icons-github size-4" />
-                <span className="hidden md:inline">Star on GitHub</span>
+                <i className={link.icon} style={{ color: link.color }} />
               </a>
-            </Button>
-            <Button
-              buttonClassName="hidden lg:block cursor-pointer !text-accent-content"
-              onClick={handleToApp}
-            >
-              Open app
-              <Kbd className="!leading-0 !dark:bg-zinc-200 kbd-xs ml-2 size-5 scale-[0.85] rounded-sm !border-transparent !bg-zinc-50 !font-mono text-black">
-                L
-              </Kbd>
-            </Button>
+            ))}
           </div>
         </nav>
       </Container>

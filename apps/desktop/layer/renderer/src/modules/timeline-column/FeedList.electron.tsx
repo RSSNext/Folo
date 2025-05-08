@@ -18,6 +18,7 @@ import {
   useListsGroupedData,
 } from "~/store/subscription"
 
+import { useIsPreviewFeed } from "../entry-column/hooks/useIsPreviewFeed"
 import {
   resetSelectedFeedIds,
   setFeedAreaScrollProgressValue,
@@ -117,7 +118,8 @@ const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
   const shouldFreeUpSpace = useShouldFreeUpSpace()
 
   const routerParams = useRouteParams()
-  const { listId, isPreview, feedId } = routerParams
+  const { listId, feedId } = routerParams
+  const isPreview = useIsPreviewFeed()
   const isFeedPreview = isPreview && !listId
   const isListPreview = isPreview && listId
 

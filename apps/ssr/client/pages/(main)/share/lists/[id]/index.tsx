@@ -100,6 +100,7 @@ export function Component() {
                   onClick={() => {
                     handleOpenInFollowApp()
                   }}
+                  size="lg"
                 >
                   <FollowIcon className="mr-2 size-3" />
                   {isSubscribed

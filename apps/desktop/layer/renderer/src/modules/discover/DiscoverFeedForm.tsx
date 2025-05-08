@@ -88,14 +88,14 @@ export const DiscoverFeedForm = ({
   route,
   routePrefix,
   noDescription,
-
   routeParams,
+  viewportClassName,
 }: {
   route: RSSHubRoute
   routePrefix: string
   noDescription?: boolean
-
   routeParams?: RouteParams
+  viewportClassName?: string
 }) => {
   const { t } = useTranslation()
   const keys = useMemo(
@@ -228,7 +228,7 @@ export const DiscoverFeedForm = ({
         <ScrollArea.ScrollArea
           flex
           rootClassName={cn(isInModal && "-mx-4 px-4 -mt-4", "max-h-[calc(100vh-200px)] grow")}
-          viewportClassName="pt-4"
+          viewportClassName={cn("pt-4", viewportClassName)}
         >
           <div className="flex">
             <div className="w-0 grow truncate">
@@ -323,7 +323,7 @@ export const DiscoverFeedForm = ({
                           className="grow-0"
                         />
                         {!!value.description && (
-                          <Markdown className="text-text-secondary text-footnote w-full max-w-full pl-3">
+                          <Markdown className="text-text-secondary text-footnote w-full max-w-full text-wrap pl-3">
                             {value.description}
                           </Markdown>
                         )}
@@ -350,7 +350,7 @@ export const DiscoverFeedForm = ({
         </ScrollArea.ScrollArea>
       </Form>
 
-      <ReadmeAside description={route.description} />
+      {!noDescription && <ReadmeAside description={route.description} />}
     </div>
   )
 }

@@ -58,8 +58,8 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
   let finalFeedId = feedId || params.feedId || ROUTE_FEED_PENDING
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
-  const subsctiption = getSubscriptionByFeedId(finalFeedId)
-  const finalView = subsctiption?.view || view
+  const subscription = getSubscriptionByFeedId(finalFeedId)
+  const finalView = subscription?.view || view
 
   if (backPath) {
     setPreviewBackPath(backPath)

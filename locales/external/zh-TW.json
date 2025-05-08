@@ -65,7 +65,6 @@
   "register.email": "電子信箱",
   "register.label": "創建 {{app_name}} 帳號",
   "register.login": "登入",
-  "register.note": "已經有帳號了嗎？ <LoginLink />",
   "register.password": "密碼",
   "register.submit": "創建帳號",
   "words.email": "電子信箱"

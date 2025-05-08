@@ -30,9 +30,8 @@ enableFreeze(true)
 
 initializeApp()
 registerSitemap()
-initializeI18n().then(() => {
-  registerRootComponent(RootComponent)
-})
+initializeI18n()
+registerRootComponent(RootComponent)
 
 function RootComponent() {
   const { t } = useTranslation()

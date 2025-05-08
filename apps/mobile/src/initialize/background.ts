@@ -1,4 +1,4 @@
-import * as BackgroundFetch from "expo-background-fetch"
+import * as BackgroundTask from "expo-background-task"
 import * as TaskManager from "expo-task-manager"
 
 import { getUISettings } from "../atoms/settings/ui"
@@ -7,28 +7,26 @@ import { whoami } from "../store/user/getters"
 
 const BACKGROUND_FETCH_TASK = "background-fetch"
 
-export async function initBackgroundFetch() {
+export async function initBackgroundTask() {
   TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     // const now = Date.now()
     // console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`)
     const user = whoami()
     const { showUnreadCountBadgeMobile } = getUISettings()
     if (!user || !showUnreadCountBadgeMobile) {
-      return BackgroundFetch.BackgroundFetchResult.NoData
+      return BackgroundTask.BackgroundTaskResult.Success
     }
 
     try {
-      const res = await unreadSyncService.updateBadgeAtBackground()
-      return res
-        ? BackgroundFetch.BackgroundFetchResult.NewData
-        : BackgroundFetch.BackgroundFetchResult.NoData
+      await unreadSyncService.updateBadgeAtBackground()
+      return BackgroundTask.BackgroundTaskResult.Success
     } catch (err) {
       console.error(err)
-      return BackgroundFetch.BackgroundFetchResult.Failed
+      return BackgroundTask.BackgroundTaskResult.Failed
     }
   })
 
-  return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+  return BackgroundTask.registerTaskAsync(BACKGROUND_FETCH_TASK, {
     minimumInterval: 60 * 15, // 15 minutes
   })
 }

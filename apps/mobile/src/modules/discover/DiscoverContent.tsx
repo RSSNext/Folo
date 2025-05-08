@@ -1,3 +1,4 @@
+import type { RSSHubCategory } from "@follow/constants"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { LinearGradient } from "expo-linear-gradient"
 import { memo } from "react"
@@ -30,19 +31,17 @@ export function DiscoverContent() {
 
 const DiscoverGrid = () => {
   return (
-    <View className="p-4">
-      <Grid columns={2} gap={12}>
-        {RSSHubCategories.map((category) => (
-          <CategoryItem key={category} category={category} />
-        ))}
-      </Grid>
-    </View>
+    <Grid columns={2} gap={12} className="p-4">
+      {RSSHubCategories.map((category) => (
+        <CategoryItem key={category} category={category} />
+      ))}
+    </Grid>
   )
 }
 
-const CategoryItem = memo(({ category }: { category: string }) => {
+const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
   const { t } = useTranslation("common")
-  const name = t(`discover.category.${category}` as any)
+  const name = t(`discover.category.${category}`)
   const navigation = useNavigation()
 
   return (
@@ -60,19 +59,14 @@ const CategoryItem = memo(({ category }: { category: string }) => {
       }}
     >
       <LinearGradient
-        colors={[
-          `${CategoryMap[category as keyof typeof CategoryMap].color}80`,
-          CategoryMap[category as keyof typeof CategoryMap].color,
-        ]}
+        colors={[`${CategoryMap[category].color}80`, CategoryMap[category].color]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="rounded-2xl p-4"
         style={styles.cardItem}
       >
         <View className="flex-1">
-          <Text className="absolute right-2 top-2 text-4xl">
-            {CategoryMap[category as keyof typeof CategoryMap].emoji}
-          </Text>
+          <Text className="absolute right-2 top-2 text-4xl">{CategoryMap[category].emoji}</Text>
           <Text className="absolute bottom-0 left-2 text-xl font-bold text-white">{name}</Text>
         </View>
       </LinearGradient>

@@ -27,7 +27,7 @@ export const EntryGridFooter = ({
   if (!entry) return null
 
   return (
-    <View className={cn("my-1 px-1", view === FeedViewType.Videos && "h-[52]")}>
+    <View className="gap-2 px-1 py-2">
       <View className="flex-row gap-1">
         {!entry.read && <View className="bg-red mt-1.5 inline-block rounded-full" />}
         {entry.title && (
@@ -45,7 +45,7 @@ export const EntryGridFooter = ({
           />
         )}
       </View>
-      <View className="mt-1 flex-row items-center gap-1.5">
+      <View className="flex-row items-center gap-1.5">
         <FeedIcon fallback feed={feed} size={14} />
         <Text numberOfLines={1} className="text-label shrink text-xs font-medium">
           {feed?.title}

@@ -58,6 +58,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       package: "is.follow",
+      // Suppress warning about EDGE_TO_EDGE_PLUGIN
+      // Learn more: https://expo.dev/blog/edge-to-edge-display-now-streamlined-for-android
+      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
@@ -128,7 +131,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
-      require("./plugins/with-android-day-night-theme-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
@@ -144,6 +146,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           enableBackgroundRemoteNotifications: true,
         },
       ],
+      "expo-background-task",
     ],
   }
 

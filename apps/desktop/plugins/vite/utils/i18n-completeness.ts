@@ -49,7 +49,7 @@ function calculateCompleteness(localesDir: string): LanguageCompletion {
 
   languages.forEach((lang) => {
     if (lang !== "en") {
-      const percent = Math.round((keyCount[lang]! / enCount) * 100)
+      const percent = Math.floor((keyCount[lang]! / enCount) * 100)
       completeness[lang] = percent
     }
   })

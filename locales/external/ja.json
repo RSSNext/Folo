@@ -64,7 +64,6 @@
   "register.email": "Email",
   "register.label": "{{app_name}} のアカウントを作成する",
   "register.login": "ログイン",
-  "register.note": "アカウントを既にお持ちですか？ <LoginLink />",
   "register.password": "パスワード",
   "register.submit": "アカウントを作成",
   "words.email": "Email"

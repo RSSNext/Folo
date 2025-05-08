@@ -34,7 +34,7 @@ export function App({ children }: { children: React.ReactNode }) {
   }))
   return (
     <>
-      <StatusBar translucent animated />
+      <StatusBar translucent animated style="auto" />
       <View className="flex-1 bg-black">
         <Session />
 

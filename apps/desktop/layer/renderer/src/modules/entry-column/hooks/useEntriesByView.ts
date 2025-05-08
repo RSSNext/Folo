@@ -3,7 +3,6 @@ import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
@@ -13,6 +12,8 @@ import { entries, useEntries } from "~/queries/entries"
 import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
 import { useFolderFeedsByFeedId } from "~/store/subscription"
 import { feedUnreadActions } from "~/store/unread"
+
+import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
 interface UseEntriesReturn {
   entriesIds: string[]
@@ -46,7 +47,8 @@ const fallbackReturn: UseEntriesReturn = {
   error: null,
 }
 const useRemoteEntries = (): UseEntriesReturn => {
-  const { feedId, view, inboxId, listId, isPreview } = useRouteParams()
+  const { feedId, view, inboxId, listId } = useRouteParams()
+  const isPreview = useIsPreviewFeed()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
 
@@ -99,12 +101,6 @@ const useRemoteEntries = (): UseEntriesReturn => {
   useEffect(() => {
     setPauseQuery(hasUpdate)
   }, [hasUpdate])
-
-  useEffect(() => {
-    if (query.isError) {
-      toast.error(query.error.message)
-    }
-  }, [query.isError])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])

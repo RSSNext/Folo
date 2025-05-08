@@ -16,15 +16,13 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import { authProvidersConfig } from "@follow/constants"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.ssr"
-import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -98,6 +96,10 @@ export function Login() {
     onceRef.current = true
   }, [handleOpenApp, isAuthenticated])
 
+  const navigate = useNavigate()
+
+  const [isEmail, setIsEmail] = useState(false)
+
   const LoginOrStatusContent = useMemo(() => {
     switch (true) {
       case isAuthenticated: {
@@ -141,76 +143,69 @@ export function Login() {
         )
       }
       default: {
-        if (!authProviders?.credential) {
-          return (
-            <div className="flex w-[350px] max-w-full flex-col gap-3">
-              {Object.entries(authProviders || [])
-                .filter(([key]) => key !== "credential")
-                .map(([key, provider]) => (
-                  <Button
-                    key={key}
-                    buttonClassName={cn(
-                      "h-[48px] w-full rounded-[8px] font-sans text-base text-white hover:!bg-black/80 focus:!border-black/80 focus:!ring-black/80",
-                      authProvidersConfig[key]?.buttonClassName,
-                    )}
-                    onClick={() => {
-                      loginHandler(key, "app")
-                    }}
-                  >
-                    <i className={cn("mr-2 text-xl", authProvidersConfig[key]?.iconClassName)} />{" "}
-                    {t("login.continueWith", {
-                      provider: provider.name,
-                    })}
-                  </Button>
-                ))}
-            </div>
-          )
-        } else {
-          return (
-            <>
+        return (
+          <>
+            {isEmail ? (
               <LoginWithPassword />
-              <div className="mt-2 w-full space-y-2">
-                <div className="flex items-center justify-center">
-                  <Divider className="flex-1" />
-                  <p className="text-text-secondary px-4 text-center text-sm">{t("login.or")}</p>
-                  <Divider className="flex-1" />
-                </div>
-              </div>
-              <div className="flex items-center justify-center gap-4">
-                {Object.entries(authProviders || [])
-                  .filter(([key]) => key !== "credential")
-                  .map(([key, provider]) => (
-                    <MotionButtonBase
-                      key={key}
-                      onClick={() => {
+            ) : (
+              <div className="mb-3 flex flex-col items-center justify-center gap-4">
+                {Object.entries(authProviders || []).map(([key, provider]) => (
+                  <MotionButtonBase
+                    key={key}
+                    onClick={() => {
+                      if (key === "credential") {
+                        setIsEmail(true)
+                      } else {
                         loginHandler(key, "app")
+                      }
+                    }}
+                    className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
+                  >
+                    <img
+                      className="absolute left-9 h-5"
+                      style={{
+                        color: provider.color,
                       }}
-                    >
-                      <div
-                        className="center hover:bg-material-medium inline-flex rounded-full border p-2.5 duration-200 [&_svg]:size-6"
-                        dangerouslySetInnerHTML={{
-                          __html: provider.icon,
-                        }}
-                        style={{
-                          color: provider.color,
-                        }}
-                      />
-                    </MotionButtonBase>
-                  ))}
+                      src={provider.icon64}
+                    />
+                    <span>{t("login.continueWith", { provider: provider.name })}</span>
+                  </MotionButtonBase>
+                ))}
               </div>
-            </>
-          )
-        }
+            )}
+            <Divider />
+            {isEmail ? (
+              <div className="cursor-pointer pb-2 text-center" onClick={() => setIsEmail(false)}>
+                Back
+              </div>
+            ) : (
+              <div
+                className="cursor-pointer pb-2 text-center"
+                onClick={() => {
+                  navigate("/register")
+                }}
+              >
+                <Trans
+                  t={t}
+                  i18nKey="login.no_account"
+                  components={{
+                    strong: <span className="text-accent" />,
+                  }}
+                />
+              </div>
+            )}
+          </>
+        )
       }
     }
-  }, [authProviders, handleOpenApp, isAuthenticated, refetch, t])
+  }, [authProviders, handleOpenApp, isAuthenticated, refetch, t, isEmail, navigate])
   const Content = useMemo(() => {
     switch (true) {
       case redirecting: {
         return <div className="center">{t("login.redirecting")}</div>
       }
       default: {
-        return <div className="flex flex-col gap-3">{LoginOrStatusContent}</div>
+        return <div className="flex min-w-80 flex-col gap-3">{LoginOrStatusContent}</div>
       }
     }
   }, [LoginOrStatusContent, redirecting, t])
@@ -248,7 +243,6 @@ function LoginWithPassword() {
   const [needTwoFactor, setNeedTwoFactor] = useState(false)
   const [isButtonLoading, setIsButtonLoading] = useState(false)
 
-  const navigate = useNavigate()
   const recaptchaRef = useRef<ReCAPTCHA>(null)
 
   const resetLoadingState = useCallback(() => {
@@ -373,19 +367,6 @@ function LoginWithPassword() {
           {needTwoFactor
             ? t("login.two_factor.verify")
             : t("login.continueWith", { provider: t("words.email") })}
-        </Button>
-        <Button
-          type="button"
-          buttonClassName="!mt-3"
-          className="w-full"
-          variant="outline"
-          onClick={() => {
-            navigate("/register")
-          }}
-          size="lg"
-          disabled={isButtonLoading}
-        >
-          {t("login.signUp")}
         </Button>
       </form>
     </Form>

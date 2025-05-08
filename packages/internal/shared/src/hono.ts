@@ -78,7 +78,7 @@ declare const authPlugins: ({
                 returnHeaders?: ReturnHeaders | undefined;
             }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
                 headers: Headers;
-                response: {
+                response: ({
                     id: string;
                     provider: string;
                     profile: {
@@ -87,9 +87,21 @@ declare const authPlugins: ({
                         email?: string | null;
                         image?: string;
                         emailVerified: boolean;
+                    };
+                    accountId?: undefined;
+                } | {
+                    id: string;
+                    accountId: string;
+                    provider: string;
+                    profile: {
+                        id: string;
+                        name?: string;
+                        email?: string | null;
+                        image?: string;
+                        emailVerified: boolean;
                     } | undefined;
-                }[] | null;
-            } : {
+                })[] | null;
+            } : ({
                 id: string;
                 provider: string;
                 profile: {
@@ -98,8 +110,20 @@ declare const authPlugins: ({
                     email?: string | null;
                     image?: string;
                     emailVerified: boolean;
+                };
+                accountId?: undefined;
+            } | {
+                id: string;
+                accountId: string;
+                provider: string;
+                profile: {
+                    id: string;
+                    name?: string;
+                    email?: string | null;
+                    image?: string;
+                    emailVerified: boolean;
                 } | undefined;
-            }[] | null>;
+            })[] | null>;
             options: {
                 method: "GET";
             } & {
@@ -10493,7 +10517,7 @@ declare const auth: {
                 returnHeaders?: ReturnHeaders | undefined;
             }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
                 headers: Headers;
-                response: {
+                response: ({
                     id: string;
                     provider: string;
                     profile: {
@@ -10502,9 +10526,21 @@ declare const auth: {
                         email?: string | null;
                         image?: string;
                         emailVerified: boolean;
+                    };
+                    accountId?: undefined;
+                } | {
+                    id: string;
+                    accountId: string;
+                    provider: string;
+                    profile: {
+                        id: string;
+                        name?: string;
+                        email?: string | null;
+                        image?: string;
+                        emailVerified: boolean;
                     } | undefined;
-                }[] | null;
-            } : {
+                })[] | null;
+            } : ({
                 id: string;
                 provider: string;
                 profile: {
@@ -10513,8 +10549,20 @@ declare const auth: {
                     email?: string | null;
                     image?: string;
                     emailVerified: boolean;
+                };
+                accountId?: undefined;
+            } | {
+                id: string;
+                accountId: string;
+                provider: string;
+                profile: {
+                    id: string;
+                    name?: string;
+                    email?: string | null;
+                    image?: string;
+                    emailVerified: boolean;
                 } | undefined;
-            }[] | null>;
+            })[] | null>;
             options: {
                 method: "GET";
             } & {
@@ -13127,7 +13175,7 @@ declare const auth: {
                         returnHeaders?: ReturnHeaders | undefined;
                     }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
                         headers: Headers;
-                        response: {
+                        response: ({
                             id: string;
                             provider: string;
                             profile: {
@@ -13136,9 +13184,21 @@ declare const auth: {
                                 email?: string | null;
                                 image?: string;
                                 emailVerified: boolean;
+                            };
+                            accountId?: undefined;
+                        } | {
+                            id: string;
+                            accountId: string;
+                            provider: string;
+                            profile: {
+                                id: string;
+                                name?: string;
+                                email?: string | null;
+                                image?: string;
+                                emailVerified: boolean;
                             } | undefined;
-                        }[] | null;
-                    } : {
+                        })[] | null;
+                    } : ({
                         id: string;
                         provider: string;
                         profile: {
@@ -13147,8 +13207,20 @@ declare const auth: {
                             email?: string | null;
                             image?: string;
                             emailVerified: boolean;
+                        };
+                        accountId?: undefined;
+                    } | {
+                        id: string;
+                        accountId: string;
+                        provider: string;
+                        profile: {
+                            id: string;
+                            name?: string;
+                            email?: string | null;
+                            image?: string;
+                            emailVerified: boolean;
                         } | undefined;
-                    }[] | null>;
+                    })[] | null>;
                     options: {
                         method: "GET";
                     } & {

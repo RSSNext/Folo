@@ -23,7 +23,7 @@ export default resolveConfig(
             "color-scheme": "light",
 
             primary: "#007AFF", //#0A84FF
-            accent: "#ff760a",
+            accent: "#FF5C00",
             "accent-content": "#fff",
             neutral: "#212427",
 
@@ -43,7 +43,7 @@ export default resolveConfig(
             "color-scheme": "dark",
 
             primary: "#0A84FF",
-            accent: "#ff760a",
+            accent: "#FF5C00",
             "accent-content": "#fff",
             neutral: "#2a2a2a",
             "base-100": "#121212",

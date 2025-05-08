@@ -24,10 +24,9 @@ export const RSSHubCategories = [
   "finance",
 ] as const
 
-export const CategoryMap: Record<
-  (typeof RSSHubCategories)[number],
-  { color: string; emoji: string }
-> = {
+export type RSSHubCategory = (typeof RSSHubCategories)[number]
+
+export const CategoryMap: Record<RSSHubCategory, { color: string; emoji: string }> = {
   all: { color: "#FFCA28", emoji: "⭐️" },
   "social-media": { color: "#42A5F5", emoji: "💬" },
   "new-media": { color: "#FF7043", emoji: "📣" },

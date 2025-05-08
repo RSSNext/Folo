@@ -20,6 +20,7 @@ export interface AuthProvider {
   id: string
   color: string
   icon: string
+  icon64: string
 }
 export const useAuthProviders = () => {
   const isInMASReview = useIsInMASReview()
