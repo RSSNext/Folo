@@ -76,6 +76,9 @@ jobs:
     runs-on: macos-15
 
     steps:
+      - name: Use Xcode 16.3
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+
       - name: 📦 Checkout code
         uses: actions/checkout@v4
 
@@ -117,6 +120,9 @@ jobs:
     runs-on: macos-15
 
     steps:
+      - name: Use Xcode 16.3
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+
       - name: 📦 Checkout code
         uses: actions/checkout@v4
 
