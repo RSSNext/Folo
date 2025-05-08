@@ -3,8 +3,24 @@ import path from "node:path"
 
 const sourceDir = "./locales/app"
 const targetDir = "./locales/mobile/default"
-const keysToCopy: string[] = ["feed_item.error_since"]
-const keysToPlace = ["operation.error_since"]
+const keysToCopy: string[] = [
+  "feed_form.title",
+  "feed_form.title_description",
+  "feed_form.category",
+  "feed_form.category_description",
+  "feed_form.private_follow",
+  "feed_form.private_follow_description",
+  "feed_form.view",
+]
+const keysToPlace = [
+  "subscription_form.title",
+  "subscription_form.title_description",
+  "subscription_form.category",
+  "subscription_form.category_description",
+  "subscription_form.private_follow",
+  "subscription_form.private_follow_description",
+  "subscription_form.view",
+]
 
 const copyTranslations = (sourceDir: string, targetDir: string) => {
   const sourceFiles = fs.readdirSync(sourceDir)

@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { Alert, StyleSheet, Text, View } from "react-native"
 import { z } from "zod"
 
@@ -57,6 +58,8 @@ const formSchema = z.object({
 })
 
 const Impl = (props: { id: string }) => {
+  const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
   const { id } = props
   const list = useList(id)
 
@@ -146,13 +149,13 @@ const Impl = (props: { id: string }) => {
       contentViewClassName="gap-y-4 mt-2"
       Header={
         <NavigationBlurEffectHeaderView
-          title={`${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`}
+          title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${list?.title}`}
           headerRight={
             <HeaderSubmitTextButton
               isValid={isValid}
               onPress={form.handleSubmit(submit)}
               isLoading={isLoading}
-              label={isSubscribed ? "Save" : "Follow"}
+              label={isSubscribed ? tCommon("words.save") : tCommon("words.follow")}
             />
           }
         />
@@ -179,36 +182,37 @@ const Impl = (props: { id: string }) => {
       <GroupedInsetListCard className="gap-y-6 px-5 py-4">
         <FormProvider form={form}>
           <View className="-mx-4">
-            <FormLabel className="mb-4 pl-5" label="View" optional />
+            <FormLabel className="mb-4 pl-4" label={t("subscription_form.view")} optional />
 
             <FeedViewSelector readOnly value={list.view} />
           </View>
 
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="title"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Title"
-                  description="Custom title for this Feed. Leave empty to use the default."
+                  label={t("subscription_form.title")}
+                  description={t("subscription_form.title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-1">
             <Controller
               name="isPrivate"
               control={form.control}
               render={({ field: { onChange, value } }) => (
                 <FormSwitch
                   value={value}
-                  label="Private"
-                  description="Private feeds are only visible to you."
+                  label={t("subscription_form.private_follow")}
+                  description={t("subscription_form.private_follow_description")}
                   onValueChange={onChange}
                   size="sm"
                 />

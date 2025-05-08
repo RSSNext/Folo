@@ -127,7 +127,7 @@ export const SettingAbout = () => {
               target="_blank"
               rel="noreferrer"
             >
-              <i className={link.icon} />
+              <i className={link.iconClassName} />
               {link.label}
             </a>
           ))}

@@ -145,7 +145,7 @@ export const useSelectedFeedTitle = () => {
       return viewDef?.name ? t(viewDef.name) : ""
     }
     case "feed": {
-      return selectedFeed.feedId === FEED_COLLECTION_LIST ? "Collections" : (feed?.title ?? "")
+      return selectedFeed.feedId === FEED_COLLECTION_LIST ? t("words.starred") : (feed?.title ?? "")
     }
     case "category": {
       return selectedFeed.categoryName

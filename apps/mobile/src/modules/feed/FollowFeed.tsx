@@ -2,6 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
@@ -70,6 +71,8 @@ export function FollowUrl(props: { url: string }) {
 }
 
 function FollowImpl(props: { feedId: string }) {
+  const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
   const { feedId: id } = props
 
   const feed = useFeed(id)
@@ -147,13 +150,13 @@ function FollowImpl(props: { feedId: string }) {
       contentContainerStyle={{ paddingBottom: insets.bottom }}
       Header={
         <NavigationBlurEffectHeaderView
-          title={`${isSubscribed ? "Edit" : "Follow"} - ${feed?.title}`}
+          title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${feed?.title}`}
           headerRight={
             <HeaderSubmitTextButton
               isValid={isValid}
               onPress={form.handleSubmit(submit)}
               isLoading={isLoading}
-              label={isSubscribed ? "Save" : "Follow"}
+              label={isSubscribed ? tCommon("words.save") : tCommon("words.follow")}
             />
           }
         />
@@ -174,39 +177,41 @@ function FollowImpl(props: { feedId: string }) {
       {/* Group 2 */}
       <GroupedInsetListCard className="gap-y-4 p-4">
         <FormProvider form={form}>
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="title"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Title"
-                  description="Custom title for this Feed. Leave empty to use the default."
+                  label={t("subscription_form.title")}
+                  description={t("subscription_form.title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="category"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Category"
-                  description="By default, your follows will be grouped by website."
+                  label={t("subscription_form.category")}
+                  description={t("subscription_form.category_description")}
                   onChangeText={onChange}
                   value={value || ""}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-1">
             <Controller
               name="isPrivate"
               control={form.control}
@@ -214,8 +219,8 @@ function FollowImpl(props: { feedId: string }) {
                 <FormSwitch
                   size="sm"
                   value={value}
-                  label="Private"
-                  description="Private feeds are only visible to you."
+                  label={t("subscription_form.private_follow")}
+                  description={t("subscription_form.private_follow_description")}
                   onValueChange={onChange}
                 />
               )}
@@ -223,7 +228,7 @@ function FollowImpl(props: { feedId: string }) {
           </View>
 
           <View className="-mx-4">
-            <FormLabel className="mb-4 pl-5" label="View" optional />
+            <FormLabel className="mb-4 pl-4" label={t("subscription_form.view")} optional />
 
             <Controller
               name="view"

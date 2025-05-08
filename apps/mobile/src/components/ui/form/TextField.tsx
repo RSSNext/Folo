@@ -34,7 +34,7 @@ const BaseField = ({
   ...rest
 }: TextInputProps & BaseFieldProps & { ref?: React.Ref<TextInput | null> }) => {
   return (
-    <View className="w-full flex-1">
+    <View className="w-full flex-1 gap-1">
       {!!label && <FormLabel className="pl-2.5" label={label} optional={!required} />}
       {!!description && (
         <Text className="text-secondary-label mb-1 pl-2.5 text-sm">{description}</Text>

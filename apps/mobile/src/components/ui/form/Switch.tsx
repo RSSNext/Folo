@@ -31,7 +31,7 @@ export const FormSwitch = ({
   }
   return (
     <View className={"w-full flex-row"}>
-      <View className="flex-1">
+      <View className="flex-1 gap-1">
         <FormLabel className="pl-1" label={label} optional />
         {!!description && (
           <Text className="text-secondary-label mb-1 pl-1 text-sm">{description}</Text>
