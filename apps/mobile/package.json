@@ -30,7 +30,7 @@
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
     "@gorhom/portal": "1.0.14",
-    "@hookform/resolvers": "4.1.3",
+    "@hookform/resolvers": "5.0.1",
     "@openpanel/sdk": "1.0.0",
     "@react-native-community/image-editor": "4.3.0",
     "@react-native-firebase/analytics": "22.1.0",
