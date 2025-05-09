@@ -2,6 +2,8 @@ import type { FC, RefObject } from "react"
 import { createContext as reactCreateContext } from "react"
 import { createContext as createContextSelector } from "use-context-selector"
 
+import type { ModalProps } from "./types"
+
 export type CurrentModalContentProps = ModalActionsInternal & {
   ref: RefObject<HTMLElement | null>
   modalElementRef: RefObject<HTMLElement | null>
@@ -37,3 +39,10 @@ export type ModalActionsInternal = {
   setClickOutSideToDismiss: (value: boolean) => void
   getIndex: () => number
 }
+
+type Disposer = () => void
+type PresentModalContextInternalFn = (props: ModalProps & { id?: string }) => Disposer
+export const PresentModalContextInternal = reactCreateContext<PresentModalContextInternalFn>(() => {
+  warnNoProvider()
+  return () => {}
+})

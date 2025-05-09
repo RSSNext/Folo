@@ -1,75 +1,30 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { nextFrame } from "@follow/utils/dom"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { use, useId, useRef, useState } from "react"
+import { use, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
 import { useEventCallback } from "usehooks-ts"
 
-import { getUISettings } from "~/atoms/settings/ui"
 import { jotaiStore } from "~/lib/jotai"
 
 import { modalStackAtom } from "./atom"
 import { ModalEventBus } from "./bus"
-import { CurrentModalContext, CurrentModalStateContext } from "./context"
-import type { DialogInstance, ModalProps, ModalStackOptions } from "./types"
+import {
+  CurrentModalContext,
+  CurrentModalStateContext,
+  PresentModalContextInternal,
+} from "./context"
+import type { DialogInstance, ModalProps } from "./types"
 
 export const modalIdToPropsMap = {} as Record<string, ModalProps>
-export const useModalStack = (options?: ModalStackOptions) => {
-  const id = useId()
-  const currentCount = useRef(0)
-  const { wrapper } = options || {}
+export const useModalStack = () => {
+  const present = use(PresentModalContextInternal)
 
   return {
-    present: useEventCallback((props: ModalProps & { id?: string }) => {
-      const presentSync = (props: ModalProps & { id?: string }) => {
-        const fallbackModelId = `${id}-${++currentCount.current}`
-        const modalId = props.id ?? fallbackModelId
-
-        const currentStack = jotaiStore.get(modalStackAtom)
-
-        const existingModal = currentStack.find((item) => item.id === modalId)
-
-        if (existingModal) {
-          // Move to top
-          jotaiStore.set(modalStackAtom, (p) => {
-            const index = p.indexOf(existingModal)
-            return [...p.slice(0, index), ...p.slice(index + 1), existingModal]
-          })
-        } else {
-          // NOTE: The props of the Command Modal are immutable, so we'll just take the store value and inject it.
-          // There is no need to inject `overlay` props, this is rendered responsively based on ui changes.
-          const uiSettings = getUISettings()
-          const modalConfig: Partial<ModalProps> = {
-            draggable: uiSettings.modalDraggable,
-            modal: true,
-          }
-          jotaiStore.set(modalStackAtom, (p) => {
-            const modalProps: ModalProps = {
-              ...modalConfig,
-              ...props,
-
-              wrapper,
-            }
-            modalIdToPropsMap[modalId] = modalProps
-            return p.concat({
-              id: modalId,
-              ...modalProps,
-            })
-          })
-        }
-
-        return () => {
-          jotaiStore.set(modalStackAtom, (p) => p.filter((item) => item.id !== modalId))
-        }
-      }
-
-      return nextFrame(() => presentSync(props))
-    }),
-
+    present,
     ...actions,
   }
 }

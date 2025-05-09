@@ -32,9 +32,6 @@ export interface ModalProps {
 
   autoFocus?: boolean
 }
-export interface ModalStackOptions {
-  wrapper?: FC
-}
 
 export interface DialogInstance {
   ask: (options: {

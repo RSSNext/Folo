@@ -12,6 +12,7 @@ import { Suspense } from "react"
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3"
 import { HotkeysProvider } from "react-hotkeys-hook"
 
+import { ModalStackProvider } from "~/components/ui/modal"
 import { HotKeyScopeMap } from "~/constants/hotkeys"
 import { jotaiStore } from "~/lib/jotai"
 import { persistConfig, queryClient } from "~/lib/query-client"
@@ -24,7 +25,6 @@ import {
   LazyExtensionExposeProvider,
   LazyExternalJumpInProvider,
   LazyLottieRenderContainer,
-  LazyModalStackProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,
   // specific import should add `index` postfix
@@ -39,40 +39,41 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
     useEnterprise={true}
     useRecaptchaNet={true}
   >
-    <MotionProvider>
-      <PersistQueryClientProvider persistOptions={persistConfig} client={queryClient}>
-        <HotkeysProvider initiallyActiveScopes={HotKeyScopeMap.Home}>
-          <Provider store={jotaiStore}>
+    <Provider store={jotaiStore}>
+      <MotionProvider>
+        <PersistQueryClientProvider persistOptions={persistConfig} client={queryClient}>
+          <HotkeysProvider initiallyActiveScopes={HotKeyScopeMap.Home}>
             <I18nProvider>
-              <Toaster />
-              <EventProvider />
+              <ModalStackProvider>
+                <Toaster />
+                <EventProvider />
 
-              <UserProvider />
-              <ServerConfigsProvider />
+                <UserProvider />
+                <ServerConfigsProvider />
 
-              <StableRouterProvider />
-              <SettingSync />
-              <FollowCommandManager />
-              {import.meta.env.DEV && <Devtools />}
+                <StableRouterProvider />
+                <SettingSync />
+                <FollowCommandManager />
+                {import.meta.env.DEV && <Devtools />}
 
-              {children}
+                {children}
 
-              <Suspense>
-                <LazyExtensionExposeProvider />
-                <LazyModalStackProvider />
-                <LazyContextMenuProvider />
-                <LazyLottieRenderContainer />
-                <LazyExternalJumpInProvider />
-                <LazyReloadPrompt />
-                {!window.__RN__ && <LazyPWAPrompt />}
-              </Suspense>
+                <Suspense>
+                  <LazyExtensionExposeProvider />
+                  <LazyContextMenuProvider />
+                  <LazyLottieRenderContainer />
+                  <LazyExternalJumpInProvider />
+                  <LazyReloadPrompt />
+                  {!window.__RN__ && <LazyPWAPrompt />}
+                </Suspense>
+              </ModalStackProvider>
             </I18nProvider>
-          </Provider>
-        </HotkeysProvider>
+          </HotkeysProvider>
 
-        <InvalidateQueryProvider />
-      </PersistQueryClientProvider>
-    </MotionProvider>
+          <InvalidateQueryProvider />
+        </PersistQueryClientProvider>
+      </MotionProvider>
+    </Provider>
   </GoogleReCaptchaProvider>
 )
 
