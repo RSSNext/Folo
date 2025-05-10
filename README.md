@@ -52,7 +52,7 @@ Feel free to try it using the following methods:
 
 You can also install using the following methods maintained by our community:
 
-- If you are using Arch Linux, you can install package [follow-appimage](https://aur.archlinux.org/packages/follow-appimage) that maintained by [timochan](https://github.com/ttimochan).
+- If you are using Arch Linux, you can install package [folo-appimage](https://aur.archlinux.org/packages/folo-appimage) that maintained by [timochan](https://github.com/ttimochan) and [grtsinry43](https://github.com/grtsinry43).
 - If you are using Nix, you can install package [follow](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/fo/follow/package.nix) that maintained by [iosmanthus](https://github.com/iosmanthus).
 - If you are using macOS with [Homebrew](https://brew.sh), you can install cask [folo](https://formulae.brew.sh/cask/folo) that maintained by [realSunyz](https://github.com/realSunyz).
 - If you are using Windows with [Scoop](https://scoop.sh), you can install manifest [folo](https://github.com/cscnk52/cetacea/blob/master/bucket/folo.json) that maintained by [cscnk52](https://github.com/cscnk52).
