@@ -78,6 +78,7 @@ export const ActionButton = ({
   const Trigger = (
     <button
       ref={buttonRef}
+      id={id}
       // @see https://github.com/radix-ui/primitives/issues/2248#issuecomment-2147056904
       onFocusCapture={stopPropagation}
       className={cn(
