@@ -163,7 +163,7 @@ const FollowSubscriptionButton = () => {
       <ActionButton
         id={LOGO_MOBILE_ID}
         tooltip="Subscription"
-        className="absolute left-3 translate-y-px text-zinc-500"
+        className="text-text-secondary absolute left-3 translate-y-px"
       >
         <FollowIcon className="size-4" />
       </ActionButton>

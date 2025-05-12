@@ -28,6 +28,7 @@ import { useEntryStore } from "~/store/entry"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
+import type { Command } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterIntegrationCommands = () => {
@@ -558,3 +559,47 @@ const buildMemoRequestBody = (entry: FlatEntryModel, selectedText: string) => {
     source_url: entry.entries.url,
   }
 }
+
+export type SaveToEagleCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToEagle
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToReadwiseCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToReadwise
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToInstapaperCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToInstapaper
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToObsidianCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToObsidian
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToOutlineCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToOutline
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToReadeckCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToReadeck
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type SaveToCuboxCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToCubox
+  fn: (payload: { entryId: string }) => void
+}>
+
+export type IntegrationCommand =
+  | SaveToEagleCommand
+  | SaveToReadwiseCommand
+  | SaveToInstapaperCommand
+  | SaveToObsidianCommand
+  | SaveToOutlineCommand
+  | SaveToReadeckCommand
+  | SaveToCuboxCommand

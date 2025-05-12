@@ -11,7 +11,7 @@ import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
-import { HotKeyScopeMap, ROUTE_ENTRY_PENDING } from "~/constants"
+import { HotkeyScope, ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content"
@@ -39,7 +39,7 @@ export const RightContentDesktop = () => {
     },
     {
       enabled: showEntryContent && settingWideMode,
-      scopes: HotKeyScopeMap.Home,
+      scopes: HotkeyScope.Home,
       preventDefault: true,
     },
   )

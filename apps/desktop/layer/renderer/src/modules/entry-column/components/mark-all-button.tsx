@@ -8,7 +8,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
 import { useI18n } from "~/hooks/common"
 
@@ -61,7 +61,7 @@ export const MarkAllReadButton = ({
     },
     {
       preventDefault: true,
-      scopes: HotKeyScopeMap.Home,
+      scopes: HotkeyScope.Home,
     },
   )
 
@@ -100,7 +100,7 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const [countdown] = useCountdown({ countStart: 3 })
 
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotKeyScopeMap.Home,
+    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
 

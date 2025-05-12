@@ -73,24 +73,28 @@ export const MobileFloatBar = ({
   return (
     <div
       className={clsx(
-        "pb-safe-offset-6 pointer-events-none absolute inset-x-0 bottom-0 flex h-36 items-end",
+        "pb-safe-offset-2 pointer-events-none absolute inset-x-0 bottom-0 flex h-40 items-end",
         className,
       )}
     >
       <m.div
         className={clsx(
-          "bg-background mx-1 inline-flex h-10 w-full min-w-0 items-center rounded-full border border-neutral-200 pl-4 pr-2 shadow-sm shadow-zinc-100 dark:border-neutral-800",
-          "[box-shadow:0px_8px_30px_rgba(122,122,122,0.2)] dark:[box-shadow:0px_8px_30px_rgba(122,122,122,0.2)]",
-          "pointer-events-auto",
+          "bg-background/90 mx-3 inline-flex h-12 w-full min-w-0 items-center justify-between rounded-2xl border border-neutral-200/60 px-4 backdrop-blur-md dark:border-neutral-800/60",
+          "shadow-lg shadow-zinc-200/40 dark:shadow-zinc-900/40",
+          "pointer-events-auto transition-all duration-200",
         )}
-        transition={{ type: "spring" }}
+        transition={{ type: "spring", damping: 20 }}
         animate={animateController}
       >
-        <PlayerIcon isScrollDown={isScrollDown} onLogoClick={onLogoClick} />
-        <DividerVertical className="h-3/4 shrink-0" />
+        <div className="flex items-center gap-3">
+          <PlayerIcon isScrollDown={isScrollDown} onLogoClick={onLogoClick} />
+          <DividerVertical className="h-5 shrink-0 opacity-60" />
+        </div>
         <ViewTabs onViewChange={onViewChange} />
-        <DividerVertical className="h-3/4 shrink-0" />
-        <ProfileButton />
+        <div className="flex items-center gap-3">
+          <DividerVertical className="h-5 shrink-0 opacity-60" />
+          <ProfileButton />
+        </div>
       </m.div>
     </div>
   )
@@ -102,7 +106,7 @@ const ViewTabs = ({ onViewChange }: { onViewChange?: (view: number) => void }) =
 
   return (
     <div
-      className="text-text-secondary flex w-full shrink items-center justify-between gap-4 overflow-x-auto overflow-y-hidden text-xl"
+      className="text-text-secondary scrollbar-none flex shrink items-center justify-center gap-6 overflow-x-auto overflow-y-hidden text-xl"
       onClick={stopPropagation}
     >
       {views.map((item) => (

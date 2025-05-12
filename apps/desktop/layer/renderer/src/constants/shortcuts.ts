@@ -10,65 +10,69 @@ type Shortcuts = Record<
 const shortcutConfigs = {
   feeds: {
     add: {
-      name: "keys.feeds.add",
+      name: tShortcuts("keys.feeds.add"),
       key: "Meta+T",
     },
     switchToView: {
-      name: "keys.feeds.switchToView",
+      name: tShortcuts("keys.feeds.switchToView"),
       key: "1, 2, 3, 4, 5, 6",
     },
-    switchBetweenViews: {
-      name: "keys.feeds.switchBetweenViews",
-      key: "Tab, Left, Right",
+    switchNextView: {
+      name: tShortcuts("keys.feeds.switchNextView"),
+      key: "Tab, ArrowRight",
+    },
+    switchPreviousView: {
+      name: tShortcuts("keys.feeds.switchPreviousView"),
+      key: "Shift+Tab, ArrowLeft",
     },
   },
   layout: {
     toggleSidebar: {
-      name: "keys.layout.toggleSidebar",
+      name: tShortcuts("keys.layout.toggleSidebar"),
       key: "Meta+B, [",
     },
     showShortcuts: {
-      name: "keys.layout.showShortcuts",
+      name: tShortcuts("keys.layout.showShortcuts"),
       key: "H",
     },
     toggleWideMode: {
-      name: "keys.layout.toggleWideMode",
+      name: tShortcuts("keys.layout.toggleWideMode"),
       key: "Meta+[",
     },
     zenMode: {
-      name: "keys.layout.zenMode",
+      name: tShortcuts("keys.layout.zenMode"),
       key: "Ctrl+Shift+Z",
     },
   },
   entries: {
     refetch: {
-      name: "keys.entries.refetch",
+      name: tShortcuts("keys.entries.refetch"),
       key: "R",
     },
     previous: {
-      name: "keys.entries.previous",
-      key: "K, Up",
+      name: tShortcuts("keys.entries.previous"),
+      key: "K, ArrowUp",
     },
     next: {
-      name: "keys.entries.next",
-      key: "J, Down",
+      name: tShortcuts("keys.entries.next"),
+      key: "J, ArrowDown",
     },
     markAllAsRead: {
-      name: "keys.entries.markAllAsRead",
+      name: tShortcuts("keys.entries.markAllAsRead"),
       key: "Shift+Meta+A",
     },
     toggleUnreadOnly: {
-      name: "keys.entries.toggleUnreadOnly",
+      name: tShortcuts("keys.entries.toggleUnreadOnly"),
       key: "U",
     },
   },
   entry: {
     toggleRead: {
-      name: "keys.entry.toggleRead",
+      name: tShortcuts("keys.entry.toggleRead"),
       key: "M",
     },
     toggleStarred: {
-      name: "keys.entry.toggleStarred",
+      name: tShortcuts("keys.entry.toggleStarred"),
       key: "S",
     },
     openInBrowser: {
@@ -77,43 +81,51 @@ const shortcutConfigs = {
       extra: "Double Click",
     },
     tts: {
-      name: "keys.entry.tts",
+      name: tShortcuts("keys.entry.tts"),
       key: "Shift+Meta+V",
     },
     copyLink: {
-      name: "keys.entry.copyLink",
+      name: tShortcuts("keys.entry.copyLink"),
       key: "Shift+Meta+C",
     },
     copyTitle: {
-      name: "keys.entry.copyTitle",
+      name: tShortcuts("keys.entry.copyTitle"),
       key: "Shift+Meta+B",
     },
     tip: {
-      name: "keys.entry.tip",
+      name: tShortcuts("keys.entry.tip"),
       key: "Shift+Meta+T",
     },
     share: {
-      name: "keys.entry.share",
+      name: tShortcuts("keys.entry.share"),
       key: "Meta+Alt+S",
     },
     scrollUp: {
-      name: "keys.entry.scrollUp",
-      key: "PageUp",
+      name: tShortcuts("keys.entry.scrollUp"),
+      key: "K",
     },
     scrollDown: {
-      name: "keys.entry.scrollDown",
-      key: "PageDown",
+      name: tShortcuts("keys.entry.scrollDown"),
+      key: "J",
+    },
+    nextEntry: {
+      name: tShortcuts("keys.entries.next"),
+      key: "L, ArrowRight",
+    },
+    previousEntry: {
+      name: tShortcuts("keys.entries.previous"),
+      key: "H, ArrowLeft",
     },
   },
   audio: {
     "play/pause": {
-      name: "keys.audio.playPause",
+      name: tShortcuts("keys.audio.playPause"),
       key: "Space",
     },
   },
   misc: {
     quickSearch: {
-      name: "keys.misc.quickSearch",
+      name: tShortcuts("keys.misc.quickSearch"),
       key: "Meta+K",
     },
   },

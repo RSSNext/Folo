@@ -34,6 +34,21 @@ declare global {
   export type I18nKeys = OmitStringType<Parameters<typeof t>[0]>
   export type I18nKeysForSettings = OmitStringType<Parameters<typeof settingsT>[0]>
   export type I18nKeysForShortcuts = OmitStringType<Parameters<typeof shortcutsT>[0]>
+
+  // MACROS
+
+  /**
+   * This function is a macro, will replace in the build stage.
+   */
+  export function tShortcuts(key: I18nKeysForShortcuts): I18nKeysForShortcuts
+  /**
+   * This function is a macro, will replace in the build stage.
+   */
+  export function tSettings(key: I18nKeysForSettings): I18nKeysForSettings
+  /**
+   * This function is a macro, will replace in the build stage.
+   */
+  export function t_(key: I18nKeys): I18nKeys
 }
 
 export {}

@@ -116,6 +116,7 @@ export const ActionButton = ({
             }
           : void 0
       }
+      id={id}
       {...rest}
     >
       {loading ? (

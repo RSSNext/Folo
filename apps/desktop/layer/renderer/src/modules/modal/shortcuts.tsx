@@ -55,7 +55,7 @@ const ShortcutModalContent = () => {
         <div className="w-full space-y-6 px-4 pb-5 pt-6">
           {Object.keys(shortcuts).map((type) => (
             <section key={type}>
-              <div className="text-text-secondary mb-2 pl-4 text-xs font-medium capitalize">
+              <div className="text-text-secondary mb-2 pl-3 text-xs font-medium capitalize">
                 {t(shortcutsType[type])}
               </div>
               <div className="text-text rounded-md border text-[13px]">

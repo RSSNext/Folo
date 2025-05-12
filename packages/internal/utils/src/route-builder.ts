@@ -33,7 +33,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
 
   const routeObject: RouteObject[] = []
 
-  function dtsRoutes(
+  function dfsRoutes(
     parentKey: string,
     children: RouteObject[],
     paths: NestedStructure,
@@ -97,7 +97,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
         // }
 
         const childrenChildren: RouteObject[] = []
-        dtsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, parentPath)
+        dfsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, parentPath)
         children.push({
           path: "",
           lazy: globGetter,
@@ -118,7 +118,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
 
         const childrenChildren: RouteObject[] = []
         // should omit layout, because layout is already handled
-        dtsRoutes(parentKey, childrenChildren, omit(paths, "layout") as NestedStructure, parentPath)
+        dfsRoutes(parentKey, childrenChildren, omit(paths, "layout") as NestedStructure, parentPath)
         children.push({
           path: "",
           lazy: globGetter,
@@ -157,7 +157,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
         } else {
           const childrenChildren: RouteObject[] = []
           const fullPath = `${parentPath}/${normalizeKey}`
-          dtsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, fullPath)
+          dfsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, fullPath)
           children.push({
             path: normalizeKey,
             children: childrenChildren,
@@ -171,7 +171,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
     }
   }
 
-  dtsRoutes("./pages/", routeObject, paths)
+  dfsRoutes("./pages/", routeObject, paths)
   return routeObject
 }
 

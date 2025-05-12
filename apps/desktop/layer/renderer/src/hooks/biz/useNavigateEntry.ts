@@ -83,7 +83,7 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
   finalFeedId = encodeURIComponent(finalFeedId)
 
-  if (finalView !== undefined) {
+  if (finalView !== undefined && !timelineId) {
     finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
@@ -91,15 +91,22 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
   disableShowAISummaryOnce()
   disableShowAITranslationOnce()
 
-  tracker.navigateEntry({
-    feedId: finalFeedId,
-    entryId: finalEntryId,
-    timelineId: finalTimelineId,
-  })
+  tracker.navigateEntry({ feedId: finalFeedId, entryId: finalEntryId, timelineId: finalTimelineId })
 
   const path = `/timeline/${finalTimelineId}/${finalFeedId}/${finalEntryId}`
 
   const currentPath = getReadonlyRoute().location.pathname + getReadonlyRoute().location.search
   if (path === currentPath) return
   return getStableRouterNavigate()?.(path)
+}
+
+export const useBackHome = (timelineId?: string) => {
+  const navigate = useNavigateEntry()
+
+  return useCallback(
+    (overvideTimelineId?: string) => {
+      navigate({ feedId: null, entryId: null, timelineId: overvideTimelineId ?? timelineId })
+    },
+    [timelineId, navigate],
+  )
 }

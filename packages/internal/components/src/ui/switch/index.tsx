@@ -1,6 +1,5 @@
 "use client"
 
-import { Spring } from "@follow/components/constants/spring"
 import { cn } from "@follow/utils/utils"
 import type { SwitchProps as SwitchPrimitiveProps } from "@headlessui/react"
 import { Switch as SwitchPrimitive } from "@headlessui/react"
@@ -8,6 +7,8 @@ import type { HTMLMotionProps } from "motion/react"
 import { m as motion } from "motion/react"
 import * as React from "react"
 import { useMemo } from "react"
+
+import { Spring } from "../../constants/spring"
 
 type SwitchProps<TTag extends React.ElementType = typeof motion.button> =
   SwitchPrimitiveProps<TTag> &

@@ -88,6 +88,7 @@
     "react-zoom-pan-pinch": "3.7.0",
     "shiki": "3.3.0",
     "sonner": "2.0.3",
+    "tinykeys": "3.0.0",
     "tldts": "7.0.4",
     "use-context-selector": "2.0.0",
     "use-sync-external-store": "1.5.0",

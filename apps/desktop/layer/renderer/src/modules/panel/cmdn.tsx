@@ -12,7 +12,7 @@ import { z } from "zod"
 import { m } from "~/components/common/Motion"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
 
@@ -116,7 +116,7 @@ export const CmdNTrigger = () => {
   useRegisterGlobalContext("quickAdd", handler)
 
   useHotkeys("meta+n,ctrl+n", handler, {
-    scopes: HotKeyScopeMap.Home,
+    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
 

@@ -12,7 +12,6 @@ import { debounce } from "es-toolkit/compat"
 import type { PropsWithChildren } from "react"
 import * as React from "react"
 import { Suspense, useEffect, useRef, useState } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 import { Trans } from "react-i18next"
 import { useResizable } from "react-resizable-layout"
 import { Outlet } from "react-router"
@@ -31,7 +30,7 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { shortcuts } from "~/constants/shortcuts"
 import { useDailyTask } from "~/hooks/biz/useDailyTask"
@@ -40,8 +39,9 @@ import { useI18n } from "~/hooks/common"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
 import { DebugRegistry } from "~/modules/debug/registry"
-import { useShortcutsModal } from "~/modules/modal/shortcuts"
 import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
@@ -51,6 +51,7 @@ import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/timeline-col
 import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
+import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { NewUserGuide } from "./index.shared"
 
@@ -241,17 +242,13 @@ const FeedResponsiveResizerContainer = ({
     }
   }, [feedColumnShow])
 
-  useHotkeys(
-    shortcuts.layout.toggleSidebar.key,
-    () => {
-      setTimelineColumnShow(!feedColumnShow)
-    },
-    {
-      scopes: HotKeyScopeMap.Home,
-    },
-  )
-  const showShortcuts = useShortcutsModal()
-  useHotkeys(shortcuts.layout.showShortcuts.key, showShortcuts)
+  const activeScopes = useHotkeyScope()
+
+  useCommandHotkey({
+    commandId: COMMAND_ID.layout.toggleTimelineColumn,
+    shortcut: shortcuts.layout.toggleSidebar.key,
+    when: activeScopes.includes(HotkeyScope.Home),
+  })
 
   const [delayShowSplitter, setDelayShowSplitter] = useState(feedColumnShow)
 

@@ -14,7 +14,7 @@ export const createBuildSafeHeaders =
     }
 
     // referer and origin
-    if (selfRefererMatches.some((item) => url.startsWith(item))) {
+    if (selfRefererMatches.filter((i) => !!i).some((item) => url.startsWith(item))) {
       headers.Referer = webUrl
       return headers
     }

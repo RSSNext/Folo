@@ -5,6 +5,7 @@ import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
+import type { Command } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterSettingsCommands = () => {
@@ -66,3 +67,10 @@ const useRegisterThemeCommands = () => {
     },
   ])
 }
+
+export type CustomizeToolbarCommand = Command<{
+  id: typeof COMMAND_ID.settings.customizeToolbar
+  fn: () => void
+}>
+
+export type SettingsCommand = CustomizeToolbarCommand

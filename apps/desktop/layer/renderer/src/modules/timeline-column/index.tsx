@@ -4,26 +4,30 @@ import { Routes } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useRegisterGlobalContext } from "@follow/shared/bridge"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
+import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { isHotkeyPressed, useHotkeys } from "react-hotkeys-hook"
 import { useLocation } from "react-router"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { shortcuts } from "~/constants/shortcuts"
-import { navigateEntry, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
+import { useConditionalHotkeyScope } from "~/hooks/common"
+import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { WindowUnderBlur } from "../../components/ui/background"
+import { COMMAND_ID } from "../command/commands/id"
+import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
 import { TimelineColumnHeader } from "./TimelineColumnHeader"
@@ -31,21 +35,6 @@ import TimelineList from "./TimelineList"
 import { TimelineSwitchButton } from "./TimelineSwitchButton"
 
 const lethargy = new Lethargy()
-
-const useBackHome = (timelineId?: string) => {
-  const navigate = useNavigateEntry()
-
-  return useCallback(
-    (overvideTimelineId?: string) => {
-      navigate({
-        feedId: null,
-        entryId: null,
-        timelineId: overvideTimelineId ?? timelineId,
-      })
-    },
-    [timelineId, navigate],
-  )
-}
 
 export function FeedColumn({ children, className }: PropsWithChildren<{ className?: string }>) {
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -98,28 +87,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
         return false
       }
     },
-    {
-      target: carouselRef,
-    },
-  )
-
-  useHotkeys(
-    shortcuts.feeds.switchBetweenViews.key,
-    (e) => {
-      e.preventDefault()
-      if (isHotkeyPressed("Left")) {
-        setActive((_, i) => {
-          if (i === 0) {
-            return timelineList.at(-1)!
-          } else {
-            return timelineList[i - 1]!
-          }
-        })
-      } else {
-        setActive((_, i) => timelineList[(i + 1) % timelineList.length]!)
-      }
-    },
-    { scopes: HotKeyScopeMap.Home },
+    { target: carouselRef },
   )
 
   useRegisterGlobalContext("goToDiscover", () => {
@@ -128,34 +96,38 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
 
   const location = useLocation()
   useRegisterGlobalContext("goToFeed", ({ id, view }: { id: string; view?: number }) => {
-    navigateEntry({
-      feedId: id,
-      view: view ?? 0,
-      backPath: location.pathname,
-    })
+    navigateEntry({ feedId: id, view: view ?? 0, backPath: location.pathname })
   })
   useRegisterGlobalContext("goToList", ({ id, view }: { id: string; view?: number }) => {
-    navigateEntry({
-      listId: id,
-      view: view ?? 0,
-      backPath: location.pathname,
-    })
+    navigateEntry({ listId: id, view: view ?? 0, backPath: location.pathname })
   })
 
   const shouldFreeUpSpace = useShouldFreeUpSpace()
   const feedColumnShow = useTimelineColumnShow()
   const rootContainerElement = useRootContainerElement()
 
+  const { setIsFocus } = useRegisterCommands({ setActive, timelineList })
+
   return (
     <WindowUnderBlur
       data-hide-in-print
+      onFocus={useCallback(() => {
+        setIsFocus(true)
+      }, [setIsFocus])}
+      onBlur={useCallback(() => {
+        setIsFocus(false)
+      }, [setIsFocus])}
       className={cn(
         "relative flex h-full flex-col pt-2.5",
 
         !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
         className,
       )}
-      onClick={useCallback(() => navigateBackHome(), [navigateBackHome])}
+      onClick={useCallback(async () => {
+        if (document.hasFocus()) {
+          navigateBackHome()
+        }
+      }, [navigateBackHome])}
     >
       <TimelineColumnHeader />
       {!feedColumnShow && (
@@ -205,69 +177,102 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
   )
 }
 
-const SwipeWrapper: FC<{
-  active: string
-  children: React.JSX.Element[]
-}> = memo(({ children, active }) => {
-  const reduceMotion = useReduceMotion()
-  const timelineList = useTimelineList()
-  const index = timelineList.indexOf(active)
+const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo(
+  ({ children, active }) => {
+    const reduceMotion = useReduceMotion()
+    const timelineList = useTimelineList()
+    const index = timelineList.indexOf(active)
 
-  const feedColumnWidth = useUISettingKey("feedColWidth")
-  const containerRef = useRef<HTMLDivElement>(null)
+    const feedColumnWidth = useUISettingKey("feedColWidth")
+    const containerRef = useRef<HTMLDivElement>(null)
 
-  const prevActiveIndexRef = useRef(-1)
-  const [isReady, setIsReady] = useState(false)
+    const prevActiveIndexRef = useRef(-1)
+    const [isReady, setIsReady] = useState(false)
 
-  const [direction, setDirection] = useState<"left" | "right">("right")
-  const [currentAnimtedActive, setCurrentAnimatedActive] = useState(index)
+    const [direction, setDirection] = useState<"left" | "right">("right")
+    const [currentAnimtedActive, setCurrentAnimatedActive] = useState(index)
 
-  useLayoutEffect(() => {
-    const prevActiveIndex = prevActiveIndexRef.current
-    if (prevActiveIndex !== index) {
-      if (prevActiveIndex < index) {
-        setDirection("right")
-      } else {
-        setDirection("left")
-      }
-    }
-    // eslint-disable-next-line @eslint-react/web-api/no-leaked-timeout
-    setTimeout(() => {
-      setCurrentAnimatedActive(index)
-    }, 0)
-    if (prevActiveIndexRef.current !== -1) {
-      setIsReady(true)
-    }
-    prevActiveIndexRef.current = index
-  }, [index])
-
-  if (reduceMotion) {
-    return <div ref={containerRef}>{children[currentAnimtedActive]}</div>
-  }
-
-  return (
-    <AnimatePresence mode="popLayout">
-      <m.div
-        className="grow"
-        key={currentAnimtedActive}
-        initial={
-          isReady
-            ? {
-                x: direction === "right" ? feedColumnWidth : -feedColumnWidth,
-              }
-            : true
+    useLayoutEffect(() => {
+      const prevActiveIndex = prevActiveIndexRef.current
+      if (prevActiveIndex !== index) {
+        if (prevActiveIndex < index) {
+          setDirection("right")
+        } else {
+          setDirection("left")
         }
-        animate={{ x: 0 }}
-        exit={{
-          x: direction === "right" ? -feedColumnWidth : feedColumnWidth,
-        }}
-        transition={{
-          x: { type: "spring", stiffness: 700, damping: 40 },
-        }}
-        ref={containerRef}
-      >
-        {children[currentAnimtedActive]}
-      </m.div>
-    </AnimatePresence>
-  )
-})
+      }
+      // eslint-disable-next-line @eslint-react/web-api/no-leaked-timeout
+      setTimeout(() => {
+        setCurrentAnimatedActive(index)
+      }, 0)
+      if (prevActiveIndexRef.current !== -1) {
+        setIsReady(true)
+      }
+      prevActiveIndexRef.current = index
+    }, [index])
+
+    if (reduceMotion) {
+      return <div ref={containerRef}>{children[currentAnimtedActive]}</div>
+    }
+
+    return (
+      <AnimatePresence mode="popLayout">
+        <m.div
+          className="grow"
+          key={currentAnimtedActive}
+          initial={
+            isReady ? { x: direction === "right" ? feedColumnWidth : -feedColumnWidth } : true
+          }
+          animate={{ x: 0 }}
+          exit={{ x: direction === "right" ? -feedColumnWidth : feedColumnWidth }}
+          transition={{ x: { type: "spring", stiffness: 700, damping: 40 } }}
+          ref={containerRef}
+        >
+          {children[currentAnimtedActive]}
+        </m.div>
+      </AnimatePresence>
+    )
+  },
+)
+
+const useRegisterCommands = ({
+  setActive,
+  timelineList,
+}: {
+  setActive: (args: string | ((prev: string | undefined, index: number) => string)) => void
+  timelineList: string[]
+}) => {
+  const activeScope = useHotkeyScope()
+  const when =
+    activeScope.includes(HotkeyScope.SubscriptionList) || activeScope.includes(HotkeyScope.Timeline)
+  useCommandHotkey({
+    commandId: COMMAND_ID.subscription.switchTabToNext,
+    shortcut: shortcuts.feeds.switchNextView.key,
+    when,
+  })
+
+  useCommandHotkey({
+    commandId: COMMAND_ID.subscription.switchTabToPrevious,
+    shortcut: shortcuts.feeds.switchPreviousView.key,
+    when,
+  })
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.subscription.switchTabToNext, () => {
+      setActive((_, i) => timelineList[(i + 1) % timelineList.length]!)
+    })
+  }, [activeScope, setActive, timelineList])
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.subscription.switchTabToPrevious, () => {
+      setActive((_, i) => timelineList[(i - 1 + timelineList.length) % timelineList.length]!)
+    })
+  }, [activeScope, setActive, timelineList])
+
+  const [isFocus, setIsFocus] = useState(false)
+
+  useConditionalHotkeyScope(HotkeyScope.SubscriptionList, isFocus, true)
+  return {
+    setIsFocus,
+  }
+}

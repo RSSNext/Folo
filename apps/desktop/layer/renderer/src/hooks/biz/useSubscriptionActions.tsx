@@ -4,7 +4,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { apiClient } from "~/lib/api-fetch"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import type { SubscriptionFlatModel } from "~/store/subscription"
@@ -92,7 +92,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
 const UnfollowInfo = ({ title, undo }: { title: string; undo: () => any }) => {
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotKeyScopeMap.Home,
+    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
   return (

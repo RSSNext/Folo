@@ -35,7 +35,11 @@ export const EntryColumnMobile = () => {
         <MobileFloatBar
           scrollContainer={scrollContainer}
           onLogoClick={() => {
-            ;(document.querySelector(`#${LOGO_MOBILE_ID}`) as HTMLElement)?.click()
+            const logo = document.querySelector(`#${LOGO_MOBILE_ID}`) as HTMLElement
+            if (logo) {
+              logo.click()
+              logo.blur()
+            }
           }}
           onViewChange={(view) => {
             navigateEntry({

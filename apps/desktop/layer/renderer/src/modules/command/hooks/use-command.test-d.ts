@@ -1,7 +1,7 @@
 import { assertType, expectTypeOf, test } from "vitest"
 
+import type { TipCommand } from "../commands/entry"
 import { COMMAND_ID } from "../commands/id"
-import type { TipCommand } from "../commands/types"
 import { getCommand, useCommand, useRunCommandFn } from "./use-command"
 
 test("getCommand types work properly", () => {

@@ -1,8 +1,8 @@
 import { assertType, test } from "vitest"
 
 import { CommandActionButton, CommandIdButton } from "./command-button"
+import type { OpenInBrowserCommand, TipCommand } from "./commands/entry"
 import { COMMAND_ID } from "./commands/id"
-import type { OpenInBrowserCommand, TipCommand } from "./commands/types"
 
 test("CommandActionButton types", () => {
   const mockCommand = {} as OpenInBrowserCommand

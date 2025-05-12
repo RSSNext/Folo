@@ -41,4 +41,29 @@ export const COMMAND_ID = {
     changeThemeToLight: "follow:change-color-mode-to-light",
     customizeToolbar: "follow:customize-toolbar",
   },
+  global: {
+    showShortcuts: "global:show-shortcuts",
+  },
+  layout: {
+    toggleTimelineColumn: "layout:toggle-timeline-column",
+  },
+  timeline: {
+    switchToNext: "timeline:switch-to-next",
+    switchToPrevious: "timeline:switch-to-previous",
+    refetch: "timeline:refetch",
+  },
+  entryRender: {
+    scrollDown: "entry-render:scroll-down",
+    scrollUp: "entry-render:scroll-up",
+  },
+  subscription: {
+    switchTabToNext: "subscription:switch-tab-to-next",
+    switchTabToPrevious: "subscription:switch-tab-to-previous",
+    switchTabToArticle: "subscription:switch-tab-to-article",
+    switchTabToSocial: "subscription:switch-tab-to-social",
+    switchTabToPicture: "subscription:switch-tab-to-picture",
+    switchTabToVideo: "subscription:switch-tab-to-video",
+    switchTabToAudio: "subscription:switch-tab-to-audio",
+    switchTabToNotification: "subscription:switch-tab-to-notification",
+  },
 } as const

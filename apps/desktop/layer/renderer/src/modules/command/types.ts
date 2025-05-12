@@ -8,6 +8,7 @@ export type CommandCategory =
   | "follow:updates"
   | "follow:help"
   | "follow:general"
+  | "follow:entry-render"
 
 export interface KeybindingOptions {
   binding: string
@@ -15,36 +16,6 @@ export interface KeybindingOptions {
   // some keybindings are already registered in other places
   // we can skip the registration of these keybindings __FOR NOW__
   // skipRegister?: boolean
-}
-
-export interface CommandKeybindingOptions<
-  ID extends string,
-  T extends (...args: any[]) => unknown = (...args: unknown[]) => unknown,
-> {
-  /**
-   * the command id.
-   */
-  commandId: ID
-  /**
-   * a set of predefined precondition strategies.
-   *
-   * note: this only used for keybinding and command menu.
-   * command will always available when called directly.
-   */
-  when?: boolean
-  /**
-   * we use https://github.com/jamiebuilds/tinykeys so that we can use the same keybinding definition
-   * for both mac and windows.
-   *
-   * Use `$mod` for `Cmd` on Mac and `Ctrl` on Windows and Linux.
-   */
-  keyBinding?: KeybindingOptions | string
-  /**
-   * additional arguments for the command.
-   *
-   * Only used when the command is called from a keybinding.
-   */
-  args?: Parameters<T>
 }
 
 export interface Command<
@@ -61,9 +32,6 @@ export interface Command<
   readonly icon?: ReactNode | ((props?: { isActive?: boolean }) => ReactNode)
   readonly category: CommandCategory
   readonly run: T["fn"]
-
-  // readonly when: boolean
-  // readonly keyBinding?: KeybindingOptions
 }
 
 export type SimpleCommand<T extends string> = Command<{ id: T; fn: () => void }>
@@ -87,7 +55,6 @@ export interface CommandOptions<
   run: T["fn"]
 
   when?: boolean
-  keyBinding?: T["fn"] extends () => void ? KeybindingOptions | string : never
 }
 
 export type FollowCommandMap = {

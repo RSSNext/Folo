@@ -14,13 +14,13 @@ import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendati
 export function DiscoverContent() {
   return (
     <View>
-      <View className="flex-row items-center gap-1 px-6 pt-4">
+      <View className="flex-row items-center gap-1 px-6 pb-1 pt-4">
         <Text className="text-label text-2xl font-bold leading-[1.1]">Good Luck</Text>
       </View>
 
       <GoodLuck />
 
-      <View className="mt-4 flex-row items-center gap-1 px-6 pt-4">
+      <View className="mt-4 flex-row items-center gap-1 px-6 pb-1 pt-4">
         <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>
       </View>
 

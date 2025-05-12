@@ -20,6 +20,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { getAttachmentState, player } from "@/src/lib/player"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useEntry } from "@/src/store/entry/hooks"
+import type { EntryModel } from "@/src/store/entry/types"
 import { getInboxFrom } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useEntryTranslation } from "@/src/store/translation/hooks"
@@ -50,18 +51,9 @@ export const EntryNormalItem = memo(
       }
     }, [entryId, entry, navigation, view])
 
-    const thumbnailRatio = useUISettingKey("thumbnailRatio")
-
-    const coverImage = entry?.media?.[0]
-    const image = coverImage?.url || (view === FeedViewType.Audios ? feed?.image : null)
-    const blurhash = coverImage?.blurhash
-
     const audio = entry?.attachments?.find((attachment) =>
       attachment.mime_type?.startsWith("audio/"),
     )
-    const audioState = getAttachmentState(extraData, audio)
-    const isPlaying = audioState === "playing"
-    const isLoading = audioState === "loading"
 
     const estimatedMins = useMemo(() => {
       const durationInSeconds = formatTimeToSeconds(audio?.duration_in_seconds)
@@ -133,49 +125,7 @@ export const EntryNormalItem = memo(
             )}
           </View>
           {view !== FeedViewType.Notifications && (
-            <View className="relative ml-4">
-              {image &&
-                (thumbnailRatio === "square" ? (
-                  <SquareImage image={image} blurhash={blurhash} />
-                ) : (
-                  <AspectRatioImage
-                    blurhash={blurhash}
-                    image={image}
-                    height={coverImage?.height}
-                    width={coverImage?.width}
-                  />
-                ))}
-
-              {audio && (
-                <NativePressable
-                  className="absolute inset-0 flex items-center justify-center"
-                  onPress={() => {
-                    if (isLoading) return
-                    if (isPlaying) {
-                      player.pause()
-                      return
-                    }
-                    player.play({
-                      url: audio.url,
-                      title: entry?.title,
-                      artist: feed?.title,
-                      artwork: image,
-                    })
-                  }}
-                >
-                  <View className="overflow-hidden rounded-full p-2">
-                    <ThemedBlurView style={StyleSheet.absoluteFillObject} intensity={30} />
-                    {isPlaying ? (
-                      <PauseCuteFiIcon color="white" width={24} height={24} />
-                    ) : isLoading ? (
-                      <PlatformActivityIndicator />
-                    ) : (
-                      <PlayCuteFiIcon color="white" width={24} height={24} />
-                    )}
-                  </View>
-                </NativePressable>
-              )}
-            </View>
+            <ThumbnailImage entry={entry} view={view} extraData={extraData} />
           )}
         </ItemPressable>
       </EntryItemContextMenu>
@@ -184,6 +134,84 @@ export const EntryNormalItem = memo(
 )
 
 EntryNormalItem.displayName = "EntryNormalItem"
+
+const ThumbnailImage = ({
+  view,
+  extraData,
+  entry,
+}: {
+  view: FeedViewType
+  extraData: string
+  entry: EntryModel
+}) => {
+  const feed = useFeed(entry?.feedId as string)
+  const thumbnailRatio = useUISettingKey("thumbnailRatio")
+
+  const coverImage = entry?.media?.[0]
+  const image = coverImage?.url || (view === FeedViewType.Audios ? feed?.image : null)
+  const blurhash = coverImage?.blurhash
+
+  const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
+  const audioState = getAttachmentState(extraData, audio)
+  const isPlaying = audioState === "playing"
+  const isLoading = audioState === "loading"
+
+  const handlePressPlayAudio = useCallback(() => {
+    if (!audio) return
+    if (isLoading) return
+    if (isPlaying) {
+      player.pause()
+      return
+    }
+    player.play({
+      url: audio.url,
+      title: entry?.title,
+      artist: feed?.title,
+      artwork: image,
+    })
+  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying])
+
+  return (
+    <View className="relative ml-4">
+      {image &&
+        (thumbnailRatio === "square" ? (
+          <SquareImage image={image} blurhash={blurhash} />
+        ) : (
+          <AspectRatioImage
+            blurhash={blurhash}
+            image={image}
+            height={coverImage?.height}
+            width={coverImage?.width}
+          />
+        ))}
+
+      {/* Show feed icon if no image but audio is present */}
+      {audio && !image && <FeedIcon feed={feed} size={96} />}
+
+      {audio && (
+        <NativePressable
+          className="absolute inset-0 flex items-center justify-center"
+          onPress={handlePressPlayAudio}
+        >
+          <View className="overflow-hidden rounded-full p-2">
+            <ThemedBlurView
+              style={StyleSheet.absoluteFillObject}
+              intensity={30}
+              experimentalBlurMethod="none"
+            />
+            {isPlaying ? (
+              <PauseCuteFiIcon color="white" width={24} height={24} />
+            ) : isLoading ? (
+              <PlatformActivityIndicator />
+            ) : (
+              <PlayCuteFiIcon color="white" width={24} height={24} />
+            )}
+          </View>
+        </NativePressable>
+      )}
+    </View>
+  )
+}
 
 const AspectRatioImage = ({
   image,

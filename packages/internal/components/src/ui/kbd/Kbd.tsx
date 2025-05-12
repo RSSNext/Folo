@@ -10,6 +10,10 @@ const SharedKeys = {
   pageup: "PageUp",
   pagedown: "PageDown",
   tab: "Tab",
+  arrowup: "↑",
+  arrowdown: "↓",
+  arrowleft: "←",
+  arrowright: "→",
 }
 const SpecialKeys = {
   Windows: {

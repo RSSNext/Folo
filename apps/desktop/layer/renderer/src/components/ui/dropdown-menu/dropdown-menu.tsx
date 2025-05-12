@@ -5,11 +5,12 @@ import { cn } from "@follow/utils/utils"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import * as React from "react"
 
-import { useHotkeyScope } from "~/hooks/common"
+import { HotkeyScope } from "~/constants"
+import { useConditionalHotkeyScope } from "~/hooks/common"
 
 const DropdownMenu: typeof DropdownMenuPrimitive.Root = (props) => {
   const [open, setOpen] = React.useState(!!props.open)
-  useHotkeyScope("DropdownMenu", open)
+  useConditionalHotkeyScope(HotkeyScope.DropdownMenu, open)
 
   return (
     <DropdownMenuPrimitive.Root

@@ -6,7 +6,7 @@ import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
@@ -22,26 +22,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { ProfileButton } from "~/modules/user/ProfileButton"
-
-const useBackHome = (timelineId?: string) => {
-  const navigate = useNavigateEntry()
-
-  return useCallback(
-    (overvideTimelineId?: string) => {
-      navigate({
-        feedId: null,
-        entryId: null,
-        timelineId: overvideTimelineId ?? timelineId,
-      })
-    },
-    [timelineId, navigate],
-  )
-}
 
 export const TimelineColumnHeader = memo(() => {
   const timelineId = useRouteParamsSelector((s) => s.timelineId)
@@ -88,15 +73,11 @@ export const TimelineColumnHeader = memo(() => {
 const LayoutActionButton = () => {
   const feedColumnShow = useTimelineColumnShow()
 
-  const [animation, setAnimation] = useState({
-    width: !feedColumnShow ? "auto" : 0,
-  })
+  const [animation, setAnimation] = useState({ width: !feedColumnShow ? "auto" : 0 })
   const isZenMode = useIsZenMode()
   const setIsZenMode = useSetZenMode()
   useEffect(() => {
-    setAnimation({
-      width: !feedColumnShow ? "auto" : 0,
-    })
+    setAnimation({ width: !feedColumnShow ? "auto" : 0 })
   }, [feedColumnShow])
 
   const t = useI18n()
@@ -183,10 +164,7 @@ const SearchTrigger = () => {
     () => {
       setAppSearchOpen(true)
     },
-    {
-      enabled: canSearch,
-      preventDefault: true,
-    },
+    { enabled: canSearch, preventDefault: true },
   )
 
   return null

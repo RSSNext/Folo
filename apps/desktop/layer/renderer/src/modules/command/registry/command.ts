@@ -23,9 +23,6 @@ export function createCommand<
       label = typeof label === "string" ? { title: label } : label
       return label
     },
-    // when: !!(options.when ?? true),
-    // keyBinding:
-    //   typeof options.keyBinding === "string" ? { binding: options.keyBinding } : options.keyBinding,
   }
 }
 

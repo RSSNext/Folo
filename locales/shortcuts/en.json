@@ -18,6 +18,8 @@
   "keys.entry.tts": "Play TTS",
   "keys.feeds.add": "Add Subscription",
   "keys.feeds.switchBetweenViews": "Switch Between Views",
+  "keys.feeds.switchNextView": "Switch to Next View",
+  "keys.feeds.switchPreviousView": "Switch to Previous View",
   "keys.feeds.switchToView": "Switch to View",
   "keys.layout.showShortcuts": "Show/Hide Shortcuts",
   "keys.layout.toggleSidebar": "Show/Hide Feed Sidebar",

@@ -24,7 +24,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu"
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 import { useSwitchHotKeyScope } from "~/hooks/common"
 
 export const ContextMenuProvider: Component = ({ children }) => (
@@ -114,7 +114,7 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
   useHotkeys((item as any as MenuItemText).shortcut!, () => itemRef.current?.click(), {
     // enabled: item.enabled !== false && item.shortcut !== undefined,
     enabled: item instanceof MenuItemText && !!item.shortcut,
-    scopes: HotKeyScopeMap.Menu,
+    scopes: HotkeyScope.Menu,
     preventDefault: true,
   })
 

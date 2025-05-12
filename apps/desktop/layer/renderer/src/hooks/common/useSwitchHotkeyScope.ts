@@ -1,55 +1,54 @@
 import { useCallback, useLayoutEffect, useRef } from "react"
 import { useHotkeysContext } from "react-hotkeys-hook"
 
-import { HotKeyScopeMap } from "~/constants"
+import { HotkeyScope } from "~/constants"
 
-const allScopes = Object.keys(HotKeyScopeMap).reduce((acc, key) => {
-  acc.push(...HotKeyScopeMap[key])
+const allScopes = Object.keys(HotkeyScope).reduce((acc, key) => {
+  acc.push(HotkeyScope[key])
   return acc
 }, [] as string[])
+
 export const useSwitchHotKeyScope = () => {
   const { enableScope, disableScope } = useHotkeysContext()
 
   return useCallback(
-    (scope: keyof typeof HotKeyScopeMap) => {
-      const nextScope = HotKeyScopeMap[scope]
+    (scope: keyof typeof HotkeyScope) => {
+      const nextScope = HotkeyScope[scope]
       if (!nextScope) return
 
       for (const key of allScopes) {
         disableScope(key)
       }
-      for (const key of nextScope) {
-        enableScope(key)
-      }
+      enableScope(nextScope)
     },
     [disableScope, enableScope],
   )
 }
-export const useHotkeyScopeFn = (scope: keyof typeof HotKeyScopeMap) => {
+export const useConditionalHotkeyScopeFn = (scope: HotkeyScope, replaceAll = true) => {
   const { enableScope, disableScope, activeScopes } = useHotkeysContext()
   const currentScopeRef = useRef(activeScopes)
 
   return useCallback(() => {
     const currentScope = currentScopeRef.current
-    for (const key of allScopes) {
-      disableScope(key)
-    }
-    for (const key of scope) {
-      enableScope(key)
-    }
-    return () => {
-      for (const key of scope) {
+    if (replaceAll) {
+      for (const key of allScopes) {
         disableScope(key)
       }
-      for (const scope of currentScope) {
-        enableScope(scope)
+    }
+    enableScope(scope)
+    return () => {
+      disableScope(scope)
+      if (replaceAll) {
+        for (const key of currentScope) {
+          enableScope(key)
+        }
       }
     }
-  }, [enableScope, disableScope, scope])
+  }, [enableScope, disableScope, scope, replaceAll])
 }
 
-export const useHotkeyScope = (scope: keyof typeof HotKeyScopeMap, when: boolean) => {
-  const fn = useHotkeyScopeFn(scope)
+export const useConditionalHotkeyScope = (scope: HotkeyScope, when: boolean, append = false) => {
+  const fn = useConditionalHotkeyScopeFn(scope, !append)
   useLayoutEffect(() => {
     if (when) {
       return fn()
