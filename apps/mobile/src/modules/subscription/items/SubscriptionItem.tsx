@@ -25,7 +25,7 @@ import type { SubscriptionItemBaseProps } from "./types"
 import { UnreadCount } from "./UnreadCount"
 
 export const SubscriptionItem = memo(
-  ({ id, isFirst, isLast, isGroupLast, className }: SubscriptionItemBaseProps) => {
+  ({ id, isFirst, isLast, className }: SubscriptionItemBaseProps) => {
     const red = useColor("red")
     const colorLabel = useColor("label")
     const subscription = useSubscription(id)
@@ -95,7 +95,7 @@ export const SubscriptionItem = memo(
             </ItemPressable>
           </SubscriptionFeedItemContextMenu>
         </Animated.View>
-        {!isLast && (inGrouped && !isGroupLast ? <SecondaryItemSeparator /> : <ItemSeparator />)}
+        {!isLast && (inGrouped ? <SecondaryItemSeparator /> : <ItemSeparator />)}
       </>
     )
   },

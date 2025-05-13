@@ -83,6 +83,7 @@ export const CategoryGrouped = memo(
           </SubscriptionFeedCategoryContextMenu>
         </View>
 
+        {/* FIXME: This separator is not visible when expanded and will add a unexpected space under grouped list */}
         {!isLast && !expanded && <ItemSeparator />}
         {expanded && (
           <GroupedContext value={category}>

@@ -19,7 +19,6 @@ export const UnGroupedList: FC<{
       id={id}
       isFirst={false}
       isLast={!!isLastGroup && index === sortedSubscriptionIds.length - 1}
-      isGroupLast={index === sortedSubscriptionIds.length - 1}
     />
   ))
 }
