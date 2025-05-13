@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { createContext, use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,21 +13,6 @@ import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useInbox } from "@/src/store/inbox/hooks"
 import { useList } from "@/src/store/list/hooks"
-// drawer open state
-
-// is drawer swipe disabled
-
-const isDrawerSwipeDisabledAtom = atom<boolean>(true)
-
-export function useIsDrawerSwipeDisabled() {
-  return useAtomValue(isDrawerSwipeDisabledAtom)
-}
-
-export function useSetDrawerSwipeDisabled() {
-  return useSetAtom(isDrawerSwipeDisabledAtom)
-}
-
-// feed panel selected state
 
 export type SelectedTimeline = {
   type: "view"
