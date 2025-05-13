@@ -15,7 +15,7 @@ import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
-import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { accentColor, useColor } from "@/src/theme/colors"
 
@@ -41,7 +41,7 @@ export const DiscoverHeader = () => {
   const headerHeight = getDefaultHeaderHeight(frame, sheetModal, insets.top)
 
   const scrollContainerAnimatedX = useSearchPageScrollContainerAnimatedX()
-  const { searchFocusedAtom } = useSearchPageContext()
+  const { searchFocusedAtom, fromIntent } = useSearchPageContext()
   const isFocused = useAtomValue(searchFocusedAtom)
 
   const setHeaderHeight = use(SetNavigationHeaderHeightContext)
@@ -56,7 +56,7 @@ export const DiscoverHeader = () => {
     >
       <DynamicBlurEffect />
 
-      <View style={styles.header}>
+      <View style={[styles.header, fromIntent && { marginTop: 14 }]}>
         <SearchInput />
       </View>
       {isFocused && <SearchTabBar animatedX={scrollContainerAnimatedX} />}
@@ -65,6 +65,7 @@ export const DiscoverHeader = () => {
 }
 
 const SearchInput = () => {
+  const navigation = useNavigation()
   const { t } = useTranslation("common")
   const { searchFocusedAtom, searchValueAtom } = useSearchPageContext()
   const [isFocused, setIsFocused] = useAtom(searchFocusedAtom)
@@ -77,11 +78,11 @@ const SearchInput = () => {
   const skeletonTranslateX = useSharedValue(0)
   const placeholderOpacity = useSharedValue(0)
   const marginRight = useSharedValue(0)
-  const cancelButtonTranslateX = useSharedValue(20)
 
   const [tempSearchValue, setTempSearchValue] = useState(searchValue)
 
-  const focusOrHasValue = isFocused || searchValue || tempSearchValue
+  const focusOrHasValue = isFocused || !!searchValue || !!tempSearchValue
+  const cancelButtonTranslateX = useSharedValue(focusOrHasValue ? 0 : 20)
 
   useEffect(() => {
     if (focusOrHasValue) {
@@ -196,9 +197,13 @@ const SearchInput = () => {
       <ReAnimatedTouchableOpacity
         hitSlop={10}
         onPress={() => {
-          setIsFocused(false)
-          setSearchValue("")
-          setTempSearchValue("")
+          if (navigation.canGoBack()) {
+            navigation.dismiss()
+          } else {
+            setIsFocused(false)
+            setSearchValue("")
+            setTempSearchValue("")
+          }
         }}
         className="absolute -right-20 w-20 pl-4"
         style={cancelButtonAnimatedStyle}

@@ -4,6 +4,7 @@ import { useEffect } from "react"
 
 import { useNavigation } from "../lib/navigation/hooks"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
+import { DiscoverTabScreen } from "../screens/(stack)/(tabs)/discover"
 
 // This needs to stay outside of react to persist between account switches
 let previousIntentUrl = ""
@@ -16,14 +17,15 @@ export function useIntentHandler() {
 
   const navigation = useNavigation()
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const { hasShareIntent, shareIntent, resetShareIntent, error } = useShareIntent()
-  // eslint-disable-next-line no-console
-  console.log({
-    hasShareIntent,
-    shareIntent,
-    error,
-  })
+  const { hasShareIntent, shareIntent } = useShareIntent()
+
+  useEffect(() => {
+    if (hasShareIntent && shareIntent.webUrl) {
+      navigation.presentControllerView(DiscoverTabScreen, {
+        searchValue: shareIntent.webUrl,
+      })
+    }
+  }, [hasShareIntent, navigation, shareIntent.webUrl])
 
   useEffect(() => {
     if (incomingUrl && incomingUrl !== previousIntentUrl) {
