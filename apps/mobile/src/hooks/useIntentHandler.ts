@@ -1,4 +1,5 @@
 import * as Linking from "expo-linking"
+import { useShareIntent } from "expo-share-intent"
 import { useEffect } from "react"
 
 import { useNavigation } from "../lib/navigation/hooks"
@@ -14,6 +15,15 @@ export function useIntentHandler() {
   const incomingUrl = Linking.useURL()
 
   const navigation = useNavigation()
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const { hasShareIntent, shareIntent, resetShareIntent, error } = useShareIntent()
+  // eslint-disable-next-line no-console
+  console.log({
+    hasShareIntent,
+    shareIntent,
+    error,
+  })
 
   useEffect(() => {
     if (incomingUrl && incomingUrl !== previousIntentUrl) {

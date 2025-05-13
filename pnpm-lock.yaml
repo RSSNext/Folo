@@ -70,6 +70,9 @@ patchedDependencies:
   workbox-precaching:
     hash: 51e57c78af317e292b43fca4b72f57b247b7b1a1faa8b03c8881ddb798c7c52f
     path: patches/workbox-precaching.patch
+  xcode:
+    hash: aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465
+    path: patches/xcode.patch
 
 importers:
 
@@ -909,6 +912,9 @@ importers:
       expo-secure-store:
         specifier: 14.2.3
         version: 14.2.3(expo@53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))
+      expo-share-intent:
+        specifier: 4.0.0
+        version: 4.0.0(50f5cb1998537fd12e3c719869c9ba3a)
       expo-sharing:
         specifier: 13.1.5
         version: 13.1.5(expo@53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))
@@ -3500,6 +3506,9 @@ packages:
 
   '@expo/config-plugins@10.0.1':
     resolution: {integrity: sha512-JM8fmG2TVzuF02LrkywZKfCBfA8yVvOeK+3X/JnWUQqWCdUpLNf1RmCdnZ67VBeFLBD74ro+Gd1bJR1dW5aMcw==}
+
+  '@expo/config-plugins@10.0.2':
+    resolution: {integrity: sha512-TzUn3pPdpwCS0yYaSlZOClgDmCX8N4I2lfgitX5oStqmvpPtB+vqtdyqsVM02fQ2tlJIAqwBW+NHaHqqy8Jv7g==}
 
   '@expo/config-plugins@9.0.12':
     resolution: {integrity: sha512-/Ko/NM+GzvJyRkq8PITm8ms0KY5v0wmN1OQFYRMkcJqOi3PjlhndW+G6bHpJI9mkQXBaUnHwAiGLqIC3+MQ5Wg==}
@@ -9382,6 +9391,15 @@ packages:
     resolution: {integrity: sha512-hYBbaAD70asKTFd/eZBKVu+9RTo9OSTMMLqXtzDF8ndUGjpc6tmRCoZtrMHlUo7qLtwL5jm+vpYVBWI8hxh/1Q==}
     peerDependencies:
       expo: '*'
+
+  expo-share-intent@4.0.0:
+    resolution: {integrity: sha512-edgHV+9ghtinhsNERm5Gv6tIyvMA36FSvRVzNCJm9vom4TBJOemj6nBM4ucvae+HqD5ipY9KUNMbCusg+5i4kA==}
+    peerDependencies:
+      expo: ^53
+      expo-constants: '>=17.1.5'
+      expo-linking: '>=7.0.2'
+      react: 19.0.0
+      react-native: '*'
 
   expo-sharing@13.1.5:
     resolution: {integrity: sha512-X/5sAEiWXL2kdoGE3NO5KmbfcmaCWuWVZXHu8OQef7Yig4ZgHFkGD11HKJ5KqDrDg+SRZe4ISd6MxE7vGUgm4w==}
@@ -17656,7 +17674,26 @@ snapshots:
       semver: 7.7.1
       slash: 3.0.0
       slugify: 1.6.6
-      xcode: 3.0.1
+      xcode: 3.0.1(patch_hash=aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465)
+      xml2js: 0.6.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@expo/config-plugins@10.0.2':
+    dependencies:
+      '@expo/config-types': 53.0.3
+      '@expo/json-file': 9.1.4
+      '@expo/plist': 0.3.4
+      '@expo/sdk-runtime-versions': 1.0.0
+      chalk: 4.1.2
+      debug: 4.4.0(supports-color@8.1.1)
+      getenv: 1.0.0
+      glob: 10.4.5
+      resolve-from: 5.0.0
+      semver: 7.7.1
+      slash: 3.0.0
+      slugify: 1.6.6
+      xcode: 3.0.1(patch_hash=aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465)
       xml2js: 0.6.0
     transitivePeerDependencies:
       - supports-color
@@ -17675,7 +17712,7 @@ snapshots:
       semver: 7.7.1
       slash: 3.0.0
       slugify: 1.6.6
-      xcode: 3.0.1
+      xcode: 3.0.1(patch_hash=aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465)
       xml2js: 0.6.0
     transitivePeerDependencies:
       - supports-color
@@ -17694,7 +17731,7 @@ snapshots:
       semver: 7.7.1
       slash: 3.0.0
       slugify: 1.6.6
-      xcode: 3.0.1
+      xcode: 3.0.1(patch_hash=aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465)
       xml2js: 0.6.0
     transitivePeerDependencies:
       - supports-color
@@ -25182,6 +25219,17 @@ snapshots:
     dependencies:
       expo: 53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5)
 
+  expo-share-intent@4.0.0(50f5cb1998537fd12e3c719869c9ba3a):
+    dependencies:
+      '@expo/config-plugins': 10.0.2
+      expo: 53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5)
+      expo-constants: 17.1.4(expo@53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))
+      expo-linking: 7.1.4(expo@53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)
+      react: 19.0.0
+      react-native: 0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)
+    transitivePeerDependencies:
+      - supports-color
+
   expo-sharing@13.1.5(expo@53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5)):
     dependencies:
       expo: 53.0.4(@babel/core@7.26.10)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(utf-8-validate@6.0.5)
@@ -32219,7 +32267,7 @@ snapshots:
     dependencies:
       path-extra: 1.0.3
 
-  xcode@3.0.1:
+  xcode@3.0.1(patch_hash=aa445e8363cb2a506d0f122fba5b7d36d4878779b864dc04fcc2358418be8465):
     dependencies:
       simple-plist: 1.3.1
       uuid: 7.0.3

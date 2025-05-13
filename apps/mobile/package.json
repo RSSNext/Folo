@@ -73,6 +73,7 @@
     "expo-media-library": "17.1.6",
     "expo-notifications": "0.31.1",
     "expo-secure-store": "14.2.3",
+    "expo-share-intent": "4.0.0",
     "expo-sharing": "13.1.5",
     "expo-splash-screen": "0.30.7",
     "expo-sqlite": "15.2.9",

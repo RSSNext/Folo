@@ -147,6 +147,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
       ],
       "expo-background-task",
+      "expo-share-intent",
     ],
   }
 

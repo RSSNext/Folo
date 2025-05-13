@@ -1,0 +1,31 @@
+diff --git a/lib/pbxProject.js b/lib/pbxProject.js
+index 068548ab89dfd2d39f90d46d881c17dc86f90bf4..8f5ae84a130cc1c801bb91f03d4d9a75ad46caf5 100644
+--- a/lib/pbxProject.js
++++ b/lib/pbxProject.js
+@@ -1148,7 +1148,7 @@ pbxProject.prototype.updateBuildProperty = function(prop, value, build, targetNa
+             }
+         }
+     }
+-    
++
+     var configs = this.pbxXCBuildConfigurationSection();
+     for (var configName in configs) {
+         if (!COMMENT_KEY.test(configName)) {
+@@ -1679,7 +1679,7 @@ function correctForFrameworksPath(file, project) {
+ function correctForPath(file, project, group) {
+     var r_group_dir = new RegExp('^' + group + '[\\\\/]');
+ 
+-    if (project.pbxGroupByName(group).path)
++    if (project.pbxGroupByName(group)&&project.pbxGroupByName(group).path)
+         file.path = file.path.replace(r_group_dir, '');
+ 
+     return file;
+@@ -2091,7 +2091,7 @@ pbxProject.prototype.getBuildProperty = function(prop, build, targetName) {
+             }
+         }
+     }
+-    
++
+     var configs = this.pbxXCBuildConfigurationSection();
+     for (var configName in configs) {
+         if (!COMMENT_KEY.test(configName)) {
