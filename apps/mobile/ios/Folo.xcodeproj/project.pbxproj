@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0175BDE65D12F3A725B98366 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		320C9B6283A558FACAB1F077 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		49E6152678E64D0F94E41CB2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37D265EE3D784D71BB2A1D40 /* MainInterface.storyboard */; };
 		68D26842EA194BFDB08A6A4C /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F2C62A5E0443479CE1BC1B /* ShareViewController.swift */; };
@@ -17,7 +17,6 @@
 		AE539BC6827CFB582DA95D14 /* Pods_Folo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A92EA1D99570EEE67CF3C16 /* Pods_Folo.framework */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		BC17B94C251D4DAB8EFCE14B /* rn-web in Resources */ = {isa = PBXBuildFile; fileRef = 41DD004D89664106AF26882E /* rn-web */; };
-		C423F5E477424F6BABEAEBEA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */; };
 		D1D29D5EDCB1438EA5B52E69 /* ShareExtensionPreprocessor.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F635367F99642D0B8439EE3 /* ShareExtensionPreprocessor.js */; };
 		E67F80FC976E4D099819B4C8 /* ShareExtension.appex in Copy Files */ = {isa = PBXBuildFile; fileRef = 8E3AE256327246A8BC759523 /* ShareExtension.appex */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
@@ -42,11 +41,11 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Folo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Folo/Info.plist; sourceTree = "<group>"; };
 		2DCF96DC58493B0192531ED6 /* Pods-Folo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Folo.release.xcconfig"; path = "Target Support Files/Pods-Folo/Pods-Folo.release.xcconfig"; sourceTree = "<group>"; };
-		37D265EE3D784D71BB2A1D40 /* MainInterface.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MainInterface.storyboard; path = ShareExtension/MainInterface.storyboard; sourceTree = "<group>"; };
-		41DD004D89664106AF26882E /* rn-web */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "rn-web"; path = "../../../out/rn-web"; sourceTree = "<group>"; };
+		37D265EE3D784D71BB2A1D40 /* MainInterface.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MainInterface.storyboard; path = ShareExtension/MainInterface.storyboard; sourceTree = "<group>"; };
+		41DD004D89664106AF26882E /* rn-web */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "rn-web"; path = "../../../out/rn-web"; sourceTree = "<group>"; };
 		5A92EA1D99570EEE67CF3C16 /* Pods_Folo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Folo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E3AE256327246A8BC759523 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = ShareExtension.appex; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F635367F99642D0B8439EE3 /* ShareExtensionPreprocessor.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = ShareExtensionPreprocessor.js; path = ShareExtension/ShareExtensionPreprocessor.js; sourceTree = "<group>"; };
+		8E3AE256327246A8BC759523 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = 9; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F635367F99642D0B8439EE3 /* ShareExtensionPreprocessor.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ShareExtensionPreprocessor.js; path = ShareExtension/ShareExtensionPreprocessor.js; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Folo/SplashScreen.storyboard; sourceTree = "<group>"; };
 		AE6DFA75757F61EFB9FE4C4D /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Folo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -56,7 +55,7 @@
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Folo/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Folo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Folo-Bridging-Header.h"; path = "Folo/Folo-Bridging-Header.h"; sourceTree = "<group>"; };
 		FC82B5696EE74D37ABBC11A0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Folo/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = PrivacyInfo.xcprivacy; path = ShareExtension/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PrivacyInfo.xcprivacy; path = ShareExtension/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +107,6 @@
 				EBA10F66956B3F2B469ECF20 /* Pods-Folo.debug.xcconfig */,
 				2DCF96DC58493B0192531ED6 /* Pods-Folo.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -137,6 +135,7 @@
 				D003C5535DFD4F2DA4FB9DBF /* Assets */,
 				426DBD4BB0F2A55C930D86FD /* Pods */,
 				3A5943D2DC04222133711A9C /* ExpoModulesProviders */,
+				A6884C6F2DD38F3D00FEF9C4 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -150,6 +149,17 @@
 				8E3AE256327246A8BC759523 /* ShareExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A6884C6F2DD38F3D00FEF9C4 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				FEFB77576C2248B994FBDC2F /* PrivacyInfo.xcprivacy */,
+				C2F2C62A5E0443479CE1BC1B /* ShareViewController.swift */,
+				9F635367F99642D0B8439EE3 /* ShareExtensionPreprocessor.js */,
+				37D265EE3D784D71BB2A1D40 /* MainInterface.storyboard */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -167,7 +177,6 @@
 				41DD004D89664106AF26882E /* rn-web */,
 			);
 			name = Assets;
-			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -223,12 +232,12 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 492J8Q67PF;
 						LastSwiftMigration = 1250;
-						DevelopmentTeam = "492J8Q67PF";
 						ProvisioningStyle = Automatic;
 					};
 					DC5BFD054E2447199A9DF0F6 = {
-						DevelopmentTeam = "492J8Q67PF";
+						DevelopmentTeam = 492J8Q67PF;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -262,7 +271,7 @@
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				A64C4D1F7DFC4F8EB4DB1F20 /* GoogleService-Info.plist in Resources */,
 				BC17B94C251D4DAB8EFCE14B /* rn-web in Resources */,
-				0175BDE65D12F3A725B98366 /* PrivacyInfo.xcprivacy in Resources */,
+				320C9B6283A558FACAB1F077 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +281,6 @@
 			files = (
 				D1D29D5EDCB1438EA5B52E69 /* ShareExtensionPreprocessor.js in Resources */,
 				49E6152678E64D0F94E41CB2 /* MainInterface.storyboard in Resources */,
-				C423F5E477424F6BABEAEBEA /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,7 +506,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Folo/Folo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 492J8Q67PF;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -524,9 +535,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
-				DEVELOPMENT_TEAM = "492J8Q67PF";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 			};
 			name = Debug;
 		};
@@ -537,7 +545,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Folo/Folo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 492J8Q67PF;
 				INFOPLIST_FILE = Folo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -557,9 +568,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
-				DEVELOPMENT_TEAM = "492J8Q67PF";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 			};
 			name = Release;
 		};
@@ -568,8 +576,10 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 492J8Q67PF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ShareExtension/ShareExtension-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -585,8 +595,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				DEVELOPMENT_TEAM = "492J8Q67PF";
-				CODE_SIGN_IDENTITY = "Apple Development";
 			};
 			name = Release;
 		};
@@ -741,8 +749,10 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 492J8Q67PF;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -762,8 +772,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				DEVELOPMENT_TEAM = "492J8Q67PF";
-				CODE_SIGN_IDENTITY = "Apple Development";
 			};
 			name = Debug;
 		};
