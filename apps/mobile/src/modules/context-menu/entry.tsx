@@ -22,6 +22,12 @@ import { unreadSyncService } from "@/src/store/unread/store"
 import { useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const EntryItemContextMenu = ({
+  children,
+}: PropsWithChildren<{ id: string; view: FeedViewType }>) => {
+  return <View>{children}</View>
+}
+
+export const EntryItemContextMenu2 = ({
   id,
   children,
   view,
