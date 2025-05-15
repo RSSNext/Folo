@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
@@ -60,8 +60,8 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
                 <span className="min-w-[50%] shrink truncate font-bold">
                   {entryTitleMeta.title}
                 </span>
-                <i className="i-mgc-line-cute-re size-[10px] shrink-0 translate-y-[-3px] rotate-[-25deg]" />
-                <span className="text-text-secondary text-headline shrink truncate">
+                <i className="i-mgc-line-cute-re text-text-secondary size-[10px] shrink-0 translate-y-[-3px] rotate-[-25deg]" />
+                <span className="text-text-secondary text-headline shrink -translate-y-px truncate">
                   {entryTitleMeta.description}
                 </span>
               </m.div>
@@ -69,10 +69,12 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
           </AnimatePresence>
         </div>
 
-        <div className="relative flex shrink-0 items-center justify-end gap-2">
-          <EntryHeaderActions entryId={entry.entries.id} view={view} compact={compact} />
-          <MoreActions entryId={entry.entries.id} />
-        </div>
+        {view !== FeedViewType.SocialMedia && (
+          <div className="relative flex shrink-0 items-center justify-end gap-2">
+            <EntryHeaderActions entryId={entry.entries.id} view={view} compact={compact} />
+            <MoreActions entryId={entry.entries.id} />
+          </div>
+        )}
       </div>
     </div>
   )

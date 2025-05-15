@@ -15,10 +15,12 @@ export const useBackHandler = () => {
     const listener = BackHandler.addEventListener("hardwareBackPress", () => {
       if (canDismiss) {
         navigation.dismiss()
-      } else {
+        return true
+      } else if (navigation.canGoBack()) {
         navigation.back()
+        return true
       }
-      return true
+      return false
     })
 
     return () => {

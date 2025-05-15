@@ -2,6 +2,7 @@ import { PassviseFragment } from "@follow/components/common/Fragment.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
+import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/shared/hono"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
@@ -10,9 +11,7 @@ import { atom } from "jotai"
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { MenuItemText } from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { Media } from "~/components/ui/media"
@@ -22,7 +21,8 @@ import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { jotaiStore } from "~/lib/jotai"
 import { parseSocialMedia } from "~/lib/parsers"
-import { COMMAND_ID } from "~/modules/command/commands/id"
+import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
+import { MoreActions } from "~/modules/entry-content/actions/more-actions"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { useEntry } from "~/store/entry/hooks"
@@ -139,20 +139,8 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
   return (
     <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
       <div className="flex items-center gap-1">
-        {entryActions
-          .filter((item) => item instanceof MenuItemText)
-          .filter(
-            (item) =>
-              item.id !== COMMAND_ID.entry.read && item.id !== COMMAND_ID.entry.openInBrowser,
-          )
-          .map((item) => (
-            <CommandActionButton
-              commandId={item.id}
-              active={item.active}
-              onClick={item.click!}
-              key={item.id}
-            />
-          ))}
+        <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
+        <MoreActions entryId={entryId} />
       </div>
     </div>
   )

@@ -3,18 +3,41 @@ import { EventBus } from "@follow/utils/event-bus"
 import { isEmptyObject } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import i18next from "i18next"
+import LanguageDetector from "i18next-browser-languagedetector"
 import { toast } from "sonner"
 
 import { currentSupportedLanguages, dayjsLocaleImportMap } from "~/@types/constants"
 import { defaultResources } from "~/@types/default-resource"
-import { fallbackLanguage, i18nAtom, langChain, LocaleCache } from "~/i18n"
+import { I18N_LOCALE_KEY } from "~/constants"
+import { i18nAtom, langChain, LocaleCache } from "~/i18n"
 import { jotaiStore } from "~/lib/jotai"
 
 import { tipcClient } from "./client"
 import { appLog } from "./log"
 
 const loadingLangLock = new Set<string>()
-const loadedLangs = new Set<string>([fallbackLanguage])
+const loadedLangs = new Set<string>(["en"])
+
+let defaultLanguage = "en"
+const languageDetector = new LanguageDetector(null, {
+  order: ["querystring", "localStorage", "navigator"],
+  lookupQuerystring: "lng",
+  lookupLocalStorage: I18N_LOCALE_KEY,
+  caches: ["localStorage"],
+})
+
+const userLang = languageDetector.detect()
+if (userLang) {
+  const firstUserLang = Array.isArray(userLang) ? userLang[0]! : userLang
+  const currentLang = currentSupportedLanguages.find((lang) => lang.includes(firstUserLang))
+  if (currentLang) {
+    defaultLanguage = currentLang
+  }
+}
+
+export const getDefaultLanguage = () => {
+  return defaultLanguage
+}
 
 export const loadLanguageAndApply = async (lang: string) => {
   const dayjsImport = dayjsLocaleImportMap[lang]

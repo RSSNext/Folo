@@ -5,6 +5,7 @@ import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugi
 import { createAuthClient } from "better-auth/react"
 import type { BetterAuthClientPlugin } from "better-auth/types"
 import * as SecureStore from "expo-secure-store"
+import { Platform } from "react-native"
 
 import { isNewUserQueryKey } from "../store/user/constants"
 import { whoamiQueryKey } from "../store/user/hooks"
@@ -91,12 +92,20 @@ export interface AuthProvider {
   id: string
   color: string
   icon: string
+  icon64: string
+  iconDark64?: string
 }
 
 export const useAuthProviders = () => {
   return useQuery({
     queryKey: ["providers"],
-    queryFn: async () => (await getProviders()).data,
+    queryFn: async () => {
+      const data = (await getProviders()).data as Record<string, AuthProvider>
+      if (Platform.OS !== "ios") {
+        delete data.apple
+      }
+      return data
+    },
   })
 }
 

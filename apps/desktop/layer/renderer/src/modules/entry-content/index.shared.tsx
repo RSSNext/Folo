@@ -5,7 +5,6 @@ import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { WEB_BUILD } from "@follow/shared/constants"
-import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import type { FallbackRender } from "@sentry/react"
@@ -261,9 +260,6 @@ export const ContainerToc = memo(
           <div className="sticky top-0">
             <Toc
               ref={ref}
-              onItemClick={() => {
-                EventBus.dispatch("FOCUS_ENTRY_CONTAINER")
-              }}
               className={cn(
                 "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
                 "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",

@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query"
-import { toast } from "sonner"
 
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
+import { toastFetchError } from "~/lib/error-parser"
 import { userActions } from "~/store/user"
 
 import type { MutationBaseProps } from "./types"
@@ -23,7 +23,7 @@ export const useSetRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 
     onError: (error) => {
       onError?.(error)
-      toast.error(error.message)
+      toastFetchError(error)
     },
   })
 
@@ -53,7 +53,7 @@ export const useAddRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 
     onError: (error) => {
       onError?.(error)
-      toast.error(error.message)
+      toastFetchError(error)
     },
   })
 
@@ -63,7 +63,7 @@ export const useDeleteRSSHubMutation = ({ onError }: MutationBaseProps = {}) =>
 
     onError: (error) => {
       onError?.(error)
-      toast.error(error.message)
+      toastFetchError(error)
     },
   })
 

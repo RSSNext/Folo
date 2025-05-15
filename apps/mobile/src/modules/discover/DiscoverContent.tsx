@@ -7,18 +7,18 @@ import { Pressable, StyleSheet, Text, View } from "react-native"
 
 import { Grid } from "@/src/components/ui/grid"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { GoodLuck } from "@/src/modules/discover/GoodLuck"
 import { Recommendations } from "@/src/modules/discover/Recommendations"
+import { Trending } from "@/src/modules/discover/Trending"
 import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendation/RecommendationCategoryScreen"
 
 export function DiscoverContent() {
   return (
     <View>
       <View className="flex-row items-center gap-1 px-6 pb-1 pt-4">
-        <Text className="text-label text-2xl font-bold leading-[1.1]">Good Luck</Text>
+        <Text className="text-label text-2xl font-bold leading-[1.1]">Trending</Text>
       </View>
 
-      <GoodLuck />
+      <Trending />
 
       <View className="mt-4 flex-row items-center gap-1 px-6 pb-1 pt-4">
         <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>

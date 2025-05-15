@@ -9,6 +9,7 @@ declare module "@follow/utils/event-bus" {
     "timeline:switch-to-next": never
     "timeline:switch-to-previous": never
     "timeline:refetch": never
+    "timeline:enter": never
   }
 }
 export const useRegisterTimelineCommand = () => {
@@ -35,6 +36,13 @@ export const useRegisterTimelineCommand = () => {
         EventBus.dispatch("timeline:refetch")
       },
     },
+    {
+      id: COMMAND_ID.timeline.enter,
+      label: "Enter Selected Entry",
+      run: () => {
+        EventBus.dispatch("timeline:enter")
+      },
+    },
   ])
 }
 
@@ -53,7 +61,13 @@ export type RefetchTimelineCommand = Command<{
   fn: () => void
 }>
 
+export type EnterTimelineCommand = Command<{
+  id: typeof COMMAND_ID.timeline.enter
+  fn: () => void
+}>
+
 export type TimelineCommand =
   | SwitchToNextTimelineCommand
   | SwitchToPreviousTimelineCommand
   | RefetchTimelineCommand
+  | EnterTimelineCommand

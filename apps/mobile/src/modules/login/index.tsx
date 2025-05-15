@@ -1,5 +1,6 @@
-import { useCallback } from "react"
-import { Text, TouchableWithoutFeedback, View } from "react-native"
+import { useCallback, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
+import { Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -9,9 +10,10 @@ import { Logo } from "@/src/components/ui/logo"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { NavigationLink } from "@/src/lib/navigation/NavigationLink"
 import { useScaleHeight } from "@/src/lib/responsive"
+import { PrivacyPolicyScreen } from "@/src/screens/(headless)/privacy"
 import { TermsMarkdown, TermsScreen } from "@/src/screens/(headless)/terms"
 
-import { EmailLogin } from "./email"
+import { EmailLogin, EmailSignUp } from "./email"
 import { SocialLogin } from "./social"
 
 export function Login() {
@@ -21,46 +23,70 @@ export function Login() {
   const gapSize = scaledHeight(28)
   const fontSize = scaledHeight(28)
   const lineHeight = scaledHeight(32)
+  const { t } = useTranslation()
+
+  const [isRegister, setIsRegister] = useState(true)
+  const [isEmail, setIsEmail] = useState(false)
 
   return (
     <View className="pb-safe-or-2 flex-1 justify-between" style={{ paddingTop: insets.top + 56 }}>
-      <View>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            KeyboardController.dismiss()
+      <TouchableWithoutFeedback
+        onPress={() => {
+          KeyboardController.dismiss()
+        }}
+        accessible={false}
+      >
+        <View
+          className="items-center"
+          style={{
+            gap: gapSize,
           }}
-          accessible={false}
         >
-          <View
-            className="items-center"
+          <Logo style={{ width: logoSize, height: logoSize }} />
+          <Text
+            className="text-label"
             style={{
-              gap: gapSize,
+              fontSize,
+              lineHeight,
             }}
           >
-            <Logo style={{ width: logoSize, height: logoSize }} />
-            <Text
-              className="text-label"
-              style={{
-                fontSize,
-                lineHeight,
-              }}
-            >
-              Sign in to <Text className="font-bold">Folo</Text>
-            </Text>
-            <EmailLogin />
-          </View>
-        </TouchableWithoutFeedback>
-        <View className="border-t-opaque-separator border-t-hairline mx-28 mb-2 mt-4" />
-        <View className="items-center gap-4">
-          <View className="flex w-full max-w-sm flex-row items-center gap-4">
-            <View className="bg-separator my-4 h-[0.5px] flex-1" />
-            <Text className="text-secondary-label text-lg">or</Text>
-            <View className="bg-separator my-4 h-[0.5px] flex-1" />
-          </View>
-          <SocialLogin />
+            <Text className="font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
+            <Text className="font-bold">Folo</Text>
+          </Text>
+          {isEmail ? (
+            isRegister ? (
+              <EmailSignUp />
+            ) : (
+              <EmailLogin />
+            )
+          ) : (
+            <SocialLogin onPressEmail={() => setIsEmail(true)} />
+          )}
         </View>
-      </View>
+      </TouchableWithoutFeedback>
       <TermsCheckBox />
+      <View className="mt-14">
+        {isEmail ? (
+          <Text
+            className="text-label pb-2 text-center text-lg font-medium"
+            onPress={() => setIsEmail(false)}
+          >
+            {t("login.back")}
+          </Text>
+        ) : (
+          <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
+            <Text className="text-label pb-2 text-center text-lg font-medium">
+              <Trans
+                t={t}
+                i18nKey={isRegister ? "login.have_account" : "login.no_account"}
+                components={{
+                  strong: <Text className="text-accent" />,
+                }}
+              />
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   )
 }
@@ -85,15 +111,26 @@ const TermsText = () => {
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger className="w-full overflow-hidden rounded-full">
-        <Text className="text-secondary-label text-sm">
+        <Text className="text-secondary-label text-center text-sm">
+          By continuing, you agree to our{" "}
+        </Text>
+        <View className="flex-row items-center">
           <NavigationLink
             destination={TermsScreen}
             suppressHighlighting
-            className="text-primary-label"
+            className="text-secondary-label"
           >
-            Terms of Service
+            <Text className="font-semibold">Terms of Service</Text>
           </NavigationLink>
-        </Text>
+          <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
+          <NavigationLink
+            destination={PrivacyPolicyScreen}
+            suppressHighlighting
+            className="text-secondary-label"
+          >
+            <Text className="font-semibold">Privacy Policy</Text>
+          </NavigationLink>
+        </View>
       </ContextMenu.Trigger>
 
       <ContextMenu.Content>

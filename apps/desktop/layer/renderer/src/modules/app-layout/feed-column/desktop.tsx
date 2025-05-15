@@ -32,7 +32,6 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { HotkeyScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
-import { shortcuts } from "~/constants/shortcuts"
 import { useDailyTask } from "~/hooks/biz/useDailyTask"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
@@ -40,7 +39,7 @@ import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
+import { useCommandBinding } from "~/modules/command/hooks/use-register-hotkey"
 import { DebugRegistry } from "~/modules/debug/registry"
 import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
@@ -244,9 +243,8 @@ const FeedResponsiveResizerContainer = ({
 
   const activeScopes = useHotkeyScope()
 
-  useCommandHotkey({
+  useCommandBinding({
     commandId: COMMAND_ID.layout.toggleTimelineColumn,
-    shortcut: shortcuts.layout.toggleSidebar.key,
     when: activeScopes.includes(HotkeyScope.Home),
   })
 

@@ -29,7 +29,7 @@ export const EntryGridFooter = ({
   return (
     <View className="gap-2 px-1 py-2">
       <View className="flex-row gap-1">
-        {!entry.read && <View className="bg-red mt-1.5 inline-block rounded-full" />}
+        {!entry.read && <View className="bg-red mt-1.5 inline-block size-2 rounded-full" />}
         {entry.title && (
           <EntryTranslation
             numberOfLines={2}

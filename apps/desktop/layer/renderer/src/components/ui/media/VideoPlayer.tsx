@@ -1,4 +1,4 @@
-import { Focusable } from "@follow/components/common/Focusable.js"
+import { Focusable } from "@follow/components/common/Focusable/index.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import type { HTMLMediaState } from "@follow/hooks"

@@ -1,3 +1,4 @@
+import { useMobile } from "@follow/components/hooks/useMobile.js"
 import {
   MasonryIntersectionContext,
   MasonryItemsAspectRatioContext,
@@ -46,6 +47,7 @@ const gutter = 24
 
 export const PictureMasonry: FC<MasonryProps> = (props) => {
   const { data } = props
+  const isMobile = useMobile()
   const cacheMap = useState(() => new Map<string, object>())[0]
   const [isInitDim, setIsInitDim] = useState(false)
   const [isInitLayout, setIsInitLayout] = useState(false)
@@ -79,7 +81,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     },
   )
 
-  const finalColumn = customizeColumn !== -1 ? customizeColumn : currentColumn
+  const finalColumn = customizeColumn !== -1 && !isMobile ? customizeColumn : currentColumn
   const finalItemWidth = useMemo(
     () => (customizeColumn !== -1 ? calcItemWidth(finalColumn) : currentItemWidth),
     [calcItemWidth, currentItemWidth, customizeColumn, finalColumn],

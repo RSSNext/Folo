@@ -71,6 +71,16 @@ export const FeedForm: Component<{
   const isInModal = useIsInModal()
   const placeholderRef = useRef<HTMLDivElement | null>(null)
 
+  useEffect(() => {
+    if (!feedQuery.isLoading) {
+      tracker.subscribeModalOpened({
+        feedId: id,
+        feedUrl: feedQuery.data?.feed.url || url,
+        isError: feedQuery.isError,
+      })
+    }
+  }, [feedQuery.isLoading])
+
   return (
     <div
       className={cn(
@@ -209,7 +219,11 @@ const FeedInnerForm = ({
   }, [subscription])
 
   useEffect(() => {
-    if (analytics?.view !== undefined && !subscription && defaultValues?.view === undefined) {
+    if (
+      typeof analytics?.view === "number" &&
+      !subscription &&
+      typeof defaultValues?.view !== "number"
+    ) {
       form.setValue("view", `${analytics.view}`)
     }
   }, [analytics, subscription, defaultValues?.view])

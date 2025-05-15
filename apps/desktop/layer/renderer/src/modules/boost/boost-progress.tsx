@@ -24,7 +24,7 @@ export const BoostProgress = ({
   const nextLevel = level + 1
   return (
     <div className="flex w-full flex-col px-2">
-      <div className="relative -mx-2 pt-12">
+      <div className="relative -mx-1 pt-12">
         <span
           className={cn(
             "absolute -bottom-3 mb-10 flex h-7 -translate-x-1/2 items-center justify-center whitespace-nowrap rounded-full p-2 text-sm font-bold text-white transition-all duration-500 ease-out after:absolute after:bottom-[-5px] after:left-1/2 after:-z-10 after:flex after:size-3 after:-translate-x-1/2 after:rotate-45",
@@ -43,7 +43,7 @@ export const BoostProgress = ({
             aria-valuemin={0}
             aria-valuemax={remainingBoostsToLevelUp}
             style={{ width: `calc(${percentage}% + 0.5rem)` }}
-            className="bg-accent flex h-full -translate-x-2 items-center justify-center rounded-3xl text-white transition-all duration-500 ease-out"
+            className="bg-accent flex h-full -translate-x-1 items-center justify-center rounded-3xl text-white transition-all duration-500 ease-out"
           />
         </div>
       </div>

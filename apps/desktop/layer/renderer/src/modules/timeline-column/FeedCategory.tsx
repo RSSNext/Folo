@@ -18,7 +18,7 @@ import { useEventCallback, useOnClickOutside } from "usehooks-ts"
 
 import type { MenuItemInput } from "~/atoms/context-menu"
 import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
-import { useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useGeneralSettingKey, useGeneralSettingSelector } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { useAddFeedToFeedList } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -73,15 +73,15 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const folderName =
     subscription?.category || (autoGroup ? subscription.defaultCategory : subscription.feedId)
 
-  const showCollapse = sortByUnreadFeedList.length > 1 || !!subscription?.category
+  const isCategory = sortByUnreadFeedList.length > 1 || !!subscription?.category
 
   const open = useMemo(() => {
-    if (!showCollapse) return true
+    if (!isCategory) return true
     if (folderName && typeof categoryOpenStateData[folderName] === "boolean") {
       return categoryOpenStateData[folderName]
     }
     return false
-  }, [categoryOpenStateData, folderName, showCollapse])
+  }, [categoryOpenStateData, folderName, isCategory])
 
   const setOpen = useCallback(
     (next: boolean) => {
@@ -164,7 +164,6 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   })
 
   const [isCategoryEditing, setIsCategoryEditing] = useState(false)
-
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const isCategoryIsWaiting = isChangePending
 
@@ -270,7 +269,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   })
   return (
     <div tabIndex={-1} onClick={stopPropagation}>
-      {!!showCollapse && (
+      {!!isCategory && (
         <div
           ref={setNodeRef}
           data-active={isActive || isContextMenuOpen}
@@ -279,6 +278,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
             "my-px px-2.5",
             feedColumnStyles.item,
           )}
+          data-sub={`feed-category-${folderName}`}
           onClick={(e) => {
             e.stopPropagation()
             if (!isCategoryEditing) {
@@ -289,6 +289,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
         >
           <div className="flex w-full min-w-0 items-center" onDoubleClick={toggleCategoryOpenState}>
             <button
+              data-type="collapse"
               type="button"
               onClick={toggleCategoryOpenState}
               data-state={open ? "open" : "close"}
@@ -335,7 +336,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
             ref={itemsRef}
             className="space-y-px"
             initial={
-              !!showCollapse && {
+              !!isCategory && {
                 height: 0,
                 opacity: 0.01,
               }
@@ -351,7 +352,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           >
             <SortedFeedItems
               ids={ids}
-              showCollapse={showCollapse as boolean}
+              showCollapse={isCategory as boolean}
               view={view as FeedViewType}
             />
           </m.div>
@@ -361,7 +362,25 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   )
 }
 
-export const FeedCategory = memo(FeedCategoryImpl)
+function FilterReadFeedCategory(props: FeedCategoryProps) {
+  const unread = useFeedUnreadStore(
+    useCallback(
+      (state) => props.data.reduce((acc, feedId) => (state.data[feedId] || 0) + acc, 0),
+      [props.data],
+    ),
+  )
+  if (!unread) return null
+  return <FeedCategoryImpl {...props} />
+}
+
+export function FeedCategoryAutoHideUnread(props: FeedCategoryProps) {
+  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  if (hideAllReadSubscriptions && unreadOnly) {
+    return <FilterReadFeedCategory {...props} />
+  }
+  return <FeedCategoryImpl {...props} />
+}
 
 const RenameCategoryForm: FC<{
   currentCategory: string

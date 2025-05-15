@@ -407,3 +407,13 @@ export function duplicateIfLengthLessThan(text: string, length: number) {
     ? text.repeat(Math.ceil(length / text.length))
     : text
 }
+
+export function combineCleanupFunctions(...fns: Array<Nullable<(() => void) | void>>) {
+  return () => {
+    fns.forEach((fn) => {
+      if (typeof fn === "function") {
+        fn()
+      }
+    })
+  }
+}

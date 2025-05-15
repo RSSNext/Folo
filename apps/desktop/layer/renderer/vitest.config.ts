@@ -16,6 +16,10 @@ export default defineProject({
     globals: true,
     setupFiles: [resolve(__dirname, "./setup-file.ts")],
     environment: "happy-dom",
+    alias: {
+      "@pkg": resolve(__dirname, "./package.json"),
+      "@locales": resolve(__dirname, "../../../../locales"),
+    },
   },
 
   define: {

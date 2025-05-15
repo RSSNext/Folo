@@ -13,6 +13,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { feedIconSelector } from "~/store/feed/selector"
+import { useViewWithSubscription } from "~/store/subscription/hooks"
 
 import { ProfileButton } from "../../user/ProfileButton"
 import { PodcastButton } from "./components/PodcastButton"
@@ -101,6 +102,7 @@ export const MobileFloatBar = ({
 }
 
 const ViewTabs = ({ onViewChange }: { onViewChange?: (view: number) => void }) => {
+  const viewsWithSubscription = useViewWithSubscription()
   const view = useRouteParamsSelector((s) => s.view)
   const navigate = useNavigateEntry()
 
@@ -109,21 +111,23 @@ const ViewTabs = ({ onViewChange }: { onViewChange?: (view: number) => void }) =
       className="text-text-secondary scrollbar-none flex shrink items-center justify-center gap-6 overflow-x-auto overflow-y-hidden text-xl"
       onClick={stopPropagation}
     >
-      {views.map((item) => (
-        <MotionButtonBase
-          className={clsx(
-            "center flex transition-colors duration-200",
-            view === item.view && item.className,
-          )}
-          key={item.name}
-          onClick={() => {
-            navigate({ view: item.view })
-            onViewChange?.(item.view)
-          }}
-        >
-          <div className="relative flex flex-col items-center">{item.icon}</div>
-        </MotionButtonBase>
-      ))}
+      {views
+        .filter((item) => viewsWithSubscription.includes(item.view))
+        .map((item) => (
+          <MotionButtonBase
+            className={clsx(
+              "center flex transition-colors duration-200",
+              view === item.view && item.className,
+            )}
+            key={item.name}
+            onClick={() => {
+              navigate({ view: item.view })
+              onViewChange?.(item.view)
+            }}
+          >
+            <div className="relative flex flex-col items-center">{item.icon}</div>
+          </MotionButtonBase>
+        ))}
     </div>
   )
 }

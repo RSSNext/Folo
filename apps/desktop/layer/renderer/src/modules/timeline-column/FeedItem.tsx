@@ -9,15 +9,13 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { nextFrame } from "@follow/utils/dom"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
-import dayjs from "dayjs"
 import { createElement, memo, use, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
-import { getMainContainerElement } from "~/atoms/dom"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { ErrorTooltip } from "~/components/common/ErrorTooltip"
 import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/useFeedActions"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -106,10 +104,6 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         entryId: null,
         view,
       })
-      // focus to main container in order to let keyboard can navigate entry items by arrow keys
-      nextFrame(() => {
-        getMainContainerElement()?.focus()
-      })
     },
     [feedId, navigate, setSelectedFeedIds, view],
   )
@@ -167,6 +161,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
     <DraggableItemWrapper
       isInMultipleSelection={isInMultipleSelection}
       data-feed-id={feedId}
+      data-sub={`feed-${feedId}`}
       data-active={
         isMultiSelectingButNotSelected
           ? false
@@ -187,29 +182,10 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       <div className={cn("flex min-w-0 items-center", isFeed && feed.errorAt && "text-red")}>
         <FeedIcon fallback feed={feed} size={16} />
         <FeedTitle feed={feed} />
-        {isFeed && feed.errorAt && (
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <i className="i-mgc-wifi-off-cute-re ml-1 shrink-0 text-base" />
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent>
-                <div className="flex items-center gap-1">
-                  <i className="i-mgc-time-cute-re" />
-                  {t("feed_item.error_since")}{" "}
-                  {dayjs
-                    .duration(dayjs(feed.errorAt).diff(dayjs(), "minute"), "minute")
-                    .humanize(true)}
-                </div>
-                {!!feed.errorMessage && (
-                  <div className="flex items-center gap-1">
-                    <i className="i-mgc-bug-cute-re" />
-                    {feed.errorMessage}
-                  </div>
-                )}
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
+        {isFeed && (
+          <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
+            <i className="i-mgc-wifi-off-cute-re ml-1 shrink-0 text-base" />
+          </ErrorTooltip>
         )}
         {subscription?.isPrivate && (
           <Tooltip delayDuration={300}>
@@ -254,8 +230,8 @@ export const FeedItem = memo(FeedItemImpl)
 
 export const FeedItemAutoHideUnread: Component<FeedItemProps> = memo((props) => {
   const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
-
-  if (hideAllReadSubscriptions) return createElement(FilterReadFeedItem, props)
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  if (hideAllReadSubscriptions && unreadOnly) return createElement(FilterReadFeedItem, props)
   return createElement(FeedItemImpl, props)
 })
 
@@ -292,10 +268,6 @@ const ListItemImpl: Component<ListItemProps> = ({
         entryId: null,
         view,
       })
-      // focus to main container in order to let keyboard can navigate entry items by arrow keys
-      nextFrame(() => {
-        getMainContainerElement()?.focus()
-      })
     },
     [listId, navigate, view],
   )
@@ -315,6 +287,7 @@ const ListItemImpl: Component<ListItemProps> = ({
   return (
     <div
       data-list-id={listId}
+      data-sub={`list-${listId}`}
       data-active={isActive || isContextMenuOpen}
       className={cn(feedColumnStyles.item, "py-1 pl-2.5", className)}
       onClick={handleNavigate}
@@ -416,6 +389,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
   return (
     <div
       data-active={isActive || isContextMenuOpen}
+      data-sub={`inbox-${inboxId}`}
       data-inbox-id={inboxId}
       className={cn(
         "cursor-menu flex w-full items-center justify-between rounded-md pr-2.5 text-base font-medium leading-loose lg:text-sm",

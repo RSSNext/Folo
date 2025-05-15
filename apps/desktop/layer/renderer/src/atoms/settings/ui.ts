@@ -6,6 +6,7 @@ import { jotaiStore } from "@follow/utils/jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useEventCallback } from "usehooks-ts"
 
+import { getDefaultLanguage } from "~/lib/load-language"
 import { DEFAULT_ACTION_ORDER } from "~/modules/customize-toolbar/constant"
 
 import { hookEnhancedSettings } from "./general"
@@ -15,6 +16,9 @@ export const createDefaultSettings = (): UISettings => ({
 
   // Action Order
   toolbarOrder: DEFAULT_ACTION_ORDER,
+
+  // Discover
+  discoverLanguage: getDefaultLanguage().startsWith("zh") ? "all" : "eng",
 })
 
 const zenModeAtom = atom(false)

@@ -8,22 +8,34 @@ type Shortcuts = Record<
 >
 
 const shortcutConfigs = {
-  feeds: {
+  subscriptions: {
     add: {
-      name: tShortcuts("keys.feeds.add"),
+      name: tShortcuts("keys.subscriptions.add"),
       key: "Meta+T",
     },
     switchToView: {
-      name: tShortcuts("keys.feeds.switchToView"),
+      name: tShortcuts("keys.subscriptions.switchToView"),
       key: "1, 2, 3, 4, 5, 6",
     },
     switchNextView: {
-      name: tShortcuts("keys.feeds.switchNextView"),
+      name: tShortcuts("keys.subscriptions.switchNextView"),
       key: "Tab, ArrowRight",
     },
     switchPreviousView: {
-      name: tShortcuts("keys.feeds.switchPreviousView"),
+      name: tShortcuts("keys.subscriptions.switchPreviousView"),
       key: "Shift+Tab, ArrowLeft",
+    },
+    nextSubscription: {
+      name: tShortcuts("keys.subscriptions.nextSubscription"),
+      key: "J, ArrowDown",
+    },
+    previousSubscription: {
+      name: tShortcuts("keys.subscriptions.previousSubscription"),
+      key: "K, ArrowUp",
+    },
+    toggleFolderCollapse: {
+      name: tShortcuts("keys.subscriptions.toggleFolderCollapse"),
+      key: "Z",
     },
   },
   layout: {
@@ -102,11 +114,11 @@ const shortcutConfigs = {
     },
     scrollUp: {
       name: tShortcuts("keys.entry.scrollUp"),
-      key: "K",
+      key: "K, ArrowUp",
     },
     scrollDown: {
       name: tShortcuts("keys.entry.scrollDown"),
-      key: "J",
+      key: "J, ArrowDown",
     },
     nextEntry: {
       name: tShortcuts("keys.entries.next"),
@@ -147,7 +159,7 @@ function transformShortcuts<T extends Shortcuts>(configs: T) {
 export const shortcuts = transformShortcuts(shortcutConfigs) satisfies Shortcuts
 
 export const shortcutsType: { [key in keyof typeof shortcuts]: I18nKeysForShortcuts } = {
-  feeds: "keys.type.feeds",
+  subscriptions: "keys.type.subscriptions",
   layout: "keys.type.layout",
   entries: "keys.type.entries",
   entry: "keys.type.entry",

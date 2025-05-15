@@ -9,7 +9,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
@@ -55,7 +55,7 @@ export const CategoryGrouped = memo(
                   type: "category",
                   categoryName: category,
                 })
-                closeDrawer()
+
                 navigation.pushControllerView(FeedScreen, {
                   feedId: category,
                 })
@@ -83,10 +83,11 @@ export const CategoryGrouped = memo(
           </SubscriptionFeedCategoryContextMenu>
         </View>
 
-        {!isLast && <ItemSeparator />}
+        {/* FIXME: This separator is not visible when expanded and will add a unexpected space under grouped list */}
+        {!isLast && !expanded && <ItemSeparator />}
         {expanded && (
           <GroupedContext value={category}>
-            <UnGroupedList subscriptionIds={subscriptionIds} isGroupLast={isLast} />
+            <UnGroupedList subscriptionIds={subscriptionIds} isLastGroup={isLast} />
           </GroupedContext>
         )}
       </>

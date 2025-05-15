@@ -64,6 +64,7 @@
   "13004": "RSSHub user limit exceeded",
   "13005": "RSSHub purchase not found",
   "13006": "RSSHub config invalid",
+  "13007": "This RSSHub instance is unavailable currently",
   "14000": "Invalid file",
   "14001": "File too large",
   "14002": "Upload failed"

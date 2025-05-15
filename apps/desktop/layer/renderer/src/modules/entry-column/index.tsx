@@ -1,3 +1,4 @@
+import { Focusable } from "@follow/components/common/Focusable/index.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
@@ -116,7 +117,7 @@ function EntryColumnImpl() {
 
   const ListComponent = views[view]!.gridMode ? EntryColumnGrid : EntryList
   return (
-    <div
+    <Focusable
       data-hide-in-print
       className="@container relative flex h-full flex-1 flex-col"
       onClick={
@@ -164,7 +165,7 @@ function EntryColumnImpl() {
           />
         )}
       </EntryColumnWrapper>
-    </div>
+    </Focusable>
   )
 }
 

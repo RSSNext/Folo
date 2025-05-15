@@ -1,0 +1,16 @@
+{
+  "name": "@follow/legal",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": "./dist/index.ts",
+    "./privacy": "./dist/privacy.html",
+    "./tos": "./dist/tos.html"
+  },
+  "scripts": {
+    "build": "tsx script/build.ts"
+  },
+  "devDependencies": {
+    "marked": "15.0.11"
+  }
+}

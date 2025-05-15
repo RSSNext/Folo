@@ -3145,6 +3145,40 @@ declare const feeds: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        rsshubRoute: drizzle_orm_pg_core.PgColumn<{
+            name: "rsshub_route";
+            tableName: "feeds";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        rsshubNamespace: drizzle_orm_pg_core.PgColumn<{
+            name: "rsshub_namespace";
+            tableName: "feeds";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -3164,6 +3198,8 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     ownerUserId: zod.ZodNullable<zod.ZodString>;
     language: zod.ZodNullable<zod.ZodString>;
     migrateTo: zod.ZodNullable<zod.ZodString>;
+    rsshubRoute: zod.ZodNullable<zod.ZodString>;
+    rsshubNamespace: zod.ZodNullable<zod.ZodString>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     id: string;
     image: string | null;
@@ -3180,6 +3216,8 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     ownerUserId: string | null;
     language: string | null;
     migrateTo: string | null;
+    rsshubRoute: string | null;
+    rsshubNamespace: string | null;
 }, {
     id: string;
     image: string | null;
@@ -3196,6 +3234,8 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     ownerUserId: string | null;
     language: string | null;
     migrateTo: string | null;
+    rsshubRoute: string | null;
+    rsshubNamespace: string | null;
 }>;
 declare const feedsRelations: drizzle_orm.Relations<"feeds", {
     subscriptions: drizzle_orm.Many<"subscriptions">;
@@ -5211,6 +5251,40 @@ declare const rsshub: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        errorMessage: drizzle_orm_pg_core.PgColumn<{
+            name: "error_message";
+            tableName: "rsshub";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        errorAt: drizzle_orm_pg_core.PgColumn<{
+            name: "error_at";
+            tableName: "rsshub";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -5222,9 +5296,13 @@ declare const rsshubOpenAPISchema: zod.ZodObject<{
     price: zod.ZodNumber;
     description: zod.ZodNullable<zod.ZodString>;
     userLimit: zod.ZodNullable<zod.ZodNumber>;
+    errorMessage: zod.ZodNullable<zod.ZodString>;
+    errorAt: zod.ZodNullable<zod.ZodString>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     id: string;
     description: string | null;
+    errorMessage: string | null;
+    errorAt: string | null;
     ownerUserId: string;
     baseUrl: string;
     accessKey: string | null;
@@ -5233,6 +5311,8 @@ declare const rsshubOpenAPISchema: zod.ZodObject<{
 }, {
     id: string;
     description: string | null;
+    errorMessage: string | null;
+    errorAt: string | null;
     ownerUserId: string;
     baseUrl: string;
     accessKey: string | null;
@@ -5312,6 +5392,138 @@ declare const rsshubUsageOpenAPISchema: zod.ZodObject<{
 }>;
 declare const rsshubUsageRelations: drizzle_orm.Relations<"rsshub_usage", {
     rsshub: drizzle_orm.One<"rsshub", true>;
+}>;
+
+declare const rsshubAnalytics: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "rsshub_analytics";
+    schema: undefined;
+    columns: {
+        rsshubId: drizzle_orm_pg_core.PgColumn<{
+            name: "rsshub_id";
+            tableName: "rsshub_analytics";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        rsshubRoute: drizzle_orm_pg_core.PgColumn<{
+            name: "rsshub_route";
+            tableName: "rsshub_analytics";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        rsshubNamespace: drizzle_orm_pg_core.PgColumn<{
+            name: "rsshub_namespace";
+            tableName: "rsshub_analytics";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        successCount: drizzle_orm_pg_core.PgColumn<{
+            name: "success_count";
+            tableName: "rsshub_analytics";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        errorCount: drizzle_orm_pg_core.PgColumn<{
+            name: "error_count";
+            tableName: "rsshub_analytics";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        timestamp: drizzle_orm_pg_core.PgColumn<{
+            name: "timestamp";
+            tableName: "rsshub_analytics";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const rsshubAnalyticsOpenAPISchema: zod.ZodObject<{
+    rsshubId: zod.ZodString;
+    rsshubRoute: zod.ZodString;
+    rsshubNamespace: zod.ZodString;
+    successCount: zod.ZodNumber;
+    errorCount: zod.ZodNumber;
+    timestamp: zod.ZodString;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    rsshubRoute: string;
+    rsshubNamespace: string;
+    rsshubId: string;
+    successCount: number;
+    errorCount: number;
+    timestamp: string;
+}, {
+    rsshubRoute: string;
+    rsshubNamespace: string;
+    rsshubId: string;
+    successCount: number;
+    errorCount: number;
+    timestamp: string;
 }>;
 
 declare const settings: drizzle_orm_pg_core.PgTableWithColumns<{
@@ -15554,6 +15766,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     ownerUserId: string | null;
                     language: string | null;
                     migrateTo: string | null;
+                    rsshubRoute: string | null;
+                    rsshubNamespace: string | null;
                 } | null;
                 list: {
                     id: string;
@@ -16818,6 +17032,28 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
+} & {
+    "/rsshub": {
+        $get: {
+            input: {
+                query: {
+                    route?: string | undefined;
+                    namespace?: string | undefined;
+                };
+            };
+            output: {
+                code: 0;
+                data: {
+                    successCount: number;
+                    errorCount: number;
+                    timestamp: string;
+                    successRate: number;
+                }[];
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
 }, "/probes"> | hono_types.MergeSchemaPath<{
     "/": {
         $post: {
@@ -16844,6 +17080,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                 data: {
                     id: string;
                     description: string | null;
+                    errorMessage: string | null;
+                    errorAt: string | null;
                     ownerUserId: string;
                     owner: {
                         id: string;
@@ -16910,6 +17148,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     instance: {
                         id: string;
                         description: string | null;
+                        errorMessage: string | null;
+                        errorAt: string | null;
                         ownerUserId: string;
                         price: number;
                         userLimit: number | null;
@@ -17003,14 +17243,14 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             updatedAt: string;
                             suspended: boolean | null;
                         }[] | null | undefined;
-                    } | null;
+                    };
                     analytics: {
                         view: number | null;
                         feedId: string;
                         updatesPerWeek: number | null;
                         subscriptionCount: number | null;
                         latestEntryPublishedAt: string | null;
-                    } | null;
+                    };
                 }[];
             };
             outputFormat: "json";
@@ -17020,4 +17260,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/trending">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

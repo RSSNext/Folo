@@ -4,7 +4,7 @@ import { nextFrame } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { repository } from "@pkg"
 import type { FC } from "react"
-import { useEffect, useRef } from "react"
+import { Suspense, use, useEffect, useRef } from "react"
 import { toast } from "sonner"
 
 import { useServerConfigs } from "~/atoms/server-configs"
@@ -85,7 +85,11 @@ const AppNotificationContainer: FC = () => {
                     CustomModalComponent: ({ children }) => {
                       return <PeekModal>{children}</PeekModal>
                     },
-                    content: Changelog,
+                    content: () => (
+                      <Suspense>
+                        <Changelog />
+                      </Suspense>
+                    ),
                     overlay: true,
                   })
                 })
@@ -98,16 +102,21 @@ const AppNotificationContainer: FC = () => {
       setTimeout(toaster)
     }
 
-    DEV && DebugRegistry.add("simulate_app_upgraded_toast", toaster)
+    DEV && DebugRegistry.add("App Upgraded Toast", toaster)
   })
 
   return null
 }
-
 export default AppNotificationContainer
 
+const changelogContext = (async () => {
+  if (import.meta.env.DEV) {
+    return import("../../../../../changelog/next.md?raw").then((m) => m.default)
+  }
+  return CHANGELOG_CONTENT
+})()
 const Changelog = () => (
   <Paper>
-    <Markdown className="mt-8 w-full max-w-full">{CHANGELOG_CONTENT}</Markdown>
+    <Markdown className="mt-8 w-full max-w-full">{use(changelogContext)}</Markdown>
   </Paper>
 )

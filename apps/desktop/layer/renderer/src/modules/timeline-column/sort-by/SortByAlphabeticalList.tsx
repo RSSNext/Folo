@@ -6,7 +6,7 @@ import { getPreferredTitle, useFeedStore } from "~/store/feed"
 import { useSubscriptionStore } from "~/store/subscription"
 
 import { useFeedListSortSelector } from "../atom"
-import { FeedCategory } from "../FeedCategory"
+import { FeedCategoryAutoHideUnread } from "../FeedCategory"
 import { InboxItem, ListItemAutoHideUnread } from "../FeedItem"
 import type { FeedListProps, ListListProps } from "./types"
 
@@ -82,7 +82,7 @@ export const SortByAlphabeticalFeedList = ({
   return (
     <Fragment>
       {sortedByAlphabetical.map((category) => (
-        <FeedCategory
+        <FeedCategoryAutoHideUnread
           key={category}
           data={data[category]!}
           view={view}

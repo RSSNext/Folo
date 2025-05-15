@@ -12,6 +12,15 @@ export async function registerWebPushNotifications() {
     return
   }
   try {
+    const actions = await apiClient.actions.$get()
+    const rules = actions.data?.rules
+    const hasPushNotificationRule = rules?.some(
+      (rule) => rule.result.newEntryNotification && !rule.result.disabled,
+    )
+    if (!hasPushNotificationRule) {
+      return
+    }
+
     const existingRegistration = await navigator.serviceWorker.getRegistration()
     const registration = existingRegistration
 

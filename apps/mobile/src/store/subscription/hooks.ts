@@ -3,7 +3,7 @@ import { sortByAlphabet } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
-import { getGeneralSettings } from "@/src/atoms/settings/general"
+import { getGeneralSettings, useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
 
 import { getFeed } from "../feed/getter"
@@ -142,6 +142,7 @@ export const useSortedGroupedSubscription = (
   sortBy: "alphabet" | "count",
   sortOrder: "asc" | "desc",
 ) => {
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
   return useSubscriptionStore(
     useCallback(() => {
       const categories = Object.keys(grouped)
@@ -152,10 +153,12 @@ export const useSortedGroupedSubscription = (
       })
       const sortedList = [] as { category: string; subscriptionIds: string[] }[]
       for (const category of sortedCategories) {
-        sortedList.push({ category, subscriptionIds: grouped[category]! })
+        if (!hideAllReadSubscriptions || grouped[category]?.some((id) => getUnreadCount(id) > 0)) {
+          sortedList.push({ category, subscriptionIds: grouped[category]! })
+        }
       }
       return sortedList
-    }, [grouped, sortBy, sortOrder, view]),
+    }, [grouped, sortBy, sortOrder, view, hideAllReadSubscriptions]),
   )
 }
 
@@ -164,15 +167,21 @@ export const useSortedUngroupedSubscription = (
   sortBy: "alphabet" | "count",
   sortOrder: "asc" | "desc",
 ) => {
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+
   return useSubscriptionStore(
     useCallback(() => {
-      return ids.sort((a, b) => {
-        const sortMethod =
-          sortBy === "alphabet" ? sortUngroupedSubscriptionByAlphabet : sortByUnread
-        const result = sortMethod(a, b)
-        return sortOrder === "asc" ? result : -result
-      })
-    }, [ids.toString(), sortBy, sortOrder]),
+      return ids
+        .filter((id) => {
+          return !hideAllReadSubscriptions || getUnreadCount(id) > 0
+        })
+        .sort((a, b) => {
+          const sortMethod =
+            sortBy === "alphabet" ? sortUngroupedSubscriptionByAlphabet : sortByUnread
+          const result = sortMethod(a, b)
+          return sortOrder === "asc" ? result : -result
+        })
+    }, [ids.toString(), sortBy, sortOrder, hideAllReadSubscriptions]),
   )
 }
 
@@ -215,17 +224,23 @@ export const useListSubscription = (view: FeedViewType) => {
 }
 
 export const useSortedListSubscription = (ids: string[], sortBy: "alphabet" | "unread") => {
-  return useSubscriptionStore(() => {
-    return ids.concat().sort((a, b) => {
-      const leftList = getList(a)
-      const rightList = getList(b)
-      if (!leftList || !rightList) return 0
-      if (sortBy === "alphabet") {
-        return sortByAlphabet(leftList.title, rightList.title)
-      }
-      return sortByUnread(a, b)
-    })
-  })
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  return useSubscriptionStore(
+    useCallback(() => {
+      return ids
+        .concat()
+        .filter((id) => !hideAllReadSubscriptions || getUnreadCount(id) > 0)
+        .sort((a, b) => {
+          const leftList = getList(a)
+          const rightList = getList(b)
+          if (!leftList || !rightList) return 0
+          if (sortBy === "alphabet") {
+            return sortByAlphabet(leftList.title, rightList.title)
+          }
+          return sortByUnread(a, b)
+        })
+    }, [ids.toString(), sortBy, hideAllReadSubscriptions]),
+  )
 }
 
 export const useInboxSubscription = (view: FeedViewType) => {

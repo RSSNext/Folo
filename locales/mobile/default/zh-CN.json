@@ -1,4 +1,8 @@
 {
+  "login.back": "返回",
+  "login.continueWith": "使用 {{provider}} 继续",
+  "login.have_account": "已有账户？<strong>登录</strong>",
+  "login.no_account": "没有账户？<strong>注册</strong>",
   "onboarding.edit_profile": "编辑个人资料",
   "onboarding.edit_profile_description": "更改你的姓名、电子邮件和头像",
   "onboarding.finished_description": "你已完成所有设置步骤。开始享受 Folo 带来的精彩体验吧！",
@@ -50,6 +54,8 @@
   "operation.unstar": "取消收藏",
   "profile.title": "{{name}}的个人资料",
   "profile.uncategorized_feeds": "未分类的订阅源",
+  "signin.sign_in_to": "登录",
+  "signin.sign_up_to": "注册",
   "subscription_form.category": "分类",
   "subscription_form.category_description": "默认情况下，你的订阅将按网站域名分组。",
   "subscription_form.private_follow": "私密订阅",

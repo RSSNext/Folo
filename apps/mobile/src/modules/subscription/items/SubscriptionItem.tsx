@@ -12,7 +12,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { WifiOffCuteReIcon } from "@/src/icons/wifi_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 import { useFeed, usePrefetchFeed } from "@/src/store/feed/hooks"
 import { useSubscription } from "@/src/store/subscription/hooks"
@@ -69,7 +69,7 @@ export const SubscriptionItem = memo(
                   type: "feed",
                   feedId: id,
                 })
-                closeDrawer()
+
                 navigation.pushControllerView(FeedScreen, {
                   feedId: id,
                 })

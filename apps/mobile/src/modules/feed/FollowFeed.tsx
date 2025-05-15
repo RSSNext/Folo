@@ -17,10 +17,10 @@ import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
 import { TextField } from "@/src/components/ui/form/TextField"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
-import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
+import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
 import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@/src/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@/src/store/subscription/hooks"
@@ -163,16 +163,16 @@ function FollowImpl(props: { feedId: string }) {
       }
     >
       {/* Group 1 */}
-      <GroupedInsetListCard className="px-5 py-4">
-        <View className="flex flex-row gap-4">
-          <View className="size-[50px] overflow-hidden rounded-lg">
-            <FeedIcon feed={feed} size={50} />
-          </View>
-          <View className="flex-1 flex-col gap-y-1">
-            <Text className="text-text text-lg font-semibold">{feed?.title}</Text>
-            <Text className="text-secondary-label text-sm">{feed?.description}</Text>
-          </View>
-        </View>
+      <GroupedInsetListCard>
+        <FeedSummary
+          className="px-5 py-4"
+          item={{
+            feed: {
+              ...feed,
+              type: "feed",
+            },
+          }}
+        />
       </GroupedInsetListCard>
       {/* Group 2 */}
       <GroupedInsetListCard className="gap-y-4 p-4">

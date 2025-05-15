@@ -1,4 +1,8 @@
 {
+  "login.back": "Back",
+  "login.continueWith": "Continue with {{provider}}",
+  "login.have_account": "Already have an account? <strong>Sign in</strong>",
+  "login.no_account": "Don't have an account? <strong>Sign up</strong>",
   "onboarding.edit_profile": "Edit Profile",
   "onboarding.edit_profile_description": "Change your name, email, and profile picture",
   "onboarding.finished_description": "You have completed the guide. Enjoy your journey!",
@@ -50,6 +54,8 @@
   "operation.unstar": "Unstar",
   "profile.title": "{{name}}'s Profile",
   "profile.uncategorized_feeds": "Uncategorized feeds",
+  "signin.sign_in_to": "Sign in to",
+  "signin.sign_up_to": "Sign up to",
   "subscription_form.category": "Category",
   "subscription_form.category_description": "By default, your follows will be grouped by website.",
   "subscription_form.private_follow": "Private Follow",

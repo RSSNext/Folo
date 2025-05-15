@@ -9,6 +9,7 @@ import {
   GroupedInsetListNavigationLink,
 } from "@/src/components/ui/grouped/GroupedList"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { PrivacyPolicyScreen } from "@/src/screens/(headless)/privacy"
 import { TermsScreen } from "@/src/screens/(headless)/terms"
 
 export const PrivacyScreen = () => {
@@ -24,6 +25,12 @@ export const PrivacyScreen = () => {
           label={t("privacy.terms")}
           onPress={() => {
             pushControllerView(TermsScreen)
+          }}
+        />
+        <GroupedInsetListNavigationLink
+          label={t("privacy.privacy")}
+          onPress={() => {
+            pushControllerView(PrivacyPolicyScreen)
           }}
         />
       </GroupedInsetListCard>

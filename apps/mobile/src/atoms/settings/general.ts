@@ -45,3 +45,9 @@ export function getActionLanguage() {
   const { actionLanguage, language } = getGeneralSettings()
   return (actionLanguage === "default" ? language : actionLanguage) as SupportedLanguages
 }
+
+export function useHideAllReadSubscriptions() {
+  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  return hideAllReadSubscriptions && unreadOnly
+}

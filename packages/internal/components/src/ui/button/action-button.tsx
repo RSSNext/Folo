@@ -1,4 +1,4 @@
-import { useFocusable } from "@follow/components/common/Focusable.jsx"
+import { useFocusable } from "@follow/components/common/Focusable/index.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
 import * as React from "react"

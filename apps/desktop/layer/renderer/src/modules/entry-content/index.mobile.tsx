@@ -5,7 +5,7 @@ import type { FeedModel, InboxModel } from "@follow/models/types"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useUISettingKey } from "~/atoms/settings/ui"
@@ -13,10 +13,8 @@ import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery, usePreventOverscrollBounce } from "~/hooks/common"
+import { usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
-import { Queries } from "~/queries"
-import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -28,7 +26,14 @@ import { EntryReadHistory } from "./components/EntryReadHistory"
 import { EntryTitle } from "./components/EntryTitle"
 import { SupportCreator } from "./components/SupportCreator"
 import { EntryHeader } from "./header"
-import { NoContent, RenderError, TitleMetaHandler } from "./index.shared"
+import { useEntryContent, useEntryMediaInfo } from "./hooks"
+import {
+  NoContent,
+  ReadabilityAutoToggleEffect,
+  ReadabilityNotice,
+  RenderError,
+  TitleMetaHandler,
+} from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
 export interface EntryContentClassNames {
@@ -63,37 +68,19 @@ export const EntryContent: Component<{
   }, [navigateEntry, params])
 
   const entry = useEntry(entryId)
+  const mediaInfo = useEntryMediaInfo(entryId)
+
   useTitle(entry?.entries.title)
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
+  const isInbox = !!inbox
 
-  const { error, data, isPending } = useAuthQuery(
-    inbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
-    {
-      enabled: !!entryId,
-      staleTime: 300_000,
-    },
-  )
+  const { error, content, isPending } = useEntryContent(entryId)
 
   const view = useRouteParamsSelector((route) => route.view)
 
-  const mediaInfo = useMemo(
-    () =>
-      Object.fromEntries(
-        (entry?.entries.media ?? data?.entries.media)
-          ?.filter((m) => m.type === "photo")
-          .map((cur) => [
-            cur.url,
-            {
-              width: cur.width,
-              height: cur.height,
-            },
-          ]) ?? [],
-      ),
-    [entry?.entries.media, data?.entries.media],
-  )
   const hideRecentReader = useUISettingKey("hideRecentReader")
 
   const { entryId: audioEntryId } = useAudioPlayerAtomSelector((state) => state)
@@ -102,18 +89,9 @@ export const EntryContent: Component<{
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   const customCSS = useUISettingKey("customCSS")
-
-  const contentTranslated = useEntryTranslation({ entry, extraFields: ["content"] })
-
   const stableRenderStyle = useRenderStyle()
 
   if (!entry) return null
-
-  const entryContent = entry?.entries.content ?? data?.entries.content
-  const translatedContent = contentTranslated.data?.content
-  const content = translatedContent || entryContent
-
-  const isInbox = !!inbox
 
   return (
     <WrappedElementProvider>
@@ -162,6 +140,7 @@ export const EntryContent: Component<{
                     <TitleMetaHandler entryId={entry.entries.id} />
                     <AISummary entryId={entry.entries.id} />
                     <ErrorBoundary fallback={RenderError}>
+                      <ReadabilityNotice entryId={entryId} />
                       <ShadowDOM injectHostStyles={!isInbox}>
                         {!!customCSS && (
                           <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>
@@ -183,6 +162,13 @@ export const EntryContent: Component<{
                     </ErrorBoundary>
                   </div>
                 </WrappedElementProvider>
+
+                {entry.settings?.readability && (
+                  <ReadabilityAutoToggleEffect
+                    id={entry.entries.id}
+                    url={entry.entries.url ?? ""}
+                  />
+                )}
 
                 {!content && (
                   <div className="center mt-16 min-w-0">

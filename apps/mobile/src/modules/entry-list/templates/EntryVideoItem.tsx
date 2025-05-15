@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { transformVideoUrl } from "@follow/utils"
 import { memo } from "react"
-import { Linking, View } from "react-native"
+import { Linking, Text, View } from "react-native"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 import { Image } from "@/src/components/ui/image/Image"
@@ -19,9 +19,11 @@ import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 export const EntryVideoItem = memo(({ id }: { id: string }) => {
   const item = useEntry(id)
 
-  if (!item || !item.media) {
+  if (!item) {
     return null
   }
+
+  const imageUrl = item.media?.at(0)?.url
 
   return (
     <View className="m-1">
@@ -42,14 +44,18 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
             openVideo(item.url)
           }}
         >
-          <Image
-            source={{ uri: item.media[0]?.url || "" }}
-            aspectRatio={16 / 9}
-            className="w-full rounded-lg"
-            proxy={{
-              width: 200,
-            }}
-          />
+          {imageUrl ? (
+            <Image
+              source={{ uri: imageUrl }}
+              aspectRatio={16 / 9}
+              className="w-full rounded-lg"
+              proxy={{
+                width: 200,
+              }}
+            />
+          ) : (
+            <FallbackMedia />
+          )}
           <EntryGridFooter entryId={id} view={FeedViewType.Videos} />
         </ItemPressable>
       </VideoContextMenu>
@@ -58,6 +64,15 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
 })
 
 EntryVideoItem.displayName = "EntryVideoItem"
+
+const FallbackMedia = () => (
+  <View
+    className="bg-tertiary-system-fill w-full items-center justify-center rounded-lg"
+    style={{ aspectRatio: 16 / 9 }}
+  >
+    <Text className="text-label text-center">No media available</Text>
+  </View>
+)
 
 const parseSchemeLink = (url: string) => {
   let urlObject: URL

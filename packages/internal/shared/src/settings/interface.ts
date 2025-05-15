@@ -75,6 +75,9 @@ export interface UISettings {
   // @mobile
   showUnreadCountViewAndSubscriptionMobile: boolean
   showUnreadCountBadgeMobile: boolean
+
+  // Discover
+  discoverLanguage: "all" | "eng" | "cmn"
 }
 
 export interface IntegrationSettings {

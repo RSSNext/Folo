@@ -193,7 +193,9 @@ const ShikiCode: FC<
       )}
     >
       <div className="flex items-center justify-between border-b p-2">
-        {language !== "plaintext" && (
+        {language === "plaintext" ? (
+          <div />
+        ) : (
           <span className="center flex gap-1 text-xs uppercase opacity-80 dark:text-white">
             <span className="center [&_svg]:size-4">{getLanguageIcon(language)}</span>
             <span>{language}</span>

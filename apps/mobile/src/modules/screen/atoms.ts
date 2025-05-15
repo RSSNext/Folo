@@ -1,9 +1,9 @@
 import { FeedViewType } from "@follow/constants"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { createContext, use, useCallback, useMemo, useState } from "react"
+import { createContext, use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { views } from "@/src/constants/views"
@@ -13,36 +13,6 @@ import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
 import { useFeed } from "@/src/store/feed/hooks"
 import { useInbox } from "@/src/store/inbox/hooks"
 import { useList } from "@/src/store/list/hooks"
-// drawer open state
-
-const drawerOpenAtom = atom<boolean>(false)
-
-export function useFeedDrawer() {
-  const [state, setState] = useAtom(drawerOpenAtom)
-
-  return {
-    isDrawerOpen: state,
-    openDrawer: useCallback(() => setState(true), [setState]),
-    closeDrawer: useCallback(() => setState(false), [setState]),
-    toggleDrawer: useCallback(() => setState(!state), [setState, state]),
-  }
-}
-
-export const closeDrawer = () => jotaiStore.set(drawerOpenAtom, false)
-
-// is drawer swipe disabled
-
-const isDrawerSwipeDisabledAtom = atom<boolean>(true)
-
-export function useIsDrawerSwipeDisabled() {
-  return useAtomValue(isDrawerSwipeDisabledAtom)
-}
-
-export function useSetDrawerSwipeDisabled() {
-  return useSetAtom(isDrawerSwipeDisabledAtom)
-}
-
-// feed panel selected state
 
 export type SelectedTimeline = {
   type: "view"

@@ -3,7 +3,7 @@ import { Fragment, useCallback } from "react"
 import { useFeedUnreadStore } from "~/store/unread"
 
 import { useFeedListSortSelector } from "../atom"
-import { FeedCategory } from "../FeedCategory"
+import { FeedCategoryAutoHideUnread } from "../FeedCategory"
 import type { FeedListProps } from "./types"
 
 export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: FeedListProps) => {
@@ -41,7 +41,7 @@ export const SortByUnreadFeedList = ({ view, data, categoryOpenStateData }: Feed
   return (
     <Fragment>
       {sortedByUnread?.map(([category, ids]) => (
-        <FeedCategory
+        <FeedCategoryAutoHideUnread
           key={category}
           data={ids}
           view={view}

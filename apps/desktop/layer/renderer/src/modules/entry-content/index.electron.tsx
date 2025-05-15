@@ -1,41 +1,40 @@
+import {
+  Focusable,
+  useFocusable,
+  useFocusActions,
+} from "@follow/components/common/Focusable/index.js"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
+import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
-import { stopPropagation } from "@follow/utils/dom"
+import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
-import { cn } from "@follow/utils/utils"
+import { cn, combineCleanupFunctions } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import * as React from "react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
-import {
-  useEntryIsInReadability,
-  useEntryIsInReadabilitySuccess,
-  useEntryReadabilityContent,
-} from "~/atoms/readability"
-import { useUISettingKey } from "~/atoms/settings/ui"
+import { useEntryIsInReadability } from "~/atoms/readability"
+import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery, useConditionalHotkeyScope } from "~/hooks/common"
+import { useConditionalHotkeyScope } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { useHotkeyScope } from "~/providers/hotkey-provider"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
-import { Queries } from "~/queries"
-import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding, useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
@@ -43,7 +42,7 @@ import { EntryTitle } from "./components/EntryTitle"
 import { SourceContentPanel } from "./components/SourceContentView"
 import { SupportCreator } from "./components/SupportCreator"
 import { EntryHeader } from "./header"
-import { useFocusEntryContainerSubscriptions } from "./hooks"
+import { useEntryContent, useEntryMediaInfo } from "./hooks"
 import type { EntryContentProps } from "./index.shared"
 import {
   ContainerToc,
@@ -69,54 +68,37 @@ export const EntryContent: Component<EntryContentProps> = ({
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
 
   const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
+  const isInbox = !!inbox
+  const isInReadabilityMode = useEntryIsInReadability(entryId)
 
-  const { error, data, isPending } = useAuthQuery(
-    inbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
-    {
-      staleTime: 300_000,
-    },
-  )
-  const readabilityContent = useEntryReadabilityContent(entryId)
+  const { error, content, isPending } = useEntryContent(entryId)
 
   const view = useRouteParamsSelector((route) => route.view)
 
-  const isInReadabilityMode = useEntryIsInReadability(entryId)
-  const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const scrollerRef = useRef<HTMLDivElement | null>(null)
-  useEffect(() => {
-    scrollerRef.current?.scrollTo(0, 0)
-    scrollerRef.current?.focus()
-  }, [entryId])
 
-  useFocusEntryContainerSubscriptions(scrollerRef)
+  useEffect(() => {
+    const scrollAndFocus = () => {
+      scrollerRef.current?.scrollTo(0, 0)
+    }
+
+    scrollAndFocus()
+    return combineCleanupFunctions(
+      EventBus.subscribe(COMMAND_ID.timeline.switchToNext, scrollAndFocus),
+      EventBus.subscribe(COMMAND_ID.timeline.switchToPrevious, scrollAndFocus),
+    )
+  }, [entryId])
 
   const safeUrl = useFeedSafeUrl(entryId)
 
   const customCSS = useUISettingKey("customCSS")
 
-  const contentTranslated = useEntryTranslation({
-    entry,
-    extraFields: isReadabilitySuccess ? ["readabilityContent"] : ["content"],
-  })
-
   const isInPeekModal = useInPeekModal()
 
-  const { setIsUserInteraction } = useRegisterCommands({
-    entryId,
-    scrollerRef,
-  })
+  const [isUserInteraction, setIsUserInteraction] = useState(false)
+  const isZenMode = useIsZenMode()
 
   if (!entry) return null
-
-  const entryContent = isInReadabilityMode
-    ? readabilityContent?.content
-    : (entry?.entries.content ?? data?.entries.content)
-  const translatedContent = isInReadabilityMode
-    ? contentTranslated.data?.readabilityContent
-    : contentTranslated.data?.content
-  const content = translatedContent || entryContent
-
-  const isInbox = !!inbox
 
   return (
     <>
@@ -129,16 +111,52 @@ export const EntryContent: Component<EntryContentProps> = ({
         />
       )}
 
-      <div className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible">
+      <Focusable
+        className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
+        onFocus={() => setIsUserInteraction(true)}
+      >
+        <RegisterCommands
+          scrollerRef={scrollerRef}
+          isUserInteraction={isUserInteraction}
+          setIsUserInteraction={setIsUserInteraction}
+        />
         <EntryTimelineSidebar entryId={entry.entries.id} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
+          {/* Indicator for the entry */}
           <div
             className="animate-in fade-in slide-in-from-bottom-24 f-motion-reduce:fade-in-0 f-motion-reduce:slide-in-from-bottom-0 select-text duration-200 ease-in-out"
             key={entry.entries.id}
           >
+            {!isZenMode && (
+              <>
+                <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
+                  <MotionButtonBase
+                    // -12： Visual center point
+                    className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
+                    onClick={() => {
+                      EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
+                    }}
+                  >
+                    <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
+                  </MotionButtonBase>
+                </div>
+
+                <div className="absolute inset-y-0 right-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
+                  <MotionButtonBase
+                    className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
+                    onClick={() => {
+                      EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
+                    }}
+                  >
+                    <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
+                  </MotionButtonBase>
+                </div>
+              </>
+            )}
+
             <article
               tabIndex={-1}
-              onClick={() => setIsUserInteraction(true)}
+              onFocus={() => setIsUserInteraction(true)}
               data-testid="entry-render"
               onContextMenu={stopPropagation}
               className="@[950px]:max-w-[70ch] @7xl:max-w-[80ch] relative m-auto min-w-0 max-w-[550px]"
@@ -202,7 +220,7 @@ export const EntryContent: Component<EntryContentProps> = ({
           </div>
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
-      </div>
+      </Focusable>
     </>
   )
 }
@@ -238,19 +256,7 @@ const Renderer: React.FC<{
   noMedia?: boolean
   content?: Nullable<string>
 }> = React.memo(({ entryId, view, feedId, noMedia = false, content = "" }) => {
-  const mediaInfo = useEntry(entryId, (entry) =>
-    Object.fromEntries(
-      entry?.entries.media
-        ?.filter((m) => m.type === "photo")
-        .map((cur) => [
-          cur.url,
-          {
-            width: cur.width,
-            height: cur.height,
-          },
-        ]) ?? [],
-    ),
-  )
+  const mediaInfo = useEntryMediaInfo(entryId)
 
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
 
@@ -286,70 +292,78 @@ const Renderer: React.FC<{
   )
 })
 
-const useRegisterCommands = ({
-  entryId,
+const RegisterCommands = ({
   scrollerRef,
+  isUserInteraction,
+  setIsUserInteraction,
 }: {
-  entryId: string
   scrollerRef: React.RefObject<HTMLDivElement | null>
+  isUserInteraction: boolean
+  setIsUserInteraction: (isUserInteraction: boolean) => void
 }) => {
-  const [isUserInteraction, setIsUserInteraction] = React.useState(false)
-  useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction, true)
+  const containerFocused = useFocusable()
+  useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction && containerFocused, true)
 
   const activeScope = useHotkeyScope()
   const when = activeScope.includes(HotkeyScope.EntryRender)
 
-  useCommandHotkey({
-    shortcut: shortcuts.entry.scrollUp.key,
+  useCommandBinding({
     commandId: COMMAND_ID.entryRender.scrollUp,
     when,
   })
 
-  useCommandHotkey({
-    shortcut: shortcuts.entry.scrollDown.key,
+  useCommandBinding({
     commandId: COMMAND_ID.entryRender.scrollDown,
     when,
   })
 
-  useCommandHotkey({
-    shortcut: shortcuts.entry.nextEntry.key,
-    commandId: COMMAND_ID.timeline.switchToNext,
+  useCommandBinding({
+    commandId: COMMAND_ID.entryRender.nextEntry,
+    when,
+  })
 
+  useCommandBinding({
+    commandId: COMMAND_ID.entryRender.previousEntry,
     when,
   })
 
   useCommandHotkey({
-    shortcut: shortcuts.entry.previousEntry.key,
-    commandId: COMMAND_ID.timeline.switchToPrevious,
+    commandId: COMMAND_ID.layout.focusToTimeline,
     when,
+    shortcut: "Backspace, Escape",
   })
 
-  useEffect(() => {
-    return EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
-      const currentScroll = scrollerRef.current?.scrollTop
-      const delta = window.innerHeight
-
-      if (typeof currentScroll === "number" && delta) {
-        springScrollTo(currentScroll - delta, scrollerRef.current!)
-      }
-    })
-  }, [scrollerRef])
+  const { highlightBoundary } = useFocusActions()
 
   useEffect(() => {
-    return EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
-      const currentScroll = scrollerRef.current?.scrollTop
-      const delta = window.innerHeight
-      if (typeof currentScroll === "number" && delta) {
-        springScrollTo(currentScroll + delta, scrollerRef.current!)
-      }
-    })
-  }, [scrollerRef])
+    return combineCleanupFunctions(
+      EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
+        const currentScroll = scrollerRef.current?.scrollTop
+        const delta = window.innerHeight
 
-  useEffect(() => {
-    return () => setIsUserInteraction(false)
-  }, [entryId])
+        if (typeof currentScroll === "number" && delta) {
+          springScrollTo(currentScroll - delta, scrollerRef.current!)
+        }
+      }),
 
-  return {
-    setIsUserInteraction,
-  }
+      EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
+        const currentScroll = scrollerRef.current?.scrollTop
+        const delta = window.innerHeight
+        if (typeof currentScroll === "number" && delta) {
+          springScrollTo(currentScroll + delta, scrollerRef.current!)
+        }
+      }),
+      EventBus.subscribe(COMMAND_ID.timeline.enter, () => {
+        const $scroller = scrollerRef.current
+        if ($scroller) {
+          springScrollTo(0, $scroller)
+          $scroller.focus()
+          nextFrame(highlightBoundary)
+          setIsUserInteraction(true)
+        }
+      }),
+    )
+  }, [highlightBoundary, scrollerRef, setIsUserInteraction])
+
+  return null
 }

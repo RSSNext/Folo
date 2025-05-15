@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 import { DrawerModalLayout } from "~/components/ui/modal/stacked/custom-modal"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
@@ -29,35 +29,39 @@ const LanguageOptions = [
   },
   {
     label: "English",
-    value: "en",
+    value: "eng",
   },
   {
     label: "中文",
-    value: "zh-CN",
+    value: "cmn",
   },
 ] as const
 
 type Language = (typeof LanguageOptions)[number]["value"]
 type DiscoverCategories = (typeof RSSHubCategories)[number] | string
 
+const LanguageMap = {
+  all: "all",
+  eng: "en",
+  cmn: "zh-CN",
+} as const
+
 const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
   return Queries.discover.rsshubCategory({
     category: "popular",
     categories: category === "all" ? "popular" : `popular,${category}`,
-    lang,
+    lang: LanguageMap[lang],
   })
 }
 let firstLoad = true
 export function Recommendations() {
   const { t } = useTranslation()
-  const lang = useGeneralSettingKey("language")
   const { present } = useModalStack()
 
-  const defaultLang = !lang || ["zh-CN", "zh-HK", "zh-TW"].includes(lang) ? "all" : "en"
   const [category, setCategory] = useState<DiscoverCategories>("all")
-  const [selectedLang, setSelectedLang] = useState<Language>(defaultLang)
+  const lang = useUISettingKey("discoverLanguage")
 
-  const rsshubPopular = useAuthQuery(fetchRsshubPopular(category, selectedLang), {
+  const rsshubPopular = useAuthQuery(fetchRsshubPopular(category, lang), {
     meta: {
       persist: true,
     },
@@ -107,7 +111,7 @@ export function Recommendations() {
   const handleLangChange = useCallback(
     (value: string) => {
       flushSync(() => {
-        setSelectedLang(value as Language)
+        setUISetting("discoverLanguage", value as Language)
       })
       rsshubPopular.refetch()
     },
@@ -152,7 +156,7 @@ export function Recommendations() {
           <div className="flex items-center gap-2">
             <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}</span>
             <ResponsiveSelect
-              value={selectedLang}
+              value={lang}
               onValueChange={handleLangChange}
               triggerClassName="h-8 rounded border-0"
               size="sm"

@@ -1,4 +1,5 @@
 import type { MediaModel } from "@follow/shared/hono"
+import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import useEmblaCarousel from "embla-carousel-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
@@ -84,6 +85,7 @@ export function SwipeMedia({
               type="button"
               className="center absolute left-2 top-1/2 size-6 -translate-y-1/2 rounded-full bg-gray-800 text-white opacity-0 duration-200 group-hover:opacity-100"
               onClick={scrollPrev}
+              onDoubleClick={stopPropagation}
             >
               <i className="i-mingcute-arrow-left-line" />
             </button>
@@ -93,6 +95,7 @@ export function SwipeMedia({
               type="button"
               className="center absolute right-2 top-1/2 size-6 -translate-y-1/2 rounded-full bg-gray-800 text-white opacity-0 duration-200 group-hover:opacity-100"
               onClick={scrollNext}
+              onDoubleClick={stopPropagation}
             >
               <i className="i-mingcute-arrow-right-line" />
             </button>

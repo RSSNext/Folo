@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 
 import type { FollowCommand, FollowCommandId } from "../types"
 import { getCommand } from "./use-command"
+import type { BindingCommandId } from "./use-command-shortcut"
+import { useCommandShortcut } from "./use-command-shortcut"
 
 interface RegisterHotkeyOptions<T extends FollowCommandId> {
   shortcut: string
@@ -14,14 +16,15 @@ interface RegisterHotkeyOptions<T extends FollowCommandId> {
 export const useCommandHotkey = <T extends FollowCommandId>({
   shortcut,
   commandId,
-  when = true,
+  when,
   args,
 }: RegisterHotkeyOptions<T>) => {
-  const unsubscribeRef = useRef<() => void>(void 0)
-
   useEffect(() => {
     if (!when) {
-      unsubscribeRef.current?.()
+      return
+    }
+
+    if (!shortcut) {
       return
     }
 
@@ -55,10 +58,21 @@ export const useCommandHotkey = <T extends FollowCommandId>({
       }
     })
 
-    unsubscribeRef.current = tinykeys(document.documentElement, keyMap)
-
-    return () => {
-      unsubscribeRef.current?.()
-    }
+    return tinykeys(document.documentElement, keyMap)
   }, [shortcut, commandId, when, args])
+}
+
+export const useCommandBinding = <T extends BindingCommandId>({
+  commandId,
+  when = true,
+  args,
+}: Omit<RegisterHotkeyOptions<T>, "shortcut">) => {
+  const commandShortcut = useCommandShortcut(commandId)
+
+  return useCommandHotkey({
+    shortcut: commandShortcut,
+    commandId,
+    when,
+    args,
+  })
 }

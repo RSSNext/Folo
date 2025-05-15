@@ -7,8 +7,8 @@ import { SubscriptionItem } from "./items/SubscriptionItem"
 
 export const UnGroupedList: FC<{
   subscriptionIds: string[]
-  isGroupLast?: boolean
-}> = ({ subscriptionIds, isGroupLast }) => {
+  isLastGroup?: boolean
+}> = ({ subscriptionIds, isLastGroup }) => {
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
   const sortedSubscriptionIds = useSortedUngroupedSubscription(subscriptionIds, sortBy, sortOrder)
@@ -18,7 +18,7 @@ export const UnGroupedList: FC<{
       key={id}
       id={id}
       isFirst={false}
-      isLast={!!isGroupLast && index === sortedSubscriptionIds.length - 1}
+      isLast={!!isLastGroup && index === sortedSubscriptionIds.length - 1}
     />
   ))
 }

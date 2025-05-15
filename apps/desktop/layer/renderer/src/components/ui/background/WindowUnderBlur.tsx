@@ -1,4 +1,4 @@
-import { Focusable } from "@follow/components/common/Focusable.js"
+import { Focusable } from "@follow/components/common/Focusable/index.js"
 import { SYSTEM_CAN_UNDER_BLUR_WINDOW } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 

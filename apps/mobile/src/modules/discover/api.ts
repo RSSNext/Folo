@@ -11,3 +11,21 @@ export const fetchRsshubPopular = (category: DiscoverCategories, lang: Language)
     },
   })
 }
+
+export const fetchFeedTrending = ({
+  lang,
+  view,
+  limit,
+}: {
+  lang?: "eng" | "cmn"
+  view?: number
+  limit: number
+}) => {
+  return apiClient.trending.feeds.$get({
+    query: {
+      language: lang,
+      view,
+      limit,
+    },
+  })
+}

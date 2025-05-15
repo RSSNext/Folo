@@ -1,3 +1,4 @@
+import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Routes } from "@follow/constants"
@@ -17,7 +18,6 @@ import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import { HotkeyScope } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
 import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -27,7 +27,7 @@ import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding } from "../command/hooks/use-register-hotkey"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
 import { TimelineColumnHeader } from "./TimelineColumnHeader"
@@ -106,29 +106,30 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
   const feedColumnShow = useTimelineColumnShow()
   const rootContainerElement = useRootContainerElement()
 
-  const { setIsFocus } = useRegisterCommands({ setActive, timelineList })
+  const focusableContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!focusableContainerRef.current) return
+    focusableContainerRef.current.focus()
+  }, [])
 
   return (
     <WindowUnderBlur
       data-hide-in-print
-      onFocus={useCallback(() => {
-        setIsFocus(true)
-      }, [setIsFocus])}
-      onBlur={useCallback(() => {
-        setIsFocus(false)
-      }, [setIsFocus])}
       className={cn(
         "relative flex h-full flex-col pt-2.5",
 
         !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
         className,
       )}
+      ref={focusableContainerRef}
       onClick={useCallback(async () => {
         if (document.hasFocus()) {
           navigateBackHome()
         }
       }, [navigateBackHome])}
     >
+      <CommandsHandler setActive={setActive} timelineList={timelineList} />
       <TimelineColumnHeader />
       {!feedColumnShow && (
         <RootPortal to={rootContainerElement}>
@@ -235,7 +236,7 @@ const SwipeWrapper: FC<{ active: string; children: React.JSX.Element[] }> = memo
   },
 )
 
-const useRegisterCommands = ({
+const CommandsHandler = ({
   setActive,
   timelineList,
 }: {
@@ -245,15 +246,13 @@ const useRegisterCommands = ({
   const activeScope = useHotkeyScope()
   const when =
     activeScope.includes(HotkeyScope.SubscriptionList) || activeScope.includes(HotkeyScope.Timeline)
-  useCommandHotkey({
+  useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToNext,
-    shortcut: shortcuts.feeds.switchNextView.key,
     when,
   })
 
-  useCommandHotkey({
+  useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToPrevious,
-    shortcut: shortcuts.feeds.switchPreviousView.key,
     when,
   })
 
@@ -269,10 +268,8 @@ const useRegisterCommands = ({
     })
   }, [activeScope, setActive, timelineList])
 
-  const [isFocus, setIsFocus] = useState(false)
+  const focus = useFocusable()
 
-  useConditionalHotkeyScope(HotkeyScope.SubscriptionList, isFocus, true)
-  return {
-    setIsFocus,
-  }
+  useConditionalHotkeyScope(HotkeyScope.SubscriptionList, focus, true)
+  return null
 }

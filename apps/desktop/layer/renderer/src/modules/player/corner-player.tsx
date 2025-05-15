@@ -1,4 +1,4 @@
-import { useFocusable } from "@follow/components/common/Focusable.js"
+import { useFocusable } from "@follow/components/common/Focusable/index.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"

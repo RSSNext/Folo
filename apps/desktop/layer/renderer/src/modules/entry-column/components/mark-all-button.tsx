@@ -50,7 +50,7 @@ export const MarkAllReadButton = ({
           label: (
             <span className="flex items-center gap-1">
               {t("mark_all_read_button.undo")}
-              <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
+              <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
                 Meta+Z
               </Kbd>
             </span>

@@ -3,35 +3,16 @@ import type { SupportedLanguages } from "@follow/models"
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import { enhancedGeneralSettingKeys } from "@follow/shared/settings/enhanced"
 import type { GeneralSettings } from "@follow/shared/settings/interface"
-import LanguageDetector from "i18next-browser-languagedetector"
 import { useCallback, useMemo } from "react"
 
-import { currentSupportedLanguages } from "~/@types/constants"
-import { I18N_LOCALE_KEY } from "~/constants"
 import { jotaiStore } from "~/lib/jotai"
+import { getDefaultLanguage } from "~/lib/load-language"
 
 export const DEFAULT_ACTION_LANGUAGE = "default"
 
-let language = "en"
-const languageDetector = new LanguageDetector(null, {
-  order: ["querystring", "localStorage", "navigator"],
-  lookupQuerystring: "lng",
-  lookupLocalStorage: I18N_LOCALE_KEY,
-  caches: ["localStorage"],
-})
-
-const userLang = languageDetector.detect()
-if (userLang) {
-  const firstUserLang = Array.isArray(userLang) ? userLang[0]! : userLang
-  const currentLang = currentSupportedLanguages.find((lang) => lang.includes(firstUserLang))
-  if (currentLang) {
-    language = currentLang
-  }
-}
-
 const createDefaultSettings = (): GeneralSettings => ({
   ...defaultGeneralSettings,
-  language,
+  language: getDefaultLanguage(),
 })
 
 const {

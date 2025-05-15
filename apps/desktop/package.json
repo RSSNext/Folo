@@ -52,6 +52,7 @@
     "@follow/configs": "workspace:*",
     "@follow/constants": "workspace:*",
     "@follow/hooks": "workspace:*",
+    "@follow/legal": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
     "@follow/utils": "workspace:*",

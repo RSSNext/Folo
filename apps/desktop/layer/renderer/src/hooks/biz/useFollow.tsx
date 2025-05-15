@@ -1,6 +1,7 @@
 import { UserRole } from "@follow/constants"
 import { t } from "i18next"
 import { useCallback } from "react"
+import { withoutTrailingSlash, withTrailingSlash } from "ufo"
 import { useEventCallback } from "usehooks-ts"
 
 import { useServerConfigs } from "~/atoms/server-configs"
@@ -12,6 +13,7 @@ import type { FeedFormDataValuesType } from "~/modules/discover/FeedForm"
 import { FeedForm } from "~/modules/discover/FeedForm"
 import type { ListFormDataValuesType } from "~/modules/discover/ListForm"
 import { ListForm } from "~/modules/discover/ListForm"
+import { getFeedByIdOrUrl } from "~/store/feed"
 import {
   getSubscriptionByFeedId,
   useFeedSubscriptionCount,
@@ -73,10 +75,16 @@ export const useFollow = () => {
       } else {
         canFollowMoreInboxAndNotify("feed")
       }
-      let isFollowed = false
-      if (options?.id) {
-        isFollowed = !!getSubscriptionByFeedId(options.id)
-      }
+
+      // Some feeds redirect xxx.com/feed to xxx.com/feed/
+      // Try to get a valid feed, then we can check isFollowed correctly
+      const feed =
+        getFeedByIdOrUrl({ id: options?.id, url: withTrailingSlash(options?.url) }) ??
+        getFeedByIdOrUrl({ id: options?.id, url: withoutTrailingSlash(options?.url) })
+      const id = options?.id || feed?.id
+      const url = feed?.type === "feed" ? feed.url : options?.url
+      const subscription = getSubscriptionByFeedId(id)
+      const isFollowed = !!subscription
 
       present({
         title: `${isFollowed ? `${t("common:words.edit")} ` : ""}${options?.isList ? t("words.lists") : t("words.feeds")}`,
@@ -94,8 +102,8 @@ export const useFollow = () => {
             />
           ) : (
             <FeedForm
-              id={options?.id}
-              url={options?.url}
+              id={id}
+              url={url}
               defaultValues={options?.defaultValues as FeedFormDataValuesType}
               onSuccess={onSuccess}
             />

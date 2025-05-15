@@ -1,14 +1,13 @@
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { views } from "@follow/constants"
-import type { FeedModel } from "@follow/models"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { apiFetch } from "~/lib/api-fetch"
+import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { apiClient } from "~/lib/api-fetch"
 
 import { TrendingFeedCard } from "../discover/TrendingFeedCard"
 
@@ -27,7 +26,7 @@ const LanguageOptions = [
   },
 ]
 
-type Language = (typeof LanguageOptions)[number]["value"]
+type Language = "all" | "eng" | "cmn"
 
 const viewOptions = [
   {
@@ -53,24 +52,16 @@ export function Trending({
 }) {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
-  const lang = useGeneralSettingKey("language")
+  const lang = useUISettingKey("discoverLanguage")
 
-  const [selectedLang, setSelectedLang] = useState<Language>(lang.startsWith("zh") ? "all" : "eng")
   const [selectedView, setSelectedView] = useState<View>("all")
 
   const { data, isLoading } = useQuery({
-    queryKey: ["trending", selectedLang, selectedView],
+    queryKey: ["trending", lang, selectedView],
     queryFn: async () => {
-      return await apiFetch<{
-        data: {
-          feed: FeedModel
-          view: number
-          subscriptionCount: number
-        }[]
-      }>("/trending/feeds", {
-        method: "GET",
-        params: {
-          language: selectedLang === "all" ? undefined : selectedLang,
+      return await apiClient.trending.feeds.$get({
+        query: {
+          language: lang === "all" ? undefined : lang,
           view: selectedView === "all" ? undefined : Number(selectedView),
           limit,
         },
@@ -94,9 +85,9 @@ export function Trending({
           <div className="flex items-center">
             <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}:</span>
             <ResponsiveSelect
-              value={selectedLang}
+              value={lang}
               onValueChange={(value) => {
-                setSelectedLang(value as Language)
+                setUISetting("discoverLanguage", value as Language)
               }}
               triggerClassName="h-8 rounded border-0"
               size="sm"

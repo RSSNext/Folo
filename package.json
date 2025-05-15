@@ -12,6 +12,7 @@
     "type": "git"
   },
   "scripts": {
+    "build:packages": "turbo run build --filter='./packages/**/*'",
     "build:web": "turbo run Folo#build:web",
     "dedupe:locales": "eslint --fix locales/**",
     "depcheck": "npx depcheck --quiet",
@@ -26,6 +27,7 @@
     "lint:tsl": "tsslint --project apps/*/tsconfig.json",
     "mitproxy": "bash scripts/run-proxy.sh",
     "polyfill-optimize": "pnpx nolyfill install",
+    "postinstall": "pnpm run build:packages",
     "prepare": "simple-git-hooks && corepack prepare",
     "reinstall": "rm -rf node_modules && rm -rf apps/**/node_modules && rm -rf packages/**/node_modules && pnpm install",
     "test": "cross-env CI=1 pnpm --recursive run test",
@@ -84,6 +86,7 @@
       "@electron/node-gyp": "10.2.0-electron.2",
       "is-core-module": "npm:@nolyfill/is-core-module@1.0.39",
       "isarray": "npm:@nolyfill/isarray@1.0.44",
+      "lan-network@<0.1.6": "0.1.6",
       "react": "19.0.0",
       "react-dom": "19.0.0",
       "react-native-ios-context-menu": "3.1.1",

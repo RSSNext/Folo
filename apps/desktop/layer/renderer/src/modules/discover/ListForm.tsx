@@ -66,6 +66,15 @@ export const ListForm: Component<{
 
   const { t } = useTranslation()
 
+  useEffect(() => {
+    if (!feedQuery.isLoading) {
+      tracker.subscribeModalOpened({
+        listId: id,
+        isError: feedQuery.isError,
+      })
+    }
+  }, [feedQuery.isLoading])
+
   return (
     <div
       className={cn(

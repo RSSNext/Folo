@@ -171,6 +171,7 @@ export enum TrackerMapper {
   FeedClaimed = 2012,
   DailyRewardClaimed = 2013,
   TipSent = 2014,
+  SubscribeModalOpened = 2015,
 
   // https://docs.google.com/spreadsheets/d/1XlUxTxiXWIQDHFYa2eoPBeuosR1t2h8VFIjXEOqmjhY/edit?gid=0#gid=0
   Register = 3000,
@@ -269,6 +270,15 @@ export class TrackerPoints {
 
   tipModalOpened(props: { entryId?: string }) {
     this.track(TrackerMapper.TipModalOpened, props)
+  }
+
+  subscribeModalOpened(props: {
+    feedId?: string
+    listId?: string
+    feedUrl?: string
+    isError?: boolean
+  }) {
+    this.track(TrackerMapper.SubscribeModalOpened, props)
   }
 
   feedClaimed(props: { feedId: string }) {

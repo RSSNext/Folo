@@ -3,10 +3,9 @@ import type { FeedViewType } from "@follow/constants"
 import { MenuItemText } from "~/atoms/context-menu"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { useHasModal } from "~/components/ui/modal/stacked/hooks"
-import { shortcuts } from "~/constants/shortcuts"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
+import { useCommandBinding } from "~/modules/command/hooks/use-register-hotkey"
 import { useEntry } from "~/store/entry/hooks"
 
 export const EntryHeaderActions = ({
@@ -23,9 +22,8 @@ export const EntryHeaderActions = ({
 
   const hasModal = useHasModal()
 
-  useCommandHotkey({
+  useCommandBinding({
     when: !!entry?.entries.url && !hasModal,
-    shortcut: shortcuts.entry.openInBrowser.key,
     commandId: COMMAND_ID.entry.openInBrowser,
     args: [{ entryId }],
   })

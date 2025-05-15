@@ -15,6 +15,7 @@ import { FeedService } from "~/services"
 import { getSubscriptionByFeedId } from "../subscription"
 import { userActions } from "../user"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
+import { feedByIdOrUrlSelector } from "./selector"
 import type { FeedQueryParams, FeedState } from "./types"
 
 export const useFeedStore = createZustandStore<FeedState>("feed")(() => ({
@@ -142,6 +143,9 @@ export const feedActions = new FeedActions()
 
 export const getFeedById = (feedId: string): Nullable<FeedOrListRespModel> =>
   useFeedStore.getState().feeds[feedId]
+export const getFeedByIdOrUrl = (feed: FeedQueryParams): Nullable<FeedOrListRespModel> => {
+  return feedByIdOrUrlSelector(feed)(get())
+}
 
 export const getPreferredTitle = (
   feed?: Pick<FeedOrListRespModel, "type" | "id" | "title"> | null,

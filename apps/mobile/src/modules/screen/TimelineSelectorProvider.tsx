@@ -37,27 +37,16 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
         [isTimeline, isSubscriptions],
       )}
       headerRight={useMemo(() => {
-        const Component = (() => {
-          if (isTimeline || isFeed)
-            return () => (
-              <ActionGroup>
-                <UnreadOnlyActionButton />
-                <MarkAllAsReadActionButton />
-                <FeedShareActionButton feedId={feedId} />
-              </ActionGroup>
-            )
-          if (isSubscriptions)
-            return () => (
-              <ActionGroup>
-                <MarkAllAsReadActionButton />
-              </ActionGroup>
-            )
-        })()
-
-        if (Component)
-          return () => <View className="flex-row items-center justify-end">{Component()}</View>
-        return
-      }, [isFeed, isTimeline, isSubscriptions, feedId])}
+        return () => (
+          <View className="flex-row items-center justify-end">
+            <ActionGroup>
+              <UnreadOnlyActionButton />
+              <MarkAllAsReadActionButton />
+              <FeedShareActionButton feedId={feedId} />
+            </ActionGroup>
+          </View>
+        )
+      }, [feedId])}
       headerHideableBottom={isTimeline || isSubscriptions ? TimelineViewSelector : undefined}
       headerHideableBottomHeight={TIMELINE_VIEW_SELECTOR_HEIGHT}
     />
