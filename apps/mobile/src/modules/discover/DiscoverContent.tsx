@@ -28,7 +28,7 @@ export function DiscoverContent() {
         </ItemPressable> */}
       </View>
 
-      <Trending className="mt-4" />
+      <Trending className="mt-4" itemClassName="px-6" />
 
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
         <View className="flex-row items-center gap-2">

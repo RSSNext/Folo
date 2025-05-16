@@ -50,7 +50,7 @@ export const FeedSummary = ({
     >
       {preChildren}
       {/* Headline */}
-      <View className="flex-row items-center gap-2 pr-2">
+      <View className="flex-1 flex-row items-center gap-2 pr-2">
         <View className="size-[32px] overflow-hidden rounded-lg">
           <FeedIcon
             size={32}
@@ -70,11 +70,7 @@ export const FeedSummary = ({
           />
         </View>
         <View className="flex-1">
-          <Text
-            className="text-text text-lg font-semibold"
-            ellipsizeMode="middle"
-            numberOfLines={1}
-          >
+          <Text className="text-text text-lg font-semibold" numberOfLines={1}>
             {item.feed?.title}
           </Text>
           <Text className="text-text text-sm leading-tight opacity-60">{item.feed?.url}</Text>

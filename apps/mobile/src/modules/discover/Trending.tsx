@@ -8,7 +8,13 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { fetchFeedTrending } from "./api"
 import { FeedSummary } from "./FeedSummary"
 
-export const Trending = ({ className }: { className?: string }) => {
+export const Trending = ({
+  className,
+  itemClassName,
+}: {
+  className?: string
+  itemClassName?: string
+}) => {
   const { i18n } = useTranslation()
   const { data, isLoading } = useQuery({
     queryKey: ["trending", "feeds"],
@@ -30,7 +36,7 @@ export const Trending = ({ className }: { className?: string }) => {
           <FeedSummary
             key={item.feed?.id}
             item={item}
-            className="flex flex-1 flex-row items-center bg-none px-6 py-3"
+            className={cn("flex flex-1 flex-row items-center bg-none py-3", itemClassName)}
             simple
             preChildren={
               <View
