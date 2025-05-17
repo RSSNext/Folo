@@ -11,10 +11,10 @@ import {
 } from "@/src/modules/discover/ctx"
 import { DiscoverHeader } from "@/src/modules/discover/search"
 
-export default function Discover() {
+export default function Discover({ searchValue }: { searchValue?: string }) {
   return (
     <SearchPageScrollContainerAnimatedXProvider>
-      <SearchPageProvider>
+      <SearchPageProvider searchValue={searchValue}>
         <SafeNavigationScrollView
           Header={
             <View className="absolute top-0 z-10 w-full">
