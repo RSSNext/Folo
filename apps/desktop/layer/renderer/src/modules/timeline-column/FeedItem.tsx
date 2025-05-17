@@ -14,7 +14,7 @@ import { createElement, memo, use, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useHideAllReadSubscriptions } from "~/atoms/settings/general"
 import { ErrorTooltip } from "~/components/common/ErrorTooltip"
 import { useFeedActions, useInboxActions, useListActions } from "~/hooks/biz/useFeedActions"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -229,9 +229,8 @@ const FilterReadFeedItem: Component<FeedItemProps> = (props) => {
 export const FeedItem = memo(FeedItemImpl)
 
 export const FeedItemAutoHideUnread: Component<FeedItemProps> = memo((props) => {
-  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
-  const unreadOnly = useGeneralSettingKey("unreadOnly")
-  if (hideAllReadSubscriptions && unreadOnly) return createElement(FilterReadFeedItem, props)
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  if (hideAllReadSubscriptions) return createElement(FilterReadFeedItem, props)
   return createElement(FeedItemImpl, props)
 })
 
@@ -343,7 +342,7 @@ const FilterReadListItem: Component<ListItemProps> = (props) => {
 }
 
 export const ListItemAutoHideUnread: Component<ListItemProps> = memo((props) => {
-  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
 
   if (hideAllReadSubscriptions) return createElement(FilterReadListItem, props)
   return createElement(ListItemImpl, props)

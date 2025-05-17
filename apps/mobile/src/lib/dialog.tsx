@@ -50,7 +50,7 @@ interface ShowDialogOptions<Ctx> {
   }
 }
 
-const entering = SlideInUp.springify().damping(16.5).stiffness(100)
+const entering = SlideInUp.duration(200)
 const exiting = SlideOutUp.duration(200)
 
 type DialogContextType = {
@@ -200,7 +200,7 @@ class DialogStatic {
           <FullWindowOverlay>
             <Overlay onPress={handleClose} />
             <Animated.View
-              className="bg-secondary-system-background absolute inset-x-0 -top-8 z-10 pt-8"
+              className="bg-system-background absolute inset-x-0 -top-8 z-10 pt-8"
               entering={entering}
               exiting={exiting}
             >

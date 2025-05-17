@@ -18,11 +18,13 @@ type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["da
 export const FeedSummary = ({
   item,
   children,
+  preChildren,
   className,
   simple,
 }: {
   item: SearchResultItem
   children?: React.ReactNode
+  preChildren?: React.ReactNode
   className?: string
   simple?: boolean
 }) => {
@@ -30,7 +32,7 @@ export const FeedSummary = ({
 
   return (
     <ItemPressable
-      itemStyle={ItemPressableStyle.Plain}
+      itemStyle={ItemPressableStyle.UnStyled}
       onPress={() => {
         if (item.feed?.id) {
           navigation.presentControllerView(FollowScreen, {
@@ -46,6 +48,7 @@ export const FeedSummary = ({
       }}
       className={className}
     >
+      {preChildren}
       {/* Headline */}
       <View className="flex-row items-center gap-2 pr-2">
         <View className="size-[32px] overflow-hidden rounded-lg">

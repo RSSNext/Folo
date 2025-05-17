@@ -24,11 +24,7 @@ export const EntryColumnWrapper = ({ ref, children, onScroll }: EntryColumnWrapp
           views[view]!.wideMode ? "mt-2" : "",
           isZenMode ? "max-w-[80ch] mx-auto" : "",
         )}
-        viewportClassName={cn(
-          "[&>div]:grow flex",
-          // avoid ActionBar being cut off
-          view === FeedViewType.SocialMedia && "pt-6",
-        )}
+        viewportClassName={"[&>div]:grow flex"}
         onScroll={onScroll}
       >
         {children}

@@ -6,7 +6,7 @@ import { jotaiStore } from "@follow/utils/jotai"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useEventCallback } from "usehooks-ts"
 
-import { getDefaultLanguage } from "~/lib/load-language"
+import { getDefaultLanguage } from "~/lib/language"
 import { DEFAULT_ACTION_ORDER } from "~/modules/customize-toolbar/constant"
 
 import { hookEnhancedSettings } from "./general"

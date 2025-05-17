@@ -18,7 +18,7 @@ import { useEventCallback, useOnClickOutside } from "usehooks-ts"
 
 import type { MenuItemInput } from "~/atoms/context-menu"
 import { MenuItemSeparator, MenuItemText, useShowContextMenu } from "~/atoms/context-menu"
-import { useGeneralSettingKey, useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useGeneralSettingSelector, useHideAllReadSubscriptions } from "~/atoms/settings/general"
 import { ROUTE_FEED_IN_FOLDER } from "~/constants"
 import { useAddFeedToFeedList } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -374,9 +374,8 @@ function FilterReadFeedCategory(props: FeedCategoryProps) {
 }
 
 export function FeedCategoryAutoHideUnread(props: FeedCategoryProps) {
-  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
-  const unreadOnly = useGeneralSettingKey("unreadOnly")
-  if (hideAllReadSubscriptions && unreadOnly) {
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  if (hideAllReadSubscriptions) {
     return <FilterReadFeedCategory {...props} />
   }
   return <FeedCategoryImpl {...props} />

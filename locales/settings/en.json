@@ -180,7 +180,7 @@
   "general.export_database.label": "Export Database",
   "general.group_by_date.description": "Group entries by date.",
   "general.group_by_date.label": "Group by date",
-  "general.hide_all_read_subscriptions.description": "Hide read subscriptions and no updated in the subscription list.",
+  "general.hide_all_read_subscriptions.description": "Hide subscriptions without unread entries in the subscription list.",
   "general.hide_all_read_subscriptions.label": "Hide read",
   "general.language": "Language",
   "general.launch_at_login": "Launch at login",

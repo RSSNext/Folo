@@ -6,7 +6,7 @@ import type { GeneralSettings } from "@follow/shared/settings/interface"
 import { useCallback, useMemo } from "react"
 
 import { jotaiStore } from "~/lib/jotai"
-import { getDefaultLanguage } from "~/lib/load-language"
+import { getDefaultLanguage } from "~/lib/language"
 
 export const DEFAULT_ACTION_LANGUAGE = "default"
 
@@ -187,6 +187,12 @@ export function getActionLanguage() {
   return (
     actionLanguage === DEFAULT_ACTION_LANGUAGE ? language : actionLanguage
   ) as SupportedLanguages
+}
+
+export function useHideAllReadSubscriptions() {
+  const hideAllReadSubscriptions = useGeneralSettingKey("hideAllReadSubscriptions")
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  return hideAllReadSubscriptions && unreadOnly
 }
 
 export const subscribeShouldUseIndexedDB = (callback: (value: boolean) => void) =>

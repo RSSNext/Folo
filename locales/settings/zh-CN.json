@@ -180,7 +180,7 @@
   "general.export_database.label": "导出数据库",
   "general.group_by_date.description": "按日期对条目进行分组。",
   "general.group_by_date.label": "按日期分组",
-  "general.hide_all_read_subscriptions.description": "在订阅列表中隐藏已读和没有更新的订阅。",
+  "general.hide_all_read_subscriptions.description": "在订阅列表中隐藏没有未读条目的订阅。",
   "general.hide_all_read_subscriptions.label": "隐藏已读",
   "general.language": "语言",
   "general.launch_at_login": "开机时启动",

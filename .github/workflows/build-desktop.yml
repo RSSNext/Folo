@@ -7,6 +7,7 @@ on:
     paths:
       - "apps/desktop/**"
       - "pnpm-lock.yaml"
+      - ".github/workflows/build-desktop.yml"
   workflow_dispatch:
     inputs:
       tag_version:
@@ -124,6 +125,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm i
+
+      - name: Prebuild packages (Windows)
+        if: runner.os == 'windows'
+        run: pnpm run build:packages
+
       - name: Update main hash
         working-directory: apps/desktop
         run: pnpm update:main-hash

@@ -73,7 +73,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative flex px-5 py-4 lg:px-8",
+        "relative flex px-5 py-4 first:mt-6 lg:px-8",
         "group",
         !asRead &&
           "before:bg-accent before:absolute before:left-1 before:top-8 before:block before:size-2 before:rounded-full md:before:-left-2 lg:before:left-2",
