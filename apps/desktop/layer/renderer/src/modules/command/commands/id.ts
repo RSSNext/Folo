@@ -26,6 +26,7 @@ export const COMMAND_ID = {
     saveToOutline: "integration:save-to-outline",
     saveToReadeck: "integration:save-to-readeck",
     saveToCubox: "integration:save-to-cubox",
+    saveToZotero: "integration:save-to-zotero",
   },
   list: {
     edit: "list:edit",
