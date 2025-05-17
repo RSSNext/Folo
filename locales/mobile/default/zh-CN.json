@@ -27,6 +27,7 @@
   "onboarding.welcome_title": "欢迎使用 Folo！",
   "operation.add_feeds_to_category": "移动至分类",
   "operation.change_to_other_view": "更改为其他视图",
+  "operation.copy.email_address": "邮件地址",
   "operation.copy.link": "链接",
   "operation.copy_which": "复制{{which}}",
   "operation.copy_which_success": "{{which}}已复制到剪贴板",
