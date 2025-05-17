@@ -256,8 +256,8 @@ const SearchItem = memo(function Item({
       className={clsx(
         "relative flex w-full justify-between px-1 text-[0.9rem]",
         `before:absolute before:inset-0 before:rounded-md before:content-[""]`,
-        "hover:before:bg-zinc-200/60 dark:hover:before:bg-zinc-800/80",
-        "data-[selected=true]:before:bg-zinc-200/60 data-[selected=true]:dark:before:bg-zinc-800/80",
+        "hover:before:bg-theme-selection-hover",
+        "data-[selected=true]:before:bg-theme-selection-active",
         "min-w-0 max-w-full",
         styles["content-visually"],
       )}
