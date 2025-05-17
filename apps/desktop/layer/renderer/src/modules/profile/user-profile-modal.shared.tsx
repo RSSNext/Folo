@@ -14,12 +14,13 @@ import { useEventCallback } from "usehooks-ts"
 
 import { m } from "~/components/common/Motion"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useI18n } from "~/hooks/common"
+import { useAuthQuery, useI18n } from "~/hooks/common"
+import { defineQuery } from "~/lib/defineQuery"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
 import { useSubscriptionStore } from "~/store/subscription"
-import { useUserById } from "~/store/user"
+import { userActions, useUserById } from "~/store/user"
 
 type ItemVariant = "loose" | "compact"
 
@@ -35,16 +36,25 @@ export const SubscriptionItems = ({
   userId: string
   itemStyle: ItemVariant
 }) => {
+  const profile = useAuthQuery(
+    defineQuery(["profiles", userId], async () => {
+      return userActions.getOrFetchProfile(userId!)
+    }),
+    {
+      enabled: !!userId,
+    },
+  )
   const userInfo = useUserById(userId)
   const subscriptions = useUserSubscriptionsQuery(userId)
-  if (!userInfo) return null
+  const renderUserData = profile.data || userInfo
+
   return subscriptions.isLoading ? (
     <LoadingWithIcon
       size="large"
       icon={
         <Avatar className="aspect-square size-4">
-          <AvatarImage src={replaceImgUrlIfNeed(userInfo.image || undefined)} />
-          <AvatarFallback>{userInfo.name?.slice(0, 2)}</AvatarFallback>
+          <AvatarImage src={replaceImgUrlIfNeed(renderUserData?.image || undefined)} />
+          <AvatarFallback>{renderUserData?.name?.slice(0, 2)}</AvatarFallback>
         </Avatar>
       }
       className="center h-48 w-full max-w-full"
