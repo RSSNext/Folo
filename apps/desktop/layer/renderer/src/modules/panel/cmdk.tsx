@@ -333,7 +333,7 @@ const SearchResultCount: FC<{
               )}
             </ExPromise>
           )}{" "}
-          {t("search.result_count_local_mode")}
+          <span>{t("search.result_count_local_mode")}</span>
           <i className="i-mingcute-question-line" />
         </small>
       </TooltipTrigger>
