@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue, useSetAtom } from "jotai"
-import { useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
@@ -16,10 +16,12 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { CalendarTimeAddCuteReIcon } from "@/src/icons/calendar_time_add_cute_re"
 import { openLink } from "@/src/lib/native"
+import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
+import { usePullUpToNext } from "@/src/modules/entry-content/use-pull-up-to-next"
 import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
 import { entrySyncServices } from "@/src/store/entry/store"
 import type { EntryWithTranslation } from "@/src/store/entry/types"
@@ -31,8 +33,9 @@ import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/
 
 export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
+  entryIds?: string[]
   view: FeedViewType
-}> = ({ entryId, view: viewType }) => {
+}> = ({ entryId, entryIds, view: viewType }) => {
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
   const translation = useEntryTranslation(entryId)
@@ -56,6 +59,22 @@ export const EntryDetailScreen: NavigationControllerView<{
     [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
   )
 
+  const navigation = useNavigation()
+  const { scrollViewEventHandlers } = usePullUpToNext({
+    onRefresh: useCallback(() => {
+      if (!entryIds) return
+      const currentEntryIdx = entryIds.indexOf(entryId)
+      const nextEntryId = entryIds[currentEntryIdx + 1]
+      if (!nextEntryId) return
+      navigation.back()
+      navigation.pushControllerView(EntryDetailScreen, {
+        entryId: nextEntryId,
+        entryIds,
+        view: viewType,
+      })
+    }, [entryId, entryIds, navigation, viewType]),
+  })
+
   return (
     <EntryContentContext value={ctxValue}>
       <PortalProvider>
@@ -63,12 +82,13 @@ export const EntryDetailScreen: NavigationControllerView<{
           <SafeNavigationScrollView
             Header={<EntryNavigationHeader entryId={entryId} />}
             automaticallyAdjustContentInsets={false}
-            className="bg-system-background"
+            contentContainerClassName="flex min-h-full"
+            {...scrollViewEventHandlers}
           >
             <ItemPressable
               itemStyle={ItemPressableStyle.UnStyled}
               onPress={() => entry?.url && openLink(entry.url)}
-              className="relative rounded-xl py-4"
+              className="rounded-xl py-4"
             >
               {viewType === FeedViewType.SocialMedia ? (
                 <EntrySocialTitle entryId={entryId} />
@@ -81,7 +101,7 @@ export const EntryDetailScreen: NavigationControllerView<{
             </ItemPressable>
             <EntryAISummary entryId={entryId} />
             {entryWithTranslation && (
-              <View className="mt-3">
+              <View className="mb-32 bg-red mt-3">
                 <EntryContentWebViewWithContext entry={entryWithTranslation} />
               </View>
             )}
