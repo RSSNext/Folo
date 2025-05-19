@@ -60,11 +60,15 @@ export const EntryDetailScreen: NavigationControllerView<{
   )
 
   const navigation = useNavigation()
+  const nextEntryId = useMemo(() => {
+    if (!entryIds) return
+    const currentEntryIdx = entryIds.indexOf(entryId)
+    return entryIds[currentEntryIdx + 1]
+  }, [entryId, entryIds])
+
   const { scrollViewEventHandlers } = usePullUpToNext({
+    enabled: !!nextEntryId,
     onRefresh: useCallback(() => {
-      if (!entryIds) return
-      const currentEntryIdx = entryIds.indexOf(entryId)
-      const nextEntryId = entryIds[currentEntryIdx + 1]
       if (!nextEntryId) return
       navigation.back()
       navigation.pushControllerView(EntryDetailScreen, {
@@ -72,7 +76,7 @@ export const EntryDetailScreen: NavigationControllerView<{
         entryIds,
         view: viewType,
       })
-    }, [entryId, entryIds, navigation, viewType]),
+    }, [entryIds, navigation, nextEntryId, viewType]),
   })
 
   return (
@@ -82,7 +86,7 @@ export const EntryDetailScreen: NavigationControllerView<{
           <SafeNavigationScrollView
             Header={<EntryNavigationHeader entryId={entryId} />}
             automaticallyAdjustContentInsets={false}
-            contentContainerClassName="flex min-h-full"
+            contentContainerClassName="flex min-h-full pb-16"
             {...scrollViewEventHandlers}
           >
             <ItemPressable
@@ -101,7 +105,7 @@ export const EntryDetailScreen: NavigationControllerView<{
             </ItemPressable>
             <EntryAISummary entryId={entryId} />
             {entryWithTranslation && (
-              <View className="mb-32 bg-red mt-3">
+              <View className="mt-3">
                 <EntryContentWebViewWithContext entry={entryWithTranslation} />
               </View>
             )}
