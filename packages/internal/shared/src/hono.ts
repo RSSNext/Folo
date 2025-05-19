@@ -11,6 +11,7 @@ import * as drizzle_orm from 'drizzle-orm';
 import { InferInsertModel, SQL } from 'drizzle-orm';
 import * as better_auth_plugins from 'better-auth/plugins';
 import * as better_auth from 'better-auth';
+import { BetterAuthOptions } from 'better-auth';
 
 type Env = {
     Bindings: HttpBindings;
@@ -4479,10 +4480,10 @@ declare const invitations: drizzle_orm_pg_core.PgTableWithColumns<{
             data: string;
             driverParam: string;
             notNull: true;
-            hasDefault: false;
+            hasDefault: true;
             isPrimaryKey: true;
             isAutoincrement: false;
-            hasRuntimeDefault: false;
+            hasRuntimeDefault: true;
             enumValues: [string, ...string[]];
             baseColumn: never;
             identity: undefined;
@@ -4580,6 +4581,97 @@ declare const invitationsOpenAPISchema: zod.ZodObject<{
 }>;
 declare const invitationsRelations: drizzle_orm.Relations<"invitations", {
     users: drizzle_orm.One<"user", false>;
+}>;
+declare const referrals: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "referrals";
+    schema: undefined;
+    columns: {
+        code: drizzle_orm_pg_core.PgColumn<{
+            name: "code";
+            tableName: "referrals";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: true;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        createdAt: drizzle_orm_pg_core.PgColumn<{
+            name: "created_at";
+            tableName: "referrals";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        updatedAt: drizzle_orm_pg_core.PgColumn<{
+            name: "updated_at";
+            tableName: "referrals";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        userId: drizzle_orm_pg_core.PgColumn<{
+            name: "user_id";
+            tableName: "referrals";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const referralsOpenAPISchema: zod.ZodObject<{
+    code: zod.ZodString;
+    createdAt: zod.ZodString;
+    updatedAt: zod.ZodNullable<zod.ZodString>;
+    userId: zod.ZodString;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    code: string;
+    createdAt: string;
+    updatedAt: string | null;
+    userId: string;
+}, {
+    code: string;
+    createdAt: string;
+    updatedAt: string | null;
+    userId: string;
 }>;
 
 declare const lists: drizzle_orm_pg_core.PgTableWithColumns<{
@@ -12234,7 +12326,22 @@ declare const auth: {
     }>;
     options: {
         appName: string;
-        database: (options: better_auth.BetterAuthOptions) => better_auth.Adapter;
+        database: (options: BetterAuthOptions) => better_auth.Adapter;
+        databaseHooks: {
+            user: {
+                create: {
+                    after: (user: {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                    }, context: better_auth.GenericEndpointContext | undefined) => Promise<void>;
+                };
+            };
+        };
         advanced: {
             generateId: false;
             defaultCookieAttributes: {
@@ -17257,7 +17364,37 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
-}, "/trending">, "/">;
+}, "/trending"> | hono_types.MergeSchemaPath<{
+    "/": {
+        $get: {
+            input: {};
+            output: {
+                code: 0;
+                data: {
+                    invitations: {
+                        code: string;
+                        user: {
+                            enabled: boolean;
+                            id: string;
+                            name: string | null;
+                            image: string | null;
+                        } | null;
+                        createdAt: string | null;
+                        toUserId: string | null;
+                    }[];
+                    referral: {
+                        code: string;
+                        createdAt: string;
+                        updatedAt: string | null;
+                        userId: string;
+                    };
+                };
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
+}, "/referrals">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, referrals, referralsOpenAPISchema, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

@@ -48,6 +48,15 @@ export class Auth {
     this.authClient = createAuthClient({
       baseURL: `${this.options.apiURL}/better-auth`,
       plugins,
+      fetchOptions: {
+        onRequest(context) {
+          const referralCode = new URLSearchParams(window.location.search).get("referralCode")
+          if (referralCode) {
+            context.headers.set("folo-referral-code", referralCode)
+          }
+          return context
+        },
+      },
     })
   }
 
