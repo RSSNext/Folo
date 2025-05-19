@@ -29,8 +29,21 @@ import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentArticle"
 import { EntryTranslation } from "./EntryTranslation"
 
+export type EntryExtraData = {
+  playingAudioUrl: string | null
+  entryIds: string[] | null
+}
+
 export const EntryNormalItem = memo(
-  ({ entryId, extraData, view }: { entryId: string; extraData: string; view: FeedViewType }) => {
+  ({
+    entryId,
+    extraData,
+    view,
+  }: {
+    entryId: string
+    extraData: EntryExtraData
+    view: FeedViewType
+  }) => {
     const entry = useEntry(entryId)
     const translation = useEntryTranslation(entryId)
     const from = getInboxFrom(entry)
@@ -46,10 +59,11 @@ export const EntryNormalItem = memo(
 
         navigation.pushControllerView(EntryDetailScreen, {
           entryId,
+          entryIds: extraData.entryIds ?? [],
           view,
         })
       }
-    }, [entryId, entry, navigation, view])
+    }, [entry, navigation, entryId, extraData.entryIds, view])
 
     const audio = entry?.attachments?.find((attachment) =>
       attachment.mime_type?.startsWith("audio/"),
@@ -125,7 +139,7 @@ export const EntryNormalItem = memo(
             )}
           </View>
           {view !== FeedViewType.Notifications && (
-            <ThumbnailImage entry={entry} view={view} extraData={extraData} />
+            <ThumbnailImage entry={entry} view={view} playingAudioUrl={extraData.playingAudioUrl} />
           )}
         </ItemPressable>
       </EntryItemContextMenu>
@@ -137,11 +151,11 @@ EntryNormalItem.displayName = "EntryNormalItem"
 
 const ThumbnailImage = ({
   view,
-  extraData,
+  playingAudioUrl,
   entry,
 }: {
   view: FeedViewType
-  extraData: string
+  playingAudioUrl: string | null
   entry: EntryModel
 }) => {
   const feed = useFeed(entry?.feedId as string)
@@ -152,7 +166,7 @@ const ThumbnailImage = ({
   const blurhash = coverImage?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
-  const audioState = getAttachmentState(extraData, audio)
+  const audioState = getAttachmentState(playingAudioUrl ?? undefined, audio)
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
 

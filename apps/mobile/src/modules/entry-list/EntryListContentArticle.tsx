@@ -12,6 +12,7 @@ import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparator } from "./ItemSeparator"
+import type { EntryExtraData } from "./templates/EntryNormalItem"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 
 export const EntryListContentArticle = ({
@@ -23,13 +24,17 @@ export const EntryListContentArticle = ({
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const playingAudioUrl = usePlayingUrl()
+  const extraData: EntryExtraData = useMemo(
+    () => ({ playingAudioUrl, entryIds }),
+    [playingAudioUrl, entryIds],
+  )
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem entryId={id} extraData={extraData} view={view} />
+      <EntryNormalItem entryId={id} extraData={extraData as EntryExtraData} view={view} />
     ),
     [view],
   )
@@ -56,7 +61,7 @@ export const EntryListContentArticle = ({
       onRefresh={refetch}
       isRefetching={isRefetching}
       data={entryIds}
-      extraData={playingAudioUrl}
+      extraData={extraData}
       keyExtractor={defaultKeyExtractor}
       estimatedItemSize={100}
       renderItem={renderItem}
