@@ -35,6 +35,11 @@ export const useCommandHotkey = <T extends FollowCommandId>({
     // Create a handler for each shortcut
     shortcuts.forEach((key) => {
       keyMap[key] = (event) => {
+        const isInputFocused = document.activeElement?.matches(
+          'input, textarea, [contenteditable], [role="textbox"]',
+        )
+        if (isInputFocused) return
+
         event.preventDefault()
         event.stopPropagation()
 
