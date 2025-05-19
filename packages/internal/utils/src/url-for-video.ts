@@ -38,6 +38,18 @@ export const transformVideoUrl = ({
     ).toString()}`
   }
 
+  if (url?.match(/\/\/www.pornhub.com\/view_video.php\?viewkey=\w+/)) {
+    if (mini) {
+      return null
+    } else {
+      return `https://www.pornhub.com/embed/${url.match(/\/\/www.pornhub.com\/view_video.php\?viewkey=(\w+)/)?.[1]}?${new URLSearchParams(
+        {
+          autoplay: "1",
+        },
+      ).toString()}`
+    }
+  }
+
   if (attachments) {
     return attachments.find((attachment) => attachment.mime_type === "text/html")?.url ?? null
   }

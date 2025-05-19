@@ -22,6 +22,7 @@ import type { SharedValue } from "react-native-reanimated"
 import { useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { AnimatedScrollView } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
@@ -117,6 +118,12 @@ export const Recommendations = () => {
   )
 }
 
+const LanguageMap = {
+  all: "all",
+  eng: "en",
+  cmn: "zh-CN",
+} as const
+
 export const RecommendationTab: TabComponent<{
   contentContainerStyle?: ContentStyle
   insets?: { top?: number; bottom?: number }
@@ -129,9 +136,12 @@ export const RecommendationTab: TabComponent<{
   insets: customInsets,
   ...rest
 }) => {
+  const discoverLanguage = useUISettingKey("discoverLanguage")
+
   const { data, isLoading } = useQuery({
     queryKey: ["rsshub-popular", "cache", tab.value],
-    queryFn: () => fetchRsshubPopular(tab.value, "all").then((res) => res.data),
+    queryFn: () =>
+      fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
   })
   const keys = useMemo(() => {
     if (!data) {
