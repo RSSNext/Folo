@@ -227,7 +227,10 @@ export const DiscoverFeedForm = ({
       <Form {...form}>
         <ScrollArea.ScrollArea
           flex
-          rootClassName={cn(isInModal && "-mx-4 px-4 -mt-4", "max-h-[calc(100vh-200px)] grow")}
+          rootClassName={cn(
+            isInModal && "-mx-4 px-4 -mt-4",
+            "max-h-[calc(100vh-200px)] grow overflow-scroll",
+          )}
           viewportClassName={cn("pt-4", viewportClassName)}
         >
           <div className="flex">
