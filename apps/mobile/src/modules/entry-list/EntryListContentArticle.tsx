@@ -12,8 +12,8 @@ import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparator } from "./ItemSeparator"
-import type { EntryExtraData } from "./templates/EntryNormalItem"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
+import type { EntryExtraData } from "./types"
 
 export const EntryListContentArticle = ({
   ref: forwardRef,

@@ -27,12 +27,8 @@ import { useEntryTranslation } from "@/src/store/translation/hooks"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentArticle"
+import type { EntryExtraData } from "../types"
 import { EntryTranslation } from "./EntryTranslation"
-
-export type EntryExtraData = {
-  playingAudioUrl: string | null
-  entryIds: string[] | null
-}
 
 export const EntryNormalItem = memo(
   ({
