@@ -90,12 +90,14 @@ export const DiscoverFeedForm = ({
   noDescription,
   routeParams,
   viewportClassName,
+  rootClassName,
 }: {
   route: RSSHubRoute
   routePrefix: string
   noDescription?: boolean
   routeParams?: RouteParams
   viewportClassName?: string
+  rootClassName?: string
 }) => {
   const { t } = useTranslation()
   const keys = useMemo(
@@ -230,6 +232,7 @@ export const DiscoverFeedForm = ({
           rootClassName={cn(
             isInModal && "-mx-4 px-4 -mt-4",
             "max-h-[calc(100vh-200px)] grow overflow-scroll",
+            rootClassName,
           )}
           viewportClassName={cn("pt-4", viewportClassName)}
         >
