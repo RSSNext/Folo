@@ -4579,99 +4579,9 @@ declare const invitationsOpenAPISchema: zod.ZodObject<{
     fromUserId: string;
     toUserId: string | null;
 }>;
+type InvitationDB = typeof invitations.$inferSelect;
 declare const invitationsRelations: drizzle_orm.Relations<"invitations", {
     users: drizzle_orm.One<"user", false>;
-}>;
-declare const referrals: drizzle_orm_pg_core.PgTableWithColumns<{
-    name: "referrals";
-    schema: undefined;
-    columns: {
-        code: drizzle_orm_pg_core.PgColumn<{
-            name: "code";
-            tableName: "referrals";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: true;
-            isAutoincrement: false;
-            hasRuntimeDefault: true;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        createdAt: drizzle_orm_pg_core.PgColumn<{
-            name: "created_at";
-            tableName: "referrals";
-            dataType: "date";
-            columnType: "PgTimestamp";
-            data: Date;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        updatedAt: drizzle_orm_pg_core.PgColumn<{
-            name: "updated_at";
-            tableName: "referrals";
-            dataType: "date";
-            columnType: "PgTimestamp";
-            data: Date;
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        userId: drizzle_orm_pg_core.PgColumn<{
-            name: "user_id";
-            tableName: "referrals";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: true;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-    };
-    dialect: "pg";
-}>;
-declare const referralsOpenAPISchema: zod.ZodObject<{
-    code: zod.ZodString;
-    createdAt: zod.ZodString;
-    updatedAt: zod.ZodNullable<zod.ZodString>;
-    userId: zod.ZodString;
-}, zod.UnknownKeysParam, zod.ZodTypeAny, {
-    code: string;
-    createdAt: string;
-    updatedAt: string | null;
-    userId: string;
-}, {
-    code: string;
-    createdAt: string;
-    updatedAt: string | null;
-    userId: string;
 }>;
 
 declare const lists: drizzle_orm_pg_core.PgTableWithColumns<{
@@ -12241,14 +12151,14 @@ declare const auth: {
                         ipAddress?: string | null | undefined | undefined;
                         userAgent?: string | null | undefined | undefined;
                     };
-                    invitation: boolean | {
+                    invitation: true | {
                         code: string;
                         createdAt: Date | null;
                         usedAt: Date | null;
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: "user" | "trial";
+                    role: "user" | "trial" | "preview";
                 } | null;
             } : {
                 user: {
@@ -12274,14 +12184,14 @@ declare const auth: {
                     ipAddress?: string | null | undefined | undefined;
                     userAgent?: string | null | undefined | undefined;
                 };
-                invitation: boolean | {
+                invitation: true | {
                     code: string;
                     createdAt: Date | null;
                     usedAt: Date | null;
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: "user" | "trial";
+                role: "user" | "trial" | "preview";
             } | null>;
             options: {
                 method: "GET";
@@ -12330,7 +12240,7 @@ declare const auth: {
         databaseHooks: {
             user: {
                 create: {
-                    after: (user: {
+                    after: (newUser: {
                         id: string;
                         name: string;
                         email: string;
@@ -13648,14 +13558,14 @@ declare const auth: {
                                 ipAddress?: string | null | undefined | undefined;
                                 userAgent?: string | null | undefined | undefined;
                             };
-                            invitation: boolean | {
+                            invitation: true | {
                                 code: string;
                                 createdAt: Date | null;
                                 usedAt: Date | null;
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: "user" | "trial";
+                            role: "user" | "trial" | "preview";
                         } | null;
                     } : {
                         user: {
@@ -13681,14 +13591,14 @@ declare const auth: {
                             ipAddress?: string | null | undefined | undefined;
                             userAgent?: string | null | undefined | undefined;
                         };
-                        invitation: boolean | {
+                        invitation: true | {
                             code: string;
                             createdAt: Date | null;
                             usedAt: Date | null;
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: "user" | "trial";
+                        role: "user" | "trial" | "preview";
                     } | null>;
                     options: {
                         method: "GET";
@@ -14938,8 +14848,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     feedId?: string | undefined;
                     read?: boolean | undefined;
                     listId?: string | undefined;
-                    limit?: number | undefined;
                     feedIdList?: string[] | undefined;
+                    limit?: number | undefined;
                     publishedAfter?: string | undefined;
                     publishedBefore?: string | undefined;
                     collected?: boolean | undefined;
@@ -17009,6 +16919,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     INVITATION_INTERVAL_DAYS: number;
                     INVITATION_PRICE: number;
                     INVITATION_ENABLED: boolean;
+                    REFERRAL_ENABLED: boolean;
                     DAILY_POWER_SUPPLY: number;
                     IS_RSS3_TESTNET: boolean;
                     PRODUCT_HUNT_VOTE_URL: string;
@@ -17382,12 +17293,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string | null;
                         toUserId: string | null;
                     }[];
-                    referral: {
-                        code: string;
-                        createdAt: string;
-                        updatedAt: string | null;
-                        userId: string;
-                    };
                 };
             };
             outputFormat: "json";
@@ -17397,4 +17302,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/referrals">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, referrals, referralsOpenAPISchema, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
