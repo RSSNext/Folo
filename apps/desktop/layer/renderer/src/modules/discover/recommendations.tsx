@@ -24,7 +24,7 @@ import { RecommendationContent } from "./RecommendationContent"
 
 const LanguageOptions = [
   {
-    label: "All",
+    label: "words.all",
     value: "all",
   },
   {
@@ -35,9 +35,9 @@ const LanguageOptions = [
     label: "中文",
     value: "cmn",
   },
-] as const
+]
 
-type Language = (typeof LanguageOptions)[number]["value"]
+type Language = "all" | "eng" | "cmn"
 type DiscoverCategories = (typeof RSSHubCategories)[number] | string
 
 const LanguageMap = {
@@ -56,6 +56,7 @@ const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
 let firstLoad = true
 export function Recommendations() {
   const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
   const { present } = useModalStack()
 
   const [category, setCategory] = useState<DiscoverCategories>("all")
@@ -160,7 +161,8 @@ export function Recommendations() {
               onValueChange={handleLangChange}
               triggerClassName="h-8 rounded border-0"
               size="sm"
-              items={LanguageOptions as any}
+              items={LanguageOptions}
+              renderItem={(item) => <>{tCommon(item.label as any)}</>}
             />
           </div>
         </div>
