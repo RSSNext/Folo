@@ -113,5 +113,10 @@ export interface IntegrationSettings {
   cuboxToken: string
   enableCuboxAutoMemo: boolean
 
+  //zotero
+  enableZotero: boolean
+  zoteroUserID: string
+  zoteroToken: string
+
   saveSummaryAsDescription: boolean
 }

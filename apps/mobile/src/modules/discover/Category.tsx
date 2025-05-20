@@ -11,9 +11,12 @@ import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { Grid2CuteReIcon } from "@/src/icons/grid_2_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Recommendations } from "@/src/modules/discover/Recommendations"
+import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendation/RecommendationCategoryScreen"
 
 export const Category = () => {
+  const navigation = useNavigation()
+
   return (
     <>
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
@@ -21,7 +24,12 @@ export const Category = () => {
           <Grid2CuteReIcon width={24} height={24} />
           <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>
         </View>
-        <ItemPressable className="rounded-lg p-1">
+        <ItemPressable
+          className="rounded-lg p-1"
+          onPress={() => {
+            navigation.presentControllerView(DiscoverSettingsScreen)
+          }}
+        >
           <FilterCuteReIcon width={20} height={20} />
         </ItemPressable>
       </View>

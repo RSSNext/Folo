@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -28,6 +28,7 @@
     "dev:electron": "electron-vite dev",
     "dev:server": "pnpm run --filter=ssr dev",
     "dev:web": "cross-env WEB_BUILD=1 vite",
+    "hotfix": "vv -c bump.hotfix.config.js",
     "publish": "electron-vite build && electron-forge publish",
     "start": "electron-vite preview",
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"

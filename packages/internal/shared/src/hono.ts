@@ -11,6 +11,7 @@ import * as drizzle_orm from 'drizzle-orm';
 import { InferInsertModel, SQL } from 'drizzle-orm';
 import * as better_auth_plugins from 'better-auth/plugins';
 import * as better_auth from 'better-auth';
+import { BetterAuthOptions } from 'better-auth';
 
 type Env = {
     Bindings: HttpBindings;
@@ -12234,7 +12235,7 @@ declare const auth: {
     }>;
     options: {
         appName: string;
-        database: (options: better_auth.BetterAuthOptions) => better_auth.Adapter;
+        database: (options: BetterAuthOptions) => better_auth.Adapter;
         advanced: {
             generateId: false;
             defaultCookieAttributes: {

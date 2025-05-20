@@ -94,7 +94,9 @@ export const SafeNavigationScrollView = ({
       if (reanimatedScrollY) {
         reanimatedScrollY.value = event.contentOffset.y
       }
-
+      if (onScroll) {
+        runOnJS(onScroll)(event)
+      }
       runOnJS(checkScrollToBottom)()
       screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
     },

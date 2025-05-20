@@ -8,6 +8,8 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 
 import { fetchFeedTrending } from "./api"
 import { FeedSummary } from "./FeedSummary"
@@ -21,13 +23,14 @@ export const Trending = ({
 }) => {
   const discoverLanguage = useUISettingKey("discoverLanguage")
   const { data, isLoading } = useQuery({
-    queryKey: ["trending", "feeds"],
+    queryKey: ["trending", "feeds", discoverLanguage],
     queryFn: () =>
       fetchFeedTrending({
         lang: discoverLanguage === "all" ? undefined : discoverLanguage,
         limit: 20,
       }).then((res) => res.data),
   })
+  const navigation = useNavigation()
 
   return (
     <View className={className}>
@@ -36,7 +39,13 @@ export const Trending = ({
           <TrendingUpCuteReIcon width={24} height={24} />
           <Text className="text-label text-2xl font-bold leading-[1.1]">Trending</Text>
         </View>
-        <ItemPressable className="rounded-lg p-1" itemStyle={ItemPressableStyle.UnStyled}>
+        <ItemPressable
+          className="rounded-lg p-1"
+          itemStyle={ItemPressableStyle.UnStyled}
+          onPress={() => {
+            navigation.presentControllerView(DiscoverSettingsScreen)
+          }}
+        >
           <FilterCuteReIcon width={20} height={20} />
         </ItemPressable>
       </View>

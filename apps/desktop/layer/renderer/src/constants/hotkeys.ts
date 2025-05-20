@@ -8,4 +8,5 @@ export enum HotkeyScope {
   Timeline = "timeline",
   EntryRender = "entry-render",
   SubscriptionList = "subscription-list",
+  SubLayer = "sub-layer",
 }

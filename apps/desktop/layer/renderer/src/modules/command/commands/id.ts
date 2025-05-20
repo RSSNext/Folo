@@ -26,6 +26,7 @@ export const COMMAND_ID = {
     saveToOutline: "integration:save-to-outline",
     saveToReadeck: "integration:save-to-readeck",
     saveToCubox: "integration:save-to-cubox",
+    saveToZotero: "integration:save-to-zotero",
   },
   list: {
     edit: "list:edit",
@@ -48,12 +49,12 @@ export const COMMAND_ID = {
     toggleTimelineColumn: "layout:toggle-timeline-column",
     focusToTimeline: "layout:focus-to-timeline",
     focusToSubscription: "layout:focus-to-subscription",
+    focusToEntryRender: "layout:focus-to-entry-render",
   },
   timeline: {
     switchToNext: "timeline:switch-to-next",
     switchToPrevious: "timeline:switch-to-previous",
     refetch: "timeline:refetch",
-    enter: "timeline:enter",
   },
   entryRender: {
     scrollDown: "entry-render:scroll-down",

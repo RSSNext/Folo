@@ -19,11 +19,11 @@ const shortcutConfigs = {
     },
     switchNextView: {
       name: tShortcuts("keys.subscriptions.switchNextView"),
-      key: "Tab, ArrowRight",
+      key: "Tab",
     },
     switchPreviousView: {
       name: tShortcuts("keys.subscriptions.switchPreviousView"),
-      key: "Shift+Tab, ArrowLeft",
+      key: "Shift+Tab",
     },
     nextSubscription: {
       name: tShortcuts("keys.subscriptions.nextSubscription"),
@@ -45,7 +45,7 @@ const shortcutConfigs = {
     },
     showShortcuts: {
       name: tShortcuts("keys.layout.showShortcuts"),
-      key: "H",
+      key: "?",
     },
     toggleWideMode: {
       name: tShortcuts("keys.layout.toggleWideMode"),

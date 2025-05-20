@@ -27,7 +27,7 @@ import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
 import { TimelineColumnHeader } from "./TimelineColumnHeader"

@@ -211,6 +211,11 @@ export const useEntryActions = ({
         entryId,
       }),
       new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToZotero,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToZotero, [{ entryId }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
         id: COMMAND_ID.entry.tip,
         onClick: runCmdFn(COMMAND_ID.entry.tip, [
           { entryId, feedId: feed?.id, userId: feed?.ownerUserId },
@@ -325,6 +330,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           { entryId, entryContent: entry?.entries.content! },
         ]),
         hide: !IN_ELECTRON || compact || !entry?.entries.content,
@@ -334,6 +340,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           { entryId, entryUrl: entry?.entries.url! },
         ]),
         hide:

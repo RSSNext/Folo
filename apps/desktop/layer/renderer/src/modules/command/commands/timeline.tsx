@@ -36,13 +36,6 @@ export const useRegisterTimelineCommand = () => {
         EventBus.dispatch("timeline:refetch")
       },
     },
-    {
-      id: COMMAND_ID.timeline.enter,
-      label: "Enter Selected Entry",
-      run: () => {
-        EventBus.dispatch("timeline:enter")
-      },
-    },
   ])
 }
 
@@ -61,13 +54,7 @@ export type RefetchTimelineCommand = Command<{
   fn: () => void
 }>
 
-export type EnterTimelineCommand = Command<{
-  id: typeof COMMAND_ID.timeline.enter
-  fn: () => void
-}>
-
 export type TimelineCommand =
   | SwitchToNextTimelineCommand
   | SwitchToPreviousTimelineCommand
   | RefetchTimelineCommand
-  | EnterTimelineCommand
