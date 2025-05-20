@@ -50,7 +50,7 @@ export class Auth {
       plugins,
       fetchOptions: {
         onRequest(context) {
-          const referralCode = new URLSearchParams(window.location.search).get("referralCode")
+          const referralCode = localStorage.getItem(getStorageNS("referral"))
           if (referralCode) {
             context.headers.set("folo-referral-code", referralCode)
           }
@@ -88,3 +88,7 @@ export class Auth {
     }
   }
 }
+
+// copy from packages/internal/utils/src/ns.ts
+const ns = "follow"
+const getStorageNS = (key: string) => `${ns}:${key}`

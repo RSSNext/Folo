@@ -7848,6 +7848,8 @@ declare const rsshubPurchase: drizzle_orm_pg_core.PgTableWithColumns<{
     dialect: "pg";
 }>;
 
+type UserRole = "admin" | "user" | "trial" | "preview";
+
 declare const auth: {
     handler: (request: Request) => Promise<Response>;
     api: better_auth.InferAPI<{
@@ -12158,7 +12160,8 @@ declare const auth: {
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: "user" | "trial" | "preview";
+                    role: UserRole;
+                    endDate: Date | undefined;
                 } | null;
             } : {
                 user: {
@@ -12191,7 +12194,8 @@ declare const auth: {
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: "user" | "trial" | "preview";
+                role: UserRole;
+                endDate: Date | undefined;
             } | null>;
             options: {
                 method: "GET";
@@ -13565,7 +13569,8 @@ declare const auth: {
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: "user" | "trial" | "preview";
+                            role: UserRole;
+                            endDate: Date | undefined;
                         } | null;
                     } : {
                         user: {
@@ -13598,7 +13603,8 @@ declare const auth: {
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: "user" | "trial" | "preview";
+                        role: UserRole;
+                        endDate: Date | undefined;
                     } | null>;
                     options: {
                         method: "GET";
