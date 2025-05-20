@@ -22,18 +22,10 @@ const LanguageOptions = [
 ]
 
 type Language = "all" | "eng" | "cmn"
-type DiscoverCategories = (typeof RSSHubCategories)[number] | string
-
-const LanguageMap = {
-  all: "all",
-  eng: "en",
-  cmn: "zh-CN",
-} as const
 
 export function Recommendations() {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
-  const { present } = useModalStack()
 
   const lang = useUISettingKey("discoverLanguage")
 
