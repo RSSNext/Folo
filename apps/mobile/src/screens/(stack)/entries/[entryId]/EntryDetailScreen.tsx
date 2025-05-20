@@ -66,7 +66,7 @@ export const EntryDetailScreen: NavigationControllerView<{
     return entryIds[currentEntryIdx + 1]
   }, [entryId, entryIds])
 
-  const { scrollViewEventHandlers } = usePullUpToNext({
+  const { EntryPullUpToNext, scrollViewEventHandlers, pullUpViewProps } = usePullUpToNext({
     enabled: !!nextEntryId,
     onRefresh: useCallback(() => {
       if (!nextEntryId) return
@@ -85,6 +85,7 @@ export const EntryDetailScreen: NavigationControllerView<{
         <BottomTabBarHeightContext value={insets.bottom}>
           <SafeNavigationScrollView
             Header={<EntryNavigationHeader entryId={entryId} />}
+            ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
             automaticallyAdjustContentInsets={false}
             contentContainerClassName="flex min-h-full pb-16"
             {...scrollViewEventHandlers}
