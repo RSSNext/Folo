@@ -26,7 +26,8 @@ import {
 } from "~/store/subscription"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding, useCommandHotkey } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
+import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { useIsPreviewFeed } from "../entry-column/hooks/useIsPreviewFeed"
 import {
   resetSelectedFeedIds,
@@ -318,7 +319,7 @@ const useRegisterCommand = () => {
   useCommandHotkey({
     commandId: COMMAND_ID.layout.focusToTimeline,
     when: isFocus,
-    shortcut: "Enter",
+    shortcut: "Enter, L, ArrowRight",
   })
 
   useCommandBinding({

@@ -127,6 +127,11 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   cuboxToken: "",
   enableCuboxAutoMemo: false,
 
+  // zotero
+  enableZotero: false,
+  zoteroUserID: "",
+  zoteroToken: "",
+
   saveSummaryAsDescription: false,
 }
 

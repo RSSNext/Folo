@@ -19,7 +19,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "generator:i18n-template": "tsx scripts/generate-i18n-locale.ts",
-    "hotfix": "vv -c bump.hotfix.config.js",
     "icons:sync": "tsx scripts/svg-to-rn.ts && prettier --write apps/mobile/src/icons/**/*.tsx && eslint --fix apps/mobile/src/icons/**/*.tsx",
     "icons:update": "tsx scripts/update-icon.ts",
     "lint": "pnpm run lint:tsl && eslint",

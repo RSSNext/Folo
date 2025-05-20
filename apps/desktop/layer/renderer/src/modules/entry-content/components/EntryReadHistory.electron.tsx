@@ -2,7 +2,7 @@ import { AvatarGroup } from "@follow/components/ui/avatar-group/index.js"
 import { FeedViewType } from "@follow/constants"
 
 import { useWhoami } from "~/atoms/user"
-import { getRouteParams } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { useAppLayoutGridContainerWidth } from "~/providers/app-grid-layout-container-provider"
 import { Queries } from "~/queries"
@@ -32,8 +32,12 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
   const me = useWhoami()
   const entryHistory = useEntryReadHistory(entryId)
 
+  const inboxId = useRouteParamsSelector((s) => s.inboxId)
+
   const { data } = useAuthQuery(Queries.entries.entryReadingHistory(entryId), {
     refetchInterval: 1000 * 60,
+    enabled: !inboxId,
+    refetchIntervalInBackground: false,
   })
   const totalCount = data?.total || 0
 

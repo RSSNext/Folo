@@ -75,9 +75,11 @@ const Viewport = ({
   ref: forwardedRef,
   className,
   mask = false,
+  focusable = true,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {
   mask?: boolean
+  focusable?: boolean
 } & { ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Viewport> | null> }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const [shouldAddMask, setShouldAddMask] = React.useState(false)
@@ -105,7 +107,7 @@ const Viewport = ({
     <ScrollAreaBase.Viewport
       {...rest}
       ref={ref}
-      tabIndex={-1}
+      tabIndex={focusable ? -1 : void 0}
       className={cn("block size-full", shouldAddMask && styles["mask-scroller"], className)}
     />
   )
@@ -143,6 +145,8 @@ export const ScrollArea = ({
   onScroll,
   orientation = "vertical",
   asChild = false,
+
+  focusable = true,
 }: React.PropsWithChildren & {
   rootClassName?: string
   viewportClassName?: string
@@ -152,6 +156,7 @@ export const ScrollArea = ({
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
+  focusable?: boolean
 } & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
@@ -166,6 +171,7 @@ export const ScrollArea = ({
           mask={mask}
           asChild={asChild}
           onScroll={onScroll}
+          focusable={focusable}
         >
           {children}
         </Viewport>

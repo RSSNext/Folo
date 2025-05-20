@@ -10,6 +10,7 @@ declare module "@follow/utils/event-bus" {
   interface EventBusMap {
     "layout:focus-to-timeline": never
     "layout:focus-to-subscription": never
+    "layout:focus-to-entry-render": never
   }
 }
 
@@ -36,6 +37,13 @@ export const useRegisterLayoutCommands = () => {
         EventBus.dispatch(COMMAND_ID.layout.focusToSubscription)
       },
     },
+    {
+      id: COMMAND_ID.layout.focusToEntryRender,
+      label: "Enter Selected Entry",
+      run: () => {
+        EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender)
+      },
+    },
   ])
 }
 
@@ -53,7 +61,12 @@ export type FocusToTimelineCommand = Command<{
   id: typeof COMMAND_ID.layout.focusToTimeline
   fn: () => void
 }>
+export type FocusToEntryRenderCommand = Command<{
+  id: typeof COMMAND_ID.layout.focusToEntryRender
+  fn: () => void
+}>
 export type LayoutCommand =
   | ToggleTimelineColumnCommand
   | FocusToTimelineCommand
   | FocusToSubscriptionCommand
+  | FocusToEntryRenderCommand

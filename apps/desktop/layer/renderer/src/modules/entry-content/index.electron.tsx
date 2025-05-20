@@ -5,6 +5,7 @@ import {
 } from "@follow/components/common/Focusable/index.js"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
@@ -14,6 +15,7 @@ import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
+import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
@@ -34,7 +36,8 @@ import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding, useCommandHotkey } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
+import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
@@ -98,6 +101,8 @@ export const EntryContent: Component<EntryContentProps> = ({
   const [isUserInteraction, setIsUserInteraction] = useState(false)
   const isZenMode = useIsZenMode()
 
+  const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
+
   if (!entry) return null
 
   return (
@@ -110,16 +115,19 @@ export const EntryContent: Component<EntryContentProps> = ({
           compact={compact}
         />
       )}
+      <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
         className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
         onFocus={() => setIsUserInteraction(true)}
       >
-        <RegisterCommands
-          scrollerRef={scrollerRef}
-          isUserInteraction={isUserInteraction}
-          setIsUserInteraction={setIsUserInteraction}
-        />
+        <RootPortal to={panelPortalElement}>
+          <RegisterCommands
+            scrollerRef={scrollerRef}
+            isUserInteraction={isUserInteraction}
+            setIsUserInteraction={setIsUserInteraction}
+          />
+        </RootPortal>
         <EntryTimelineSidebar entryId={entry.entries.id} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
           {/* Indicator for the entry */}
@@ -235,6 +243,7 @@ const EntryScrollArea: Component<{
   }
   return (
     <ScrollArea.ScrollArea
+      focusable={false}
       mask={false}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
@@ -301,6 +310,9 @@ const RegisterCommands = ({
   isUserInteraction: boolean
   setIsUserInteraction: (isUserInteraction: boolean) => void
 }) => {
+  const isAlreadyScrolledBottomRef = useRef(false)
+  const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
+
   const containerFocused = useFocusable()
   useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction && containerFocused, true)
 
@@ -336,6 +348,25 @@ const RegisterCommands = ({
   const { highlightBoundary } = useFocusActions()
 
   useEffect(() => {
+    const checkScrollBottom = ($scroller: HTMLDivElement) => {
+      const currentScroll = $scroller.scrollTop
+      const { scrollHeight, clientHeight } = $scroller
+
+      if (isAlreadyScrolledBottomRef.current) {
+        EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
+        setShowKeepScrollingPanel(false)
+        isAlreadyScrolledBottomRef.current = false
+        springScrollTo(0, $scroller)
+        return
+      }
+
+      if (scrollHeight && clientHeight) {
+        isAlreadyScrolledBottomRef.current =
+          Math.abs(currentScroll + clientHeight - scrollHeight) < 2
+        setShowKeepScrollingPanel(isAlreadyScrolledBottomRef.current)
+      }
+    }
+
     return combineCleanupFunctions(
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
         const currentScroll = scrollerRef.current?.scrollTop
@@ -347,23 +378,67 @@ const RegisterCommands = ({
       }),
 
       EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
-        const currentScroll = scrollerRef.current?.scrollTop
-        const delta = window.innerHeight
-        if (typeof currentScroll === "number" && delta) {
-          springScrollTo(currentScroll + delta, scrollerRef.current!)
-        }
-      }),
-      EventBus.subscribe(COMMAND_ID.timeline.enter, () => {
         const $scroller = scrollerRef.current
-        if ($scroller) {
-          springScrollTo(0, $scroller)
-          $scroller.focus()
-          nextFrame(highlightBoundary)
-          setIsUserInteraction(true)
+        if (!$scroller) {
+          return
         }
+
+        const currentScroll = $scroller.scrollTop
+        const delta = window.innerHeight
+
+        if (typeof currentScroll === "number" && delta) {
+          springScrollTo(currentScroll + delta, $scroller)
+        }
+        checkScrollBottom($scroller)
+      }),
+      EventBus.subscribe(COMMAND_ID.layout.focusToEntryRender, () => {
+        const $scroller = scrollerRef.current
+        if (!$scroller) {
+          return
+        }
+        springScrollTo(0, $scroller)
+        $scroller.focus()
+        nextFrame(highlightBoundary)
+        setIsUserInteraction(true)
+        checkScrollBottom($scroller)
       }),
     )
   }, [highlightBoundary, scrollerRef, setIsUserInteraction])
 
-  return null
+  return (
+    <AnimatePresence>
+      {showKeepScrollingPanel && (
+        <FloatPanel side="bottom">
+          Already scrolled to the bottom.
+          <br />
+          Keep pressing to jump to the next article
+        </FloatPanel>
+      )}
+    </AnimatePresence>
+  )
 }
+
+const FloatPanel: React.FC<{ children: React.ReactNode; side: "bottom" | "top" }> = ({
+  children,
+  side,
+}) => (
+  <m.div
+    initial={{ opacity: 0, y: 32 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 32 }}
+    transition={{ duration: 0.2 }}
+    className={cn(
+      "absolute left-1/2 z-50 -translate-x-1/2 select-none rounded-2xl bg-white/70 px-6 py-3 text-center text-[15px] font-medium text-neutral-800 shadow-xl backdrop-blur-md dark:bg-neutral-900/70 dark:text-neutral-200",
+      side === "bottom" ? "bottom-8" : "top-8",
+    )}
+    style={{
+      boxShadow: "0 4px 24px 0 rgba(0,0,0,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.08)",
+      WebkitBackdropFilter: "blur(16px)",
+      backdropFilter: "blur(16px)",
+      maxWidth: 360,
+      width: "calc(100vw - 32px)",
+    }}
+  >
+    {children}
+  </m.div>
+)
