@@ -147,6 +147,9 @@ const useLocalEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId, isAllFeeds } = useRouteParams()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
 
   const folderIds = useFolderFeedsByFeedId({
     feedId,
@@ -158,6 +161,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     {
       unread: unreadOnly,
       view,
+      excludePrivate: hidePrivateSubscriptionsInTimeline,
     },
   )
 

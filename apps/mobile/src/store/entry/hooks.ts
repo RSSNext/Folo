@@ -11,10 +11,28 @@ import type { EntryModel, FetchEntriesProps } from "./types"
 export const usePrefetchEntries = (props: Omit<FetchEntriesProps, "pageParam" | "read"> | null) => {
   const { feedId, inboxId, listId, view, limit, feedIdList } = props || {}
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
   return useInfiniteQuery({
-    queryKey: ["entries", feedId, inboxId, listId, view, unreadOnly, limit, feedIdList],
+    queryKey: [
+      "entries",
+      feedId,
+      inboxId,
+      listId,
+      view,
+      unreadOnly,
+      limit,
+      feedIdList,
+      hidePrivateSubscriptionsInTimeline,
+    ],
     queryFn: ({ pageParam }) =>
-      entrySyncServices.fetchEntries({ ...props, pageParam, read: unreadOnly ? false : undefined }),
+      entrySyncServices.fetchEntries({
+        ...props,
+        pageParam,
+        read: unreadOnly ? false : undefined,
+        excludePrivate: hidePrivateSubscriptionsInTimeline,
+      }),
     getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,

@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 
+import { getGeneralSettings } from "@/src/atoms/settings/general"
 import type { UnreadSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
@@ -68,9 +69,11 @@ class UnreadSyncService {
     } | null
     time?: PublishAtTimeRangeFilter
   }) {
+    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
     await apiClient.reads.all.$post({
       json: {
         view,
+        excludePrivate: hidePrivateSubscriptionsInTimeline,
         ...filter,
         ...time,
       },
