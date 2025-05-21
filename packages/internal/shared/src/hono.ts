@@ -17073,9 +17073,21 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data: {
-                    completed: number;
-                    wait: number;
-                    failed: number;
+                    current: {
+                        completed: number;
+                        wait: number;
+                        failed: number;
+                    };
+                    metrics: {
+                        completed: {
+                            data: number[];
+                            count: number;
+                        };
+                        failed: {
+                            data: number[];
+                            count: number;
+                        };
+                    };
                 };
             };
             outputFormat: "json";

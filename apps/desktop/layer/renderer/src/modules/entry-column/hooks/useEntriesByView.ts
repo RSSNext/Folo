@@ -67,7 +67,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       listId,
       view,
       ...(unreadOnly === true && !isPreview && { read: false }),
-      ...(hidePrivateSubscriptionsInTimeline === true && { hidePrivate: true }),
+      ...(hidePrivateSubscriptionsInTimeline === true && { excludePrivate: true }),
     }
 
     if (feedId && listId && isBizId(feedId)) {

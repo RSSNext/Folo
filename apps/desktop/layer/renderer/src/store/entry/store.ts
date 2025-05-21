@@ -113,7 +113,7 @@ class EntryActions {
     listId,
     view,
     read,
-    hidePrivate,
+    excludePrivate,
     limit,
     pageParam,
   }: {
@@ -122,7 +122,7 @@ class EntryActions {
     listId?: number | string
     view?: number
     read?: boolean
-    hidePrivate?: boolean
+    excludePrivate?: boolean
     limit?: number
     pageParam?: string
   }) {
@@ -165,7 +165,7 @@ class EntryActions {
         publishedAfter: pageParam,
         read,
         limit,
-        hidePrivate,
+        excludePrivate,
         ...params,
       },
     })

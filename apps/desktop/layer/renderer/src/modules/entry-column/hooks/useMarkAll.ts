@@ -22,7 +22,7 @@ export const markAllByRoute = async (filter?: MarkAllFilter) => {
     subscriptionActions.markReadByView({
       view,
       filter,
-      hidePrivate: hidePrivateSubscriptionsInTimeline,
+      excludePrivate: hidePrivateSubscriptionsInTimeline,
     })
   } else if (inboxId) {
     subscriptionActions.markReadByFeedIds({

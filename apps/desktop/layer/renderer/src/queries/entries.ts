@@ -13,7 +13,7 @@ export const entries = {
     listId,
     view,
     read,
-    hidePrivate,
+    excludePrivate,
     limit,
   }: {
     feedId?: number | string
@@ -21,7 +21,7 @@ export const entries = {
     listId?: number | string
     view?: number
     read?: boolean
-    hidePrivate?: boolean
+    excludePrivate?: boolean
     limit?: number
   }) =>
     defineQuery(
@@ -33,7 +33,7 @@ export const entries = {
           listId,
           view,
           read,
-          hidePrivate,
+          excludePrivate,
           limit,
           pageParam: pageParam as string,
         }),
@@ -133,20 +133,20 @@ export const useEntries = ({
   listId,
   view,
   read,
-  hidePrivate,
+  excludePrivate,
 }: {
   feedId?: number | string
   inboxId?: number | string
   listId?: number | string
   view?: number
   read?: boolean
-  hidePrivate?: boolean
+  excludePrivate?: boolean
 }) => {
   const fetchUnread = read === false
   const feedUnreadDirty = useFeedUnreadIsDirty((feedId as string) || "")
 
   return useAuthInfiniteQuery(
-    entries.entries({ feedId, inboxId, listId, view, read, hidePrivate }),
+    entries.entries({ feedId, inboxId, listId, view, read, excludePrivate }),
     {
       enabled: feedId !== undefined || inboxId !== undefined || listId !== undefined,
       getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
