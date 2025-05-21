@@ -1,9 +1,10 @@
 import { useShortcutsModal } from "~/modules/modal/shortcuts"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
+const category: CommandCategory = "Global"
 export const useRegisterGlobalCommands = () => {
   const showShortcuts = useShortcutsModal()
 
@@ -14,6 +15,7 @@ export const useRegisterGlobalCommands = () => {
       run: () => {
         showShortcuts()
       },
+      category,
     },
   ])
 }

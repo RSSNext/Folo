@@ -3,7 +3,7 @@ import { EventBus } from "@follow/utils/event-bus"
 import { setGeneralSetting } from "~/atoms/settings/general"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -14,11 +14,14 @@ declare module "@follow/utils/event-bus" {
     "timeline:enter": never
   }
 }
+
+const category: CommandCategory = "Timeline"
 export const useRegisterTimelineCommand = () => {
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.timeline.switchToNext,
       label: "Switch to next timeline",
+      category,
 
       run: () => {
         EventBus.dispatch("timeline:switch-to-next")
@@ -27,6 +30,7 @@ export const useRegisterTimelineCommand = () => {
     {
       id: COMMAND_ID.timeline.switchToPrevious,
       label: "Switch to previous timeline",
+      category,
       run: () => {
         EventBus.dispatch("timeline:switch-to-previous")
       },
@@ -34,6 +38,7 @@ export const useRegisterTimelineCommand = () => {
     {
       id: COMMAND_ID.timeline.refetch,
       label: "Refetch timeline",
+      category,
       run: () => {
         EventBus.dispatch("timeline:refetch")
       },
@@ -41,6 +46,7 @@ export const useRegisterTimelineCommand = () => {
     {
       id: COMMAND_ID.timeline.unreadOnly,
       label: "Unread Only",
+      category,
       run: (unreadOnly: boolean) => {
         setGeneralSetting("unreadOnly", unreadOnly)
       },

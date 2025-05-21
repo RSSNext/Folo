@@ -3,13 +3,15 @@ import type { ReactNode } from "react"
 import type { BasicCommand } from "./commands/types"
 
 export type CommandCategory =
-  | "follow:settings"
-  | "follow:layout"
-  | "follow:updates"
-  | "follow:help"
-  | "follow:general"
-  | "follow:entry-render"
-
+  | "Entry Render"
+  | "Entry"
+  | "Global"
+  | "Integration"
+  | "Layout"
+  | "List"
+  | "Settings"
+  | "Timeline"
+  | "Subscription"
 export interface KeybindingOptions {
   binding: string
   capture?: boolean

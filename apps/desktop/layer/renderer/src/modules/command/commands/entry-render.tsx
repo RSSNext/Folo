@@ -1,7 +1,7 @@
 import { EventBus } from "@follow/utils/event-bus"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -12,9 +12,8 @@ declare module "@follow/utils/event-bus" {
     "entry-render:previous-entry": never
   }
 }
-const LABEL_PREFIX = "Entry Render"
 
-const category = "follow:entry-render"
+const category: CommandCategory = "Entry Render"
 export const useRegisterEntryRenderCommand = () => {
   useRegisterCommandEffect([
     {
@@ -23,7 +22,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollDown)
       },
       category,
-      label: `${LABEL_PREFIX}: Scroll down`,
+      label: "Scroll down",
     },
     {
       id: COMMAND_ID.entryRender.scrollUp,
@@ -31,7 +30,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollUp)
       },
       category,
-      label: `${LABEL_PREFIX}: Scroll up`,
+      label: "Scroll up",
     },
     {
       id: COMMAND_ID.entryRender.nextEntry,
@@ -40,7 +39,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.nextEntry)
       },
       category,
-      label: `${LABEL_PREFIX}: Next entry`,
+      label: "Next entry",
     },
     {
       id: COMMAND_ID.entryRender.previousEntry,
@@ -49,7 +48,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.previousEntry)
       },
       category,
-      label: `${LABEL_PREFIX}: Previous entry`,
+      label: "Previous entry",
     },
   ])
 }

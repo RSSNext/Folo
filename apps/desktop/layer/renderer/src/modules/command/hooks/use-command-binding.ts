@@ -1,6 +1,7 @@
 import { shortcuts } from "~/constants/shortcuts"
 
 import { COMMAND_ID } from "../commands/id"
+import type { FollowCommandId } from "../types"
 import type { RegisterHotkeyOptions } from "./use-register-hotkey"
 import { useCommandHotkey } from "./use-register-hotkey"
 
@@ -46,6 +47,11 @@ const defaultCommandShortcuts = {
   [COMMAND_ID.timeline.unreadOnly]: shortcuts.entries.toggleUnreadOnly.key,
 } as const
 
+export const allowCustomizeCommands = new Set<FollowCommandId>([
+  COMMAND_ID.layout.toggleTimelineColumn,
+  COMMAND_ID.layout.toggleWideMode,
+  COMMAND_ID.layout.toggleZenMode,
+])
 export type BindingCommandId = keyof typeof defaultCommandShortcuts
 
 // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix, @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks

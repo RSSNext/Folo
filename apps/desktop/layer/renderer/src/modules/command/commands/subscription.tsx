@@ -4,7 +4,7 @@ import type { BizRouteParams } from "~/hooks/biz/useRouteParams"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -26,89 +26,102 @@ declare module "@follow/utils/event-bus" {
     "subscription:open-site-in-browser": never
   }
 }
-const LABEL_PREFIX = "Subscription"
+
+const category: CommandCategory = "Subscription"
 export const useRegisterSubscriptionCommands = () => {
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.subscription.switchTabToNext,
-      label: `${LABEL_PREFIX}: Switch to next tab`,
+      label: `Switch to next tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNext)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToPrevious,
-      label: `${LABEL_PREFIX}: Switch to previous tab`,
+      label: `Switch to previous tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPrevious)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToArticle,
-      label: `${LABEL_PREFIX}: Switch to article tab`,
+      label: `Switch to article tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToArticle)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToSocial,
-      label: `${LABEL_PREFIX}: Switch to social tab`,
+      label: `Switch to social tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToSocial)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToPicture,
-      label: `${LABEL_PREFIX}: Switch to picture tab`,
+      label: `Switch to picture tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPicture)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToVideo,
-      label: `${LABEL_PREFIX}: Switch to video tab`,
+      label: `Switch to video tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToVideo)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToAudio,
-      label: `${LABEL_PREFIX}: Switch to audio tab`,
+      label: `Switch to audio tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToAudio)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToNotification,
-      label: `${LABEL_PREFIX}: Switch to notification tab`,
+      label: `Switch to notification tab`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNotification)
       },
     },
     {
       id: COMMAND_ID.subscription.nextSubscription,
-      label: `${LABEL_PREFIX}: Next Subscription`,
+      label: `Next Subscription`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.nextSubscription)
       },
     },
     {
       id: COMMAND_ID.subscription.previousSubscription,
-      label: `${LABEL_PREFIX}: Previous Subscription`,
+      label: `Previous Subscription`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.previousSubscription)
       },
     },
     {
       id: COMMAND_ID.subscription.toggleFolderCollapse,
-      label: `${LABEL_PREFIX}: Toggle Folder Collapse`,
+      label: `Toggle Folder Collapse`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.toggleFolderCollapse)
       },
     },
     {
       id: COMMAND_ID.subscription.markAllAsRead,
-      label: `${LABEL_PREFIX}: Mark All as Read`,
+      label: `Mark All as Read`,
+      category,
       run: () => {
         const routeParams = getRouteParams()
         EventBus.dispatch(COMMAND_ID.subscription.markAllAsRead, routeParams)
@@ -116,14 +129,16 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.openInBrowser,
-      label: `${LABEL_PREFIX}: Open in Browser`,
+      label: `Open in Browser`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openInBrowser)
       },
     },
     {
       id: COMMAND_ID.subscription.openSiteInBrowser,
-      label: `${LABEL_PREFIX}: Open site in Browser`,
+      label: `Open site in Browser`,
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openSiteInBrowser)
       },
