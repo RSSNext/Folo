@@ -2,7 +2,7 @@ import "./side-effects"
 
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { callWindowExpose } from "@follow/shared/bridge"
-import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
+import { DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { createBuildSafeHeaders } from "@follow/utils/headers"
 import { IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
@@ -101,7 +101,7 @@ function bootstrap() {
     })
 
     // Set app user model id for windows
-    electronApp.setAppUserModelId(`re.${APP_PROTOCOL}`)
+    electronApp.setAppUserModelId(`re.${LEGACY_APP_PROTOCOL}`)
 
     session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
       details.requestHeaders = buildSafeHeaders({

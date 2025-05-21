@@ -378,7 +378,16 @@ const RegisterCommands = ({
       }
     }
 
+    const checkScrollBottomByWheel = () => {
+      isAlreadyScrolledBottomRef.current = false
+      setShowKeepScrollingPanel(false)
+    }
+    scrollerRef.current?.addEventListener("wheel", checkScrollBottomByWheel)
+
     return combineCleanupFunctions(
+      () => {
+        scrollerRef.current?.removeEventListener("wheel", checkScrollBottomByWheel)
+      },
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
         const currentScroll = scrollerRef.current?.scrollTop
         const delta = window.innerHeight
@@ -386,6 +395,7 @@ const RegisterCommands = ({
         if (typeof currentScroll === "number" && delta) {
           springScrollTo(currentScroll - delta, scrollerRef.current!)
         }
+        checkScrollBottom(scrollerRef.current!)
       }),
 
       EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
@@ -411,7 +421,6 @@ const RegisterCommands = ({
         $scroller.focus()
         nextFrame(highlightBoundary)
         setIsUserInteraction(true)
-        checkScrollBottom($scroller)
       }),
     )
   }, [highlightBoundary, scrollerRef, setIsUserInteraction])
@@ -439,7 +448,7 @@ const FloatPanel: React.FC<{ children: React.ReactNode; side: "bottom" | "top" }
     exit={{ opacity: 0, y: 32 }}
     transition={{ duration: 0.2 }}
     className={cn(
-      "absolute left-1/2 z-50 -translate-x-1/2 select-none rounded-2xl bg-white/70 px-6 py-3 text-center text-[15px] font-medium text-neutral-800 shadow-xl backdrop-blur-md dark:bg-neutral-900/70 dark:text-neutral-200",
+      "bg-material-ultra-thick text-text backdrop-blur-background absolute left-1/2 z-50 -translate-x-1/2 select-none rounded-2xl px-6 py-3 text-center text-[15px] font-medium shadow-xl",
       side === "bottom" ? "bottom-8" : "top-8",
     )}
     style={{

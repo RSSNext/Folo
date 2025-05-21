@@ -107,6 +107,10 @@ const config: ForgeConfig = {
         name: "Folo",
         schemes: ["follow"],
       },
+      {
+        name: "Folo",
+        schemes: ["folo"],
+      },
     ],
 
     afterCopy: [

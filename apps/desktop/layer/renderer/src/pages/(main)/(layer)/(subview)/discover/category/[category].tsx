@@ -12,15 +12,14 @@ import { Link, useParams } from "react-router"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useFollow } from "~/hooks/biz/useFollow"
 import { useAuthQuery } from "~/hooks/common"
 import type { apiClient } from "~/lib/api-fetch"
 import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
 import { RecommendationContent } from "~/modules/discover/RecommendationContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { Queries } from "~/queries"
-
-type Language = "all" | "eng" | "cmn"
-type DiscoverCategories = (typeof RSSHubCategories)[number] | string
+import { getPreferredTitle } from "~/store/feed"
 
 const LanguageMap = {
   all: "all",
@@ -30,13 +29,6 @@ const LanguageMap = {
 
 type RouteData = Awaited<ReturnType<typeof apiClient.discover.rsshub.$get>>["data"]
 
-const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
-  return Queries.discover.rsshubCategory({
-    // category: "popular",
-    categories: category === "all" ? "popular" : `${category}`,
-    lang: LanguageMap[lang],
-  })
-}
 export const Component = () => {
   const { t } = useTranslation()
   const lang = useUISettingKey("discoverLanguage")
@@ -44,10 +36,16 @@ export const Component = () => {
   const title = t(`discover.category.${category}`, { ns: "common" })
   useSubViewTitle(title)
 
-  const rsshubPopular = useAuthQuery(fetchRsshubPopular(category, lang), {
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
-    placeholderData: keepPreviousData,
-  })
+  const rsshubPopular = useAuthQuery(
+    Queries.discover.rsshubCategory({
+      categories: category === "all" ? "popular" : `${category}`,
+      lang: LanguageMap[lang],
+    }),
+    {
+      staleTime: 1000 * 60 * 60 * 24, // 1 day
+      placeholderData: keepPreviousData,
+    },
+  )
 
   const data: RouteData = rsshubPopular.data as any
   const { isLoading } = rsshubPopular
@@ -172,6 +170,17 @@ const RecommendationListItem = ({
     }
   }, [data])
 
+  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics(), {
+    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    placeholderData: keepPreviousData,
+  })
+
+  const rsshubAnalyticsData: Awaited<
+    ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
+  >["data"] = rsshubAnalytics.data as any
+
+  const follow = useFollow()
+
   return (
     <Card className="shadow-background border-border overflow-hidden rounded-lg border transition-shadow duration-200 hover:shadow-md">
       <div className="border-border flex items-center gap-3 border-b p-4">
@@ -208,17 +217,20 @@ const RecommendationListItem = ({
           </div>
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 pt-2">
         <ul className="text-text mb-3">
           {routes.map((route) => {
             const routeData = data.routes[route]!
             if (Array.isArray(routeData.path)) {
               routeData.path = routeData.path.find((p) => p === route) ?? routeData.path[0]
             }
+
+            const analytics = rsshubAnalyticsData?.[`/${routePrefix}${routeData.path}`]
+
             return (
               <li
                 key={route}
-                className="hover:bg-material-opaque -mx-4 flex items-center rounded p-2 px-5 transition-colors"
+                className="hover:bg-material-opaque -mx-4 rounded p-3 px-5 transition-colors"
                 role="button"
                 onClick={() => {
                   present({
@@ -234,14 +246,53 @@ const RecommendationListItem = ({
                   })
                 }}
               >
-                <div className="bg-accent mr-2 size-1.5 rounded-full" />
-                <div className="relative h-5 grow">
-                  <div className="absolute inset-0 flex items-center gap-2 text-sm">
-                    <EllipsisHorizontalTextWithTooltip>
-                      {routeData.name}
-                    </EllipsisHorizontalTextWithTooltip>
-                    <div className="text-text-secondary shrink-0 text-xs">{`rsshub://${routePrefix}${routeData.path}`}</div>
+                <div className="w-full">
+                  <div className="flex w-full items-center gap-8">
+                    <div className="flex flex-1 items-center gap-2">
+                      <div className="bg-accent mr-2 size-1.5 rounded-full" />
+                      <div className="relative h-5 grow">
+                        <div className="text-title3 absolute inset-0 flex items-center gap-3 font-medium">
+                          <EllipsisHorizontalTextWithTooltip>
+                            {routeData.name}
+                          </EllipsisHorizontalTextWithTooltip>
+                          <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-xs">{`rsshub://${routePrefix}${routeData.path}`}</EllipsisHorizontalTextWithTooltip>
+                        </div>
+                      </div>
+                    </div>
+                    {analytics?.subscriptionCount && (
+                      <div className="flex items-center gap-0.5 text-xs">
+                        <i className="i-mgc-fire-cute-re" />
+                        {analytics?.subscriptionCount}
+                      </div>
+                    )}
                   </div>
+                  {analytics?.topFeeds && (
+                    <div className="mt-2 flex items-center gap-10 pl-5 text-xs">
+                      {analytics.topFeeds.slice(0, 2).map((feed) => (
+                        <div key={feed.id} className="flex w-2/5 flex-1 items-center text-sm">
+                          <FeedIcon
+                            feed={feed}
+                            className="mask-squircle mask shrink-0 rounded-none"
+                            size={16}
+                          />
+                          <div
+                            className="min-w-0 leading-tight"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              follow({
+                                isList: false,
+                                id: feed.id,
+                              })
+                            }}
+                          >
+                            <EllipsisHorizontalTextWithTooltip className="truncate">
+                              {getPreferredTitle(feed) || feed?.title}
+                            </EllipsisHorizontalTextWithTooltip>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </li>
             )

@@ -1,9 +1,30 @@
-import { defaultSettings } from "@follow/shared/settings/defaults"
+import { isEqual } from "es-toolkit/compat"
 
-import { getGeneralSettings, setGeneralSetting } from "~/atoms/settings/general"
-import { getUISettings } from "~/atoms/settings/ui"
+import {
+  createDefaultGeneralSettings,
+  getGeneralSettings,
+  setGeneralSetting,
+} from "~/atoms/settings/general"
+import { createDefaultUISettings, getUISettings } from "~/atoms/settings/ui"
 
 import { defineMigration } from "../helper"
+
+function hasSettingsChanged(
+  currentSettings: Record<string, any>,
+  defaultSettings: Record<string, any>,
+): boolean {
+  for (const key in defaultSettings) {
+    const defaultValue = defaultSettings[key]
+    const currentValue = currentSettings[key]
+    if (currentValue === undefined) {
+      continue
+    }
+    if (!isEqual(defaultValue, currentValue)) {
+      return true
+    }
+  }
+  return false
+}
 
 export const v1 = defineMigration({
   version: "v1",
@@ -11,23 +32,10 @@ export const v1 = defineMigration({
     const settings = getGeneralSettings()
     const uiSettings = getUISettings()
 
-    let enabledEnhancedSettings = false
-    for (const key in defaultSettings.ui) {
-      const defaultValue = defaultSettings.ui[key]
-      const currentValue = uiSettings[key]
-      if (defaultValue !== currentValue) {
-        enabledEnhancedSettings = true
-        break
-      }
-    }
-    for (const key in defaultSettings.general) {
-      const defaultValue = defaultSettings.general[key]
-      const currentValue = settings[key]
-      if (defaultValue !== currentValue) {
-        enabledEnhancedSettings = true
-        break
-      }
-    }
+    const enabledEnhancedSettings =
+      hasSettingsChanged(uiSettings, createDefaultUISettings()) ||
+      hasSettingsChanged(settings, createDefaultGeneralSettings())
+
     setGeneralSetting("enhancedSettings", enabledEnhancedSettings)
   },
 })

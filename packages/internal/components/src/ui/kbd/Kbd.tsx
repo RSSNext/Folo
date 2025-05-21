@@ -4,6 +4,8 @@ import * as React from "react"
 import { Fragment, memo } from "react"
 import { isHotkeyPressed } from "react-hotkeys-hook"
 
+const os = getOS()
+
 const SharedKeys = {
   backspace: "⌫",
   space: "␣",
@@ -14,6 +16,8 @@ const SharedKeys = {
   arrowdown: "↓",
   arrowleft: "←",
   arrowright: "→",
+
+  $mod: os === "macOS" ? "⌘" : "Ctrl",
 }
 const SpecialKeys = {
   Windows: {
@@ -43,7 +47,6 @@ SpecialKeys.iOS = SpecialKeys.macOS
 // @ts-ignore
 SpecialKeys.Android = SpecialKeys.Linux
 
-const os = getOS()
 export const KbdCombined: FC<{
   children: string
   className?: string

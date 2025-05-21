@@ -37,7 +37,7 @@ export function FeedColumnMobile({ asWidget }: { asWidget?: boolean }) {
         </span>
         <div className="center inline-flex">
           <Link to="/discover" tabIndex={-1}>
-            <ActionButton shortcut="Meta+T" tooltip={t("words.discover")}>
+            <ActionButton shortcut="$mod+T" tooltip={t("words.discover")}>
               <i className="i-mgc-add-cute-re text-text-secondary size-5" />
             </ActionButton>
           </Link>

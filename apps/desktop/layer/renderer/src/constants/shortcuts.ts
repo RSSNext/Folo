@@ -11,7 +11,7 @@ const shortcutConfigs = {
   subscriptions: {
     add: {
       name: tShortcuts("keys.subscriptions.add"),
-      key: "Meta+T",
+      key: "$mod+T",
     },
     switchToView: {
       name: tShortcuts("keys.subscriptions.switchToView"),
@@ -37,11 +37,23 @@ const shortcutConfigs = {
       name: tShortcuts("keys.subscriptions.toggleFolderCollapse"),
       key: "Z",
     },
+    openInBrowser: {
+      name: tShortcuts("keys.subscriptions.openInBrowser"),
+      key: "O",
+    },
+    openSiteInBrowser: {
+      name: tShortcuts("keys.subscriptions.openSiteInBrowser"),
+      key: "$mod+O",
+    },
+    markAllAsRead: {
+      name: tShortcuts("keys.entries.markAllAsRead"),
+      key: "Shift+$mod+A",
+    },
   },
   layout: {
     toggleSidebar: {
       name: tShortcuts("keys.layout.toggleSidebar"),
-      key: "Meta+B, [",
+      key: "$mod+B, [",
     },
     showShortcuts: {
       name: tShortcuts("keys.layout.showShortcuts"),
@@ -49,7 +61,7 @@ const shortcutConfigs = {
     },
     toggleWideMode: {
       name: tShortcuts("keys.layout.toggleWideMode"),
-      key: "Meta+[",
+      key: "$mod+[",
     },
     zenMode: {
       name: tShortcuts("keys.layout.zenMode"),
@@ -69,10 +81,7 @@ const shortcutConfigs = {
       name: tShortcuts("keys.entries.next"),
       key: "J, ArrowDown",
     },
-    markAllAsRead: {
-      name: tShortcuts("keys.entries.markAllAsRead"),
-      key: "Shift+Meta+A",
-    },
+
     toggleUnreadOnly: {
       name: tShortcuts("keys.entries.toggleUnreadOnly"),
       key: "U",
@@ -94,23 +103,23 @@ const shortcutConfigs = {
     },
     tts: {
       name: tShortcuts("keys.entry.tts"),
-      key: "Shift+Meta+V",
+      key: "Shift+$mod+V",
     },
     copyLink: {
       name: tShortcuts("keys.entry.copyLink"),
-      key: "Shift+Meta+C",
+      key: "Shift+$mod+C",
     },
     copyTitle: {
       name: tShortcuts("keys.entry.copyTitle"),
-      key: "Shift+Meta+B",
+      key: "Shift+$mod+B",
     },
     tip: {
       name: tShortcuts("keys.entry.tip"),
-      key: "Shift+Meta+T",
+      key: "Shift+$mod+T",
     },
     share: {
       name: tShortcuts("keys.entry.share"),
-      key: "Meta+Alt+S",
+      key: "$mod+Alt+S",
     },
     scrollUp: {
       name: tShortcuts("keys.entry.scrollUp"),
@@ -138,7 +147,7 @@ const shortcutConfigs = {
   misc: {
     quickSearch: {
       name: tShortcuts("keys.misc.quickSearch"),
-      key: "Meta+K",
+      key: "$mod+K",
     },
   },
 } as const

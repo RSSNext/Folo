@@ -101,7 +101,7 @@ function transformMenuItemsForNative(nextItems: FollowMenuItem[]): ElectronMenuI
       click: item.click,
       enabled:
         (!item.disabled && item.click !== undefined) || (!!item.submenu && item.submenu.length > 0),
-      accelerator: item.shortcut?.replace("Meta", "CmdOrCtrl"),
+      accelerator: item.shortcut?.replace("$mod", "CmdOrCtrl"),
       checked: typeof item.checked === "boolean" ? item.checked : undefined,
       submenu:
         item.submenu.length > 0

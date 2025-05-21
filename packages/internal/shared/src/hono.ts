@@ -14574,6 +14574,53 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
+} & {
+    "/rsshub-analytics": {
+        $get: {
+            input: {};
+            output: {
+                data: {
+                    [x: string]: {
+                        subscriptionCount: number;
+                        topFeeds: {
+                            id: string;
+                            type: "feed";
+                            url: string;
+                            image?: string | null | undefined;
+                            description?: string | null | undefined;
+                            title?: string | null | undefined;
+                            siteUrl?: string | null | undefined;
+                            errorMessage?: string | null | undefined;
+                            errorAt?: string | null | undefined;
+                            ownerUserId?: string | null | undefined;
+                            owner?: {
+                                id: string;
+                                name: string | null;
+                                emailVerified: boolean | null;
+                                image: string | null;
+                                handle: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                suspended: boolean | null;
+                            } | null | undefined;
+                            tipUsers?: {
+                                id: string;
+                                name: string | null;
+                                emailVerified: boolean | null;
+                                image: string | null;
+                                handle: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                suspended: boolean | null;
+                            }[] | null | undefined;
+                        }[];
+                    };
+                };
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
 }, "/discover"> | hono_types.MergeSchemaPath<hono_types.MergeSchemaPath<{
     "/": {
         $post: {

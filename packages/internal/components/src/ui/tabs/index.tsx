@@ -8,8 +8,8 @@ const TabsIdContext = React.createContext<string | null>(null)
 const SetTabIndicatorContext = React.createContext<
   React.Dispatch<
     React.SetStateAction<{
-      w: number
-      x: number
+      w: number | undefined
+      x: number | undefined
     }>
   >
 >(() => {})
@@ -17,8 +17,8 @@ const SetTabIndicatorContext = React.createContext<
 const TabVariantContext = React.createContext<"default" | "rounded" | undefined>(undefined)
 
 const TabIndicatorContext = React.createContext<{
-  w: number
-  x: number
+  w: number | undefined
+  x: number | undefined
 } | null>(null)
 
 const Tabs: ComponentWithRef<
@@ -29,9 +29,12 @@ const Tabs: ComponentWithRef<
   HTMLDivElement
 > = ({ ref, ...props }) => {
   const { children, variant, ...rest } = props
-  const [indicator, setIndicator] = React.useState({
-    w: 0,
-    x: 0,
+  const [indicator, setIndicator] = React.useState<{
+    w: number | undefined
+    x: number | undefined
+  }>({
+    w: undefined,
+    x: undefined,
   })
   const id = React.useId()
 
@@ -68,7 +71,7 @@ const TabsList = ({
       )}
     >
       {props.children}
-      {indicator && (
+      {indicator?.x !== undefined && (
         <span
           className={cn(
             "absolute left-0 duration-200 will-change-[transform,width]",
@@ -78,7 +81,7 @@ const TabsList = ({
           )}
           style={{
             width: indicator.w,
-            transform: `translate3d(${indicator.x}px, 0, 0)`,
+            transform: indicator.x ? `translate3d(${indicator.x}px, 0, 0)` : undefined,
           }}
         />
       )}
