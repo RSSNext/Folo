@@ -11,7 +11,7 @@ import { DEFAULT_ACTION_ORDER } from "~/modules/customize-toolbar/constant"
 
 import { hookEnhancedSettings } from "./general"
 
-export const createDefaultSettings = (): UISettings => ({
+export const createDefaultUISettings = (): UISettings => ({
   ...defaultUISettings,
 
   // Action Order
@@ -33,7 +33,7 @@ const {
   getSettings: getUISettingsInternal,
   useSettingValue: useUISettingValueInternal,
   settingAtom: __uiSettingAtom,
-} = createSettingAtom("ui", createDefaultSettings)
+} = createSettingAtom("ui", createDefaultUISettings)
 
 const [useUISettingKey, useUISettingSelector, useUISettingKeys, getUISettings, useUISettingValue] =
   hookEnhancedSettings(

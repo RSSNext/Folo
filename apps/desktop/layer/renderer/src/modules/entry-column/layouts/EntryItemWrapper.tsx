@@ -1,6 +1,7 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useState } from "react"
@@ -75,6 +76,8 @@ export const EntryItemWrapper: FC<
       navigate({
         entryId: entry.entries.id,
       })
+
+      setTimeout(() => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender), 60)
     },
     [asRead, entry.entries.id, entry.feedId, navigate],
   )

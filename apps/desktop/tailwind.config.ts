@@ -1,7 +1,6 @@
 import { extendConfig } from "@follow/configs/tailwindcss/web"
 import plugin from "tailwindcss/plugin"
 
-const isWebBuild = !!process.env.WEB_BUILD || !!process.env.RN_BUILD || !!process.env.VERCEL
 export default extendConfig({
   content: [
     "./layer/renderer/src/**/*.{ts,tsx}",
@@ -12,9 +11,17 @@ export default extendConfig({
     "../../packages/**/*.{ts,tsx}",
     "!../../packages/**/node_modules",
   ],
-  future: {
-    hoverOnlyWhenSupported: isWebBuild,
-  },
+
+  safelist: [
+    "line-clamp-[1]",
+    "line-clamp-[2]",
+    "line-clamp-[3]",
+    "line-clamp-[4]",
+    "line-clamp-[5]",
+    "line-clamp-[6]",
+    "line-clamp-[7]",
+    "line-clamp-[8]",
+  ],
   theme: {
     extend: {
       cursor: {

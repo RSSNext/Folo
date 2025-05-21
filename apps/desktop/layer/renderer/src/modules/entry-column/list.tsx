@@ -242,7 +242,7 @@ export const EntryList: FC<EntryListProps> = memo(
                       "bg-background",
                       isActiveStickyItem
                         ? "sticky top-0 z-[1]"
-                        : "absolute left-0 top-0 w-full will-change-transform",
+                        : "absolute left-0 top-0 z-[1] w-full will-change-transform",
                     )}
                     style={
                       !isActiveStickyItem

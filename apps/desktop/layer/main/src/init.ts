@@ -2,7 +2,7 @@ import path from "node:path"
 
 import { getRendererHandlers, registerIpcMain } from "@egoist/tipc/main"
 import { PushReceiver } from "@eneris/push-receiver"
-import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
+import { APP_PROTOCOL, DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { MessagingData } from "@follow/shared/hono"
 import { app, nativeTheme, Notification, protocol, shell } from "electron"
@@ -31,14 +31,16 @@ export function initializeAppStage0() {
   initializeSentry()
 }
 export const initializeAppStage1 = () => {
-  if (process.defaultApp) {
-    if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient(APP_PROTOCOL, process.execPath, [
-        path.resolve(process.argv[1]!),
-      ])
+  const protocols = [LEGACY_APP_PROTOCOL, APP_PROTOCOL]
+
+  for (const protocol of protocols) {
+    if (process.defaultApp) {
+      if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient(protocol, process.execPath, [path.resolve(process.argv[1]!)])
+      }
+    } else {
+      app.setAsDefaultProtocolClient(protocol)
     }
-  } else {
-    app.setAsDefaultProtocolClient(APP_PROTOCOL)
   }
 
   registerIpcMain(router)

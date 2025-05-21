@@ -39,7 +39,7 @@ const useParseDate = (date: string) =>
     }
   }, [date])
 
-const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 bg-background px-4 font-bold text-zinc-800 dark:text-neutral-400 h-7`
+const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 bg-background px-4 font-bold text-text h-7`
 export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
   if (view === FeedViewType.SocialMedia) {
     return <SocialMediaDateItem date={date} className={dateItemclassName} isSticky={isSticky} />

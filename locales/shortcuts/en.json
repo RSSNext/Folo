@@ -23,6 +23,8 @@
   "keys.misc.quickSearch": "Quick Search",
   "keys.subscriptions.add": "Add Subscription",
   "keys.subscriptions.nextSubscription": "Next Subscription",
+  "keys.subscriptions.openInBrowser": "Open in Browser",
+  "keys.subscriptions.openSiteInBrowser": "Open site in Browser",
   "keys.subscriptions.previousSubscription": "Previous Subscription",
   "keys.subscriptions.switchBetweenViews": "Switch Between Views",
   "keys.subscriptions.switchNextView": "Switch to Next View",

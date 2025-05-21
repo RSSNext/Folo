@@ -35,7 +35,7 @@ export const SegmentGroup = (props: ComponentType<SegmentGroupProps>) => {
       <div
         role="tablist"
         className={cn(
-          "bg-fill-secondary text-text-secondary inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
+          "bg-fill-tertiary text-text-secondary inline-flex h-9 items-center justify-center rounded-lg p-1 outline-none",
           className,
         )}
         tabIndex={0}

@@ -1,6 +1,7 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
@@ -130,10 +131,6 @@ export class EntryActionMenuItem extends MenuItemText {
 }
 export type EntryActionItem = EntryActionMenuItem | MenuItemSeparator
 
-function hasHTMLTags(text?: string | null): boolean {
-  return /<[^>]+>/.test(text || "")
-}
-
 export const useEntryActions = ({
   entryId,
   view,
@@ -158,7 +155,7 @@ export const useEntryActions = ({
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
   const isInbox = !!inbox
-  const isContentContainsHTMLTags = hasHTMLTags(entry?.entries.content)
+  const isContentContainsHTMLTags = doesTextContainHTML(entry?.entries.content)
 
   const isShowSourceContent = useShowSourceContent()
   const isShowAISummaryAuto = useShowAISummaryAuto(entry)

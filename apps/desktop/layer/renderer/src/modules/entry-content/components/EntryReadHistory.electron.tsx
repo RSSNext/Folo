@@ -64,17 +64,19 @@ export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) =>
           ))}
       </AvatarGroup>
 
-      <div
-        style={{
-          margin: "-8px",
-          zIndex: LIMIT + 1,
-        }}
-        className="no-drag-region border-border bg-material-opaque ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
-      >
-        <span className="text-text-secondary text-[10px] font-medium tabular-nums">
-          +{Math.min(totalCount - LIMIT, 99)}
-        </span>
-      </div>
+      {totalCount > LIMIT && (
+        <div
+          style={{
+            margin: "-8px",
+            zIndex: LIMIT + 1,
+          }}
+          className="no-drag-region border-border bg-material-opaque ring-background relative flex size-7 items-center justify-center rounded-full border ring-2"
+        >
+          <span className="text-text-secondary text-[10px] font-medium tabular-nums">
+            +{Math.min(totalCount - LIMIT, 99)}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

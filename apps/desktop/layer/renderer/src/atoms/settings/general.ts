@@ -10,7 +10,7 @@ import { getDefaultLanguage } from "~/lib/language"
 
 export const DEFAULT_ACTION_LANGUAGE = "default"
 
-const createDefaultSettings = (): GeneralSettings => ({
+export const createDefaultGeneralSettings = (): GeneralSettings => ({
   ...defaultGeneralSettings,
   language: getDefaultLanguage(),
 })
@@ -26,7 +26,7 @@ const {
   useSettingValue: useGeneralSettingValueInternal,
 
   settingAtom: __generalSettingAtom,
-} = createSettingAtom("general", createDefaultSettings)
+} = createSettingAtom("general", createDefaultGeneralSettings)
 
 const [
   useGeneralSettingKey,

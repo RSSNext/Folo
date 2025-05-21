@@ -2,9 +2,9 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { is } from "@electron-toolkit/utils"
-import { APP_PROTOCOL } from "@follow/shared"
+import { LEGACY_APP_PROTOCOL } from "@follow/shared"
 import { callWindowExpose, WindowState } from "@follow/shared/bridge"
-import { DEV } from "@follow/shared/constants"
+import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import type { BrowserWindowConstructorOptions } from "electron"
 import { app, BrowserWindow, screen, shell } from "electron"
 import type { Event } from "electron/main"
@@ -112,7 +112,16 @@ export function createWindow(
   const handleExternalProtocol = async (e: Event, url: string, window: BrowserWindow) => {
     const { protocol } = new URL(url)
 
-    const ignoreProtocols = ["http", "https", APP_PROTOCOL, "file", "code", "cursor", "app"]
+    const ignoreProtocols = [
+      "http",
+      "https",
+      LEGACY_APP_PROTOCOL,
+      APP_PROTOCOL,
+      "file",
+      "code",
+      "cursor",
+      "app",
+    ]
     if (ignoreProtocols.includes(protocol.slice(0, -1))) {
       return
     }

@@ -119,7 +119,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.new_entry_notification"),
-        icon: <i className="i-mgc-bell-ringing-cute-re" />,
+        icon: <i className="i-mgc-notification-cute-re" />,
         enabled: !!newEntryNotification,
         onInit: (data) => {
           data.result.newEntryNotification = true

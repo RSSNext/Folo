@@ -1,12 +1,14 @@
 import type { FC, PropsWithChildren } from "react"
 
 declare global {
-  export type Component<P = object> = FC<ComponentType & P>
+  export type Component<P = object> = FC<Prettify<ComponentType & P>>
 
   export type ComponentWithRef<P = object, Ref = object> = FC<ComponentWithRefType<P, Ref>>
-  export type ComponentWithRefType<P = object, Ref = object> = ComponentType<P> & {
-    ref?: React.Ref<Ref>
-  }
+  export type ComponentWithRefType<P = object, Ref = object> = Prettify<
+    ComponentType<P> & {
+      ref?: React.Ref<Ref>
+    }
+  >
 
   export type ComponentType<P = object> = {
     className?: string

@@ -77,22 +77,15 @@ export const handleSessionChanges = () => {
 }
 
 export const signOut = async () => {
-  if (window.__RN__) {
-    window.ReactNativeWebView?.postMessage("sign-out")
-    return
-  }
-
   // Clear query cache
   localStorage.removeItem(QUERY_PERSIST_KEY)
 
-  // setLoginModalShow(true)
   setWhoami(null)
+  // clear local store data
+  await clearLocalPersistStoreData()
 
   // Clear local storage
   clearStorage()
-
-  // clear local store data
-  await clearLocalPersistStoreData()
   // Sign out
   await tipcClient?.signOut()
   await signOutFn()

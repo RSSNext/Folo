@@ -11,9 +11,7 @@ const globTree = import.meta.glob("./pages/**/*.tsx")
 const tree = buildGlobRoutes(globTree)
 
 let routerCreator =
-  IN_ELECTRON || window.__RN__ || globalThis["__DEBUG_PROXY__"]
-    ? createHashRouter
-    : createBrowserRouter
+  IN_ELECTRON || globalThis["__DEBUG_PROXY__"] ? createHashRouter : createBrowserRouter
 if (window.SENTRY_RELEASE) {
   routerCreator = wrapCreateBrowserRouterV7(routerCreator)
 }

@@ -1,5 +1,8 @@
 import { EventBus } from "@follow/utils/event-bus"
 
+import type { BizRouteParams } from "~/hooks/biz/useRouteParams"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
+
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import type { Command } from "../types"
 import { COMMAND_ID } from "./id"
@@ -18,6 +21,9 @@ declare module "@follow/utils/event-bus" {
     "subscription:next": never
     "subscription:previous": never
     "subscription:toggle-folder-collapse": never
+    "subscription:mark-all-as-read": BizRouteParams
+    "subscription:open-in-browser": never
+    "subscription:open-site-in-browser": never
   }
 }
 const LABEL_PREFIX = "Subscription"
@@ -100,6 +106,28 @@ export const useRegisterSubscriptionCommands = () => {
         EventBus.dispatch(COMMAND_ID.subscription.toggleFolderCollapse)
       },
     },
+    {
+      id: COMMAND_ID.subscription.markAllAsRead,
+      label: `${LABEL_PREFIX}: Mark All as Read`,
+      run: () => {
+        const routeParams = getRouteParams()
+        EventBus.dispatch(COMMAND_ID.subscription.markAllAsRead, routeParams)
+      },
+    },
+    {
+      id: COMMAND_ID.subscription.openInBrowser,
+      label: `${LABEL_PREFIX}: Open in Browser`,
+      run: () => {
+        EventBus.dispatch(COMMAND_ID.subscription.openInBrowser)
+      },
+    },
+    {
+      id: COMMAND_ID.subscription.openSiteInBrowser,
+      label: `${LABEL_PREFIX}: Open site in Browser`,
+      run: () => {
+        EventBus.dispatch(COMMAND_ID.subscription.openSiteInBrowser)
+      },
+    },
   ])
 }
 
@@ -158,6 +186,21 @@ type ToggleFolderCollapseCommand = Command<{
   fn: () => void
 }>
 
+type MarkAllAsReadCommand = Command<{
+  id: typeof COMMAND_ID.subscription.markAllAsRead
+  fn: () => void
+}>
+
+type OpenInBrowserCommand = Command<{
+  id: typeof COMMAND_ID.subscription.openInBrowser
+  fn: () => void
+}>
+
+type OpenSiteInBrowserCommand = Command<{
+  id: typeof COMMAND_ID.subscription.openSiteInBrowser
+  fn: () => void
+}>
+
 export type SubscriptionCommand =
   | SwitchTabToNextCommand
   | SwitchTabToPreviousCommand
@@ -170,3 +213,6 @@ export type SubscriptionCommand =
   | NextSubscriptionCommand
   | PreviousSubscriptionCommand
   | ToggleFolderCollapseCommand
+  | MarkAllAsReadCommand
+  | OpenInBrowserCommand
+  | OpenSiteInBrowserCommand

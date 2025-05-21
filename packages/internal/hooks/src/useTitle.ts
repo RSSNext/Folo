@@ -1,6 +1,7 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useEffect, useRef } from "react"
 
+declare const APP_NAME: string
 const titleTemplate = IN_ELECTRON ? `%s` : `%s | ${APP_NAME}`
 
 export const useTitle = (title?: string | null) => {

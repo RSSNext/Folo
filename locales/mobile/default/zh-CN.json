@@ -1,4 +1,6 @@
 {
+  "entry.pull_up_to_next_entry": "继续上拉查看下一条内容",
+  "entry.release_to_next_entry": "松开查看下一条内容",
   "login.back": "返回",
   "login.continueWith": "使用 {{provider}} 继续",
   "login.have_account": "已有账户？<strong>登录</strong>",

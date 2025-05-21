@@ -62,7 +62,7 @@ export function SubviewLayout() {
     if (prevLocation.pathname === location.pathname) {
       navigate({ pathname: "" })
     } else {
-      navigate(prevLocation)
+      navigate(-1)
     }
   }
   useHotkeys("esc", backHandler)
