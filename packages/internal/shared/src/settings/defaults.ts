@@ -19,6 +19,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   // subscription
   autoGroup: true,
   hideAllReadSubscriptions: false,
+  hidePrivateSubscriptionsInTimeline: false,
 
   // view
   unreadOnly: true,

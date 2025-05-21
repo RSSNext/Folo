@@ -14887,6 +14887,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     isCollection?: boolean | undefined;
                     isArchived?: boolean | undefined;
                     withContent?: boolean | undefined;
+                    hidePrivate?: boolean | undefined;
                 };
             };
             output: {
@@ -15556,6 +15557,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     listId?: string | undefined;
                     feedIdList?: string[] | undefined;
                     inboxId?: string | undefined;
+                    hidePrivate?: boolean | undefined;
                     startTime?: number | undefined;
                     endTime?: number | undefined;
                 };

@@ -238,13 +238,22 @@ class SubscriptionActions {
     })
   }
 
-  async markReadByView(view: FeedViewType, filter?: MarkReadFilter) {
+  async markReadByView({
+    view,
+    hidePrivate,
+    filter,
+  }: {
+    view: FeedViewType
+    hidePrivate?: boolean
+    filter?: MarkReadFilter
+  }) {
     const tx = createTransaction()
 
     tx.execute(async () => {
       await apiClient.reads.all.$post({
         json: {
           view,
+          hidePrivate,
           ...filter,
         },
       })
@@ -257,6 +266,9 @@ class SubscriptionActions {
     tx.optimistic(async () => {
       const state = get()
       for (const feedId in state.data) {
+        if (hidePrivate && state.data[feedId]?.isPrivate) {
+          return
+        }
         if (state.data[feedId]!.view === view) {
           if (state.data[feedId]?.listId) {
             const listFeedIds = getListById(state.data[feedId].listId)?.feedIds
