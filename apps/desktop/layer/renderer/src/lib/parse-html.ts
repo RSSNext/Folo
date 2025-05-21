@@ -65,8 +65,27 @@ export const parseHtml = (
       },
       style: Style,
 
-      video: ({ node, ...props }) =>
-        createElement(Media, { ...props, popper: true, type: "video" }),
+      video: ({ node, ...props }) => {
+        const sourceElement = Array.isArray(props.children)
+          ? props.children.find((i) => i.type === "source")
+          : // Children is only the source element
+            props.children &&
+              typeof props.children === "object" &&
+              "type" in props.children &&
+              props.children.type === "source"
+            ? props.children
+            : null
+
+        const src = props.src || sourceElement?.props.src
+        return createElement(Media, {
+          ...props,
+          popper: true,
+          type: "video",
+          previewImageUrl: props.poster,
+          src,
+        })
+      },
+
       p: ({ node, ref, ...props }) => {
         if (node?.children && node.children.length !== 1) {
           for (const item of node.children) {
