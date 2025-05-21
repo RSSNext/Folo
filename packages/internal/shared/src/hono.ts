@@ -1809,6 +1809,47 @@ type ExtraModel = {
         content_html?: string;
     }[];
 };
+declare const CommonEntryFields: {
+    id: drizzle_orm.HasRuntimeDefault<drizzle_orm.HasDefault<drizzle_orm.IsPrimaryKey<drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
+    title: drizzle_orm_pg_core.PgTextBuilderInitial<"title", [string, ...string[]]>;
+    url: drizzle_orm_pg_core.PgTextBuilderInitial<"url", [string, ...string[]]>;
+    content: drizzle_orm_pg_core.PgTextBuilderInitial<"content", [string, ...string[]]>;
+    description: drizzle_orm_pg_core.PgTextBuilderInitial<"description", [string, ...string[]]>;
+    guid: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
+    author: drizzle_orm_pg_core.PgTextBuilderInitial<"author", [string, ...string[]]>;
+    authorUrl: drizzle_orm_pg_core.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
+    authorAvatar: drizzle_orm_pg_core.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
+    insertedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"inserted_at">>;
+    publishedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"published_at">>;
+    media: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"media">, MediaModel[]>;
+    categories: drizzle_orm_pg_core.PgArrayBuilder<{
+        name: "categories";
+        dataType: "array";
+        columnType: "PgArray";
+        data: string[];
+        driverParam: string | string[];
+        enumValues: [string, ...string[]];
+        size: undefined;
+        baseBuilder: {
+            name: "categories";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            enumValues: [string, ...string[]];
+            driverParam: string;
+        };
+    }, {
+        name: "categories";
+        dataType: "string";
+        columnType: "PgText";
+        data: string;
+        enumValues: [string, ...string[]];
+        driverParam: string;
+    }>;
+    attachments: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
+    extra: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"extra">, ExtraModel>;
+    language: drizzle_orm_pg_core.PgTextBuilderInitial<"language", [string, ...string[]]>;
+};
 declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "entries";
     schema: undefined;
@@ -9452,6 +9493,21 @@ declare const auth: {
                 body: Partial<better_auth.AdditionalUserFieldsInput<{
                     appName: string;
                     database: (options: BetterAuthOptions) => better_auth.Adapter;
+                    databaseHooks: {
+                        user: {
+                            create: {
+                                after: (newUser: {
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    emailVerified: boolean;
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    image?: string | null | undefined;
+                                }, context: better_auth.GenericEndpointContext | undefined) => Promise<void>;
+                            };
+                        };
+                    };
                     advanced: {
                         generateId: false;
                         defaultCookieAttributes: {
@@ -10758,14 +10814,15 @@ declare const auth: {
                                             ipAddress?: string | null | undefined | undefined;
                                             userAgent?: string | null | undefined | undefined;
                                         };
-                                        invitation: boolean | {
+                                        invitation: true | {
                                             code: string;
                                             createdAt: Date | null;
                                             usedAt: Date | null;
                                             fromUserId: string;
                                             toUserId: string | null;
                                         } | undefined;
-                                        role: "user" | "trial";
+                                        role: UserRole;
+                                        endDate: Date | undefined;
                                     } | null;
                                 } : {
                                     user: {
@@ -10791,14 +10848,15 @@ declare const auth: {
                                         ipAddress?: string | null | undefined | undefined;
                                         userAgent?: string | null | undefined | undefined;
                                     };
-                                    invitation: boolean | {
+                                    invitation: true | {
                                         code: string;
                                         createdAt: Date | null;
                                         usedAt: Date | null;
                                         fromUserId: string;
                                         toUserId: string | null;
                                     } | undefined;
-                                    role: "user" | "trial";
+                                    role: UserRole;
+                                    endDate: Date | undefined;
                                 } | null>;
                                 options: {
                                     method: "GET";
@@ -11179,6 +11237,21 @@ declare const auth: {
                         body: Partial<better_auth.AdditionalUserFieldsInput<{
                             appName: string;
                             database: (options: BetterAuthOptions) => better_auth.Adapter;
+                            databaseHooks: {
+                                user: {
+                                    create: {
+                                        after: (newUser: {
+                                            id: string;
+                                            name: string;
+                                            email: string;
+                                            emailVerified: boolean;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                            image?: string | null | undefined;
+                                        }, context: better_auth.GenericEndpointContext | undefined) => Promise<void>;
+                                    };
+                                };
+                            };
                             advanced: {
                                 generateId: false;
                                 defaultCookieAttributes: {
@@ -12485,14 +12558,15 @@ declare const auth: {
                                                     ipAddress?: string | null | undefined | undefined;
                                                     userAgent?: string | null | undefined | undefined;
                                                 };
-                                                invitation: boolean | {
+                                                invitation: true | {
                                                     code: string;
                                                     createdAt: Date | null;
                                                     usedAt: Date | null;
                                                     fromUserId: string;
                                                     toUserId: string | null;
                                                 } | undefined;
-                                                role: "user" | "trial";
+                                                role: UserRole;
+                                                endDate: Date | undefined;
                                             } | null;
                                         } : {
                                             user: {
@@ -12518,14 +12592,15 @@ declare const auth: {
                                                 ipAddress?: string | null | undefined | undefined;
                                                 userAgent?: string | null | undefined | undefined;
                                             };
-                                            invitation: boolean | {
+                                            invitation: true | {
                                                 code: string;
                                                 createdAt: Date | null;
                                                 usedAt: Date | null;
                                                 fromUserId: string;
                                                 toUserId: string | null;
                                             } | undefined;
-                                            role: "user" | "trial";
+                                            role: UserRole;
+                                            endDate: Date | undefined;
                                         } | null>;
                                         options: {
                                             method: "GET";
@@ -20641,4 +20716,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/referrals">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
