@@ -245,7 +245,9 @@ const CommandsHandler = ({
 }) => {
   const activeScope = useHotkeyScope()
   const when =
-    activeScope.includes(HotkeyScope.SubscriptionList) || activeScope.includes(HotkeyScope.Timeline)
+    (activeScope.includes(HotkeyScope.SubscriptionList) ||
+      activeScope.includes(HotkeyScope.Timeline)) &&
+    activeScope.includes(HotkeyScope.Home)
   useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToNext,
     when,

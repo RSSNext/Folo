@@ -3,6 +3,7 @@ export enum HotkeyScope {
   Menu = "menu",
   Modal = "modal",
   DropdownMenu = "dropdown-menu",
+  Recording = "recording",
 
   // Atom Scope
   Timeline = "timeline",

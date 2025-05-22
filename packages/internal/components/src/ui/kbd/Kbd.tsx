@@ -337,7 +337,7 @@ export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolea
     const Kbd = (
       <kbd
         className={cn(
-          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] transition-[border] duration-200",
+          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
 
           wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
           className,

@@ -1,5 +1,8 @@
+import { getStorageNS } from "@follow/utils/ns"
 import { transformShortcut } from "@follow/utils/utils"
-import { useMemo } from "react"
+import { useAtomValue, useSetAtom } from "jotai"
+import { atomWithStorage, selectAtom } from "jotai/utils"
+import { useCallback, useMemo } from "react"
 
 import { COMMAND_ID } from "../commands/id"
 import type { CommandCategory, FollowCommandId } from "../types"
@@ -49,6 +52,12 @@ const defaultCommandShortcuts = {
   [COMMAND_ID.global.showShortcuts]: "?",
 } as const
 
+const overrideCommandShortcutsAtom = atomWithStorage<
+  Partial<Record<AllowCustomizeCommandId, string>>
+>(getStorageNS("command-shortcuts"), {}, undefined, {
+  getOnInit: true,
+})
+
 export const useCommandShortcutItems = () => {
   const commandShortcuts = useCommandShortcuts()
 
@@ -68,22 +77,56 @@ export const useCommandShortcutItems = () => {
     return groupedCommands
   }, [commandShortcuts])
 }
-export const allowCustomizeCommands = new Set<FollowCommandId>([
+export const allowCustomizeCommands = new Set([
   COMMAND_ID.layout.toggleTimelineColumn,
   COMMAND_ID.layout.toggleWideMode,
   COMMAND_ID.layout.toggleZenMode,
-])
+] as const)
+type ExtractSetType<T extends Set<unknown>> = T extends Set<infer U> ? U : never
+export type AllowCustomizeCommandId = ExtractSetType<typeof allowCustomizeCommands>
 export type BindingCommandId = keyof typeof defaultCommandShortcuts
 
-// eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix, @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks
-const useCommandShortcut = (commandId: BindingCommandId): string => {
-  const commandShortcut = defaultCommandShortcuts[commandId]
-
-  return commandShortcut
+export const useCommandShortcut = (commandId: BindingCommandId): string => {
+  return useAtomValue(
+    useMemo(
+      () =>
+        selectAtom(overrideCommandShortcutsAtom, (v) => {
+          return v[commandId] ?? defaultCommandShortcuts[commandId]
+        }),
+      [commandId],
+    ),
+  )
 }
 
+export const useSetCustomCommandShortcut = () => {
+  const setOverrideCommandShortcuts = useSetAtom(overrideCommandShortcutsAtom)
+
+  return useCallback(
+    (commandId: AllowCustomizeCommandId, shortcut: string | null) => {
+      setOverrideCommandShortcuts((prev) => {
+        if (shortcut === null) {
+          const { [commandId]: _, ...rest } = prev
+
+          return rest
+        }
+        return { ...prev, [commandId]: shortcut }
+      })
+    },
+    [setOverrideCommandShortcuts],
+  )
+}
+
+/**
+ *
+ * @deprecated Use `useCommandShortcut` for more granular control
+ */
 export const useCommandShortcuts = () => {
-  return defaultCommandShortcuts
+  const overrideCommandShortcuts = useAtomValue(overrideCommandShortcutsAtom)
+
+  return {
+    ...defaultCommandShortcuts,
+    ...overrideCommandShortcuts,
+  }
 }
 
 export const useCommandBinding = <T extends BindingCommandId>({
