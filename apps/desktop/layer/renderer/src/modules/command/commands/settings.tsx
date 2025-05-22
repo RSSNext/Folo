@@ -13,7 +13,7 @@ export const useRegisterSettingsCommands = () => {
   useRegisterThemeCommands()
 }
 
-const category: CommandCategory = "Settings"
+const category: CommandCategory = "category.settings"
 const useCustomizeToolbarCommand = () => {
   const [t] = useTranslation("settings")
   const showModal = useShowCustomizeToolbarModal()

@@ -2,16 +2,9 @@ import type { ReactNode } from "react"
 
 import type { BasicCommand } from "./commands/types"
 
-export type CommandCategory =
-  | "Entry Render"
-  | "Entry"
-  | "Global"
-  | "Integration"
-  | "Layout"
-  | "List"
-  | "Settings"
-  | "Timeline"
-  | "Subscription"
+type ExtractCategory<T extends string> = T extends `category.${string}` ? T : never
+export type CommandCategory = ExtractCategory<Parameters<typeof tShortcuts>[0]>
+
 export interface KeybindingOptions {
   binding: string
   capture?: boolean

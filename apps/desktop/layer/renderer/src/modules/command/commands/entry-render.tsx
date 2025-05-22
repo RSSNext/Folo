@@ -1,4 +1,5 @@
 import { EventBus } from "@follow/utils/event-bus"
+import { useTranslation } from "react-i18next"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -13,8 +14,9 @@ declare module "@follow/utils/event-bus" {
   }
 }
 
-const category: CommandCategory = "Entry Render"
+const category: CommandCategory = "category.entry_render"
 export const useRegisterEntryRenderCommand = () => {
+  const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.entryRender.scrollDown,
@@ -22,7 +24,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollDown)
       },
       category,
-      label: "Scroll down",
+      label: t("command.entry.scroll_down.title"),
     },
     {
       id: COMMAND_ID.entryRender.scrollUp,
@@ -30,7 +32,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollUp)
       },
       category,
-      label: "Scroll up",
+      label: t("command.entry.scroll_up.title"),
     },
     {
       id: COMMAND_ID.entryRender.nextEntry,
@@ -39,7 +41,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.nextEntry)
       },
       category,
-      label: "Next entry",
+      label: t("command.entry.next_entry.title"),
     },
     {
       id: COMMAND_ID.entryRender.previousEntry,
@@ -48,7 +50,7 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.previousEntry)
       },
       category,
-      label: "Previous entry",
+      label: t("command.entry.previous_entry.title"),
     },
   ])
 }

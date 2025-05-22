@@ -43,7 +43,7 @@ export const useRegisterIntegrationCommands = () => {
   useRegisterZoteroCommands()
 }
 
-const category: CommandCategory = "Integration"
+const category: CommandCategory = "category.integration"
 const useRegisterEagleCommands = () => {
   const { t } = useTranslation()
   const { view } = useRouteParams()

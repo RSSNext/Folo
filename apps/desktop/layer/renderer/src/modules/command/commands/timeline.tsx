@@ -1,4 +1,5 @@
 import { EventBus } from "@follow/utils/event-bus"
+import { useTranslation } from "react-i18next"
 
 import { setGeneralSetting } from "~/atoms/settings/general"
 
@@ -15,12 +16,13 @@ declare module "@follow/utils/event-bus" {
   }
 }
 
-const category: CommandCategory = "Timeline"
+const category: CommandCategory = "category.timeline"
 export const useRegisterTimelineCommand = () => {
+  const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.timeline.switchToNext,
-      label: "Switch to next timeline",
+      label: t("command.timeline.switch_to_next.title"),
       category,
 
       run: () => {
@@ -29,7 +31,7 @@ export const useRegisterTimelineCommand = () => {
     },
     {
       id: COMMAND_ID.timeline.switchToPrevious,
-      label: "Switch to previous timeline",
+      label: t("command.timeline.switch_to_previous.title"),
       category,
       run: () => {
         EventBus.dispatch("timeline:switch-to-previous")
@@ -37,7 +39,7 @@ export const useRegisterTimelineCommand = () => {
     },
     {
       id: COMMAND_ID.timeline.refetch,
-      label: "Refetch timeline",
+      label: t("command.timeline.refetch.title"),
       category,
       run: () => {
         EventBus.dispatch("timeline:refetch")
@@ -45,7 +47,7 @@ export const useRegisterTimelineCommand = () => {
     },
     {
       id: COMMAND_ID.timeline.unreadOnly,
-      label: "Unread Only",
+      label: t("command.timeline.toggle_unread_only.title"),
       category,
       run: (unreadOnly: boolean) => {
         setGeneralSetting("unreadOnly", unreadOnly)

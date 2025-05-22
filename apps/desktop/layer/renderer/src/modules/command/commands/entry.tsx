@@ -31,7 +31,7 @@ import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
-const category: CommandCategory = "Entry"
+const category: CommandCategory = "category.entry"
 
 const useCollect = () => {
   const { t } = useTranslation()

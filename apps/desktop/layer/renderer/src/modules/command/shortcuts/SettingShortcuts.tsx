@@ -1,34 +1,25 @@
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
-import { cn } from "@follow/utils/utils"
+import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { shortcuts, shortcutsType } from "~/constants/shortcuts"
+import { useCommand } from "../hooks/use-command"
+import { useCommandShortcutItems, useCommandShortcuts } from "../hooks/use-command-binding"
+import type { CommandCategory, FollowCommandId } from "../types"
 
-export const SettingShortcuts = () => {
+export const ShortcutsGuideline = () => {
   const { t } = useTranslation("shortcuts")
+  const commandShortcuts = useCommandShortcutItems()
+
   return (
     <div className="mt-4 space-y-6">
-      {Object.keys(shortcuts).map((type) => (
+      {Object.entries(commandShortcuts).map(([type, commands]) => (
         <section key={type}>
           <div className="text-text-secondary mb-2 pl-3 text-sm font-medium capitalize">
-            {t(shortcutsType[type])}
+            {t(type as CommandCategory)}
           </div>
           <div className="text-text rounded-md border text-[13px]">
-            {Object.keys(shortcuts[type]).map((action, index) => (
-              <div
-                key={`${type}-${action}`}
-                className={cn(
-                  "flex h-9 items-center justify-between px-3 py-1.5",
-                  index % 2 && "bg-fill-quinary",
-                )}
-              >
-                <div>{t(shortcuts[type][action].name)}</div>
-                <div>
-                  <KbdCombined joint>
-                    {`${shortcuts[type][action].key}${shortcuts[type][action].extra ? `, ${shortcuts[type][action].extra}` : ""}`}
-                  </KbdCombined>
-                </div>
-              </div>
+            {commands.map((commandId) => (
+              <CommandShortcutItem key={commandId} commandId={commandId} />
             ))}
           </div>
         </section>
@@ -36,3 +27,17 @@ export const SettingShortcuts = () => {
     </div>
   )
 }
+
+const CommandShortcutItem = memo(({ commandId }: { commandId: FollowCommandId }) => {
+  const command = useCommand(commandId)
+  const commandShortcuts = useCommandShortcuts()
+  if (!command) return null
+  return (
+    <div className={"odd:bg-fill-quinary flex h-9 items-center justify-between px-3 py-1.5"}>
+      <div>{command.label.title}</div>
+      <div>
+        <KbdCombined joint>{commandShortcuts[commandId]}</KbdCombined>
+      </div>
+    </div>
+  )
+})

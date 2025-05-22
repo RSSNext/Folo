@@ -1,4 +1,4 @@
-import { SettingShortcuts } from "~/modules/command/shortcuts/SettingShortcuts"
+import { ShortcutsGuideline } from "~/modules/command/shortcuts/SettingShortcuts"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
 
@@ -14,7 +14,7 @@ export function Component() {
   return (
     <>
       <SettingsTitle />
-      <SettingShortcuts />
+      <ShortcutsGuideline />
     </>
   )
 }

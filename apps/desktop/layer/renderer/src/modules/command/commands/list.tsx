@@ -13,7 +13,7 @@ import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import type { CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
-const category: CommandCategory = "List"
+const category: CommandCategory = "category.list"
 export const useRegisterListCommands = () => {
   const { t } = useTranslation()
 
