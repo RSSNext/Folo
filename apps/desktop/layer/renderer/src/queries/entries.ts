@@ -25,7 +25,7 @@ export const entries = {
     limit?: number
   }) =>
     defineQuery(
-      ["entries", inboxId || listId || feedId, view, read, limit],
+      ["entries", inboxId || listId || feedId, view, read, excludePrivate, limit],
       async ({ pageParam }) =>
         entryActions.fetchEntries({
           feedId,
