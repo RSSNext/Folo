@@ -12,7 +12,7 @@ import { useCommandHotkey } from "./use-register-hotkey"
 
 const defaultCommandShortcuts = {
   // Layout commands
-  [COMMAND_ID.layout.toggleTimelineColumn]: transformShortcut("$mod+B, ["),
+  [COMMAND_ID.layout.toggleTimelineColumn]: transformShortcut("$mod+B"),
   [COMMAND_ID.layout.toggleWideMode]: transformShortcut("$mod+["),
   [COMMAND_ID.layout.toggleZenMode]: transformShortcut("$mod+Shift+Z"),
 
@@ -81,6 +81,27 @@ export const allowCustomizeCommands = new Set([
   COMMAND_ID.layout.toggleTimelineColumn,
   COMMAND_ID.layout.toggleWideMode,
   COMMAND_ID.layout.toggleZenMode,
+
+  COMMAND_ID.subscription.markAllAsRead,
+
+  COMMAND_ID.subscription.openInBrowser,
+  COMMAND_ID.subscription.openSiteInBrowser,
+
+  COMMAND_ID.subscription.switchTabToNext,
+  COMMAND_ID.subscription.switchTabToPrevious,
+  COMMAND_ID.subscription.toggleFolderCollapse,
+
+  COMMAND_ID.timeline.refetch,
+  COMMAND_ID.timeline.unreadOnly,
+
+  COMMAND_ID.entry.copyLink,
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.openInBrowser,
+  COMMAND_ID.entry.read,
+  COMMAND_ID.entry.share,
+  COMMAND_ID.entry.star,
+  COMMAND_ID.entry.tip,
+  COMMAND_ID.entry.tts,
 ] as const)
 type ExtractSetType<T extends Set<unknown>> = T extends Set<infer U> ? U : never
 export type AllowCustomizeCommandId = ExtractSetType<typeof allowCustomizeCommands>
