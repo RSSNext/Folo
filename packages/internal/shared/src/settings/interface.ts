@@ -20,6 +20,8 @@ export interface GeneralSettings {
   // subscription
   autoGroup: boolean
   hideAllReadSubscriptions: boolean
+  hidePrivateSubscriptionsInTimeline: boolean
+
   /**
    * Top timeline for mobile
    */

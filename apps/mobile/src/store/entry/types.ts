@@ -14,4 +14,5 @@ export type FetchEntriesProps = {
   limit?: number
   pageParam?: string
   isCollection?: boolean
+  excludePrivate?: boolean
 }

@@ -186,6 +186,8 @@
   "general.group_by_date.label": "Group by date",
   "general.hide_all_read_subscriptions.description": "Hide subscriptions without unread entries in the subscription list.",
   "general.hide_all_read_subscriptions.label": "Hide read",
+  "general.hide_private_subscriptions_in_timeline.description": "Hide private subscriptions in the View Timeline.",
+  "general.hide_private_subscriptions_in_timeline.label": "Hide private",
   "general.language": "Language",
   "general.launch_at_login": "Launch at login",
   "general.log_file.button": "Reveal",

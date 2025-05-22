@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
@@ -31,6 +32,7 @@ import { tipcClient } from "~/lib/client"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 import { FollowSummary } from "~/modules/feed/feed-summary"
+import { entries as entriesQuery } from "~/queries/entries"
 import { lists as listsQuery, useList } from "~/queries/lists"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useListById } from "~/store/list"
@@ -219,6 +221,16 @@ const ListInnerForm = ({
       })
     },
     onSuccess: (_, variables) => {
+      if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
+        entriesQuery
+          .entries({
+            feedId: "all",
+            view: Number(variables.view),
+            excludePrivate: true,
+          })
+          .invalidate({ exact: true })
+      }
+
       if (isSubscribed && variables.view !== `${subscription?.view}`) {
         feedUnreadActions.fetchUnreadByView(subscription?.view)
       } else {

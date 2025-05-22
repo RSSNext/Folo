@@ -185,6 +185,8 @@
   "general.group_by_date.label": "按日期分组",
   "general.hide_all_read_subscriptions.description": "在订阅列表中隐藏没有未读条目的订阅。",
   "general.hide_all_read_subscriptions.label": "隐藏已读",
+  "general.hide_private_subscriptions_in_timeline.description": "在视图时间线中隐藏私密订阅。",
+  "general.hide_private_subscriptions_in_timeline.label": "隐藏私密",
   "general.language": "语言",
   "general.launch_at_login": "开机时启动",
   "general.log_file.button": "显示",

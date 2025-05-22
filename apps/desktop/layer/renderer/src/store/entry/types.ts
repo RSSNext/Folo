@@ -31,4 +31,5 @@ export interface EntryState {
 export interface EntryFilter {
   unread?: boolean
   view?: FeedViewType
+  excludePrivate?: boolean
 }

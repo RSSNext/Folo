@@ -14,7 +14,7 @@ overrides:
   '@electron/node-gyp': 10.2.0-electron.2
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
-  lan-network@<0.1.6: 0.1.6
+  lan-network@<0.1.7: 0.1.7
   react: 19.0.0
   react-dom: 19.0.0
   react-native-ios-context-menu: 3.1.1
@@ -10937,8 +10937,8 @@ packages:
     resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
     engines: {node: '>=14.0.0'}
 
-  lan-network@0.1.6:
-    resolution: {integrity: sha512-0qPYjNoD89v+bfhkIqFBYGBAof1xhxLqjX8bkNN1kQdP81UHpZw5TDXgEjwB+X2iCFGQmzF8TRmvg4vQcykyDA==}
+  lan-network@0.1.7:
+    resolution: {integrity: sha512-mnIlAEMu4OyEvUNdzco9xpuB9YVcPkQec+QsgycBCtPZvEqWPCDPfbAE4OJMdBBWpZWtpCn1xw9jJYlwjWI5zQ==}
     hasBin: true
 
   launch-ide@1.0.7:
@@ -17628,7 +17628,7 @@ snapshots:
       freeport-async: 2.0.0
       getenv: 1.0.0
       glob: 10.4.5
-      lan-network: 0.1.6
+      lan-network: 0.1.7
       minimatch: 9.0.5
       node-forge: 1.3.1
       npm-package-arg: 11.0.3
@@ -27081,7 +27081,7 @@ snapshots:
 
   kysely@0.27.6: {}
 
-  lan-network@0.1.6: {}
+  lan-network@0.1.7: {}
 
   launch-ide@1.0.7:
     dependencies:
