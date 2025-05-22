@@ -39,5 +39,6 @@
   "command.timeline.refetch.title": "Refetch",
   "command.timeline.switch_to_next.title": "Switch to Next Timeline",
   "command.timeline.switch_to_previous.title": "Switch to Previous Timeline",
-  "command.timeline.toggle_unread_only.title": "Toggle Unread Only"
+  "command.timeline.toggle_unread_only.title": "Toggle Unread Only",
+  "settings.shortcuts.description": "Customize the application's shortcuts. Below is a list of some commands that can be customized."
 }
