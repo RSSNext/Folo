@@ -1,6 +1,5 @@
+import { transformShortcut } from "@follow/utils/utils"
 import { useMemo } from "react"
-
-import { shortcuts } from "~/constants/shortcuts"
 
 import { COMMAND_ID } from "../commands/id"
 import type { CommandCategory, FollowCommandId } from "../types"
@@ -10,44 +9,44 @@ import { useCommandHotkey } from "./use-register-hotkey"
 
 const defaultCommandShortcuts = {
   // Layout commands
-  [COMMAND_ID.layout.toggleTimelineColumn]: shortcuts.layout.toggleSidebar.key,
-  [COMMAND_ID.layout.toggleWideMode]: shortcuts.layout.toggleWideMode.key,
-  [COMMAND_ID.layout.toggleZenMode]: shortcuts.layout.toggleZenMode.key,
+  [COMMAND_ID.layout.toggleTimelineColumn]: transformShortcut("$mod+B, ["),
+  [COMMAND_ID.layout.toggleWideMode]: transformShortcut("$mod+["),
+  [COMMAND_ID.layout.toggleZenMode]: transformShortcut("$mod+Shift+Z"),
 
   // Subscription commands
-  [COMMAND_ID.subscription.markAllAsRead]: shortcuts.subscriptions.markAllAsRead.key,
-  [COMMAND_ID.subscription.nextSubscription]: shortcuts.subscriptions.nextSubscription.key,
-  [COMMAND_ID.subscription.openInBrowser]: shortcuts.subscriptions.openInBrowser.key,
-  [COMMAND_ID.subscription.openSiteInBrowser]: shortcuts.subscriptions.openSiteInBrowser.key,
-  [COMMAND_ID.subscription.previousSubscription]: shortcuts.subscriptions.previousSubscription.key,
-  [COMMAND_ID.subscription.switchTabToNext]: shortcuts.subscriptions.switchNextView.key,
-  [COMMAND_ID.subscription.switchTabToPrevious]: shortcuts.subscriptions.switchPreviousView.key,
-  [COMMAND_ID.subscription.toggleFolderCollapse]: shortcuts.subscriptions.toggleFolderCollapse.key,
+  [COMMAND_ID.subscription.markAllAsRead]: transformShortcut("Shift+$mod+A"),
+  [COMMAND_ID.subscription.nextSubscription]: "J, ArrowDown",
+  [COMMAND_ID.subscription.openInBrowser]: "O",
+  [COMMAND_ID.subscription.openSiteInBrowser]: transformShortcut("$mod+O"),
+  [COMMAND_ID.subscription.previousSubscription]: "K, ArrowUp",
+  [COMMAND_ID.subscription.switchTabToNext]: "Tab",
+  [COMMAND_ID.subscription.switchTabToPrevious]: transformShortcut("Shift+Tab"),
+  [COMMAND_ID.subscription.toggleFolderCollapse]: "Z",
 
   // Timeline commands
-  [COMMAND_ID.timeline.refetch]: shortcuts.entries.refetch.key,
-  [COMMAND_ID.timeline.switchToNext]: shortcuts.entries.next.key,
-  [COMMAND_ID.timeline.switchToPrevious]: shortcuts.entries.previous.key,
-  [COMMAND_ID.timeline.unreadOnly]: shortcuts.entries.toggleUnreadOnly.key,
+  [COMMAND_ID.timeline.refetch]: "R",
+  [COMMAND_ID.timeline.switchToNext]: "J, ArrowDown",
+  [COMMAND_ID.timeline.switchToPrevious]: "K, ArrowUp",
+  [COMMAND_ID.timeline.unreadOnly]: "U",
 
   // Entry commands
-  [COMMAND_ID.entry.copyLink]: shortcuts.entry.copyLink.key,
-  [COMMAND_ID.entry.copyTitle]: shortcuts.entry.copyTitle.key,
-  [COMMAND_ID.entry.openInBrowser]: shortcuts.entry.openInBrowser.key,
-  [COMMAND_ID.entry.read]: shortcuts.entry.toggleRead.key,
-  [COMMAND_ID.entry.share]: shortcuts.entry.share.key,
-  [COMMAND_ID.entry.star]: shortcuts.entry.toggleStarred.key,
-  [COMMAND_ID.entry.tip]: shortcuts.entry.tip.key,
-  [COMMAND_ID.entry.tts]: shortcuts.entry.tts.key,
+  [COMMAND_ID.entry.copyLink]: transformShortcut("Shift+$mod+C"),
+  [COMMAND_ID.entry.copyTitle]: transformShortcut("Shift+$mod+B"),
+  [COMMAND_ID.entry.openInBrowser]: "B",
+  [COMMAND_ID.entry.read]: "M",
+  [COMMAND_ID.entry.share]: transformShortcut("$mod+Alt+S"),
+  [COMMAND_ID.entry.star]: "S",
+  [COMMAND_ID.entry.tip]: transformShortcut("Shift+$mod+T"),
+  [COMMAND_ID.entry.tts]: transformShortcut("Shift+$mod+V"),
 
   // Entry render commands
-  [COMMAND_ID.entryRender.nextEntry]: shortcuts.entry.nextEntry.key,
-  [COMMAND_ID.entryRender.previousEntry]: shortcuts.entry.previousEntry.key,
-  [COMMAND_ID.entryRender.scrollDown]: shortcuts.entry.scrollDown.key,
-  [COMMAND_ID.entryRender.scrollUp]: shortcuts.entry.scrollUp.key,
+  [COMMAND_ID.entryRender.nextEntry]: "L, ArrowRight",
+  [COMMAND_ID.entryRender.previousEntry]: "H, ArrowLeft",
+  [COMMAND_ID.entryRender.scrollDown]: "J, ArrowDown",
+  [COMMAND_ID.entryRender.scrollUp]: "K, ArrowUp",
 
   // Global commands
-  [COMMAND_ID.global.showShortcuts]: shortcuts.misc.showShortcuts.key,
+  [COMMAND_ID.global.showShortcuts]: "?",
 } as const
 
 export const useCommandShortcutItems = () => {
