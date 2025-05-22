@@ -14,6 +14,7 @@ export enum DisableWhy {
 export interface SettingPageConfig {
   icon: string | React.ReactNode
   name: I18nKeysForSettings
+  title?: I18nKeysForSettings
   priority: number
   headerIcon?: string | React.ReactNode
   hideIf?: (ctx: SettingPageContext, serverConfigs?: ServerConfigs | null) => boolean

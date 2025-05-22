@@ -1809,6 +1809,47 @@ type ExtraModel = {
         content_html?: string;
     }[];
 };
+declare const CommonEntryFields: {
+    id: drizzle_orm.HasRuntimeDefault<drizzle_orm.HasDefault<drizzle_orm.IsPrimaryKey<drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
+    title: drizzle_orm_pg_core.PgTextBuilderInitial<"title", [string, ...string[]]>;
+    url: drizzle_orm_pg_core.PgTextBuilderInitial<"url", [string, ...string[]]>;
+    content: drizzle_orm_pg_core.PgTextBuilderInitial<"content", [string, ...string[]]>;
+    description: drizzle_orm_pg_core.PgTextBuilderInitial<"description", [string, ...string[]]>;
+    guid: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
+    author: drizzle_orm_pg_core.PgTextBuilderInitial<"author", [string, ...string[]]>;
+    authorUrl: drizzle_orm_pg_core.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
+    authorAvatar: drizzle_orm_pg_core.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
+    insertedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"inserted_at">>;
+    publishedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"published_at">>;
+    media: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"media">, MediaModel[]>;
+    categories: drizzle_orm_pg_core.PgArrayBuilder<{
+        name: "categories";
+        dataType: "array";
+        columnType: "PgArray";
+        data: string[];
+        driverParam: string | string[];
+        enumValues: [string, ...string[]];
+        size: undefined;
+        baseBuilder: {
+            name: "categories";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            enumValues: [string, ...string[]];
+            driverParam: string;
+        };
+    }, {
+        name: "categories";
+        dataType: "string";
+        columnType: "PgText";
+        data: string;
+        enumValues: [string, ...string[]];
+        driverParam: string;
+    }>;
+    attachments: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
+    extra: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"extra">, ExtraModel>;
+    language: drizzle_orm_pg_core.PgTextBuilderInitial<"language", [string, ...string[]]>;
+};
 declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "entries";
     schema: undefined;
@@ -7750,8 +7791,6 @@ declare const rsshubPurchase: drizzle_orm_pg_core.PgTableWithColumns<{
     dialect: "pg";
 }>;
 
-type UserRole = "admin" | "user" | "trial" | "preview";
-
 declare const auth: {
     handler: (request: Request) => Promise<Response>;
     api: better_auth.InferAPI<{
@@ -10780,8 +10819,8 @@ declare const auth: {
                                             fromUserId: string;
                                             toUserId: string | null;
                                         } | undefined;
-                                        role: UserRole;
-                                        endDate: Date | undefined;
+                                        role: "user" | "trial" | "preview";
+                                        roleEndDate: Date | undefined;
                                     } | null;
                                 } : {
                                     user: {
@@ -10814,8 +10853,8 @@ declare const auth: {
                                         fromUserId: string;
                                         toUserId: string | null;
                                     } | undefined;
-                                    role: UserRole;
-                                    endDate: Date | undefined;
+                                    role: "user" | "trial" | "preview";
+                                    roleEndDate: Date | undefined;
                                 } | null>;
                                 options: {
                                     method: "GET";
@@ -12524,8 +12563,8 @@ declare const auth: {
                                                     fromUserId: string;
                                                     toUserId: string | null;
                                                 } | undefined;
-                                                role: UserRole;
-                                                endDate: Date | undefined;
+                                                role: "user" | "trial" | "preview";
+                                                roleEndDate: Date | undefined;
                                             } | null;
                                         } : {
                                             user: {
@@ -12558,8 +12597,8 @@ declare const auth: {
                                                 fromUserId: string;
                                                 toUserId: string | null;
                                             } | undefined;
-                                            role: UserRole;
-                                            endDate: Date | undefined;
+                                            role: "user" | "trial" | "preview";
+                                            roleEndDate: Date | undefined;
                                         } | null>;
                                         options: {
                                             method: "GET";
@@ -15488,8 +15527,8 @@ declare const auth: {
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: UserRole;
-                    endDate: Date | undefined;
+                    role: "user" | "trial" | "preview";
+                    roleEndDate: Date | undefined;
                 } | null;
             } : {
                 user: {
@@ -15522,8 +15561,8 @@ declare const auth: {
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: UserRole;
-                endDate: Date | undefined;
+                role: "user" | "trial" | "preview";
+                roleEndDate: Date | undefined;
             } | null>;
             options: {
                 method: "GET";
@@ -16897,8 +16936,8 @@ declare const auth: {
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: UserRole;
-                            endDate: Date | undefined;
+                            role: "user" | "trial" | "preview";
+                            roleEndDate: Date | undefined;
                         } | null;
                     } : {
                         user: {
@@ -16931,8 +16970,8 @@ declare const auth: {
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: UserRole;
-                        endDate: Date | undefined;
+                        role: "user" | "trial" | "preview";
+                        roleEndDate: Date | undefined;
                     } | null>;
                     options: {
                         method: "GET";
@@ -20264,29 +20303,30 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data: {
-                    MAX_SUBSCRIPTIONS: number;
-                    MAX_LISTS: number;
-                    MAX_ACTIONS: number;
-                    MAX_WEBHOOKS_PER_ACTION: number;
-                    MAX_INBOXES: number;
-                    IMPORTING_TITLE: string;
-                    DAILY_POWER_PERCENTAGES: number[];
-                    LEVEL_PERCENTAGES: number[];
+                    ANNOUNCEMENT: string;
                     DAILY_CLAIM_AMOUNT: {
                         trial: number;
                         normal: number;
                     };
-                    TAX_POINT: string;
+                    DAILY_POWER_PERCENTAGES: number[];
+                    DAILY_POWER_SUPPLY: number;
+                    IMPORTING_TITLE: string;
+                    INVITATION_ENABLED: boolean;
                     INVITATION_INTERVAL_DAYS: number;
                     INVITATION_PRICE: number;
-                    INVITATION_ENABLED: boolean;
-                    REFERRAL_ENABLED: boolean;
-                    DAILY_POWER_SUPPLY: number;
                     IS_RSS3_TESTNET: boolean;
-                    PRODUCT_HUNT_VOTE_URL: string;
-                    ANNOUNCEMENT: string;
+                    LEVEL_PERCENTAGES: number[];
+                    MAX_ACTIONS: number;
+                    MAX_INBOXES: number;
+                    MAX_LISTS: number;
+                    MAX_SUBSCRIPTIONS: number;
                     MAX_TRIAL_USER_FEED_SUBSCRIPTION: number;
                     MAX_TRIAL_USER_LIST_SUBSCRIPTION: number;
+                    MAX_WEBHOOKS_PER_ACTION: number;
+                    PRODUCT_HUNT_VOTE_URL: string;
+                    REFERRAL_ENABLED: boolean;
+                    REFERRAL_REQUIRED_INVITATIONS: number;
+                    TAX_POINT: string;
                     MAS_IN_REVIEW_VERSION?: string | undefined;
                 };
             };
@@ -20666,6 +20706,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string | null;
                         toUserId: string | null;
                     }[];
+                    referralCycleDays: number;
                 };
             };
             outputFormat: "json";
@@ -20675,4 +20716,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/referrals">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
