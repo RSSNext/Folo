@@ -379,11 +379,13 @@ const useRegisterCommand = () => {
       EventBus.subscribe(COMMAND_ID.subscription.previousSubscription, () => {
         handleSubscriptionNavigation("previous")
       }),
-      EventBus.subscribe(COMMAND_ID.layout.focusToSubscription, () => {
+      EventBus.subscribe(COMMAND_ID.layout.focusToSubscription, ({ highlightBoundary }) => {
         focusableContainerRef.current?.focus()
-        nextFrame(() => {
-          focusActions.highlightBoundary()
-        })
+        if (highlightBoundary) {
+          nextFrame(() => {
+            focusActions.highlightBoundary()
+          })
+        }
       }),
       EventBus.subscribe(COMMAND_ID.subscription.toggleFolderCollapse, () => {
         const result = getCurrentActiveSubscriptionElement()

@@ -117,6 +117,7 @@ function bootstrap() {
     updateProxy()
     registerUpdater()
     registerAppTray()
+    updateNotificationsToken()
 
     app.on("open-url", (_, url) => {
       if (mainWindow && !mainWindow.isDestroyed()) {

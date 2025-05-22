@@ -77,7 +77,11 @@ export const FeedSummary = ({
         </View>
       </View>
       {!simple && !!item.feed?.description && (
-        <Text className="mt-3 pl-[39] pr-2 text-sm" ellipsizeMode="tail" numberOfLines={2}>
+        <Text
+          className="text-text mt-3 pl-[39] pr-2 text-sm"
+          ellipsizeMode="tail"
+          numberOfLines={2}
+        >
           {item.feed?.description}
         </Text>
       )}

@@ -4,6 +4,7 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
+import { cn } from "@follow/utils/utils"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -203,9 +204,10 @@ const RecommendationListItem = ({
               <Link
                 to={`/discover/category/${c}`}
                 key={c}
-                className={`bg-accent/10 flex cursor-pointer items-center rounded-full px-2 py-0.5 duration-200 ${
-                  !RSSHubCategories.includes(c) ? "pointer-events-none opacity-50" : ""
-                }`}
+                className={cn(
+                  "bg-accent/10 cursor-pointer rounded-full px-2 py-0.5 leading-5 duration-200",
+                  !RSSHubCategories.includes(c) ? "pointer-events-none opacity-50" : "",
+                )}
               >
                 {RSSHubCategories.includes(c)
                   ? t(`discover.category.${c}`, { ns: "common" })

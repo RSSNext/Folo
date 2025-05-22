@@ -19,10 +19,6 @@ const FIREBASE_MESSAGING_TOKEN_STORAGE_KEY = "firebase_messaging_token"
 async function saveMessagingToken() {
   const app = getApp()
   const token = await getMessaging(app).getToken()
-  const storedToken = await kv.get(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY)
-  if (storedToken === token) {
-    return
-  }
   await apiClient.messaging.$post({
     json: {
       token,

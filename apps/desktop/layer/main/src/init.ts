@@ -18,7 +18,7 @@ import { registerAppMenu } from "./menu"
 import type { RendererHandlers } from "./renderer-handlers"
 import { initializeSentry } from "./sentry"
 import { router } from "./tipc"
-import { createMainWindow, getMainWindow } from "./window"
+import { getMainWindowOrCreate } from "./window"
 
 if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
   process.env.NODE_ENV = "development"
@@ -186,10 +186,7 @@ const registerPushNotifications = async () => {
           body: data.description,
         })
         notification.on("click", () => {
-          let mainWindow = getMainWindow()
-          if (!mainWindow) {
-            mainWindow = createMainWindow()
-          }
+          const mainWindow = getMainWindowOrCreate()
           mainWindow.restore()
           mainWindow.focus()
           const handlers = getRendererHandlers<RendererHandlers>(mainWindow.webContents)

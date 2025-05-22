@@ -1,5 +1,7 @@
 import { EventBus } from "@follow/utils/event-bus"
 
+import { setGeneralSetting } from "~/atoms/settings/general"
+
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import type { Command } from "../types"
 import { COMMAND_ID } from "./id"
@@ -36,6 +38,13 @@ export const useRegisterTimelineCommand = () => {
         EventBus.dispatch("timeline:refetch")
       },
     },
+    {
+      id: COMMAND_ID.timeline.unreadOnly,
+      label: "Unread Only",
+      run: (unreadOnly: boolean) => {
+        setGeneralSetting("unreadOnly", unreadOnly)
+      },
+    },
   ])
 }
 
@@ -54,7 +63,13 @@ export type RefetchTimelineCommand = Command<{
   fn: () => void
 }>
 
+export type UnreadOnlyTimelineCommand = Command<{
+  id: typeof COMMAND_ID.timeline.unreadOnly
+  fn: (unreadOnly: boolean) => void
+}>
+
 export type TimelineCommand =
   | SwitchToNextTimelineCommand
   | SwitchToPreviousTimelineCommand
   | RefetchTimelineCommand
+  | UnreadOnlyTimelineCommand

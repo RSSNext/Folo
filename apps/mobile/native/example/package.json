@@ -18,7 +18,7 @@
     "react-native-css-interop": "0.1.22",
     "react-native-reanimated": "3.17.4",
     "react-native-safe-area-context": "5.3.0",
-    "react-native-uikit-colors": "0.5.2"
+    "react-native-uikit-colors": "0.6.2"
   },
   "expo": {
     "autolinking": {

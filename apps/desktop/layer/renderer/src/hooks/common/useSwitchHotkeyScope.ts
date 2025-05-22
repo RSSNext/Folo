@@ -28,6 +28,10 @@ export const useConditionalHotkeyScopeFn = (scope: HotkeyScope, replaceAll = tru
   const { enableScope, disableScope, activeScopes } = useHotkeysContext()
   const currentScopeRef = useRef(activeScopes)
 
+  useLayoutEffect(() => {
+    currentScopeRef.current = activeScopes
+  }, [activeScopes])
+
   return useCallback(() => {
     const currentScope = currentScopeRef.current
     if (replaceAll) {

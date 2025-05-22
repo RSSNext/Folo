@@ -100,10 +100,15 @@ export const EntryColumnShortcutHandler: FC<{
   const $scrollArea = useScrollViewElement()
   const { highlightBoundary } = useFocusActions()
   useEffect(() => {
-    return EventBus.subscribe(COMMAND_ID.layout.focusToTimeline, () => {
-      $scrollArea?.focus()
-      nextFrame(highlightBoundary)
-    })
+    return EventBus.subscribe(
+      COMMAND_ID.layout.focusToTimeline,
+      ({ highlightBoundary: highlight }) => {
+        $scrollArea?.focus()
+        if (highlight) {
+          nextFrame(highlightBoundary)
+        }
+      },
+    )
   }, [$scrollArea, highlightBoundary])
 
   const isFocusIn = useFocusable()

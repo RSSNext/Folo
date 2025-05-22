@@ -13,6 +13,7 @@ import { NavigationType, Outlet, useLocation, useNavigate, useNavigationType } f
 import { FABContainer, FABPortable } from "~/components/ui/fab"
 import { HotkeyScope } from "~/constants"
 import { useConditionalHotkeyScope } from "~/hooks/common"
+import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { useSubViewTitleValue } from "./hooks"
 
@@ -65,7 +66,10 @@ export function SubviewLayout() {
       navigate(-1)
     }
   }
-  useHotkeys("esc", backHandler)
+  const activeScope = useHotkeyScope()
+  useHotkeys("Escape", backHandler, {
+    enabled: activeScope.includes(HotkeyScope.SubLayer),
+  })
   return (
     <div className="relative flex size-full">
       <div

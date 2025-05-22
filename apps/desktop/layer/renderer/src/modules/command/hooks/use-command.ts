@@ -1,7 +1,7 @@
 import { jotaiStore } from "@follow/utils/jotai"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
 import { CommandRegistry } from "../registry/registry"
 import type { FollowCommandId, FollowCommandMap } from "../types"
@@ -25,14 +25,16 @@ export function useCommand<T extends FollowCommandId>(id: T): FollowCommandMap[T
 }
 
 const noop = () => {}
+const runCommand = <T extends FollowCommandId>(
+  id: T,
+  args: Parameters<FollowCommandMap[T]["run"]>,
+) => {
+  const cmd = getCommand(id)
+
+  if (!cmd) return noop
+  // @ts-expect-error - The type should be discriminated
+  return () => cmd.run(...args)
+}
 export function useRunCommandFn() {
-  return useCallback(
-    <T extends FollowCommandId>(id: T, args: Parameters<FollowCommandMap[T]["run"]>) => {
-      const cmd = getCommand(id)
-      if (!cmd) return noop
-      // @ts-expect-error - The type should be discriminated
-      return () => cmd.run(...args)
-    },
-    [],
-  )
+  return runCommand
 }

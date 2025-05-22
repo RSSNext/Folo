@@ -25,8 +25,9 @@ import {
   useSetZenMode,
   useUISettingKey,
 } from "~/atoms/settings/ui"
-import { shortcuts } from "~/constants/shortcuts"
 import { useAIDailyReportModal } from "~/modules/ai/ai-daily/useAIDailyReportModal"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
 import { setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
 
@@ -146,9 +147,10 @@ export const WideModeButton = () => {
   const { t } = useTranslation()
 
   const setIsZenMode = useSetZenMode()
+  const shortcuts = useCommandShortcuts()
   return (
     <ActionButton
-      shortcut={shortcuts.layout.toggleWideMode.key}
+      shortcut={shortcuts[COMMAND_ID.layout.toggleWideMode]}
       onClick={() => {
         if (isZenMode) {
           setIsZenMode(false)

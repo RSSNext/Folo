@@ -11,13 +11,15 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
 import { previewBackPath } from "~/atoms/preview"
-import { setGeneralSetting, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useTimelineColumnShow } from "~/atoms/sidebar"
 import { useWhoami } from "~/atoms/user"
 import { FEED_COLLECTION_LIST, ROUTE_ENTRY_PENDING } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useRunCommandFn } from "~/modules/command/hooks/use-command"
+import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import { EntryHeader } from "~/modules/entry-content/header"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { getFeedById, useFeedById, useFeedHeaderTitle } from "~/store/feed"
@@ -64,7 +66,8 @@ export const EntryListHeader: FC<{
 
   const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
   const feedColumnShow = useTimelineColumnShow()
-
+  const commandShortcuts = useCommandShortcuts()
+  const runCmdFn = useRunCommandFn()
   return (
     <div
       className={cn(
@@ -134,8 +137,8 @@ export const EntryListHeader: FC<{
                   ? t("entry_list_header.show_unread_only")
                   : t("entry_list_header.show_all")
               }
-              shortcut={shortcuts.entries.toggleUnreadOnly.key}
-              onClick={() => setGeneralSetting("unreadOnly", !unreadOnly)}
+              shortcut={commandShortcuts[COMMAND_ID.timeline.unreadOnly]}
+              onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
             >
               {unreadOnly ? (
                 <i className="i-mgc-round-cute-fi" />

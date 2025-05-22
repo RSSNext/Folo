@@ -10,10 +10,9 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { HotkeyScope } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
 import { useI18n } from "~/hooks/common"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
+import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import type { MarkAllFilter } from "../hooks/useMarkAll"
@@ -71,6 +70,8 @@ export const MarkAllReadButton = ({
       })
     })
   }, [t])
+
+  const markAllAsReadShortcut = useCommandShortcuts()[COMMAND_ID.subscription.markAllAsRead]
   return (
     <ActionButton
       tooltip={
@@ -83,9 +84,7 @@ export const MarkAllReadButton = ({
           />
           {shortcut && (
             <div className="ml-1">
-              <KbdCombined className="text-text-secondary">
-                {shortcuts.subscriptions.markAllAsRead.key}
-              </KbdCombined>
+              <KbdCombined className="text-text-secondary">{markAllAsReadShortcut}</KbdCombined>
             </div>
           )}
         </>

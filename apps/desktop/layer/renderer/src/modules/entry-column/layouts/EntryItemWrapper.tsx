@@ -77,7 +77,10 @@ export const EntryItemWrapper: FC<
         entryId: entry.entries.id,
       })
 
-      setTimeout(() => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender), 60)
+      setTimeout(
+        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+        60,
+      )
     },
     [asRead, entry.entries.id, entry.feedId, navigate],
   )

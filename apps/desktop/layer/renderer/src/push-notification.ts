@@ -2,6 +2,7 @@ import { env } from "@follow/shared/env.desktop"
 import { initializeApp } from "firebase/app"
 import { getMessaging, getToken } from "firebase/messaging"
 
+import { setAppMessagingToken } from "./atoms/app"
 import { apiClient } from "./lib/api-fetch"
 import { router } from "./router"
 
@@ -51,6 +52,8 @@ export async function registerWebPushNotifications() {
     })
 
     registerPushNotificationPostMessage()
+
+    setAppMessagingToken(token)
 
     return token
   } catch (error) {

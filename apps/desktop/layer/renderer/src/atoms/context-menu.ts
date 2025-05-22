@@ -215,10 +215,12 @@ export class BaseMenuItemText {
   }
 }
 
-export type MenuItemTextConfig = BaseMenuItemTextConfig & {
-  hide?: boolean
-  submenu?: MenuItemInput[]
-}
+export type MenuItemTextConfig = Prettify<
+  BaseMenuItemTextConfig & {
+    hide?: boolean
+    submenu?: MenuItemInput[]
+  }
+>
 
 export class MenuItemText extends BaseMenuItemText {
   protected __submenu: FollowMenuItem[]

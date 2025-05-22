@@ -8,6 +8,7 @@ declare global {
 
   export const GIT_COMMIT_SHA: string
   export const APP_VERSION: string
+  export const APP_NAME: string
 }
 
 export {}

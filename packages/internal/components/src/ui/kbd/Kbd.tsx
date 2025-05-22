@@ -299,34 +299,35 @@ function simulateKeyPress(key: string) {
 
   document.dispatchEvent(event)
 }
-export const Kbd: FC<{ children: string; className?: string }> = memo(({ children, className }) => {
-  let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
-  specialKeys = { ...SharedKeys, ...specialKeys }
+export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolean }> = memo(
+  ({ children, className, wrapButton = true }) => {
+    let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
+    specialKeys = { ...SharedKeys, ...specialKeys }
 
-  const [isKeyPressed, setIsKeyPressed] = React.useState(false)
-  React.useEffect(() => {
-    const handler = () => {
-      setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
-    }
-    document.addEventListener("keydown", handler)
-    document.addEventListener("keyup", handler)
+    const [isKeyPressed, setIsKeyPressed] = React.useState(false)
+    React.useEffect(() => {
+      const handler = () => {
+        setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
+      }
+      document.addEventListener("keydown", handler)
+      document.addEventListener("keyup", handler)
 
-    return () => {
-      document.removeEventListener("keydown", handler)
-      document.removeEventListener("keyup", handler)
-    }
-  }, [children])
+      return () => {
+        document.removeEventListener("keydown", handler)
+        document.removeEventListener("keyup", handler)
+      }
+    }, [children])
 
-  const handleClick = React.useCallback(() => {
-    setIsKeyPressed(true)
-    setTimeout(() => {
-      setIsKeyPressed(false)
-    }, 100)
+    const handleClick = React.useCallback(() => {
+      setIsKeyPressed(true)
+      setTimeout(() => {
+        setIsKeyPressed(false)
+      }, 100)
 
-    simulateKeyPress(children.trim())
-  }, [children])
-  return (
-    <button type="button" onClick={handleClick}>
+      simulateKeyPress(children.trim())
+    }, [children])
+
+    const Kbd = (
       <kbd
         className={cn(
           "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem]",
@@ -380,9 +381,16 @@ export const Kbd: FC<{ children: string; className?: string }> = memo(({ childre
           }
         })}
       </kbd>
-    </button>
-  )
-})
+    )
+    return wrapButton ? (
+      <button type="button" onClick={handleClick}>
+        {Kbd}
+      </button>
+    ) : (
+      Kbd
+    )
+  },
+)
 
 function MaterialSymbolsKeyboardCommandKey(props: React.SVGProps<SVGSVGElement>) {
   return (

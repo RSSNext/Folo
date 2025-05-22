@@ -30,8 +30,8 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { SafeFragment } from "~/components/common/Fragment"
 import { m } from "~/components/common/Motion"
 import { ErrorComponentType } from "~/components/errors/enum"
-import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
-import { useSwitchHotKeyScope } from "~/hooks/common"
+import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT, HotkeyScope } from "~/constants"
+import { useConditionalHotkeyScope } from "~/hooks/common"
 
 import { modalStackAtom } from "./atom"
 import { MODAL_STACK_Z_INDEX, modalMontionConfig } from "./constants"
@@ -192,7 +192,7 @@ export const ModalInternal = memo(function Modal({
     }
   }, [currentIsClosing])
 
-  useShortcutScope()
+  useConditionalHotkeyScope(HotkeyScope.Modal, true)
 
   const modalStyle = resizeableStyle
   const { handleSelectStart, handleDetectSelectEnd, isSelectingRef } = useModalSelect()
@@ -402,16 +402,6 @@ export const ModalInternal = memo(function Modal({
     </Wrapper>
   )
 })
-
-const useShortcutScope = () => {
-  const switchHotkeyScope = useSwitchHotKeyScope()
-  useEffect(() => {
-    switchHotkeyScope("Modal")
-    return () => {
-      switchHotkeyScope("Home")
-    }
-  }, [switchHotkeyScope])
-}
 
 const ModalContext: FC<
   PropsWithChildren & {

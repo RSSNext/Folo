@@ -16,7 +16,7 @@ import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
-import type { Variants } from "motion/react"
+import type { JSAnimation, Variants } from "motion/react"
 import { AnimatePresence, m, useAnimationControls } from "motion/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -101,10 +101,13 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const animationController = useAnimationControls()
   const prevEntryId = useRef<string | undefined>(undefined)
-
+  const scrollAnimationRef = useRef<JSAnimation<any> | null>(null)
   useEffect(() => {
     if (prevEntryId.current !== entryId) {
-      springScrollTo(0, scrollerRef.current!)
+      scrollAnimationRef.current?.stop()
+      nextFrame(() => {
+        scrollerRef.current?.scrollTo({ top: 0 })
+      })
       animationController.start(pageMotionVariants.exit).then(() => {
         animationController.start(pageMotionVariants.animate)
       })
@@ -132,6 +135,7 @@ export const EntryContent: Component<EntryContentProps> = ({
       >
         <RootPortal to={panelPortalElement}>
           <RegisterCommands
+            scrollAnimationRef={scrollAnimationRef}
             scrollerRef={scrollerRef}
             isUserInteraction={isUserInteraction}
             setIsUserInteraction={setIsUserInteraction}
@@ -316,10 +320,12 @@ const RegisterCommands = ({
   scrollerRef,
   isUserInteraction,
   setIsUserInteraction,
+  scrollAnimationRef,
 }: {
   scrollerRef: React.RefObject<HTMLDivElement | null>
   isUserInteraction: boolean
   setIsUserInteraction: (isUserInteraction: boolean) => void
+  scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
 }) => {
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
@@ -384,16 +390,22 @@ const RegisterCommands = ({
     }
     scrollerRef.current?.addEventListener("wheel", checkScrollBottomByWheel)
 
+    const cleanupScrollAnimation = () => {
+      scrollAnimationRef.current?.stop()
+      scrollAnimationRef.current = null
+    }
     return combineCleanupFunctions(
       () => {
         scrollerRef.current?.removeEventListener("wheel", checkScrollBottomByWheel)
       },
+      cleanupScrollAnimation,
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
         const currentScroll = scrollerRef.current?.scrollTop
         const delta = window.innerHeight
 
         if (typeof currentScroll === "number" && delta) {
-          springScrollTo(currentScroll - delta, scrollerRef.current!)
+          cleanupScrollAnimation()
+          scrollAnimationRef.current = springScrollTo(currentScroll - delta, scrollerRef.current!)
         }
         checkScrollBottom(scrollerRef.current!)
       }),
@@ -408,22 +420,28 @@ const RegisterCommands = ({
         const delta = window.innerHeight
 
         if (typeof currentScroll === "number" && delta) {
-          springScrollTo(currentScroll + delta, $scroller)
+          cleanupScrollAnimation()
+          scrollAnimationRef.current = springScrollTo(currentScroll + delta, $scroller)
         }
         checkScrollBottom($scroller)
       }),
-      EventBus.subscribe(COMMAND_ID.layout.focusToEntryRender, () => {
-        const $scroller = scrollerRef.current
-        if (!$scroller) {
-          return
-        }
-        springScrollTo(0, $scroller)
-        $scroller.focus()
-        nextFrame(highlightBoundary)
-        setIsUserInteraction(true)
-      }),
+      EventBus.subscribe(
+        COMMAND_ID.layout.focusToEntryRender,
+        ({ highlightBoundary: highlight }) => {
+          const $scroller = scrollerRef.current
+          if (!$scroller) {
+            return
+          }
+
+          $scroller.focus()
+          if (highlight) {
+            nextFrame(highlightBoundary)
+          }
+          setIsUserInteraction(true)
+        },
+      ),
     )
-  }, [highlightBoundary, scrollerRef, setIsUserInteraction])
+  }, [highlightBoundary, scrollAnimationRef, scrollerRef, setIsUserInteraction])
 
   return (
     <AnimatePresence>

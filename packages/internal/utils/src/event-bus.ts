@@ -11,11 +11,18 @@ class EventBusEvent extends Event {
     super(EventBusEvent.type)
   }
 }
+
+type IDispatcher<E> = <T extends keyof E>(
+  ...args: E[T] extends never ? [event: T] : [event: T, data: E[T]]
+) => void
 type AnyObject = Record<string, any>
 class EventBusStatic<E extends AnyObject> {
-  dispatch<T extends keyof E>(event: T, data: E[T]): void
-  dispatch<T extends keyof E>(event: T): void
-  dispatch<T extends keyof E>(event: T, data?: E[T]) {
+  constructor() {
+    this.dispatch = this.dispatch.bind(this)
+    this.subscribe = this.subscribe.bind(this)
+    this.unsubscribe = this.unsubscribe.bind(this)
+  }
+  dispatch: IDispatcher<E> = <T extends keyof E>(event: T, data?: E[T]) => {
     window.dispatchEvent(new EventBusEvent(event as string, data))
   }
 

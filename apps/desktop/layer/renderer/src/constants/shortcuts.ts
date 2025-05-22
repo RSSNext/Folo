@@ -55,17 +55,14 @@ const shortcutConfigs = {
       name: tShortcuts("keys.layout.toggleSidebar"),
       key: "$mod+B, [",
     },
-    showShortcuts: {
-      name: tShortcuts("keys.layout.showShortcuts"),
-      key: "?",
-    },
+
     toggleWideMode: {
       name: tShortcuts("keys.layout.toggleWideMode"),
       key: "$mod+[",
     },
-    zenMode: {
+    toggleZenMode: {
       name: tShortcuts("keys.layout.zenMode"),
-      key: "Ctrl+Shift+Z",
+      key: "$mod+Shift+Z",
     },
   },
   entries: {
@@ -148,6 +145,10 @@ const shortcutConfigs = {
     quickSearch: {
       name: tShortcuts("keys.misc.quickSearch"),
       key: "$mod+K",
+    },
+    showShortcuts: {
+      name: tShortcuts("keys.misc.showShortcuts"),
+      key: "?",
     },
   },
 } as const

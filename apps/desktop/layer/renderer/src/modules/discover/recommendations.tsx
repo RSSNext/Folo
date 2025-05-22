@@ -8,23 +8,24 @@ import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 
 const LanguageOptions = [
   {
-    label: "All",
+    label: "words.all",
     value: "all",
   },
   {
-    label: "English",
+    label: "words.english",
     value: "eng",
   },
   {
-    label: "中文",
+    label: "words.chinese",
     value: "cmn",
   },
-] as const
+]
 
-type Language = (typeof LanguageOptions)[number]["value"]
+type Language = "all" | "eng" | "cmn"
 
 export function Recommendations() {
   const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
 
   const lang = useUISettingKey("discoverLanguage")
 
@@ -47,7 +48,8 @@ export function Recommendations() {
               onValueChange={handleLangChange}
               triggerClassName="h-8 rounded border-0"
               size="sm"
-              items={LanguageOptions as any}
+              items={LanguageOptions}
+              renderItem={(item) => <>{tCommon(item.label as any)}</>}
             />
           </div>
         </div>
