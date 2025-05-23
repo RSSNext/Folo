@@ -94,7 +94,7 @@ class UnreadActions {
       const finalId = getInboxOrFeedIdFromFeedId(key)
       const state = get()
       const cur = state.data[finalId]
-      const nextValue = Math.max(0, (cur || 0) + type === "increment" ? value : -value)
+      const nextValue = Math.max(0, (cur || 0) + (type === "increment" ? value : -value))
       return [finalId, nextValue] as [string, number]
     })
     this.internal_setValue(finalData)
