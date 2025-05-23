@@ -19084,6 +19084,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     feedIds: string[];
                     fee: number;
                 } | null;
+                unread: {
+                    [x: string]: number;
+                };
             };
             outputFormat: "json";
             status: 200;

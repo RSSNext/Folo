@@ -41,7 +41,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
         if (!feed) return
         const undo = async () => {
           // TODO store action
-          await apiClient.subscriptions.$post({
+          const { unread } = await apiClient.subscriptions.$post({
             json: {
               url: feed.type === "feed" ? feed.url : undefined,
               listId: feed.type === "list" ? feed.id : undefined,
@@ -50,9 +50,9 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
               isPrivate: subscription.isPrivate,
             },
           })
+          unreadActions.upsertMany(unread)
 
           subscriptionQuery.all().invalidate()
-          subscriptionQuery.unreadAll().invalidate()
 
           toast.dismiss(toastId)
         }

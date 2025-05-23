@@ -33,12 +33,12 @@ import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { toastFetchError } from "~/lib/error-parser"
-import { Queries } from "~/queries"
 import { entries as entriesQuery } from "~/queries/entries"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useFeedByIdOrUrl } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
+import { unreadActions } from "~/store/unread"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
 import { FeedSummary } from "./FeedSummary"
@@ -244,9 +244,12 @@ const FeedInnerForm = ({
 
       return $method({
         json: body,
-      })
+      }) as unknown as Promise<
+        | ReturnType<typeof apiClient.subscriptions.$post>
+        | ReturnType<typeof apiClient.subscriptions.$patch>
+      >
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
         entriesQuery
           .entries({
@@ -257,8 +260,8 @@ const FeedInnerForm = ({
           .invalidate({ exact: true })
       }
 
-      if (!isSubscribed) {
-        Queries.subscription.unreadAll().invalidate()
+      if ("unread" in data) {
+        unreadActions.upsertMany(data.unread)
       }
       subscriptionQuery.all().invalidate()
       tipcClient?.invalidateQuery(subscriptionQuery.all().key)

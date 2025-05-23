@@ -95,6 +95,10 @@ class UnreadActions {
     this.internal_setValue([[finalId, unread]])
   }
 
+  upsertMany(data: UnreadValuesObject | UnreadValuesArray) {
+    this.internal_setValue(Array.isArray(data) ? data : Object.entries(data))
+  }
+
   subscribeUnreadCount(fn: (count: number) => void, immediately?: boolean) {
     const handler = (state: UnreadState): void => {
       let unread = 0
