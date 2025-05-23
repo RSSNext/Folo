@@ -279,14 +279,14 @@ class SubscriptionActions {
 
               listFeedIds.forEach((id) => {
                 !filter && unreadActions.updateById(id, 0)
-                entryActions.patchManyByFeedId(id, { read: true }, filter)
+                entryActions.patchManyById(id, { read: true }, filter)
               })
             }
           } else {
             feedIds.push(feedId)
             // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
             !filter && unreadActions.updateById(feedId, 0)
-            entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+            entryActions.patchManyById(feedId, { read: true }, filter)
           }
         }
       }
@@ -303,7 +303,7 @@ class SubscriptionActions {
     }
   }
 
-  async markReadByFeedIds({
+  async markReadByIds({
     feedIds,
     inboxId,
     filter,
@@ -346,17 +346,17 @@ class SubscriptionActions {
         if (listFeedIds) {
           for (const feedId of listFeedIds) {
             !filter && unreadActions.updateById(feedId, 0)
-            entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+            entryActions.patchManyById(feedId, { read: true }, filter)
           }
         }
       } else if (inboxId) {
         !filter && unreadActions.updateById(inboxId, 0)
-        entryActions.patchManyByFeedId(getInboxIdWithPrefix(inboxId), { read: true }, filter)
+        entryActions.patchManyById(getInboxIdWithPrefix(inboxId), { read: true }, filter)
       } else {
         for (const feedId of stableFeedIds) {
           // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
           !filter && unreadActions.updateById(feedId, 0)
-          entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+          entryActions.patchManyById(feedId, { read: true }, filter)
         }
       }
     })

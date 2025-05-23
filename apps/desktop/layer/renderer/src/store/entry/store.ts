@@ -207,8 +207,8 @@ class EntryActions {
     )
   }
 
-  patchManyByFeedId(
-    feedId: string,
+  patchManyById(
+    id: string,
     changed: Partial<CombinedEntryModel>,
     filter?: {
       startTime: number
@@ -226,7 +226,7 @@ class EntryActions {
 
     set((state) =>
       produce(state, (draft) => {
-        const ids = draft.entries[feedId]
+        const ids = draft.entries[id]
         if (!ids) return
 
         ids.forEach((entryId) => {

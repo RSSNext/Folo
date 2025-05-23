@@ -177,7 +177,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.mark_as_read"),
             click: () => {
-              subscriptionActions.markReadByFeedIds({
+              subscriptionActions.markReadByIds({
                 feedIds: ids,
               })
             },
