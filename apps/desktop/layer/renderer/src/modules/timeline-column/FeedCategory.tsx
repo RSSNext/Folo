@@ -32,7 +32,7 @@ import {
   subscriptionCategoryExist,
   useSubscriptionByFeedId,
 } from "~/store/subscription"
-import { useFeedUnreadStore } from "~/store/unread"
+import { useSortedIdsByUnread, useUnreadByIds } from "~/store/unread/hooks"
 
 import { useModalStack } from "../../components/ui/modal/stacked/hooks"
 import { ListCreationModalContent } from "../settings/tabs/lists/modals"
@@ -52,19 +52,7 @@ interface FeedCategoryProps {
 function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCategoryProps) {
   const { t } = useTranslation()
 
-  const sortByUnreadFeedList = useFeedUnreadStore(
-    useCallback(
-      (state) =>
-        ids.sort((a, b) => {
-          const unreadCompare = (state.data[b] || 0) - (state.data[a] || 0)
-          if (unreadCompare !== 0) {
-            return unreadCompare
-          }
-          return a.localeCompare(b)
-        }),
-      [ids],
-    ),
-  )
+  const sortByUnreadFeedList = useSortedIdsByUnread(ids)
 
   const navigate = useNavigateEntry()
 
@@ -145,9 +133,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
     }
   }
 
-  const unread = useFeedUnreadStore(
-    useCallback((state) => ids.reduce((acc, feedId) => (state.data[feedId] || 0) + acc, 0), [ids]),
-  )
+  const unread = useUnreadByIds(ids)
 
   const isActive = useRouteParamsSelector(
     (routerParams) => routerParams.feedId === `${ROUTE_FEED_IN_FOLDER}${folderName}`,
@@ -191,7 +177,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.mark_as_read"),
             click: () => {
-              subscriptionActions.markReadByFeedIds({
+              subscriptionActions.markReadByIds({
                 feedIds: ids,
               })
             },
@@ -363,12 +349,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
 }
 
 function FilterReadFeedCategory(props: FeedCategoryProps) {
-  const unread = useFeedUnreadStore(
-    useCallback(
-      (state) => props.data.reduce((acc, feedId) => (state.data[feedId] || 0) + acc, 0),
-      [props.data],
-    ),
-  )
+  const unread = useUnreadByIds(props.data)
   if (!unread) return null
   return <FeedCategoryImpl {...props} />
 }
@@ -517,15 +498,7 @@ const SortByAlphabeticalList = (props: SortListProps) => {
 }
 const SortByUnreadList = ({ ids, showCollapse, view }: SortListProps) => {
   const isDesc = useFeedListSortSelector((s) => s.order === "desc")
-  const sortByUnreadFeedList = useFeedUnreadStore(
-    useCallback(
-      (state) => {
-        const res = ids.sort((a, b) => (state.data[b] || 0) - (state.data[a] || 0))
-        return isDesc ? res : res.reverse()
-      },
-      [ids, isDesc],
-    ),
-  )
+  const sortByUnreadFeedList = useSortedIdsByUnread(ids, isDesc)
 
   return (
     <Fragment>

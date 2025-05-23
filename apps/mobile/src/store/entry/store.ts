@@ -429,7 +429,8 @@ class EntrySyncServices {
       }
 
       if (params.feedIdList && params.feedIdList.length > 0) {
-        const category = getSubscription(params.feedIdList[0])?.category
+        const firstSubscription = getSubscription(params.feedIdList[0])
+        const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
         if (category) {
           entryActions.resetByCategory({ category, entries })
         }

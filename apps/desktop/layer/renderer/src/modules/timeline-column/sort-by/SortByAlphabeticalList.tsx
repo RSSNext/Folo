@@ -1,7 +1,7 @@
 import { sortByAlphabet } from "@follow/utils/utils"
 import { Fragment, useCallback } from "react"
 
-import { INBOX_PREFIX_ID } from "~/constants"
+import { getInboxOrFeedIdFromFeedId } from "~/constants"
 import { getPreferredTitle, useFeedStore } from "~/store/feed"
 import { useSubscriptionStore } from "~/store/subscription"
 
@@ -107,13 +107,7 @@ export const SortByAlphabeticalInboxList = ({ view, data }: ListListProps) => {
   return (
     <div>
       {Object.keys(data).map((feedId) => (
-        <InboxItem
-          key={feedId}
-          inboxId={
-            feedId.startsWith(INBOX_PREFIX_ID) ? feedId.slice(INBOX_PREFIX_ID.length) : feedId
-          }
-          view={view}
-        />
+        <InboxItem key={feedId} inboxId={getInboxOrFeedIdFromFeedId(feedId)} view={view} />
       ))}
     </div>
   )

@@ -308,7 +308,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
                   value={isSelected}
                   // onSelect={onSelect}
                 >
-                  <ContextMenu.ItemTitle>{t(view.name as any)}</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemTitle>{t(view.name, { ns: "common" })}</ContextMenu.ItemTitle>
                 </ContextMenu.CheckboxItem>
               )
             })}

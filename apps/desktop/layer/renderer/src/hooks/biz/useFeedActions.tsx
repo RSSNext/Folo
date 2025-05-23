@@ -122,7 +122,7 @@ export const useFeedActions = ({
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         disabled: isEntryList,
         click: () =>
-          subscriptionActions.markReadByFeedIds({
+          subscriptionActions.markReadByIds({
             feedIds: isMultipleSelection ? feedIds : [feedId],
           }),
         supportMultipleSelection: true,
@@ -425,7 +425,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         click: () => {
-          subscriptionActions.markReadByFeedIds({
+          subscriptionActions.markReadByIds({
             feedIds: list.feedIds,
           })
         },

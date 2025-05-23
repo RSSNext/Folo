@@ -9,14 +9,14 @@ import { clearImageDimensionsDb } from "../image/db"
 import { inboxActions } from "../inbox"
 import { listActions } from "../list"
 import { subscriptionActions } from "../subscription"
-import { feedUnreadActions } from "../unread"
+import { unreadActions } from "../unread"
 
 export const clearLocalPersistStoreData = async () => {
   // All clear and reset method will aggregate here
   ;[
     entryActions,
     subscriptionActions,
-    feedUnreadActions,
+    unreadActions,
     feedActions,
     listActions,
     inboxActions,

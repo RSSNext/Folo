@@ -12,6 +12,7 @@ import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
 
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty, setFeedUnreadDirty } from "~/atoms/feed"
+import { getInboxIdWithPrefix } from "~/constants/app"
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { getEntriesParams } from "~/lib/utils"
@@ -21,7 +22,7 @@ import { feedActions } from "../feed"
 import { imageActions } from "../image"
 import { inboxActions } from "../inbox"
 import { getSubscriptionByFeedId } from "../subscription"
-import { feedUnreadActions } from "../unread"
+import { unreadActions } from "../unread"
 import { createTransaction, createZustandStore } from "../utils/helper"
 import { internal_batchMarkRead } from "./helper"
 import type { EntryState, FlatEntryModel } from "./types"
@@ -206,8 +207,8 @@ class EntryActions {
     )
   }
 
-  patchManyByFeedId(
-    feedId: string,
+  patchManyById(
+    id: string,
     changed: Partial<CombinedEntryModel>,
     filter?: {
       startTime: number
@@ -225,7 +226,7 @@ class EntryActions {
 
     set((state) =>
       produce(state, (draft) => {
-        const ids = draft.entries[feedId]
+        const ids = draft.entries[id]
         if (!ids) return
 
         ids.forEach((entryId) => {
@@ -315,7 +316,7 @@ class EntryActions {
 
           // Is related to inbox
           if (item.inboxes) {
-            const inboxId = `inbox-${item.inboxes.id}`
+            const inboxId = getInboxIdWithPrefix(item.inboxes.id)
             if (!draft.entries[inboxId]) {
               draft.entries[inboxId] = []
             }
@@ -459,7 +460,7 @@ class EntryActions {
     const tx = createTransaction<unknown, { prevUnread: number }>({})
 
     tx.optimistic((_, ctx) => {
-      const prevUnread = feedUnreadActions.incrementByFeedId(feedId, read ? -1 : 1)!
+      const prevUnread = unreadActions.incrementById(feedId, read ? -1 : 1)!
       ctx.prevUnread = prevUnread
 
       this.patch(entryId, {
@@ -490,7 +491,7 @@ class EntryActions {
     })
 
     tx.rollback((_, ctx) => {
-      feedUnreadActions.updateByFeedId(feedId, ctx.prevUnread)
+      unreadActions.updateById(feedId, ctx.prevUnread)
       this.patch(entryId, {
         read: !read,
       })
@@ -589,7 +590,7 @@ class EntryActions {
       const fullInboxId = `inbox-${inboxId}`
 
       if (!read) {
-        feedUnreadActions.incrementByFeedId(inboxId, -1)
+        unreadActions.incrementById(inboxId, -1)
       }
 
       set((state) => {
@@ -630,7 +631,7 @@ class EntryActions {
     tx.rollback((entry, ctx) => {
       const { inboxId, read } = entry
       if (!read) {
-        feedUnreadActions.incrementByFeedId(inboxId, 1)
+        unreadActions.incrementById(inboxId, 1)
       }
 
       set((state) => ({

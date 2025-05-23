@@ -14,4 +14,9 @@ export const ROUTE_FEED_IN_LIST = "list-"
 export const ROUTE_FEED_IN_INBOX = "inbox-"
 export const ROUTE_TIMELINE_OF_VIEW = "view-"
 
+// Inbox subscription's feedId is `inbox-${inboxId}`, we need to convert it between unread and entry store.
 export const INBOX_PREFIX_ID = "inbox-"
+export const getInboxOrFeedIdFromFeedId = (id: string) =>
+  id.startsWith(INBOX_PREFIX_ID) ? id.slice(INBOX_PREFIX_ID.length) : id
+export const getInboxIdWithPrefix = (id: string) =>
+  id.startsWith(INBOX_PREFIX_ID) ? id : INBOX_PREFIX_ID + id

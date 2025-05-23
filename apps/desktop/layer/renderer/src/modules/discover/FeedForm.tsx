@@ -38,7 +38,7 @@ import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useFeedByIdOrUrl } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
 import { FeedSummary } from "./FeedSummary"
@@ -244,9 +244,12 @@ const FeedInnerForm = ({
 
       return $method({
         json: body,
-      })
+      }) as unknown as Promise<
+        | ReturnType<typeof apiClient.subscriptions.$post>
+        | ReturnType<typeof apiClient.subscriptions.$patch>
+      >
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
         entriesQuery
           .entries({
@@ -257,10 +260,8 @@ const FeedInnerForm = ({
           .invalidate({ exact: true })
       }
 
-      if (isSubscribed && variables.view !== `${subscription?.view}`) {
-        feedUnreadActions.fetchUnreadByView(subscription?.view)
-      } else {
-        feedUnreadActions.fetchUnreadByView(Number.parseInt(variables.view))
+      if ("unread" in data) {
+        unreadActions.upsertMany(data.unread)
       }
       subscriptionQuery.all().invalidate()
       tipcClient?.invalidateQuery(subscriptionQuery.all().key)

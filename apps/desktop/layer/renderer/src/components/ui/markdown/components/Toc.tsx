@@ -1,10 +1,14 @@
 import { useViewport } from "@follow/components/hooks/useViewport.js"
+import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
+import { nextFrame } from "@follow/utils/dom"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { AnimatePresence, m } from "motion/react"
 import { memo, use, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 
 import { useRealInWideMode } from "~/atoms/settings/ui"
+import { COMMAND_ID } from "~/modules/command/commands/id"
 import {
   useWrappedElementPosition,
   useWrappedElementSize,
@@ -172,6 +176,7 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
                         style={{ paddingLeft: `${(heading.depth - rootDepth) * 12}px` }}
                       >
                         <button
+                          tabIndex={1}
                           className={cn(
                             "group flex w-full cursor-pointer justify-between py-1",
                             index === currentScrollRange[0] ? "text-accent" : "",
@@ -179,11 +184,16 @@ const TocHoverCard: React.FC<TocHoverCardProps> = ({
                           type="button"
                           onClick={() => {
                             handleScrollTo(index, heading.$heading, heading.anchorId)
+                            nextFrame(() => {
+                              EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, {
+                                highlightBoundary: false,
+                              })
+                            })
                           }}
                         >
-                          <span className="group-hover:text-accent/80 select-none duration-200">
+                          <EllipsisHorizontalTextWithTooltip className="group-hover:text-accent/80 max-w-prose select-none truncate duration-200">
                             {heading.title}
-                          </span>
+                          </EllipsisHorizontalTextWithTooltip>
 
                           <span className="ml-4 select-none text-[8px] opacity-50">
                             H{heading.depth}

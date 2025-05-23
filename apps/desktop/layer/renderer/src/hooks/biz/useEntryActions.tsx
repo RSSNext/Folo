@@ -304,12 +304,13 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !hasEntry || !!entry.collections || !!inList,
+        hide: !hasEntry || !!entry.collections,
         active: !!entry?.read,
         shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
@@ -317,6 +318,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,

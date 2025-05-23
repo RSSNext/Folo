@@ -48,19 +48,35 @@ export const Component = () => {
   )
 
   const data: RouteData = rsshubPopular.data as any
-  const { isLoading } = rsshubPopular
+
+  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics(), {
+    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    placeholderData: keepPreviousData,
+  })
+
+  const rsshubAnalyticsData: Awaited<
+    ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
+  >["data"] = rsshubAnalytics.data as any
+
+  const isLoading = rsshubPopular.isLoading || rsshubAnalytics.isLoading
 
   const keys = useMemo(() => {
-    if (!data) {
+    if (!data || !rsshubAnalyticsData) {
       return []
     }
     return Object.keys(data).sort((a, b) => {
-      const aname = data[a]!.name
-      const bname = data[b]!.name
+      const aRoutes = Object.keys(data[a]?.routes ?? {})
+      const aHeat = aRoutes.reduce((acc, route) => {
+        return acc + (rsshubAnalyticsData?.[`/${a}${route}`]?.subscriptionCount ?? 0)
+      }, 0)
+      const bRoutes = Object.keys(data[b]?.routes ?? {})
+      const bHeat = bRoutes.reduce((acc, route) => {
+        return acc + (rsshubAnalyticsData?.[`/${b}${route}`]?.subscriptionCount ?? 0)
+      }, 0)
 
-      return aname.toLowerCase() < bname.toLowerCase() ? -1 : 1
+      return bHeat - aHeat
     })
-  }, [data])
+  }, [data, rsshubAnalyticsData])
 
   const [search, setSearch] = useState("")
 
@@ -113,7 +129,11 @@ export const Component = () => {
               (item) =>
                 item?.data && (
                   <div key={item.key} className="mb-4 break-inside-avoid">
-                    <RecommendationListItem data={item.data} routePrefix={item.routePrefix} />
+                    <RecommendationListItem
+                      data={item.data}
+                      routePrefix={item.routePrefix}
+                      rsshubAnalyticsData={rsshubAnalyticsData}
+                    />
                   </div>
                 ),
             )}
@@ -141,9 +161,13 @@ export const Component = () => {
 const RecommendationListItem = ({
   data,
   routePrefix,
+  rsshubAnalyticsData,
 }: {
   data: RouteData[string]
   routePrefix: string
+  rsshubAnalyticsData: Awaited<
+    ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
+  >["data"]
 }) => {
   const { t } = useTranslation()
   const { present } = useModalStack()
@@ -151,7 +175,11 @@ const RecommendationListItem = ({
   const { maintainers, categories, routes } = useMemo(() => {
     const maintainers = new Set<string>()
     const categories = new Set<string>()
-    const routes = Object.keys(data.routes)
+    const routes = Object.keys(data.routes).sort((a, b) => {
+      const aHeat = rsshubAnalyticsData?.[`/${routePrefix}${a}`]?.subscriptionCount ?? 0
+      const bHeat = rsshubAnalyticsData?.[`/${routePrefix}${b}`]?.subscriptionCount ?? 0
+      return bHeat - aHeat
+    })
 
     for (const route in data.routes) {
       const routeData = data.routes[route]!
@@ -168,16 +196,7 @@ const RecommendationListItem = ({
       categories: Array.from(categories) as unknown as typeof RSSHubCategories,
       routes,
     }
-  }, [data])
-
-  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics(), {
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
-    placeholderData: keepPreviousData,
-  })
-
-  const rsshubAnalyticsData: Awaited<
-    ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
-  >["data"] = rsshubAnalytics.data as any
+  }, [data, rsshubAnalyticsData, routePrefix])
 
   const follow = useFollow()
 
