@@ -1,5 +1,4 @@
 import {
-  useFocusable,
   useFocusActions,
   useGlobalFocusableScope,
 } from "@follow/components/common/Focusable/hooks.js"
@@ -13,7 +12,6 @@ import { memo, useEffect } from "react"
 import { HotkeyScope } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteEntryId } from "~/hooks/biz/useRouteParams"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -112,10 +110,6 @@ export const EntryColumnShortcutHandler: FC<{
       },
     )
   }, [$scrollArea, highlightBoundary])
-
-  const isFocusIn = useFocusable()
-
-  useConditionalHotkeyScope(HotkeyScope.Timeline, isFocusIn, true)
 
   return null
 })

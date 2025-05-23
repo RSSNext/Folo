@@ -2,13 +2,12 @@ import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { clsx } from "@follow/utils/utils"
 import { m, useDragControls } from "motion/react"
-import { useCallback, useEffect } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useSwitchHotKeyScope } from "~/hooks/common"
 
 import { ShortcutsGuideline } from "../command/shortcuts/SettingShortcuts"
 
@@ -17,10 +16,6 @@ const ShortcutModalContent = () => {
   const modalOverlay = useUISettingKey("modalOverlay")
   const dragControls = useDragControls()
 
-  const switchScope = useSwitchHotKeyScope()
-  useEffect(() => {
-    switchScope("Home")
-  }, [])
   const { t } = useTranslation("shortcuts")
   return (
     <m.div

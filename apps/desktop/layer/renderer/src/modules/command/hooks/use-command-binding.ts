@@ -18,19 +18,19 @@ const defaultCommandShortcuts = {
 
   // Subscription commands
   [COMMAND_ID.subscription.markAllAsRead]: transformShortcut("Shift+$mod+A"),
-  [COMMAND_ID.subscription.nextSubscription]: "J, ArrowDown",
   [COMMAND_ID.subscription.openInBrowser]: "O",
   [COMMAND_ID.subscription.openSiteInBrowser]: transformShortcut("$mod+O"),
   [COMMAND_ID.subscription.previousSubscription]: "K, ArrowUp",
+  [COMMAND_ID.subscription.nextSubscription]: "J, ArrowDown",
   [COMMAND_ID.subscription.switchTabToNext]: "Tab",
   [COMMAND_ID.subscription.switchTabToPrevious]: transformShortcut("Shift+Tab"),
   [COMMAND_ID.subscription.toggleFolderCollapse]: "Z",
 
   // Timeline commands
   [COMMAND_ID.timeline.refetch]: "R",
-  [COMMAND_ID.timeline.switchToNext]: "J, ArrowDown",
-  [COMMAND_ID.timeline.switchToPrevious]: "K, ArrowUp",
   [COMMAND_ID.timeline.unreadOnly]: "U",
+  [COMMAND_ID.timeline.switchToPrevious]: "K, ArrowUp",
+  [COMMAND_ID.timeline.switchToNext]: "J, ArrowDown",
 
   // Entry commands
   [COMMAND_ID.entry.copyLink]: transformShortcut("Shift+$mod+C"),
@@ -45,8 +45,8 @@ const defaultCommandShortcuts = {
   // Entry render commands
   [COMMAND_ID.entryRender.nextEntry]: "L, ArrowRight",
   [COMMAND_ID.entryRender.previousEntry]: "H, ArrowLeft",
-  [COMMAND_ID.entryRender.scrollDown]: "J, ArrowDown",
   [COMMAND_ID.entryRender.scrollUp]: "K, ArrowUp",
+  [COMMAND_ID.entryRender.scrollDown]: "J, ArrowDown",
 
   // Global commands
   [COMMAND_ID.global.toggleCornerPlay]: "Space",

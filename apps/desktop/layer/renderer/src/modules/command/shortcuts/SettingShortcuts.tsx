@@ -1,3 +1,4 @@
+import { useReplaceGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
@@ -7,7 +8,6 @@ import { useTranslation } from "react-i18next"
 import { useOnClickOutside } from "usehooks-ts"
 
 import { HotkeyScope } from "~/constants"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 
 import { useCommand } from "../hooks/use-command"
 import type { AllowCustomizeCommandId } from "../hooks/use-command-binding"
@@ -87,9 +87,13 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
       <button
         type="button"
         className={cn(
-          "cursor-button flex h-full justify-end rounded-md border border-transparent px-1 duration-200",
+          "flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
           allowCustomize && "hover:border-border hover:bg-material-medium",
-          isEditing && "border-border bg-material-medium",
+          isEditing
+            ? "border-border bg-material-ultra-thick"
+            : allowCustomize
+              ? "border-border/50 bg-material-ultra-thin"
+              : "border-transparent",
           !allowCustomize && "pointer-events-none",
         )}
         onClick={() => {
@@ -126,14 +130,18 @@ const KeyRecorder: FC<{
   onBlur: () => void
 }> = ({ onChange, onBlur }) => {
   const { currentKeys } = useShortcutRecorder()
-  useConditionalHotkeyScope(HotkeyScope.Recording, true)
+  const setGlobalScope = useReplaceGlobalFocusableScope()
 
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    const { rollback } = setGlobalScope(HotkeyScope.Recording)
     if (ref.current) {
       ref.current.focus()
     }
-  }, [])
+    return () => {
+      rollback()
+    }
+  }, [setGlobalScope])
   useOnClickOutside(ref as RefObject<HTMLElement>, () => {
     if (currentKeys.length > 0) {
       onChange(currentKeys)

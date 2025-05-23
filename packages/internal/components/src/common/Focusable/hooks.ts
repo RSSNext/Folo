@@ -43,14 +43,9 @@ export const useSetGlobalFocusableScope = () => {
   const ctx = use(GlobalFocusableContext)
   const setter = useSetAtom(ctx)
   return useCallback(
-    (scope: string, mode: "append" | "switch" | "replace" | "remove") => {
+    (scope: string, mode: "append" | "switch" | "remove") => {
       const snapshot = jotaiStore.get(ctx)
       setter((v) => {
-        if (mode === "remove") {
-          const newSet = new Set(v)
-          newSet.delete(scope)
-          return newSet
-        }
         if (mode === "append") {
           const newSet = new Set(v)
           newSet.add(scope)
@@ -75,6 +70,29 @@ export const useSetGlobalFocusableScope = () => {
       return {
         original: snapshot,
         new: jotaiStore.get(ctx),
+      }
+    },
+    [ctx, setter],
+  )
+}
+
+export const useReplaceGlobalFocusableScope = () => {
+  const ctx = use(GlobalFocusableContext)
+  const setter = useSetAtom(ctx)
+  return useCallback(
+    (...scopes: string[]) => {
+      const snapshot = jotaiStore.get(ctx)
+      setter(() => {
+        const newSet = new Set<string>()
+        for (const scope of scopes) {
+          newSet.add(scope)
+        }
+        return newSet
+      })
+      return {
+        rollback: () => {
+          setter(snapshot)
+        },
       }
     },
     [ctx, setter],

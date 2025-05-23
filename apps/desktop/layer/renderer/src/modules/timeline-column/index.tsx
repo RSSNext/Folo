@@ -1,4 +1,4 @@
-import { useFocusable, useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Routes } from "@follow/constants"
@@ -23,7 +23,6 @@ import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
@@ -247,8 +246,10 @@ const CommandsHandler = ({
 }) => {
   const activeScope = useGlobalFocusableScope()
   const when =
-    (activeScope.has(HotkeyScope.SubscriptionList) || activeScope.has(HotkeyScope.Timeline)) &&
-    activeScope.has(HotkeyScope.Home)
+    activeScope.has(HotkeyScope.SubscriptionList) ||
+    activeScope.has(HotkeyScope.Timeline) ||
+    activeScope.size === 0
+
   useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToNext,
     when,
@@ -271,8 +272,5 @@ const CommandsHandler = ({
     })
   }, [activeScope, setActive, timelineList])
 
-  const focus = useFocusable()
-
-  useConditionalHotkeyScope(HotkeyScope.SubscriptionList, focus, true)
   return null
 }

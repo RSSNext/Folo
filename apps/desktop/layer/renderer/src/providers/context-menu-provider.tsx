@@ -26,7 +26,6 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu"
 import { HotkeyScope } from "~/constants"
-import { useSwitchHotKeyScope } from "~/hooks/common"
 
 export const ContextMenuProvider: Component = ({ children }) => (
   <>
@@ -38,16 +37,6 @@ export const ContextMenuProvider: Component = ({ children }) => (
 const Handler = () => {
   const ref = useRef<HTMLSpanElement>(null)
   const [contextMenuState, setContextMenuState] = useContextMenuState()
-
-  const switchHotkeyScope = useSwitchHotKeyScope()
-
-  useEffect(() => {
-    if (!contextMenuState.open) return
-    switchHotkeyScope("Menu")
-    return () => {
-      switchHotkeyScope("Home")
-    }
-  }, [contextMenuState.open, switchHotkeyScope])
 
   useEffect(() => {
     if (!contextMenuState.open) return

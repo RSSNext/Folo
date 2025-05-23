@@ -1,5 +1,4 @@
 import {
-  useFocusable,
   useFocusActions,
   useGlobalFocusableScope,
 } from "@follow/components/common/Focusable/index.js"
@@ -30,7 +29,6 @@ import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
@@ -94,7 +92,6 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const isInPeekModal = useInPeekModal()
 
-  const [isUserInteraction, setIsUserInteraction] = useState(false)
   const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
@@ -132,15 +129,9 @@ export const EntryContent: Component<EntryContentProps> = ({
       <Focusable
         scope={HotkeyScope.EntryRender}
         className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
-        onFocus={() => setIsUserInteraction(true)}
       >
         <RootPortal to={panelPortalElement}>
-          <RegisterCommands
-            scrollAnimationRef={scrollAnimationRef}
-            scrollerRef={scrollerRef}
-            isUserInteraction={isUserInteraction}
-            setIsUserInteraction={setIsUserInteraction}
-          />
+          <RegisterCommands scrollAnimationRef={scrollAnimationRef} scrollerRef={scrollerRef} />
         </RootPortal>
         <EntryTimelineSidebar entryId={entry.entries.id} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
@@ -179,8 +170,6 @@ export const EntryContent: Component<EntryContentProps> = ({
             )}
 
             <article
-              tabIndex={-1}
-              onFocus={() => setIsUserInteraction(true)}
               data-testid="entry-render"
               onContextMenu={stopPropagation}
               className="@[950px]:max-w-[70ch] @7xl:max-w-[80ch] relative m-auto min-w-0 max-w-[550px]"
@@ -319,20 +308,14 @@ const Renderer: React.FC<{
 
 const RegisterCommands = ({
   scrollerRef,
-  isUserInteraction,
-  setIsUserInteraction,
   scrollAnimationRef,
 }: {
   scrollerRef: React.RefObject<HTMLDivElement | null>
-  isUserInteraction: boolean
-  setIsUserInteraction: (isUserInteraction: boolean) => void
+
   scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
 }) => {
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
-
-  const containerFocused = useFocusable()
-  useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction && containerFocused, true)
 
   const activeScope = useGlobalFocusableScope()
   const when = activeScope.has(HotkeyScope.EntryRender)
@@ -438,11 +421,10 @@ const RegisterCommands = ({
           if (highlight) {
             nextFrame(highlightBoundary)
           }
-          setIsUserInteraction(true)
         },
       ),
     )
-  }, [highlightBoundary, scrollAnimationRef, scrollerRef, setIsUserInteraction])
+  }, [highlightBoundary, scrollAnimationRef, scrollerRef])
 
   return (
     <AnimatePresence>

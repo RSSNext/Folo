@@ -31,7 +31,7 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
-import { FloatingLayerScope, HotkeyScope } from "~/constants"
+import { FloatingLayerScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { useDailyTask } from "~/hooks/biz/useDailyTask"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
@@ -245,9 +245,7 @@ const FeedResponsiveResizerContainer = ({
 
   useCommandBinding({
     commandId: COMMAND_ID.layout.toggleTimelineColumn,
-    when:
-      activeScopes.has(HotkeyScope.Home) &&
-      !FloatingLayerScope.some((scope) => activeScopes.has(scope)),
+    when: !FloatingLayerScope.some((scope) => activeScopes.has(scope)),
   })
 
   const [delayShowSplitter, setDelayShowSplitter] = useState(feedColumnShow)

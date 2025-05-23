@@ -122,7 +122,10 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     commandId: COMMAND_ID.global.toggleCornerPlay,
     when: useGlobalFocusableScopeSelector(
       // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
-      useCallback((v) => v.has(HotkeyScope.SubscriptionList) || v.has(HotkeyScope.Timeline), []),
+      useCallback(
+        (v) => v.has(HotkeyScope.SubscriptionList) || v.has(HotkeyScope.Timeline) || v.size === 0,
+        [],
+      ),
     ),
   })
 
