@@ -15,13 +15,14 @@ import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { queryClient } from "~/lib/query-client"
 import { updateFeedBoostStatus } from "~/modules/boost/atom"
+import { Queries } from "~/queries"
 import { SubscriptionService } from "~/services"
 
 import { entryActions } from "../entry"
 import { feedActions, getFeedById } from "../feed"
 import { inboxActions } from "../inbox"
 import { getListById, listActions } from "../list"
-import { feedUnreadActions } from "../unread"
+import { unreadActions } from "../unread"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 export type SubscriptionFlatModel = Omit<SubscriptionModel, "feeds"> & {
@@ -258,7 +259,7 @@ class SubscriptionActions {
         },
       })
       if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
+        Queries.subscription.unreadAll().invalidate()
       }
     })
 
@@ -276,14 +277,14 @@ class SubscriptionActions {
               feedIds.push(...listFeedIds)
 
               listFeedIds.forEach((id) => {
-                !filter && feedUnreadActions.updateByFeedId(id, 0)
+                !filter && unreadActions.updateById(id, 0)
                 entryActions.patchManyByFeedId(id, { read: true }, filter)
               })
             }
           } else {
             feedIds.push(feedId)
             // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
-            !filter && feedUnreadActions.updateByFeedId(feedId, 0)
+            !filter && unreadActions.updateById(feedId, 0)
             entryActions.patchManyByFeedId(feedId, { read: true }, filter)
           }
         }
@@ -292,7 +293,7 @@ class SubscriptionActions {
 
     tx.rollback(async () => {
       // TODO handle this local?
-      await feedUnreadActions.fetchUnreadByView(view)
+      Queries.subscription.unreadAll().invalidate()
     })
     await tx.run()
 
@@ -335,8 +336,8 @@ class SubscriptionActions {
           ...filter,
         },
       })
-      if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
+      if (filter && typeof view === "number") {
+        Queries.subscription.unreadAll().invalidate()
       }
     })
     tx.optimistic(() => {
@@ -344,17 +345,17 @@ class SubscriptionActions {
         const listFeedIds = getListById(listId)?.feedIds
         if (listFeedIds) {
           for (const feedId of listFeedIds) {
-            feedUnreadActions.updateByFeedId(feedId, 0)
+            unreadActions.updateById(feedId, 0)
             entryActions.patchManyByFeedId(feedId, { read: true }, filter)
           }
         }
       } else if (inboxId) {
-        feedUnreadActions.updateByFeedId(inboxId, 0)
+        unreadActions.updateById(inboxId, 0)
         entryActions.patchManyByFeedId(inboxId, { read: true }, filter)
       } else {
         for (const feedId of stableFeedIds) {
           // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
-          !filter && feedUnreadActions.updateByFeedId(feedId, 0)
+          !filter && unreadActions.updateById(feedId, 0)
           entryActions.patchManyByFeedId(feedId, { read: true }, filter)
         }
       }
@@ -362,7 +363,9 @@ class SubscriptionActions {
 
     tx.rollback(async () => {
       // TODO handle this local?
-      await feedUnreadActions.fetchUnreadByView(view)
+      if (typeof view === "number") {
+        Queries.subscription.unreadAll().invalidate()
+      }
     })
 
     await tx.run()
@@ -497,7 +500,7 @@ class SubscriptionActions {
         // Remove feed's entries
         entryActions.clearByFeedId(feedId)
         // Clear feed's unread count
-        feedUnreadActions.updateByFeedId(feedId, 0)
+        unreadActions.updateById(feedId, 0)
 
         SubscriptionService.removeSubscription(whoami()!.id, feedId)
       }

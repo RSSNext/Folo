@@ -9,7 +9,7 @@ import { apiClient } from "~/lib/api-fetch"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import type { SubscriptionFlatModel } from "~/store/subscription"
 import { subscriptionActions } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -35,7 +35,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
       subscriptionActions.unfollow([subscription.feedId]).then(([feed]) => {
         subscriptionQuery.all().invalidate()
-        feedUnreadActions.updateByFeedId(subscription.feedId, 0)
+        unreadActions.updateById(subscription.feedId, 0)
 
         if (!subscription) return
         if (!feed) return
@@ -52,7 +52,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
           })
 
           subscriptionQuery.all().invalidate()
-          feedUnreadActions.fetchUnreadByView(subscription.view)
+          subscriptionQuery.unreadAll().invalidate()
 
           toast.dismiss(toastId)
         }

@@ -8,10 +8,10 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient, apiFetch } from "~/lib/api-fetch"
+import { Queries } from "~/queries"
 import { entries, useEntries } from "~/queries/entries"
 import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
 import { useFolderFeedsByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
@@ -301,9 +301,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     hasUpdate: query.hasUpdate,
     refetch: useCallback(() => {
       const promise = query.refetch()
-      feedUnreadActions.fetchUnreadByView(view)
+      Queries.subscription.unreadAll().invalidate()
       return promise
-    }, [query, view]),
+    }, [query]),
     entriesIds: sortEntries,
     groupedCounts,
   }

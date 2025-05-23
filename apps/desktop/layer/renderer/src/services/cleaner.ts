@@ -4,7 +4,7 @@ import { appLog } from "~/lib/log"
 
 import { EntryService } from "./entry"
 import { FeedService } from "./feed"
-import { FeedUnreadService } from "./feed-unread"
+import { UnreadService } from "./feed-unread"
 import { InboxService } from "./inbox"
 import { ListService } from "./list"
 import { SubscriptionService } from "./subscription"
@@ -30,7 +30,7 @@ class CleanerServiceStatic {
     await Promise.allSettled([
       otherUserIds.map((id) => SubscriptionService.removeSubscription(id)),
       FeedService.bulkDelete(toRemoveFeedIds),
-      FeedUnreadService.bulkDelete(toRemoveFeedIds),
+      UnreadService.bulkDelete(toRemoveFeedIds),
       EntryService.deleteEntriesByFeedIds(toRemoveFeedIds),
     ])
   }

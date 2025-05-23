@@ -33,12 +33,12 @@ import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { toastFetchError } from "~/lib/error-parser"
+import { Queries } from "~/queries"
 import { entries as entriesQuery } from "~/queries/entries"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useFeedByIdOrUrl } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
 import { FeedSummary } from "./FeedSummary"
@@ -257,10 +257,8 @@ const FeedInnerForm = ({
           .invalidate({ exact: true })
       }
 
-      if (isSubscribed && variables.view !== `${subscription?.view}`) {
-        feedUnreadActions.fetchUnreadByView(subscription?.view)
-      } else {
-        feedUnreadActions.fetchUnreadByView(Number.parseInt(variables.view))
+      if (!isSubscribed) {
+        Queries.subscription.unreadAll().invalidate()
       }
       subscriptionQuery.all().invalidate()
       tipcClient?.invalidateQuery(subscriptionQuery.all().key)

@@ -30,12 +30,12 @@ import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
+import { Queries } from "~/queries"
 import { entries as entriesQuery } from "~/queries/entries"
 import { lists as listsQuery, useList } from "~/queries/lists"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
@@ -233,10 +233,8 @@ const ListInnerForm = ({
           .invalidate({ exact: true })
       }
 
-      if (isSubscribed && variables.view !== `${subscription?.view}`) {
-        feedUnreadActions.fetchUnreadByView(subscription?.view)
-      } else {
-        feedUnreadActions.fetchUnreadByView(Number.parseInt(variables.view))
+      if (!isSubscribed) {
+        Queries.subscription.unreadAll().invalidate()
       }
       subscriptionQuery.all().invalidate()
       tipcClient?.invalidateQuery(subscriptionQuery.all().key)
