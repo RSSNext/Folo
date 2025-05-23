@@ -23,6 +23,8 @@
   "keys.misc.showShortcuts": "显示/隐藏快捷键",
   "keys.subscriptions.add": "添加订阅源",
   "keys.subscriptions.nextSubscription": "下一个订阅",
+  "keys.subscriptions.openInBrowser": "在浏览器中打开",
+  "keys.subscriptions.openSiteInBrowser": "在浏览器中打开网站",
   "keys.subscriptions.previousSubscription": "上一个订阅",
   "keys.subscriptions.switchBetweenViews": "在类型之间切换",
   "keys.subscriptions.switchNextView": "切换到下一个视图",
