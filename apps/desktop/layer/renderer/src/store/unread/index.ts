@@ -7,11 +7,9 @@ import { createImmerSetter, createTransaction, createZustandStore } from "../uti
 
 interface UnreadState {
   data: Record<string, number>
-  ids: Set<string>
 }
 const initialState: UnreadState = {
   data: {},
-  ids: new Set(),
 }
 /**
  * feedId or inboxHandle -> unread count
@@ -36,10 +34,9 @@ class UnreadActions {
       return
     }
 
-    const idsToDelete = [...get().ids].filter((id) => !(id in data))
+    const idsToDelete = Object.keys(get().data).filter((id) => !(id in data))
     immerSet((state) => {
       state.data = data
-      state.ids = new Set(newIds)
     })
     UnreadService.bulkDelete(idsToDelete)
     UnreadService.updateUnread(Object.entries(data))
@@ -55,7 +52,6 @@ class UnreadActions {
       immerSet((state) => {
         for (const [key, value] of data) {
           state.data[key] = value
-          state.ids.add(key)
         }
       })
     })
@@ -134,7 +130,6 @@ class UnreadActions {
     immerSet((state) => {
       for (const { id, count } of data) {
         state.data[id] = count
-        state.ids.add(id)
       }
     })
   }
