@@ -306,6 +306,7 @@ const FeedCategoryPrefix = "feed-category-"
 const useRegisterCommand = () => {
   const isFocus = useFocusable()
   const focusableContainerRef = useFocusableContainerRef()
+
   const focusActions = useFocusActions()
 
   const canSwitchSubscription = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)

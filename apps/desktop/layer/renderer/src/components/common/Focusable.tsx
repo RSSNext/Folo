@@ -1,8 +1,9 @@
+import type { FocusableProps } from "@follow/components/common/Focusable/Focusable.js"
 import { Focusable as FocusableComponent } from "@follow/components/common/Focusable/Focusable.js"
 
 import { FloatingLayerScope, HotkeyScope } from "~/constants"
 
-interface BizFocusableProps extends Omit<React.ComponentType<typeof FocusableComponent>, "scope"> {
+interface BizFocusableProps extends Omit<FocusableProps, "scope"> {
   scope: HotkeyScope
 }
 export const Focusable = FocusableComponent as Component<
