@@ -17,3 +17,5 @@ export const ROUTE_TIMELINE_OF_VIEW = "view-"
 export const INBOX_PREFIX_ID = "inbox-"
 export const getInboxOrFeedIdFromFeedId = (id: string) =>
   id.startsWith(INBOX_PREFIX_ID) ? id.slice(INBOX_PREFIX_ID.length) : id
+export const getInboxIdWithPrefix = (id: string) =>
+  id.startsWith(INBOX_PREFIX_ID) ? id : INBOX_PREFIX_ID + id
