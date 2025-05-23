@@ -251,7 +251,7 @@ class SubscriptionActions {
     const tx = createTransaction()
 
     tx.execute(async () => {
-      await apiClient.reads.all.$post({
+      const { data } = await apiClient.reads.all.$post({
         json: {
           view,
           excludePrivate,
@@ -259,7 +259,7 @@ class SubscriptionActions {
         },
       })
       if (filter) {
-        Queries.subscription.unreadAll().invalidate()
+        unreadActions.changeBatch(data.read, "decrement")
       }
     })
 
@@ -268,7 +268,7 @@ class SubscriptionActions {
       const state = get()
       for (const feedId in state.data) {
         if (excludePrivate && state.data[feedId]?.isPrivate) {
-          return
+          continue
         }
         if (state.data[feedId]!.view === view) {
           if (state.data[feedId]?.listId) {
@@ -319,7 +319,7 @@ class SubscriptionActions {
     const tx = createTransaction()
 
     tx.execute(async () => {
-      await apiClient.reads.all.$post({
+      const { data } = await apiClient.reads.all.$post({
         json: {
           ...(listId
             ? {
@@ -336,7 +336,7 @@ class SubscriptionActions {
         },
       })
       if (filter) {
-        Queries.subscription.unreadAll().invalidate()
+        unreadActions.changeBatch(data.read, "decrement")
       }
     })
     tx.optimistic(() => {

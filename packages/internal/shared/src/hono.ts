@@ -18816,6 +18816,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             };
             output: {
                 code: 0;
+                data: {
+                    read: {
+                        [x: string]: number;
+                    };
+                };
             };
             outputFormat: "json";
             status: 200;
