@@ -19,7 +19,7 @@ import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import type { FlatEntryModel } from "~/store/entry"
@@ -70,17 +70,20 @@ export const EntryItemWrapper: FC<
     (e) => {
       e.stopPropagation()
 
+      const shouldNavigate = getRouteParams().entryId !== entry.entries.id
+      if (!shouldNavigate) return
       if (!asRead) {
         entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
       }
-      navigate({
-        entryId: entry.entries.id,
-      })
 
       setTimeout(
         () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
         60,
       )
+
+      navigate({
+        entryId: entry.entries.id,
+      })
     },
     [asRead, entry.entries.id, entry.feedId, navigate],
   )

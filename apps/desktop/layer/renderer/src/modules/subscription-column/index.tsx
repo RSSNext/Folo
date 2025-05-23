@@ -113,69 +113,68 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
   }, [])
 
   return (
-    <Focusable scope={HotkeyScope.SubscriptionList} asChild>
-      <WindowUnderBlur
-        data-hide-in-print
-        className={cn(
-          "relative flex h-full flex-col pt-2.5",
+    <WindowUnderBlur
+      as={Focusable}
+      scope={HotkeyScope.SubscriptionList}
+      data-hide-in-print
+      className={cn(
+        !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
+        "relative flex h-full flex-col pt-2.5",
+        className,
+      )}
+      ref={focusableContainerRef}
+      onClick={useCallback(async () => {
+        if (document.hasFocus()) {
+          navigateBackHome()
+        }
+      }, [navigateBackHome])}
+    >
+      <CommandsHandler setActive={setActive} timelineList={timelineList} />
+      <TimelineColumnHeader />
+      {!feedColumnShow && (
+        <RootPortal to={rootContainerElement}>
+          <ActionButton
+            tooltip={"Toggle Feed Column"}
+            className="center left-macos-traffic-light macos:flex absolute top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
+            onClick={() => setTimelineColumnShow(true)}
+          >
+            <i className="i-mgc-layout-leftbar-open-cute-re" />
+          </ActionButton>
+        </RootPortal>
+      )}
 
-          !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
-          className,
-        )}
-        ref={focusableContainerRef}
-        onClick={useCallback(async () => {
-          if (document.hasFocus()) {
-            navigateBackHome()
-          }
-        }, [navigateBackHome])}
-      >
-        <CommandsHandler setActive={setActive} timelineList={timelineList} />
-        <TimelineColumnHeader />
-        {!feedColumnShow && (
-          <RootPortal to={rootContainerElement}>
-            <ActionButton
-              tooltip={"Toggle Feed Column"}
-              className="center left-macos-traffic-light macos:flex absolute top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
-              onClick={() => setTimelineColumnShow(true)}
-            >
-              <i className="i-mgc-layout-leftbar-open-cute-re" />
-            </ActionButton>
-          </RootPortal>
-        )}
-
-        <div className="relative mb-4 mt-3">
-          <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
-            {timelineList.map((timelineId) => (
-              <TimelineSwitchButton key={timelineId} timelineId={timelineId} />
-            ))}
-          </div>
+      <div className="relative mb-4 mt-3">
+        <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
+          {timelineList.map((timelineId) => (
+            <TimelineSwitchButton key={timelineId} timelineId={timelineId} />
+          ))}
         </div>
-        <div
-          className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
-          ref={carouselRef}
-          onPointerDown={useTypeScriptHappyCallback((e) => {
-            if (!(e.target instanceof HTMLElement) || !e.target.closest("[data-feed-id]")) {
-              const nextSelectedFeedIds = getSelectedFeedIds()
-              if (nextSelectedFeedIds.length === 0) {
-                setSelectedFeedIds(nextSelectedFeedIds)
-              } else {
-                resetSelectedFeedIds()
-              }
+      </div>
+      <div
+        className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
+        ref={carouselRef}
+        onPointerDown={useTypeScriptHappyCallback((e) => {
+          if (!(e.target instanceof HTMLElement) || !e.target.closest("[data-feed-id]")) {
+            const nextSelectedFeedIds = getSelectedFeedIds()
+            if (nextSelectedFeedIds.length === 0) {
+              setSelectedFeedIds(nextSelectedFeedIds)
+            } else {
+              resetSelectedFeedIds()
             }
-          }, [])}
-        >
-          <SwipeWrapper active={timelineId!}>
-            {timelineList.map((timelineId) => (
-              <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
-                <TimelineList key={timelineId} timelineId={timelineId} />
-              </section>
-            ))}
-          </SwipeWrapper>
-        </div>
+          }
+        }, [])}
+      >
+        <SwipeWrapper active={timelineId!}>
+          {timelineList.map((timelineId) => (
+            <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
+              <TimelineList key={timelineId} timelineId={timelineId} />
+            </section>
+          ))}
+        </SwipeWrapper>
+      </div>
 
-        {children}
-      </WindowUnderBlur>
-    </Focusable>
+      {children}
+    </WindowUnderBlur>
   )
 }
 

@@ -14,7 +14,11 @@ export const Focusable = FocusableComponent as Component<
 export const FocusablePresets = {
   isNotFloatingLayerScope: (v: Set<string>) => !FloatingLayerScope.some((s) => v.has(s)),
   isSubscriptionList: (scope: Set<string>) => {
-    return scope.size === 0 || scope.has(HotkeyScope.SubscriptionList)
+    return (
+      scope.size === 0 ||
+      scope.has(HotkeyScope.SubscriptionList) ||
+      (scope.has(HotkeyScope.Home) && scope.size === 1)
+    )
   },
 
   isSubscriptionOrTimeline: (v: Set<string>) => {

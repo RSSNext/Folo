@@ -231,6 +231,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
       />
 
       <ScrollArea.ScrollArea
+        focusable={false}
         ref={scrollerRef}
         onScroll={() => {
           selectoRef.current?.checkScroll()
