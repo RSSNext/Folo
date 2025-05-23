@@ -9,7 +9,7 @@ import { cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
 import { AnimatePresence, m } from "motion/react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Marquee from "react-fast-marquee"
 import { useTranslation } from "react-i18next"
 
@@ -19,8 +19,8 @@ import {
   useAudioPlayerAtomSelector,
   useAudioPlayerAtomValue,
 } from "~/atoms/player"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { VolumeSlider } from "~/components/ui/media/VolumeSlider"
-import { HotkeyScope } from "~/constants"
 import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { FeedIcon } from "~/modules/feed/feed-icon"
@@ -120,13 +120,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
   useCommandBinding({
     commandId: COMMAND_ID.global.toggleCornerPlay,
-    when: useGlobalFocusableScopeSelector(
-      // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
-      useCallback(
-        (v) => v.has(HotkeyScope.SubscriptionList) || v.has(HotkeyScope.Timeline) || v.size === 0,
-        [],
-      ),
-    ),
+    when: useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionOrTimeline),
   })
 
   useEffect(() => {

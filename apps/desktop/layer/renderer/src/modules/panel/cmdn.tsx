@@ -5,16 +5,16 @@ import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useCallback, useEffect, useLayoutEffect } from "react"
+import { useEffect, useLayoutEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 import { z } from "zod"
 
+import { FocusablePresets } from "~/components/common/Focusable"
 import { m } from "~/components/common/Motion"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { FloatingLayerScope } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
 
@@ -119,10 +119,7 @@ export const CmdNTrigger = () => {
 
   useCommandBinding({
     commandId: COMMAND_ID.global.quickAdd,
-    when: useGlobalFocusableScopeSelector(
-      // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
-      useCallback((v) => !FloatingLayerScope.some((s) => v.has(s)), []),
-    ),
+    when: useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope),
   })
 
   useEffect(() => {

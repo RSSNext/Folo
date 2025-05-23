@@ -3,6 +3,7 @@ import {
   useFocusable,
   useFocusableContainerRef,
   useFocusActions,
+  useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { nextFrame } from "@follow/utils/dom"
@@ -13,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
+import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
@@ -306,14 +308,16 @@ const useRegisterCommand = () => {
   const focusableContainerRef = useFocusableContainerRef()
   const focusActions = useFocusActions()
 
+  const canSwitchSubscription = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
+
   useCommandBinding({
     commandId: COMMAND_ID.subscription.nextSubscription,
-    when: isFocus,
+    when: canSwitchSubscription,
   })
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.previousSubscription,
-    when: isFocus,
+    when: canSwitchSubscription,
   })
 
   useCommandHotkey({
