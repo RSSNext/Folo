@@ -16,7 +16,7 @@ export function createCommand<
     id: options.id,
     run: options.run,
     icon: options.icon,
-    category: options.category ?? "follow:general",
+    category: options.category ?? "category.global",
     get label() {
       let { label } = options
       label = typeof label === "function" ? label?.() : label

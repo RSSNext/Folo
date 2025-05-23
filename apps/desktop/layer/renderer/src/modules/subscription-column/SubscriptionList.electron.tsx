@@ -37,12 +37,12 @@ import {
 } from "./atom"
 import { DraggableContext } from "./context"
 import { FeedItem, ListItemAutoHideUnread } from "./FeedItem"
-import type { FeedListProps } from "./FeedList"
-import { EmptyFeedList, ListHeader, StarredItem } from "./FeedList.shared"
 import { useShouldFreeUpSpace } from "./hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
+import type { SubscriptionProps } from "./SubscriptionList"
+import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
-const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
+const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
   const inboxesData = useInboxesGroupedData(view)
@@ -295,9 +295,9 @@ const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
   )
 }
 
-FeedListImpl.displayName = "FeedListImpl"
+SubscriptionImpl.displayName = "FeedListImpl"
 
-export const FeedList = memo(FeedListImpl)
+export const SubscriptionList = memo(SubscriptionImpl)
 
 const FeedCategoryPrefix = "feed-category-"
 

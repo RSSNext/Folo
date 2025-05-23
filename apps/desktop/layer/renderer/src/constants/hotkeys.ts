@@ -6,6 +6,7 @@ export enum HotkeyScope {
   Recording = "recording",
 
   // Atom Scope
+  VideoPlayer = "video-player",
   Timeline = "timeline",
   EntryRender = "entry-render",
   SubscriptionList = "subscription-list",
