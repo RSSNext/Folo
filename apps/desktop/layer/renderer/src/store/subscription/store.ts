@@ -344,12 +344,12 @@ class SubscriptionActions {
         const listFeedIds = getListById(listId)?.feedIds
         if (listFeedIds) {
           for (const feedId of listFeedIds) {
-            unreadActions.updateById(feedId, 0)
+            !filter && unreadActions.updateById(feedId, 0)
             entryActions.patchManyByFeedId(feedId, { read: true }, filter)
           }
         }
       } else if (inboxId) {
-        unreadActions.updateById(inboxId, 0)
+        !filter && unreadActions.updateById(inboxId, 0)
         entryActions.patchManyByFeedId(inboxId, { read: true }, filter)
       } else {
         for (const feedId of stableFeedIds) {
