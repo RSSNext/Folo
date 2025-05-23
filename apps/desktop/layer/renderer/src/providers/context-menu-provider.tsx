@@ -1,3 +1,4 @@
+import { useGlobalFocusableHasScope } from "@follow/components/common/Focusable/hooks.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { nextFrame, preventDefault } from "@follow/utils/dom"
@@ -111,10 +112,13 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
     }
   }, [item])
   const itemRef = useRef<HTMLDivElement>(null)
+
   useHotkeys((item as any as MenuItemText).shortcut!, () => itemRef.current?.click(), {
-    // enabled: item.enabled !== false && item.shortcut !== undefined,
-    enabled: item instanceof MenuItemText && !!item.shortcut,
-    scopes: HotkeyScope.Menu,
+    enabled:
+      useGlobalFocusableHasScope(HotkeyScope.Menu) &&
+      item instanceof MenuItemText &&
+      !!item.shortcut,
+
     preventDefault: true,
   })
 

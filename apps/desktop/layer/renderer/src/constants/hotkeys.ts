@@ -11,3 +11,10 @@ export enum HotkeyScope {
   SubscriptionList = "subscription-list",
   SubLayer = "sub-layer",
 }
+
+export const FloatingLayerScope = [
+  HotkeyScope.Modal,
+  HotkeyScope.DropdownMenu,
+  HotkeyScope.Menu,
+  HotkeyScope.Recording,
+] as const

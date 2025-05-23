@@ -1,4 +1,4 @@
-import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
+import { useFocusable, useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Routes } from "@follow/constants"
@@ -17,13 +17,13 @@ import { useLocation } from "react-router"
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
+import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
 import { useConditionalHotkeyScope } from "~/hooks/common"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
@@ -114,67 +114,69 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
   }, [])
 
   return (
-    <WindowUnderBlur
-      data-hide-in-print
-      className={cn(
-        "relative flex h-full flex-col pt-2.5",
+    <Focusable scope={HotkeyScope.SubscriptionList}>
+      <WindowUnderBlur
+        data-hide-in-print
+        className={cn(
+          "relative flex h-full flex-col pt-2.5",
 
-        !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
-        className,
-      )}
-      ref={focusableContainerRef}
-      onClick={useCallback(async () => {
-        if (document.hasFocus()) {
-          navigateBackHome()
-        }
-      }, [navigateBackHome])}
-    >
-      <CommandsHandler setActive={setActive} timelineList={timelineList} />
-      <TimelineColumnHeader />
-      {!feedColumnShow && (
-        <RootPortal to={rootContainerElement}>
-          <ActionButton
-            tooltip={"Toggle Feed Column"}
-            className="center left-macos-traffic-light macos:flex absolute top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
-            onClick={() => setTimelineColumnShow(true)}
-          >
-            <i className="i-mgc-layout-leftbar-open-cute-re" />
-          </ActionButton>
-        </RootPortal>
-      )}
-
-      <div className="relative mb-4 mt-3">
-        <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
-          {timelineList.map((timelineId) => (
-            <TimelineSwitchButton key={timelineId} timelineId={timelineId} />
-          ))}
-        </div>
-      </div>
-      <div
-        className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
-        ref={carouselRef}
-        onPointerDown={useTypeScriptHappyCallback((e) => {
-          if (!(e.target instanceof HTMLElement) || !e.target.closest("[data-feed-id]")) {
-            const nextSelectedFeedIds = getSelectedFeedIds()
-            if (nextSelectedFeedIds.length === 0) {
-              setSelectedFeedIds(nextSelectedFeedIds)
-            } else {
-              resetSelectedFeedIds()
-            }
+          !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
+          className,
+        )}
+        ref={focusableContainerRef}
+        onClick={useCallback(async () => {
+          if (document.hasFocus()) {
+            navigateBackHome()
           }
-        }, [])}
+        }, [navigateBackHome])}
       >
-        <SwipeWrapper active={timelineId!}>
-          {timelineList.map((timelineId) => (
-            <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
-              <TimelineList key={timelineId} timelineId={timelineId} />
-            </section>
-          ))}
-        </SwipeWrapper>
-      </div>
+        <CommandsHandler setActive={setActive} timelineList={timelineList} />
+        <TimelineColumnHeader />
+        {!feedColumnShow && (
+          <RootPortal to={rootContainerElement}>
+            <ActionButton
+              tooltip={"Toggle Feed Column"}
+              className="center left-macos-traffic-light macos:flex absolute top-2.5 z-0 hidden -translate-x-2 text-zinc-500"
+              onClick={() => setTimelineColumnShow(true)}
+            >
+              <i className="i-mgc-layout-leftbar-open-cute-re" />
+            </ActionButton>
+          </RootPortal>
+        )}
 
-      {children}
-    </WindowUnderBlur>
+        <div className="relative mb-4 mt-3">
+          <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
+            {timelineList.map((timelineId) => (
+              <TimelineSwitchButton key={timelineId} timelineId={timelineId} />
+            ))}
+          </div>
+        </div>
+        <div
+          className={cn("relative mt-1 flex size-full", !shouldFreeUpSpace && "overflow-hidden")}
+          ref={carouselRef}
+          onPointerDown={useTypeScriptHappyCallback((e) => {
+            if (!(e.target instanceof HTMLElement) || !e.target.closest("[data-feed-id]")) {
+              const nextSelectedFeedIds = getSelectedFeedIds()
+              if (nextSelectedFeedIds.length === 0) {
+                setSelectedFeedIds(nextSelectedFeedIds)
+              } else {
+                resetSelectedFeedIds()
+              }
+            }
+          }, [])}
+        >
+          <SwipeWrapper active={timelineId!}>
+            {timelineList.map((timelineId) => (
+              <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
+                <TimelineList key={timelineId} timelineId={timelineId} />
+              </section>
+            ))}
+          </SwipeWrapper>
+        </div>
+
+        {children}
+      </WindowUnderBlur>
+    </Focusable>
   )
 }
 
@@ -243,11 +245,10 @@ const CommandsHandler = ({
   setActive: (args: string | ((prev: string | undefined, index: number) => string)) => void
   timelineList: string[]
 }) => {
-  const activeScope = useHotkeyScope()
+  const activeScope = useGlobalFocusableScope()
   const when =
-    (activeScope.includes(HotkeyScope.SubscriptionList) ||
-      activeScope.includes(HotkeyScope.Timeline)) &&
-    activeScope.includes(HotkeyScope.Home)
+    (activeScope.has(HotkeyScope.SubscriptionList) || activeScope.has(HotkeyScope.Timeline)) &&
+    activeScope.has(HotkeyScope.Home)
   useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToNext,
     when,

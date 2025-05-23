@@ -6,19 +6,15 @@ import { cn } from "@follow/utils/utils"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import * as React from "react"
 
+import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 
 const DropdownMenu: typeof DropdownMenuPrimitive.Root = (props) => {
-  const [open, setOpen] = React.useState(!!props.open)
-  useConditionalHotkeyScope(HotkeyScope.DropdownMenu, open)
-
   return (
     <DropdownMenuPrimitive.Root
       {...props}
       onOpenChange={useTypeScriptHappyCallback(
         (open) => {
-          setOpen(open)
           props.onOpenChange?.(open)
         },
         [props.onOpenChange],
@@ -95,16 +91,18 @@ const DropdownMenuContent = ({
 }) => {
   return (
     <RootPortal>
-      <DropdownMenuPrimitive.Content
-        ref={ref}
-        sideOffset={sideOffset}
-        className={cn(
-          "bg-material-medium backdrop-blur-background text-text shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border p-1",
-          "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
-          className,
-        )}
-        {...props}
-      />
+      <Focusable scope={HotkeyScope.DropdownMenu} className="contents">
+        <DropdownMenuPrimitive.Content
+          ref={ref}
+          sideOffset={sideOffset}
+          className={cn(
+            "bg-material-medium backdrop-blur-background text-text shadow-context-menu z-[60] min-w-32 overflow-hidden rounded-[6px] border p-1",
+            "motion-scale-in-75 motion-duration-150 text-body lg:animate-none",
+            className,
+          )}
+          {...props}
+        />
+      </Focusable>
     </RootPortal>
   )
 }

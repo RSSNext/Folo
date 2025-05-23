@@ -1,7 +1,7 @@
 import {
-  Focusable,
   useFocusable,
   useFocusActions,
+  useGlobalFocusableScope,
 } from "@follow/components/common/Focusable/index.js"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { Spring } from "@follow/components/constants/spring.js"
@@ -23,6 +23,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
+import { Focusable } from "~/components/common/Focusable"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
@@ -31,7 +32,6 @@ import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useConditionalHotkeyScope } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
@@ -130,6 +130,7 @@ export const EntryContent: Component<EntryContentProps> = ({
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
+        scope={HotkeyScope.EntryRender}
         className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
         onFocus={() => setIsUserInteraction(true)}
       >
@@ -333,8 +334,8 @@ const RegisterCommands = ({
   const containerFocused = useFocusable()
   useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction && containerFocused, true)
 
-  const activeScope = useHotkeyScope()
-  const when = activeScope.includes(HotkeyScope.EntryRender)
+  const activeScope = useGlobalFocusableScope()
+  const when = activeScope.has(HotkeyScope.EntryRender)
 
   useCommandBinding({
     commandId: COMMAND_ID.entryRender.scrollUp,

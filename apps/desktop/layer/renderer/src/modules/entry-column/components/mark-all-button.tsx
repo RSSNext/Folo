@@ -1,3 +1,4 @@
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { useCountdown } from "@follow/hooks"
@@ -13,7 +14,6 @@ import { HotkeyScope } from "~/constants"
 import { useI18n } from "~/hooks/common"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import type { MarkAllFilter } from "../hooks/useMarkAll"
 import { markAllByRoute } from "../hooks/useMarkAll"
@@ -33,11 +33,11 @@ export const MarkAllReadButton = ({
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
 
-  const activeScope = useHotkeyScope()
+  const activeScope = useGlobalFocusableScope()
   useCommandBinding({
     commandId: COMMAND_ID.subscription.markAllAsRead,
     when: [HotkeyScope.Timeline, HotkeyScope.SubscriptionList].some((scope) =>
-      activeScope.includes(scope),
+      activeScope.has(scope),
     ),
   })
 
@@ -105,7 +105,6 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const [countdown] = useCountdown({ countStart: 3 })
 
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
 

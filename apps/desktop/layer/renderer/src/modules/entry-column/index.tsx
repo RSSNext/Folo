@@ -1,4 +1,3 @@
-import { Focusable } from "@follow/components/common/Focusable/index.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
@@ -7,8 +6,9 @@ import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { memo, useCallback, useEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { Focusable } from "~/components/common/Focusable"
 import { FeedNotFound } from "~/components/errors/FeedNotFound"
-import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "~/constants"
+import { FEED_COLLECTION_LIST, HotkeyScope, ROUTE_FEED_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedQuery } from "~/queries/feed"
@@ -118,6 +118,7 @@ function EntryColumnImpl() {
   const ListComponent = views[view]!.gridMode ? EntryColumnGrid : EntryList
   return (
     <Focusable
+      scope={HotkeyScope.Timeline}
       data-hide-in-print
       className="@container relative flex h-full flex-1 flex-col"
       onClick={
