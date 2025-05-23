@@ -34,7 +34,10 @@ export const useRegisterSubscriptionCommands = () => {
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.subscription.switchTabToNext,
-      label: t("command.subscription.switch_tab_to_next.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_next.title"),
+        description: t("command.subscription.switch_tab_to_next.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNext)
@@ -42,7 +45,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToPrevious,
-      label: t("command.subscription.switch_tab_to_previous.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_previous.title"),
+        description: t("command.subscription.switch_tab_to_previous.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPrevious)
@@ -50,7 +56,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToArticle,
-      label: t("command.subscription.switch_tab_to_article.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_article.title"),
+        description: t("command.subscription.switch_tab_to_article.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToArticle)
@@ -58,7 +67,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToSocial,
-      label: t("command.subscription.switch_tab_to_social.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_social.title"),
+        description: t("command.subscription.switch_tab_to_social.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToSocial)
@@ -66,7 +78,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToPicture,
-      label: t("command.subscription.switch_tab_to_picture.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_picture.title"),
+        description: t("command.subscription.switch_tab_to_picture.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPicture)
@@ -74,7 +89,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToVideo,
-      label: t("command.subscription.switch_tab_to_video.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_video.title"),
+        description: t("command.subscription.switch_tab_to_video.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToVideo)
@@ -82,7 +100,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToAudio,
-      label: t("command.subscription.switch_tab_to_audio.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_audio.title"),
+        description: t("command.subscription.switch_tab_to_audio.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToAudio)
@@ -90,7 +111,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.switchTabToNotification,
-      label: t("command.subscription.switch_tab_to_notification.title"),
+      label: {
+        title: t("command.subscription.switch_tab_to_notification.title"),
+        description: t("command.subscription.switch_tab_to_notification.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNotification)
@@ -98,7 +122,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.nextSubscription,
-      label: t("command.subscription.next_subscription.title"),
+      label: {
+        title: t("command.subscription.next_subscription.title"),
+        description: t("command.subscription.next_subscription.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.nextSubscription)
@@ -106,7 +133,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.previousSubscription,
-      label: t("command.subscription.previous_subscription.title"),
+      label: {
+        title: t("command.subscription.previous_subscription.title"),
+        description: t("command.subscription.previous_subscription.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.previousSubscription)
@@ -114,7 +144,10 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.toggleFolderCollapse,
-      label: t("command.subscription.toggle_folder_collapse.title"),
+      label: {
+        title: t("command.subscription.toggle_folder_collapse.title"),
+        description: t("command.subscription.toggle_folder_collapse.description"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.toggleFolderCollapse)
@@ -122,7 +155,9 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.markAllAsRead,
-      label: t("command.subscription.mark_all_as_read.title"),
+      label: {
+        title: t("command.subscription.mark_all_as_read.title"),
+      },
       category,
       run: () => {
         const routeParams = getRouteParams()
@@ -131,7 +166,9 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.openInBrowser,
-      label: t("command.subscription.open_in_browser.title"),
+      label: {
+        title: t("command.subscription.open_in_browser.title"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openInBrowser)
@@ -139,7 +176,9 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.openSiteInBrowser,
-      label: t("command.subscription.open_site_in_browser.title"),
+      label: {
+        title: t("command.subscription.open_site_in_browser.title"),
+      },
       category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openSiteInBrowser)

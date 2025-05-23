@@ -244,7 +244,7 @@ const FeedResponsiveResizerContainer = ({
   const activeScopes = useGlobalFocusableScope()
 
   useCommandBinding({
-    commandId: COMMAND_ID.layout.toggleTimelineColumn,
+    commandId: COMMAND_ID.layout.toggleSubscriptionColumn,
     when: !FloatingLayerScope.some((scope) => activeScopes.has(scope)),
   })
 

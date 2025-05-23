@@ -21,7 +21,10 @@ export const useRegisterGlobalCommands = () => {
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.global.showShortcuts,
-      label: t("command.global.show_shortcuts.title"),
+      label: {
+        title: t("command.global.show_shortcuts.title"),
+        description: t("command.global.show_shortcuts.description"),
+      },
       run: () => {
         showShortcuts()
       },
@@ -29,7 +32,10 @@ export const useRegisterGlobalCommands = () => {
     },
     {
       id: COMMAND_ID.global.toggleCornerPlay,
-      label: t("command.global.toggle_corner_play.title"),
+      label: {
+        title: t("command.global.toggle_corner_play.title"),
+        description: t("command.global.toggle_corner_play.description"),
+      },
       run: () => {
         EventBus.dispatch("global:toggle-corner-play")
       },
@@ -37,7 +43,10 @@ export const useRegisterGlobalCommands = () => {
     },
     {
       id: COMMAND_ID.global.quickAdd,
-      label: t("command.global.quick_add.title"),
+      label: {
+        title: t("command.global.quick_add.title"),
+        description: t("command.global.quick_add.description"),
+      },
       run: () => {
         EventBus.dispatch("global:quick-add")
       },

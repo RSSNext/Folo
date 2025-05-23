@@ -24,8 +24,11 @@ export const useRegisterLayoutCommands = () => {
   const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
-      id: COMMAND_ID.layout.toggleTimelineColumn,
-      label: t("command.layout.toggle_timeline_column.title"),
+      id: COMMAND_ID.layout.toggleSubscriptionColumn,
+      label: {
+        title: t("command.layout.toggle_subscription_column.title"),
+        description: t("command.layout.toggle_subscription_column.description"),
+      },
       category,
       run: () => {
         setTimelineColumnShow((show) => !show)
@@ -57,7 +60,10 @@ export const useRegisterLayoutCommands = () => {
     },
     {
       id: COMMAND_ID.layout.toggleWideMode,
-      label: t("command.layout.toggle_wide_mode.title"),
+      label: {
+        title: t("command.layout.toggle_wide_mode.title"),
+        description: t("command.layout.toggle_wide_mode.description"),
+      },
       category,
       run: () => {
         const { wideMode } = getUISettings()
@@ -66,7 +72,10 @@ export const useRegisterLayoutCommands = () => {
     },
     {
       id: COMMAND_ID.layout.toggleZenMode,
-      label: t("command.layout.toggle_zen_mode.title"),
+      label: {
+        title: t("command.layout.toggle_zen_mode.title"),
+        description: t("command.layout.toggle_zen_mode.description"),
+      },
       category,
       run: () => {
         setZenMode(!getIsZenMode())
@@ -81,7 +90,7 @@ export type FocusToSubscriptionCommand = Command<{
 }>
 
 export type ToggleTimelineColumnCommand = Command<{
-  id: typeof COMMAND_ID.layout.toggleTimelineColumn
+  id: typeof COMMAND_ID.layout.toggleSubscriptionColumn
   fn: () => void
 }>
 

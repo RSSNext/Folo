@@ -24,7 +24,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollDown)
       },
       category,
-      label: t("command.entry.scroll_down.title"),
+      label: {
+        title: t("command.entry.scroll_down.title"),
+        description: t("command.entry.scroll_down.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.scrollUp,
@@ -32,7 +35,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollUp)
       },
       category,
-      label: t("command.entry.scroll_up.title"),
+      label: {
+        title: t("command.entry.scroll_up.title"),
+        description: t("command.entry.scroll_up.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.nextEntry,
@@ -41,7 +47,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.nextEntry)
       },
       category,
-      label: t("command.entry.next_entry.title"),
+      label: {
+        title: t("command.entry.next_entry.title"),
+        description: t("command.entry.next_entry.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.previousEntry,
@@ -50,7 +59,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.previousEntry)
       },
       category,
-      label: t("command.entry.previous_entry.title"),
+      label: {
+        title: t("command.entry.previous_entry.title"),
+        description: t("command.entry.previous_entry.description"),
+      },
     },
   ])
 }
