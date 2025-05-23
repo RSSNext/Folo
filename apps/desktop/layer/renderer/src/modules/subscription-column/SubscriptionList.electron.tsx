@@ -1,6 +1,5 @@
 import { useDraggable } from "@dnd-kit/core"
 import {
-  useFocusable,
   useFocusableContainerRef,
   useFocusActions,
   useGlobalFocusableScopeSelector,
@@ -305,32 +304,31 @@ export const SubscriptionList = memo(SubscriptionImpl)
 const FeedCategoryPrefix = "feed-category-"
 
 const useRegisterCommand = () => {
-  const isFocus = useFocusable()
   const focusableContainerRef = useFocusableContainerRef()
 
   const focusActions = useFocusActions()
 
-  const canSwitchSubscription = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
+  const inSubscriptionScope = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.nextSubscription,
-    when: canSwitchSubscription,
+    when: inSubscriptionScope,
   })
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.previousSubscription,
-    when: canSwitchSubscription,
+    when: inSubscriptionScope,
   })
 
   useCommandHotkey({
     commandId: COMMAND_ID.layout.focusToTimeline,
-    when: isFocus,
+    when: inSubscriptionScope,
     shortcut: "Enter, L, ArrowRight",
   })
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.toggleFolderCollapse,
-    when: isFocus,
+    when: inSubscriptionScope,
   })
 
   const getCurrentActiveSubscriptionElement = useEventCallback(() => {
