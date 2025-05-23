@@ -304,6 +304,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -317,6 +318,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
