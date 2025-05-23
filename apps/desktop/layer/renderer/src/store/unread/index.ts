@@ -90,9 +90,9 @@ class UnreadActions {
   }
 
   changeBatch(data: UnreadValuesArray | UnreadValuesObject, type: "increment" | "decrement") {
+    const state = get()
     const finalData = (Array.isArray(data) ? data : Object.entries(data)).map(([key, value]) => {
       const finalId = getInboxOrFeedIdFromFeedId(key)
-      const state = get()
       const cur = state.data[finalId]
       const nextValue = Math.max(0, (cur || 0) + (type === "increment" ? value : -value))
       return [finalId, nextValue] as [string, number]
