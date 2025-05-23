@@ -293,7 +293,7 @@ class SubscriptionActions {
 
     tx.rollback(async () => {
       // TODO handle this local?
-      Queries.subscription.unreadAll().invalidate()
+      await Queries.subscription.unreadAll().invalidate()
     })
     await tx.run()
 
@@ -305,7 +305,6 @@ class SubscriptionActions {
   async markReadByFeedIds({
     feedIds,
     inboxId,
-    view,
     filter,
     listId,
   }: {
@@ -336,7 +335,7 @@ class SubscriptionActions {
           ...filter,
         },
       })
-      if (filter && typeof view === "number") {
+      if (filter) {
         Queries.subscription.unreadAll().invalidate()
       }
     })
@@ -363,9 +362,7 @@ class SubscriptionActions {
 
     tx.rollback(async () => {
       // TODO handle this local?
-      if (typeof view === "number") {
-        Queries.subscription.unreadAll().invalidate()
-      }
+      await Queries.subscription.unreadAll().invalidate()
     })
 
     await tx.run()
