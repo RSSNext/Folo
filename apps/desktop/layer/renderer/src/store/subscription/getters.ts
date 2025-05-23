@@ -9,10 +9,9 @@ import {
 } from "./selector"
 import { useSubscriptionStore } from "./store"
 
-const get = useSubscriptionStore.getState
 export const getSubscriptionByFeedId = (feedId?: FeedId) => {
   if (!feedId) return
-  return get().data[feedId]
+  return useSubscriptionStore.getState().data[feedId]
 }
 export const getSubscriptionByFeedIdOrUrl = (params: FeedQueryParams) => {
   const feed = getFeedByIdOrUrl(params)
@@ -28,10 +27,10 @@ export const isListSubscription = (feedId?: FeedId) => {
 }
 
 export const subscriptionCategoryExist = (name: string) =>
-  subscriptionCategoryExistSelector(name)(get())
+  subscriptionCategoryExistSelector(name)(useSubscriptionStore.getState())
 
 export const getFolderFeedsByFeedId = ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
-  folderFeedsByFeedIdSelector({ feedId, view })(get()) || []
+  folderFeedsByFeedIdSelector({ feedId, view })(useSubscriptionStore.getState()) || []
 
 export const getSubscriptionByView = (view: FeedViewType) =>
-  subscriptionByViewSelector(view)(get()) || []
+  subscriptionByViewSelector(view)(useSubscriptionStore.getState()) || []
