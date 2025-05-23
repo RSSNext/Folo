@@ -1,5 +1,5 @@
 import { jotaiStore } from "@follow/utils/jotai"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { use, useCallback, useMemo } from "react"
 
@@ -32,8 +32,11 @@ export const useGlobalFocusableScope = () => {
 }
 
 export const useGlobalFocusableHasScope = (scope: string) => {
+  return useGlobalFocusableScopeSelector((v) => v.has(scope))
+}
+export const useGlobalFocusableScopeSelector = (selector: (scope: Set<string>) => boolean) => {
   const ctx = use(GlobalFocusableContext)
-  return useAtom(useMemo(() => selectAtom(ctx, (v) => v.has(scope)), [ctx, scope]))
+  return useAtomValue(useMemo(() => selectAtom(ctx, selector), [ctx, selector]))
 }
 
 export const useSetGlobalFocusableScope = () => {

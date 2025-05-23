@@ -9,7 +9,3 @@ export const Focusable = FocusableComponent as Component<
   Prettify<BizFocusableProps> &
     React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 >
-
-// export const excludeFloatingScopes = (...scopes: HotkeyScope[]) => {
-//   return useMemo
-// }

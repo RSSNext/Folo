@@ -1,20 +1,25 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
 import { useRegisterGlobalContext } from "@follow/shared/bridge"
 import { tracker } from "@follow/tracker"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useLayoutEffect } from "react"
+import { useCallback, useEffect, useLayoutEffect } from "react"
 import { useForm } from "react-hook-form"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
+import { useEventCallback } from "usehooks-ts"
 import { z } from "zod"
 
 import { m } from "~/components/common/Motion"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { FloatingLayerScope } from "~/constants"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { tipcClient } from "~/lib/client"
 
+import { COMMAND_ID } from "../command/commands/id"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { FeedForm } from "../discover/FeedForm"
 
 const CmdNPanel = () => {
@@ -101,7 +106,7 @@ const CmdNPanel = () => {
 export const CmdNTrigger = () => {
   const { t } = useTranslation()
   const { present } = useModalStack()
-  const handler = () => {
+  const handler = useEventCallback(() => {
     present({
       title: t("quick_add.title"),
       content: CmdNPanel,
@@ -110,13 +115,21 @@ export const CmdNTrigger = () => {
       id: "quick-add",
       clickOutsideToDismiss: true,
     })
-  }
+  })
+
+  useCommandBinding({
+    commandId: COMMAND_ID.global.quickAdd,
+    when: useGlobalFocusableScopeSelector(
+      // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
+      useCallback((v) => !FloatingLayerScope.some((s) => v.has(s)), []),
+    ),
+  })
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.global.quickAdd, handler)
+  }, [handler])
 
   useRegisterGlobalContext("quickAdd", handler)
-
-  useHotkeys("meta+n,ctrl+n", handler, {
-    preventDefault: true,
-  })
 
   return null
 }

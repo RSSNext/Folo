@@ -114,7 +114,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
   }, [])
 
   return (
-    <Focusable scope={HotkeyScope.SubscriptionList}>
+    <Focusable scope={HotkeyScope.SubscriptionList} className="contents">
       <WindowUnderBlur
         data-hide-in-print
         className={cn(

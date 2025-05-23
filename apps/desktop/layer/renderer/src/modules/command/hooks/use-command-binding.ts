@@ -49,6 +49,8 @@ const defaultCommandShortcuts = {
   [COMMAND_ID.entryRender.scrollUp]: "K, ArrowUp",
 
   // Global commands
+  [COMMAND_ID.global.toggleCornerPlay]: "Space",
+  [COMMAND_ID.global.quickAdd]: transformShortcut("$mod+N"),
   [COMMAND_ID.global.showShortcuts]: "?",
 } as const
 

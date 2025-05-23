@@ -44,6 +44,8 @@ export const COMMAND_ID = {
   },
   global: {
     showShortcuts: "global:show-shortcuts",
+    toggleCornerPlay: "global:toggle-corner-play",
+    quickAdd: "global:quick-add",
   },
   layout: {
     toggleTimelineColumn: "layout:toggle-timeline-column",
