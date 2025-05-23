@@ -1,5 +1,6 @@
 import { useReplaceGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
+import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
 import type { FC, RefObject, SVGProps } from "react"
@@ -13,8 +14,10 @@ import { useCommand } from "../hooks/use-command"
 import type { AllowCustomizeCommandId } from "../hooks/use-command-binding"
 import {
   allowCustomizeCommands,
+  defaultCommandShortcuts,
   useCommandShortcutItems,
   useCommandShortcuts,
+  useIsShortcutConflict,
   useSetCustomCommandShortcut,
 } from "../hooks/use-command-binding"
 import type { CommandCategory, FollowCommandId } from "../types"
@@ -71,7 +74,11 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
 
   const setCustomCommandShortcut = useSetCustomCommandShortcut()
   const allowCustomize = allowCustomizeCommands.has(commandId as AllowCustomizeCommandId)
+
   if (!command) return null
+
+  const isUserCustomize = commandShortcuts[commandId] !== defaultCommandShortcuts[commandId]
+
   return (
     <div
       className={
@@ -79,51 +86,145 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
       }
     >
       <div className="flex min-w-0 flex-col gap-1">
-        <div className="text-text text-sm">{command.label.title}</div>
+        <div className="text-text flex items-center gap-2 text-sm">
+          {command.label.title}
+          {isUserCustomize && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="bg-accent/10 text-accent hover:bg-accent/20 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-all duration-200"
+                  title="User customized shortcut"
+                >
+                  <div className="bg-accent mr-1 size-2 rounded-full" />
+                  Custom
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>This shortcut is customized by you</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
         {!!command.label.description && (
           <small className="text-text-secondary text-xs">{command.label.description}</small>
         )}
       </div>
-      <button
-        type="button"
-        className={cn(
-          "flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
-          allowCustomize && "hover:border-border hover:bg-material-medium",
-          isEditing
-            ? "border-border bg-material-ultra-thick"
-            : allowCustomize
-              ? "border-border/50 bg-material-ultra-thin"
-              : "border-transparent",
-          !allowCustomize && "pointer-events-none",
-        )}
-        onClick={() => {
-          if (allowCustomize) {
-            setIsEditing(!isEditing)
-          }
+      <ShortcutInputWrapper
+        commandId={commandId}
+        shortcut={commandShortcuts[commandId]}
+        isEditing={isEditing}
+        isUserCustomize={isUserCustomize}
+        allowCustomize={allowCustomize}
+        onEditingChange={setIsEditing}
+        onShortcutChange={(shortcut) => {
+          setCustomCommandShortcut(commandId as AllowCustomizeCommandId, shortcut)
+          setIsEditing(false)
         }}
-      >
-        {isEditing ? (
-          <KeyRecorder
-            onBlur={() => {
-              setIsEditing(false)
-            }}
-            onChange={(keys) => {
-              setCustomCommandShortcut(
-                commandId as AllowCustomizeCommandId,
-                Array.isArray(keys) ? keys.join("+") : null,
-              )
-              setIsEditing(false)
-            }}
-          />
-        ) : (
-          <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
-            {commandShortcuts[commandId]}
-          </KbdCombined>
-        )}
-      </button>
+      />
     </div>
   )
 })
+
+interface ShortcutInputWrapperProps {
+  commandId: FollowCommandId
+  shortcut: string
+  isEditing: boolean
+  isUserCustomize: boolean
+  allowCustomize: boolean
+  onEditingChange: (editing: boolean) => void
+  onShortcutChange: (shortcut: string | null) => void
+}
+
+const ShortcutInputWrapper = memo(
+  ({
+    commandId,
+    shortcut,
+    isEditing,
+    isUserCustomize,
+    allowCustomize,
+    onEditingChange,
+    onShortcutChange,
+  }: ShortcutInputWrapperProps) => {
+    const conflictResult = useIsShortcutConflict(shortcut, commandId as AllowCustomizeCommandId)
+
+    const hasConflict = allowCustomize && conflictResult.hasConflict
+    const conflictingCommandId = allowCustomize ? conflictResult.conflictingCommandId : null
+
+    const conflictCommand = useCommand(conflictingCommandId as FollowCommandId)
+
+    const getBorderColor = () => {
+      if (hasConflict) {
+        return "border-red/70 hover:!border-red"
+      }
+      if (isEditing) {
+        return "border-border bg-material-ultra-thick"
+      }
+      if (allowCustomize) {
+        return "border-border/50 bg-material-ultra-thin data-[customized=true]:bg-accent/10 data-[customized=true]:border-accent/50"
+      }
+      return "border-transparent"
+    }
+
+    const getBackgroundColor = () => {
+      if (hasConflict && !isEditing) {
+        return "bg-red/5"
+      }
+      if (isEditing) {
+        return "bg-material-ultra-thick"
+      }
+      return ""
+    }
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            data-customized={isUserCustomize}
+            className={cn(
+              "flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
+              allowCustomize && "hover:!border-border hover:!bg-material-medium",
+              getBorderColor(),
+              getBackgroundColor(),
+              !allowCustomize && "pointer-events-none",
+            )}
+            onClick={() => {
+              if (allowCustomize) {
+                onEditingChange(!isEditing)
+              }
+            }}
+          >
+            {isEditing ? (
+              <KeyRecorder
+                onBlur={() => {
+                  onEditingChange(false)
+                }}
+                onChange={(keys) => {
+                  onShortcutChange(Array.isArray(keys) ? keys.join("+") : null)
+                }}
+              />
+            ) : (
+              <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
+                {shortcut}
+              </KbdCombined>
+            )}
+          </button>
+        </TooltipTrigger>
+        {hasConflict && (
+          <RootPortal>
+            <TooltipContent className="max-w-xs">
+              <div className="space-y-1">
+                <div className="font-medium text-red-400">Shortcut Conflict</div>
+                <div className="text-xs">
+                  This shortcut conflicts with command:
+                  <p className="text-sm font-medium">{conflictCommand?.label.title}</p>
+                </div>
+              </div>
+            </TooltipContent>
+          </RootPortal>
+        )}
+      </Tooltip>
+    )
+  },
+)
 
 const KeyRecorder: FC<{
   onChange: (keys: string[] | null) => void
@@ -165,7 +266,7 @@ const KeyRecorder: FC<{
         <span className="text-text-secondary pr-4">Press keys to record</span>
       )}
       <Tooltip delayDuration={0}>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <button
             type="button"
             className="hover:text-text absolute inset-y-0 right-0 z-[1] flex items-center justify-center px-1"

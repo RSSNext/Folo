@@ -47,6 +47,9 @@ export const useSetGlobalFocusableScope = () => {
       const snapshot = jotaiStore.get(ctx)
       setter((v) => {
         if (mode === "append") {
+          if (v.has(scope)) {
+            return v
+          }
           const newSet = new Set(v)
           newSet.add(scope)
           return newSet
@@ -60,9 +63,9 @@ export const useSetGlobalFocusableScope = () => {
           }
           return newSet
         } else {
-          const newSet = new Set<string>()
-          newSet.add(scope)
-
+          if (!v.has(scope)) return v
+          const newSet = new Set(v)
+          newSet.delete(scope)
           return newSet
         }
       })

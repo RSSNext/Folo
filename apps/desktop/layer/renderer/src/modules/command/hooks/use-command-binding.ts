@@ -10,7 +10,7 @@ import { getCommand } from "./use-command"
 import type { RegisterHotkeyOptions } from "./use-register-hotkey"
 import { useCommandHotkey } from "./use-register-hotkey"
 
-const defaultCommandShortcuts = {
+export const defaultCommandShortcuts = {
   // Layout commands
   [COMMAND_ID.layout.toggleTimelineColumn]: transformShortcut("$mod+B"),
   [COMMAND_ID.layout.toggleWideMode]: transformShortcut("$mod+["),
@@ -150,6 +150,52 @@ export const useCommandShortcuts = () => {
     ...defaultCommandShortcuts,
     ...overrideCommandShortcuts,
   }
+}
+
+export const useIsShortcutConflict = (
+  shortcut: string,
+  excludeCommandId?: AllowCustomizeCommandId,
+) => {
+  const overrideCommandShortcuts = useAtomValue(overrideCommandShortcutsAtom)
+
+  return useMemo(() => {
+    const allShortcuts = {
+      ...defaultCommandShortcuts,
+      ...overrideCommandShortcuts,
+    }
+
+    // Check if the shortcut conflicts with any existing shortcuts
+    for (const [commandId, existingShortcut] of Object.entries(allShortcuts)) {
+      // Skip the command we're excluding (useful when editing an existing shortcut)
+      if (excludeCommandId && commandId === excludeCommandId) {
+        continue
+      }
+
+      // Normalize shortcuts for comparison (handle multiple shortcuts separated by comma)
+      const normalizedShortcut = shortcut.trim().toLowerCase()
+      const normalizedExisting = existingShortcut.toLowerCase()
+
+      // Check if shortcuts match exactly or if one is contained in the other's alternatives
+      const shortcutAlternatives = normalizedShortcut.split(",").map((s) => s.trim())
+      const existingAlternatives = normalizedExisting.split(",").map((s) => s.trim())
+
+      for (const shortcutAlt of shortcutAlternatives) {
+        for (const existingAlt of existingAlternatives) {
+          if (shortcutAlt === existingAlt) {
+            return {
+              hasConflict: true,
+              conflictingCommandId: commandId as FollowCommandId,
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      hasConflict: false,
+      conflictingCommandId: null,
+    }
+  }, [shortcut, excludeCommandId, overrideCommandShortcuts])
 }
 
 export const useCommandBinding = <T extends BindingCommandId>({
