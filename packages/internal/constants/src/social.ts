@@ -1,20 +1,17 @@
 export const SocialMediaLinks = [
   {
-    iconClassName: "i-mgc-github-cute-fi",
+    iconClassName: "i-mgc-github-cute-fi text-[#000000] dark:text-[#ffffff]",
     label: "GitHub",
     url: "https://github.com/RSSNext/Folo",
-    color: "#000000",
   },
   {
-    iconClassName: "i-mgc-discord-cute-fi",
+    iconClassName: "i-mgc-discord-cute-fi text-[#5865F2] dark:brightness-125",
     label: "Discord",
     url: "https://discord.gg/followapp",
-    color: "#5865F2",
   },
   {
-    iconClassName: "i-mgc-social-x-cute-re",
+    iconClassName: "i-mgc-social-x-cute-re text-[#000000] dark:text-[#ffffff]",
     label: "X",
     url: "https://x.com/intent/follow?screen_name=follow_app_",
-    color: "#000000",
   },
 ]

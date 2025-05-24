@@ -34,6 +34,7 @@ export default defineConfig({
     codeInspectorPlugin({
       bundler: "vite",
       editor: "cursor",
+      hotKeys: ["altKey"],
     }),
   ],
 
