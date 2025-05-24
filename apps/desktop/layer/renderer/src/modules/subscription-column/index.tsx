@@ -1,4 +1,4 @@
-import { useFocusable } from "@follow/components/common/Focusable/hooks.js"
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Routes } from "@follow/constants"
@@ -17,13 +17,12 @@ import { useLocation } from "react-router"
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
+import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
-import { useConditionalHotkeyScope } from "~/hooks/common"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { WindowUnderBlur } from "../../components/ui/background"
 import { COMMAND_ID } from "../command/commands/id"
@@ -115,11 +114,12 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
 
   return (
     <WindowUnderBlur
+      as={Focusable}
+      scope={HotkeyScope.SubscriptionList}
       data-hide-in-print
       className={cn(
-        "relative flex h-full flex-col pt-2.5",
-
         !feedColumnShow && ELECTRON_BUILD && "bg-material-opaque",
+        "relative flex h-full flex-col pt-2.5",
         className,
       )}
       ref={focusableContainerRef}
@@ -243,9 +243,12 @@ const CommandsHandler = ({
   setActive: (args: string | ((prev: string | undefined, index: number) => string)) => void
   timelineList: string[]
 }) => {
-  const activeScope = useHotkeyScope()
+  const activeScope = useGlobalFocusableScope()
   const when =
-    activeScope.includes(HotkeyScope.SubscriptionList) || activeScope.includes(HotkeyScope.Timeline)
+    activeScope.has(HotkeyScope.SubscriptionList) ||
+    activeScope.has(HotkeyScope.Timeline) ||
+    activeScope.size === 0
+
   useCommandBinding({
     commandId: COMMAND_ID.subscription.switchTabToNext,
     when,
@@ -268,8 +271,5 @@ const CommandsHandler = ({
     })
   }, [activeScope, setActive, timelineList])
 
-  const focus = useFocusable()
-
-  useConditionalHotkeyScope(HotkeyScope.SubscriptionList, focus, true)
   return null
 }

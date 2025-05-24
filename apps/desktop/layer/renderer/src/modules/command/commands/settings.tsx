@@ -5,7 +5,7 @@ import { useSetTheme } from "~/hooks/common"
 import { useShowCustomizeToolbarModal } from "~/modules/customize-toolbar/modal"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterSettingsCommands = () => {
@@ -13,6 +13,7 @@ export const useRegisterSettingsCommands = () => {
   useRegisterThemeCommands()
 }
 
+const category: CommandCategory = "category.settings"
 const useCustomizeToolbarCommand = () => {
   const [t] = useTranslation("settings")
   const showModal = useShowCustomizeToolbarModal()
@@ -20,7 +21,7 @@ const useCustomizeToolbarCommand = () => {
     {
       id: COMMAND_ID.settings.customizeToolbar,
       label: t("customizeToolbar.title"),
-      category: "follow:settings",
+      category,
       icon: <i className="i-mgc-settings-7-cute-re" />,
       run() {
         showModal()
@@ -38,7 +39,7 @@ const useRegisterThemeCommands = () => {
     {
       id: COMMAND_ID.settings.changeThemeToAuto,
       label: `To ${t("appearance.theme.system")}`,
-      category: "follow:settings",
+      category,
       icon: <i className="i-mgc-settings-7-cute-re" />,
       when: theme !== "system",
       run() {
@@ -48,7 +49,7 @@ const useRegisterThemeCommands = () => {
     {
       id: COMMAND_ID.settings.changeThemeToDark,
       label: `To ${t("appearance.theme.dark")}`,
-      category: "follow:settings",
+      category,
       icon: <i className="i-mingcute-moon-line" />,
       when: theme !== "dark",
       run() {
@@ -58,7 +59,7 @@ const useRegisterThemeCommands = () => {
     {
       id: COMMAND_ID.settings.changeThemeToLight,
       label: `To ${t("appearance.theme.light")}`,
-      category: "follow:settings",
+      category,
       icon: <i className="i-mingcute-sun-line" />,
       when: theme !== "light",
       run() {

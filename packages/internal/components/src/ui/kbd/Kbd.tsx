@@ -51,24 +51,31 @@ export const KbdCombined: FC<{
   children: string
   className?: string
   joint?: boolean
-}> = ({ children, joint, className }) => {
+  kbdProps?: Partial<React.ComponentProps<typeof Kbd>>
+}> = ({ children, joint, className, kbdProps }) => {
   const keys = children.split(",")
   return (
     <div className="flex items-center gap-1">
       {keys.map((k, i) => (
         <Fragment key={k}>
           {joint ? (
-            <Kbd className={className}>{k}</Kbd>
+            <Kbd className={className} {...kbdProps}>
+              {k}
+            </Kbd>
           ) : (
             <div className="flex items-center gap-1">
               {k.split("+").map((key) => (
-                <Kbd key={key} className={className}>
+                <Kbd key={key} className={className} {...kbdProps}>
                   {key}
                 </Kbd>
               ))}
             </div>
           )}
-          {i !== keys.length - 1 && " / "}
+          {i !== keys.length - 1 && (
+            <span>
+              <i className="i-mgc-line-cute-re text-text-secondary size-[0.75em] shrink-0 origin-center translate-y-[0.15em] rotate-[-25deg]" />
+            </span>
+          )}
         </Fragment>
       ))}
     </div>
@@ -330,9 +337,9 @@ export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolea
     const Kbd = (
       <kbd
         className={cn(
-          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem]",
+          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
 
-          isKeyPressed ? "" : "border-b-2",
+          wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
           className,
         )}
       >
@@ -383,7 +390,7 @@ export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolea
       </kbd>
     )
     return wrapButton ? (
-      <button type="button" onClick={handleClick}>
+      <button type="button" className="contents" onClick={handleClick}>
         {Kbd}
       </button>
     ) : (

@@ -2,13 +2,8 @@ import type { ReactNode } from "react"
 
 import type { BasicCommand } from "./commands/types"
 
-export type CommandCategory =
-  | "follow:settings"
-  | "follow:layout"
-  | "follow:updates"
-  | "follow:help"
-  | "follow:general"
-  | "follow:entry-render"
+type ExtractCategory<T extends string> = T extends `category.${string}` ? T : never
+export type CommandCategory = ExtractCategory<Parameters<typeof tShortcuts>[0]>
 
 export interface KeybindingOptions {
   binding: string

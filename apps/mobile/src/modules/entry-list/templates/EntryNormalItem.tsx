@@ -1,7 +1,8 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
-import { memo, useCallback, useMemo } from "react"
+import { useVideoPlayer, VideoView } from "expo-video"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
@@ -17,6 +18,7 @@ import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
 import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { isIOS } from "@/src/lib/platform"
 import { getAttachmentState, player } from "@/src/lib/player"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 import { useEntry } from "@/src/store/entry/hooks"
@@ -61,14 +63,15 @@ export const EntryNormalItem = memo(
       }
     }, [entry, navigation, entryId, extraData.entryIds, view])
 
-    const audio = entry?.attachments?.find((attachment) =>
-      attachment.mime_type?.startsWith("audio/"),
+    const audioOrVideo = entry?.attachments?.find(
+      (attachment) =>
+        attachment.mime_type?.startsWith("audio/") || attachment.mime_type?.startsWith("video/"),
     )
 
     const estimatedMins = useMemo(() => {
-      const durationInSeconds = formatTimeToSeconds(audio?.duration_in_seconds)
+      const durationInSeconds = formatTimeToSeconds(audioOrVideo?.duration_in_seconds)
       return durationInSeconds && Math.floor(durationInSeconds / 60)
-    }, [audio?.duration_in_seconds])
+    }, [audioOrVideo?.duration_in_seconds])
 
     if (!entry) return <EntryItemSkeleton />
 
@@ -135,7 +138,7 @@ export const EntryNormalItem = memo(
             )}
           </View>
           {view !== FeedViewType.Notifications && (
-            <ThumbnailImage entry={entry} view={view} playingAudioUrl={extraData.playingAudioUrl} />
+            <ThumbnailImage entry={entry} playingAudioUrl={extraData.playingAudioUrl} />
           )}
         </ItemPressable>
       </EntryItemContextMenu>
@@ -146,27 +149,45 @@ export const EntryNormalItem = memo(
 EntryNormalItem.displayName = "EntryNormalItem"
 
 const ThumbnailImage = ({
-  view,
   playingAudioUrl,
   entry,
 }: {
-  view: FeedViewType
   playingAudioUrl: string | null
   entry: EntryModel
 }) => {
   const feed = useFeed(entry?.feedId as string)
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
-  const coverImage = entry?.media?.[0]
-  const image = coverImage?.url || (view === FeedViewType.Audios ? feed?.image : null)
-  const blurhash = coverImage?.blurhash
+  const mediaModel = entry?.media?.find(
+    (media) => media.type === "photo" || (media.type === "video" && media.preview_image_url),
+  )
+  const image = mediaModel?.type === "photo" ? mediaModel?.url : null // mediaModel?.preview_image_url
+  const blurhash = mediaModel?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
   const audioState = getAttachmentState(playingAudioUrl ?? undefined, audio)
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
 
-  const handlePressPlayAudio = useCallback(() => {
+  const video = entry?.media?.find((media) => media.type === "video")
+  const videoViewRef = useRef<null | VideoView>(null)
+  const videoPlayer = useVideoPlayer(video?.url ?? "")
+  const [showVideoNativeControlsForAndroid, setShowVideoNativeControlsForAndroid] = useState(false)
+
+  const handlePressPlay = useCallback(() => {
+    if (video) {
+      setShowVideoNativeControlsForAndroid(true)
+      // Ensure the nativeControls is ready before entering fullscreen for Android
+      setTimeout(() => {
+        videoViewRef.current?.enterFullscreen()
+      }, 0)
+      if (videoPlayer.playing) {
+        videoPlayer.pause()
+      } else {
+        videoPlayer.play()
+      }
+      return
+    }
     if (!audio) return
     if (isLoading) return
     if (isPlaying) {
@@ -179,10 +200,11 @@ const ThumbnailImage = ({
       artist: feed?.title,
       artwork: image,
     })
-  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying])
+  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
 
+  if (!image && !audio && !video) return null
   return (
-    <View className="relative ml-4">
+    <View className="relative ml-4 overflow-hidden rounded-lg">
       {image &&
         (thumbnailRatio === "square" ? (
           <SquareImage image={image} blurhash={blurhash} />
@@ -190,18 +212,39 @@ const ThumbnailImage = ({
           <AspectRatioImage
             blurhash={blurhash}
             image={image}
-            height={coverImage?.height}
-            width={coverImage?.width}
+            height={mediaModel?.height}
+            width={mediaModel?.width}
           />
         ))}
+
+      {video && (
+        <View className="size-24 rounded-lg">
+          <VideoView
+            className="absolute size-full rounded-lg"
+            style={{ aspectRatio: 1 }}
+            contentFit="cover"
+            ref={videoViewRef}
+            player={videoPlayer}
+            // The Android native controls will be shown when the video is paused
+            nativeControls={isIOS || showVideoNativeControlsForAndroid}
+            accessible={false}
+            allowsFullscreen={false}
+            allowsVideoFrameAnalysis={false}
+            onFullscreenExit={() => {
+              videoPlayer.pause()
+              setShowVideoNativeControlsForAndroid(false)
+            }}
+          />
+        </View>
+      )}
 
       {/* Show feed icon if no image but audio is present */}
       {audio && !image && <FeedIcon feed={feed} size={96} />}
 
-      {audio && (
+      {(video || audio) && (
         <NativePressable
           className="absolute inset-0 flex items-center justify-center"
-          onPress={handlePressPlayAudio}
+          onPress={handlePressPlay}
         >
           <View className="overflow-hidden rounded-full p-2">
             <ThemedBlurView

@@ -12,7 +12,7 @@ import { Link } from "react-router"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
-import { FeedList } from "../../timeline-column/FeedList"
+import { SubscriptionList } from "../../subscription-column/SubscriptionList"
 import { MobileFloatBar } from "./float-bar.mobile"
 
 export function FeedColumnMobile({ asWidget }: { asWidget?: boolean }) {
@@ -47,7 +47,7 @@ export function FeedColumnMobile({ asWidget }: { asWidget?: boolean }) {
         <SwipeWrapper active={view}>
           {views.map((item, index) => (
             <section key={item.name} className="size-full flex-none shrink-0 snap-center">
-              <FeedList
+              <SubscriptionList
                 ref={setFeedListScrollRef}
                 className="flex size-full flex-col text-sm"
                 view={index}

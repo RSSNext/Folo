@@ -1,4 +1,4 @@
-import { Focusable } from "@follow/components/common/Focusable/index.js"
+"~/components/common/Focusable.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/index.js"
 import type { HTMLMediaState } from "@follow/hooks"
@@ -23,7 +23,9 @@ import { createContext, useContext, useContextSelector } from "use-context-selec
 import { useEventCallback } from "usehooks-ts"
 
 import { AudioPlayer } from "~/atoms/player"
+import { Focusable } from "~/components/common/Focusable"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
+import { HotkeyScope } from "~/constants"
 
 import { VolumeSlider } from "./VolumeSlider"
 
@@ -137,7 +139,11 @@ export const VideoPlayer = ({
   )
 
   return (
-    <Focusable className="center group relative size-full" ref={wrapperRef}>
+    <Focusable
+      className="center group relative size-full"
+      ref={wrapperRef}
+      scope={HotkeyScope.VideoPlayer}
+    >
       {element}
       <div className="center pointer-events-none absolute inset-0">
         <m.div

@@ -1,4 +1,7 @@
-import { useFocusable, useFocusActions } from "@follow/components/common/Focusable/hooks.js"
+import {
+  useFocusActions,
+  useGlobalFocusableScope,
+} from "@follow/components/common/Focusable/hooks.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { useRefValue } from "@follow/hooks"
 import { nextFrame } from "@follow/utils/dom"
@@ -9,8 +12,6 @@ import { memo, useEffect } from "react"
 import { HotkeyScope } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteEntryId } from "~/hooks/biz/useRouteParams"
-import { useConditionalHotkeyScope } from "~/hooks/common"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -23,10 +24,9 @@ export const EntryColumnShortcutHandler: FC<{
 }> = memo(({ data, refetch, handleScrollTo }) => {
   const dataRef = useRefValue(data!)
 
-  const activeScope = useHotkeyScope()
+  const activeScope = useGlobalFocusableScope()
 
-  const when =
-    activeScope.includes(HotkeyScope.Timeline) && !activeScope.includes(HotkeyScope.EntryRender)
+  const when = activeScope.has(HotkeyScope.Timeline) && !activeScope.has(HotkeyScope.EntryRender)
 
   useCommandBinding({
     commandId: COMMAND_ID.timeline.switchToNext,
@@ -110,10 +110,6 @@ export const EntryColumnShortcutHandler: FC<{
       },
     )
   }, [$scrollArea, highlightBoundary])
-
-  const isFocusIn = useFocusable()
-
-  useConditionalHotkeyScope(HotkeyScope.Timeline, isFocusIn, true)
 
   return null
 })

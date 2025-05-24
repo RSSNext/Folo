@@ -3,6 +3,13 @@ import AST from "unplugin-ast/vite"
 
 export const astPlugin = AST({
   transformer: [
-    RemoveWrapperFunction(["tw", "defineSettingPageData", "t_", "tShortcuts", "tSettings"]),
+    RemoveWrapperFunction([
+      "tw",
+      "defineSettingPageData",
+      "t_",
+      "tShortcuts",
+      "tSettings",
+      "defineFollowCommand",
+    ]),
   ],
 })

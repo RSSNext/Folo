@@ -1,10 +1,11 @@
 import { EventBus } from "@follow/utils/event-bus"
+import { useTranslation } from "react-i18next"
 
 import type { BizRouteParams } from "~/hooks/biz/useRouteParams"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -26,89 +27,138 @@ declare module "@follow/utils/event-bus" {
     "subscription:open-site-in-browser": never
   }
 }
-const LABEL_PREFIX = "Subscription"
+
+const category: CommandCategory = "category.subscription"
 export const useRegisterSubscriptionCommands = () => {
+  const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.subscription.switchTabToNext,
-      label: `${LABEL_PREFIX}: Switch to next tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_next.title"),
+        description: t("command.subscription.switch_tab_to_next.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNext)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToPrevious,
-      label: `${LABEL_PREFIX}: Switch to previous tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_previous.title"),
+        description: t("command.subscription.switch_tab_to_previous.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPrevious)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToArticle,
-      label: `${LABEL_PREFIX}: Switch to article tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_article.title"),
+        description: t("command.subscription.switch_tab_to_article.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToArticle)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToSocial,
-      label: `${LABEL_PREFIX}: Switch to social tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_social.title"),
+        description: t("command.subscription.switch_tab_to_social.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToSocial)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToPicture,
-      label: `${LABEL_PREFIX}: Switch to picture tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_picture.title"),
+        description: t("command.subscription.switch_tab_to_picture.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToPicture)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToVideo,
-      label: `${LABEL_PREFIX}: Switch to video tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_video.title"),
+        description: t("command.subscription.switch_tab_to_video.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToVideo)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToAudio,
-      label: `${LABEL_PREFIX}: Switch to audio tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_audio.title"),
+        description: t("command.subscription.switch_tab_to_audio.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToAudio)
       },
     },
     {
       id: COMMAND_ID.subscription.switchTabToNotification,
-      label: `${LABEL_PREFIX}: Switch to notification tab`,
+      label: {
+        title: t("command.subscription.switch_tab_to_notification.title"),
+        description: t("command.subscription.switch_tab_to_notification.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.switchTabToNotification)
       },
     },
     {
       id: COMMAND_ID.subscription.nextSubscription,
-      label: `${LABEL_PREFIX}: Next Subscription`,
+      label: {
+        title: t("command.subscription.next_subscription.title"),
+        description: t("command.subscription.next_subscription.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.nextSubscription)
       },
     },
     {
       id: COMMAND_ID.subscription.previousSubscription,
-      label: `${LABEL_PREFIX}: Previous Subscription`,
+      label: {
+        title: t("command.subscription.previous_subscription.title"),
+        description: t("command.subscription.previous_subscription.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.previousSubscription)
       },
     },
     {
       id: COMMAND_ID.subscription.toggleFolderCollapse,
-      label: `${LABEL_PREFIX}: Toggle Folder Collapse`,
+      label: {
+        title: t("command.subscription.toggle_folder_collapse.title"),
+        description: t("command.subscription.toggle_folder_collapse.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.toggleFolderCollapse)
       },
     },
     {
       id: COMMAND_ID.subscription.markAllAsRead,
-      label: `${LABEL_PREFIX}: Mark All as Read`,
+      label: {
+        title: t("command.subscription.mark_all_as_read.title"),
+      },
+      category,
       run: () => {
         const routeParams = getRouteParams()
         EventBus.dispatch(COMMAND_ID.subscription.markAllAsRead, routeParams)
@@ -116,14 +166,20 @@ export const useRegisterSubscriptionCommands = () => {
     },
     {
       id: COMMAND_ID.subscription.openInBrowser,
-      label: `${LABEL_PREFIX}: Open in Browser`,
+      label: {
+        title: t("command.subscription.open_in_browser.title"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openInBrowser)
       },
     },
     {
       id: COMMAND_ID.subscription.openSiteInBrowser,
-      label: `${LABEL_PREFIX}: Open site in Browser`,
+      label: {
+        title: t("command.subscription.open_site_in_browser.title"),
+      },
+      category,
       run: () => {
         EventBus.dispatch(COMMAND_ID.subscription.openSiteInBrowser)
       },
