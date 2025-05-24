@@ -79,3 +79,12 @@ export function isNodeVisibleInScroller(node: Element, scroller: Element) {
 
   return nodeRight > scrollerLeft && nodeLeft < scrollerRight
 }
+
+export const checkIsEditableElement = (element: HTMLElement) => {
+  return (
+    element.isContentEditable ||
+    element.getAttribute("contenteditable") === "true" ||
+    (element instanceof HTMLInputElement && element.type === "text") ||
+    element instanceof HTMLTextAreaElement
+  )
+}

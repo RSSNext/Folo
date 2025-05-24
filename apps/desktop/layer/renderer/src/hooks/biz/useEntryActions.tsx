@@ -1,6 +1,7 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
@@ -16,11 +17,11 @@ import {
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
-import { shortcuts } from "~/constants/shortcuts"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
+import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 import { useEntry } from "~/store/entry"
@@ -130,10 +131,6 @@ export class EntryActionMenuItem extends MenuItemText {
 }
 export type EntryActionItem = EntryActionMenuItem | MenuItemSeparator
 
-function hasHTMLTags(text?: string | null): boolean {
-  return /<[^>]+>/.test(text || "")
-}
-
 export const useEntryActions = ({
   entryId,
   view,
@@ -158,7 +155,7 @@ export const useEntryActions = ({
   const inList = !!listId
   const inbox = useInboxById(entry?.inboxId)
   const isInbox = !!inbox
-  const isContentContainsHTMLTags = hasHTMLTags(entry?.entries.content)
+  const isContentContainsHTMLTags = doesTextContainHTML(entry?.entries.content)
 
   const isShowSourceContent = useShowSourceContent()
   const isShowAISummaryAuto = useShowAISummaryAuto(entry)
@@ -170,6 +167,8 @@ export const useEntryActions = ({
   const hasEntry = !!entry
 
   const userRole = useUserRole()
+
+  const shortcuts = useCommandShortcuts()
 
   const actionConfigs: EntryActionItem[] = useMemo(() => {
     if (!hasEntry) return []
@@ -211,32 +210,38 @@ export const useEntryActions = ({
         entryId,
       }),
       new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToZotero,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToZotero, [{ entryId }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
         id: COMMAND_ID.entry.tip,
         onClick: runCmdFn(COMMAND_ID.entry.tip, [
           { entryId, feedId: feed?.id, userId: feed?.ownerUserId },
         ]),
         hide: isInbox || feed?.ownerUserId === whoami()?.id,
-        shortcut: shortcuts.entry.tip.key,
+        // shortcut: shortcuts.entry.tip.key,
+        shortcut: shortcuts[COMMAND_ID.entry.tip],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.star,
         onClick: runCmdFn(COMMAND_ID.entry.star, [{ entryId, view }]),
         active: !!entry?.collections,
-        shortcut: shortcuts.entry.toggleStarred.key,
+        shortcut: shortcuts[COMMAND_ID.entry.star],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.copyTitle,
         onClick: runCmdFn(COMMAND_ID.entry.copyTitle, [{ entryId }]),
-        shortcut: shortcuts.entry.copyTitle.key,
+        shortcut: shortcuts[COMMAND_ID.entry.copyTitle],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.copyLink,
         onClick: runCmdFn(COMMAND_ID.entry.copyLink, [{ entryId }]),
         hide: !entry?.entries.url,
-        shortcut: shortcuts.entry.copyLink.key,
+        shortcut: shortcuts[COMMAND_ID.entry.copyLink],
         entryId,
       }),
       new EntryActionMenuItem({
@@ -293,25 +298,27 @@ export const useEntryActions = ({
         id: COMMAND_ID.entry.share,
         onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
         hide: !entry?.entries.url || !("share" in navigator || IN_ELECTRON),
-        shortcut: shortcuts.entry.share.key,
+        shortcut: shortcuts[COMMAND_ID.entry.share],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !hasEntry || !!entry.collections || !!inList,
+        hide: !hasEntry || !!entry.collections,
         active: !!entry?.read,
-        shortcut: shortcuts.entry.toggleRead.key,
+        shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.entries.publishedAt }]),
+        hide: !hasEntry || !!entry.collections,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
@@ -325,15 +332,17 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.tts,
         onClick: runCmdFn(COMMAND_ID.entry.tts, [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           { entryId, entryContent: entry?.entries.content! },
         ]),
         hide: !IN_ELECTRON || compact || !entry?.entries.content,
-        shortcut: shortcuts.entry.tts.key,
+        shortcut: shortcuts[COMMAND_ID.entry.tts],
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readability,
         onClick: runCmdFn(COMMAND_ID.entry.readability, [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           { entryId, entryUrl: entry?.entries.url! },
         ]),
         hide:
@@ -360,32 +369,33 @@ export const useEntryActions = ({
 
     return configs
   }, [
-    compact,
-    entry?.collections,
-    entry?.entries.content,
-    entry?.entries.publishedAt,
-    entry?.entries.url,
-    entry?.read,
-    entry?.settings?.readability,
-    entry?.view,
+    hasEntry,
+    runCmdFn,
     entryId,
-    isEntryInReadability,
     feed?.id,
     feed?.ownerUserId,
     feed?.siteUrl,
-    hasEntry,
-    imageLength,
-    inList,
     isInbox,
+    shortcuts,
+    view,
+    entry?.collections,
+    entry?.entries.url,
+    entry?.entries.publishedAt,
+    entry?.entries.content,
+    entry?.view,
+    entry?.read,
+    entry?.settings?.readability,
+    imageLength,
+    isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
+    userRole,
     isShowAITranslationAuto,
     isShowAITranslationOnce,
-    isShowSourceContent,
+    inList,
+    compact,
+    isEntryInReadability,
     isContentContainsHTMLTags,
-    runCmdFn,
-    userRole,
-    view,
   ])
 
   return actionConfigs

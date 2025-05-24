@@ -39,6 +39,7 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
   contentViewClassName?: string
 
   Header?: React.ReactNode
+  ScrollViewBottom?: React.ReactNode
 } & PropsWithChildren
 
 export interface ForwardedSafeNavigationScrollView extends ScrollView {
@@ -54,6 +55,7 @@ export const SafeNavigationScrollView = ({
   contentViewClassName,
   contentViewStyle,
   Header,
+  ScrollViewBottom,
   ...props
 }: SafeNavigationScrollViewProps & { ref?: React.Ref<ScrollView | null> }) => {
   const insets = useSafeAreaInsets()
@@ -94,7 +96,9 @@ export const SafeNavigationScrollView = ({
       if (reanimatedScrollY) {
         reanimatedScrollY.value = event.contentOffset.y
       }
-
+      if (onScroll) {
+        runOnJS(onScroll)(event)
+      }
       runOnJS(checkScrollToBottom)()
       screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
     },
@@ -132,6 +136,7 @@ export const SafeNavigationScrollView = ({
           <View style={contentViewStyle} className={contentViewClassName}>
             {children}
           </View>
+          {ScrollViewBottom}
           <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
         </ReAnimatedScrollView>
       </SetNavigationHeaderHeightContext>

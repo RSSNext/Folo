@@ -5,7 +5,7 @@ import { useCallback } from "react"
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "~/constants"
 
 import { useListsFeedIds } from "../list"
-import { useFeedIdByView } from "../subscription"
+import { useFeedIdByView, useNonPrivateSubscriptionIds } from "../subscription"
 import { getEntryIsInView, getFilteredFeedIds } from "./helper"
 import { useEntryStore } from "./store"
 import type { EntryFilter, FlatEntryModel } from "./types"
@@ -82,12 +82,15 @@ export const useEntryIdsByFeedId = (feedId: string, filter?: EntryFilter) =>
 
 export const useEntryIdsByView = (view: FeedViewType, filter?: EntryFilter) => {
   const feedIds = useFeedIdByView(view)
-  const listFeedIds = useListsFeedIds(feedIds)
+  const nonPrivateFeedIds = useNonPrivateSubscriptionIds(feedIds)
+  const finalFeedIds = filter?.excludePrivate ? nonPrivateFeedIds : feedIds
+  const listFeedIds = useListsFeedIds(finalFeedIds)
 
   return useEntryStore(
     useCallback(
-      () => getFilteredFeedIds(Array.from(new Set([...feedIds, ...listFeedIds])), filter) || [],
-      [feedIds, listFeedIds, filter],
+      () =>
+        getFilteredFeedIds(Array.from(new Set([...finalFeedIds, ...listFeedIds])), filter) || [],
+      [finalFeedIds, listFeedIds, filter],
     ),
   )
 }

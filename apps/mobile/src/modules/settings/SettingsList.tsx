@@ -14,12 +14,12 @@ import {
   GroupedInsetListNavigationLinkIcon,
 } from "@/src/components/ui/grouped/GroupedList"
 import { getDbPath } from "@/src/database"
-import { BellRingingCuteFiIcon } from "@/src/icons/bell_ringing_cute_fi"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
 import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
+import { NotificationCuteReIcon } from "@/src/icons/notification_cute_re"
 import { PaletteCuteFiIcon } from "@/src/icons/palette_cute_fi"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { SafeLockFilledIcon } from "@/src/icons/safe_lock_filled"
@@ -66,7 +66,7 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
   },
   {
     label: "titles.notifications",
-    icon: BellRingingCuteFiIcon,
+    icon: NotificationCuteReIcon,
     onPress: ({ navigation }) => {
       navigation.pushControllerView(NotificationsScreen)
     },

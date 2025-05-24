@@ -1,3 +1,4 @@
+import { GlobalFocusableProvider } from "@follow/components/common/Focusable/GlobalFocusableProvider.js"
 import { MotionProvider } from "@follow/components/common/MotionProvider.jsx"
 import { EventProvider } from "@follow/components/providers/event-provider.js"
 import { StableRouterProvider } from "@follow/components/providers/stable-router-provider.js"
@@ -40,34 +41,36 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
     <Provider store={jotaiStore}>
       <MotionProvider>
         <PersistQueryClientProvider persistOptions={persistConfig} client={queryClient}>
-          <HotkeyProvider>
-            <I18nProvider>
-              <ModalStackProvider>
-                <Toaster />
-                <EventProvider />
+          <GlobalFocusableProvider>
+            <HotkeyProvider>
+              <I18nProvider>
+                <ModalStackProvider>
+                  <Toaster />
+                  <EventProvider />
 
-                <UserProvider />
-                <ServerConfigsProvider />
+                  <UserProvider />
+                  <ServerConfigsProvider />
 
-                <StableRouterProvider />
-                <SettingSync />
-                <FollowCommandManager />
+                  <StableRouterProvider />
+                  <SettingSync />
+                  <FollowCommandManager />
 
-                {import.meta.env.DEV && <Devtools />}
+                  {import.meta.env.DEV && <Devtools />}
 
-                {children}
+                  {children}
 
-                <Suspense>
-                  <LazyExtensionExposeProvider />
-                  <LazyContextMenuProvider />
-                  <LazyLottieRenderContainer />
-                  <LazyExternalJumpInProvider />
-                  <LazyReloadPrompt />
-                  {!window.__RN__ && <LazyPWAPrompt />}
-                </Suspense>
-              </ModalStackProvider>
-            </I18nProvider>
-          </HotkeyProvider>
+                  <Suspense>
+                    <LazyExtensionExposeProvider />
+                    <LazyContextMenuProvider />
+                    <LazyLottieRenderContainer />
+                    <LazyExternalJumpInProvider />
+                    <LazyReloadPrompt />
+                    {!IN_ELECTRON && <LazyPWAPrompt />}
+                  </Suspense>
+                </ModalStackProvider>
+              </I18nProvider>
+            </HotkeyProvider>
+          </GlobalFocusableProvider>
 
           <InvalidateQueryProvider />
         </PersistQueryClientProvider>

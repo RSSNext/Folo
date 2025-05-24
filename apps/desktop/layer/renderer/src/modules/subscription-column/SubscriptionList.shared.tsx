@@ -1,10 +1,10 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
+import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
-import { useQuery } from "@tanstack/react-query"
 import { AnimatePresence, m } from "motion/react"
 import { memo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -18,31 +18,24 @@ import { useRouteFeedId } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import { subscriptionActions, useCategoryOpenStateByView } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
 import { useUnreadByView } from "~/store/unread/hooks"
 
 import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "./atom"
 import { feedColumnStyles } from "./styles"
 import { UnreadNumber } from "./UnreadNumber"
 
-export const ListHeader = ({ view }: { view: number }) => {
+export const ListHeader = ({ view }: { view: FeedViewType }) => {
   useAuthQuery(Queries.subscription.all())
   useAuthQuery(Queries.subscription.unreadAll(), {
-    refetchInterval: false,
-  })
-
-  const { t } = useTranslation()
-  const categoryOpenStateData = useCategoryOpenStateByView(view)
-  const expansion = Object.values(categoryOpenStateData).every((value) => value === true)
-
-  useQuery({
-    queryKey: ["fetchUnreadByView", view],
-    queryFn: () => feedUnreadActions.fetchUnreadByView(view),
     // 10 minute
     refetchInterval: 1000 * 60 * 10,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
   })
+
+  const { t } = useTranslation()
+  const categoryOpenStateData = useCategoryOpenStateByView(view)
+  const expansion = Object.values(categoryOpenStateData).every((value) => value === true)
 
   const totalUnread = useUnreadByView(view)
 

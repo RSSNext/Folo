@@ -106,10 +106,7 @@ export function AISummary({ entryId }: { entryId: string }) {
         )}
       </div>
 
-      <AutoResizeHeight
-        spring
-        className="mt-4 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300"
-      >
+      <AutoResizeHeight className="mt-4 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
         {summary.isLoading ? (
           <div className="space-y-2">
             <div className="bg-material-ultra-thick h-3 w-full rounded-lg" />

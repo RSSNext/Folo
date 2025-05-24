@@ -11,6 +11,7 @@ import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
+import type { EntryExtraData } from "./types"
 
 export const EntryListContentSocial = ({
   ref: forwardRef,
@@ -21,12 +22,15 @@ export const EntryListContentSocial = ({
 }) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()
+  const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
   // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
   const renderItem = useCallback(
-    ({ item: id }: ListRenderItemInfo<string>) => <EntrySocialItem entryId={id} />,
+    ({ item: id, extraData }: ListRenderItemInfo<string>) => (
+      <EntrySocialItem entryId={id} extraData={extraData as EntryExtraData} />
+    ),
     [],
   )
 
@@ -50,6 +54,7 @@ export const EntryListContentSocial = ({
       }}
       isRefetching={isRefetching}
       data={entryIds}
+      extraData={extraData}
       keyExtractor={(id) => id}
       estimatedItemSize={100}
       renderItem={renderItem}

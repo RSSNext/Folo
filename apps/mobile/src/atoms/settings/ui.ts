@@ -1,9 +1,14 @@
 import { defaultUISettings } from "@follow/shared/src/settings/defaults"
 import type { UISettings } from "@follow/shared/src/settings/interface"
 
+import { getDeviceLanguage } from "@/src/lib/i18n"
+
 import { createSettingAtom } from "./internal/helper"
 
-export const createDefaultSettings = (): UISettings => defaultUISettings
+export const createDefaultSettings = (): UISettings => ({
+  ...defaultUISettings,
+  discoverLanguage: getDeviceLanguage().startsWith("zh") ? "all" : "eng",
+})
 
 export const {
   useSettingKey: useUISettingKey,

@@ -4,6 +4,8 @@ import { atom } from "jotai"
 import { createAtomHooks } from "~/lib/jotai"
 
 export const [, , useAppIsReady, , appIsReady, setAppIsReady] = createAtomHooks(atom(false))
+export const [, , useAppMessagingToken, , appMessagingToken, setAppMessagingToken] =
+  createAtomHooks(atom<string | null>(null))
 
 export const [, , useAppSearchOpen, , , setAppSearchOpen] = createAtomHooks(atom(false))
 

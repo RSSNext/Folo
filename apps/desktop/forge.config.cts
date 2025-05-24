@@ -107,6 +107,10 @@ const config: ForgeConfig = {
         name: "Folo",
         schemes: ["follow"],
       },
+      {
+        name: "Folo",
+        schemes: ["folo"],
+      },
     ],
 
     afterCopy: [
@@ -214,6 +218,7 @@ const config: ForgeConfig = {
       publisherDisplayName: "Natural Selection Labs",
       identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
       packageBackgroundColor: "#FF5C00",
+      protocol: "follow", // TODO: use custom appx manifest to support both follow and folo
     }),
   ],
   plugins: [

@@ -2,6 +2,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@follow/utils/utils"
 import { useMemo } from "react"
+import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -67,9 +68,6 @@ export function ListItem({
     if (translation?.description && !simple && bilingual) {
       lineClampDescription += 1
     }
-
-    // for tailwind
-    // line-clamp-[1] line-clamp-[2] line-clamp-[3] line-clamp-[4] line-clamp-[5] line-clamp-[6] line-clamp-[7] line-clamp-[8]
 
     // FIXME: Safari bug, not support line-clamp cross elements
     return {
@@ -157,8 +155,8 @@ export function ListItem({
           {entry.entries.title ? (
             <EntryTranslation
               className={cn("hyphens-auto font-medium", lineClamp.title)}
-              source={entry.entries.title}
-              target={translation?.title}
+              source={titleCase(entry.entries.title ?? "")}
+              target={titleCase(translation?.title ?? "")}
             />
           ) : (
             <EntryTranslation

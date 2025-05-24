@@ -44,7 +44,7 @@ export const NotFound = () => {
   }, [])
   const navigate = useNavigate()
 
-  if (window.__RN__ && location.pathname.endsWith("/index.html")) {
+  if (location.pathname.endsWith("/index.html")) {
     return <Navigate to="/" />
   }
 

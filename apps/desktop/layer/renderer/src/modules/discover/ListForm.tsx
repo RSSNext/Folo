@@ -1,5 +1,4 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Card, CardHeader } from "@follow/components/ui/card/index.jsx"
 import {
   Form,
   FormControl,
@@ -13,7 +12,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { ListModel } from "@follow/models/types"
+import type { ListAnalyticsModel, ListModel } from "@follow/models/types"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -24,21 +23,23 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { tipcClient } from "~/lib/client"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
-import { FollowSummary } from "~/modules/feed/feed-summary"
+import { entries as entriesQuery } from "~/queries/entries"
 import { lists as listsQuery, useList } from "~/queries/lists"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
+import { FeedSummary } from "./FeedSummary"
 
 const formSchema = z.object({
   view: z.string(),
@@ -90,6 +91,7 @@ export const ListForm: Component<{
 
             onSuccess,
             subscriptionData: feedQuery.data?.subscription,
+            analytics: feedQuery.data?.analytics,
             list,
           }}
         />
@@ -163,6 +165,7 @@ const ListInnerForm = ({
   onSuccess,
   subscriptionData,
   list,
+  analytics,
 }: {
   defaultValues?: z.infer<typeof formSchema>
   id?: string
@@ -175,6 +178,7 @@ const ListInnerForm = ({
     title?: string | null
   }
   list: ListModel
+  analytics?: ListAnalyticsModel
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
   const isSubscribed = !!subscription
@@ -216,13 +220,25 @@ const ListInnerForm = ({
 
       return $method({
         json: body,
-      })
+      }) as unknown as Promise<
+        | ReturnType<typeof apiClient.subscriptions.$post>
+        | ReturnType<typeof apiClient.subscriptions.$patch>
+      >
     },
-    onSuccess: (_, variables) => {
-      if (isSubscribed && variables.view !== `${subscription?.view}`) {
-        feedUnreadActions.fetchUnreadByView(subscription?.view)
-      } else {
-        feedUnreadActions.fetchUnreadByView(Number.parseInt(variables.view))
+    onSuccess: (data, variables) => {
+      if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
+        entriesQuery
+          .entries({
+            feedId: "all",
+            view: Number(variables.view),
+            excludePrivate: true,
+          })
+          .invalidate({ exact: true })
+      }
+
+      if ("unread" in data) {
+        const { unread } = data
+        unreadActions.upsertMany(unread)
       }
       subscriptionQuery.all().invalidate()
       tipcClient?.invalidateQuery(subscriptionQuery.all().key)
@@ -260,11 +276,7 @@ const ListInnerForm = ({
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <Card>
-        <CardHeader>
-          <FollowSummary feed={list} />
-        </CardHeader>
-      </Card>
+      <FeedSummary feed={list} analytics={analytics} showAnalytics />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col gap-y-4">
           <FormField

@@ -2,6 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { debounce } from "es-toolkit/compat"
 import { fetch as expoFetch } from "expo/fetch"
 
+import { getGeneralSettings } from "@/src/atoms/settings/general"
 import { apiClient } from "@/src/lib/api-fetch"
 import { getCookie } from "@/src/lib/auth"
 import { honoMorph } from "@/src/morph/hono"
@@ -68,16 +69,21 @@ class EntryActions {
     sources?: string[] | null
   }) {
     if (!feedId) return
+
     const subscription = getSubscription(feedId)
-    if (typeof subscription?.view === "number") {
+    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
+    const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
+
+    if (typeof subscription?.view === "number" && !ignore) {
       draft.entryIdByView[subscription.view].add(entryId)
     }
 
     // lists
     for (const s of sources ?? []) {
       const subscription = getSubscription(s)
+      const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
-      if (typeof subscription?.view === "number") {
+      if (typeof subscription?.view === "number" && !ignore) {
         draft.entryIdByView[subscription.view].add(entryId)
       }
     }
@@ -363,8 +369,18 @@ class EntryActions {
 
 class EntrySyncServices {
   async fetchEntries(props: FetchEntriesProps) {
-    const { feedId, inboxId, listId, view, read, limit, pageParam, isCollection, feedIdList } =
-      props
+    const {
+      feedId,
+      inboxId,
+      listId,
+      view,
+      read,
+      limit,
+      pageParam,
+      isCollection,
+      feedIdList,
+      excludePrivate,
+    } = props
     const params = getEntriesParams({
       feedId,
       inboxId,
@@ -389,6 +405,7 @@ class EntrySyncServices {
             read,
             limit,
             isCollection,
+            excludePrivate,
             ...params,
           },
         })
@@ -412,7 +429,8 @@ class EntrySyncServices {
       }
 
       if (params.feedIdList && params.feedIdList.length > 0) {
-        const category = getSubscription(params.feedIdList[0])?.category
+        const firstSubscription = getSubscription(params.feedIdList[0])
+        const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
         if (category) {
           entryActions.resetByCategory({ category, entries })
         }

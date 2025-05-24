@@ -1,35 +1,54 @@
 import { highlightElement } from "@follow/components/common/Focusable/utils.js"
-import { nextFrame } from "@follow/utils/dom"
+import {
+  checkIsEditableElement,
+  nextFrame,
+  preventDefault,
+  stopPropagation,
+} from "@follow/utils/dom"
+import { useEffect } from "react"
+import { tinykeys } from "tinykeys"
 import { useEventListener } from "usehooks-ts"
 
-import { HotkeyScope } from "~/constants/hotkeys"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandBinding } from "~/modules/command/hooks/use-register-hotkey"
-
-import { useHotkeyScope } from "./hotkey-provider"
+import { useRunCommandFn } from "~/modules/command/hooks/use-command"
+import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
 export const GlobalHotkeysProvider = () => {
-  const activeScopes = useHotkeyScope()
-
   useCommandBinding({
     commandId: COMMAND_ID.global.showShortcuts,
-    when:
-      activeScopes.includes(HotkeyScope.Home) && !activeScopes.includes(HotkeyScope.EntryRender),
   })
 
   useEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       nextFrame(() => {
-        if (
-          document.activeElement instanceof HTMLInputElement ||
-          document.activeElement instanceof HTMLTextAreaElement
-        ) {
+        if (checkIsEditableElement(e.target as HTMLElement)) {
           return
         }
         highlightElement(document.activeElement as HTMLElement)
       })
     }
   })
+
+  const commandShortcuts = useCommandShortcuts()
+
+  const runCommandFn = useRunCommandFn()
+  useEffect(() => {
+    const preHandler = (e: Event) => {
+      stopPropagation(e)
+      preventDefault(e)
+    }
+    return tinykeys(window, {
+      // Show current focused element
+      "$mod+Period": (e) => {
+        preHandler(e)
+        highlightElement(document.activeElement as HTMLElement)
+      },
+      [commandShortcuts[COMMAND_ID.layout.toggleZenMode]]: (e) => {
+        preHandler(e)
+        runCommandFn(COMMAND_ID.layout.toggleZenMode, [])()
+      },
+    })
+  }, [commandShortcuts, runCommandFn])
 
   return null
 }

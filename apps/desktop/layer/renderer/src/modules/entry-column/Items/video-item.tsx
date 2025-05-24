@@ -2,6 +2,7 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { stopPropagation } from "@follow/utils/dom"
+import { formatDuration } from "@follow/utils/duration"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
 import { cn } from "@follow/utils/utils"
 import { useHover } from "@use-gesture/react"
@@ -77,6 +78,16 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
     }
   }, [hovered])
 
+  const duration = useMemo(() => {
+    const seconds = entry?.entries.attachments?.find(
+      (attachment) => attachment.duration_in_seconds,
+    )?.duration_in_seconds
+    if (seconds) {
+      return formatDuration(Number.parseInt(seconds.toString()))
+    }
+    return 0
+  }, [entry?.entries.attachments])
+
   if (!entry) return null
   return (
     <GridItem entryId={entryId} entryPreview={entryPreview} translation={translation}>
@@ -107,7 +118,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
           }
         }}
       >
-        <div className="overflow-x-auto" ref={ref}>
+        <div className="relative overflow-x-auto" ref={ref}>
           {miniIframeSrc && showPreview ? (
             <ViewTag
               src={miniIframeSrc}
@@ -137,6 +148,11 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
             <div className="center bg-material-medium text-text-secondary aspect-video w-full flex-col gap-1 rounded-md text-xs">
               <i className="i-mgc-sad-cute-re size-6" />
               No media available
+            </div>
+          )}
+          {!!duration && (
+            <div className="absolute bottom-2 right-2 rounded-md bg-black/50 px-1 py-0.5 text-xs font-medium text-white">
+              {duration}
             </div>
           )}
         </div>

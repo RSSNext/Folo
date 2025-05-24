@@ -70,7 +70,7 @@ function Outtro() {
           <Trans
             i18nKey="new_user_guide.step.shortcuts.description2"
             components={{
-              kbd: <Kbd>H</Kbd>,
+              kbd: <Kbd>?</Kbd>,
             }}
           />
         </p>

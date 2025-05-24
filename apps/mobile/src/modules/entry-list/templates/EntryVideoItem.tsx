@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
-import { transformVideoUrl } from "@follow/utils"
-import { memo } from "react"
+import { formatDuration, transformVideoUrl } from "@follow/utils"
+import { memo, useMemo } from "react"
 import { Linking, Text, View } from "react-native"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
@@ -18,6 +18,16 @@ import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 
 export const EntryVideoItem = memo(({ id }: { id: string }) => {
   const item = useEntry(id)
+
+  const duration = useMemo(() => {
+    const seconds = item?.attachments?.find(
+      (attachment) => attachment.duration_in_seconds,
+    )?.duration_in_seconds
+    if (seconds) {
+      return formatDuration(Number.parseInt(seconds.toString()))
+    }
+    return 0
+  }, [item?.attachments])
 
   if (!item) {
     return null
@@ -44,18 +54,25 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
             openVideo(item.url)
           }}
         >
-          {imageUrl ? (
-            <Image
-              source={{ uri: imageUrl }}
-              aspectRatio={16 / 9}
-              className="w-full rounded-lg"
-              proxy={{
-                width: 200,
-              }}
-            />
-          ) : (
-            <FallbackMedia />
-          )}
+          <View className="relative">
+            {imageUrl ? (
+              <Image
+                source={{ uri: imageUrl }}
+                aspectRatio={16 / 9}
+                className="w-full rounded-lg"
+                proxy={{
+                  width: 200,
+                }}
+              />
+            ) : (
+              <FallbackMedia />
+            )}
+            {!!duration && (
+              <Text className="absolute bottom-2 right-2 rounded-md bg-black/50 px-1 py-0.5 text-xs font-medium text-white">
+                {duration}
+              </Text>
+            )}
+          </View>
           <EntryGridFooter entryId={id} view={FeedViewType.Videos} />
         </ItemPressable>
       </VideoContextMenu>

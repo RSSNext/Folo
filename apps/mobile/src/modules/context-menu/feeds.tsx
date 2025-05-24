@@ -308,7 +308,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
                   value={isSelected}
                   // onSelect={onSelect}
                 >
-                  <ContextMenu.ItemTitle>{t(view.name as any)}</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemTitle>{t(view.name, { ns: "common" })}</ContextMenu.ItemTitle>
                 </ContextMenu.CheckboxItem>
               )
             })}
@@ -343,7 +343,11 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem entryId={id} extraData="" view={props.view} />
+      <EntryNormalItem
+        entryId={id}
+        extraData={{ entryIds: null, playingAudioUrl: null }}
+        view={props.view}
+      />
     ),
     [props.view],
   )

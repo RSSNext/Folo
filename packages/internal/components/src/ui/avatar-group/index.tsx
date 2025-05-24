@@ -15,7 +15,7 @@ type AvatarProps = {
 
 const AvatarContainer = React.memo(({ children, zIndex, transition, translate }: AvatarProps) => {
   return (
-    <TooltipTrigger>
+    <TooltipTrigger asChild>
       <motion.div
         data-slot="avatar-container"
         initial="initial"

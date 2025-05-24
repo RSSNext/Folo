@@ -1,8 +1,8 @@
 import { useDraggable } from "@dnd-kit/core"
 import {
-  useFocusable,
   useFocusableContainerRef,
   useFocusActions,
+  useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { nextFrame } from "@follow/utils/dom"
@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
+import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
@@ -26,7 +27,8 @@ import {
 } from "~/store/subscription"
 
 import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding, useCommandHotkey } from "../command/hooks/use-register-hotkey"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
+import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { useIsPreviewFeed } from "../entry-column/hooks/useIsPreviewFeed"
 import {
   resetSelectedFeedIds,
@@ -36,12 +38,12 @@ import {
 } from "./atom"
 import { DraggableContext } from "./context"
 import { FeedItem, ListItemAutoHideUnread } from "./FeedItem"
-import type { FeedListProps } from "./FeedList"
-import { EmptyFeedList, ListHeader, StarredItem } from "./FeedList.shared"
 import { useShouldFreeUpSpace } from "./hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
+import type { SubscriptionProps } from "./SubscriptionList"
+import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
-const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
+const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
   const inboxesData = useInboxesGroupedData(view)
@@ -228,6 +230,7 @@ const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
       />
 
       <ScrollArea.ScrollArea
+        focusable={false}
         ref={scrollerRef}
         onScroll={() => {
           selectoRef.current?.checkScroll()
@@ -294,36 +297,38 @@ const FeedListImpl = ({ ref, className, view }: FeedListProps) => {
   )
 }
 
-FeedListImpl.displayName = "FeedListImpl"
+SubscriptionImpl.displayName = "FeedListImpl"
 
-export const FeedList = memo(FeedListImpl)
+export const SubscriptionList = memo(SubscriptionImpl)
 
 const FeedCategoryPrefix = "feed-category-"
 
 const useRegisterCommand = () => {
-  const isFocus = useFocusable()
   const focusableContainerRef = useFocusableContainerRef()
+
   const focusActions = useFocusActions()
+
+  const inSubscriptionScope = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.nextSubscription,
-    when: isFocus,
+    when: inSubscriptionScope,
   })
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.previousSubscription,
-    when: isFocus,
+    when: inSubscriptionScope,
   })
 
   useCommandHotkey({
     commandId: COMMAND_ID.layout.focusToTimeline,
-    when: isFocus,
-    shortcut: "Enter",
+    when: inSubscriptionScope,
+    shortcut: "Enter, L, ArrowRight",
   })
 
   useCommandBinding({
     commandId: COMMAND_ID.subscription.toggleFolderCollapse,
-    when: isFocus,
+    when: inSubscriptionScope,
   })
 
   const getCurrentActiveSubscriptionElement = useEventCallback(() => {
@@ -378,11 +383,13 @@ const useRegisterCommand = () => {
       EventBus.subscribe(COMMAND_ID.subscription.previousSubscription, () => {
         handleSubscriptionNavigation("previous")
       }),
-      EventBus.subscribe(COMMAND_ID.layout.focusToSubscription, () => {
+      EventBus.subscribe(COMMAND_ID.layout.focusToSubscription, ({ highlightBoundary }) => {
         focusableContainerRef.current?.focus()
-        nextFrame(() => {
-          focusActions.highlightBoundary()
-        })
+        if (highlightBoundary) {
+          nextFrame(() => {
+            focusActions.highlightBoundary()
+          })
+        }
       }),
       EventBus.subscribe(COMMAND_ID.subscription.toggleFolderCollapse, () => {
         const result = getCurrentActiveSubscriptionElement()

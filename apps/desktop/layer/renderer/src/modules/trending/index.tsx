@@ -17,11 +17,11 @@ const LanguageOptions = [
     value: "all",
   },
   {
-    label: "English",
+    label: "words.english",
     value: "eng",
   },
   {
-    label: "中文",
+    label: "words.chinese",
     value: "cmn",
   },
 ]

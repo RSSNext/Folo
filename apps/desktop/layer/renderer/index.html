@@ -62,8 +62,7 @@
       setTheme()
       // Can not get window.electron so check userAgent
       const isElectron = navigator.userAgent.includes("Electron")
-      const isRN = window.__RN__
-      document.documentElement.dataset.buildType = isRN ? "rn" : isElectron ? "electron" : "web"
+      document.documentElement.dataset.buildType = isElectron ? "electron" : "web"
     </script>
     <script>
       const isMobile = window.innerWidth < 1024

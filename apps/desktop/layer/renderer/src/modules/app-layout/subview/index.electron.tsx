@@ -1,4 +1,5 @@
 import { getReadonlyRoute } from "@follow/components/atoms/route.js"
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Routes } from "@follow/constants"
@@ -6,14 +7,24 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn, getOS } from "@follow/utils/utils"
 import { useEffect, useRef, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 import { NavigationType, Outlet, useLocation, useNavigate, useNavigationType } from "react-router"
 
+import { Focusable } from "~/components/common/Focusable"
 import { FABContainer, FABPortable } from "~/components/ui/fab"
+import { HotkeyScope } from "~/constants"
 
 import { useSubViewTitleValue } from "./hooks"
 
 export function SubviewLayout() {
+  return (
+    <Focusable className="contents" scope={HotkeyScope.SubLayer}>
+      <SubviewLayoutInner />
+    </Focusable>
+  )
+}
+function SubviewLayoutInner() {
   const navigate = useNavigate()
   const prevLocation = useRef(getReadonlyRoute().location).current
   const title = useSubViewTitleValue()
@@ -53,6 +64,17 @@ export function SubviewLayout() {
   // electron window has pt-[calc(var(--fo-window-padding-top)_-10px)]
   const isElectronWindows = ELECTRON_BUILD && getOS() === "Windows"
 
+  const backHandler = () => {
+    if (prevLocation.pathname === location.pathname) {
+      navigate({ pathname: "" })
+    } else {
+      navigate(-1)
+    }
+  }
+  const activeScope = useGlobalFocusableScope()
+  useHotkeys("Escape", backHandler, {
+    enabled: activeScope.has(HotkeyScope.SubLayer),
+  })
   return (
     <div className="relative flex size-full">
       <div
@@ -64,13 +86,7 @@ export function SubviewLayout() {
         )}
       >
         <MotionButtonBase
-          onClick={() => {
-            if (prevLocation.pathname === location.pathname) {
-              navigate({ pathname: "" })
-            } else {
-              navigate(prevLocation)
-            }
-          }}
+          onClick={backHandler}
           className="no-drag-region hover:text-accent inline-flex items-center gap-1 duration-200"
         >
           <i className="i-mingcute-left-line" />

@@ -1,16 +1,19 @@
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { useCountdown } from "@follow/hooks"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { HotkeyScope } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
 import { useI18n } from "~/hooks/common"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
 import type { MarkAllFilter } from "../hooks/useMarkAll"
 import { markAllByRoute } from "../hooks/useMarkAll"
@@ -30,9 +33,16 @@ export const MarkAllReadButton = ({
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
 
-  useHotkeys(
-    shortcuts.entries.markAllAsRead.key,
-    () => {
+  const activeScope = useGlobalFocusableScope()
+  useCommandBinding({
+    commandId: COMMAND_ID.subscription.markAllAsRead,
+    when: [HotkeyScope.Timeline, HotkeyScope.SubscriptionList].some((scope) =>
+      activeScope.has(scope),
+    ),
+  })
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.subscription.markAllAsRead, () => {
       let cancel = false
       const undo = () => {
         toast.dismiss(id)
@@ -51,20 +61,17 @@ export const MarkAllReadButton = ({
             <span className="flex items-center gap-1">
               {t("mark_all_read_button.undo")}
               <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
-                Meta+Z
+                $mod+z
               </Kbd>
             </span>
           ),
           onClick: undo,
         },
       })
-    },
-    {
-      preventDefault: true,
-      scopes: HotkeyScope.Home,
-    },
-  )
+    })
+  }, [t])
 
+  const markAllAsReadShortcut = useCommandShortcuts()[COMMAND_ID.subscription.markAllAsRead]
   return (
     <ActionButton
       tooltip={
@@ -77,9 +84,7 @@ export const MarkAllReadButton = ({
           />
           {shortcut && (
             <div className="ml-1">
-              <KbdCombined className="text-text-secondary">
-                {shortcuts.entries.markAllAsRead.key}
-              </KbdCombined>
+              <KbdCombined className="text-text-secondary">{markAllAsReadShortcut}</KbdCombined>
             </div>
           )}
         </>
@@ -100,7 +105,6 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const [countdown] = useCountdown({ countStart: 3 })
 
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
 

@@ -1,5 +1,5 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
-import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import { loginHandler, oneTimeToken, twoFactor } from "@client/lib/auth"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -104,30 +104,20 @@ export function Login() {
     switch (true) {
       case isAuthenticated: {
         return (
-          <div className="flex w-full flex-col items-center justify-center gap-10 px-4">
+          <div className="mt-4 flex w-full flex-col items-center justify-center px-4">
             <div className="relative flex items-center justify-center">
               <UserAvatar className="gap-4 px-10 py-4 text-2xl" />
-              <div className="absolute right-0">
-                <Button
-                  variant="ghost"
-                  onClick={async () => {
-                    await signOut()
-                    await refetch()
-                  }}
-                >
-                  <i className="i-mingcute-exit-line text-xl" />
-                </Button>
-              </div>
             </div>
-            <h2 className="text-center">
-              {t("redirect.successMessage", { app_name: APP_NAME })} <br />
-              <br />
+            <p className="mt-4 text-center">
+              {t("redirect.successMessage", { app_name: APP_NAME })}
+            </p>
+            <p className="text-text-secondary mt-2 text-center text-sm">
               {t("redirect.instruction", { app_name: APP_NAME })}
-            </h2>
-            <div className="center flex flex-col gap-20 sm:flex-row">
+            </p>
+            <div className="center mt-8 flex flex-col gap-4 sm:flex-row">
               <Button
                 variant="text"
-                buttonClassName="h-14 text-base"
+                buttonClassName="h-14 text-base px-10 rounded-full"
                 onClick={() => {
                   window.location.href = "/"
                 }}
@@ -136,8 +126,8 @@ export function Login() {
               </Button>
 
               <Button
-                variant="text"
-                buttonClassName="h-14 !rounded-full px-5 text-lg"
+                variant="primary"
+                buttonClassName="h-12 !rounded-full px-10 text-lg"
                 onClick={handleOpenApp}
               >
                 {t("redirect.openApp", { app_name: APP_NAME })}

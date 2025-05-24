@@ -1,15 +1,15 @@
+import { useRefValue } from "@follow/hooks"
+import { checkIsEditableElement } from "@follow/utils/dom"
 import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 
 import type { FollowCommand, FollowCommandId } from "../types"
 import { getCommand } from "./use-command"
-import type { BindingCommandId } from "./use-command-shortcut"
-import { useCommandShortcut } from "./use-command-shortcut"
 
 export interface HotkeyOptions {
   forceInputElement?: true
 }
-interface RegisterHotkeyOptions<T extends FollowCommandId> {
+export interface RegisterHotkeyOptions<T extends FollowCommandId> {
   shortcut: string
   commandId: T
   args?: Parameters<Extract<FollowCommand, { id: T }>["run"]>
@@ -18,7 +18,9 @@ interface RegisterHotkeyOptions<T extends FollowCommandId> {
   options?: HotkeyOptions
 }
 
-const IGNORE_INPUT_ELEMENT = [HTMLInputElement, HTMLTextAreaElement]
+const SPECIAL_KEYS_MAPPINGS = {
+  "?": "Shift+Slash",
+}
 
 export const useCommandHotkey = <T extends FollowCommandId>({
   shortcut,
@@ -27,6 +29,7 @@ export const useCommandHotkey = <T extends FollowCommandId>({
   args,
   options,
 }: RegisterHotkeyOptions<T>) => {
+  const argsRef = useRefValue(args)
   useEffect(() => {
     if (!when) {
       return
@@ -42,13 +45,15 @@ export const useCommandHotkey = <T extends FollowCommandId>({
 
     // Create a handler for each shortcut
     shortcuts.forEach((key) => {
-      keyMap[key] = (event) => {
+      let nextKey = key
+
+      if (SPECIAL_KEYS_MAPPINGS[key]) {
+        nextKey = SPECIAL_KEYS_MAPPINGS[key]
+      }
+
+      keyMap[nextKey] = (event) => {
         const { target } = event
-        if (
-          !options?.forceInputElement &&
-          (IGNORE_INPUT_ELEMENT.some((el) => target instanceof el) ||
-            (target as HTMLElement).getAttribute("contenteditable") === "true")
-        ) {
+        if (!options?.forceInputElement && checkIsEditableElement(target as HTMLElement)) {
           return
         }
 
@@ -57,7 +62,7 @@ export const useCommandHotkey = <T extends FollowCommandId>({
 
         const command = getCommand(commandId)
         if (!command) return
-
+        const args = argsRef.current
         if (Array.isArray(args)) {
           // It should be safe to spread the args here because we are checking if it is an array
           // @ts-expect-error - A spread argument must either have a tuple type or be passed to a rest parameter.ts(2556)
@@ -76,20 +81,5 @@ export const useCommandHotkey = <T extends FollowCommandId>({
     })
 
     return tinykeys(document.documentElement, keyMap)
-  }, [shortcut, commandId, when, args])
-}
-
-export const useCommandBinding = <T extends BindingCommandId>({
-  commandId,
-  when = true,
-  args,
-}: Omit<RegisterHotkeyOptions<T>, "shortcut">) => {
-  const commandShortcut = useCommandShortcut(commandId)
-
-  return useCommandHotkey({
-    shortcut: commandShortcut,
-    commandId,
-    when,
-    args,
-  })
+  }, [shortcut, commandId, when, argsRef, options?.forceInputElement])
 }

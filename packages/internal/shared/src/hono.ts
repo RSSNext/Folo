@@ -11,6 +11,7 @@ import * as drizzle_orm from 'drizzle-orm';
 import { InferInsertModel, SQL } from 'drizzle-orm';
 import * as better_auth_plugins from 'better-auth/plugins';
 import * as better_auth from 'better-auth';
+import { BetterAuthOptions } from 'better-auth';
 
 type Env = {
     Bindings: HttpBindings;
@@ -290,48 +291,6 @@ declare const authPlugins: ({
                 use: any[];
             };
             path: "/one-time-token/apply";
-        };
-    };
-} | {
-    id: "customCreateSession";
-    endpoints: {
-        customCreateSession: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "GET" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    ck: string;
-                    userId: string;
-                } | null;
-            } : {
-                ck: string;
-                userId: string;
-            } | null>;
-            options: {
-                method: "GET";
-            } & {
-                use: any[];
-            };
-            path: "/create-session";
         };
     };
 })[];
@@ -852,7 +811,7 @@ declare const actionsItemOpenAPISchema: z.ZodObject<{
     };
 }>;
 type ActionItem = z.infer<typeof actionsItemOpenAPISchema>;
-declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const actionsOpenAPISchema: z.ZodObject<Omit<{
     userId: z.ZodString;
     createdAt: z.ZodNullable<z.ZodString>;
     updatedAt: z.ZodNullable<z.ZodString>;
@@ -905,7 +864,7 @@ declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     } | (string | number | boolean | {
         [key: string]: string | number | boolean | /*elided*/ any | /*elided*/ any | null;
     } | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null>>;
-}, "rules">, {
+}, "rules"> & {
     rules: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
         condition: z.ZodUnion<[z.ZodArray<z.ZodObject<{
@@ -1073,7 +1032,7 @@ declare const actionsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
             webhooks?: string[] | undefined;
         };
     }>, "many">>>;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     createdAt: string | null;
     updatedAt: string | null;
     userId: string;
@@ -1431,7 +1390,7 @@ declare const airdrops: drizzle_orm_pg_core.PgTableWithColumns<{
     };
     dialect: "pg";
 }>;
-declare const airdropsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const airdropsOpenAPISchema: z.ZodObject<Omit<{
     activity: z.ZodEnum<["public_beta"]>;
     userId: z.ZodString;
     amount: z.ZodString;
@@ -1487,7 +1446,7 @@ declare const airdropsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     } | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null>>;
     verify: z.ZodNullable<z.ZodString>;
     tx: z.ZodNullable<z.ZodString>;
-}, "detail">, {
+}, "detail"> & {
     detail: z.ZodNullable<z.ZodObject<{
         "Invitations count": z.ZodNumber;
         "Purchase lists cost": z.ZodNumber;
@@ -1576,7 +1535,7 @@ declare const airdropsOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
         "Created lists income amount Rank": number;
         "GitHub Community Contributions Rank": number;
     }>>;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     userId: string;
     tx: string | null;
     activity: "public_beta";
@@ -1849,117 +1808,6 @@ type ExtraModel = {
         type: string;
         content_html?: string;
     }[];
-};
-declare const CommonEntryFields: {
-    id: drizzle_orm.HasRuntimeDefault<drizzle_orm.HasDefault<drizzle_orm.IsPrimaryKey<drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilder<{
-        name: "id";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>>>>>;
-    title: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "title";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    url: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "url";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    content: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "content";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    description: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "description";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    guid: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTextBuilder<{
-        name: "guid";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>>;
-    author: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "author";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    authorUrl: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "author_url";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    authorAvatar: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "author_avatar";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    insertedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"inserted_at">>;
-    publishedAt: drizzle_orm.NotNull<drizzle_orm_pg_core.PgTimestampBuilderInitial<"published_at">>;
-    media: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"media">, MediaModel[]>;
-    categories: drizzle_orm_pg_core.PgArrayBuilder<{
-        name: "categories";
-        dataType: "array";
-        columnType: "PgArray";
-        data: string[];
-        driverParam: string | string[];
-        enumValues: [string, ...string[]];
-        size: undefined;
-        baseBuilder: {
-            name: "categories";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            enumValues: [string, ...string[]];
-            driverParam: string;
-        };
-    }, {
-        name: "categories";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
-    attachments: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
-    extra: drizzle_orm.$Type<drizzle_orm_pg_core.PgJsonbBuilderInitial<"extra">, ExtraModel>;
-    language: drizzle_orm_pg_core.PgTextBuilder<{
-        name: "language";
-        dataType: "string";
-        columnType: "PgText";
-        data: string;
-        enumValues: [string, ...string[]];
-        driverParam: string;
-    }>;
 };
 declare const entries: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "entries";
@@ -2357,7 +2205,7 @@ declare const extraZodSchema: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         content_html?: string | undefined;
     }[] | null | undefined;
 }>>>;
-declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const entriesOpenAPISchema: z.ZodObject<Omit<{
     id: z.ZodString;
     title: z.ZodNullable<z.ZodString>;
     url: z.ZodNullable<z.ZodString>;
@@ -2519,7 +2367,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
     } | /*elided*/ any | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null)[] | null>>;
     language: z.ZodNullable<z.ZodString>;
     feedId: z.ZodString;
-}, "media" | "attachments" | "extra">, {
+}, "media" | "attachments" | "extra"> & {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
         duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
@@ -2588,7 +2436,7 @@ declare const entriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
             content_html?: string | undefined;
         }[] | null | undefined;
     }>>>;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     id: string;
     description: string | null;
     title: string | null;
@@ -3749,7 +3597,7 @@ declare const inboxesEntries: drizzle_orm_pg_core.PgTableWithColumns<{
     };
     dialect: "pg";
 }>;
-declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const inboxesEntriesOpenAPISchema: z.ZodObject<Omit<{
     id: z.ZodString;
     title: z.ZodNullable<z.ZodString>;
     url: z.ZodNullable<z.ZodString>;
@@ -3912,7 +3760,7 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
     language: z.ZodNullable<z.ZodString>;
     inboxHandle: z.ZodString;
     read: z.ZodNullable<z.ZodBoolean>;
-}, "media" | "attachments" | "extra">, {
+}, "media" | "attachments" | "extra"> & {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
         duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
@@ -3981,7 +3829,7 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
             content_html?: string | undefined;
         }[] | null | undefined;
     }>>>;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     id: string;
     description: string | null;
     title: string | null;
@@ -4058,7 +3906,7 @@ declare const inboxesEntriesOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<
         }[] | null | undefined;
     } | null | undefined;
 }>;
-declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<Omit<{
     id: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     title: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -4221,7 +4069,7 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extend
     publishedAt: z.ZodString;
     read: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
     inboxHandle: z.ZodString;
-}, "id" | "media" | "attachments" | "extra" | "insertedAt" | "publishedAt" | "inboxHandle">, {
+}, "id" | "media" | "attachments" | "extra" | "insertedAt" | "publishedAt" | "inboxHandle"> & {
     attachments: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         url: z.ZodString;
         duration_in_seconds: z.ZodOptional<z.ZodUnion<[z.ZodNumber, z.ZodString]>>;
@@ -4291,7 +4139,7 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<z.objectUtil.extend
         }[] | null | undefined;
     }>>>;
     publishedAt: z.ZodString;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     guid: string;
     publishedAt: string;
     description?: string | null | undefined;
@@ -4580,6 +4428,61 @@ declare const invitationsOpenAPISchema: zod.ZodObject<{
 }>;
 declare const invitationsRelations: drizzle_orm.Relations<"invitations", {
     users: drizzle_orm.One<"user", false>;
+}>;
+
+declare const listAnalytics: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "list_analytics";
+    schema: undefined;
+    columns: {
+        listId: drizzle_orm_pg_core.PgColumn<{
+            name: "list_id";
+            tableName: "list_analytics";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        subscriptionCount: drizzle_orm_pg_core.PgColumn<{
+            name: "subscription_count";
+            tableName: "list_analytics";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const listAnalyticsOpenAPISchema: zod.ZodObject<{
+    listId: zod.ZodString;
+    subscriptionCount: zod.ZodNullable<zod.ZodNumber>;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    subscriptionCount: number | null;
+    listId: string;
+}, {
+    subscriptionCount: number | null;
+    listId: string;
+}>;
+declare const listAnalyticsRelations: drizzle_orm.Relations<"list_analytics", {
+    list: drizzle_orm.One<"lists", true>;
 }>;
 
 declare const lists: drizzle_orm_pg_core.PgTableWithColumns<{
@@ -5039,13 +4942,13 @@ declare const messaging: drizzle_orm_pg_core.PgTableWithColumns<{
     };
     dialect: "pg";
 }>;
-declare const messagingOpenAPISchema: z.ZodObject<z.objectUtil.extendShape<Omit<{
+declare const messagingOpenAPISchema: z.ZodObject<Omit<{
     userId: z.ZodNullable<z.ZodString>;
     token: z.ZodString;
     channel: z.ZodString;
-}, "channel">, {
+}, "channel"> & {
     channel: z.ZodEnum<["macos", "windows", "linux", "ios", "android", "web", "desktop"]>;
-}>, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     userId: string | null;
     token: string;
     channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
@@ -8153,8 +8056,8 @@ declare const auth: {
                                                         required: string[];
                                                     };
                                                 };
-                                                required: string[];
                                             };
+                                            required: string[];
                                         };
                                     };
                                 };
@@ -8461,10 +8364,12 @@ declare const auth: {
                     name: string;
                     email: string;
                     password: string;
+                    callbackURL?: string;
                 } | ({
                     name: string;
                     email: string;
                     password: string;
+                    callbackURL?: string;
                 } & {} & {})) & {
                     handle: string;
                 } & {
@@ -8545,10 +8450,12 @@ declare const auth: {
                             name: string;
                             email: string;
                             password: string;
+                            callbackURL?: string;
                         } | ({
                             name: string;
                             email: string;
                             password: string;
+                            callbackURL?: string;
                         } & {} & {})) & {
                             handle: string;
                         } & {
@@ -9080,8 +8987,8 @@ declare const auth: {
                                                     type: string;
                                                     description: string;
                                                 };
-                                                required: string[];
                                             };
+                                            required: string[];
                                         };
                                     };
                                 };
@@ -9539,16 +9446,1679 @@ declare const auth: {
         };
         updateUser: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
-                body: Partial<better_auth.Prettify<({
-                    handle: string;
-                } | ({} & {} & {
-                    handle: string;
-                })) & {
-                    handle?: string | null | undefined;
-                } & {
+                body: Partial<better_auth.AdditionalUserFieldsInput<{
+                    appName: string;
+                    database: (options: BetterAuthOptions) => better_auth.Adapter;
+                    advanced: {
+                        generateId: false;
+                        defaultCookieAttributes: {
+                            sameSite: "none";
+                            secure: true;
+                        };
+                    };
+                    session: {
+                        updateAge: number;
+                        expiresIn: number;
+                    };
+                    basePath: string;
+                    trustedOrigins: string[];
+                    user: {
+                        additionalFields: {
+                            handle: {
+                                type: "string";
+                            };
+                        };
+                        changeEmail: {
+                            enabled: true;
+                            sendChangeEmailVerification: ({ user, url }: {
+                                user: better_auth.User;
+                                newEmail: string;
+                                url: string;
+                                token: string;
+                            }) => Promise<void>;
+                        };
+                    };
+                    account: {
+                        accountLinking: {
+                            enabled: true;
+                            trustedProviders: ("github" | "apple" | "google")[];
+                            allowDifferentEmails: true;
+                        };
+                    };
+                    socialProviders: {
+                        google: {
+                            clientId: string;
+                            clientSecret: string;
+                        };
+                        github: {
+                            clientId: string;
+                            clientSecret: string;
+                        };
+                        apple: {
+                            enabled: boolean;
+                            clientId: string;
+                            clientSecret: string;
+                            appBundleIdentifier: string | undefined;
+                        };
+                    };
+                    emailAndPassword: {
+                        enabled: true;
+                        sendResetPassword({ user, url }: {
+                            user: better_auth.User;
+                            url: string;
+                            token: string;
+                        }): Promise<void>;
+                    };
+                    emailVerification: {
+                        sendOnSignUp: true;
+                        sendVerificationEmail({ user, url }: {
+                            user: better_auth.User;
+                            url: string;
+                            token: string;
+                        }): Promise<void>;
+                    };
+                    plugins: ({
+                        id: "open-api";
+                        endpoints: {
+                            generateOpenAPISchema: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_1 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_1 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_1] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        openapi: string;
+                                        info: {
+                                            title: string;
+                                            description: string;
+                                            version: string;
+                                        };
+                                        components: {
+                                            securitySchemes: {
+                                                apiKeyCookie: {
+                                                    type: string;
+                                                    in: string;
+                                                    name: string;
+                                                    description: string;
+                                                };
+                                                bearerAuth: {
+                                                    type: string;
+                                                    scheme: string;
+                                                    description: string;
+                                                };
+                                            };
+                                            schemas: {};
+                                        };
+                                        security: {
+                                            apiKeyCookie: never[];
+                                            bearerAuth: never[];
+                                        }[];
+                                        servers: {
+                                            url: string;
+                                        }[];
+                                        tags: {
+                                            name: string;
+                                            description: string;
+                                        }[];
+                                        paths: Record<string, better_auth_plugins.Path>;
+                                    };
+                                } : {
+                                    openapi: string;
+                                    info: {
+                                        title: string;
+                                        description: string;
+                                        version: string;
+                                    };
+                                    components: {
+                                        securitySchemes: {
+                                            apiKeyCookie: {
+                                                type: string;
+                                                in: string;
+                                                name: string;
+                                                description: string;
+                                            };
+                                            bearerAuth: {
+                                                type: string;
+                                                scheme: string;
+                                                description: string;
+                                            };
+                                        };
+                                        schemas: {};
+                                    };
+                                    security: {
+                                        apiKeyCookie: never[];
+                                        bearerAuth: never[];
+                                    }[];
+                                    servers: {
+                                        url: string;
+                                    }[];
+                                    tags: {
+                                        name: string;
+                                        description: string;
+                                    }[];
+                                    paths: Record<string, better_auth_plugins.Path>;
+                                }>;
+                                options: {
+                                    method: "GET";
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/open-api/generate-schema";
+                            };
+                            openAPIReference: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_2 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_2 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_2] extends [true] ? {
+                                    headers: Headers;
+                                    response: Response;
+                                } : Response>;
+                                options: {
+                                    method: "GET";
+                                    metadata: {
+                                        isAction: boolean;
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/reference";
+                            };
+                        };
+                    } | {
+                        id: "two-factor";
+                        endpoints: {
+                            enableTwoFactor: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_3 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        password: string;
+                                        issuer?: string | undefined;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_3 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_3] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        totpURI: string;
+                                        backupCodes: string[];
+                                    };
+                                } : {
+                                    totpURI: string;
+                                    backupCodes: string[];
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        password: zod.ZodString;
+                                        issuer: zod.ZodOptional<zod.ZodString>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        password: string;
+                                        issuer?: string | undefined;
+                                    }, {
+                                        password: string;
+                                        issuer?: string | undefined;
+                                    }>;
+                                    use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                        session: {
+                                            session: Record<string, any> & {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined;
+                                                userAgent?: string | null | undefined;
+                                            };
+                                            user: Record<string, any> & {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            };
+                                        };
+                                    }>)[];
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    totpURI: {
+                                                                        type: string;
+                                                                        description: string;
+                                                                    };
+                                                                    backupCodes: {
+                                                                        type: string;
+                                                                        items: {
+                                                                            type: string;
+                                                                        };
+                                                                        description: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/enable";
+                            };
+                            disableTwoFactor: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_4 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        password: string;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_4 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_4] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        status: boolean;
+                                    };
+                                } : {
+                                    status: boolean;
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        password: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        password: string;
+                                    }, {
+                                        password: string;
+                                    }>;
+                                    use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                        session: {
+                                            session: Record<string, any> & {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined;
+                                                userAgent?: string | null | undefined;
+                                            };
+                                            user: Record<string, any> & {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            };
+                                        };
+                                    }>)[];
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    status: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/disable";
+                            };
+                            verifyBackupCode: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_5 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                        disableSession?: boolean | undefined;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_5 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_5] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        token: string | undefined;
+                                        user: {
+                                            id: string;
+                                            email: string;
+                                            emailVerified: boolean;
+                                            name: string;
+                                            image: string | null | undefined;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                        };
+                                    };
+                                } : {
+                                    token: string | undefined;
+                                    user: {
+                                        id: string;
+                                        email: string;
+                                        emailVerified: boolean;
+                                        name: string;
+                                        image: string | null | undefined;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                    };
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        code: zod.ZodString;
+                                        disableSession: zod.ZodOptional<zod.ZodBoolean>;
+                                        trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                        disableSession?: boolean | undefined;
+                                    }, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                        disableSession?: boolean | undefined;
+                                    }>;
+                                    metadata: {
+                                        openapi: {
+                                            description: string;
+                                            responses: {
+                                                "200": {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    user: {
+                                                                        type: string;
+                                                                        properties: {
+                                                                            id: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            email: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            emailVerified: {
+                                                                                type: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            name: {
+                                                                                type: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            image: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            twoFactorEnabled: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            createdAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                            updatedAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                        description: string;
+                                                                    };
+                                                                    session: {
+                                                                        type: string;
+                                                                        properties: {
+                                                                            token: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            userId: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            createdAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                            expiresAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                        description: string;
+                                                                    };
+                                                                };
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/verify-backup-code";
+                            };
+                            generateBackupCodes: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_6 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        password: string;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_6 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_6] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        status: boolean;
+                                        backupCodes: string[];
+                                    };
+                                } : {
+                                    status: boolean;
+                                    backupCodes: string[];
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        password: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        password: string;
+                                    }, {
+                                        password: string;
+                                    }>;
+                                    use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                        session: {
+                                            session: Record<string, any> & {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined;
+                                                userAgent?: string | null | undefined;
+                                            };
+                                            user: Record<string, any> & {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            };
+                                        };
+                                    }>)[];
+                                    metadata: {
+                                        openapi: {
+                                            description: string;
+                                            responses: {
+                                                "200": {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    status: {
+                                                                        type: string;
+                                                                        description: string;
+                                                                        enum: boolean[];
+                                                                    };
+                                                                    backupCodes: {
+                                                                        type: string;
+                                                                        items: {
+                                                                            type: string;
+                                                                        };
+                                                                        description: string;
+                                                                    };
+                                                                };
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/generate-backup-codes";
+                            };
+                            viewBackupCodes: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_7 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        userId: string;
+                                    };
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_7 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_7] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        status: boolean;
+                                        backupCodes: string[];
+                                    };
+                                } : {
+                                    status: boolean;
+                                    backupCodes: string[];
+                                }>;
+                                options: {
+                                    method: "GET";
+                                    body: zod.ZodObject<{
+                                        userId: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        userId: string;
+                                    }, {
+                                        userId: string;
+                                    }>;
+                                    metadata: {
+                                        SERVER_ONLY: true;
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/view-backup-codes";
+                            };
+                            sendTwoFactorOTP: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_8 extends boolean = false>(inputCtx_0?: ({
+                                    body?: {
+                                        trustDevice?: boolean | undefined;
+                                    } | undefined;
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_8 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_8] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        status: boolean;
+                                    };
+                                } : {
+                                    status: boolean;
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodOptional<zod.ZodObject<{
+                                        trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        trustDevice?: boolean | undefined;
+                                    }, {
+                                        trustDevice?: boolean | undefined;
+                                    }>>;
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    status: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/send-otp";
+                            };
+                            verifyTwoFactorOTP: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_9 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_9 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_9] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        token: string;
+                                        user: {
+                                            id: any;
+                                            email: any;
+                                            emailVerified: any;
+                                            name: any;
+                                            image: any;
+                                            createdAt: any;
+                                            updatedAt: any;
+                                        };
+                                    };
+                                } : {
+                                    token: string;
+                                    user: {
+                                        id: any;
+                                        email: any;
+                                        emailVerified: any;
+                                        name: any;
+                                        image: any;
+                                        createdAt: any;
+                                        updatedAt: any;
+                                    };
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        code: zod.ZodString;
+                                        trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    }, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    }>;
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                "200": {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    token: {
+                                                                        type: string;
+                                                                        description: string;
+                                                                    };
+                                                                    user: {
+                                                                        type: string;
+                                                                        properties: {
+                                                                            id: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            email: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            emailVerified: {
+                                                                                type: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            name: {
+                                                                                type: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            image: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                nullable: boolean;
+                                                                                description: string;
+                                                                            };
+                                                                            createdAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                            updatedAt: {
+                                                                                type: string;
+                                                                                format: string;
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                        description: string;
+                                                                    };
+                                                                };
+                                                                required: string[];
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/verify-otp";
+                            };
+                            generateTOTP: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_10 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        secret: string;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_10 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_10] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        code: string;
+                                    };
+                                } : {
+                                    code: string;
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        secret: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        secret: string;
+                                    }, {
+                                        secret: string;
+                                    }>;
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    code: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                        SERVER_ONLY: true;
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/totp/generate";
+                            };
+                            getTOTPURI: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_11 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        password: string;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_11 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_11] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        totpURI: string;
+                                    };
+                                } : {
+                                    totpURI: string;
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                        session: {
+                                            session: Record<string, any> & {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined;
+                                                userAgent?: string | null | undefined;
+                                            };
+                                            user: Record<string, any> & {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            };
+                                        };
+                                    }>)[];
+                                    body: zod.ZodObject<{
+                                        password: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        password: string;
+                                    }, {
+                                        password: string;
+                                    }>;
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    totpURI: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/get-totp-uri";
+                            };
+                            verifyTOTP: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_12 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_12 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_12] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        token: string;
+                                        user: {
+                                            id: string;
+                                            email: string;
+                                            emailVerified: boolean;
+                                            name: string;
+                                            image: string | null | undefined;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                        };
+                                    };
+                                } : {
+                                    token: string;
+                                    user: {
+                                        id: string;
+                                        email: string;
+                                        emailVerified: boolean;
+                                        name: string;
+                                        image: string | null | undefined;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                    };
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        code: zod.ZodString;
+                                        trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    }, {
+                                        code: string;
+                                        trustDevice?: boolean | undefined;
+                                    }>;
+                                    metadata: {
+                                        openapi: {
+                                            summary: string;
+                                            description: string;
+                                            responses: {
+                                                200: {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "object";
+                                                                properties: {
+                                                                    status: {
+                                                                        type: string;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/two-factor/verify-totp";
+                            };
+                        };
+                        options: better_auth_plugins.TwoFactorOptions | undefined;
+                        hooks: {
+                            after: {
+                                matcher(context: better_auth.HookEndpointContext): boolean;
+                                handler: (inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                    twoFactorRedirect: boolean;
+                                } | undefined>;
+                            }[];
+                        };
+                        schema: {
+                            user: {
+                                fields: {
+                                    twoFactorEnabled: {
+                                        type: "boolean";
+                                        required: false;
+                                        defaultValue: false;
+                                        input: false;
+                                    };
+                                };
+                            };
+                            twoFactor: {
+                                fields: {
+                                    secret: {
+                                        type: "string";
+                                        required: true;
+                                        returned: false;
+                                    };
+                                    backupCodes: {
+                                        type: "string";
+                                        required: true;
+                                        returned: false;
+                                    };
+                                    userId: {
+                                        type: "string";
+                                        required: true;
+                                        returned: false;
+                                        references: {
+                                            model: string;
+                                            field: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                        rateLimit: {
+                            pathMatcher(path: string): boolean;
+                            window: number;
+                            max: number;
+                        }[];
+                        $ERROR_CODES: {
+                            readonly OTP_NOT_ENABLED: "OTP not enabled";
+                            readonly OTP_HAS_EXPIRED: "OTP has expired";
+                            readonly TOTP_NOT_ENABLED: "TOTP not enabled";
+                            readonly TWO_FACTOR_NOT_ENABLED: "Two factor isn't enabled";
+                            readonly BACKUP_CODES_NOT_ENABLED: "Backup codes aren't enabled";
+                            readonly INVALID_BACKUP_CODE: "Invalid backup code";
+                            readonly INVALID_CODE: "Invalid code";
+                            readonly TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE: "Too many attempts. Please request a new code.";
+                            readonly INVALID_TWO_FACTOR_COOKIE: "Invalid two factor cookie";
+                        };
+                    } | {
+                        id: "expo";
+                        init: (ctx: better_auth.AuthContext) => {
+                            options: {
+                                trustedOrigins: string[];
+                            };
+                        };
+                        onRequest(request: Request, ctx: better_auth.AuthContext): Promise<{
+                            request: Request;
+                        } | undefined>;
+                        hooks: {
+                            after: {
+                                matcher(context: better_auth.HookEndpointContext): boolean;
+                                handler: (inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<void>;
+                            }[];
+                        };
+                    } | {
+                        id: "custom-session";
+                        endpoints: {
+                            getSession: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_13 extends boolean = false>(inputCtx_0: {
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: {
+                                        disableCookieCache?: string | boolean | undefined;
+                                        disableRefresh?: boolean | undefined;
+                                    } | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_13 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_13] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        user: {
+                                            id: string;
+                                            name: string;
+                                            email: string;
+                                            emailVerified: boolean;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                            image?: string | null | undefined | undefined;
+                                        } & {
+                                            image: string | null;
+                                            handle: string | null;
+                                            twoFactorEnabled: boolean | null;
+                                        };
+                                        session: {
+                                            id: string;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                            userId: string;
+                                            expiresAt: Date;
+                                            token: string;
+                                            ipAddress?: string | null | undefined | undefined;
+                                            userAgent?: string | null | undefined | undefined;
+                                        };
+                                        invitation: boolean | {
+                                            code: string;
+                                            createdAt: Date | null;
+                                            usedAt: Date | null;
+                                            fromUserId: string;
+                                            toUserId: string | null;
+                                        } | undefined;
+                                        role: "user" | "trial";
+                                    } | null;
+                                } : {
+                                    user: {
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                        emailVerified: boolean;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                        image?: string | null | undefined | undefined;
+                                    } & {
+                                        image: string | null;
+                                        handle: string | null;
+                                        twoFactorEnabled: boolean | null;
+                                    };
+                                    session: {
+                                        id: string;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                        userId: string;
+                                        expiresAt: Date;
+                                        token: string;
+                                        ipAddress?: string | null | undefined | undefined;
+                                        userAgent?: string | null | undefined | undefined;
+                                    };
+                                    invitation: boolean | {
+                                        code: string;
+                                        createdAt: Date | null;
+                                        usedAt: Date | null;
+                                        fromUserId: string;
+                                        toUserId: string | null;
+                                    } | undefined;
+                                    role: "user" | "trial";
+                                } | null>;
+                                options: {
+                                    method: "GET";
+                                    query: zod.ZodOptional<zod.ZodObject<{
+                                        disableCookieCache: zod.ZodOptional<zod.ZodUnion<[zod.ZodBoolean, zod.ZodEffects<zod.ZodString, boolean, string>]>>;
+                                        disableRefresh: zod.ZodOptional<zod.ZodBoolean>;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        disableCookieCache?: boolean | undefined;
+                                        disableRefresh?: boolean | undefined;
+                                    }, {
+                                        disableCookieCache?: string | boolean | undefined;
+                                        disableRefresh?: boolean | undefined;
+                                    }>>;
+                                    metadata: {
+                                        CUSTOM_SESSION: boolean;
+                                        openapi: {
+                                            description: string;
+                                            responses: {
+                                                "200": {
+                                                    description: string;
+                                                    content: {
+                                                        "application/json": {
+                                                            schema: {
+                                                                type: "array";
+                                                                nullable: boolean;
+                                                                items: {
+                                                                    $ref: string;
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                    requireHeaders: true;
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/get-session";
+                            };
+                        };
+                    } | {
+                        id: "customGetProviders";
+                        endpoints: {
+                            customGetProviders: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_14 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    headers: Headers;
+                                    response: any;
+                                } : any>;
+                                options: {
+                                    method: "GET";
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/get-providers";
+                            };
+                        };
+                    } | {
+                        id: "getAccountInfo";
+                        endpoints: {
+                            getAccountInfo: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_14 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    headers: Headers;
+                                    response: ({
+                                        id: string;
+                                        provider: string;
+                                        profile: {
+                                            id: string;
+                                            name?: string;
+                                            email?: string | null;
+                                            image?: string;
+                                            emailVerified: boolean;
+                                        };
+                                        accountId?: undefined;
+                                    } | {
+                                        id: string;
+                                        accountId: string;
+                                        provider: string;
+                                        profile: {
+                                            id: string;
+                                            name?: string;
+                                            email?: string | null;
+                                            image?: string;
+                                            emailVerified: boolean;
+                                        } | undefined;
+                                    })[] | null;
+                                } : ({
+                                    id: string;
+                                    provider: string;
+                                    profile: {
+                                        id: string;
+                                        name?: string;
+                                        email?: string | null;
+                                        image?: string;
+                                        emailVerified: boolean;
+                                    };
+                                    accountId?: undefined;
+                                } | {
+                                    id: string;
+                                    accountId: string;
+                                    provider: string;
+                                    profile: {
+                                        id: string;
+                                        name?: string;
+                                        email?: string | null;
+                                        image?: string;
+                                        emailVerified: boolean;
+                                    } | undefined;
+                                })[] | null>;
+                                options: {
+                                    method: "GET";
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/get-account-info";
+                            };
+                        };
+                    } | {
+                        id: "customUpdateUser";
+                        endpoints: {
+                            customUpdateUser: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_14 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    headers: Headers;
+                                    response: string | null;
+                                } : string | null>;
+                                options: {
+                                    method: "POST";
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/update-user-ccc";
+                            };
+                        };
+                    } | {
+                        id: "oneTimeToken";
+                        endpoints: {
+                            generateOneTimeToken: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                                    body?: undefined;
+                                } & {
+                                    method?: "GET" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_14 | undefined;
+                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        token: string;
+                                    };
+                                } : {
+                                    token: string;
+                                }>;
+                                options: {
+                                    method: "GET";
+                                    use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                        session: {
+                                            session: Record<string, any> & {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined;
+                                                userAgent?: string | null | undefined;
+                                            };
+                                            user: Record<string, any> & {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            };
+                                        };
+                                    }>)[];
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/one-time-token/generate";
+                            };
+                            applyOneTimeToken: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0: {
+                                    body: {
+                                        token: string;
+                                    };
+                                } & {
+                                    method?: "POST" | undefined;
+                                } & {
+                                    query?: Record<string, any> | undefined;
+                                } & {
+                                    params?: Record<string, any>;
+                                } & {
+                                    request?: Request;
+                                } & {
+                                    headers?: HeadersInit;
+                                } & {
+                                    asResponse?: boolean;
+                                    returnHeaders?: boolean;
+                                    use?: better_call.Middleware[];
+                                    path?: string;
+                                } & {
+                                    asResponse?: AsResponse_1 | undefined;
+                                    returnHeaders?: ReturnHeaders_14 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    headers: Headers;
+                                    response: {
+                                        user: {
+                                            id: string;
+                                            name: string;
+                                            email: string;
+                                            emailVerified: boolean;
+                                            createdAt: Date;
+                                            updatedAt: Date;
+                                            image?: string | null | undefined;
+                                        } & Record<string, any>;
+                                    };
+                                } : {
+                                    user: {
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                        emailVerified: boolean;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                        image?: string | null | undefined;
+                                    } & Record<string, any>;
+                                }>;
+                                options: {
+                                    method: "POST";
+                                    body: zod.ZodObject<{
+                                        token: zod.ZodString;
+                                    }, "strip", zod.ZodTypeAny, {
+                                        token: string;
+                                    }, {
+                                        token: string;
+                                    }>;
+                                } & {
+                                    use: any[];
+                                };
+                                path: "/one-time-token/apply";
+                            };
+                        };
+                    })[];
+                }>> & {
                     name?: string;
-                    image?: string | null;
-                }>>;
+                    image?: string;
+                };
             } & {
                 method?: "POST" | undefined;
             } & {
@@ -9603,16 +11173,1679 @@ declare const auth: {
                 }>)[];
                 metadata: {
                     $Infer: {
-                        body: Partial<better_auth.Prettify<({
-                            handle: string;
-                        } | ({} & {} & {
-                            handle: string;
-                        })) & {
-                            handle?: string | null | undefined;
-                        } & {
+                        body: Partial<better_auth.AdditionalUserFieldsInput<{
+                            appName: string;
+                            database: (options: BetterAuthOptions) => better_auth.Adapter;
+                            advanced: {
+                                generateId: false;
+                                defaultCookieAttributes: {
+                                    sameSite: "none";
+                                    secure: true;
+                                };
+                            };
+                            session: {
+                                updateAge: number;
+                                expiresIn: number;
+                            };
+                            basePath: string;
+                            trustedOrigins: string[];
+                            user: {
+                                additionalFields: {
+                                    handle: {
+                                        type: "string";
+                                    };
+                                };
+                                changeEmail: {
+                                    enabled: true;
+                                    sendChangeEmailVerification: ({ user, url }: {
+                                        user: better_auth.User;
+                                        newEmail: string;
+                                        url: string;
+                                        token: string;
+                                    }) => Promise<void>;
+                                };
+                            };
+                            account: {
+                                accountLinking: {
+                                    enabled: true;
+                                    trustedProviders: ("github" | "apple" | "google")[];
+                                    allowDifferentEmails: true;
+                                };
+                            };
+                            socialProviders: {
+                                google: {
+                                    clientId: string;
+                                    clientSecret: string;
+                                };
+                                github: {
+                                    clientId: string;
+                                    clientSecret: string;
+                                };
+                                apple: {
+                                    enabled: boolean;
+                                    clientId: string;
+                                    clientSecret: string;
+                                    appBundleIdentifier: string | undefined;
+                                };
+                            };
+                            emailAndPassword: {
+                                enabled: true;
+                                sendResetPassword({ user, url }: {
+                                    user: better_auth.User;
+                                    url: string;
+                                    token: string;
+                                }): Promise<void>;
+                            };
+                            emailVerification: {
+                                sendOnSignUp: true;
+                                sendVerificationEmail({ user, url }: {
+                                    user: better_auth.User;
+                                    url: string;
+                                    token: string;
+                                }): Promise<void>;
+                            };
+                            plugins: ({
+                                id: "open-api";
+                                endpoints: {
+                                    generateOpenAPISchema: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                openapi: string;
+                                                info: {
+                                                    title: string;
+                                                    description: string;
+                                                    version: string;
+                                                };
+                                                components: {
+                                                    securitySchemes: {
+                                                        apiKeyCookie: {
+                                                            type: string;
+                                                            in: string;
+                                                            name: string;
+                                                            description: string;
+                                                        };
+                                                        bearerAuth: {
+                                                            type: string;
+                                                            scheme: string;
+                                                            description: string;
+                                                        };
+                                                    };
+                                                    schemas: {};
+                                                };
+                                                security: {
+                                                    apiKeyCookie: never[];
+                                                    bearerAuth: never[];
+                                                }[];
+                                                servers: {
+                                                    url: string;
+                                                }[];
+                                                tags: {
+                                                    name: string;
+                                                    description: string;
+                                                }[];
+                                                paths: Record<string, better_auth_plugins.Path>;
+                                            };
+                                        } : {
+                                            openapi: string;
+                                            info: {
+                                                title: string;
+                                                description: string;
+                                                version: string;
+                                            };
+                                            components: {
+                                                securitySchemes: {
+                                                    apiKeyCookie: {
+                                                        type: string;
+                                                        in: string;
+                                                        name: string;
+                                                        description: string;
+                                                    };
+                                                    bearerAuth: {
+                                                        type: string;
+                                                        scheme: string;
+                                                        description: string;
+                                                    };
+                                                };
+                                                schemas: {};
+                                            };
+                                            security: {
+                                                apiKeyCookie: never[];
+                                                bearerAuth: never[];
+                                            }[];
+                                            servers: {
+                                                url: string;
+                                            }[];
+                                            tags: {
+                                                name: string;
+                                                description: string;
+                                            }[];
+                                            paths: Record<string, better_auth_plugins.Path>;
+                                        }>;
+                                        options: {
+                                            method: "GET";
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/open-api/generate-schema";
+                                    };
+                                    openAPIReference: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: Response;
+                                        } : Response>;
+                                        options: {
+                                            method: "GET";
+                                            metadata: {
+                                                isAction: boolean;
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/reference";
+                                    };
+                                };
+                            } | {
+                                id: "two-factor";
+                                endpoints: {
+                                    enableTwoFactor: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                password: string;
+                                                issuer?: string | undefined;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                totpURI: string;
+                                                backupCodes: string[];
+                                            };
+                                        } : {
+                                            totpURI: string;
+                                            backupCodes: string[];
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                password: zod.ZodString;
+                                                issuer: zod.ZodOptional<zod.ZodString>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                password: string;
+                                                issuer?: string | undefined;
+                                            }, {
+                                                password: string;
+                                                issuer?: string | undefined;
+                                            }>;
+                                            use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                                session: {
+                                                    session: Record<string, any> & {
+                                                        id: string;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        userId: string;
+                                                        expiresAt: Date;
+                                                        token: string;
+                                                        ipAddress?: string | null | undefined;
+                                                        userAgent?: string | null | undefined;
+                                                    };
+                                                    user: Record<string, any> & {
+                                                        id: string;
+                                                        name: string;
+                                                        email: string;
+                                                        emailVerified: boolean;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        image?: string | null | undefined;
+                                                    };
+                                                };
+                                            }>)[];
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            totpURI: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            backupCodes: {
+                                                                                type: string;
+                                                                                items: {
+                                                                                    type: string;
+                                                                                };
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/enable";
+                                    };
+                                    disableTwoFactor: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                password: string;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                status: boolean;
+                                            };
+                                        } : {
+                                            status: boolean;
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                password: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                password: string;
+                                            }, {
+                                                password: string;
+                                            }>;
+                                            use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                                session: {
+                                                    session: Record<string, any> & {
+                                                        id: string;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        userId: string;
+                                                        expiresAt: Date;
+                                                        token: string;
+                                                        ipAddress?: string | null | undefined;
+                                                        userAgent?: string | null | undefined;
+                                                    };
+                                                    user: Record<string, any> & {
+                                                        id: string;
+                                                        name: string;
+                                                        email: string;
+                                                        emailVerified: boolean;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        image?: string | null | undefined;
+                                                    };
+                                                };
+                                            }>)[];
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            status: {
+                                                                                type: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/disable";
+                                    };
+                                    verifyBackupCode: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                                disableSession?: boolean | undefined;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                token: string | undefined;
+                                                user: {
+                                                    id: string;
+                                                    email: string;
+                                                    emailVerified: boolean;
+                                                    name: string;
+                                                    image: string | null | undefined;
+                                                    createdAt: Date;
+                                                    updatedAt: Date;
+                                                };
+                                            };
+                                        } : {
+                                            token: string | undefined;
+                                            user: {
+                                                id: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                name: string;
+                                                image: string | null | undefined;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                            };
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                code: zod.ZodString;
+                                                disableSession: zod.ZodOptional<zod.ZodBoolean>;
+                                                trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                                disableSession?: boolean | undefined;
+                                            }, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                                disableSession?: boolean | undefined;
+                                            }>;
+                                            metadata: {
+                                                openapi: {
+                                                    description: string;
+                                                    responses: {
+                                                        "200": {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            user: {
+                                                                                type: string;
+                                                                                properties: {
+                                                                                    id: {
+                                                                                        type: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    email: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    emailVerified: {
+                                                                                        type: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    name: {
+                                                                                        type: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    image: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    twoFactorEnabled: {
+                                                                                        type: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    createdAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    updatedAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                };
+                                                                                required: string[];
+                                                                                description: string;
+                                                                            };
+                                                                            session: {
+                                                                                type: string;
+                                                                                properties: {
+                                                                                    token: {
+                                                                                        type: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    userId: {
+                                                                                        type: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    createdAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    expiresAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                };
+                                                                                required: string[];
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/verify-backup-code";
+                                    };
+                                    generateBackupCodes: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                password: string;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                status: boolean;
+                                                backupCodes: string[];
+                                            };
+                                        } : {
+                                            status: boolean;
+                                            backupCodes: string[];
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                password: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                password: string;
+                                            }, {
+                                                password: string;
+                                            }>;
+                                            use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                                session: {
+                                                    session: Record<string, any> & {
+                                                        id: string;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        userId: string;
+                                                        expiresAt: Date;
+                                                        token: string;
+                                                        ipAddress?: string | null | undefined;
+                                                        userAgent?: string | null | undefined;
+                                                    };
+                                                    user: Record<string, any> & {
+                                                        id: string;
+                                                        name: string;
+                                                        email: string;
+                                                        emailVerified: boolean;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        image?: string | null | undefined;
+                                                    };
+                                                };
+                                            }>)[];
+                                            metadata: {
+                                                openapi: {
+                                                    description: string;
+                                                    responses: {
+                                                        "200": {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            status: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                                enum: boolean[];
+                                                                            };
+                                                                            backupCodes: {
+                                                                                type: string;
+                                                                                items: {
+                                                                                    type: string;
+                                                                                };
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/generate-backup-codes";
+                                    };
+                                    viewBackupCodes: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                userId: string;
+                                            };
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                status: boolean;
+                                                backupCodes: string[];
+                                            };
+                                        } : {
+                                            status: boolean;
+                                            backupCodes: string[];
+                                        }>;
+                                        options: {
+                                            method: "GET";
+                                            body: zod.ZodObject<{
+                                                userId: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                userId: string;
+                                            }, {
+                                                userId: string;
+                                            }>;
+                                            metadata: {
+                                                SERVER_ONLY: true;
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/view-backup-codes";
+                                    };
+                                    sendTwoFactorOTP: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: {
+                                                trustDevice?: boolean | undefined;
+                                            } | undefined;
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                status: boolean;
+                                            };
+                                        } : {
+                                            status: boolean;
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodOptional<zod.ZodObject<{
+                                                trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                trustDevice?: boolean | undefined;
+                                            }, {
+                                                trustDevice?: boolean | undefined;
+                                            }>>;
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            status: {
+                                                                                type: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/send-otp";
+                                    };
+                                    verifyTwoFactorOTP: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                token: string;
+                                                user: {
+                                                    id: any;
+                                                    email: any;
+                                                    emailVerified: any;
+                                                    name: any;
+                                                    image: any;
+                                                    createdAt: any;
+                                                    updatedAt: any;
+                                                };
+                                            };
+                                        } : {
+                                            token: string;
+                                            user: {
+                                                id: any;
+                                                email: any;
+                                                emailVerified: any;
+                                                name: any;
+                                                image: any;
+                                                createdAt: any;
+                                                updatedAt: any;
+                                            };
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                code: zod.ZodString;
+                                                trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            }, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            }>;
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        "200": {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            token: {
+                                                                                type: string;
+                                                                                description: string;
+                                                                            };
+                                                                            user: {
+                                                                                type: string;
+                                                                                properties: {
+                                                                                    id: {
+                                                                                        type: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    email: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    emailVerified: {
+                                                                                        type: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    name: {
+                                                                                        type: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    image: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        nullable: boolean;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    createdAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                    updatedAt: {
+                                                                                        type: string;
+                                                                                        format: string;
+                                                                                        description: string;
+                                                                                    };
+                                                                                };
+                                                                                required: string[];
+                                                                                description: string;
+                                                                            };
+                                                                        };
+                                                                        required: string[];
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/verify-otp";
+                                    };
+                                    generateTOTP: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                secret: string;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                code: string;
+                                            };
+                                        } : {
+                                            code: string;
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                secret: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                secret: string;
+                                            }, {
+                                                secret: string;
+                                            }>;
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            code: {
+                                                                                type: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                SERVER_ONLY: true;
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/totp/generate";
+                                    };
+                                    getTOTPURI: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                password: string;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                totpURI: string;
+                                            };
+                                        } : {
+                                            totpURI: string;
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                                session: {
+                                                    session: Record<string, any> & {
+                                                        id: string;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        userId: string;
+                                                        expiresAt: Date;
+                                                        token: string;
+                                                        ipAddress?: string | null | undefined;
+                                                        userAgent?: string | null | undefined;
+                                                    };
+                                                    user: Record<string, any> & {
+                                                        id: string;
+                                                        name: string;
+                                                        email: string;
+                                                        emailVerified: boolean;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        image?: string | null | undefined;
+                                                    };
+                                                };
+                                            }>)[];
+                                            body: zod.ZodObject<{
+                                                password: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                password: string;
+                                            }, {
+                                                password: string;
+                                            }>;
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            totpURI: {
+                                                                                type: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/get-totp-uri";
+                                    };
+                                    verifyTOTP: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                token: string;
+                                                user: {
+                                                    id: string;
+                                                    email: string;
+                                                    emailVerified: boolean;
+                                                    name: string;
+                                                    image: string | null | undefined;
+                                                    createdAt: Date;
+                                                    updatedAt: Date;
+                                                };
+                                            };
+                                        } : {
+                                            token: string;
+                                            user: {
+                                                id: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                name: string;
+                                                image: string | null | undefined;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                            };
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                code: zod.ZodString;
+                                                trustDevice: zod.ZodOptional<zod.ZodBoolean>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            }, {
+                                                code: string;
+                                                trustDevice?: boolean | undefined;
+                                            }>;
+                                            metadata: {
+                                                openapi: {
+                                                    summary: string;
+                                                    description: string;
+                                                    responses: {
+                                                        200: {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "object";
+                                                                        properties: {
+                                                                            status: {
+                                                                                type: string;
+                                                                            };
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/two-factor/verify-totp";
+                                    };
+                                };
+                                options: better_auth_plugins.TwoFactorOptions | undefined;
+                                hooks: {
+                                    after: {
+                                        matcher(context: better_auth.HookEndpointContext): boolean;
+                                        handler: (inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                            twoFactorRedirect: boolean;
+                                        } | undefined>;
+                                    }[];
+                                };
+                                schema: {
+                                    user: {
+                                        fields: {
+                                            twoFactorEnabled: {
+                                                type: "boolean";
+                                                required: false;
+                                                defaultValue: false;
+                                                input: false;
+                                            };
+                                        };
+                                    };
+                                    twoFactor: {
+                                        fields: {
+                                            secret: {
+                                                type: "string";
+                                                required: true;
+                                                returned: false;
+                                            };
+                                            backupCodes: {
+                                                type: "string";
+                                                required: true;
+                                                returned: false;
+                                            };
+                                            userId: {
+                                                type: "string";
+                                                required: true;
+                                                returned: false;
+                                                references: {
+                                                    model: string;
+                                                    field: string;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                                rateLimit: {
+                                    pathMatcher(path: string): boolean;
+                                    window: number;
+                                    max: number;
+                                }[];
+                                $ERROR_CODES: {
+                                    readonly OTP_NOT_ENABLED: "OTP not enabled";
+                                    readonly OTP_HAS_EXPIRED: "OTP has expired";
+                                    readonly TOTP_NOT_ENABLED: "TOTP not enabled";
+                                    readonly TWO_FACTOR_NOT_ENABLED: "Two factor isn't enabled";
+                                    readonly BACKUP_CODES_NOT_ENABLED: "Backup codes aren't enabled";
+                                    readonly INVALID_BACKUP_CODE: "Invalid backup code";
+                                    readonly INVALID_CODE: "Invalid code";
+                                    readonly TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE: "Too many attempts. Please request a new code.";
+                                    readonly INVALID_TWO_FACTOR_COOKIE: "Invalid two factor cookie";
+                                };
+                            } | {
+                                id: "expo";
+                                init: (ctx: better_auth.AuthContext) => {
+                                    options: {
+                                        trustedOrigins: string[];
+                                    };
+                                };
+                                onRequest(request: Request, ctx: better_auth.AuthContext): Promise<{
+                                    request: Request;
+                                } | undefined>;
+                                hooks: {
+                                    after: {
+                                        matcher(context: better_auth.HookEndpointContext): boolean;
+                                        handler: (inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<void>;
+                                    }[];
+                                };
+                            } | {
+                                id: "custom-session";
+                                endpoints: {
+                                    getSession: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: {
+                                                disableCookieCache?: string | boolean | undefined;
+                                                disableRefresh?: boolean | undefined;
+                                            } | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                user: {
+                                                    id: string;
+                                                    name: string;
+                                                    email: string;
+                                                    emailVerified: boolean;
+                                                    createdAt: Date;
+                                                    updatedAt: Date;
+                                                    image?: string | null | undefined | undefined;
+                                                } & {
+                                                    image: string | null;
+                                                    handle: string | null;
+                                                    twoFactorEnabled: boolean | null;
+                                                };
+                                                session: {
+                                                    id: string;
+                                                    createdAt: Date;
+                                                    updatedAt: Date;
+                                                    userId: string;
+                                                    expiresAt: Date;
+                                                    token: string;
+                                                    ipAddress?: string | null | undefined | undefined;
+                                                    userAgent?: string | null | undefined | undefined;
+                                                };
+                                                invitation: boolean | {
+                                                    code: string;
+                                                    createdAt: Date | null;
+                                                    usedAt: Date | null;
+                                                    fromUserId: string;
+                                                    toUserId: string | null;
+                                                } | undefined;
+                                                role: "user" | "trial";
+                                            } | null;
+                                        } : {
+                                            user: {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined | undefined;
+                                            } & {
+                                                image: string | null;
+                                                handle: string | null;
+                                                twoFactorEnabled: boolean | null;
+                                            };
+                                            session: {
+                                                id: string;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                userId: string;
+                                                expiresAt: Date;
+                                                token: string;
+                                                ipAddress?: string | null | undefined | undefined;
+                                                userAgent?: string | null | undefined | undefined;
+                                            };
+                                            invitation: boolean | {
+                                                code: string;
+                                                createdAt: Date | null;
+                                                usedAt: Date | null;
+                                                fromUserId: string;
+                                                toUserId: string | null;
+                                            } | undefined;
+                                            role: "user" | "trial";
+                                        } | null>;
+                                        options: {
+                                            method: "GET";
+                                            query: zod.ZodOptional<zod.ZodObject<{
+                                                disableCookieCache: zod.ZodOptional<zod.ZodUnion<[zod.ZodBoolean, zod.ZodEffects<zod.ZodString, boolean, string>]>>;
+                                                disableRefresh: zod.ZodOptional<zod.ZodBoolean>;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                disableCookieCache?: boolean | undefined;
+                                                disableRefresh?: boolean | undefined;
+                                            }, {
+                                                disableCookieCache?: string | boolean | undefined;
+                                                disableRefresh?: boolean | undefined;
+                                            }>>;
+                                            metadata: {
+                                                CUSTOM_SESSION: boolean;
+                                                openapi: {
+                                                    description: string;
+                                                    responses: {
+                                                        "200": {
+                                                            description: string;
+                                                            content: {
+                                                                "application/json": {
+                                                                    schema: {
+                                                                        type: "array";
+                                                                        nullable: boolean;
+                                                                        items: {
+                                                                            $ref: string;
+                                                                        };
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                            requireHeaders: true;
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/get-session";
+                                    };
+                                };
+                            } | {
+                                id: "customGetProviders";
+                                endpoints: {
+                                    customGetProviders: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: any;
+                                        } : any>;
+                                        options: {
+                                            method: "GET";
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/get-providers";
+                                    };
+                                };
+                            } | {
+                                id: "getAccountInfo";
+                                endpoints: {
+                                    getAccountInfo: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: ({
+                                                id: string;
+                                                provider: string;
+                                                profile: {
+                                                    id: string;
+                                                    name?: string;
+                                                    email?: string | null;
+                                                    image?: string;
+                                                    emailVerified: boolean;
+                                                };
+                                                accountId?: undefined;
+                                            } | {
+                                                id: string;
+                                                accountId: string;
+                                                provider: string;
+                                                profile: {
+                                                    id: string;
+                                                    name?: string;
+                                                    email?: string | null;
+                                                    image?: string;
+                                                    emailVerified: boolean;
+                                                } | undefined;
+                                            })[] | null;
+                                        } : ({
+                                            id: string;
+                                            provider: string;
+                                            profile: {
+                                                id: string;
+                                                name?: string;
+                                                email?: string | null;
+                                                image?: string;
+                                                emailVerified: boolean;
+                                            };
+                                            accountId?: undefined;
+                                        } | {
+                                            id: string;
+                                            accountId: string;
+                                            provider: string;
+                                            profile: {
+                                                id: string;
+                                                name?: string;
+                                                email?: string | null;
+                                                image?: string;
+                                                emailVerified: boolean;
+                                            } | undefined;
+                                        })[] | null>;
+                                        options: {
+                                            method: "GET";
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/get-account-info";
+                                    };
+                                };
+                            } | {
+                                id: "customUpdateUser";
+                                endpoints: {
+                                    customUpdateUser: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: string | null;
+                                        } : string | null>;
+                                        options: {
+                                            method: "POST";
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/update-user-ccc";
+                                    };
+                                };
+                            } | {
+                                id: "oneTimeToken";
+                                endpoints: {
+                                    generateOneTimeToken: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                                            body?: undefined;
+                                        } & {
+                                            method?: "GET" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                token: string;
+                                            };
+                                        } : {
+                                            token: string;
+                                        }>;
+                                        options: {
+                                            method: "GET";
+                                            use: ((inputContext: better_call.MiddlewareInputContext<better_call.MiddlewareOptions>) => Promise<{
+                                                session: {
+                                                    session: Record<string, any> & {
+                                                        id: string;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        userId: string;
+                                                        expiresAt: Date;
+                                                        token: string;
+                                                        ipAddress?: string | null | undefined;
+                                                        userAgent?: string | null | undefined;
+                                                    };
+                                                    user: Record<string, any> & {
+                                                        id: string;
+                                                        name: string;
+                                                        email: string;
+                                                        emailVerified: boolean;
+                                                        createdAt: Date;
+                                                        updatedAt: Date;
+                                                        image?: string | null | undefined;
+                                                    };
+                                                };
+                                            }>)[];
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/one-time-token/generate";
+                                    };
+                                    applyOneTimeToken: {
+                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                                            body: {
+                                                token: string;
+                                            };
+                                        } & {
+                                            method?: "POST" | undefined;
+                                        } & {
+                                            query?: Record<string, any> | undefined;
+                                        } & {
+                                            params?: Record<string, any>;
+                                        } & {
+                                            request?: Request;
+                                        } & {
+                                            headers?: HeadersInit;
+                                        } & {
+                                            asResponse?: boolean;
+                                            returnHeaders?: boolean;
+                                            use?: better_call.Middleware[];
+                                            path?: string;
+                                        } & {
+                                            asResponse?: AsResponse | undefined;
+                                            returnHeaders?: ReturnHeaders | undefined;
+                                        }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                                            headers: Headers;
+                                            response: {
+                                                user: {
+                                                    id: string;
+                                                    name: string;
+                                                    email: string;
+                                                    emailVerified: boolean;
+                                                    createdAt: Date;
+                                                    updatedAt: Date;
+                                                    image?: string | null | undefined;
+                                                } & Record<string, any>;
+                                            };
+                                        } : {
+                                            user: {
+                                                id: string;
+                                                name: string;
+                                                email: string;
+                                                emailVerified: boolean;
+                                                createdAt: Date;
+                                                updatedAt: Date;
+                                                image?: string | null | undefined;
+                                            } & Record<string, any>;
+                                        }>;
+                                        options: {
+                                            method: "POST";
+                                            body: zod.ZodObject<{
+                                                token: zod.ZodString;
+                                            }, "strip", zod.ZodTypeAny, {
+                                                token: string;
+                                            }, {
+                                                token: string;
+                                            }>;
+                                        } & {
+                                            use: any[];
+                                        };
+                                        path: "/one-time-token/apply";
+                                    };
+                                };
+                            })[];
+                        }>> & {
                             name?: string;
-                            image?: string | null;
-                        }>>;
+                            image?: string;
+                        };
                     };
                     openapi: {
                         description: string;
@@ -10692,6 +13925,107 @@ declare const auth: {
             };
             path: "/refresh-token";
         };
+        getAccessToken: {
+            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                body: {
+                    providerId: string;
+                    accountId?: string | undefined;
+                    userId?: string | undefined;
+                };
+            } & {
+                method?: "POST" | undefined;
+            } & {
+                query?: Record<string, any> | undefined;
+            } & {
+                params?: Record<string, any>;
+            } & {
+                request?: Request;
+            } & {
+                headers?: HeadersInit;
+            } & {
+                asResponse?: boolean;
+                returnHeaders?: boolean;
+                use?: better_call.Middleware[];
+                path?: string;
+            } & {
+                asResponse?: AsResponse | undefined;
+                returnHeaders?: ReturnHeaders | undefined;
+            }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                headers: Headers;
+                response: {
+                    accessToken: string | undefined;
+                    accessTokenExpiresAt: Date | undefined;
+                    scopes: string[];
+                    idToken: string | undefined;
+                };
+            } : {
+                accessToken: string | undefined;
+                accessTokenExpiresAt: Date | undefined;
+                scopes: string[];
+                idToken: string | undefined;
+            }>;
+            options: {
+                method: "POST";
+                body: zod.ZodObject<{
+                    providerId: zod.ZodString;
+                    accountId: zod.ZodOptional<zod.ZodString>;
+                    userId: zod.ZodOptional<zod.ZodString>;
+                }, "strip", zod.ZodTypeAny, {
+                    providerId: string;
+                    accountId?: string | undefined;
+                    userId?: string | undefined;
+                }, {
+                    providerId: string;
+                    accountId?: string | undefined;
+                    userId?: string | undefined;
+                }>;
+                metadata: {
+                    openapi: {
+                        description: string;
+                        responses: {
+                            200: {
+                                description: string;
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object";
+                                            properties: {
+                                                tokenType: {
+                                                    type: string;
+                                                };
+                                                idToken: {
+                                                    type: string;
+                                                };
+                                                accessToken: {
+                                                    type: string;
+                                                };
+                                                refreshToken: {
+                                                    type: string;
+                                                };
+                                                accessTokenExpiresAt: {
+                                                    type: string;
+                                                    format: string;
+                                                };
+                                                refreshTokenExpiresAt: {
+                                                    type: string;
+                                                    format: string;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                            400: {
+                                description: string;
+                            };
+                        };
+                    };
+                };
+            } & {
+                use: any[];
+            };
+            path: "/get-access-token";
+        };
     } & {
         generateOpenAPISchema: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
@@ -11093,45 +14427,6 @@ declare const auth: {
                 use: any[];
             };
             path: "/one-time-token/apply";
-        };
-    } & {
-        customCreateSession: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "GET" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: {
-                    ck: string;
-                    userId: string;
-                } | null;
-            } : {
-                ck: string;
-                userId: string;
-            } | null>;
-            options: {
-                method: "GET";
-            } & {
-                use: any[];
-            };
-            path: "/create-session";
         };
     } & {
         enableTwoFactor: {
@@ -12234,7 +15529,7 @@ declare const auth: {
     }>;
     options: {
         appName: string;
-        database: (options: better_auth.BetterAuthOptions) => better_auth.Adapter;
+        database: (options: BetterAuthOptions) => better_auth.Adapter;
         advanced: {
             generateId: false;
             defaultCookieAttributes: {
@@ -13900,48 +17195,6 @@ declare const auth: {
                     path: "/one-time-token/apply";
                 };
             };
-        } | {
-            id: "customCreateSession";
-            endpoints: {
-                customCreateSession: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                        body?: undefined;
-                    } & {
-                        method?: "GET" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: {
-                            ck: string;
-                            userId: string;
-                        } | null;
-                    } : {
-                        ck: string;
-                        userId: string;
-                    } | null>;
-                    options: {
-                        method: "GET";
-                    } & {
-                        use: any[];
-                    };
-                    path: "/create-session";
-                };
-            };
         })[];
     };
     $context: Promise<better_auth.AuthContext>;
@@ -14573,6 +17826,53 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
+} & {
+    "/rsshub-analytics": {
+        $get: {
+            input: {};
+            output: {
+                data: {
+                    [x: string]: {
+                        subscriptionCount: number;
+                        topFeeds: {
+                            id: string;
+                            type: "feed";
+                            url: string;
+                            image?: string | null | undefined;
+                            description?: string | null | undefined;
+                            title?: string | null | undefined;
+                            siteUrl?: string | null | undefined;
+                            errorMessage?: string | null | undefined;
+                            errorAt?: string | null | undefined;
+                            ownerUserId?: string | null | undefined;
+                            owner?: {
+                                id: string;
+                                name: string | null;
+                                emailVerified: boolean | null;
+                                image: string | null;
+                                handle: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                suspended: boolean | null;
+                            } | null | undefined;
+                            tipUsers?: {
+                                id: string;
+                                name: string | null;
+                                emailVerified: boolean | null;
+                                image: string | null;
+                                handle: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                suspended: boolean | null;
+                            }[] | null | undefined;
+                        }[];
+                    };
+                };
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
 }, "/discover"> | hono_types.MergeSchemaPath<hono_types.MergeSchemaPath<{
     "/": {
         $post: {
@@ -14839,6 +18139,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     isCollection?: boolean | undefined;
                     isArchived?: boolean | undefined;
                     withContent?: boolean | undefined;
+                    excludePrivate?: boolean | undefined;
                 };
             };
             output: {
@@ -15508,12 +18809,18 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     listId?: string | undefined;
                     feedIdList?: string[] | undefined;
                     inboxId?: string | undefined;
+                    excludePrivate?: boolean | undefined;
                     startTime?: number | undefined;
                     endTime?: number | undefined;
                 };
             };
             output: {
                 code: 0;
+                data: {
+                    read: {
+                        [x: string]: number;
+                    };
+                };
             };
             outputFormat: "json";
             status: 200;
@@ -15782,6 +19089,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     feedIds: string[];
                     fee: number;
                 } | null;
+                unread: {
+                    [x: string]: number;
+                };
             };
             outputFormat: "json";
             status: 200;
@@ -16336,6 +19646,10 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     };
                     readCount: number;
                     feedCount: number;
+                    analytics?: {
+                        subscriptionCount: number | null;
+                        listId: string;
+                    } | undefined;
                     subscription?: {
                         createdAt: string;
                         userId: string;
@@ -16856,7 +20170,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 } & {
     "/test": {
         $get: {
-            input: {};
+            input: {
+                query: {
+                    channel?: string | undefined;
+                };
+            };
             output: {
                 code: 0;
             };
@@ -16874,6 +20192,22 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             };
             output: {
                 code: 0;
+            };
+            outputFormat: "json";
+            status: 200;
+        };
+    };
+} & {
+    "/": {
+        $get: {
+            input: {};
+            output: {
+                code: 0;
+                data: {
+                    userId: string | null;
+                    token: string;
+                    channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
+                }[];
             };
             outputFormat: "json";
             status: 200;
@@ -17023,9 +20357,21 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             output: {
                 code: 0;
                 data: {
-                    completed: number;
-                    wait: number;
-                    failed: number;
+                    current: {
+                        completed: number;
+                        wait: number;
+                        failed: number;
+                    };
+                    metrics: {
+                        completed: {
+                            data: number[];
+                            count: number;
+                        };
+                        failed: {
+                            data: number[];
+                            count: number;
+                        };
+                    };
                 };
             };
             outputFormat: "json";
@@ -17260,4 +20606,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/trending">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

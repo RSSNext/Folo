@@ -1,3 +1,4 @@
+import type { PrimitiveAtom } from "jotai"
 import { createContext } from "react"
 
 export const FocusableContext = createContext(false)
@@ -8,3 +9,5 @@ export const FocusableContainerRefContext = createContext<React.RefObject<HTMLDi
 export const FocusActionsContext = createContext<{
   highlightBoundary: () => void
 }>(null!)
+
+export const GlobalFocusableContext = createContext<PrimitiveAtom<Set<string>>>(null!)

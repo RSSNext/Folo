@@ -39,4 +39,9 @@ export const discover = {
       })
       return res.data
     }),
+  rsshubAnalytics: () =>
+    defineQuery(["discover", "rsshub", "analytics"], async () => {
+      const res = await apiClient.discover["rsshub-analytics"].$get()
+      return res.data
+    }),
 }

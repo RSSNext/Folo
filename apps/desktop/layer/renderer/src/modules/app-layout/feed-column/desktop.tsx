@@ -1,5 +1,6 @@
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
+import { useGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
@@ -30,7 +31,7 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
-import { HotkeyScope } from "~/constants"
+import { FloatingLayerScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { useDailyTask } from "~/hooks/biz/useDailyTask"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
@@ -39,18 +40,17 @@ import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
 import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandBinding } from "~/modules/command/hooks/use-register-hotkey"
+import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 import { DebugRegistry } from "~/modules/debug/registry"
 import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { CornerPlayer } from "~/modules/player/corner-player"
-import { FeedColumn } from "~/modules/timeline-column"
-import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/timeline-column/atom"
+import { FeedColumn } from "~/modules/subscription-column"
+import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/subscription-column/atom"
 import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { NewUserGuide } from "./index.shared"
 
@@ -241,11 +241,11 @@ const FeedResponsiveResizerContainer = ({
     }
   }, [feedColumnShow])
 
-  const activeScopes = useHotkeyScope()
+  const activeScopes = useGlobalFocusableScope()
 
   useCommandBinding({
-    commandId: COMMAND_ID.layout.toggleTimelineColumn,
-    when: activeScopes.includes(HotkeyScope.Home),
+    commandId: COMMAND_ID.layout.toggleSubscriptionColumn,
+    when: !FloatingLayerScope.some((scope) => activeScopes.has(scope)),
   })
 
   const [delayShowSplitter, setDelayShowSplitter] = useState(feedColumnShow)

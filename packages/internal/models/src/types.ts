@@ -38,6 +38,10 @@ export type FeedAnalyticsModel = ExtractBizResponse<
   typeof _apiClient.feeds.$get
 >["data"]["analytics"]
 
+export type ListAnalyticsModel = ExtractBizResponse<
+  typeof _apiClient.lists.$get
+>["data"]["analytics"]
+
 export type ListModel = Omit<ListModelPoplutedFeeds, "feeds">
 export type ListModelPoplutedFeeds = ExtractBizResponse<
   typeof _apiClient.lists.$get
