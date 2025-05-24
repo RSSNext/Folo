@@ -318,7 +318,7 @@ const AspectRatioImage = ({
           }}
           transition={100}
           blurhash={blurhash}
-          className="size-24 rounded-md"
+          className="rounded-md"
           contentFit="cover"
           hideOnError
         />
