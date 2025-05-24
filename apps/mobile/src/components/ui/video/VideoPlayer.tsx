@@ -21,7 +21,7 @@ export function VideoPlayer({
   view: FeedViewType
 }) {
   const [isFullScreen, setIsFullScreen] = useState(false)
-  const viewViewRef = useRef<null | VideoView>(null)
+  const videoViewRef = useRef<null | VideoView>(null)
   const player = useVideoPlayer(source, (player) => {
     player.loop = true
     player.muted = true
@@ -31,12 +31,16 @@ export function VideoPlayer({
   return (
     <NativePressable
       onPress={() => {
-        viewViewRef.current?.enterFullscreen()
+        if (!videoViewRef.current) {
+          console.warn("VideoView ref is not set")
+          return
+        }
+        videoViewRef.current?.enterFullscreen()
         player.muted = false
       }}
     >
       <VideoView
-        ref={viewViewRef}
+        ref={videoViewRef}
         style={{
           width: view === FeedViewType.Pictures ? width : "100%",
           height: view === FeedViewType.Pictures ? height : undefined,
