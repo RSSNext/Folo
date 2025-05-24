@@ -48,6 +48,15 @@ export class Auth {
     this.authClient = createAuthClient({
       baseURL: `${this.options.apiURL}/better-auth`,
       plugins,
+      fetchOptions: {
+        onRequest(context) {
+          const referralCode = localStorage.getItem(getStorageNS("referral"))
+          if (referralCode) {
+            context.headers.set("folo-referral-code", referralCode)
+          }
+          return context
+        },
+      },
     })
   }
 
@@ -79,3 +88,7 @@ export class Auth {
     }
   }
 }
+
+// copy from packages/internal/utils/src/ns.ts
+const ns = "follow"
+const getStorageNS = (key: string) => `${ns}:${key}`

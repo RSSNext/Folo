@@ -39,13 +39,15 @@ export const SettingsTitle = ({
   const { t } = useTranslation("settings")
   const {
     icon: iconName,
-    name: title,
+    name,
+    title,
     headerIcon,
   } = (useLoaderData() || loader || {}) as SettingPageConfig
 
   const usedIcon = headerIcon || iconName
+  const usedTitle = title || name
   const isInSettingIndependentWindow = use(IsInSettingIndependentWindowContext)
-  if (!title) {
+  if (!usedTitle) {
     return null
   }
   return (
@@ -58,7 +60,7 @@ export const SettingsTitle = ({
       )}
     >
       {typeof usedIcon === "string" ? <i className={usedIcon} /> : usedIcon}
-      <span>{t(title as any)}</span>
+      <span>{t(usedTitle)}</span>
     </div>
   )
 }
