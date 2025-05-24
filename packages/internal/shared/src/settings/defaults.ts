@@ -19,6 +19,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   // subscription
   autoGroup: true,
   hideAllReadSubscriptions: false,
+  hidePrivateSubscriptionsInTimeline: false,
 
   // view
   unreadOnly: true,
@@ -126,6 +127,11 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   enableCubox: false,
   cuboxToken: "",
   enableCuboxAutoMemo: false,
+
+  // zotero
+  enableZotero: false,
+  zoteroUserID: "",
+  zoteroToken: "",
 
   saveSummaryAsDescription: false,
 }

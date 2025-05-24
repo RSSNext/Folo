@@ -1,3 +1,4 @@
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { getFolderFeedsByFeedId, subscriptionActions } from "~/store/subscription"
 
@@ -17,27 +18,32 @@ export const markAllByRoute = async (filter?: MarkAllFilter) => {
   if (!routerParams) return
 
   if (typeof routerParams.feedId === "number" || routerParams.isAllFeeds) {
-    subscriptionActions.markReadByView(view, filter)
+    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
+    subscriptionActions.markReadByView({
+      view,
+      filter,
+      excludePrivate: hidePrivateSubscriptionsInTimeline,
+    })
   } else if (inboxId) {
-    subscriptionActions.markReadByFeedIds({
+    subscriptionActions.markReadByIds({
       inboxId,
       view,
       filter,
     })
   } else if (listId) {
-    subscriptionActions.markReadByFeedIds({
+    subscriptionActions.markReadByIds({
       listId,
       view,
       filter,
     })
   } else if (folderIds?.length) {
-    subscriptionActions.markReadByFeedIds({
+    subscriptionActions.markReadByIds({
       feedIds: folderIds,
       view,
       filter,
     })
   } else if (routerParams.feedId) {
-    subscriptionActions.markReadByFeedIds({
+    subscriptionActions.markReadByIds({
       feedIds: routerParams.feedId?.split(","),
       view,
       filter,

@@ -1,7 +1,10 @@
 import { EventBus } from "@follow/utils/event-bus"
+import { useTranslation } from "react-i18next"
+
+import { setGeneralSetting } from "~/atoms/settings/general"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -12,11 +15,18 @@ declare module "@follow/utils/event-bus" {
     "timeline:enter": never
   }
 }
+
+const category: CommandCategory = "category.timeline"
 export const useRegisterTimelineCommand = () => {
+  const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.timeline.switchToNext,
-      label: "Switch to next timeline",
+      label: {
+        title: t("command.timeline.switch_to_next.title"),
+        description: t("command.timeline.switch_to_next.description"),
+      },
+      category,
 
       run: () => {
         EventBus.dispatch("timeline:switch-to-next")
@@ -24,23 +34,35 @@ export const useRegisterTimelineCommand = () => {
     },
     {
       id: COMMAND_ID.timeline.switchToPrevious,
-      label: "Switch to previous timeline",
+      label: {
+        title: t("command.timeline.switch_to_previous.title"),
+        description: t("command.timeline.switch_to_previous.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch("timeline:switch-to-previous")
       },
     },
     {
       id: COMMAND_ID.timeline.refetch,
-      label: "Refetch timeline",
+      label: {
+        title: t("command.timeline.refetch.title"),
+        description: t("command.timeline.refetch.description"),
+      },
+      category,
       run: () => {
         EventBus.dispatch("timeline:refetch")
       },
     },
     {
-      id: COMMAND_ID.timeline.enter,
-      label: "Enter Selected Entry",
-      run: () => {
-        EventBus.dispatch("timeline:enter")
+      id: COMMAND_ID.timeline.unreadOnly,
+      label: {
+        title: t("command.timeline.toggle_unread_only.title"),
+        description: t("command.timeline.toggle_unread_only.description"),
+      },
+      category,
+      run: (unreadOnly: boolean) => {
+        setGeneralSetting("unreadOnly", unreadOnly)
       },
     },
   ])
@@ -61,13 +83,13 @@ export type RefetchTimelineCommand = Command<{
   fn: () => void
 }>
 
-export type EnterTimelineCommand = Command<{
-  id: typeof COMMAND_ID.timeline.enter
-  fn: () => void
+export type UnreadOnlyTimelineCommand = Command<{
+  id: typeof COMMAND_ID.timeline.unreadOnly
+  fn: (unreadOnly: boolean) => void
 }>
 
 export type TimelineCommand =
   | SwitchToNextTimelineCommand
   | SwitchToPreviousTimelineCommand
   | RefetchTimelineCommand
-  | EnterTimelineCommand
+  | UnreadOnlyTimelineCommand

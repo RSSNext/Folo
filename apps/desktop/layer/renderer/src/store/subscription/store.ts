@@ -11,17 +11,19 @@ import { parse } from "tldts"
 
 import { setFeedUnreadDirty } from "~/atoms/feed"
 import { whoami } from "~/atoms/user"
+import { getInboxIdWithPrefix } from "~/constants"
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { queryClient } from "~/lib/query-client"
 import { updateFeedBoostStatus } from "~/modules/boost/atom"
+import { Queries } from "~/queries"
 import { SubscriptionService } from "~/services"
 
 import { entryActions } from "../entry"
 import { feedActions, getFeedById } from "../feed"
 import { inboxActions } from "../inbox"
 import { getListById, listActions } from "../list"
-import { feedUnreadActions } from "../unread"
+import { unreadActions } from "../unread"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 export type SubscriptionFlatModel = Omit<SubscriptionModel, "feeds"> & {
@@ -238,18 +240,27 @@ class SubscriptionActions {
     })
   }
 
-  async markReadByView(view: FeedViewType, filter?: MarkReadFilter) {
+  async markReadByView({
+    view,
+    excludePrivate,
+    filter,
+  }: {
+    view: FeedViewType
+    excludePrivate?: boolean
+    filter?: MarkReadFilter
+  }) {
     const tx = createTransaction()
 
     tx.execute(async () => {
-      await apiClient.reads.all.$post({
+      const { data } = await apiClient.reads.all.$post({
         json: {
           view,
+          excludePrivate,
           ...filter,
         },
       })
       if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
+        unreadActions.changeBatch(data.read, "decrement")
       }
     })
 
@@ -257,6 +268,9 @@ class SubscriptionActions {
     tx.optimistic(async () => {
       const state = get()
       for (const feedId in state.data) {
+        if (excludePrivate && state.data[feedId]?.isPrivate) {
+          continue
+        }
         if (state.data[feedId]!.view === view) {
           if (state.data[feedId]?.listId) {
             const listFeedIds = getListById(state.data[feedId].listId)?.feedIds
@@ -264,15 +278,15 @@ class SubscriptionActions {
               feedIds.push(...listFeedIds)
 
               listFeedIds.forEach((id) => {
-                !filter && feedUnreadActions.updateByFeedId(id, 0)
-                entryActions.patchManyByFeedId(id, { read: true }, filter)
+                !filter && unreadActions.updateById(id, 0)
+                entryActions.patchManyById(id, { read: true }, filter)
               })
             }
           } else {
             feedIds.push(feedId)
             // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
-            !filter && feedUnreadActions.updateByFeedId(feedId, 0)
-            entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+            !filter && unreadActions.updateById(feedId, 0)
+            entryActions.patchManyById(feedId, { read: true }, filter)
           }
         }
       }
@@ -280,7 +294,7 @@ class SubscriptionActions {
 
     tx.rollback(async () => {
       // TODO handle this local?
-      await feedUnreadActions.fetchUnreadByView(view)
+      await Queries.subscription.unreadAll().invalidate()
     })
     await tx.run()
 
@@ -289,10 +303,9 @@ class SubscriptionActions {
     }
   }
 
-  async markReadByFeedIds({
+  async markReadByIds({
     feedIds,
     inboxId,
-    view,
     filter,
     listId,
   }: {
@@ -307,7 +320,7 @@ class SubscriptionActions {
     const tx = createTransaction()
 
     tx.execute(async () => {
-      await apiClient.reads.all.$post({
+      const { data } = await apiClient.reads.all.$post({
         json: {
           ...(listId
             ? {
@@ -324,7 +337,7 @@ class SubscriptionActions {
         },
       })
       if (filter) {
-        feedUnreadActions.fetchUnreadByView(view)
+        unreadActions.changeBatch(data.read, "decrement")
       }
     })
     tx.optimistic(() => {
@@ -332,25 +345,25 @@ class SubscriptionActions {
         const listFeedIds = getListById(listId)?.feedIds
         if (listFeedIds) {
           for (const feedId of listFeedIds) {
-            feedUnreadActions.updateByFeedId(feedId, 0)
-            entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+            !filter && unreadActions.updateById(feedId, 0)
+            entryActions.patchManyById(feedId, { read: true }, filter)
           }
         }
       } else if (inboxId) {
-        feedUnreadActions.updateByFeedId(inboxId, 0)
-        entryActions.patchManyByFeedId(inboxId, { read: true }, filter)
+        !filter && unreadActions.updateById(inboxId, 0)
+        entryActions.patchManyById(getInboxIdWithPrefix(inboxId), { read: true }, filter)
       } else {
         for (const feedId of stableFeedIds) {
           // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.
-          !filter && feedUnreadActions.updateByFeedId(feedId, 0)
-          entryActions.patchManyByFeedId(feedId, { read: true }, filter)
+          !filter && unreadActions.updateById(feedId, 0)
+          entryActions.patchManyById(feedId, { read: true }, filter)
         }
       }
     })
 
     tx.rollback(async () => {
       // TODO handle this local?
-      await feedUnreadActions.fetchUnreadByView(view)
+      await Queries.subscription.unreadAll().invalidate()
     })
 
     await tx.run()
@@ -485,7 +498,7 @@ class SubscriptionActions {
         // Remove feed's entries
         entryActions.clearByFeedId(feedId)
         // Clear feed's unread count
-        feedUnreadActions.updateByFeedId(feedId, 0)
+        unreadActions.updateById(feedId, 0)
 
         SubscriptionService.removeSubscription(whoami()!.id, feedId)
       }

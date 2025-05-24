@@ -37,7 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     version: PKG.version,
     orientation: "portrait" as const,
     icon: iconPath,
-    scheme: "follow",
+    scheme: ["follow", "folo"],
     userInterfaceStyle: "automatic" as const,
     newArchEnabled: true,
     ios: {

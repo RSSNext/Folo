@@ -156,10 +156,10 @@ export function highlightElement(element: HTMLElement | null, colorString = "255
       ctx.lineWidth = shadowWidth
       ctx.beginPath()
       ctx.roundRect(
-        padding - shadowWidth / 2,
-        padding - shadowWidth / 2,
-        rect.width + shadowWidth,
-        rect.height + shadowWidth,
+        padding + shadowWidth / 2,
+        padding + shadowWidth / 2,
+        rect.width - shadowWidth,
+        rect.height - shadowWidth,
         borderRadius,
       )
       ctx.stroke()
@@ -171,10 +171,10 @@ export function highlightElement(element: HTMLElement | null, colorString = "255
       ctx.lineWidth = outlineWidth
       ctx.beginPath()
       ctx.roundRect(
-        padding - outlineWidth / 2,
-        padding - outlineWidth / 2,
-        rect.width + outlineWidth,
-        rect.height + outlineWidth,
+        padding + outlineWidth / 2,
+        padding + outlineWidth / 2,
+        rect.width - outlineWidth,
+        rect.height - outlineWidth,
         borderRadius,
       )
       ctx.stroke()

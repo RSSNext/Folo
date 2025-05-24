@@ -7,17 +7,20 @@ import {
 } from "@follow/components/ui/tooltip/index.js"
 import { stopPropagation } from "@follow/utils/dom"
 import dayjs from "dayjs"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
+import { useUISettingKey } from "~/atoms/settings/ui"
 
 export { RelativeTime } from "@follow/components/ui/datetime/index.js"
-const formatTemplateStringShort = "ll"
-
 export const RelativeDay = ({ date }: { date: Date }) => {
   const { t } = useTranslation("common")
   const language = useGeneralSettingSelector((s) => s.language)
+
+  const dateFormatValue = useUISettingKey("dateFormat")
+  const formatTemplateString = "lll"
+  const dateFormat = dateFormatValue === "default" ? formatTemplateString : dateFormatValue
 
   const formatDateString = useCallback(
     (date: Date) => {
@@ -35,21 +38,10 @@ export const RelativeDay = ({ date }: { date: Date }) => {
       } else if (diffDays === 1) {
         return t("time.yesterday")
       } else {
-        let locale: Intl.Locale
-
-        try {
-          locale = new Intl.Locale(language.replace("_", "-"))
-        } catch {
-          locale = new Intl.Locale("en-US")
-        }
-        return date.toLocaleDateString(locale, {
-          weekday: "long",
-          month: "short",
-          day: "numeric",
-        })
+        return dayjs(date).format("ll")
       }
     },
-    [t, language],
+    [t],
   )
 
   const timerRef = useRef<any>(null)
@@ -70,7 +62,7 @@ export const RelativeDay = ({ date }: { date: Date }) => {
     }
   }, [date, formatDateString, language])
 
-  const formated = dayjs(date).format(formatTemplateStringShort)
+  const formated = useMemo(() => dayjs(date).format(dateFormat), [dateFormat, date])
 
   if (formated === dateString) {
     return <>{dateString}</>

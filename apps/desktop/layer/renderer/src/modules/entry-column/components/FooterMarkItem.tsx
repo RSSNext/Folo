@@ -13,22 +13,26 @@ export const FooterMarkItem = ({ view }: { view: FeedViewType }) => {
 
 const SocialMediaFooterMarkItem = () => {
   return (
-    <FlatMarkAllReadButton
-      className="justify-start"
-      buttonClassName="w-[645px] mx-auto mb-4 pl-7 py-4"
-      iconClassName="mr-1 text-lg"
-      which="above"
-    />
+    <div className="relative w-full">
+      <FlatMarkAllReadButton
+        className="justify-center"
+        buttonClassName="w-[645px] mx-auto mb-4 pl-7 py-4"
+        iconClassName="mr-1 text-lg"
+        which="above"
+      />
+    </div>
   )
 }
 
 const GridFooterMarkItem = () => {
   return (
-    <FlatMarkAllReadButton
-      buttonClassName="w-full py-4"
-      iconClassName="mr-1 text-base"
-      which="above"
-    />
+    <div className="relative w-full">
+      <FlatMarkAllReadButton
+        buttonClassName="w-full py-4"
+        iconClassName="mr-1 text-base"
+        which="above"
+      />
+    </div>
   )
 }
 

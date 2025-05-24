@@ -10,14 +10,15 @@ import { cn, isBizId } from "@follow/utils/utils"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 
-import { setGeneralSetting, useGeneralSettingKey } from "~/atoms/settings/general"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useWhoami } from "~/atoms/user"
 import { HeaderTopReturnBackButton } from "~/components/mobile/button"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { LOGO_MOBILE_ID } from "~/constants/dom"
-import { shortcuts } from "~/constants/shortcuts"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { FeedColumnMobile } from "~/modules/app-layout/feed-column/mobile"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 
@@ -60,6 +61,7 @@ export const EntryListHeader: FC<EntryListHeaderProps> = ({ refetch, isRefreshin
   const isList = !!listId
 
   const showQuickTimeline = useGeneralSettingKey("showQuickTimeline")
+  const runCmdFn = useRunCommandFn()
 
   return (
     <div
@@ -130,8 +132,7 @@ export const EntryListHeader: FC<EntryListHeaderProps> = ({ refetch, isRefreshin
                     ? t("entry_list_header.show_unread_only")
                     : t("entry_list_header.show_all")
                 }
-                shortcut={shortcuts.entries.toggleUnreadOnly.key}
-                onClick={() => setGeneralSetting("unreadOnly", !unreadOnly)}
+                onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
               >
                 {unreadOnly ? (
                   <i className="i-mgc-round-cute-fi" />

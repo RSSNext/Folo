@@ -13,6 +13,7 @@ export const entries = {
     listId,
     view,
     read,
+    excludePrivate,
     limit,
   }: {
     feedId?: number | string
@@ -20,10 +21,11 @@ export const entries = {
     listId?: number | string
     view?: number
     read?: boolean
+    excludePrivate?: boolean
     limit?: number
   }) =>
     defineQuery(
-      ["entries", inboxId || listId || feedId, view, read, limit],
+      ["entries", inboxId || listId || feedId, view, read, excludePrivate, limit],
       async ({ pageParam }) =>
         entryActions.fetchEntries({
           feedId,
@@ -31,6 +33,7 @@ export const entries = {
           listId,
           view,
           read,
+          excludePrivate,
           limit,
           pageParam: pageParam as string,
         }),
@@ -130,30 +133,35 @@ export const useEntries = ({
   listId,
   view,
   read,
+  excludePrivate,
 }: {
   feedId?: number | string
   inboxId?: number | string
   listId?: number | string
   view?: number
   read?: boolean
+  excludePrivate?: boolean
 }) => {
   const fetchUnread = read === false
   const feedUnreadDirty = useFeedUnreadIsDirty((feedId as string) || "")
 
-  return useAuthInfiniteQuery(entries.entries({ feedId, inboxId, listId, view, read }), {
-    enabled: feedId !== undefined || inboxId !== undefined || listId !== undefined,
-    getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
-    initialPageParam: undefined,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    // DON'T refetch when the router is pop to previous page
-    refetchOnMount: fetchUnread && feedUnreadDirty && !history.isPop ? "always" : false,
+  return useAuthInfiniteQuery(
+    entries.entries({ feedId, inboxId, listId, view, read, excludePrivate }),
+    {
+      enabled: feedId !== undefined || inboxId !== undefined || listId !== undefined,
+      getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
+      initialPageParam: undefined,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      // DON'T refetch when the router is pop to previous page
+      refetchOnMount: fetchUnread && feedUnreadDirty && !history.isPop ? "always" : false,
 
-    staleTime:
-      // Force refetch unread entries when feed is dirty
-      // HACK: disable refetch when the router is pop to previous page
-      history.isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
-  })
+      staleTime:
+        // Force refetch unread entries when feed is dirty
+        // HACK: disable refetch when the router is pop to previous page
+        history.isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
+    },
+  )
 }
 
 export const useEntriesPreview = ({ id }: { id?: string }) =>

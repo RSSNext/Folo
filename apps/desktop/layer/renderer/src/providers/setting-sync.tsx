@@ -10,7 +10,7 @@ import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
 import { tipcClient } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 const useUISettingSync = () => {
   const setting = useUISettingValue()
@@ -38,10 +38,7 @@ const useUISettingSync = () => {
 
   useEffect(() => {
     if (setting.showDockBadge) {
-      return feedUnreadActions.subscribeUnreadCount(
-        (count) => tipcClient?.setDockBadge(count),
-        true,
-      )
+      return unreadActions.subscribeUnreadCount((count) => tipcClient?.setDockBadge(count), true)
     } else {
       tipcClient?.setDockBadge(0)
     }

@@ -26,6 +26,7 @@ export const COMMAND_ID = {
     saveToOutline: "integration:save-to-outline",
     saveToReadeck: "integration:save-to-readeck",
     saveToCubox: "integration:save-to-cubox",
+    saveToZotero: "integration:save-to-zotero",
   },
   list: {
     edit: "list:edit",
@@ -43,17 +44,22 @@ export const COMMAND_ID = {
   },
   global: {
     showShortcuts: "global:show-shortcuts",
+    toggleCornerPlay: "global:toggle-corner-play",
+    quickAdd: "global:quick-add",
   },
   layout: {
-    toggleTimelineColumn: "layout:toggle-timeline-column",
+    toggleSubscriptionColumn: "layout:toggle-subscription-column",
     focusToTimeline: "layout:focus-to-timeline",
     focusToSubscription: "layout:focus-to-subscription",
+    focusToEntryRender: "layout:focus-to-entry-render",
+    toggleWideMode: "layout:toggle-wide-mode",
+    toggleZenMode: "layout:toggle-zen-mode",
   },
   timeline: {
     switchToNext: "timeline:switch-to-next",
     switchToPrevious: "timeline:switch-to-previous",
     refetch: "timeline:refetch",
-    enter: "timeline:enter",
+    unreadOnly: "timeline:unread-only",
   },
   entryRender: {
     scrollDown: "entry-render:scroll-down",
@@ -75,5 +81,8 @@ export const COMMAND_ID = {
     previousSubscription: "subscription:previous",
 
     toggleFolderCollapse: "subscription:toggle-folder-collapse",
+    markAllAsRead: "subscription:mark-all-as-read",
+    openInBrowser: "subscription:open-in-browser",
+    openSiteInBrowser: "subscription:open-site-in-browser",
   },
 } as const

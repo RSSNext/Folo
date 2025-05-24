@@ -113,12 +113,12 @@ export function SettingModalLayout(
             onResizeStop={handleResizeStop}
             enable={resizableOnly("bottomRight")}
             defaultSize={{
-              width: 800,
-              height: 700,
+              width: 950,
+              height: 800,
             }}
-            maxHeight="80vh"
-            minHeight={500}
-            minWidth={600}
+            maxHeight="90vh"
+            minHeight={600}
+            minWidth={700}
             maxWidth="95vw"
             className="flex !select-none flex-col"
           >

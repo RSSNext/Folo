@@ -54,7 +54,8 @@ export const useNavigateEntry = () => {
  */
 export const navigateEntry = (options: NavigateEntryOptions) => {
   const { entryId, feedId, view, folderName, inboxId, listId, timelineId, backPath } = options || {}
-  const { params } = getReadonlyRoute()
+  const route = getReadonlyRoute()
+  const { params } = route
   let finalFeedId = feedId || params.feedId || ROUTE_FEED_PENDING
   let finalTimelineId = timelineId || params.timelineId || ROUTE_FEED_PENDING
   const finalEntryId = entryId || ROUTE_ENTRY_PENDING
@@ -95,7 +96,7 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
 
   const path = `/timeline/${finalTimelineId}/${finalFeedId}/${finalEntryId}`
 
-  const currentPath = getReadonlyRoute().location.pathname + getReadonlyRoute().location.search
+  const currentPath = route.location.pathname + route.location.search
   if (path === currentPath) return
   return getStableRouterNavigate()?.(path)
 }

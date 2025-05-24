@@ -1,6 +1,7 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useState } from "react"
@@ -18,7 +19,7 @@ import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import type { FlatEntryModel } from "~/store/entry"
@@ -69,9 +70,17 @@ export const EntryItemWrapper: FC<
     (e) => {
       e.stopPropagation()
 
+      const shouldNavigate = getRouteParams().entryId !== entry.entries.id
+      if (!shouldNavigate) return
       if (!asRead) {
         entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
       }
+
+      setTimeout(
+        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+        60,
+      )
+
       navigate({
         entryId: entry.entries.id,
       })

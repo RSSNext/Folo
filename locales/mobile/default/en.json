@@ -1,4 +1,6 @@
 {
+  "entry.pull_up_to_next_entry": "Pull up to go to the next entry",
+  "entry.release_to_next_entry": "Release to go to the next entry",
   "login.back": "Back",
   "login.continueWith": "Continue with {{provider}}",
   "login.have_account": "Already have an account? <strong>Sign in</strong>",

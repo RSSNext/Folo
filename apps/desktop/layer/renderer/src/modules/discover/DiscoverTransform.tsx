@@ -74,7 +74,7 @@ export function DiscoverTransform() {
             route={data?.rsshub.routes["/transform/html/:url/:routeParams"]!}
             routeParams={transformRouteParams}
             noDescription
-            viewportClassName="pt-0"
+            viewportClassName="pt-0 max-h-none"
           />
         </div>
       )}

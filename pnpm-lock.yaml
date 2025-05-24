@@ -14,7 +14,7 @@ overrides:
   '@electron/node-gyp': 10.2.0-electron.2
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
   isarray: npm:@nolyfill/isarray@1.0.44
-  lan-network@<0.1.6: 0.1.6
+  lan-network@<0.1.7: 0.1.7
   react: 19.0.0
   react-dom: 19.0.0
   react-native-ios-context-menu: 3.1.1
@@ -684,6 +684,9 @@ importers:
       tinykeys:
         specifier: 3.0.0
         version: 3.0.0
+      title-case:
+        specifier: 4.3.2
+        version: 4.3.2
       tldts:
         specifier: 7.0.4
         version: 7.0.4
@@ -1049,8 +1052,8 @@ importers:
         specifier: 4.1.1
         version: 4.1.1(patch_hash=d011fdd16d124609523059323ac7614e3999174a9c7b21074c1124d7075650fb)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)
       react-native-uikit-colors:
-        specifier: 0.5.2
-        version: 0.5.2(nativewind@4.1.23(react-native-reanimated@3.17.4(@babel/core@7.26.10)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-safe-area-context@5.3.0(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-svg@15.11.2(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3)))
+        specifier: 0.6.2
+        version: 0.6.2(nativewind@4.1.23(react-native-reanimated@3.17.4(@babel/core@7.26.10)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-safe-area-context@5.3.0(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-svg@15.11.2(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3)))
       react-native-volume-manager:
         specifier: 2.0.8
         version: 2.0.8(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)
@@ -1344,8 +1347,8 @@ importers:
         specifier: 0.6.0
         version: 0.6.0(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3)))
       tailwindcss-uikit-colors:
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.6.2
+        version: 0.6.2
     devDependencies:
       postcss:
         specifier: 8.5.3
@@ -1531,8 +1534,8 @@ importers:
         specifier: 2.0.3
         version: 2.0.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwindcss-uikit-colors:
-        specifier: 0.5.2
-        version: 0.5.2
+        specifier: 0.6.2
+        version: 0.6.2
       unified:
         specifier: 11.0.5
         version: 11.0.5
@@ -6953,11 +6956,8 @@ packages:
     os: [darwin]
     hasBin: true
 
-  apple-uikit-colors@0.5.2:
-    resolution: {integrity: sha512-APXPAIxarSwknfrruUOGyegV1czmFWk1hnO+tgK6QNKpGjF8/Yk5/um/MLydZSUhAA1RAmMkYvFASqIVkWN3qw==}
-
-  apple-uikit-colors@0.6.0:
-    resolution: {integrity: sha512-F9PRddVxfsNGhcY5AXwrdM1wmGqErESPOrB3lRhoH02xeIJLVRmHkhk+qH3OD99btAqtA7oL2HFYSdfj2tLsMg==}
+  apple-uikit-colors@0.6.2:
+    resolution: {integrity: sha512-sv0b92krbTZGNt4AJQLAPioUvuEI/wW2cLqGuEBWl3KpU2JK/odOftx8+dGSC5jGWhdB5qnwBqF96X2FA8FUQA==}
 
   archiver-utils@2.1.0:
     resolution: {integrity: sha512-bEL/yUb/fNNiNTuUz979Z0Yg5L+LzLxGJz8x79lYmR54fmTIb6ob/hNQgkQnIUDWIFjZVQwl9Xs356I6BAMHfw==}
@@ -10937,8 +10937,8 @@ packages:
     resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
     engines: {node: '>=14.0.0'}
 
-  lan-network@0.1.6:
-    resolution: {integrity: sha512-0qPYjNoD89v+bfhkIqFBYGBAof1xhxLqjX8bkNN1kQdP81UHpZw5TDXgEjwB+X2iCFGQmzF8TRmvg4vQcykyDA==}
+  lan-network@0.1.7:
+    resolution: {integrity: sha512-mnIlAEMu4OyEvUNdzco9xpuB9YVcPkQec+QsgycBCtPZvEqWPCDPfbAE4OJMdBBWpZWtpCn1xw9jJYlwjWI5zQ==}
     hasBin: true
 
   launch-ide@1.0.7:
@@ -13230,8 +13230,8 @@ packages:
       shaka-player:
         optional: true
 
-  react-native-uikit-colors@0.5.2:
-    resolution: {integrity: sha512-iTY9WJefNW4JyBUxHXK/+mA8A2MlVM6BJij+ZZAjGZ3mldPPwtUmUHBRC59DOqAOtPRldl0nGm3ohOwe+l4vNA==}
+  react-native-uikit-colors@0.6.2:
+    resolution: {integrity: sha512-qcsQOb/0+3eoYPS/pJG8R5Idxnk+o/UKPwTfa4wCxJ/gFJEcShm1q0wsw9D7BgceXo8tK+aMDebeguvNJYt6Og==}
     peerDependencies:
       nativewind: '>=4.1.0'
       react: 19.0.0
@@ -14342,11 +14342,8 @@ packages:
     peerDependencies:
       tailwindcss: ^2.0.0 || >=3.0.0
 
-  tailwindcss-uikit-colors@0.5.2:
-    resolution: {integrity: sha512-itP1VBOADp/ePTqsMTuNh8Z0kIhVWIb3xQ9wbyKSLkm28jdmKH6+AU3hh/490UmE0gAomiNA3Y3Ob0iGbvghMA==}
-
-  tailwindcss-uikit-colors@0.6.0:
-    resolution: {integrity: sha512-Z4IPzvghlivjVn7O67lKezLiSR5PhKLlyzJtcVo2byORm6I46pLw/IX+Ye0dyLz0M6JcdlpXmtQbX24HqM7reg==}
+  tailwindcss-uikit-colors@0.6.2:
+    resolution: {integrity: sha512-RfF3VVB2nHvJwPZ2ZSTMgKYbZjRny/KW3rP6ufg6/bopxINDQ9TpN/fJXxvKnD86hIU0F2oLIfAv2r6o/ZWcZw==}
 
   tailwindcss@3.4.17:
     resolution: {integrity: sha512-w33E2aCvSDP0tW9RZuNXadXlkHXqFzSkQew/aIa2i/Sj8fThxwovwlXHSPXTbAHwEIhBFXAedUhP2tueAKP8Og==}
@@ -14467,6 +14464,9 @@ packages:
   tinyspy@3.0.2:
     resolution: {integrity: sha512-n1cw8k1k0x4pgA2+9XrOkFydTerNcJ1zWCO5Nn9scWHTD+5tp8dghT2x1uduQePZTZgd3Tupf+x9BxJjeJi77Q==}
     engines: {node: '>=14.0.0'}
+
+  title-case@4.3.2:
+    resolution: {integrity: sha512-I/nkcBo73mO42Idfv08jhInV61IMb61OdIFxk+B4Gu1oBjWBPOLmhZdsli+oJCVaD+86pYQA93cJfFt224ZFAA==}
 
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
@@ -17628,7 +17628,7 @@ snapshots:
       freeport-async: 2.0.0
       getenv: 1.0.0
       glob: 10.4.5
-      lan-network: 0.1.6
+      lan-network: 0.1.7
       minimatch: 9.0.5
       node-forge: 1.3.1
       npm-package-arg: 11.0.3
@@ -22145,9 +22145,7 @@ snapshots:
       repeat-string: 1.6.1
     optional: true
 
-  apple-uikit-colors@0.5.2: {}
-
-  apple-uikit-colors@0.6.0: {}
+  apple-uikit-colors@0.6.2: {}
 
   archiver-utils@2.1.0:
     dependencies:
@@ -27083,7 +27081,7 @@ snapshots:
 
   kysely@0.27.6: {}
 
-  lan-network@0.1.6: {}
+  lan-network@0.1.7: {}
 
   launch-ide@1.0.7:
     dependencies:
@@ -29606,14 +29604,14 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)
 
-  react-native-uikit-colors@0.5.2(nativewind@4.1.23(react-native-reanimated@3.17.4(@babel/core@7.26.10)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-safe-area-context@5.3.0(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-svg@15.11.2(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))):
+  react-native-uikit-colors@0.6.2(nativewind@4.1.23(react-native-reanimated@3.17.4(@babel/core@7.26.10)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-safe-area-context@5.3.0(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-svg@15.11.2(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))):
     dependencies:
-      apple-uikit-colors: 0.5.2
+      apple-uikit-colors: 0.6.2
       nativewind: 4.1.23(react-native-reanimated@3.17.4(@babel/core@7.26.10)(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-safe-area-context@5.3.0(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native-svg@15.11.2(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3)))
       react: 19.0.0
       react-native: 0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5)
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))
-      tailwindcss-uikit-colors: 0.5.2
+      tailwindcss-uikit-colors: 0.6.2
 
   react-native-volume-manager@2.0.8(react-native@0.79.1(@babel/core@7.26.10)(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@6.0.5))(react@19.0.0):
     dependencies:
@@ -30986,13 +30984,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3))
 
-  tailwindcss-uikit-colors@0.5.2:
+  tailwindcss-uikit-colors@0.6.2:
     dependencies:
-      apple-uikit-colors: 0.5.2
-
-  tailwindcss-uikit-colors@0.6.0:
-    dependencies:
-      apple-uikit-colors: 0.6.0
+      apple-uikit-colors: 0.6.2
 
   tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.15.3)(typescript@5.8.3)):
     dependencies:
@@ -31156,6 +31150,8 @@ snapshots:
   tinyrainbow@2.0.0: {}
 
   tinyspy@3.0.2: {}
+
+  title-case@4.3.2: {}
 
   tldts-core@6.1.86:
     optional: true

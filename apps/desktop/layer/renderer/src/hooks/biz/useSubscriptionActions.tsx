@@ -4,12 +4,11 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { HotkeyScope } from "~/constants"
 import { apiClient } from "~/lib/api-fetch"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import type { SubscriptionFlatModel } from "~/store/subscription"
 import { subscriptionActions } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -35,13 +34,13 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
       subscriptionActions.unfollow([subscription.feedId]).then(([feed]) => {
         subscriptionQuery.all().invalidate()
-        feedUnreadActions.updateByFeedId(subscription.feedId, 0)
+        unreadActions.updateById(subscription.feedId, 0)
 
         if (!subscription) return
         if (!feed) return
         const undo = async () => {
           // TODO store action
-          await apiClient.subscriptions.$post({
+          const { unread } = await apiClient.subscriptions.$post({
             json: {
               url: feed.type === "feed" ? feed.url : undefined,
               listId: feed.type === "list" ? feed.id : undefined,
@@ -50,9 +49,9 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
               isPrivate: subscription.isPrivate,
             },
           })
+          unreadActions.upsertMany(unread)
 
           subscriptionQuery.all().invalidate()
-          feedUnreadActions.fetchUnreadByView(subscription.view)
 
           toast.dismiss(toastId)
         }
@@ -65,7 +64,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
               <span className="flex items-center gap-1">
                 {t("words.undo")}
                 <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
-                  Meta+Z
+                  $mod+Z
                 </Kbd>
               </span>
             ),
@@ -92,7 +91,6 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
 const UnfollowInfo = ({ title, undo }: { title: string; undo: () => any }) => {
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotkeyScope.Home,
     preventDefault: true,
   })
   return (

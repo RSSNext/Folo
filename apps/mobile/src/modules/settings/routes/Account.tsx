@@ -156,7 +156,11 @@ const AccountLinker: FC<{
       label={provider2LabelMap[provider]}
       icon={provider2IconMap[provider]}
       postfix={
-        <Text ellipsizeMode="tail" className="text-secondary-label mr-1 max-w-[100px]">
+        <Text
+          ellipsizeMode="tail"
+          numberOfLines={1}
+          className="text-secondary-label mr-1 max-w-[150px]"
+        >
           {account?.profile?.email || account?.profile?.name || ""}
         </Text>
       }

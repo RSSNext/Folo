@@ -1,5 +1,6 @@
 import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
 import { useMemo } from "react"
+import { titleCase } from "title-case"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
@@ -74,8 +75,8 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
             className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
           >
             <EntryTranslation
-              source={entry.entries.title}
-              target={translation.data?.title}
+              source={titleCase(entry.entries.title ?? "")}
+              target={titleCase(translation.data?.title ?? "")}
               className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
               bilingual

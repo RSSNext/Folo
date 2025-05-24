@@ -73,6 +73,10 @@ export const ActionButton = ({
   React.useImperativeHandle(ref, () => buttonRef.current!)
 
   const [shouldHighlightMotion, setShouldHighlightMotion] = useState(highlightMotion)
+  React.useEffect(() => {
+    setShouldHighlightMotion(highlightMotion)
+  }, [highlightMotion])
+
   const [loading, setLoading] = useState(false)
 
   const Trigger = (
@@ -191,7 +195,7 @@ const HotKeyTrigger = ({
   const isFocusWithIn = useFocusable()
   const enabledInOptions = options?.enabled || true
 
-  useHotkeys(shortcut, fn, {
+  useHotkeys(replaceShortcut(shortcut), fn, {
     preventDefault: true,
     enabled: shortcutOnlyFocusWithIn
       ? isFocusWithIn
@@ -201,4 +205,10 @@ const HotKeyTrigger = ({
     ...options,
   })
   return null
+}
+
+const os = getOS()
+
+const replaceShortcut = (shortcut: string) => {
+  return shortcut.replace("$mod", os === "macOS" ? "Meta" : "Ctrl")
 }

@@ -28,8 +28,10 @@ import { useTipModal } from "~/modules/wallet/hooks"
 import { entryActions, useEntryStore } from "~/store/entry"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
+
+const category: CommandCategory = "category.entry"
 
 const useCollect = () => {
   const { t } = useTranslation()
@@ -120,8 +122,7 @@ export const useRegisterEntryCommands = () => {
               id: COMMAND_ID.entry.tip,
               label: t("entry_actions.tip"),
               icon: <i className="i-mgc-power-outline" />,
-              // keyBinding: shortcuts.entry.tip.key,
-              // when: !isInbox && feed?.ownerUserId !== whoami()?.id && !!populatedEntry,
+              category,
               run: ({ userId, feedId, entryId }) => {
                 openTipModal({
                   userId,
@@ -134,6 +135,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.star,
         label: t("entry_actions.star"),
+        category,
         icon: (props) => (
           <i
             className={cn(
@@ -147,15 +149,7 @@ export const useRegisterEntryCommands = () => {
             toast.error("Failed to star: entry is not available", { duration: 3000 })
             return
           }
-          // if (type === "toolbar") {
-          //   const absoluteStarAnimationUri = new URL(StarAnimationUri, import.meta.url).href
-          //   mountLottie(absoluteStarAnimationUri, {
-          //     x: e.clientX - 90,
-          //     y: e.clientY - 70,
-          //     height: 126,
-          //     width: 252,
-          //   })
-          // }
+
           if (entry.collections) {
             uncollect.mutate(entry.entries.id)
           } else {
@@ -167,6 +161,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.delete,
         label: t("entry_actions.delete"),
         icon: <i className="i-mgc-delete-2-cute-re" />,
+        category,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
           if (!entry) {
@@ -180,6 +175,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.copyLink,
         label: t("entry_actions.copy_link"),
         icon: <i className="i-mgc-link-cute-re" />,
+        category,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
           if (!entry) {
@@ -197,6 +193,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.exportAsPDF,
         label: t("entry_actions.export_as_pdf"),
         icon: <i className="i-mgc-pdf-cute-re" />,
+        category,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
 
@@ -212,6 +209,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.copyTitle,
         label: t("entry_actions.copy_title"),
         icon: <i className="i-mgc-copy-cute-re" />,
+        category,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
           if (!entry) {
@@ -230,6 +228,7 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_actions.open_in_browser", {
           which: t(IN_ELECTRON ? "words.browser" : "words.newTab"),
         }),
+        category,
         icon: <i className="i-mgc-world-2-cute-re" />,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
@@ -244,6 +243,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.viewSourceContent,
         label: t("entry_actions.view_source_content"),
         icon: <i className="i-mgc-web-cute-re" />,
+        category,
         run: ({ entryId, siteUrl }) => {
           if (!getShowSourceContent()) {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
@@ -276,6 +276,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.share,
         label: t("entry_actions.share"),
         icon: <i className="i-mgc-share-forward-cute-re" />,
+        category,
         run: ({ entryId }) => {
           const entry = useEntryStore.getState().flatMapEntries[entryId]
           if (!entry || !entry.entries.url) {
@@ -300,6 +301,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.readAbove,
         label: t("entry_actions.mark_above_as_read"),
+        category,
         run: ({ publishedAt }: { publishedAt: string }) => {
           return markAllByRoute({
             startTime: new Date(publishedAt).getTime() + 1,
@@ -310,6 +312,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.read,
         label: t("entry_actions.mark_as_read"),
+        category,
         icon: (props) => (
           <i className={cn(props?.isActive ? "i-mgc-round-cute-re" : "i-mgc-round-cute-fi")} />
         ),
@@ -329,6 +332,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.readBelow,
         label: t("entry_actions.mark_below_as_read"),
+        category,
         run: ({ publishedAt }: { publishedAt: string }) => {
           return markAllByRoute({
             startTime: 1,
@@ -340,6 +344,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.imageGallery,
         label: t("entry_actions.image_gallery"),
         icon: <i className="i-mgc-pic-cute-fi" />,
+        category,
         run: ({ entryId }) => {
           openGalleryModal(entryId)
         },
@@ -347,6 +352,7 @@ export const useRegisterEntryCommands = () => {
       {
         id: COMMAND_ID.entry.tts,
         label: t("entry_content.header.play_tts"),
+        category,
         icon: <i className="i-mgc-voice-cute-re" />,
         run: async ({ entryId, entryContent }) => {
           if (getAudioPlayerAtomValue().entryId === entryId) {
@@ -370,6 +376,7 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.readability,
+        category,
         label: {
           title: t("entry_content.header.readability"),
           description: t("entry_content.header.readability_description"),
@@ -396,6 +403,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.toggleAISummary,
         label: t("entry_actions.toggle_ai_summary"),
         icon: <i className="i-mgc-ai-cute-re" />,
+        category,
         run: () => {
           if (role === UserRole.Trial) {
             presentActivationModal()
@@ -408,6 +416,7 @@ export const useRegisterEntryCommands = () => {
         id: COMMAND_ID.entry.toggleAITranslation,
         label: t("entry_actions.toggle_ai_translation"),
         icon: <i className="i-mgc-translate-2-ai-cute-re" />,
+        category,
         run: () => {
           if (role === UserRole.Trial) {
             presentActivationModal()

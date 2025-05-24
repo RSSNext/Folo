@@ -4,14 +4,13 @@ import { useWheel } from "@use-gesture/react"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useState } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useParams } from "react-router"
 
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
-import { HotkeyScope, ROUTE_ENTRY_PENDING } from "~/constants"
+import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content"
@@ -31,18 +30,6 @@ export const RightContentDesktop = () => {
   const feedColumnTempShow = useTimelineColumnTempShow()
   const feedColumnShow = useTimelineColumnShow()
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
-
-  useHotkeys(
-    "Escape",
-    () => {
-      navigate({ entryId: null })
-    },
-    {
-      enabled: showEntryContent && settingWideMode,
-      scopes: HotkeyScope.Home,
-      preventDefault: true,
-    },
-  )
 
   if (!showEntryContent) {
     return null

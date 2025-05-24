@@ -6,6 +6,7 @@ import {
   SimpleIconsOutline,
   SimpleIconsReadeck,
   SimpleIconsReadwise,
+  SimpleIconsZotero,
 } from "@follow/components/ui/platform-icon/icons.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { tracker } from "@follow/tracker"
@@ -28,7 +29,7 @@ import { useEntryStore } from "~/store/entry"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterIntegrationCommands = () => {
@@ -39,8 +40,10 @@ export const useRegisterIntegrationCommands = () => {
   useRegisterOutlineCommands()
   useRegisterReadeckCommands()
   useRegisterCuboxCommands()
+  useRegisterZoteroCommands()
 }
 
+const category: CommandCategory = "category.integration"
 const useRegisterEagleCommands = () => {
   const { t } = useTranslation()
   const { view } = useRouteParams()
@@ -123,6 +126,7 @@ const useRegisterReadwiseCommands = () => {
           id: COMMAND_ID.integration.saveToReadwise,
           label: t("entry_actions.save_to_readwise"),
           icon: <SimpleIconsReadwise />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -191,6 +195,7 @@ const useRegisterInstapaperCommands = () => {
           id: COMMAND_ID.integration.saveToInstapaper,
           label: t("entry_actions.save_to_instapaper"),
           icon: <SimpleIconsInstapaper />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -300,6 +305,7 @@ const useRegisterObsidianCommands = () => {
           id: COMMAND_ID.integration.saveToObsidian,
           label: t("entry_actions.save_to_obsidian"),
           icon: <SimpleIconsObsidian />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -344,6 +350,7 @@ const useRegisterOutlineCommands = () => {
           id: COMMAND_ID.integration.saveToOutline,
           label: t("entry_actions.save_to_outline"),
           icon: <SimpleIconsOutline />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -407,6 +414,7 @@ const useRegisterReadeckCommands = () => {
           id: COMMAND_ID.integration.saveToReadeck,
           label: t("entry_actions.save_to_readeck"),
           icon: <SimpleIconsReadeck />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -475,6 +483,7 @@ const useRegisterCuboxCommands = () => {
           id: COMMAND_ID.integration.saveToCubox,
           label: t("entry_actions.save_to_cubox"),
           icon: <SimpleIconsCubox />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -518,6 +527,146 @@ const useRegisterCuboxCommands = () => {
     {
       deps: [cuboxAvailable, cuboxToken, enableCuboxAutoMemo],
     },
+  )
+}
+
+const useRegisterZoteroCommands = () => {
+  const { t } = useTranslation()
+
+  const enableZotero = useIntegrationSettingKey("enableZotero")
+  const zoteroUserID = useIntegrationSettingKey("zoteroUserID")
+  const zoteroToken = useIntegrationSettingKey("zoteroToken")
+  const zoterAvailable = enableZotero && !!zoteroUserID && !!zoteroToken
+
+  // GET https://api.zotero.org/items/new?itemType=webpage
+  const buildZoteroWebpageRequestBody = (entry: FlatEntryModel) => {
+    // Zotero API only support ISO 8601 format and without millsecond
+    const accessDate = `${entry.entries.insertedAt.slice(0, 19)}Z`
+    // should return an array, because this API endpoint also support multi-item upload
+    return [
+      {
+        itemType: "webpage",
+        title: entry.entries.title || "",
+        creators: [
+          {
+            creatorType: "author",
+            firstName: entry.entries.author || "",
+            lastName: "",
+          },
+        ],
+        abstractNote: entry.entries.description || "",
+        websiteTitle: entry.entries.title || "",
+        websiteType: "",
+        date: entry.entries.publishedAt || "",
+        shortTitle: "",
+        url: entry.entries.url || "",
+        accessDate: accessDate || "",
+        language: entry.entries.language || "",
+        rights: "",
+        extra: "",
+        tags: [],
+        collections: [],
+        relations: {},
+      },
+    ]
+  }
+
+  useRegisterCommandEffect(
+    !zoterAvailable
+      ? []
+      : defineFollowCommand({
+          id: COMMAND_ID.integration.saveToZotero,
+          label: t("entry_actions.save_to_zotero"),
+          icon: <SimpleIconsZotero />,
+          category,
+          run: async ({ entryId }) => {
+            const entry = useEntryStore.getState().flatMapEntries[entryId]
+            if (!entry) {
+              toast.error("Failed to save to Zotero: entry is not available", { duration: 3000 })
+              return
+            }
+            try {
+              tracker.integration({
+                type: "zotero",
+                event: "save",
+              })
+
+              const requestBody = buildZoteroWebpageRequestBody(entry)
+
+              const response = await ofetch(`https://api.zotero.org/users/${zoteroUserID}/items`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Zotero-API-Key": zoteroToken,
+                },
+                body: requestBody,
+              })
+
+              if (response.failed && Object.keys(response.failed).length > 0) {
+                response.failed.forEach((failedObj) => {
+                  toast.error(failedObj.message, { duration: 3000 })
+                })
+              }
+              if (response.success && Object.keys(response.success).length > 0) {
+                toast.success(t("entry_actions.saved_to_zotero"), {
+                  duration: 3000,
+                })
+              }
+            } catch (error) {
+              const errorObj = error as FetchError
+              switch (errorObj.statusCode) {
+                case 400: {
+                  toast.error(
+                    `${t("entry_actions.failed_to_save_to_zotero")}: Invalid type/field; unparseable JSON`,
+                    {
+                      duration: 3000,
+                    },
+                  )
+
+                  break
+                }
+                case 409: {
+                  toast.error(
+                    `${t("entry_actions.failed_to_save_to_zotero")}: The target library is locked.`,
+                    {
+                      duration: 3000,
+                    },
+                  )
+
+                  break
+                }
+                case 412: {
+                  toast.error(
+                    `${t("entry_actions.failed_to_save_to_zotero")}: The version provided in If-Unmodified-Since-Version is out of date, or the provided Zotero-Write-Token has already been submitted.`,
+                    {
+                      duration: 3000,
+                    },
+                  )
+
+                  break
+                }
+                case 413: {
+                  toast.error(
+                    `${t("entry_actions.failed_to_save_to_zotero")}: Too many items submitted`,
+                    {
+                      duration: 3000,
+                    },
+                  )
+
+                  break
+                }
+                default: {
+                  toast.error(
+                    `${t("entry_actions.failed_to_save_to_zotero")}: ${errorObj.message} || ""`,
+                    {
+                      duration: 3000,
+                    },
+                  )
+                }
+              }
+            }
+          },
+        }),
   )
 }
 
@@ -595,6 +744,11 @@ export type SaveToCuboxCommand = Command<{
   fn: (payload: { entryId: string }) => void
 }>
 
+export type SaveToZoteroCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToZotero
+  fn: (payload: { entryId: string }) => void
+}>
+
 export type IntegrationCommand =
   | SaveToEagleCommand
   | SaveToReadwiseCommand
@@ -603,3 +757,4 @@ export type IntegrationCommand =
   | SaveToOutlineCommand
   | SaveToReadeckCommand
   | SaveToCuboxCommand
+  | SaveToZoteroCommand

@@ -21,12 +21,15 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { actionActions, useActionByIndex } from "~/store/action"
 
+import { useSettingModal } from "../settings/modal/use-setting-modal"
+
 type Action = {
   title: string
   icon: React.ReactNode
   config?: () => React.ReactNode
   configInline?: boolean
   enabled: boolean
+  settingsPath?: string
   onInit: (data: ActionModel) => void
   onRemove: (data: ActionModel) => void
 }
@@ -65,6 +68,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
   const star = useActionByIndex(index, (a) => a.result.star)
   const rewriteRules = useActionByIndex(index, (a) => a.result.rewriteRules)
   const webhooks = useActionByIndex(index, (a) => a.result.webhooks)
+  const settingModalPresent = useSettingModal()
 
   const disabled = useActionByIndex(index, (a) => a.result.disabled)
   const { t } = useTranslation("settings")
@@ -77,6 +81,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
         title: t("actions.action_card.generate_summary"),
         icon: <i className="i-mgc-ai-cute-re" />,
         enabled: !!summary,
+        settingsPath: "general",
         onInit: (data) => {
           data.result.summary = true
         },
@@ -88,6 +93,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
         title: t("actions.action_card.translate_into"),
         icon: <i className="i-mgc-translate-2-ai-cute-re" />,
         enabled: !!translation,
+        settingsPath: "general",
         onInit: (data) => {
           data.result.translation = true
         },
@@ -119,7 +125,8 @@ export const TargetActionList = ({ index }: { index: number }) => {
       },
       {
         title: t("actions.action_card.new_entry_notification"),
-        icon: <i className="i-mgc-bell-ringing-cute-re" />,
+        icon: <i className="i-mgc-notification-cute-re" />,
+        settingsPath: "notifications",
         enabled: !!newEntryNotification,
         onInit: (data) => {
           data.result.newEntryNotification = true
@@ -366,6 +373,18 @@ export const TargetActionList = ({ index }: { index: number }) => {
                     <div className="flex items-center gap-2">
                       {action.icon}
                       <span className="shrink grow truncate">{action.title}</span>
+                      {action.settingsPath && (
+                        <Button
+                          buttonClassName="ml-4"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            settingModalPresent(action.settingsPath)
+                          }}
+                        >
+                          {t("actions.action_card.settings")}
+                        </Button>
+                      )}
                     </div>
                     {action.configInline && action.config && action.config()}
 

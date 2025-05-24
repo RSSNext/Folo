@@ -76,6 +76,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
         ? [...rehypeSchema.attributes!["*"]!, "style", "class"]
         : rehypeSchema.attributes!["*"]!,
       video: ["src", "poster"],
+      source: ["src", "type"],
 
       svg: [
         "width",

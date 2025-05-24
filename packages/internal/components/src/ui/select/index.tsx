@@ -26,7 +26,7 @@ const SelectTrigger = ({
       "flex w-full items-center justify-between whitespace-nowrap rounded-lg bg-transparent",
       "focus-within:ring-material-medium outline-none transition-all duration-200 focus-within:outline-transparent focus-within:ring-2",
       "border-border hover:border-fill border",
-      size === "sm" ? "h-8 px-3 text-sm" : "h-10 px-3.5 py-2 text-sm",
+      size === "sm" ? "h-8 px-3 text-sm" : "h-9 px-3.5 py-2 text-sm",
       "placeholder:text-text-secondary",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",

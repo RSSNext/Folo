@@ -51,6 +51,7 @@ export const viteRenderBaseConfig = {
 
     codeInspectorPlugin({
       bundler: "vite",
+      hotKeys: ["altKey"],
       editor: "cursor",
     }),
     sentryVitePlugin({

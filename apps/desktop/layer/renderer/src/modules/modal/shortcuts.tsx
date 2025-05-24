@@ -1,26 +1,21 @@
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
-import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import { clsx, cn } from "@follow/utils/utils"
+import { clsx } from "@follow/utils/utils"
 import { m, useDragControls } from "motion/react"
-import { useCallback, useEffect } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { shortcuts, shortcutsType } from "~/constants/shortcuts"
-import { useSwitchHotKeyScope } from "~/hooks/common"
+
+import { ShortcutsGuideline } from "../command/shortcuts/SettingShortcuts"
 
 const ShortcutModalContent = () => {
   const { dismiss } = useCurrentModal()
   const modalOverlay = useUISettingKey("modalOverlay")
   const dragControls = useDragControls()
 
-  const switchScope = useSwitchHotKeyScope()
-  useEffect(() => {
-    switchScope("Home")
-  }, [])
   const { t } = useTranslation("shortcuts")
   return (
     <m.div
@@ -52,32 +47,8 @@ const ShortcutModalContent = () => {
         <i className="i-mgc-close-cute-re" />
       </MotionButtonBase>
       <ScrollArea.ScrollArea scrollbarClassName="w-2" rootClassName="w-full h-full">
-        <div className="w-full space-y-6 px-4 pb-5 pt-6">
-          {Object.keys(shortcuts).map((type) => (
-            <section key={type}>
-              <div className="text-text-secondary mb-2 pl-3 text-xs font-medium capitalize">
-                {t(shortcutsType[type])}
-              </div>
-              <div className="text-text rounded-md border text-[13px]">
-                {Object.keys(shortcuts[type]).map((action, index) => (
-                  <div
-                    key={`${type}-${action}`}
-                    className={cn(
-                      "flex h-9 items-center justify-between px-3 py-1.5",
-                      index % 2 && "bg-fill-quinary",
-                    )}
-                  >
-                    <div>{t(shortcuts[type][action].name)}</div>
-                    <div>
-                      <KbdCombined joint>
-                        {`${shortcuts[type][action].key}${shortcuts[type][action].extra ? `, ${shortcuts[type][action].extra}` : ""}`}
-                      </KbdCombined>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+        <div className="w-full space-y-6 px-4 pb-5">
+          <ShortcutsGuideline />
         </div>
       </ScrollArea.ScrollArea>
     </m.div>

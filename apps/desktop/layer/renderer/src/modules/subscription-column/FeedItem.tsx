@@ -29,8 +29,7 @@ import { getPreferredTitle, useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { useFeedUnreadStore } from "~/store/unread"
-import { useUnreadByListId } from "~/store/unread/hooks"
+import { useUnreadById, useUnreadByListId } from "~/store/unread/hooks"
 
 import { useSelectedFeedIdsState } from "./atom"
 import { DraggableContext } from "./context"
@@ -108,7 +107,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
     [feedId, navigate, setSelectedFeedIds, view],
   )
 
-  const feedUnread = useFeedUnreadStore((state) => state.data[feedId] || 0)
+  const feedUnread = useUnreadById(feedId)
 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.feedId === feedId)
 
@@ -220,7 +219,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 }
 
 const FilterReadFeedItem: Component<FeedItemProps> = (props) => {
-  const feedUnread = useFeedUnreadStore((state) => state.data[props.feedId] || 0)
+  const feedUnread = useUnreadById(props.feedId)
 
   if (!feedUnread) return null
   return createElement(FeedItemImpl, props)
@@ -359,7 +358,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
   const isActive = useRouteParamsSelector((routerParams) => routerParams.inboxId === inboxId)
   const { items } = useInboxActions({ inboxId })
 
-  const inboxUnread = useFeedUnreadStore((state) => state.data[inboxId] || 0)
+  const inboxUnread = useUnreadById(inboxId)
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const navigate = useNavigateEntry()

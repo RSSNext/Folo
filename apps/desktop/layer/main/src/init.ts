@@ -2,7 +2,7 @@ import path from "node:path"
 
 import { getRendererHandlers, registerIpcMain } from "@egoist/tipc/main"
 import { PushReceiver } from "@eneris/push-receiver"
-import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
+import { APP_PROTOCOL, DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { MessagingData } from "@follow/shared/hono"
 import { app, nativeTheme, Notification, protocol, shell } from "electron"
@@ -18,7 +18,7 @@ import { registerAppMenu } from "./menu"
 import type { RendererHandlers } from "./renderer-handlers"
 import { initializeSentry } from "./sentry"
 import { router } from "./tipc"
-import { createMainWindow, getMainWindow } from "./window"
+import { getMainWindowOrCreate } from "./window"
 
 if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
   process.env.NODE_ENV = "development"
@@ -31,14 +31,16 @@ export function initializeAppStage0() {
   initializeSentry()
 }
 export const initializeAppStage1 = () => {
-  if (process.defaultApp) {
-    if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient(APP_PROTOCOL, process.execPath, [
-        path.resolve(process.argv[1]!),
-      ])
+  const protocols = [LEGACY_APP_PROTOCOL, APP_PROTOCOL]
+
+  for (const protocol of protocols) {
+    if (process.defaultApp) {
+      if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient(protocol, process.execPath, [path.resolve(process.argv[1]!)])
+      }
+    } else {
+      app.setAsDefaultProtocolClient(protocol)
     }
-  } else {
-    app.setAsDefaultProtocolClient(APP_PROTOCOL)
   }
 
   registerIpcMain(router)
@@ -184,10 +186,7 @@ const registerPushNotifications = async () => {
           body: data.description,
         })
         notification.on("click", () => {
-          let mainWindow = getMainWindow()
-          if (!mainWindow) {
-            mainWindow = createMainWindow()
-          }
+          const mainWindow = getMainWindowOrCreate()
           mainWindow.restore()
           mainWindow.focus()
           const handlers = getRendererHandlers<RendererHandlers>(mainWindow.webContents)

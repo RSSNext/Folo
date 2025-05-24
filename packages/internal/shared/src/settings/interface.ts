@@ -20,6 +20,8 @@ export interface GeneralSettings {
   // subscription
   autoGroup: boolean
   hideAllReadSubscriptions: boolean
+  hidePrivateSubscriptionsInTimeline: boolean
+
   /**
    * Top timeline for mobile
    */
@@ -112,6 +114,11 @@ export interface IntegrationSettings {
   enableCubox: boolean
   cuboxToken: string
   enableCuboxAutoMemo: boolean
+
+  //zotero
+  enableZotero: boolean
+  zoteroUserID: string
+  zoteroToken: string
 
   saveSummaryAsDescription: boolean
 }

@@ -1,118 +1,109 @@
-import type { FeedViewType } from "@follow/constants"
-
 import { setFeedUnreadDirty } from "~/atoms/feed"
-import { INBOX_PREFIX_ID } from "~/constants"
+import { getInboxOrFeedIdFromFeedId } from "~/constants"
 import { apiClient } from "~/lib/api-fetch"
-import { FeedUnreadService } from "~/services"
+import { UnreadService } from "~/services"
 
-import { getSubscriptionByView } from "../subscription/getters"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 interface UnreadState {
   data: Record<string, number>
 }
-/**
- * Store for `feed` unread count
- */
-export const useFeedUnreadStore = createZustandStore<UnreadState>("unread")(() => ({
+const initialState: UnreadState = {
   data: {},
-}))
+}
+/**
+ * feedId or inboxHandle -> unread count
+ * Inbox subscription's feedId is `inbox-${inboxId}`, but in this store, we use the inboxId as the key.
+ * To get the unread count of a list, you need to get all feed ids in the list first.
+ */
+export const useUnreadStore = createZustandStore<UnreadState>("unread")(() => initialState)
 
-const set = useFeedUnreadStore.setState
-const get = useFeedUnreadStore.getState
-const immerSet = createImmerSetter(useFeedUnreadStore)
-class FeedUnreadActions {
-  private internal_reset() {
-    set({ data: {} })
-    FeedUnreadService.clear()
-  }
+const set = useUnreadStore.setState
+const get = useUnreadStore.getState
+const immerSet = createImmerSetter(useUnreadStore)
 
-  private internal_reset_by_view(view?: FeedViewType) {
-    if (view === undefined) return
-    const viewSubscription = getSubscriptionByView(view)
-    const ids = viewSubscription.map(
-      (s) => s?.feedId || s?.listId || INBOX_PREFIX_ID + (s?.feedId || ""),
-    )
+type UnreadValuesArray = [string, number][]
+type UnreadValuesObject = Record<string, number>
 
+class UnreadActions {
+  private internal_reset(data?: UnreadValuesObject) {
+    const newIds = data ? Object.keys(data) : []
+    if (!data || newIds.length === 0) {
+      set(initialState)
+      UnreadService.clear()
+      return
+    }
+
+    const idsToDelete = Object.keys(get().data).filter((id) => !(id in data))
     immerSet((state) => {
-      for (const id of ids) {
-        state.data[id] = 0
-      }
-      return state
+      state.data = data
     })
-    FeedUnreadService.bulkDelete(ids)
+    UnreadService.bulkDelete(idsToDelete)
+    UnreadService.updateUnread(Object.entries(data))
   }
 
   clear() {
     this.internal_reset()
   }
 
-  private async internal_setValue(data: [string, number][]) {
+  private async internal_setValue(data: UnreadValuesArray) {
     const tx = createTransaction()
     tx.optimistic(() => {
-      set((state) => {
-        state.data = { ...state.data }
+      immerSet((state) => {
         for (const [key, value] of data) {
           state.data[key] = value
         }
-        return { ...state }
       })
     })
 
     tx.persist(async () => {
-      await FeedUnreadService.updateFeedUnread(data)
+      await UnreadService.updateUnread(data)
     })
     await tx.run()
   }
 
-  async fetchUnreadByView(view: FeedViewType | undefined) {
-    const unread = await apiClient.reads.$get({
-      query: { view: String(view) },
-    })
-
-    const { data } = unread
-
-    this.internal_reset_by_view(view)
-    this.internal_setValue(Object.entries(data))
-
-    return data
-  }
-
   async fetchUnreadAll() {
-    const unread = await apiClient.reads.$get({
+    const { data } = await apiClient.reads.$get({
       query: {},
     })
-
-    const { data } = unread
-    this.internal_reset()
-
-    this.internal_setValue(Object.entries(data))
+    this.internal_reset(data)
     return data
   }
 
   /**
    * @returns previous value
    */
-  incrementByFeedId(feedId: string, inc: number) {
-    const finalFeedId = feedId.startsWith(INBOX_PREFIX_ID)
-      ? feedId.slice(INBOX_PREFIX_ID.length)
-      : feedId
+  incrementById(id: string, inc: number) {
+    const finalId = getInboxOrFeedIdFromFeedId(id)
 
     const state = get()
-    const cur = state.data[finalFeedId]
+    const cur = state.data[finalId]
     const nextValue = Math.max(0, (cur || 0) + inc)
 
-    this.internal_setValue([[finalFeedId, nextValue]])
-    setFeedUnreadDirty(finalFeedId)
+    this.internal_setValue([[finalId, nextValue]])
+    setFeedUnreadDirty(finalId)
     return cur
   }
 
-  updateByFeedId(feedId: string, unread: number) {
-    const finalFeedId = feedId.startsWith(INBOX_PREFIX_ID)
-      ? feedId.slice(INBOX_PREFIX_ID.length)
-      : feedId
+  changeBatch(data: UnreadValuesArray | UnreadValuesObject, type: "increment" | "decrement") {
+    const state = get()
+    const finalData = (Array.isArray(data) ? data : Object.entries(data)).map(([key, value]) => {
+      const finalId = getInboxOrFeedIdFromFeedId(key)
+      const cur = state.data[finalId]
+      const nextValue = Math.max(0, (cur || 0) + (type === "increment" ? value : -value))
+      return [finalId, nextValue] as [string, number]
+    })
+    this.internal_setValue(finalData)
+  }
 
-    this.internal_setValue([[finalFeedId, unread]])
+  updateById(id: string, unread: number) {
+    const finalId = getInboxOrFeedIdFromFeedId(id)
+
+    this.internal_setValue([[finalId, unread]])
+  }
+
+  upsertMany(data: UnreadValuesObject | UnreadValuesArray) {
+    this.internal_setValue(Array.isArray(data) ? data : Object.entries(data))
   }
 
   subscribeUnreadCount(fn: (count: number) => void, immediately?: boolean) {
@@ -127,7 +118,7 @@ class FeedUnreadActions {
     if (immediately) {
       handler(get())
     }
-    return useFeedUnreadStore.subscribe(handler)
+    return useUnreadStore.subscribe(handler)
   }
 
   hydrate(
@@ -136,16 +127,12 @@ class FeedUnreadActions {
       count: number
     }[],
   ) {
-    set((state) => {
-      state.data = { ...state.data }
-
+    immerSet((state) => {
       for (const { id, count } of data) {
         state.data[id] = count
       }
-
-      return { ...state }
     })
   }
 }
 
-export const feedUnreadActions = new FeedUnreadActions()
+export const unreadActions = new UnreadActions()
