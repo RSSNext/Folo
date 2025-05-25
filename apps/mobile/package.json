@@ -1,6 +1,6 @@
 {
   "name": "@follow/mobile",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {

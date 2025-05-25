@@ -32,10 +32,11 @@ export const useGlobalFocusableScope = () => {
 }
 
 export const useGlobalFocusableHasScope = (scope: string) => {
-  return useGlobalFocusableScopeSelector((v) => v.has(scope))
+  return useGlobalFocusableScopeSelector(useCallback((v) => v.has(scope), [scope]))
 }
 export const useGlobalFocusableScopeSelector = (selector: (scope: Set<string>) => boolean) => {
   const ctx = use(GlobalFocusableContext)
+
   return useAtomValue(useMemo(() => selectAtom(ctx, selector), [ctx, selector]))
 }
 

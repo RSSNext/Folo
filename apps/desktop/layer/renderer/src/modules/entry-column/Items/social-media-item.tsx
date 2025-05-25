@@ -370,7 +370,7 @@ const CollapsedSocialMediaItem: Component<{
   }, [children])
 
   return (
-    <AutoResizeHeight spring className="relative">
+    <AutoResizeHeight className="relative">
       <div
         className={cn(
           "relative",

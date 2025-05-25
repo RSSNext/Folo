@@ -88,12 +88,3 @@
     background: linear-gradient(to right, #f2994a, #f2c94c);
   }
 }
-
-.grecaptcha-badge {
-  visibility: hidden;
-}
-
-iframe[src*="www.recaptcha.net"] {
-  pointer-events: auto !important;
-  -webkit-app-region: no-drag !important;
-}

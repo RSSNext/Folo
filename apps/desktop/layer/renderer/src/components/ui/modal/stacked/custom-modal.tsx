@@ -3,6 +3,7 @@ import { cn } from "@follow/utils/utils"
 import { m, useAnimationControls } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useState } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 import { ModalClose } from "./components"
 import { useCurrentModal } from "./hooks"

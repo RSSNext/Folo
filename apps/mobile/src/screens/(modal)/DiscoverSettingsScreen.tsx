@@ -23,7 +23,7 @@ export const DiscoverSettingsScreen = () => {
       Header={<NavigationBlurEffectHeaderView title={t("discoverFilters.title")} />}
     >
       <GroupedInsetListSectionHeader label={t("discoverFilters.filters")} marginSize="small" />
-      <GroupedInsetListCard>
+      <GroupedInsetListCard className="flex-row">
         <GroupedInsetListCell label={t("discoverFilters.language")}>
           <View className="w-[100px]">
             <Select

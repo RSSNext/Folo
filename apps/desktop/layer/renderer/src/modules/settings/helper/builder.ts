@@ -1,3 +1,5 @@
+import type { JSX } from "react/jsx-runtime"
+
 import type { SettingItem } from "./setting-builder"
 import { createSettingBuilder } from "./setting-builder"
 
