@@ -1,8 +1,10 @@
 import * as Linking from "expo-linking"
+import { useShareIntent } from "expo-share-intent"
 import { useEffect } from "react"
 
 import { useNavigation } from "../lib/navigation/hooks"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
+import { DiscoverTabScreen } from "../screens/(stack)/(tabs)/discover"
 
 // This needs to stay outside of react to persist between account switches
 let previousIntentUrl = ""
@@ -14,6 +16,16 @@ export function useIntentHandler() {
   const incomingUrl = Linking.useURL()
 
   const navigation = useNavigation()
+
+  const { hasShareIntent, shareIntent } = useShareIntent()
+
+  useEffect(() => {
+    if (hasShareIntent && shareIntent.webUrl) {
+      navigation.presentControllerView(DiscoverTabScreen, {
+        searchValue: shareIntent.webUrl,
+      })
+    }
+  }, [hasShareIntent, navigation, shareIntent.webUrl])
 
   useEffect(() => {
     if (incomingUrl && incomingUrl !== previousIntentUrl) {

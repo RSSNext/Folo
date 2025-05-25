@@ -12,6 +12,7 @@ interface SearchPageContextType {
   searchValueAtom: PrimitiveAtom<string>
 
   searchTypeAtom: PrimitiveAtom<SearchType>
+  fromIntent?: boolean
 }
 export const SearchPageContext = createContext<SearchPageContextType>(null!)
 
@@ -35,15 +36,22 @@ export const useSetSearchBarHeight = () => {
   return use(setSearchBarHeightContext)
 }
 
-export const SearchPageProvider = ({ children }: { children: React.ReactNode }) => {
+export const SearchPageProvider = ({
+  children,
+  searchValue,
+}: {
+  children: React.ReactNode
+  searchValue?: string
+}) => {
   const [atomRefs] = useState((): SearchPageContextType => {
-    const searchFocusedAtom = atom(false)
-    const searchValueAtom = atom("")
+    const searchFocusedAtom = atom(!!searchValue)
+    const searchValueAtom = atom(searchValue ?? "")
     const searchTypeAtom = atom(SearchType.Feed)
     return {
       searchFocusedAtom,
       searchValueAtom,
       searchTypeAtom,
+      fromIntent: !!searchValue,
     }
   })
   return <SearchPageContext value={atomRefs}>{children}</SearchPageContext>

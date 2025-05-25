@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundleDisplayName</key>
+    <string>Folo - Share Extension</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>NSExtension</key>
+    <dict>
+      <key>NSExtensionAttributes</key>
+      <dict>
+        <key>NSExtensionActivationRule</key>
+        <dict>
+          <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+          <integer>1</integer>
+          <key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+          <integer>1</integer>
+        </dict>
+        <key>NSExtensionJavaScriptPreprocessingFile</key>
+        <string>ShareExtensionPreprocessor</string>
+      </dict>
+      <key>NSExtensionMainStoryboard</key>
+      <string>MainInterface</string>
+      <key>NSExtensionPointIdentifier</key>
+      <string>com.apple.share-services</string>
+    </dict>
+    <key>AppGroupIdentifier</key>
+    <string>group.is.follow</string>
+  </dict>
+</plist>
