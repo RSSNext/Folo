@@ -97,11 +97,15 @@ export const summaryActions = new SummaryActions()
 class SummarySyncService {
   private pendingPromises: Record<string, Promise<string>> = {}
 
-  async generateSummary(
-    entryId: string,
-    target: "content" | "readabilityContent",
-    actionLanguage: SupportedActionLanguage,
-  ) {
+  async generateSummary({
+    entryId,
+    target,
+    actionLanguage,
+  }: {
+    entryId: string
+    target: "content" | "readabilityContent"
+    actionLanguage: SupportedActionLanguage
+  }) {
     const entry = getEntry(entryId)
     if (!entry) return
 

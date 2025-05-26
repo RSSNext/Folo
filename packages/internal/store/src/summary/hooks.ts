@@ -27,7 +27,7 @@ export function usePrefetchSummary({
   return useQuery({
     queryKey: ["summary", entryId, target],
     queryFn: () => {
-      return summarySyncService.generateSummary(entryId, target, actionLanguage)
+      return summarySyncService.generateSummary({ entryId, target, actionLanguage })
     },
     enabled: options?.enabled,
     staleTime: 1000 * 60 * 60 * 24,

@@ -116,11 +116,11 @@ const HeaderRightActionsImpl = ({
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()
-      await summarySyncService.generateSummary(
+      await summarySyncService.generateSummary({
         entryId,
-        showReadability ? "readabilityContent" : "content",
-        getActionLanguage(),
-      )
+        target: showReadability ? "readabilityContent" : "content",
+        actionLanguage: getActionLanguage(),
+      })
       hideGlowEffect()
     }
 
