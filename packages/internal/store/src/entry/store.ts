@@ -4,7 +4,6 @@ import { debounce } from "es-toolkit/compat"
 import { fetch as expoFetch } from "expo/fetch"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
-import { apiClient } from "@/src/lib/api-fetch"
 import { getCookie } from "@/src/lib/auth"
 import { dbStoreMorph } from "@/src/morph/db-store"
 import { honoMorph } from "@/src/morph/hono"

@@ -7,8 +7,6 @@ import type {
 } from "@follow/models/src/types"
 import { merge } from "es-toolkit/compat"
 
-import { apiClient } from "@/src/lib/api-fetch"
-
 import { createImmerSetter, createZustandStore } from "../internal/helper"
 
 type ActionStore = {

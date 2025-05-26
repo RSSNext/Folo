@@ -2,8 +2,6 @@ import type { FeedViewType } from "@follow/constants"
 import type { CollectionSchema } from "@follow/database/src/schemas/types"
 import { CollectionService } from "@follow/database/src/services/collection"
 
-import { apiClient } from "@/src/lib/api-fetch"
-
 import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 

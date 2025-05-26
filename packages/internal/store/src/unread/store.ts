@@ -4,7 +4,6 @@ import { EntryService } from "@follow/database/src/services/entry"
 import { UnreadService } from "@follow/database/src/services/unread"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
-import { apiClient } from "@/src/lib/api-fetch"
 import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
 
 import { getEntry } from "../entry/getter"

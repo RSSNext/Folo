@@ -1,7 +1,6 @@
 import type { ListSchema } from "@follow/database/src/schemas/types"
 import { ListService } from "@follow/database/src/services/list"
 
-import { apiClient } from "@/src/lib/api-fetch"
 import { honoMorph } from "@/src/morph/hono"
 import { storeDbMorph } from "@/src/morph/store-db"
 

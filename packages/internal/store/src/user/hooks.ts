@@ -2,7 +2,6 @@ import { tracker } from "@follow/tracker"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 
-import { apiClient } from "@/src/lib/api-fetch"
 import { kv } from "@/src/lib/kv"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { OnboardingScreen } from "@/src/screens/OnboardingScreen"

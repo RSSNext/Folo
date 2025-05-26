@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Platform } from "react-native"
 
-import { apiClient } from "@/src/lib/api-fetch"
 import { kv } from "@/src/lib/kv"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { requestNotificationPermission } from "@/src/lib/permission"
