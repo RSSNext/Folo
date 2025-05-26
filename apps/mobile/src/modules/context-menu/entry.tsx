@@ -76,7 +76,7 @@ export const EntryItemContextMenu = ({
                 startTime: new Date(publishedAt).getTime() + 1,
                 endTime: Date.now(),
               },
-              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >
@@ -122,7 +122,7 @@ export const EntryItemContextMenu = ({
                 startTime: 1,
                 endTime: new Date(publishedAt).getTime() - 1,
               },
-              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >

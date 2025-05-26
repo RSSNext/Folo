@@ -48,7 +48,7 @@ class UnreadSyncService {
     view,
     filter,
     time,
-    hidePrivateSubscriptionsInTimeline,
+    excludePrivate,
   }: {
     view: FeedViewType
     filter?: {
@@ -58,12 +58,12 @@ class UnreadSyncService {
       inboxId?: string
     } | null
     time?: PublishAtTimeRangeFilter
-    hidePrivateSubscriptionsInTimeline: boolean
+    excludePrivate: boolean
   }) {
     await apiClient.reads.all.$post({
       json: {
         view,
-        excludePrivate: hidePrivateSubscriptionsInTimeline,
+        excludePrivate,
         ...filter,
         ...time,
       },

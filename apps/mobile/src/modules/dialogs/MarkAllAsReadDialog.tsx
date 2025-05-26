@@ -28,7 +28,7 @@ export const MarkAllAsReadDialog: DialogComponent = () => {
             unreadSyncService.markViewAsRead({
               view: selectedView,
               filter: payload,
-              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }
         }}

@@ -26,7 +26,7 @@ export const EntryListFooter = () => {
             unreadSyncService.markViewAsRead({
               view: selectedView,
               filter: payload,
-              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }
         }}
@@ -56,7 +56,7 @@ export const GridEntryListFooter = () => {
           unreadSyncService.markViewAsRead({
             view: selectedView,
             filter: payload,
-            hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+            excludePrivate: getHideAllReadSubscriptions(),
           })
         }
       }}

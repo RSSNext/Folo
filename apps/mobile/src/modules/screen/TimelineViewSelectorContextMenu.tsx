@@ -21,7 +21,7 @@ export const TimelineViewSelectorContextMenu: FC<
           onSelect={() => {
             unreadSyncService.markViewAsRead({
               view: viewId,
-              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >
