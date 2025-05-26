@@ -4,7 +4,6 @@ import { migrate } from "drizzle-orm/expo-sqlite/migrator"
 import * as SQLite from "expo-sqlite"
 
 import { SQLITE_DB_NAME } from "./constant"
-// @ts-expect-error
 import migrations from "./drizzle/migrations"
 import * as schema from "./schemas"
 

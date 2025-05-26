@@ -3,7 +3,6 @@ import { drizzle } from "drizzle-orm/sqlite-proxy"
 import { SQLocalDrizzle } from "sqlocal/drizzle"
 
 import { SQLITE_DB_NAME } from "./constant"
-// @ts-expect-error
 import migrations from "./drizzle/migrations"
 import { migrate } from "./migrator"
 import * as schema from "./schemas"
