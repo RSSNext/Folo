@@ -11,6 +11,11 @@
       "import": "./src/rsshub.ts",
       "types": "./src/rsshub.ts"
     },
+    "./src/*": {
+      "types": "./src/*.ts",
+      "require": "./src/*.ts",
+      "import": "./src/*.ts"
+    },
     "./types": {
       "import": "./src/types.ts",
       "require": "./src/types.ts"
