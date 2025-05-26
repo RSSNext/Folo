@@ -2,8 +2,6 @@ import type { FeedViewType } from "@follow/constants"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect } from "react"
 
-import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
-
 import { useListFeedIds } from "../list/hooks"
 import { useSubscriptionByView } from "../subscription/hooks"
 import { unreadSyncService, useUnreadStore } from "./store"
@@ -23,18 +21,6 @@ export const useAutoMarkAsRead = (entryId: string) => {
   useEffect(() => {
     mutate(entryId)
   }, [entryId, mutate])
-}
-
-export function useUnreadCountBadge() {
-  const unreadCount = useUnreadCounts()
-  const { mutate, isPending } = useMutation({
-    mutationFn: (unread: number) => setBadgeCountAsyncWithPermission(unread),
-  })
-  useEffect(() => {
-    if (!isPending) {
-      mutate(unreadCount)
-    }
-  }, [unreadCount, mutate, isPending])
 }
 
 export const useUnreadCount = (subscriptionId: string) => {

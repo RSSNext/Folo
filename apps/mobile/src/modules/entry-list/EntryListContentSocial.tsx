@@ -4,6 +4,9 @@ import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { checkLanguage } from "@/src/lib/translation"
+
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
@@ -43,7 +46,14 @@ export const EntryListContentSocial = ({
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   return (
     <TimelineSelectorList

@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter, parseUrl } from "@follow/utils"
+import { capitalizeFirstLetter, parseUrl } from "@follow/utils/src/utils"
 
 import { getFeed } from "../feed/getter"
 import type { SubscriptionModel } from "./store"

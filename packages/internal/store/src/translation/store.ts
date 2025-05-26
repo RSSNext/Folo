@@ -1,8 +1,7 @@
 import type { TranslationSchema } from "@follow/database/src/schemas/types"
 import { TranslationService } from "@follow/database/src/services/translation"
-
-import type { SupportedLanguages } from "@/src/lib/language"
-import { checkLanguage } from "@/src/lib/translation"
+import type { SupportedLanguages } from "@follow/models/src/types"
+import type { SupportedActionLanguage } from "@follow/shared"
 
 import { getEntry } from "../entry/getter"
 import type { Hydratable } from "../internal/base"
@@ -76,11 +75,13 @@ class TranslationSyncService {
     language,
     withContent,
     target,
+    checkLanguage,
   }: {
     entryId: string
     language: SupportedLanguages
     withContent?: boolean
     target: "content" | "readabilityContent"
+    checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean
   }) {
     const entry = getEntry(entryId)
     if (!entry) return

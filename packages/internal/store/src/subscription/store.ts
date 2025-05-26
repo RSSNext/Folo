@@ -3,16 +3,14 @@ import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
 import { SubscriptionService } from "@follow/database/src/services/subscription"
 import { tracker } from "@follow/tracker"
 
-import { toast } from "@/src/lib/toast"
-import { dbStoreMorph } from "@/src/morph/db-store"
-import { honoMorph } from "@/src/morph/hono"
-import { buildSubscriptionDbId, storeDbMorph } from "@/src/morph/store-db"
-
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { listActions } from "../list/store"
+import { dbStoreMorph } from "../morph/db-store"
+import { honoMorph } from "../morph/hono"
+import { buildSubscriptionDbId, storeDbMorph } from "../morph/store-db"
 import { whoami } from "../user/getters"
 import type { SubscriptionForm } from "./types"
 import { getInboxStoreId, getSubscriptionStoreId } from "./utils"
@@ -174,7 +172,6 @@ class SubscriptionSyncService {
     const subscriptionId = getSubscriptionStoreId(subscription)
     const current = get().data[subscriptionId]
     if (!current) {
-      toast.error("Subscription to edit not found")
       return
     }
     const tx = createTransaction(current)

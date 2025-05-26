@@ -1,7 +1,6 @@
 import type { SummarySchema } from "@follow/database/src/schemas/types"
 import { summaryService } from "@follow/database/src/services/summary"
-
-import { getActionLanguage } from "@/src/atoms/settings/general"
+import type { SupportedActionLanguage } from "@follow/shared"
 
 import { getEntry } from "../entry/getter"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
@@ -98,7 +97,11 @@ export const summaryActions = new SummaryActions()
 class SummarySyncService {
   private pendingPromises: Record<string, Promise<string>> = {}
 
-  async generateSummary(entryId: string, target: "content" | "readabilityContent") {
+  async generateSummary(
+    entryId: string,
+    target: "content" | "readabilityContent",
+    actionLanguage: SupportedActionLanguage,
+  ) {
     const entry = getEntry(entryId)
     if (!entry) return
 
@@ -110,7 +113,6 @@ class SummarySyncService {
       state.generatingStatus[entryId] = SummaryGeneratingStatus.Pending
     })
 
-    const actionLanguage = getActionLanguage()
     // Use Our AI to generate summary
     const pendingPromise = apiClient.ai.summary
       .$get({

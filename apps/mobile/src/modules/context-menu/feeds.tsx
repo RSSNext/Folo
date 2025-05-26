@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
 import { Alert, FlatList, View } from "react-native"
 
+import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { views } from "@/src/constants/views"
@@ -339,7 +340,8 @@ export const SubscriptionFeedCategoryContextMenu = ({
 const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   const { id: feedId } = props
   const entryIds = useEntryIdsByFeedId(feedId)
-  const { isLoading } = usePrefetchEntries({ feedId, limit: 5 })
+  const options = useFetchEntriesSettings()
+  const { isLoading } = usePrefetchEntries({ feedId, limit: 5, ...options })
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (

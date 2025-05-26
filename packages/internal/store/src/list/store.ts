@@ -1,12 +1,11 @@
 import type { ListSchema } from "@follow/database/src/schemas/types"
 import { ListService } from "@follow/database/src/services/list"
 
-import { honoMorph } from "@/src/morph/hono"
-import { storeDbMorph } from "@/src/morph/store-db"
-
 import { feedActions } from "../feed/store"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { honoMorph } from "../morph/hono"
+import { storeDbMorph } from "../morph/store-db"
 import { getList } from "./getters"
 import type { CreateListModel } from "./types"
 

@@ -1,14 +1,11 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/src/schemas/types"
 import { UserService } from "@follow/database/src/services/user"
-import type { AuthSession } from "@follow/shared"
-
-import { changeEmail, sendVerificationEmail, twoFactor, updateUser } from "@/src/lib/auth"
-import { toast } from "@/src/lib/toast"
-import { honoMorph } from "@/src/morph/hono"
+import type { AuthSession } from "@follow/shared/src/hono"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { honoMorph } from "../morph/hono"
 import type { UserProfileEditable } from "./types"
 
 export type UserModel = UserSchema
@@ -64,7 +61,7 @@ class UserSyncService {
     })
 
     tx.request(async () => {
-      await updateUser({
+      await authClient.updateUser({
         ...data,
       })
     })
@@ -89,8 +86,8 @@ class UserSyncService {
   async sendVerificationEmail() {
     const me = get().whoami
     if (!me?.email) return
-    await sendVerificationEmail({ email: me.email! })
-    toast.success("Verification email sent")
+    await authClient.sendVerificationEmail({ email: me.email! })
+    // toast.success("Verification email sent")
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {
@@ -99,8 +96,8 @@ class UserSyncService {
     if (!me) throw new Error("user not login")
 
     const res = enabled
-      ? await twoFactor.enable({ password })
-      : await twoFactor.disable({ password })
+      ? await authClient.twoFactor.enable({ password })
+      : await authClient.twoFactor.disable({ password })
 
     if (!res.error) {
       immerSet((state) => {
@@ -127,7 +124,7 @@ class UserSyncService {
     tx.request(async () => {
       const { whoami } = get()
       if (!whoami) return
-      await changeEmail({ newEmail: email })
+      await authClient.changeEmail({ newEmail: email })
     })
     tx.rollback(() => {
       immerSet((state) => {

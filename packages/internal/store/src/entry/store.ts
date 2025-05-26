@@ -1,23 +1,19 @@
 import { FeedViewType } from "@follow/constants"
 import { EntryService } from "@follow/database/src/services/entry"
 import { debounce } from "es-toolkit/compat"
-import { fetch as expoFetch } from "expo/fetch"
-
-import { getGeneralSettings } from "@/src/atoms/settings/general"
-import { getCookie } from "@/src/lib/auth"
-import { dbStoreMorph } from "@/src/morph/db-store"
-import { honoMorph } from "@/src/morph/hono"
-import { storeDbMorph } from "@/src/morph/store-db"
 
 import { collectionActions } from "../collection/store"
 import { feedActions } from "../feed/store"
-import type { Hydratable } from "../internal/base"
+import type { Hydratable, HydrationOptions } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { dbStoreMorph } from "../morph/db-store"
+import { honoMorph } from "../morph/hono"
+import { storeDbMorph } from "../morph/store-db"
 import { getSubscription } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
 import type { PublishAtTimeRangeFilter } from "../unread/types"
 import { getEntry } from "./getter"
-import type { EntryModel, FetchEntriesProps } from "./types"
+import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 import { getEntriesParams } from "./utils"
 
 type EntryId = string
@@ -58,12 +54,12 @@ export const useEntryStore = createZustandStore<EntryState>("entry")(() => defau
 const immerSet = createImmerSetter(useEntryStore)
 
 class EntryActions implements Hydratable {
-  async hydrate() {
+  async hydrate(options?: HydrationOptions) {
     const entries = await EntryService.getEntryAll()
-    const { unreadOnly } = getGeneralSettings()
+
     entryActions.upsertManyInSession(
       entries.map((e) => dbStoreMorph.toEntryModel(e)),
-      { unreadOnly },
+      options,
     )
   }
 
@@ -72,16 +68,17 @@ class EntryActions implements Hydratable {
     feedId,
     entryId,
     sources,
+    hidePrivateSubscriptionsInTimeline,
   }: {
     draft: EntryState
     feedId?: FeedId | null
     entryId: EntryId
     sources?: string[] | null
+    hidePrivateSubscriptionsInTimeline?: boolean
   }) {
     if (!feedId) return
 
     const subscription = getSubscription(feedId)
-    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
     const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
     if (typeof subscription?.view === "number" && !ignore) {
@@ -174,9 +171,9 @@ class EntryActions implements Hydratable {
     }
   }
 
-  upsertManyInSession(entries: EntryModel[], options?: { unreadOnly?: boolean }) {
+  upsertManyInSession(entries: EntryModel[], options?: FetchEntriesPropsSettings) {
     if (entries.length === 0) return
-    const { unreadOnly } = options ?? {}
+    const { unreadOnly, hidePrivateSubscriptionsInTimeline } = options || {}
 
     immerSet((draft) => {
       for (const entry of entries) {
@@ -205,6 +202,7 @@ class EntryActions implements Hydratable {
           feedId,
           entryId: entry.id,
           sources,
+          hidePrivateSubscriptionsInTimeline,
         })
 
         this.addEntryIdToCategory({
@@ -521,7 +519,13 @@ class EntrySyncServices {
     return entry
   }
 
-  async fetchEntryContentByStream(remoteEntryIds?: string[]) {
+  async fetchEntryContentByStream(
+    remoteEntryIds?: string[],
+    options?: {
+      fetch?: typeof fetch
+      cookie?: string
+    },
+  ) {
     if (!remoteEntryIds || remoteEntryIds.length === 0) return
 
     const onlyNoStored = true
@@ -543,11 +547,13 @@ class EntrySyncServices {
     const readStream = async () => {
       // https://github.com/facebook/react-native/issues/37505
       // TODO: And it seems we can not just use fetch from expo for ofetch, need further investigation
-      const response = await expoFetch(apiClient.entries.stream.$url().toString(), {
+      const response = await (options?.fetch || fetch)(apiClient.entries.stream.$url().toString(), {
         method: "POST",
-        headers: {
-          cookie: getCookie(),
-        },
+        headers: options?.cookie
+          ? {
+              cookie: options.cookie,
+            }
+          : undefined,
         body: JSON.stringify({
           ids: nextIds,
         }),

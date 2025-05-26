@@ -1,10 +1,7 @@
-import { FeedViewType } from "@follow/constants"
-import { sortByAlphabet } from "@follow/utils"
+import { FeedViewType, views } from "@follow/constants"
+import { sortByAlphabet } from "@follow/utils/src/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
-
-import { getGeneralSettings, useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
-import { views } from "@/src/constants/views"
 
 import { getFeed } from "../feed/getter"
 import { getList } from "../list/getters"
@@ -55,7 +52,7 @@ export const useFeedSubscriptionByView = (view: FeedViewType) => {
   return useSubscriptionStore(useCallback(() => getFeedSubscriptionByView(view), [view]))
 }
 
-export const useGroupedSubscription = (view: FeedViewType) => {
+export const useGroupedSubscription = (view: FeedViewType, autoGroup: boolean) => {
   return useSubscriptionStore(
     useCallback(
       (state) => {
@@ -63,7 +60,7 @@ export const useGroupedSubscription = (view: FeedViewType) => {
 
         const grouped = {} as Record<string, string[]>
         const unGrouped = []
-        const { autoGroup } = getGeneralSettings()
+
         const autoGrouped = {} as Record<string, string[]>
 
         for (const feedId of feedIds) {
@@ -103,7 +100,7 @@ export const useGroupedSubscription = (view: FeedViewType) => {
           unGrouped,
         }
       },
-      [view],
+      [autoGroup, view],
     ),
   )
 }
@@ -141,8 +138,8 @@ export const useSortedGroupedSubscription = (
   grouped: Record<string, string[]>,
   sortBy: "alphabet" | "count",
   sortOrder: "asc" | "desc",
+  hideAllReadSubscriptions: boolean,
 ) => {
-  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
   return useSubscriptionStore(
     useCallback(() => {
       const categories = Object.keys(grouped)
@@ -166,9 +163,8 @@ export const useSortedUngroupedSubscription = (
   ids: string[],
   sortBy: "alphabet" | "count",
   sortOrder: "asc" | "desc",
+  hideAllReadSubscriptions: boolean,
 ) => {
-  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
-
   return useSubscriptionStore(
     useCallback(() => {
       return ids
@@ -223,8 +219,11 @@ export const useListSubscription = (view: FeedViewType) => {
   )
 }
 
-export const useSortedListSubscription = (ids: string[], sortBy: "alphabet" | "unread") => {
-  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+export const useSortedListSubscription = (
+  ids: string[],
+  sortBy: "alphabet" | "unread",
+  hideAllReadSubscriptions: boolean,
+) => {
   return useSubscriptionStore(
     useCallback(() => {
       return ids
@@ -279,17 +278,19 @@ export const useSubscriptionByListId = (listId: string) =>
 export const useViewWithSubscription = () =>
   useSubscriptionStore(
     useCallback((state) => {
-      return views.filter((view) => {
-        if (
-          view.view === FeedViewType.Articles ||
-          view.view === FeedViewType.SocialMedia ||
-          view.view === FeedViewType.Pictures ||
-          view.view === FeedViewType.Videos
-        ) {
-          return true
-        } else {
-          return state.feedIdByView[view.view].size > 0
-        }
-      })
+      return views
+        .filter((view) => {
+          if (
+            view.view === FeedViewType.Articles ||
+            view.view === FeedViewType.SocialMedia ||
+            view.view === FeedViewType.Pictures ||
+            view.view === FeedViewType.Videos
+          ) {
+            return true
+          } else {
+            return state.feedIdByView[view.view].size > 0
+          }
+        })
+        .map((v) => v.view)
     }, []),
   )

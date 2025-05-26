@@ -7,7 +7,7 @@ import { tracker } from "@follow/tracker"
 import { memo, useCallback, useMemo } from "react"
 import { Pressable, Text, View } from "react-native"
 
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
@@ -29,7 +29,8 @@ import { EntryTranslation } from "./EntryTranslation"
 export const EntrySocialItem = memo(
   ({ entryId, extraData }: { entryId: string; extraData: EntryExtraData }) => {
     const entry = useEntry(entryId)
-    const translation = useEntryTranslation(entryId)
+    const actionLanguage = useActionLanguage()
+    const translation = useEntryTranslation(entryId, actionLanguage)
 
     const feed = useFeed(entry?.feedId || "")
 

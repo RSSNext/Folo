@@ -41,7 +41,7 @@ const serverPlugins = [
   }),
 ] satisfies BetterAuthClientPlugin[]
 
-const authClient = createAuthClient({
+export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   plugins: [
     twoFactorClient(),

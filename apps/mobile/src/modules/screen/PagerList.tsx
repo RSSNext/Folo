@@ -27,7 +27,7 @@ export function PagerList({
   const activeViews = useViewWithSubscription()
 
   const activeViewIndex = useMemo(
-    () => activeViews.findIndex((view) => view.view === viewId),
+    () => activeViews.indexOf(viewId as FeedViewType),
     [activeViews, viewId],
   )
 
@@ -37,7 +37,7 @@ export function PagerList({
   useEffect(() => {
     return EventBus.subscribe("SELECT_TIMELINE", (data) => {
       if (data.target !== rid) {
-        pagerRef.current?.setPage(activeViews.findIndex((view) => view.view === data.view.viewId))
+        pagerRef.current?.setPage(activeViews.indexOf(data.view.viewId))
       }
     })
   }, [activeViews, pagerRef, rid])
@@ -70,7 +70,7 @@ export function PagerList({
       }
 
       if (targetIndex !== activeViewIndex) {
-        selectTimeline({ type: "view", viewId: activeViews[targetIndex]!.view }, rid)
+        selectTimeline({ type: "view", viewId: activeViews[targetIndex]! }, rid)
         userInitiatedDragRef.value = false
       }
     },
@@ -105,11 +105,11 @@ export function PagerList({
       {useMemo(
         () =>
           activeViews.map((view, index) => (
-            <PagerListVisibleContext value={index === activeViewIndex} key={view.view}>
+            <PagerListVisibleContext value={index === activeViewIndex} key={view}>
               <PagerListWillVisibleContext
                 value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
               >
-                {renderItem(view.view, index === activeViewIndex)}
+                {renderItem(view, index === activeViewIndex)}
               </PagerListWillVisibleContext>
             </PagerListVisibleContext>
           )),

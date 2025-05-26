@@ -5,7 +5,7 @@ import { useSummaryStore } from "@follow/store/src/summary/store"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 
 import { AISummary } from "../ai/summary"
 import { useEntryContentContext } from "./ctx"
@@ -19,9 +19,11 @@ export const EntryAISummary: FC<{
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
   const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
   const summary = useSummary(entryId)
+  const actionLanguage = useActionLanguage()
   usePrefetchSummary(
     entryId,
     showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    actionLanguage,
     {
       enabled: showAISummary,
     },

@@ -2,9 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
-import { useNavigation } from "@/src/lib/navigation/hooks"
-import { toast } from "@/src/lib/toast"
-
+import type { GeneralMutationOptions } from "../types"
 import { actionSyncService, useActionStore } from "./store"
 
 export const usePrefetchActions = () => {
@@ -14,22 +12,20 @@ export const usePrefetchActions = () => {
   })
 }
 
-export const useUpdateActionsMutation = () => {
-  const navigation = useNavigation()
+export const useUpdateActionsMutation = (options?: GeneralMutationOptions) => {
   return useMutation({
     mutationFn: () => actionSyncService.saveRules(),
     onSuccess() {
-      navigation.back()
-      toast.success("Actions saved")
+      options?.onSuccess?.()
     },
     onError(err) {
       if (err instanceof FetchError && err.response?._data) {
         const { message } = err.response._data
-        toast.error(message)
+        options?.onError?.(message)
         return
       }
 
-      toast.error("Error saving actions")
+      options?.onError?.("Error saving actions")
     },
   })
 }

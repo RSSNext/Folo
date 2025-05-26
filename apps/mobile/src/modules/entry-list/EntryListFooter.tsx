@@ -1,12 +1,12 @@
-import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
 import { unreadSyncService } from "@follow/store/src/unread/store"
 import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity } from "react-native"
 
+import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { useColor } from "@/src/theme/colors"
 
-import { useSelectedFeed, useSelectedView } from "../screen/atoms"
+import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 import { ItemSeparator } from "./ItemSeparator"
 
 export const EntryListFooter = () => {
@@ -23,7 +23,11 @@ export const EntryListFooter = () => {
         onPress={() => {
           if (typeof selectedView === "number") {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            unreadSyncService.markViewAsRead({ view: selectedView, filter: payload })
+            unreadSyncService.markViewAsRead({
+              view: selectedView,
+              filter: payload,
+              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+            })
           }
         }}
       >
@@ -49,7 +53,11 @@ export const GridEntryListFooter = () => {
       onPress={() => {
         if (typeof selectedView === "number") {
           const payload = getFetchEntryPayload(selectedFeed, selectedView)
-          unreadSyncService.markViewAsRead({ view: selectedView, filter: payload })
+          unreadSyncService.markViewAsRead({
+            view: selectedView,
+            filter: payload,
+            hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
+          })
         }
       }}
     >

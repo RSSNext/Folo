@@ -5,6 +5,8 @@ import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { checkLanguage } from "@/src/lib/translation"
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
@@ -30,7 +32,14 @@ export const EntryListContentVideo = ({
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   const ListFooterComponent = useMemo(
     () =>

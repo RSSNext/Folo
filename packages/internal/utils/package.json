@@ -20,6 +20,11 @@
       "require": "./src/*.ts",
       "import": "./src/*.ts",
       "types": "./src/*.ts"
+    },
+    "./src/*": {
+      "require": "./src/*.ts",
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
     }
   },
   "main": "./exports.ts",

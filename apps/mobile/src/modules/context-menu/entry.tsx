@@ -1,7 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/src/collection/hooks"
 import { collectionSyncService } from "@follow/store/src/collection/store"
-import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
 import { useEntry } from "@follow/store/src/entry/hooks"
 import { unreadSyncService } from "@follow/store/src/unread/store"
 import { PortalProvider } from "@gorhom/portal"
@@ -10,6 +9,7 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Share, Text, View } from "react-native"
 
+import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import {
   EntryContentWebView,
   preloadWebViewEntry,
@@ -19,7 +19,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
-import { useSelectedFeed, useSelectedView } from "../screen/atoms"
+import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const EntryItemContextMenu = ({
   id,
@@ -76,6 +76,7 @@ export const EntryItemContextMenu = ({
                 startTime: new Date(publishedAt).getTime() + 1,
                 endTime: Date.now(),
               },
+              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
             })
           }}
         >
@@ -121,6 +122,7 @@ export const EntryItemContextMenu = ({
                 startTime: 1,
                 endTime: new Date(publishedAt).getTime() - 1,
               },
+              hidePrivateSubscriptionsInTimeline: getHideAllReadSubscriptions(),
             })
           }}
         >

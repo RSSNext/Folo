@@ -1,19 +1,25 @@
 import type { FeedViewType } from "@follow/constants"
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query"
-import { useCallback, useEffect } from "react"
-
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useCallback } from "react"
 
 import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
-import type { EntryModel, FetchEntriesProps } from "./types"
+import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 
-export const usePrefetchEntries = (props: Omit<FetchEntriesProps, "pageParam" | "read"> | null) => {
-  const { feedId, inboxId, listId, view, limit, feedIdList } = props || {}
-  const unreadOnly = useGeneralSettingKey("unreadOnly")
-  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
-    "hidePrivateSubscriptionsInTimeline",
-  )
+export const usePrefetchEntries = (
+  props: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,
+) => {
+  const {
+    feedId,
+    inboxId,
+    listId,
+    view,
+    limit,
+    feedIdList,
+    unreadOnly,
+    hidePrivateSubscriptionsInTimeline,
+  } = props || {}
+
   return useInfiniteQuery({
     queryKey: [
       "entries",
@@ -146,16 +152,4 @@ export const useEntryIdsByListId = (listId: string) => {
       [listId],
     ),
   )
-}
-
-export const useFetchEntryContentByStream = (remoteEntryIds?: string[]) => {
-  const { mutate: updateEntryContent } = useMutation({
-    mutationKey: ["stream-entry-content", remoteEntryIds],
-    mutationFn: entrySyncServices.fetchEntryContentByStream,
-  })
-
-  useEffect(() => {
-    if (!remoteEntryIds) return
-    updateEntryContent(remoteEntryIds)
-  }, [remoteEntryIds, updateEntryContent])
 }

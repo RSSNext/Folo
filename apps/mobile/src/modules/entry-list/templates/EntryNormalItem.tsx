@@ -10,6 +10,7 @@ import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
+import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
 import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
@@ -43,7 +44,8 @@ export const EntryNormalItem = memo(
     view: FeedViewType
   }) => {
     const entry = useEntry(entryId)
-    const translation = useEntryTranslation(entryId)
+    const actionLanguage = useActionLanguage()
+    const translation = useEntryTranslation(entryId, actionLanguage)
     const from = getInboxFrom(entry)
     const feed = useFeed(entry?.feedId as string)
     const navigation = useNavigation()

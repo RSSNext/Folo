@@ -3,16 +3,12 @@ import type { UnreadSchema } from "@follow/database/src/schemas/types"
 import { EntryService } from "@follow/database/src/services/entry"
 import { UnreadService } from "@follow/database/src/services/unread"
 
-import { getGeneralSettings } from "@/src/atoms/settings/general"
-import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
-
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 import { getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
-import { getAllUnreadCount } from "./getter"
 import type { PublishAtTimeRangeFilter, UnreadUpdateOptions } from "./types"
 
 type SubscriptionId = string
@@ -34,13 +30,6 @@ class UnreadSyncService {
     return res.data
   }
 
-  async updateBadgeAtBackground() {
-    await this.resetFromRemote()
-    const allUnreadCount = getAllUnreadCount()
-    setBadgeCountAsyncWithPermission(allUnreadCount)
-    return true
-  }
-
   private async updateUnreadStatus(feedIds: string[], time?: PublishAtTimeRangeFilter) {
     if (time) {
       await this.resetFromRemote()
@@ -59,6 +48,7 @@ class UnreadSyncService {
     view,
     filter,
     time,
+    hidePrivateSubscriptionsInTimeline,
   }: {
     view: FeedViewType
     filter?: {
@@ -68,8 +58,8 @@ class UnreadSyncService {
       inboxId?: string
     } | null
     time?: PublishAtTimeRangeFilter
+    hidePrivateSubscriptionsInTimeline: boolean
   }) {
-    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
     await apiClient.reads.all.$post({
       json: {
         view,

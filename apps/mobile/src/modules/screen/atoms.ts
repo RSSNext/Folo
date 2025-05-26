@@ -1,10 +1,11 @@
 import { FeedViewType } from "@follow/constants"
-import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
 import { usePrefetchEntries } from "@follow/store/src/entry/hooks"
+import type { FetchEntriesProps } from "@follow/store/src/entry/types"
 import { FEED_COLLECTION_LIST } from "@follow/store/src/entry/utils"
 import { useFeed } from "@follow/store/src/feed/hooks"
 import { useInbox } from "@follow/store/src/inbox/hooks"
 import { useList } from "@follow/store/src/list/hooks"
+import { getSubscriptionByCategory } from "@follow/store/src/subscription/getter"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
 import { atom, useAtomValue } from "jotai"
@@ -12,6 +13,7 @@ import { selectAtom } from "jotai/utils"
 import { createContext, use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
 
 export type SelectedTimeline = {
@@ -87,12 +89,57 @@ export function useSelectedFeed<T>(
   )
 }
 
+export const getFetchEntryPayload = (
+  selectedFeed: SelectedTimeline | SelectedFeed,
+  view: FeedViewType = FeedViewType.Articles,
+): FetchEntriesProps | null => {
+  if (!selectedFeed) {
+    return null
+  }
+
+  let payload: FetchEntriesProps = {}
+  switch (selectedFeed.type) {
+    case "view": {
+      payload = { view: selectedFeed.viewId }
+      break
+    }
+    case "feed": {
+      payload = { feedId: selectedFeed.feedId }
+      break
+    }
+    case "category": {
+      payload = {
+        feedIdList: getSubscriptionByCategory({ category: selectedFeed.categoryName, view }),
+      }
+      break
+    }
+    case "list": {
+      payload = { listId: selectedFeed.listId }
+      break
+    }
+    case "inbox": {
+      payload = { inboxId: selectedFeed.inboxId }
+      break
+    }
+    // No default
+  }
+  const isCollection =
+    selectedFeed && selectedFeed.type === "feed" && selectedFeed?.feedId === FEED_COLLECTION_LIST
+  if (isCollection) {
+    payload.view = view
+    payload.isCollection = true
+  }
+
+  return payload
+}
+
 export function useFetchEntriesControls() {
   const selectedFeed = useSelectedFeed()
   const view = useSelectedView()
 
   const payload = getFetchEntryPayload(selectedFeed, view)
-  return usePrefetchEntries(payload)
+  const options = useFetchEntriesSettings()
+  return usePrefetchEntries({ ...payload, ...options })
 }
 
 export const useSelectedFeedTitle = () => {
