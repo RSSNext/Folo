@@ -18,6 +18,7 @@
     }
   },
   "scripts": {
+    "generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
