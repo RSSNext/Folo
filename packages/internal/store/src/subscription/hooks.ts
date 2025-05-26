@@ -133,13 +133,19 @@ const sortGroupedSubscriptionByUnread = (
   return -(rightUnreadCount - leftUnreadCount)
 }
 
-export const useSortedGroupedSubscription = (
-  view: FeedViewType,
-  grouped: Record<string, string[]>,
-  sortBy: "alphabet" | "count",
-  sortOrder: "asc" | "desc",
-  hideAllReadSubscriptions: boolean,
-) => {
+export const useSortedGroupedSubscription = ({
+  view,
+  grouped,
+  sortBy,
+  sortOrder,
+  hideAllReadSubscriptions,
+}: {
+  view: FeedViewType
+  grouped: Record<string, string[]>
+  sortBy: "alphabet" | "count"
+  sortOrder: "asc" | "desc"
+  hideAllReadSubscriptions: boolean
+}) => {
   return useSubscriptionStore(
     useCallback(() => {
       const categories = Object.keys(grouped)
@@ -159,12 +165,17 @@ export const useSortedGroupedSubscription = (
   )
 }
 
-export const useSortedUngroupedSubscription = (
-  ids: string[],
-  sortBy: "alphabet" | "count",
-  sortOrder: "asc" | "desc",
-  hideAllReadSubscriptions: boolean,
-) => {
+export const useSortedUngroupedSubscription = ({
+  ids,
+  sortBy,
+  sortOrder,
+  hideAllReadSubscriptions,
+}: {
+  ids: string[]
+  sortBy: "alphabet" | "count"
+  sortOrder: "asc" | "desc"
+  hideAllReadSubscriptions: boolean
+}) => {
   return useSubscriptionStore(
     useCallback(() => {
       return ids
@@ -219,11 +230,15 @@ export const useListSubscription = (view: FeedViewType) => {
   )
 }
 
-export const useSortedListSubscription = (
-  ids: string[],
-  sortBy: "alphabet" | "unread",
-  hideAllReadSubscriptions: boolean,
-) => {
+export const useSortedListSubscription = ({
+  ids,
+  sortBy,
+  hideAllReadSubscriptions,
+}: {
+  ids: string[]
+  sortBy: "alphabet" | "unread"
+  hideAllReadSubscriptions: boolean
+}) => {
   return useSubscriptionStore(
     useCallback(() => {
       return ids

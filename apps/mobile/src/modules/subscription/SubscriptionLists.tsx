@@ -57,7 +57,11 @@ const SubscriptionListImpl = ({
 }) => {
   const listIds = useListSubscription(view)
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
-  const sortedListIds = useSortedListSubscription(listIds, "alphabet", hideAllReadSubscriptions)
+  const sortedListIds = useSortedListSubscription({
+    ids: listIds,
+    sortBy: "alphabet",
+    hideAllReadSubscriptions,
+  })
 
   const inboxes = useInboxSubscription(view)
 
@@ -65,19 +69,19 @@ const SubscriptionListImpl = ({
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedGrouped = useSortedGroupedSubscription(
+  const sortedGrouped = useSortedGroupedSubscription({
     view,
     grouped,
     sortBy,
     sortOrder,
     hideAllReadSubscriptions,
-  )
-  const sortedUnGrouped = useSortedUngroupedSubscription(
-    unGrouped,
+  })
+  const sortedUnGrouped = useSortedUngroupedSubscription({
+    ids: unGrouped,
     sortBy,
     sortOrder,
     hideAllReadSubscriptions,
-  )
+  })
 
   const data = useMemo(
     () => [

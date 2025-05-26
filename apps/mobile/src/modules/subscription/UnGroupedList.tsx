@@ -13,12 +13,12 @@ export const UnGroupedList: FC<{
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
-  const sortedSubscriptionIds = useSortedUngroupedSubscription(
-    subscriptionIds,
+  const sortedSubscriptionIds = useSortedUngroupedSubscription({
+    ids: subscriptionIds,
     sortBy,
     sortOrder,
     hideAllReadSubscriptions,
-  )
+  })
 
   return sortedSubscriptionIds.map((id, index) => (
     <SubscriptionItem
