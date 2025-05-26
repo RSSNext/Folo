@@ -87,7 +87,6 @@ class UserSyncService {
     const me = get().whoami
     if (!me?.email) return
     await authClient.sendVerificationEmail({ email: me.email! })
-    // toast.success("Verification email sent")
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {

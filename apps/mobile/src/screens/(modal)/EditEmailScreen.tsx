@@ -102,7 +102,9 @@ export const EditEmailScreen: NavigationControllerView = () => {
               }
               onPress={() => {
                 setIsSendingVerificationEmail(true)
-                userSyncService.sendVerificationEmail()
+                userSyncService.sendVerificationEmail().then(() => {
+                  toast.success("Verification email sent")
+                })
               }}
             />
           </GroupedInsetListCard>
