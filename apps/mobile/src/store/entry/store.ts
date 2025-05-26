@@ -5,12 +5,14 @@ import { fetch as expoFetch } from "expo/fetch"
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 import { apiClient } from "@/src/lib/api-fetch"
 import { getCookie } from "@/src/lib/auth"
+import { dbStoreMorph } from "@/src/morph/db-store"
 import { honoMorph } from "@/src/morph/hono"
 import { storeDbMorph } from "@/src/morph/store-db"
 import { EntryService } from "@/src/services/entry"
 
 import { collectionActions } from "../collection/store"
 import { feedActions } from "../feed/store"
+import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { getSubscription } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
@@ -56,7 +58,16 @@ export const useEntryStore = createZustandStore<EntryState>("entry")(() => defau
 
 const immerSet = createImmerSetter(useEntryStore)
 
-class EntryActions {
+class EntryActions implements Hydratable {
+  async hydrate() {
+    const entries = await EntryService.getEntryAll()
+    const { unreadOnly } = getGeneralSettings()
+    entryActions.upsertManyInSession(
+      entries.map((e) => dbStoreMorph.toEntryModel(e)),
+      { unreadOnly },
+    )
+  }
+
   private addEntryIdToView({
     draft,
     feedId,

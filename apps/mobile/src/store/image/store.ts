@@ -3,6 +3,7 @@ import ImageColors from "react-native-image-colors"
 
 import { ImagesService } from "@/src/services/image"
 
+import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { getImageInfo } from "./getters"
 
@@ -33,7 +34,12 @@ class ImageSyncService {
   }
 }
 
-class ImageActions {
+class ImageActions implements Hydratable {
+  async hydrate() {
+    const images = await ImagesService.getImageAll()
+    imageActions.upsertManyInSession(images)
+  }
+
   upsertManyInSession(images: ImageModel[]) {
     immerSet((state) => {
       for (const image of images) {

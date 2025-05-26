@@ -8,6 +8,7 @@ import { toast } from "@/src/lib/toast"
 import { honoMorph } from "@/src/morph/hono"
 import { UserService } from "@/src/services/user"
 
+import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import type { UserProfileEditable } from "./types"
 
@@ -171,7 +172,11 @@ class UserSyncService {
   }
 }
 
-class UserActions {
+class UserActions implements Hydratable {
+  async hydrate() {
+    const users = await UserService.getUserAll()
+    userActions.upsertManyInSession(users)
+  }
   upsertManyInSession(users: UserModel[]) {
     immerSet((state) => {
       for (const user of users) {

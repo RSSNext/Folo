@@ -2,20 +2,15 @@ import { db } from "@follow/database/src/db"
 import { inboxesTable } from "@follow/database/src/schemas"
 import type { InboxSchema } from "@follow/database/src/schemas/types"
 
-import { inboxActions } from "../store/inbox/store"
-import type { Hydratable, Resetable } from "./internal/base"
+import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class InboxServiceStatic implements Hydratable, Resetable {
+class InboxServiceStatic implements Resetable {
   async reset() {
     await db.delete(inboxesTable).execute()
   }
   async getInbox(): Promise<InboxSchema[]> {
     return await db.select().from(inboxesTable)
-  }
-  async hydrate() {
-    const inboxes = await db.query.inboxesTable.findMany()
-    inboxActions.upsertManyInSession(inboxes)
   }
 
   async upsertMany(inboxes: InboxSchema[]) {

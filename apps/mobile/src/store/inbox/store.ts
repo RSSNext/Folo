@@ -2,6 +2,7 @@ import type { InboxSchema } from "@follow/database/src/schemas/types"
 
 import { InboxService } from "@/src/services/inbox"
 
+import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 
 interface InboxState {
@@ -16,7 +17,11 @@ export const useInboxStore = createZustandStore<InboxState>("inbox")(() => defau
 
 // const get = useInboxStore.getState
 const set = useInboxStore.setState
-class InboxActions {
+class InboxActions implements Hydratable {
+  async hydrate() {
+    const inboxes = await InboxService.getInbox()
+    inboxActions.upsertManyInSession(inboxes)
+  }
   async upsertManyInSession(inboxes: InboxSchema[]) {
     const state = useInboxStore.getState()
     const nextInboxes: InboxState["inboxes"] = {

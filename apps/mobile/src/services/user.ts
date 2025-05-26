@@ -3,11 +3,13 @@ import { usersTable } from "@follow/database/src/schemas"
 import type { UserSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
-import { userActions } from "../store/user/store"
-import type { Hydratable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class UserServiceStatic implements Hydratable {
+class UserServiceStatic {
+  getUserAll() {
+    return db.query.usersTable.findMany()
+  }
+
   async upsertMany(users: UserSchema[]) {
     await db
       .insert(usersTable)
@@ -16,11 +18,6 @@ class UserServiceStatic implements Hydratable {
         target: [usersTable.id],
         set: conflictUpdateAllExcept(usersTable, ["id"]),
       })
-  }
-
-  async hydrate() {
-    const users = await db.query.usersTable.findMany()
-    userActions.upsertManyInSession(users)
   }
 
   async removeCurrentUser() {

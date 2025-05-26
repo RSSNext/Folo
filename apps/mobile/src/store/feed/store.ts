@@ -3,6 +3,7 @@ import type { FeedSchema } from "@follow/database/src/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { FeedService } from "@/src/services/feed"
 
+import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import type { FeedModel } from "./types"
 
@@ -18,7 +19,12 @@ const set = useFeedStore.setState
 const immerSet = createImmerSetter(useFeedStore)
 // const get = useFeedStore.getState
 // const distanceTime = 1000 * 60 * 60 * 9
-class FeedActions {
+class FeedActions implements Hydratable {
+  async hydrate() {
+    const feeds = await FeedService.getFeedAll()
+    feedActions.upsertManyInSession(feeds)
+  }
+
   clear() {
     set({ feeds: {} })
   }

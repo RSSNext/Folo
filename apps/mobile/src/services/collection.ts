@@ -3,11 +3,10 @@ import { collectionsTable } from "@follow/database/src/schemas"
 import type { CollectionSchema } from "@follow/database/src/schemas/types"
 import { eq, inArray } from "drizzle-orm"
 
-import { collectionActions } from "../store/collection/store"
-import type { Hydratable, Resetable } from "./internal/base"
+import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class CollectionServiceStatic implements Hydratable, Resetable {
+class CollectionServiceStatic implements Resetable {
   async reset() {
     await db.delete(collectionsTable).execute()
   }
@@ -31,9 +30,8 @@ class CollectionServiceStatic implements Hydratable, Resetable {
     return db.query.collectionsTable.findMany({ where: inArray(collectionsTable.entryId, entryId) })
   }
 
-  async hydrate() {
-    const collections = await db.query.collectionsTable.findMany()
-    collectionActions.upsertManyInSession(collections)
+  getCollectionAll() {
+    return db.query.collectionsTable.findMany()
   }
 }
 

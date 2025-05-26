@@ -2,17 +2,12 @@ import { db } from "@follow/database/src/db"
 import { imagesTable } from "@follow/database/src/schemas"
 import type { ImageSchema } from "@follow/database/src/schemas/types"
 
-import { imageActions } from "../store/image/store"
-import type { Hydratable, Resetable } from "./internal/base"
+import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class ImageServiceStatic implements Hydratable, Resetable {
+class ImageServiceStatic implements Resetable {
   async reset() {
     await db.delete(imagesTable).execute()
-  }
-  async hydrate() {
-    const images = await db.query.imagesTable.findMany()
-    imageActions.upsertManyInSession(images)
   }
 
   async upsertMany(imageColors: ImageSchema[]) {
@@ -24,6 +19,10 @@ class ImageServiceStatic implements Hydratable, Resetable {
         target: [imagesTable.url],
         set: conflictUpdateAllExcept(imagesTable, ["url"]),
       })
+  }
+
+  async getImageAll() {
+    return db.query.imagesTable.findMany()
   }
 }
 

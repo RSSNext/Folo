@@ -2,11 +2,10 @@ import { db } from "@follow/database/src/db"
 import { feedsTable } from "@follow/database/src/schemas"
 import type { FeedSchema } from "@follow/database/src/schemas/types"
 
-import { feedActions } from "../store/feed/store"
-import type { Hydratable, Resetable } from "./internal/base"
+import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class FeedServiceStatic implements Hydratable, Resetable {
+class FeedServiceStatic implements Resetable {
   async reset() {
     await db.delete(feedsTable).execute()
   }
@@ -21,9 +20,8 @@ class FeedServiceStatic implements Hydratable, Resetable {
       })
   }
 
-  async hydrate() {
-    const feeds = await db.query.feedsTable.findMany()
-    feedActions.upsertManyInSession(feeds)
+  getFeedAll() {
+    return db.query.feedsTable.findMany()
   }
 }
 

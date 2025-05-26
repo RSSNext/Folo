@@ -2,18 +2,17 @@ import { db } from "@follow/database/src/db"
 import { unreadTable } from "@follow/database/src/schemas"
 import type { UnreadSchema } from "@follow/database/src/schemas/types"
 
-import { unreadActions } from "../store/unread/store"
 import type { UnreadUpdateOptions } from "../store/unread/types"
-import type { Hydratable, Resetable } from "./internal/base"
+import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
-class UnreadServiceStatic implements Hydratable, Resetable {
+class UnreadServiceStatic implements Resetable {
   async reset() {
     await db.delete(unreadTable).execute()
   }
-  async hydrate() {
-    const unreads = await db.query.unreadTable.findMany()
-    unreadActions.upsertManyInSession(unreads)
+
+  async getUnreadAll() {
+    return db.query.unreadTable.findMany()
   }
 
   async upsertMany(unreads: UnreadSchema[], options?: UnreadUpdateOptions) {
