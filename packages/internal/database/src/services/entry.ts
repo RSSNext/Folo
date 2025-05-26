@@ -1,11 +1,15 @@
-import { db } from "@follow/database/src/db"
-import { entriesTable } from "@follow/database/src/schemas"
-import type { EntrySchema } from "@follow/database/src/schemas/types"
 import { and, between, eq, inArray, or } from "drizzle-orm"
 
-import type { PublishAtTimeRangeFilter } from "../store/unread/types"
+import { db } from "../db"
+import { entriesTable } from "../schemas"
+import type { EntrySchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
+
+interface PublishAtTimeRangeFilter {
+  startTime: number
+  endTime: number
+}
 
 class EntryServiceStatic implements Resetable {
   async reset() {

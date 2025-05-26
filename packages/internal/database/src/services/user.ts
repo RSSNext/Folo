@@ -1,8 +1,8 @@
-import { db } from "@follow/database/src/db"
-import { usersTable } from "@follow/database/src/schemas"
-import type { UserSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
+import { db } from "../db"
+import { usersTable } from "../schemas"
+import type { UserSchema } from "../schemas/types"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
 class UserServiceStatic {

@@ -1,12 +1,12 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/src/schemas/types"
+import { UserService } from "@follow/database/src/services/user"
 import type { AuthSession } from "@follow/shared"
 
 import { apiClient } from "@/src/lib/api-fetch"
 import { changeEmail, sendVerificationEmail, twoFactor, updateUser } from "@/src/lib/auth"
 import { toast } from "@/src/lib/toast"
 import { honoMorph } from "@/src/morph/hono"
-import { UserService } from "@/src/services/user"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"

@@ -1,7 +1,6 @@
-import { db } from "@follow/database/src/db"
-import { feedsTable } from "@follow/database/src/schemas"
-import type { FeedSchema } from "@follow/database/src/schemas/types"
-
+import { db } from "../db"
+import { feedsTable } from "../schemas"
+import type { FeedSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 

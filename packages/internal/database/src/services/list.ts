@@ -1,8 +1,8 @@
-import { db } from "@follow/database/src/db"
-import { listsTable } from "@follow/database/src/schemas"
-import type { ListSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
+import { db } from "../db"
+import { listsTable } from "../schemas"
+import type { ListSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 

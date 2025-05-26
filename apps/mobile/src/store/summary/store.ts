@@ -1,8 +1,8 @@
 import type { SummarySchema } from "@follow/database/src/schemas/types"
+import { summaryService } from "@follow/database/src/services/summary"
 
 import { getActionLanguage } from "@/src/atoms/settings/general"
 import { apiClient } from "@/src/lib/api-fetch"
-import { summaryService } from "@/src/services/summary"
 
 import { getEntry } from "../entry/getter"
 import { createImmerSetter, createZustandStore } from "../internal/helper"

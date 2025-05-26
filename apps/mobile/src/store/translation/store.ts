@@ -1,9 +1,9 @@
 import type { TranslationSchema } from "@follow/database/src/schemas/types"
+import { TranslationService } from "@follow/database/src/services/translation"
 
 import { apiClient } from "@/src/lib/api-fetch"
 import type { SupportedLanguages } from "@/src/lib/language"
 import { checkLanguage } from "@/src/lib/translation"
-import { TranslationService } from "@/src/services/translation"
 
 import { getEntry } from "../entry/getter"
 import type { Hydratable } from "../internal/base"

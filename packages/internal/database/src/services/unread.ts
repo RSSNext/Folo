@@ -1,10 +1,12 @@
-import { db } from "@follow/database/src/db"
-import { unreadTable } from "@follow/database/src/schemas"
-import type { UnreadSchema } from "@follow/database/src/schemas/types"
-
-import type { UnreadUpdateOptions } from "../store/unread/types"
+import { db } from "../db"
+import { unreadTable } from "../schemas"
+import type { UnreadSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
+
+interface UnreadUpdateOptions {
+  reset?: boolean
+}
 
 class UnreadServiceStatic implements Resetable {
   async reset() {

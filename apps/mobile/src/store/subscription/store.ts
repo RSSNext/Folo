@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
+import { SubscriptionService } from "@follow/database/src/services/subscription"
 import { tracker } from "@follow/tracker"
 
 import { apiClient } from "@/src/lib/api-fetch"
@@ -7,7 +8,6 @@ import { toast } from "@/src/lib/toast"
 import { dbStoreMorph } from "@/src/morph/db-store"
 import { honoMorph } from "@/src/morph/hono"
 import { buildSubscriptionDbId, storeDbMorph } from "@/src/morph/store-db"
-import { SubscriptionService } from "@/src/services/subscription"
 
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"

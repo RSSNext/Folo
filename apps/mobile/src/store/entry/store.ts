@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { EntryService } from "@follow/database/src/services/entry"
 import { debounce } from "es-toolkit/compat"
 import { fetch as expoFetch } from "expo/fetch"
 
@@ -8,7 +9,6 @@ import { getCookie } from "@/src/lib/auth"
 import { dbStoreMorph } from "@/src/morph/db-store"
 import { honoMorph } from "@/src/morph/hono"
 import { storeDbMorph } from "@/src/morph/store-db"
-import { EntryService } from "@/src/services/entry"
 
 import { collectionActions } from "../collection/store"
 import { feedActions } from "../feed/store"

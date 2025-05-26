@@ -1,7 +1,7 @@
 import type { FeedSchema } from "@follow/database/src/schemas/types"
+import { FeedService } from "@follow/database/src/services/feed"
 
 import { apiClient } from "@/src/lib/api-fetch"
-import { FeedService } from "@/src/services/feed"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"

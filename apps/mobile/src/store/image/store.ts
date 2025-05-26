@@ -1,7 +1,6 @@
 import type { ImageSchema } from "@follow/database/src/schemas/types"
+import { ImagesService } from "@follow/database/src/services/image"
 import ImageColors from "react-native-image-colors"
-
-import { ImagesService } from "@/src/services/image"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"

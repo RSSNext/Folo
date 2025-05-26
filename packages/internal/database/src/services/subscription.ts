@@ -1,14 +1,9 @@
-import type { FeedViewType } from "@follow/constants/src/enums"
-import { db } from "@follow/database/src/db"
-import {
-  feedsTable,
-  inboxesTable,
-  listsTable,
-  subscriptionsTable,
-} from "@follow/database/src/schemas"
-import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
+import type { FeedViewType } from "@follow/constants"
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm"
 
+import { db } from "../db"
+import { feedsTable, inboxesTable, listsTable, subscriptionsTable } from "../schemas"
+import type { SubscriptionSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 
 class SubscriptionServiceStatic implements Resetable {

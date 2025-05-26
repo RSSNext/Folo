@@ -1,8 +1,8 @@
-import { db } from "@follow/database/src/db"
-import { translationsTable } from "@follow/database/src/schemas"
-import type { TranslationSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
+import { db } from "../db"
+import { translationsTable } from "../schemas"
+import type { TranslationSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 
 class TranslationServiceStatic implements Resetable {

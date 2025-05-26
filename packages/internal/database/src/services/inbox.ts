@@ -1,7 +1,6 @@
-import { db } from "@follow/database/src/db"
-import { inboxesTable } from "@follow/database/src/schemas"
-import type { InboxSchema } from "@follow/database/src/schemas/types"
-
+import { db } from "../db"
+import { inboxesTable } from "../schemas"
+import type { InboxSchema } from "../schemas/types"
 import type { Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"
 
