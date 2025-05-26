@@ -8,11 +8,10 @@ import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { useTitle } from "@follow/hooks"
+import { useSmoothScroll, useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { springScrollTo } from "@follow/utils/scroller"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { JSAnimation, Variants } from "motion/react"
@@ -248,7 +247,7 @@ const EntryScrollArea: Component<{
   }
   return (
     <ScrollArea.ScrollArea
-      focusable={false}
+      focusable
       mask={false}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
@@ -347,7 +346,7 @@ const RegisterCommands = ({
   })
 
   const { highlightBoundary } = useFocusActions()
-
+  const smoothScrollTo = useSmoothScroll()
   useEffect(() => {
     const checkScrollBottom = ($scroller: HTMLDivElement) => {
       const currentScroll = $scroller.scrollTop
@@ -357,7 +356,7 @@ const RegisterCommands = ({
         EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
         setShowKeepScrollingPanel(false)
         isAlreadyScrolledBottomRef.current = false
-        springScrollTo(0, $scroller)
+        smoothScrollTo(0, $scroller)
         return
       }
 
@@ -384,29 +383,37 @@ const RegisterCommands = ({
       },
       cleanupScrollAnimation,
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
-        const currentScroll = scrollerRef.current?.scrollTop
-        const delta = window.innerHeight
+        const $scroller = scrollerRef.current
+        if (!$scroller) return
 
-        if (typeof currentScroll === "number" && delta) {
-          cleanupScrollAnimation()
-          scrollAnimationRef.current = springScrollTo(currentScroll - delta, scrollerRef.current!)
-        }
-        checkScrollBottom(scrollerRef.current!)
+        const currentScroll = $scroller.scrollTop
+        // Smart scroll distance: larger viewports get larger scroll distances
+        // But cap it at a reasonable maximum for very large screens
+        const viewportHeight = $scroller.clientHeight
+        const delta = Math.min(Math.max(120, viewportHeight * 0.25), 250)
+
+        cleanupScrollAnimation()
+        const targetScroll = Math.max(0, currentScroll - delta)
+        smoothScrollTo(targetScroll, $scroller)
+        checkScrollBottom($scroller)
       }),
 
       EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
         const $scroller = scrollerRef.current
-        if (!$scroller) {
-          return
-        }
+        if (!$scroller) return
 
         const currentScroll = $scroller.scrollTop
-        const delta = window.innerHeight
+        // Smart scroll distance: larger viewports get larger scroll distances
+        // But cap it at a reasonable maximum for very large screens
+        const viewportHeight = $scroller.clientHeight
+        const delta = Math.min(Math.max(120, viewportHeight * 0.25), 250)
 
-        if (typeof currentScroll === "number" && delta) {
-          cleanupScrollAnimation()
-          scrollAnimationRef.current = springScrollTo(currentScroll + delta, $scroller)
-        }
+        cleanupScrollAnimation()
+        const targetScroll = Math.min(
+          $scroller.scrollHeight - $scroller.clientHeight,
+          currentScroll + delta,
+        )
+        smoothScrollTo(targetScroll, $scroller)
         checkScrollBottom($scroller)
       }),
       EventBus.subscribe(
@@ -424,7 +431,7 @@ const RegisterCommands = ({
         },
       ),
     )
-  }, [highlightBoundary, scrollAnimationRef, scrollerRef])
+  }, [highlightBoundary, scrollAnimationRef, scrollerRef, smoothScrollTo])
 
   return (
     <AnimatePresence>

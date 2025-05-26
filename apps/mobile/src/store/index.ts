@@ -10,18 +10,17 @@ import { translationActions } from "./translation/store"
 import { unreadActions } from "./unread/store"
 import { userActions } from "./user/store"
 
-/// keep-sorted
 const hydrates: Hydratable[] = [
-  collectionActions,
-  entryActions,
   feedActions,
-  imageActions,
+  subscriptionActions,
   inboxActions,
   listActions,
-  subscriptionActions,
-  translationActions,
   unreadActions,
   userActions,
+  entryActions,
+  collectionActions,
+  imageActions,
+  translationActions,
 ]
 
 export const hydrateDatabaseToStore = async () => {
