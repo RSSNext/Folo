@@ -1,6 +1,4 @@
 import { usePrefetchActions } from "@follow/store/src/action/hooks"
-// import { useMessaging, useUpdateMessagingToken } from "@follow/store/src/messaging/hooks"
-// import { useUnreadCountBadge } from "@follow/store/src/unread/hooks"
 import { usePrefetchSessionUser } from "@follow/store/src/user/hooks"
 import { StatusBar } from "expo-status-bar"
 import { View } from "react-native"
@@ -10,19 +8,21 @@ import { useSheet } from "react-native-sheet-transitions"
 
 import { useBackHandler } from "./hooks/useBackHandler"
 import { useIntentHandler } from "./hooks/useIntentHandler"
+import { useMessaging, useUpdateMessagingToken } from "./hooks/useMessaging"
+import { useOnboarding } from "./hooks/useOnboarding"
+import { useUnreadCountBadge } from "./hooks/useUnreadCountBadge"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 
 export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()
-  // FIXME:
-  // useOnboarding()
-  // useUnreadCountBadge()
+  useOnboarding()
+  useUnreadCountBadge()
   useBackHandler()
 
   // prefetch actions to detect if the user has any actions contains notifications
   usePrefetchActions()
-  // useUpdateMessagingToken()
-  // useMessaging()
+  useUpdateMessagingToken()
+  useMessaging()
   const { scale } = useSheet()
 
   const style = useAnimatedStyle(() => ({
