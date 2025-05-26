@@ -1,6 +1,7 @@
 import { defaultGeneralSettings } from "@follow/shared/src/settings/defaults"
 import type { GeneralSettings } from "@follow/shared/src/settings/interface"
 import type { FetchEntriesPropsSettings } from "@follow/store/src/entry/types"
+import { useMemo } from "react"
 
 import { getDeviceLanguage } from "@/src/lib/i18n"
 import type { SupportedLanguages } from "@/src/lib/language"
@@ -63,8 +64,11 @@ export function useFetchEntriesSettings(): FetchEntriesPropsSettings {
     "hidePrivateSubscriptionsInTimeline",
   )
   const unreadOnly = useGeneralSettingKey("unreadOnly")
-  return {
-    hidePrivateSubscriptionsInTimeline,
-    unreadOnly,
-  }
+  return useMemo(
+    () => ({
+      hidePrivateSubscriptionsInTimeline,
+      unreadOnly,
+    }),
+    [hidePrivateSubscriptionsInTimeline, unreadOnly],
+  )
 }
