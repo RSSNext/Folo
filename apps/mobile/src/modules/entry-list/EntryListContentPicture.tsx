@@ -37,7 +37,7 @@ export const EntryListContentPicture = ({
   const actionLanguage = useActionLanguage()
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
-    actionLanguage,
+    language: actionLanguage,
     checkLanguage,
     translation,
   })

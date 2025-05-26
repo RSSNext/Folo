@@ -11,14 +11,14 @@ export const usePrefetchEntryTranslation = ({
   withContent,
   target = "content",
   translation,
-  actionLanguage,
+  language,
   checkLanguage,
 }: {
   entryIds: string[]
   withContent?: boolean
   target?: "content" | "readabilityContent"
   translation: boolean
-  actionLanguage: SupportedActionLanguage
+  language: SupportedActionLanguage
   checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean
 }) => {
   const entryList =
@@ -28,11 +28,11 @@ export const usePrefetchEntryTranslation = ({
 
   return useQueries({
     queries: entryList.map((entryId) => ({
-      queryKey: ["translation", entryId, actionLanguage, withContent, target],
+      queryKey: ["translation", entryId, language, withContent, target],
       queryFn: () =>
         translationSyncService.generateTranslation({
           entryId,
-          language: actionLanguage,
+          language,
           withContent,
           target,
           checkLanguage,

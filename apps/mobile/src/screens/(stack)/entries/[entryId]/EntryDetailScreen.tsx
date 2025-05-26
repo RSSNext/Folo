@@ -139,7 +139,7 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
     entryIds: [entryId],
     withContent: true,
     target: showReadability && entry.readabilityContent ? "readabilityContent" : "content",
-    actionLanguage,
+    language: actionLanguage,
     checkLanguage,
     translation,
   })
