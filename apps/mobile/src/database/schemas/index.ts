@@ -1,16 +1,10 @@
 import type { FeedViewType } from "@follow/constants"
+import type { ActionSettings } from "@follow/models/src/types"
+import type { SupportedActionLanguage } from "@follow/shared/src/language"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
-import type { SupportedLanguages } from "@/src/lib/language"
-
-import type {
-  ActionSettings,
-  AttachmentsModel,
-  ExtraModel,
-  ImageColorsResult,
-  MediaModel,
-} from "./types"
+import type { AttachmentsModel, ExtraModel, ImageColorsResult, MediaModel } from "./types"
 
 export const feedsTable = sqliteTable("feeds", {
   id: text("id").primaryKey(),
@@ -120,7 +114,7 @@ export const translationsTable = sqliteTable(
   "translations",
   (t) => ({
     entryId: t.text("entry_id").notNull().primaryKey(),
-    language: t.text("language").$type<SupportedLanguages>().notNull(),
+    language: t.text("language").$type<SupportedActionLanguage>().notNull(),
     title: t.text("title"),
     description: t.text("description"),
     content: t.text("content"),

@@ -1,5 +1,3 @@
-import type { HonoApiClient } from "@/src/morph/types"
-
 import type {
   collectionsTable,
   entriesTable,
@@ -36,8 +34,6 @@ export type TranslationSchema = typeof translationsTable.$inferInsert
 
 export type ImageSchema = typeof imagesTable.$inferInsert
 
-export type ActionSettings = HonoApiClient.ActionSettings
-
 export type MediaModel = {
   url: string
   type: "photo" | "video"
@@ -63,4 +59,37 @@ export type ExtraModel = {
   }[]
 }
 
-export { ImageColorsResult } from "react-native-image-colors"
+// export { ImageColorsResult } from "react-native-image-colors"
+
+interface AndroidImageColors {
+  dominant: string
+  average: string
+  vibrant: string
+  darkVibrant: string
+  lightVibrant: string
+  darkMuted: string
+  lightMuted: string
+  muted: string
+  platform: "android"
+}
+
+interface WebImageColors {
+  dominant: string
+  vibrant: string
+  darkVibrant: string
+  lightVibrant: string
+  darkMuted: string
+  lightMuted: string
+  muted: string
+  platform: "web"
+}
+
+interface IOSImageColors {
+  background: string
+  primary: string
+  secondary: string
+  detail: string
+  platform: "ios"
+}
+
+export type ImageColorsResult = AndroidImageColors | IOSImageColors | WebImageColors
