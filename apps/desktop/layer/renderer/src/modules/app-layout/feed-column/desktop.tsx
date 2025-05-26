@@ -33,7 +33,6 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { FloatingLayerScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
-import { useDailyTask } from "~/hooks/biz/useDailyTask"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
@@ -65,8 +64,6 @@ export function MainDestopLayout() {
   const user = useWhoami()
 
   const containerRef = useRef<HTMLDivElement | null>(null)
-
-  useDailyTask()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
