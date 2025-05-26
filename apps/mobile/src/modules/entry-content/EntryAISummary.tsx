@@ -20,14 +20,12 @@ export const EntryAISummary: FC<{
   const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
   const summary = useSummary(entryId)
   const actionLanguage = useActionLanguage()
-  usePrefetchSummary(
+  usePrefetchSummary({
     entryId,
-    showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    target: showReadability && entryReadabilityContent ? "readabilityContent" : "content",
     actionLanguage,
-    {
-      enabled: showAISummary,
-    },
-  )
+    enabled: showAISummary,
+  })
   const summaryToShow = showReadability
     ? summary?.readabilitySummary || summary?.summary
     : summary?.summary
