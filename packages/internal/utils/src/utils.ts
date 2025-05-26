@@ -4,6 +4,8 @@ import dayjs from "dayjs"
 import { extendTailwindMerge } from "tailwind-merge"
 import { parse } from "tldts"
 
+type Nullable<T> = T | null | undefined
+
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
