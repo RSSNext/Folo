@@ -1,11 +1,11 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/src/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"

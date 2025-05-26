@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import { useViewWithSubscription } from "@follow/store/src/subscription/hooks"
 import { EventBus } from "@follow/utils/src/event-bus"
 import * as Haptics from "expo-haptics"
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
@@ -8,7 +9,6 @@ import PagerView from "react-native-pager-view"
 import { useSharedValue } from "react-native-reanimated"
 
 import { selectTimeline, useSelectedFeed } from "@/src/modules/screen/atoms"
-import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"
 

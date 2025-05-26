@@ -1,3 +1,6 @@
+import { useEntry } from "@follow/store/src/entry/hooks"
+import { useFeed } from "@follow/store/src/feed/hooks"
+import { useEntryTranslation } from "@follow/store/src/translation/hooks"
 import { useSetAtom } from "jotai"
 import { use } from "react"
 import { Text, View } from "react-native"
@@ -5,9 +8,6 @@ import { Text, View } from "react-native"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { EntryContentContext } from "@/src/modules/entry-content/ctx"
-import { useEntry } from "@/src/store/entry/hooks"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation } from "@/src/store/translation/hooks"
 
 import { EntryTranslation } from "../entry-list/templates/EntryTranslation"
 

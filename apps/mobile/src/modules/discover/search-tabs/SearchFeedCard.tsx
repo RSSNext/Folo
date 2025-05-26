@@ -1,3 +1,4 @@
+import { useSubscriptionByFeedId } from "@follow/store/src/subscription/hooks"
 import { Text, View } from "react-native"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
@@ -5,7 +6,6 @@ import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import type { apiClient } from "@/src/lib/api-fetch"
-import { useSubscriptionByFeedId } from "@/src/store/subscription/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { FeedSummary } from "../FeedSummary"

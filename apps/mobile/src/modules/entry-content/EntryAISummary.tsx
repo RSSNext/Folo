@@ -1,11 +1,11 @@
+import { useEntry } from "@follow/store/src/entry/hooks"
+import { SummaryGeneratingStatus } from "@follow/store/src/summary/enum"
+import { usePrefetchSummary, useSummary } from "@follow/store/src/summary/hooks"
+import { useSummaryStore } from "@follow/store/src/summary/store"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { useEntry } from "@/src/store/entry/hooks"
-import { SummaryGeneratingStatus } from "@/src/store/summary/enum"
-import { usePrefetchSummary, useSummary } from "@/src/store/summary/hooks"
-import { useSummaryStore } from "@/src/store/summary/store"
 
 import { AISummary } from "../ai/summary"
 import { useEntryContentContext } from "./ctx"

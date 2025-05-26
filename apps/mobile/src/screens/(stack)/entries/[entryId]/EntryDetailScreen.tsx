@@ -1,4 +1,13 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/src/entry/hooks"
+import { entrySyncServices } from "@follow/store/src/entry/store"
+import type { EntryWithTranslation } from "@follow/store/src/entry/types"
+import { useFeed } from "@follow/store/src/feed/hooks"
+import {
+  useEntryTranslation,
+  usePrefetchEntryTranslation,
+} from "@follow/store/src/translation/hooks"
+import { useAutoMarkAsRead } from "@follow/store/src/unread/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo } from "react"
@@ -22,12 +31,6 @@ import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { usePullUpToNext } from "@/src/modules/entry-content/use-pull-up-to-next"
-import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
-import { entrySyncServices } from "@/src/store/entry/store"
-import type { EntryWithTranslation } from "@/src/store/entry/types"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
-import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
 

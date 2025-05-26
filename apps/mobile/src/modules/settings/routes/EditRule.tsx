@@ -1,4 +1,6 @@
 import type { ActionFilter, ActionModel } from "@follow/models/src/types"
+import { useActionRule } from "@follow/store/src/action/hooks"
+import { actionActions } from "@follow/store/src/action/store"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -20,8 +22,6 @@ import {
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { useActionRule } from "@/src/store/action/hooks"
-import { actionActions } from "@/src/store/action/store"
 import { accentColor, useColors } from "@/src/theme/colors"
 
 import { availableActionList, filterFieldOptions, filterOperatorOptions } from "../actions/constant"

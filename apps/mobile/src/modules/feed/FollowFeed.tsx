@@ -1,4 +1,8 @@
 import { FeedViewType } from "@follow/constants"
+import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/src/feed/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/src/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/src/subscription/store"
+import type { SubscriptionForm } from "@follow/store/src/subscription/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -22,10 +26,6 @@ import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
-import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@/src/store/feed/hooks"
-import { useSubscriptionByFeedId } from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
-import type { SubscriptionForm } from "@/src/store/subscription/types"
 
 const formSchema = z.object({
   view: z.coerce.number(),

@@ -1,4 +1,10 @@
 import { FeedViewType } from "@follow/constants"
+import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
+import { usePrefetchEntries } from "@follow/store/src/entry/hooks"
+import { FEED_COLLECTION_LIST } from "@follow/store/src/entry/utils"
+import { useFeed } from "@follow/store/src/feed/hooks"
+import { useInbox } from "@follow/store/src/inbox/hooks"
+import { useList } from "@follow/store/src/list/hooks"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
 import { atom, useAtomValue } from "jotai"
@@ -7,12 +13,6 @@ import { createContext, use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { views } from "@/src/constants/views"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { usePrefetchEntries } from "@/src/store/entry/hooks"
-import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useInbox } from "@/src/store/inbox/hooks"
-import { useList } from "@/src/store/list/hooks"
 
 export type SelectedTimeline = {
   type: "view"

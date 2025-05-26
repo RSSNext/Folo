@@ -1,6 +1,5 @@
+import { useSortedUngroupedSubscription } from "@follow/store/src/subscription/hooks"
 import type { FC } from "react"
-
-import { useSortedUngroupedSubscription } from "@/src/store/subscription/hooks"
 
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { SubscriptionItem } from "./items/SubscriptionItem"

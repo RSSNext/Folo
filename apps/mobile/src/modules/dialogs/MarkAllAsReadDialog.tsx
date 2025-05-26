@@ -1,3 +1,5 @@
+import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import { t } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
@@ -5,8 +7,6 @@ import { Text, View } from "react-native"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 import { useSelectedFeed, useSelectedView } from "../screen/atoms"
 

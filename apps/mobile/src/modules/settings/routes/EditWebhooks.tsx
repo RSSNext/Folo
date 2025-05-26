@@ -1,3 +1,5 @@
+import { useActionRule } from "@follow/store/src/action/hooks"
+import { actionActions } from "@follow/store/src/action/store"
 import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 
@@ -13,8 +15,6 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { useActionRule } from "@/src/store/action/hooks"
-import { actionActions } from "@/src/store/action/store"
 
 export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
   const { t } = useTranslation("settings")

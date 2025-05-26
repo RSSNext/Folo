@@ -1,12 +1,12 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/src/entry/hooks"
+import { useFeed } from "@follow/store/src/feed/hooks"
+import { useEntryTranslation } from "@follow/store/src/translation/hooks"
 import { cn } from "@follow/utils"
 import { Text, View } from "react-native"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
-import { useEntry } from "@/src/store/entry/hooks"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation } from "@/src/store/translation/hooks"
 
 import { EntryTranslation } from "../entry-list/templates/EntryTranslation"
 

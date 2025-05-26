@@ -1,4 +1,5 @@
 import type { RSSHubParameter, RSSHubParameterObject, RSSHubRoute } from "@follow/models/src/rsshub"
+import { feedSyncServices } from "@follow/store/src/feed/store"
 import {
   MissingOptionalParamError,
   parseFullPathParams,
@@ -26,7 +27,6 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
-import { feedSyncServices } from "@/src/store/feed/store"
 
 import { FollowScreen } from "./FollowScreen"
 

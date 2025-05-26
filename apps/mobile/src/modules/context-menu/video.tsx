@@ -1,14 +1,14 @@
 import { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/src/collection/hooks"
+import { collectionSyncService } from "@follow/store/src/collection/store"
+import { useEntry } from "@follow/store/src/entry/hooks"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 import { Share } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { toast } from "@/src/lib/toast"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { useEntry } from "@/src/store/entry/hooks"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 type VideoContextMenuProps = PropsWithChildren<{
   entryId: string

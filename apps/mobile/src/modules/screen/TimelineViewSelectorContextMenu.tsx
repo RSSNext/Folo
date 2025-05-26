@@ -1,9 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import type { FC, PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 export const TimelineViewSelectorContextMenu: FC<
   PropsWithChildren<{ type: string | undefined; viewId: FeedViewType | undefined }>

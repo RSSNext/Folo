@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { useWhoami } from "@follow/store/src/user/hooks"
 import type { FlashList } from "@shopify/flash-list"
 import { useEffect } from "react"
 
@@ -8,7 +9,6 @@ import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
-import { useWhoami } from "@/src/store/user/hooks"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"

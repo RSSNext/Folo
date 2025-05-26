@@ -1,11 +1,11 @@
 import type { FeedViewType } from "@follow/constants"
+import { usePrefetchEntryTranslation } from "@follow/store/src/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { usePlayingUrl } from "@/src/lib/player"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"

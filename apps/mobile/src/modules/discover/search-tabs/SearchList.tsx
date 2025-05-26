@@ -1,3 +1,4 @@
+import { useSubscriptionByListId } from "@follow/store/src/subscription/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { memo } from "react"
@@ -13,7 +14,6 @@ import { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { UrlBuilder } from "@/src/lib/url-builder"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
-import { useSubscriptionByListId } from "@/src/store/subscription/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext } from "../ctx"

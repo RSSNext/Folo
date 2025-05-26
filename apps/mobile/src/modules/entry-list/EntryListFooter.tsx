@@ -1,9 +1,9 @@
+import { getFetchEntryPayload } from "@follow/store/src/entry/getter"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity } from "react-native"
 
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { unreadSyncService } from "@/src/store/unread/store"
 import { useColor } from "@/src/theme/colors"
 
 import { useSelectedFeed, useSelectedView } from "../screen/atoms"

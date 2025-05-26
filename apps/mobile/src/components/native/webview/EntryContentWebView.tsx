@@ -1,3 +1,4 @@
+import type { EntryModel, EntryWithTranslation } from "@follow/store/src/entry/types"
 import { clsx } from "@follow/utils"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
@@ -7,7 +8,6 @@ import { TouchableOpacity, View } from "react-native"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
-import type { EntryModel, EntryWithTranslation } from "@/src/store/entry/types"
 
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"

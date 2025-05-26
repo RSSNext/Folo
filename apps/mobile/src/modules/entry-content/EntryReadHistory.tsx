@@ -1,3 +1,6 @@
+import { useEntry } from "@follow/store/src/entry/hooks"
+import { isInboxEntry } from "@follow/store/src/entry/utils"
+import { userActions } from "@follow/store/src/user/store"
 import { useQuery } from "@tanstack/react-query"
 import { Pressable, View } from "react-native"
 
@@ -5,9 +8,6 @@ import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
-import { useEntry } from "@/src/store/entry/hooks"
-import { isInboxEntry } from "@/src/store/entry/utils"
-import { userActions } from "@/src/store/user/store"
 
 export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId)

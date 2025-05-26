@@ -1,3 +1,5 @@
+import { debouncedFetchEntryContentByStream } from "@follow/store/src/entry/store"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import type { FlashList } from "@shopify/flash-list"
 import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
 import type { RefObject } from "react"
@@ -6,8 +8,6 @@ import type { NativeScrollEvent, NativeSyntheticEvent, ViewStyle } from "react-n
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { debouncedFetchEntryContentByStream } from "@/src/store/entry/store"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "../screen/PagerListContext"
 
