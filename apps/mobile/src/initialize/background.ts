@@ -1,8 +1,11 @@
+import { getAllUnreadCount } from "@follow/store/src/unread/getter"
+import { unreadSyncService } from "@follow/store/src/unread/store"
 import { whoami } from "@follow/store/src/user/getters"
 import * as BackgroundTask from "expo-background-task"
 import * as TaskManager from "expo-task-manager"
 
 import { getUISettings } from "../atoms/settings/ui"
+import { setBadgeCountAsyncWithPermission } from "../lib/permission"
 
 const BACKGROUND_FETCH_TASK = "background-fetch"
 
@@ -17,8 +20,9 @@ export async function initBackgroundTask() {
     }
 
     try {
-      // FIXME:
-      // await unreadSyncService.updateBadgeAtBackground()
+      await unreadSyncService.resetFromRemote()
+      const allUnreadCount = getAllUnreadCount()
+      await setBadgeCountAsyncWithPermission(allUnreadCount)
       return BackgroundTask.BackgroundTaskResult.Success
     } catch (err) {
       console.error(err)
