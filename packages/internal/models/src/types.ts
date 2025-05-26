@@ -90,6 +90,7 @@ export type DataResponse<T> = {
   data?: T
 }
 
+type Nullable<T> = T | null | undefined
 export type ActiveEntryId = Nullable<string>
 
 export type SubscriptionModel = ExtractBizResponse<
