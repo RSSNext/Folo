@@ -11,18 +11,12 @@
   },
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "require": "./src/index.ts",
-      "import": "./src/index.ts"
-    },
-    "./*": {
+    "./src/*": {
       "types": "./src/*.ts",
       "require": "./src/*.ts",
       "import": "./src/*.ts"
     }
   },
-  "main": "./exports.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
