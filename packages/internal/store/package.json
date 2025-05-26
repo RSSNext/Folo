@@ -1,0 +1,39 @@
+{
+  "name": "@follow/store",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "sideEffects": false,
+  "exports": {
+    "./src/*": {
+      "types": "./src/*.ts",
+      "require": "./src/*.ts",
+      "import": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "dependencies": {
+    "@follow/configs": "workspace:*",
+    "@follow/constants": "workspace:*",
+    "@follow/database": "workspace:*",
+    "@follow/models": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "@follow/tracker": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "@tanstack/react-query": "5.74.7",
+    "es-toolkit": "1.36.0",
+    "immer": "10.1.1",
+    "zustand": "5.0.3"
+  }
+}
