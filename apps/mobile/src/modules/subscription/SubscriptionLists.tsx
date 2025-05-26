@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
-import { useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
+import { useGeneralSettingKey, useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
 import {
   GROUPED_ICON_TEXT_GAP,
@@ -55,8 +55,9 @@ const SubscriptionListImpl = ({
   view: FeedViewType
   active?: boolean
 }) => {
-  const listIds = useListSubscription(view)
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const listIds = useListSubscription(view)
   const sortedListIds = useSortedListSubscription({
     ids: listIds,
     sortBy: "alphabet",
@@ -65,7 +66,10 @@ const SubscriptionListImpl = ({
 
   const inboxes = useInboxSubscription(view)
 
-  const { grouped, unGrouped } = useGroupedSubscription(view, hideAllReadSubscriptions)
+  const { grouped, unGrouped } = useGroupedSubscription({
+    view,
+    autoGroup,
+  })
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()

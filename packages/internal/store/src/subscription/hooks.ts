@@ -52,7 +52,13 @@ export const useFeedSubscriptionByView = (view: FeedViewType) => {
   return useSubscriptionStore(useCallback(() => getFeedSubscriptionByView(view), [view]))
 }
 
-export const useGroupedSubscription = (view: FeedViewType, autoGroup: boolean) => {
+export const useGroupedSubscription = ({
+  view,
+  autoGroup,
+}: {
+  view: FeedViewType
+  autoGroup: boolean
+}) => {
   return useSubscriptionStore(
     useCallback(
       (state) => {
