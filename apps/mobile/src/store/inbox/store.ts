@@ -1,4 +1,5 @@
-import type { InboxSchema } from "@/src/database/schemas/types"
+import type { InboxSchema } from "@follow/database/src/schemas/types"
+
 import { InboxService } from "@/src/services/inbox"
 
 import { createTransaction, createZustandStore } from "../internal/helper"

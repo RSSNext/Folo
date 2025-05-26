@@ -8,7 +8,7 @@ import { SQLITE_DB_NAME } from "./constant"
 import migrations from "./drizzle/migrations"
 import * as schema from "./schemas"
 
-const sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
+export const sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
 
 let db: ExpoSQLiteDatabase<typeof schema> & {
   $client: SQLite.SQLiteDatabase
@@ -20,6 +20,7 @@ export function initializeDb() {
     logger: false,
   })
 }
+export { db }
 
 export function migrateDb(): Promise<void> {
   return migrate(db, migrations)

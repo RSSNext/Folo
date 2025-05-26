@@ -1,4 +1,5 @@
-import type { ListSchema } from "@/src/database/schemas/types"
+import type { ListSchema } from "@follow/database/src/schemas/types"
+
 import { apiClient } from "@/src/lib/api-fetch"
 import { honoMorph } from "@/src/morph/hono"
 import { storeDbMorph } from "@/src/morph/store-db"

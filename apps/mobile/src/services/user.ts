@@ -1,8 +1,8 @@
+import { db } from "@follow/database/src/db"
+import { usersTable } from "@follow/database/src/schemas"
+import type { UserSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
-import { db } from "../database"
-import { usersTable } from "../database/schemas"
-import type { UserSchema } from "../database/schemas/types"
 import { userActions } from "../store/user/store"
 import type { Hydratable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"

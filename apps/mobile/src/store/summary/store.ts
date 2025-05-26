@@ -1,5 +1,6 @@
+import type { SummarySchema } from "@follow/database/src/schemas/types"
+
 import { getActionLanguage } from "@/src/atoms/settings/general"
-import type { SummarySchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { summaryService } from "@/src/services/summary"
 

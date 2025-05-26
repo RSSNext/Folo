@@ -1,4 +1,4 @@
-import type { EntrySchema } from "@/src/database/schemas/types"
+import type { EntrySchema } from "@follow/database/src/schemas/types"
 
 import type { EntryTranslation } from "../translation/types"
 

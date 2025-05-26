@@ -1,8 +1,8 @@
+import { db } from "@follow/database/src/db"
+import { translationsTable } from "@follow/database/src/schemas"
+import type { TranslationSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
-import { db } from "../database"
-import { translationsTable } from "../database/schemas"
-import type { TranslationSchema } from "../database/schemas/types"
 import { translationActions } from "../store/translation/store"
 import type { Hydratable, Resetable } from "./internal/base"
 

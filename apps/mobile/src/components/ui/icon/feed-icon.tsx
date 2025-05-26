@@ -1,8 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
+import type { FeedSchema } from "@follow/database/src/schemas/types"
 import type { ReactNode } from "react"
 import { useCallback, useMemo, useState } from "react"
 
-import type { FeedSchema } from "@/src/database/schemas/types"
 import { getFeedIconSource } from "@/src/lib/image"
 
 import type { ImageProps } from "../image/Image"

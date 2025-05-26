@@ -1,4 +1,4 @@
-import type { FeedSchema } from "@/src/database/schemas/types"
+import type { FeedSchema } from "@follow/database/src/schemas/types"
 
 import { useFeedStore } from "./store"
 

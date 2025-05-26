@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
+import type { UnreadSchema } from "@follow/database/src/schemas/types"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
-import type { UnreadSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
 import { EntryService } from "@/src/services/entry"

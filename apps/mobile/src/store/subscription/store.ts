@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
+import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
 import { tracker } from "@follow/tracker"
 
-import type { SubscriptionSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { toast } from "@/src/lib/toast"
 import { honoMorph } from "@/src/morph/hono"

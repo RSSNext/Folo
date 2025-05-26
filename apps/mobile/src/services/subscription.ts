@@ -1,9 +1,14 @@
 import type { FeedViewType } from "@follow/constants/src/enums"
+import { db } from "@follow/database/src/db"
+import {
+  feedsTable,
+  inboxesTable,
+  listsTable,
+  subscriptionsTable,
+} from "@follow/database/src/schemas"
+import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm"
 
-import { db } from "../database"
-import { feedsTable, inboxesTable, listsTable, subscriptionsTable } from "../database/schemas"
-import type { SubscriptionSchema } from "../database/schemas/types"
 import { dbStoreMorph } from "../morph/db-store"
 import { subscriptionActions } from "../store/subscription/store"
 import type { Hydratable, Resetable } from "./internal/base"

@@ -1,7 +1,7 @@
-import { inboxesTable } from "@/src/database/schemas"
-import type { InboxSchema } from "@/src/database/schemas/types"
+import { db } from "@follow/database/src/db"
+import { inboxesTable } from "@follow/database/src/schemas"
+import type { InboxSchema } from "@follow/database/src/schemas/types"
 
-import { db } from "../database"
 import { inboxActions } from "../store/inbox/store"
 import type { Hydratable, Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"

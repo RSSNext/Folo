@@ -1,4 +1,5 @@
-import type { TranslationSchema } from "@/src/database/schemas/types"
+import type { TranslationSchema } from "@follow/database/src/schemas/types"
+
 import { apiClient } from "@/src/lib/api-fetch"
 import type { SupportedLanguages } from "@/src/lib/language"
 import { checkLanguage } from "@/src/lib/translation"

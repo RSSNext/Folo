@@ -1,9 +1,9 @@
+import { db } from "@follow/database/src/db"
+import { entriesTable } from "@follow/database/src/schemas"
+import type { EntrySchema } from "@follow/database/src/schemas/types"
 import { and, between, eq, inArray, or } from "drizzle-orm"
 
 import { getGeneralSettings } from "../atoms/settings/general"
-import { db } from "../database"
-import { entriesTable } from "../database/schemas"
-import type { EntrySchema } from "../database/schemas/types"
 import { dbStoreMorph } from "../morph/db-store"
 import { entryActions } from "../store/entry/store"
 import type { PublishAtTimeRangeFilter } from "../store/unread/types"

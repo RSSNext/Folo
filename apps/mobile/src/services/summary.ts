@@ -1,8 +1,7 @@
+import { db } from "@follow/database/src/db"
+import { summariesTable } from "@follow/database/src/schemas"
+import type { SummarySchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
-
-import { db } from "../database"
-import { summariesTable } from "../database/schemas"
-import type { SummarySchema } from "../database/schemas/types"
 
 class SummaryServiceStatic {
   async insertSummary(data: Omit<SummarySchema, "createdAt">) {

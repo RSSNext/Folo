@@ -8,7 +8,7 @@ import migrations from "./drizzle/migrations"
 import { migrate } from "./migrator"
 import * as schema from "./schemas"
 
-const sqlite = new SQLocalDrizzle(SQLITE_DB_NAME)
+export const sqlite = new SQLocalDrizzle(SQLITE_DB_NAME)
 
 let db: SqliteRemoteDatabase<typeof schema>
 
@@ -18,6 +18,7 @@ export function initializeDb() {
     logger: false,
   })
 }
+export { db }
 
 export function migrateDb() {
   return migrate(db, migrations)

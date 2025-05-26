@@ -1,7 +1,7 @@
+import { initializeDb } from "@follow/database/src/db"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
-import { initializeDb } from "../database"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"

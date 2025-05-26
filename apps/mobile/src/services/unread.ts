@@ -1,6 +1,7 @@
-import { db } from "../database"
-import { unreadTable } from "../database/schemas"
-import type { UnreadSchema } from "../database/schemas/types"
+import { db } from "@follow/database/src/db"
+import { unreadTable } from "@follow/database/src/schemas"
+import type { UnreadSchema } from "@follow/database/src/schemas/types"
+
 import { unreadActions } from "../store/unread/store"
 import type { UnreadUpdateOptions } from "../store/unread/types"
 import type { Hydratable, Resetable } from "./internal/base"

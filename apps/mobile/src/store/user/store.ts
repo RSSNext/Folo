@@ -1,7 +1,7 @@
 import { UserRole } from "@follow/constants"
+import type { UserSchema } from "@follow/database/src/schemas/types"
 import type { AuthSession } from "@follow/shared"
 
-import type { UserSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { changeEmail, sendVerificationEmail, twoFactor, updateUser } from "@/src/lib/auth"
 import { toast } from "@/src/lib/toast"

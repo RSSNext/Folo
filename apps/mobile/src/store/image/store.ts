@@ -1,6 +1,6 @@
+import type { ImageSchema } from "@follow/database/src/schemas/types"
 import ImageColors from "react-native-image-colors"
 
-import type { ImageSchema } from "@/src/database/schemas/types"
 import { ImagesService } from "@/src/services/image"
 
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"

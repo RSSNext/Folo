@@ -1,8 +1,8 @@
+import { db } from "@follow/database/src/db"
+import { collectionsTable } from "@follow/database/src/schemas"
+import type { CollectionSchema } from "@follow/database/src/schemas/types"
 import { eq, inArray } from "drizzle-orm"
 
-import { db } from "../database"
-import { collectionsTable } from "../database/schemas"
-import type { CollectionSchema } from "../database/schemas/types"
 import { collectionActions } from "../store/collection/store"
 import type { Hydratable, Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"

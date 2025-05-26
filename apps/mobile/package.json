@@ -23,6 +23,7 @@
     "@expo/react-native-action-sheet": "4.1.1",
     "@follow/components": "workspace:*",
     "@follow/constants": "workspace:*",
+    "@follow/database": "workspace:*",
     "@follow/hooks": "workspace:*",
     "@follow/legal": "workspace:*",
     "@follow/models": "workspace:*",

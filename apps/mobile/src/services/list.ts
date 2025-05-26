@@ -1,8 +1,8 @@
+import { db } from "@follow/database/src/db"
+import { listsTable } from "@follow/database/src/schemas"
+import type { ListSchema } from "@follow/database/src/schemas/types"
 import { eq } from "drizzle-orm"
 
-import { db } from "../database"
-import { listsTable } from "../database/schemas"
-import type { ListSchema } from "../database/schemas/types"
 import { listActions } from "../store/list/store"
 import type { Hydratable, Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"

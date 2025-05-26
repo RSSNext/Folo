@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
+import type { CollectionSchema } from "@follow/database/src/schemas/types"
 
-import type { CollectionSchema } from "@/src/database/schemas/types"
 import { apiClient } from "@/src/lib/api-fetch"
 import { CollectionService } from "@/src/services/collection"
 

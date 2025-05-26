@@ -1,7 +1,7 @@
-import { imagesTable } from "@/src/database/schemas"
-import type { ImageSchema } from "@/src/database/schemas/types"
+import { db } from "@follow/database/src/db"
+import { imagesTable } from "@follow/database/src/schemas"
+import type { ImageSchema } from "@follow/database/src/schemas/types"
 
-import { db } from "../database"
 import { imageActions } from "../store/image/store"
 import type { Hydratable, Resetable } from "./internal/base"
 import { conflictUpdateAllExcept } from "./internal/utils"

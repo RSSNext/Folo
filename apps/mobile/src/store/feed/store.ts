@@ -1,4 +1,5 @@
-import type { FeedSchema } from "@/src/database/schemas/types"
+import type { FeedSchema } from "@follow/database/src/schemas/types"
+
 import { apiClient } from "@/src/lib/api-fetch"
 import { FeedService } from "@/src/services/feed"
 
