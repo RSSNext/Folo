@@ -1,3 +1,7 @@
+import { usePrefetchActions } from "@follow/store/src/action/hooks"
+// import { useMessaging, useUpdateMessagingToken } from "@follow/store/src/messaging/hooks"
+// import { useUnreadCountBadge } from "@follow/store/src/unread/hooks"
+import { usePrefetchSessionUser } from "@follow/store/src/user/hooks"
 import { StatusBar } from "expo-status-bar"
 import { View } from "react-native"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
@@ -7,21 +11,18 @@ import { useSheet } from "react-native-sheet-transitions"
 import { useBackHandler } from "./hooks/useBackHandler"
 import { useIntentHandler } from "./hooks/useIntentHandler"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
-import { usePrefetchActions } from "./store/action/hooks"
-import { useMessaging, useUpdateMessagingToken } from "./store/messaging/hooks"
-import { useUnreadCountBadge } from "./store/unread/hooks"
-import { useOnboarding, usePrefetchSessionUser } from "./store/user/hooks"
 
 export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()
-  useOnboarding()
-  useUnreadCountBadge()
+  // FIXME:
+  // useOnboarding()
+  // useUnreadCountBadge()
   useBackHandler()
 
   // prefetch actions to detect if the user has any actions contains notifications
   usePrefetchActions()
-  useUpdateMessagingToken()
-  useMessaging()
+  // useUpdateMessagingToken()
+  // useMessaging()
   const { scale } = useSheet()
 
   const style = useAnimatedStyle(() => ({

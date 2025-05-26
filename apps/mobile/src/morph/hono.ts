@@ -1,12 +1,12 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedSchema, InboxSchema } from "@follow/database/src/schemas/types"
+import type { CollectionModel } from "@follow/store/src/collection/types"
+import type { EntryModel } from "@follow/store/src/entry/types"
+import type { FeedModel } from "@follow/store/src/feed/types"
+import type { ListModel } from "@follow/store/src/list/store"
+import type { SubscriptionModel } from "@follow/store/src/subscription/store"
+import type { MeModel } from "@follow/store/src/user/store"
 
-import type { CollectionModel } from "../store/collection/types"
-import type { EntryModel } from "../store/entry/types"
-import type { FeedModel } from "../store/feed/types"
-import type { ListModel } from "../store/list/store"
-import type { SubscriptionModel } from "../store/subscription/store"
-import type { MeModel } from "../store/user/store"
 import type { HonoApiClient } from "./types"
 
 class Morph {

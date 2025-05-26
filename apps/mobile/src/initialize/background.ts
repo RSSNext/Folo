@@ -1,9 +1,8 @@
+import { whoami } from "@follow/store/src/user/getters"
 import * as BackgroundTask from "expo-background-task"
 import * as TaskManager from "expo-task-manager"
 
 import { getUISettings } from "../atoms/settings/ui"
-import { unreadSyncService } from "../store/unread/store"
-import { whoami } from "../store/user/getters"
 
 const BACKGROUND_FETCH_TASK = "background-fetch"
 
@@ -18,7 +17,8 @@ export async function initBackgroundTask() {
     }
 
     try {
-      await unreadSyncService.updateBadgeAtBackground()
+      // FIXME:
+      // await unreadSyncService.updateBadgeAtBackground()
       return BackgroundTask.BackgroundTaskResult.Success
     } catch (err) {
       console.error(err)
