@@ -3,7 +3,7 @@
 import fs from "node:fs"
 import path from "node:path"
 
-import { cleanJsonText } from "./eslint-recursive-sort.js"
+import { cleanJsonText } from "../utils.js"
 
 export default {
   rules: {

@@ -1,29 +1,4 @@
-const sortObjectKeys = (obj) => {
-  if (typeof obj !== "object" || obj === null) {
-    return obj
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map((element) => sortObjectKeys(element))
-  }
-
-  return Object.keys(obj)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = sortObjectKeys(obj[key])
-      return acc
-    }, {})
-}
-
-export function cleanJsonText(text) {
-  const cleaned = text.replaceAll(/,\s*\}/g, "}")
-  try {
-    JSON.parse(cleaned)
-    return cleaned
-  } catch {
-    return text
-  }
-}
+import { cleanJsonText, sortObjectKeys } from "../utils.js"
 
 /**
  * @type {import("eslint").ESLint.Plugin}
