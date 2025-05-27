@@ -1,5 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { usePrefetchEntryTranslation } from "@follow/store/src/translation/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle } from "react"

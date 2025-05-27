@@ -1,11 +1,11 @@
-import { useFeed } from "@follow/store/src/feed/hooks"
-import { useList, usePrefetchOwnedLists } from "@follow/store/src/list/hooks"
-import { listSyncServices } from "@follow/store/src/list/store"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useList, usePrefetchOwnedLists } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
 import {
   useFeedSubscriptionByView,
   usePrefetchSubscription,
   useSortedFeedSubscriptionByAlphabet,
-} from "@follow/store/src/subscription/hooks"
+} from "@follow/store/subscription/hooks"
 import { useMutation } from "@tanstack/react-query"
 import type { MutableRefObject } from "react"
 import { createContext, use, useEffect, useMemo, useRef, useState } from "react"

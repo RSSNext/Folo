@@ -5,7 +5,7 @@ import {
   useEntryIdsByInboxId,
   useEntryIdsByListId,
   useEntryIdsByView,
-} from "@follow/store/src/entry/hooks"
+} from "@follow/store/entry/hooks"
 import { memo, useMemo } from "react"
 
 import { useSelectedFeed, useSelectedView } from "@/src/modules/screen/atoms"

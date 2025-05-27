@@ -1,4 +1,4 @@
-import { useSubscriptionByListId } from "@follow/store/src/subscription/hooks"
+import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { memo } from "react"

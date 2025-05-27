@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { useViewWithSubscription } from "@follow/store/src/subscription/hooks"
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/src/event-bus"
 import * as Haptics from "expo-haptics"
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"

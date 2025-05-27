@@ -1,4 +1,4 @@
-import { whoami } from "@follow/store/src/user/getters"
+import { whoami } from "@follow/store/user/getters"
 import { setFirebaseTracker, setOpenPanelTracker, tracker } from "@follow/tracker"
 import { getAnalytics } from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"

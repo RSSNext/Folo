@@ -1,5 +1,5 @@
-import { useActionRule } from "@follow/store/src/action/hooks"
-import { actionActions } from "@follow/store/src/action/store"
+import { useActionRule } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 

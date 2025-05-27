@@ -1,7 +1,7 @@
-import { useEntry } from "@follow/store/src/entry/hooks"
-import { SummaryGeneratingStatus } from "@follow/store/src/summary/enum"
-import { usePrefetchSummary, useSummary } from "@follow/store/src/summary/hooks"
-import { useSummaryStore } from "@follow/store/src/summary/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
+import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
+import { useSummaryStore } from "@follow/store/summary/store"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 

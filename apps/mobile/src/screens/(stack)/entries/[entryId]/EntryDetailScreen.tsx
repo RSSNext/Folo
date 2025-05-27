@@ -1,13 +1,10 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntry, usePrefetchEntryDetail } from "@follow/store/src/entry/hooks"
-import { entrySyncServices } from "@follow/store/src/entry/store"
-import type { EntryWithTranslation } from "@follow/store/src/entry/types"
-import { useFeed } from "@follow/store/src/feed/hooks"
-import {
-  useEntryTranslation,
-  usePrefetchEntryTranslation,
-} from "@follow/store/src/translation/hooks"
-import { useAutoMarkAsRead } from "@follow/store/src/unread/hooks"
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { entrySyncServices } from "@follow/store/entry/store"
+import type { EntryWithTranslation } from "@follow/store/entry/types"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo } from "react"

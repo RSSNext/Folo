@@ -1,6 +1,6 @@
 import type { ActionFilter, ActionModel } from "@follow/models/types"
-import { useActionRule } from "@follow/store/src/action/hooks"
-import { actionActions } from "@follow/store/src/action/store"
+import { useActionRule } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"

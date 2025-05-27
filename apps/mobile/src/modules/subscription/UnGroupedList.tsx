@@ -1,4 +1,4 @@
-import { useSortedUngroupedSubscription } from "@follow/store/src/subscription/hooks"
+import { useSortedUngroupedSubscription } from "@follow/store/subscription/hooks"
 import type { FC } from "react"
 
 import { useHideAllReadSubscriptions } from "@/src/atoms/settings/general"

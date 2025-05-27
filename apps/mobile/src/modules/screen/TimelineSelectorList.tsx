@@ -1,6 +1,6 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { usePrefetchSubscription } from "@follow/store/src/subscription/hooks"
-import { usePrefetchUnread } from "@follow/store/src/unread/hooks"
+import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { usePrefetchUnread } from "@follow/store/unread/hooks"
 import { nextFrame } from "@follow/utils"
 import type {
   FlashListProps,

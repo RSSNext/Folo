@@ -1,4 +1,4 @@
-import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store/src/user/constants"
+import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store/user/constants"
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"

@@ -1,4 +1,4 @@
-import type { EntryModel, EntryWithTranslation } from "@follow/store/src/entry/types"
+import type { EntryModel, EntryWithTranslation } from "@follow/store/entry/types"
 import { clsx } from "@follow/utils"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"

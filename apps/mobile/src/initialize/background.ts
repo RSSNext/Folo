@@ -1,6 +1,6 @@
-import { getAllUnreadCount } from "@follow/store/src/unread/getter"
-import { unreadSyncService } from "@follow/store/src/unread/store"
-import { whoami } from "@follow/store/src/user/getters"
+import { getAllUnreadCount } from "@follow/store/unread/getter"
+import { unreadSyncService } from "@follow/store/unread/store"
+import { whoami } from "@follow/store/user/getters"
 import * as BackgroundTask from "expo-background-task"
 import * as TaskManager from "expo-task-manager"
 

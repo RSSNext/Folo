@@ -1,4 +1,4 @@
-import { usePrefetchImageColors } from "@follow/store/src/image/hooks"
+import { usePrefetchImageColors } from "@follow/store/image/hooks"
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import { use, useEffect } from "react"

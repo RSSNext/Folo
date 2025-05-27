@@ -1,4 +1,4 @@
-import { unreadSyncService } from "@follow/store/src/unread/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { t } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"

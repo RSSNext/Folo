@@ -1,5 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { useEntry } from "@follow/store/src/entry/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { use, useState } from "react"

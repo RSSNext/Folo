@@ -1,4 +1,4 @@
-import { useSubscriptionByFeedId } from "@follow/store/src/subscription/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { Text, View } from "react-native"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"

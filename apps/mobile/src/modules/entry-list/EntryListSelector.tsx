@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useWhoami } from "@follow/store/src/user/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import type { FlashList } from "@shopify/flash-list"
 import { useEffect } from "react"
 

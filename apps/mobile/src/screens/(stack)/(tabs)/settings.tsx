@@ -1,4 +1,4 @@
-import { useWhoami } from "@follow/store/src/user/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"

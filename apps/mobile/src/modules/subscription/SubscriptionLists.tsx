@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { FEED_COLLECTION_LIST } from "@follow/store/src/entry/utils"
+import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import {
   useGroupedSubscription,
   useInboxSubscription,
@@ -7,8 +7,8 @@ import {
   useSortedGroupedSubscription,
   useSortedListSubscription,
   useSortedUngroupedSubscription,
-} from "@follow/store/src/subscription/hooks"
-import { subscriptionSyncService } from "@follow/store/src/subscription/store"
+} from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { FlashList } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
 import { memo, useMemo, useState } from "react"

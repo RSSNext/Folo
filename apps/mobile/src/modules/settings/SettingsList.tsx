@@ -1,6 +1,6 @@
 import { UserRole } from "@follow/constants"
 import type { ServerConfigs } from "@follow/models/types"
-import { useRole, useWhoami } from "@follow/store/src/user/hooks"
+import { useRole, useWhoami } from "@follow/store/user/hooks"
 import * as FileSystem from "expo-file-system"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"

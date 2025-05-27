@@ -11,12 +11,12 @@
   },
   "sideEffects": false,
   "exports": {
-    "./src": {
+    ".": {
       "types": "./src/index.ts",
       "require": "./src/index.ts",
       "import": "./src/index.ts"
     },
-    "./src/*": {
+    "./*": {
       "types": "./src/*.ts",
       "require": "./src/*.ts",
       "import": "./src/*.ts"

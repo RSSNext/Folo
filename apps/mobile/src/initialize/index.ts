@@ -1,5 +1,5 @@
 import { initializeDb } from "@follow/database/db"
-import { hydrateDatabaseToStore } from "@follow/store/src"
+import { hydrateDatabaseToStore } from "@follow/store"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 

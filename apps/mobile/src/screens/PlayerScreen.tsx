@@ -1,4 +1,4 @@
-import { usePrefetchImageColors } from "@follow/store/src/image/hooks"
+import { usePrefetchImageColors } from "@follow/store/image/hooks"
 import { cn } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import { useEffect, useMemo } from "react"

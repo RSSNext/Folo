@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntry } from "@follow/store/src/entry/hooks"
-import { unreadSyncService } from "@follow/store/src/unread/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { formatDuration, transformVideoUrl } from "@follow/utils"
 import { memo, useMemo } from "react"

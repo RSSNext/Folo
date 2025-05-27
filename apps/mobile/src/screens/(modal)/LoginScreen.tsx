@@ -1,4 +1,4 @@
-import { useWhoami } from "@follow/store/src/user/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import { Fragment, useEffect } from "react"
 import { ScrollView, Text, TouchableOpacity } from "react-native"
 

@@ -1,5 +1,5 @@
-import { isOnboardingFinishedStorageKey } from "@follow/store/src/user/constants"
-import { useIsNewUser, useWhoami } from "@follow/store/src/user/hooks"
+import { isOnboardingFinishedStorageKey } from "@follow/store/user/constants"
+import { useIsNewUser, useWhoami } from "@follow/store/user/hooks"
 import { useEffect } from "react"
 
 import { kv } from "../lib/kv"

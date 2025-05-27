@@ -1,5 +1,5 @@
-import { getFeed } from "@follow/store/src/feed/getter"
-import { useWhoami } from "@follow/store/src/user/hooks"
+import { getFeed } from "@follow/store/feed/getter"
+import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"

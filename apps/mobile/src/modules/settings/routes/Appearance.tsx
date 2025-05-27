@@ -1,4 +1,4 @@
-import { getAllUnreadCount } from "@follow/store/src/unread/getter"
+import { getAllUnreadCount } from "@follow/store/unread/getter"
 import { themeNames } from "@shikijs/themes"
 import { useTranslation } from "react-i18next"
 import { useColorScheme, View } from "react-native"

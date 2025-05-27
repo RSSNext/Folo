@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { AppType } from "@follow/shared"
-import { userActions } from "@follow/store/src/user/store"
+import { userActions } from "@follow/store/user/store"
 import { FetchError, ofetch } from "ofetch"
 
 import { InvitationScreen } from "../screens/(modal)/InvitationScreen"

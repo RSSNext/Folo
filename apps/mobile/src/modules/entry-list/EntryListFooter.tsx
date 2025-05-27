@@ -1,4 +1,4 @@
-import { unreadSyncService } from "@follow/store/src/unread/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity } from "react-native"
 

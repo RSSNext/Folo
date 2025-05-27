@@ -1,4 +1,4 @@
-import { useInbox } from "@follow/store/src/inbox/hooks"
+import { useInbox } from "@follow/store/inbox/hooks"
 import { setStringAsync } from "expo-clipboard"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"

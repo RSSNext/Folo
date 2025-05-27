@@ -1,5 +1,5 @@
-import { usePrefetchActions } from "@follow/store/src/action/hooks"
-import { usePrefetchSessionUser } from "@follow/store/src/user/hooks"
+import { usePrefetchActions } from "@follow/store/action/hooks"
+import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { StatusBar } from "expo-status-bar"
 import { View } from "react-native"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"

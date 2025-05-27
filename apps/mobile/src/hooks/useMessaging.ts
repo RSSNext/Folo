@@ -1,5 +1,5 @@
-import { useHasNotificationActions } from "@follow/store/src/action/hooks"
-import { useWhoami } from "@follow/store/src/user/hooks"
+import { useHasNotificationActions } from "@follow/store/action/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import { getApp } from "@react-native-firebase/app"
 import type { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
 import { getMessaging } from "@react-native-firebase/messaging"

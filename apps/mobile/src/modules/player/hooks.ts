@@ -1,4 +1,4 @@
-import { useImageColors } from "@follow/store/src/image/hooks"
+import { useImageColors } from "@follow/store/image/hooks"
 import { getLuminance, shadeColor } from "@follow/utils"
 import { useMemo } from "react"
 

@@ -1,6 +1,6 @@
 import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
 import type { GeneralSettings } from "@follow/shared/settings/interface"
-import type { FetchEntriesPropsSettings } from "@follow/store/src/entry/types"
+import type { FetchEntriesPropsSettings } from "@follow/store/entry/types"
 import { useMemo } from "react"
 
 import { getDeviceLanguage } from "@/src/lib/i18n"

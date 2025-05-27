@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntry } from "@follow/store/src/entry/hooks"
-import { useFeed } from "@follow/store/src/feed/hooks"
-import { useEntryTranslation } from "@follow/store/src/translation/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn } from "@follow/utils"
 import { Text, View } from "react-native"
 

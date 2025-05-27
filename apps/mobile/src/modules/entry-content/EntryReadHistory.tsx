@@ -1,6 +1,6 @@
-import { useEntry } from "@follow/store/src/entry/hooks"
-import { isInboxEntry } from "@follow/store/src/entry/utils"
-import { userActions } from "@follow/store/src/user/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { isInboxEntry } from "@follow/store/entry/utils"
+import { userActions } from "@follow/store/user/store"
 import { useQuery } from "@tanstack/react-query"
 import { Pressable, View } from "react-native"
 

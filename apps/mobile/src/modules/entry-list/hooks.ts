@@ -1,5 +1,5 @@
-import { debouncedFetchEntryContentByStream } from "@follow/store/src/entry/store"
-import { unreadSyncService } from "@follow/store/src/unread/store"
+import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import type { FlashList } from "@shopify/flash-list"
 import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
 import { fetch as expoFetch } from "expo/fetch"

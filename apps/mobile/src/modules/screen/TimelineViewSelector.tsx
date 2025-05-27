@@ -1,5 +1,5 @@
-import { useViewWithSubscription } from "@follow/store/src/subscription/hooks"
-import { useUnreadCountByView } from "@follow/store/src/unread/hooks"
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
+import { useUnreadCountByView } from "@follow/store/unread/hooks"
 import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"

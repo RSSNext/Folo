@@ -4,8 +4,8 @@ import {
   useIsActionDataDirty,
   usePrefetchActions,
   useUpdateActionsMutation,
-} from "@follow/store/src/action/hooks"
-import { actionActions } from "@follow/store/src/action/store"
+} from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"

@@ -1,4 +1,4 @@
-import { useUnreadCounts } from "@follow/store/src/unread/hooks"
+import { useUnreadCounts } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, useState } from "react"
 import { Text, View } from "react-native"

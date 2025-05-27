@@ -1,4 +1,4 @@
-import { useUnreadCounts } from "@follow/store/src/unread/hooks"
+import { useUnreadCounts } from "@follow/store/unread/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
 

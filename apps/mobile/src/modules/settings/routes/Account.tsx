@@ -1,5 +1,5 @@
-import { useWhoami } from "@follow/store/src/user/hooks"
-import { userSyncService } from "@follow/store/src/user/store"
+import { useWhoami } from "@follow/store/user/hooks"
+import { userSyncService } from "@follow/store/user/store"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import * as FileSystem from "expo-file-system"
 import type { FC } from "react"

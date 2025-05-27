@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { usePrefetchEntryTranslation } from "@follow/store/src/translation/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"

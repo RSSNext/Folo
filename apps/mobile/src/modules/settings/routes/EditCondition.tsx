@@ -1,6 +1,6 @@
 import type { ActionConditionIndex } from "@follow/models/types"
-import { useActionRuleCondition } from "@follow/store/src/action/hooks"
-import { actionActions } from "@follow/store/src/action/store"
+import { useActionRuleCondition } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"

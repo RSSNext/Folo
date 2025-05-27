@@ -1,4 +1,4 @@
-import { whoamiQueryKey } from "@follow/store/src/user/hooks"
+import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
 import { KeyboardAvoidingView, Text, View } from "react-native"

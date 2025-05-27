@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { unreadSyncService } from "@follow/store/src/unread/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import type { FC, PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 

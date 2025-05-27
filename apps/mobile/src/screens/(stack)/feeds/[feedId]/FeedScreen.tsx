@@ -1,13 +1,13 @@
 import { FeedViewType } from "@follow/constants"
-import { useCollectionEntryList } from "@follow/store/src/collection/hooks"
+import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
   useEntryIdsByCategory,
   useEntryIdsByFeedId,
   useEntryIdsByInboxId,
   useEntryIdsByListId,
-} from "@follow/store/src/entry/hooks"
-import { FEED_COLLECTION_LIST } from "@follow/store/src/entry/utils"
-import { useFeed } from "@follow/store/src/feed/hooks"
+} from "@follow/store/entry/hooks"
+import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
+import { useFeed } from "@follow/store/feed/hooks"
 import { useMemo } from "react"
 import { RootSiblingParent } from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
