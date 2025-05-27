@@ -1,3 +1,4 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
@@ -15,11 +16,13 @@ import {
   useShowContextMenu,
 } from "~/atoms/context-menu"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
+import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
 import { useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import type { FlatEntryModel } from "~/store/entry"
@@ -34,6 +37,7 @@ export const EntryItemWrapper: FC<
   } & PropsWithChildren
 > = ({ entry, view, children, itemClassName, style }) => {
   const actionConfigs = useEntryActions({ entryId: entry.entries.id })
+
   const feedItems = useFeedActions({
     feedId: entry.feedId || entry.inboxId,
     view,
@@ -47,6 +51,8 @@ export const EntryItemWrapper: FC<
     ({ entryId }) => entryId === entry.entries.id,
     [entry.entries.id],
   )
+  const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
+  useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
 
   const asRead = useEntryIsRead(entry)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
@@ -70,14 +76,20 @@ export const EntryItemWrapper: FC<
     (e) => {
       e.stopPropagation()
 
+      const shouldNavigate = getRouteParams().entryId !== entry.entries.id
+      if (!shouldNavigate) return
       if (!asRead) {
         entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
       }
+
+      setTimeout(
+        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+        60,
+      )
+
       navigate({
         entryId: entry.entries.id,
       })
-
-      setTimeout(() => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender), 60)
     },
     [asRead, entry.entries.id, entry.feedId, navigate],
   )

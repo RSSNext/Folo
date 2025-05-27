@@ -34,10 +34,6 @@ const cleanup = subscribeShouldUseIndexedDB((value) => {
 declare global {
   interface Window {
     version: string
-    recaptchaOptions: {
-      useRecaptchaNet: boolean
-      enterprise: boolean
-    }
   }
 }
 
@@ -124,11 +120,6 @@ export const initializeApp = async () => {
     version: APP_VERSION,
     rn: false,
   })
-  // Options for react-google-recaptcha
-  window.recaptchaOptions = {
-    useRecaptchaNet: true,
-    enterprise: true,
-  }
 }
 
 import.meta.hot?.dispose(cleanup)

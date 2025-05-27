@@ -1,4 +1,6 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { usePrefetchUnread } from "@follow/store/unread/hooks"
 import { nextFrame } from "@follow/utils"
 import type {
   FlashListProps,
@@ -17,8 +19,6 @@ import { useColor } from "react-native-uikit-colors"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
-import { usePrefetchSubscription } from "@/src/store/subscription/hooks"
-import { usePrefetchUnread } from "@/src/store/unread/hooks"
 
 import { EntryListEmpty } from "../entry-list/EntryListEmpty"
 

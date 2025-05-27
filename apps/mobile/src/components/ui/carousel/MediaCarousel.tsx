@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { useEffect, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
@@ -9,7 +10,6 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { Galeria } from "@/src/components/ui/image/galeria"
-import type { MediaModel } from "@/src/database/schemas/types"
 import { EntryGridFooter } from "@/src/modules/entry-content/EntryGridFooter"
 
 import { Image } from "../image/Image"

@@ -1,7 +1,9 @@
+import { initializeDb } from "@follow/database/db"
+import { hydrateDatabaseToStore } from "@follow/store"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
-import { initializeDb } from "../database"
+import { getGeneralSettings } from "../atoms/settings/general"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -9,7 +11,7 @@ import { initBackgroundTask } from "./background"
 import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { initDeviceType } from "./device"
-import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
+import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
 
@@ -27,7 +29,13 @@ export const initializeApp = async () => {
 
   await apm("hydrateSettings", hydrateSettings)
   let dataHydratedTime = Date.now()
-  await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
+  await apm("hydrateDatabaseToStore", () => {
+    const { hidePrivateSubscriptionsInTimeline, unreadOnly } = getGeneralSettings()
+    return hydrateDatabaseToStore({
+      hidePrivateSubscriptionsInTimeline,
+      unreadOnly,
+    })
+  })
 
   dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)

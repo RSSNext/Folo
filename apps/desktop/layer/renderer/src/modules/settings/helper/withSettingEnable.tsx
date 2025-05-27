@@ -1,5 +1,6 @@
 import type { FC } from "react"
 import { createElement } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 type WithSelect<T> = T & {
   select: (_s: any) => any

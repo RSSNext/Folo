@@ -1,13 +1,13 @@
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { EventBus } from "@follow/utils/src/event-bus"
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
+import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
 import { useEffect, useId, useMemo, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 
 import { PagerView } from "@/src/components/native/PagerView"
 import type { PagerRef } from "@/src/components/native/PagerView/specs"
-import { useViewWithSubscription } from "@/src/store/subscription/hooks"
 
 import { selectTimeline, useSelectedFeed } from "./atoms"
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"
@@ -24,7 +24,7 @@ export function PagerList({
 
   const activeViews = useViewWithSubscription()
   const activeViewIndex = useMemo(
-    () => activeViews.findIndex((view) => view.view === viewId),
+    () => activeViews.indexOf(viewId as FeedViewType),
     [activeViews, viewId],
   )
   const pagerRef = useRef<PagerRef>(null)
@@ -32,7 +32,7 @@ export function PagerList({
   useEffect(() => {
     return EventBus.subscribe("SELECT_TIMELINE", (data) => {
       if (data.target !== rid) {
-        pagerRef.current?.setPage(activeViews.findIndex((view) => view.view === data.view.viewId))
+        pagerRef.current?.setPage(activeViews.indexOf(data.view.viewId))
       }
     })
   }, [activeViews, pagerRef, rid])
@@ -48,16 +48,16 @@ export function PagerList({
       containerClassName="flex-1 absolute inset-0"
       containerStyle={style}
       onPageChange={(targetIndex) => {
-        selectTimeline({ type: "view", viewId: activeViews[targetIndex]!.view }, rid)
+        selectTimeline({ type: "view", viewId: activeViews[targetIndex]! }, rid)
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       }}
       renderPage={useTypeScriptHappyCallback(
         (index) => (
-          <PagerListVisibleContext value={index === activeViewIndex} key={activeViews[index]!.view}>
+          <PagerListVisibleContext value={index === activeViewIndex} key={activeViews[index]!}>
             <PagerListWillVisibleContext
               value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
             >
-              {renderItem(activeViews[index]!.view, index === activeViewIndex)}
+              {renderItem(activeViews[index]!, index === activeViewIndex)}
             </PagerListWillVisibleContext>
           </PagerListVisibleContext>
         ),

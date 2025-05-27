@@ -1,8 +1,9 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet"
+import { sqlite } from "@follow/database/db"
 import { jotaiStore } from "@follow/utils"
 import { PortalProvider } from "@gorhom/portal"
 import { QueryClientProvider } from "@tanstack/react-query"
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin"
+import { useSQLiteDevTools } from "expo-sqlite-devtools"
 import { Provider } from "jotai"
 import type { ReactNode } from "react"
 import { StyleSheet, View } from "react-native"
@@ -13,13 +14,12 @@ import { useCurrentColorsVariants } from "react-native-uikit-colors"
 
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
-import { sqlite } from "../database"
 import { queryClient } from "../lib/query-client"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsProvider } from "./ServerConfigsProvider"
 
 export const RootProviders = ({ children }: { children: ReactNode }) => {
-  useDrizzleStudio(sqlite)
+  useSQLiteDevTools(sqlite)
 
   const currentThemeColors = useCurrentColorsVariants()
 

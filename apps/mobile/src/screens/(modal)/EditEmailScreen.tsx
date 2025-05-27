@@ -1,3 +1,5 @@
+import { useWhoami } from "@follow/store/user/hooks"
+import { userSyncService } from "@follow/store/user/store"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -18,8 +20,6 @@ import {
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
-import { useWhoami } from "@/src/store/user/hooks"
-import { userSyncService } from "@/src/store/user/store"
 
 export const EditEmailScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
@@ -102,7 +102,9 @@ export const EditEmailScreen: NavigationControllerView = () => {
               }
               onPress={() => {
                 setIsSendingVerificationEmail(true)
-                userSyncService.sendVerificationEmail()
+                userSyncService.sendVerificationEmail().then(() => {
+                  toast.success("Verification email sent")
+                })
               }}
             />
           </GroupedInsetListCard>

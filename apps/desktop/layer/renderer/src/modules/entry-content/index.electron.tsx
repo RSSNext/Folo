@@ -1,7 +1,6 @@
 import {
-  Focusable,
-  useFocusable,
   useFocusActions,
+  useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/index.js"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { Spring } from "@follow/components/constants/spring.js"
@@ -9,29 +8,27 @@ import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { useTitle } from "@follow/hooks"
+import { useSmoothScroll, useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { springScrollTo } from "@follow/utils/scroller"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
-import type { Variants } from "motion/react"
+import type { JSAnimation, Variants } from "motion/react"
 import { AnimatePresence, m, useAnimationControls } from "motion/react"
 import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
+import { Focusable, FocusablePresets } from "~/components/common/Focusable"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
@@ -61,9 +58,9 @@ import {
 import { EntryContentLoading } from "./loading"
 
 const pageMotionVariants = {
-  initial: { opacity: 0, y: 50 },
+  initial: { opacity: 0, y: 25 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 50, transition: { duration: 0 } },
+  exit: { opacity: 0, y: 25, transition: { duration: 0 } },
 } satisfies Variants
 
 export const EntryContent: Component<EntryContentProps> = ({
@@ -94,17 +91,19 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const isInPeekModal = useInPeekModal()
 
-  const [isUserInteraction, setIsUserInteraction] = useState(false)
   const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
 
   const animationController = useAnimationControls()
   const prevEntryId = useRef<string | undefined>(undefined)
-
+  const scrollAnimationRef = useRef<JSAnimation<any> | null>(null)
   useEffect(() => {
     if (prevEntryId.current !== entryId) {
-      springScrollTo(0, scrollerRef.current!)
+      scrollAnimationRef.current?.stop()
+      nextFrame(() => {
+        scrollerRef.current?.scrollTo({ top: 0 })
+      })
       animationController.start(pageMotionVariants.exit).then(() => {
         animationController.start(pageMotionVariants.animate)
       })
@@ -127,15 +126,11 @@ export const EntryContent: Component<EntryContentProps> = ({
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
+        scope={HotkeyScope.EntryRender}
         className="@container relative flex size-full flex-col overflow-hidden print:size-auto print:overflow-visible"
-        onFocus={() => setIsUserInteraction(true)}
       >
         <RootPortal to={panelPortalElement}>
-          <RegisterCommands
-            scrollerRef={scrollerRef}
-            isUserInteraction={isUserInteraction}
-            setIsUserInteraction={setIsUserInteraction}
-          />
+          <RegisterCommands scrollAnimationRef={scrollAnimationRef} scrollerRef={scrollerRef} />
         </RootPortal>
         <EntryTimelineSidebar entryId={entry.entries.id} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
@@ -143,7 +138,7 @@ export const EntryContent: Component<EntryContentProps> = ({
           <m.div
             initial={pageMotionVariants.initial}
             animate={animationController}
-            transition={Spring.presets.smooth}
+            transition={Spring.presets.bouncy}
             className="select-text"
           >
             {!isZenMode && (
@@ -174,8 +169,6 @@ export const EntryContent: Component<EntryContentProps> = ({
             )}
 
             <article
-              tabIndex={-1}
-              onFocus={() => setIsUserInteraction(true)}
               data-testid="entry-render"
               onContextMenu={stopPropagation}
               className="@[950px]:max-w-[70ch] @7xl:max-w-[80ch] relative m-auto min-w-0 max-w-[550px]"
@@ -254,7 +247,7 @@ const EntryScrollArea: Component<{
   }
   return (
     <ScrollArea.ScrollArea
-      focusable={false}
+      focusable
       mask={false}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
@@ -314,21 +307,16 @@ const Renderer: React.FC<{
 
 const RegisterCommands = ({
   scrollerRef,
-  isUserInteraction,
-  setIsUserInteraction,
+  scrollAnimationRef,
 }: {
   scrollerRef: React.RefObject<HTMLDivElement | null>
-  isUserInteraction: boolean
-  setIsUserInteraction: (isUserInteraction: boolean) => void
+
+  scrollAnimationRef: React.RefObject<JSAnimation<any> | null>
 }) => {
   const isAlreadyScrolledBottomRef = useRef(false)
   const [showKeepScrollingPanel, setShowKeepScrollingPanel] = useState(false)
 
-  const containerFocused = useFocusable()
-  useConditionalHotkeyScope(HotkeyScope.EntryRender, isUserInteraction && containerFocused, true)
-
-  const activeScope = useHotkeyScope()
-  const when = activeScope.includes(HotkeyScope.EntryRender)
+  const when = useGlobalFocusableScopeSelector(FocusablePresets.isEntryRender)
 
   useCommandBinding({
     commandId: COMMAND_ID.entryRender.scrollUp,
@@ -357,7 +345,7 @@ const RegisterCommands = ({
   })
 
   const { highlightBoundary } = useFocusActions()
-
+  const smoothScrollTo = useSmoothScroll()
   useEffect(() => {
     const checkScrollBottom = ($scroller: HTMLDivElement) => {
       const currentScroll = $scroller.scrollTop
@@ -367,7 +355,7 @@ const RegisterCommands = ({
         EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
         setShowKeepScrollingPanel(false)
         isAlreadyScrolledBottomRef.current = false
-        springScrollTo(0, $scroller)
+        smoothScrollTo(0, $scroller)
         return
       }
 
@@ -384,46 +372,65 @@ const RegisterCommands = ({
     }
     scrollerRef.current?.addEventListener("wheel", checkScrollBottomByWheel)
 
+    const cleanupScrollAnimation = () => {
+      scrollAnimationRef.current?.stop()
+      scrollAnimationRef.current = null
+    }
     return combineCleanupFunctions(
       () => {
         scrollerRef.current?.removeEventListener("wheel", checkScrollBottomByWheel)
       },
+      cleanupScrollAnimation,
       EventBus.subscribe(COMMAND_ID.entryRender.scrollUp, () => {
-        const currentScroll = scrollerRef.current?.scrollTop
-        const delta = window.innerHeight
+        const $scroller = scrollerRef.current
+        if (!$scroller) return
 
-        if (typeof currentScroll === "number" && delta) {
-          springScrollTo(currentScroll - delta, scrollerRef.current!)
-        }
-        checkScrollBottom(scrollerRef.current!)
+        const currentScroll = $scroller.scrollTop
+        // Smart scroll distance: larger viewports get larger scroll distances
+        // But cap it at a reasonable maximum for very large screens
+        const viewportHeight = $scroller.clientHeight
+        const delta = Math.min(Math.max(120, viewportHeight * 0.25), 250)
+
+        cleanupScrollAnimation()
+        const targetScroll = Math.max(0, currentScroll - delta)
+        smoothScrollTo(targetScroll, $scroller)
+        checkScrollBottom($scroller)
       }),
 
       EventBus.subscribe(COMMAND_ID.entryRender.scrollDown, () => {
         const $scroller = scrollerRef.current
-        if (!$scroller) {
-          return
-        }
+        if (!$scroller) return
 
         const currentScroll = $scroller.scrollTop
-        const delta = window.innerHeight
+        // Smart scroll distance: larger viewports get larger scroll distances
+        // But cap it at a reasonable maximum for very large screens
+        const viewportHeight = $scroller.clientHeight
+        const delta = Math.min(Math.max(120, viewportHeight * 0.25), 250)
 
-        if (typeof currentScroll === "number" && delta) {
-          springScrollTo(currentScroll + delta, $scroller)
-        }
+        cleanupScrollAnimation()
+        const targetScroll = Math.min(
+          $scroller.scrollHeight - $scroller.clientHeight,
+          currentScroll + delta,
+        )
+        smoothScrollTo(targetScroll, $scroller)
         checkScrollBottom($scroller)
       }),
-      EventBus.subscribe(COMMAND_ID.layout.focusToEntryRender, () => {
-        const $scroller = scrollerRef.current
-        if (!$scroller) {
-          return
-        }
-        springScrollTo(0, $scroller)
-        $scroller.focus()
-        nextFrame(highlightBoundary)
-        setIsUserInteraction(true)
-      }),
+      EventBus.subscribe(
+        COMMAND_ID.layout.focusToEntryRender,
+        ({ highlightBoundary: highlight }) => {
+          const $scroller = scrollerRef.current
+          if (!$scroller) {
+            return
+          }
+
+          $scroller.focus()
+          if (highlight) {
+            nextFrame(highlightBoundary)
+          }
+        },
+      ),
     )
-  }, [highlightBoundary, scrollerRef, setIsUserInteraction])
+  }, [highlightBoundary, scrollAnimationRef, scrollerRef, smoothScrollTo])
 
   return (
     <AnimatePresence>

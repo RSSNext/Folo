@@ -1,5 +1,5 @@
 import { composeEventHandlers } from "@follow/utils"
-import { cn } from "@follow/utils/src/utils"
+import { cn } from "@follow/utils/utils"
 import { useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { StyleProp, TextInputProps, ViewStyle } from "react-native"
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native"

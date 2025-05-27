@@ -1,5 +1,5 @@
-import { createBuildSafeHeaders } from "@follow/utils/src/headers"
-import { getImageProxyUrl, IMAGE_PROXY_URL } from "@follow/utils/src/img-proxy"
+import { createBuildSafeHeaders } from "@follow/utils/headers"
+import { getImageProxyUrl, IMAGE_PROXY_URL } from "@follow/utils/img-proxy"
 import type { ImageProps, ImageSource } from "expo-image"
 
 import { proxyEnv } from "@/src/lib/proxy-env"

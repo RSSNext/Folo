@@ -3,6 +3,8 @@
 import fs from "node:fs"
 import path from "node:path"
 
+import { cleanJsonText } from "../utils.js"
+
 export default {
   rules: {
     "valid-i18n-keys": {
@@ -24,7 +26,7 @@ export default {
 
             let json
             try {
-              json = JSON.parse(sourceCode.text)
+              json = JSON.parse(cleanJsonText(sourceCode.text))
             } catch {
               context.report({
                 node,

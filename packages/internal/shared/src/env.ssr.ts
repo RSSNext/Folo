@@ -26,8 +26,7 @@ export const env = createEnv({
     VITE_WEB_PROD_URL: z.string().optional(),
     VITE_WEB_DEV_URL: z.string().optional(),
 
-    VITE_RECAPTCHA_V2_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V2_SITE_KEY),
-    VITE_RECAPTCHA_V3_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V3_SITE_KEY),
+    VITE_HCAPTCHA_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.HCAPTCHA_SITE_KEY),
   },
 
   emptyStringAsUndefined: true,

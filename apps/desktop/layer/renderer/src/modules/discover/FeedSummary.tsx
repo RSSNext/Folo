@@ -1,5 +1,5 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.js"
-import type { FeedOrListRespModel } from "@follow/models"
+import type { FeedAnalyticsModel, FeedOrListRespModel, ListAnalyticsModel } from "@follow/models"
 import type { FC } from "react"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -11,11 +11,7 @@ import { FollowSummary } from "../feed/feed-summary"
 export interface FeedSummaryProps {
   feed: FeedOrListRespModel
 
-  analytics?: {
-    updatesPerWeek: number | null
-    subscriptionCount: number | null
-    latestEntryPublishedAt: string | null
-  }
+  analytics?: FeedAnalyticsModel | ListAnalyticsModel
 
   showAnalytics?: boolean
 }
@@ -28,7 +24,7 @@ export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalyti
 
       {showAnalytics && (
         <div className="text-callout mt-2 flex h-6 justify-between gap-4 pl-10">
-          {!analytics ? (
+          {!analytics && !("updatedAt" in feed && "updatedAt" in feed && feed.updatedAt) ? (
             <Skeleton className="mt-1 h-5 w-40" />
           ) : (
             <div className="text-text-secondary flex items-center gap-3">
@@ -42,12 +38,14 @@ export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalyti
                   </span>
                 </div>
               )}
-              {analytics?.updatesPerWeek ? (
+              {analytics && "updatesPerWeek" in analytics && analytics?.updatesPerWeek ? (
                 <div className="flex items-center gap-1.5">
                   <i className="i-mgc-safety-certificate-cute-re" />
                   <span>{t("feed.entry_week", { count: analytics.updatesPerWeek ?? 0 })}</span>
                 </div>
-              ) : analytics?.latestEntryPublishedAt ? (
+              ) : analytics &&
+                "latestEntryPublishedAt" in analytics &&
+                analytics?.latestEntryPublishedAt ? (
                 <div className="flex items-center gap-1.5">
                   <i className="i-mgc-safe-alert-cute-re" />
                   <span>{t("feed.updated_at")}</span>
@@ -55,6 +53,13 @@ export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalyti
                     date={analytics.latestEntryPublishedAt}
                     displayAbsoluteTimeAfterDay={Infinity}
                   />
+                </div>
+              ) : null}
+              {"updatedAt" in feed && feed.updatedAt ? (
+                <div className="flex items-center gap-1.5">
+                  <i className="i-mgc-safety-certificate-cute-re" />
+                  <span>{t("feed.updated_at")}</span>
+                  <RelativeTime date={feed.updatedAt} displayAbsoluteTimeAfterDay={Infinity} />
                 </div>
               ) : null}
             </div>

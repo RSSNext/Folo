@@ -1,8 +1,7 @@
+import type { AttachmentsModel } from "@follow/database/schemas/types"
 import { atom, useAtom } from "jotai"
 import { useCallback, useEffect } from "react"
 import TrackPlayer, { State, useActiveTrack, usePlaybackState } from "react-native-track-player"
-
-import type { AttachmentsModel } from "../database/schemas/types"
 
 const LOADING_SUFFIX = "_loading"
 

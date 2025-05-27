@@ -1,6 +1,6 @@
-import type { GeneralSettings, UISettings } from "@follow/shared/src/settings/interface"
+import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
-import { EventBus } from "@follow/utils/src/event-bus"
+import { EventBus } from "@follow/utils/event-bus"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
@@ -53,7 +53,7 @@ export interface SettingSyncQueueItem<T extends SettingSyncTab = SettingSyncTab>
   date: number
 }
 
-declare module "@follow/utils/src/event-bus" {
+declare module "@follow/utils/event-bus" {
   interface CustomEvent {
     SETTING_CHANGE_EVENT: {
       key: keyof typeof bizSettingKeyToTabMapping

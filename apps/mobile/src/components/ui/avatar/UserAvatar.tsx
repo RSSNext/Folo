@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/src/utils"
+import { cn } from "@follow/utils/utils"
 import { Text, View } from "react-native"
 
 import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"

@@ -1,4 +1,8 @@
 import { FeedViewType } from "@follow/constants"
+import type { MediaModel } from "@follow/database/schemas/types"
+import { useEntry } from "@follow/store/entry/hooks"
+import { getFeed } from "@follow/store/feed/getter"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import { useMemo } from "react"
@@ -7,11 +11,7 @@ import { Text, View } from "react-native"
 import { showEntryGaleriaAccessory } from "@/src/components/native/GaleriaAccessory/EntryGaleriaAccessory"
 import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
-import type { MediaModel } from "@/src/database/schemas/types"
 import { getFeedIconSource } from "@/src/lib/image"
-import { useEntry } from "@/src/store/entry/hooks"
-import { getFeed } from "@/src/store/feed/getter"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 export function EntryPictureItem({ id }: { id: string }) {
   const item = useEntry(id)

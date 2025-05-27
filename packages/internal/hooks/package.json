@@ -8,7 +8,6 @@
       "require": "./src/index.js"
     }
   },
-  "main": "./exports.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

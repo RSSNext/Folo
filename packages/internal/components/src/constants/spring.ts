@@ -36,7 +36,7 @@ const softBouncePreset: Spring = {
  */
 const smoothPreset: Spring = {
   type: "spring",
-  duration: 0.5,
+  duration: 0.4,
   bounce: 0,
 }
 
@@ -45,7 +45,7 @@ const smoothPreset: Spring = {
  */
 const snappyPreset: Spring = {
   type: "spring",
-  duration: 0.5,
+  duration: 0.4,
   bounce: 0.15,
 }
 
@@ -54,7 +54,7 @@ const snappyPreset: Spring = {
  */
 const bouncyPreset: Spring = {
   type: "spring",
-  duration: 0.5,
+  duration: 0.4,
   bounce: 0.3,
 }
 class SpringPresets {
@@ -76,7 +76,7 @@ class SpringStatic {
    * @param duration The perceptual duration, which defines the pace of the spring.
    * @param extraBounce How much additional bounce should be added to the base bounce of 0.
    */
-  smooth(duration = 0.5, extraBounce = 0): Spring {
+  smooth(duration = 0.4, extraBounce = 0): Spring {
     return {
       type: "spring",
       duration,
@@ -87,7 +87,7 @@ class SpringStatic {
   /**
    * A spring with a predefined duration and small amount of bounce that feels more snappy.
    */
-  snappy(duration = 0.5, extraBounce = 0): Spring {
+  snappy(duration = 0.4, extraBounce = 0): Spring {
     return {
       type: "spring",
       duration,
@@ -98,7 +98,7 @@ class SpringStatic {
   /**
    * A spring with a predefined duration and higher amount of bounce that can be tuned.
    */
-  bouncy(duration = 0.5, extraBounce = 0): Spring {
+  bouncy(duration = 0.4, extraBounce = 0): Spring {
     return {
       type: "spring",
       duration,

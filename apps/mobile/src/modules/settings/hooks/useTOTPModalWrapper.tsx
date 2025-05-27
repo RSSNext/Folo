@@ -1,3 +1,4 @@
+import { useWhoami } from "@follow/store/user/hooks"
 import { useCallback } from "react"
 import Siblings from "react-native-root-siblings"
 
@@ -5,7 +6,6 @@ import { getFetchErrorInfo } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { TwoFactorAuthScreen } from "@/src/screens/(modal)/TwoFactorAuthScreen"
-import { useWhoami } from "@/src/store/user/hooks"
 
 import { OTPWindow } from "../components/OTPWindow"
 

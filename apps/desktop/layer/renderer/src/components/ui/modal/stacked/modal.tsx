@@ -27,11 +27,11 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
+import { Focusable } from "~/components/common/Focusable"
 import { SafeFragment } from "~/components/common/Fragment"
 import { m } from "~/components/common/Motion"
 import { ErrorComponentType } from "~/components/errors/enum"
-import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
-import { useSwitchHotKeyScope } from "~/hooks/common"
+import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT, HotkeyScope } from "~/constants"
 
 import { modalStackAtom } from "./atom"
 import { MODAL_STACK_Z_INDEX, modalMontionConfig } from "./constants"
@@ -192,8 +192,6 @@ export const ModalInternal = memo(function Modal({
     }
   }, [currentIsClosing])
 
-  useShortcutScope()
-
   const modalStyle = resizeableStyle
   const { handleSelectStart, handleDetectSelectEnd, isSelectingRef } = useModalSelect()
   const handleClickOutsideToDismiss = useCallback(
@@ -253,7 +251,8 @@ export const ModalInternal = memo(function Modal({
               onPointerDownOutside={preventDefault}
               onOpenAutoFocus={openAutoFocus}
             >
-              <div
+              <Focusable
+                scope={HotkeyScope.Modal}
                 ref={setEdgeElementRef}
                 className={cn(
                   "no-drag-region fixed",
@@ -282,7 +281,7 @@ export const ModalInternal = memo(function Modal({
                     <CustomModalComponent>{finalChildren}</CustomModalComponent>
                   </ModalContext>
                 </div>
-              </div>
+              </Focusable>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -304,7 +303,8 @@ export const ModalInternal = memo(function Modal({
             onPointerDownOutside={preventDefault}
             onOpenAutoFocus={openAutoFocus}
           >
-            <div
+            <Focusable
+              scope={HotkeyScope.Modal}
               ref={setEdgeElementRef}
               onContextMenu={preventDefault}
               className={cn(
@@ -395,23 +395,13 @@ export const ModalInternal = memo(function Modal({
                   </div>
                 </ResizeSwitch>
               </m.div>
-            </div>
+            </Focusable>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
     </Wrapper>
   )
 })
-
-const useShortcutScope = () => {
-  const switchHotkeyScope = useSwitchHotKeyScope()
-  useEffect(() => {
-    switchHotkeyScope("Modal")
-    return () => {
-      switchHotkeyScope("Home")
-    }
-  }, [switchHotkeyScope])
-}
 
 const ModalContext: FC<
   PropsWithChildren & {

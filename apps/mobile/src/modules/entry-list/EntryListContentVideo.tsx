@@ -1,11 +1,13 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { checkLanguage } from "@/src/lib/translation"
 import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
@@ -30,7 +32,14 @@ export const EntryListContentVideo = ({
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    language: actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   const ListFooterComponent = useMemo(
     () =>

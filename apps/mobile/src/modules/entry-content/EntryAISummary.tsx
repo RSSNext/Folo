@@ -1,11 +1,11 @@
+import { useEntry } from "@follow/store/entry/hooks"
+import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
+import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
+import { useSummaryStore } from "@follow/store/summary/store"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { useEntry } from "@/src/store/entry/hooks"
-import { SummaryGeneratingStatus } from "@/src/store/summary/enum"
-import { usePrefetchSummary, useSummary } from "@/src/store/summary/hooks"
-import { useSummaryStore } from "@/src/store/summary/store"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 
 import { AISummary } from "../ai/summary"
 import { useEntryContentContext } from "./ctx"
@@ -19,13 +19,13 @@ export const EntryAISummary: FC<{
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
   const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
   const summary = useSummary(entryId)
-  usePrefetchSummary(
+  const actionLanguage = useActionLanguage()
+  usePrefetchSummary({
     entryId,
-    showReadability && entryReadabilityContent ? "readabilityContent" : "content",
-    {
-      enabled: showAISummary,
-    },
-  )
+    target: showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    actionLanguage,
+    enabled: showAISummary,
+  })
   const summaryToShow = showReadability
     ? summary?.readabilitySummary || summary?.summary
     : summary?.summary

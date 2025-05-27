@@ -8,10 +8,10 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient, apiFetch } from "~/lib/api-fetch"
+import { Queries } from "~/queries"
 import { entries, useEntries } from "~/queries/entries"
 import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
 import { useFolderFeedsByFeedId } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
@@ -51,6 +51,9 @@ const useRemoteEntries = (): UseEntriesReturn => {
   const isPreview = useIsPreviewFeed()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
 
   const folderIds = useFolderFeedsByFeedId({
     feedId,
@@ -64,6 +67,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
       listId,
       view,
       ...(unreadOnly === true && !isPreview && { read: false }),
+      ...(hidePrivateSubscriptionsInTimeline === true && { excludePrivate: true }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -71,7 +75,16 @@ const useRemoteEntries = (): UseEntriesReturn => {
     }
 
     return params
-  }, [feedId, folderIds, inboxId, listId, unreadOnly, view, isPreview])
+  }, [
+    feedId,
+    folderIds,
+    inboxId,
+    listId,
+    unreadOnly,
+    isPreview,
+    view,
+    hidePrivateSubscriptionsInTimeline,
+  ])
   const query = useEntries(entriesOptions)
 
   const [fetchedTime, setFetchedTime] = useState<number>()
@@ -134,6 +147,9 @@ const useLocalEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId, isAllFeeds } = useRouteParams()
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
 
   const folderIds = useFolderFeedsByFeedId({
     feedId,
@@ -145,6 +161,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     {
       unread: unreadOnly,
       view,
+      excludePrivate: hidePrivateSubscriptionsInTimeline,
     },
   )
 
@@ -284,9 +301,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     hasUpdate: query.hasUpdate,
     refetch: useCallback(() => {
       const promise = query.refetch()
-      feedUnreadActions.fetchUnreadByView(view)
+      Queries.subscription.unreadAll().invalidate()
       return promise
-    }, [query, view]),
+    }, [query]),
     entriesIds: sortEntries,
     groupedCounts,
   }

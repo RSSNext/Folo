@@ -51,4 +51,7 @@ export const settingRoute = {
     updateProxy()
     return result
   }),
+  getMessagingToken: t.procedure.action(async () => {
+    return store.get("notifications-credentials")
+  }),
 }

@@ -1,5 +1,5 @@
 import { RSSHubCategories } from "@follow/constants"
-import type { RSSHubRouteDeclaration } from "@follow/models/src/rsshub"
+import type { RSSHubRouteDeclaration } from "@follow/models/rsshub"
 import { isASCII } from "@follow/utils"
 import type { ContentStyle } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"

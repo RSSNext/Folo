@@ -1,4 +1,10 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { entrySyncServices } from "@follow/store/entry/store"
+import type { EntryWithTranslation } from "@follow/store/entry/types"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback, useEffect, useMemo } from "react"
@@ -6,7 +12,7 @@ import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
@@ -18,16 +24,11 @@ import { CalendarTimeAddCuteReIcon } from "@/src/icons/calendar_time_add_cute_re
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { checkLanguage } from "@/src/lib/translation"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { usePullUpToNext } from "@/src/modules/entry-content/use-pull-up-to-next"
-import { useEntry, usePrefetchEntryDetail } from "@/src/store/entry/hooks"
-import { entrySyncServices } from "@/src/store/entry/store"
-import type { EntryWithTranslation } from "@/src/store/entry/types"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation, usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
-import { useAutoMarkAsRead } from "@/src/store/unread/hooks"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
 
@@ -38,7 +39,8 @@ export const EntryDetailScreen: NavigationControllerView<{
 }> = ({ entryId, entryIds, view: viewType }) => {
   useAutoMarkAsRead(entryId)
   const entry = useEntry(entryId)
-  const translation = useEntryTranslation(entryId)
+  const actionLanguage = useActionLanguage()
+  const translation = useEntryTranslation(entryId, actionLanguage)
   const entryWithTranslation = useMemo(() => {
     if (!entry) return entry
     return {
@@ -128,10 +130,15 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslation = useAtomValue(showAITranslationAtom)
   const entryId = entry.id
+  const actionLanguage = useActionLanguage()
+  const translation = useGeneralSettingKey("translation")
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     withContent: true,
     target: showReadability && entry.readabilityContent ? "readabilityContent" : "content",
+    language: actionLanguage,
+    checkLanguage,
+    translation,
   })
 
   // Auto toggle readability when content is empty

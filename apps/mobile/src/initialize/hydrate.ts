@@ -2,7 +2,6 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client"
 
 import { kvStoragePersister, queryClient } from "../lib/query-client"
 
-export { hydrateDatabaseToStore } from "../services"
 export const hydrateSettings = () => {}
 export const hydrateQueryClient = () => {
   persistQueryClient({

@@ -1,10 +1,15 @@
 import type { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Share, Text, View } from "react-native"
 
+import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import {
   EntryContentWebView,
   preloadWebViewEntry,
@@ -13,13 +18,8 @@ import { ContextMenu } from "@/src/components/ui/context-menu"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { useEntry } from "@/src/store/entry/hooks"
-import { unreadSyncService } from "@/src/store/unread/store"
 
-import { useSelectedFeed, useSelectedView } from "../screen/atoms"
+import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const EntryItemContextMenu = ({
   id,
@@ -76,6 +76,7 @@ export const EntryItemContextMenu = ({
                 startTime: new Date(publishedAt).getTime() + 1,
                 endTime: Date.now(),
               },
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >
@@ -121,6 +122,7 @@ export const EntryItemContextMenu = ({
                 startTime: 1,
                 endTime: new Date(publishedAt).getTime() - 1,
               },
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >

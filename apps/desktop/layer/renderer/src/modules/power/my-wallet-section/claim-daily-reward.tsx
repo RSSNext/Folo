@@ -1,8 +1,8 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { env } from "@follow/shared/env.desktop"
+import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { useRef } from "react"
-import ReCAPTCHA from "react-google-recaptcha"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
@@ -17,19 +17,19 @@ export const ClaimDailyReward = () => {
 
   const serverConfigs = useServerConfigs()
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <>
-          <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
+          <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
           <Button
             variant="primary"
             isLoading={mutation.isPending}
             onClick={async () => {
-              const token = await recaptchaRef.current?.executeAsync()
-              mutation.mutate({ tokenV2: token })
+              const response = await captchaRef.current?.execute({ async: true })
+              mutation.mutate({ tokenV2: response?.response })
             }}
             disabled={!canClaim}
           >

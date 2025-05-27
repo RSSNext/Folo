@@ -1,18 +1,20 @@
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { useSetAtom } from "jotai"
 import { use } from "react"
 import { Text, View } from "react-native"
 
+import { useActionLanguage } from "@/src/atoms/settings/general"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { EntryContentContext } from "@/src/modules/entry-content/ctx"
-import { useEntry } from "@/src/store/entry/hooks"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useEntryTranslation } from "@/src/store/translation/hooks"
 
 import { EntryTranslation } from "../entry-list/templates/EntryTranslation"
 
 export const EntryTitle = ({ title, entryId }: { title: string; entryId: string }) => {
-  const translation = useEntryTranslation(entryId)
+  const actionLanguage = useActionLanguage()
+  const translation = useEntryTranslation(entryId, actionLanguage)
 
   const { titleHeightAtom } = use(EntryContentContext)
   const setTitleHeight = useSetAtom(titleHeightAtom)

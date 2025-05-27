@@ -1,4 +1,6 @@
+import { useSetGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
+import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
@@ -6,18 +8,20 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import * as React from "react"
 
 import { HotkeyScope } from "~/constants"
-import { useConditionalHotkeyScope } from "~/hooks/common"
 
 const DropdownMenu: typeof DropdownMenuPrimitive.Root = (props) => {
-  const [open, setOpen] = React.useState(!!props.open)
-  useConditionalHotkeyScope(HotkeyScope.DropdownMenu, open)
-
+  const setGlobalFocusableScope = useSetGlobalFocusableScope()
   return (
     <DropdownMenuPrimitive.Root
       {...props}
       onOpenChange={useTypeScriptHappyCallback(
         (open) => {
-          setOpen(open)
+          if (open) {
+            setGlobalFocusableScope(HotkeyScope.DropdownMenu, "append")
+          } else {
+            setGlobalFocusableScope(HotkeyScope.DropdownMenu, "remove")
+          }
+
           props.onOpenChange?.(open)
         },
         [props.onOpenChange],
@@ -116,12 +120,14 @@ const DropdownMenuItem = ({
   icon,
   active,
   highlightColor = "accent",
+  shortcut,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
   icon?: React.ReactNode | ((props?: { isActive?: boolean }) => React.ReactNode)
   active?: boolean
   highlightColor?: "accent" | "gray"
+  shortcut?: string
 } & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item> | null> }) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
@@ -144,8 +150,14 @@ const DropdownMenuItem = ({
       </span>
     )}
     {props.children}
+
     {/* Justify Fill */}
     {!!icon && <span className="ml-1.5 size-4" />}
+    {!!shortcut && (
+      <Kbd wrapButton={false} className="ml-auto">
+        {shortcut}
+      </Kbd>
+    )}
   </DropdownMenuPrimitive.Item>
 )
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName

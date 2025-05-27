@@ -1,6 +1,7 @@
+import { useSortedUngroupedSubscription } from "@follow/store/subscription/hooks"
 import type { FC } from "react"
 
-import { useSortedUngroupedSubscription } from "@/src/store/subscription/hooks"
+import { useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { SubscriptionItem } from "./items/SubscriptionItem"
@@ -11,7 +12,13 @@ export const UnGroupedList: FC<{
 }> = ({ subscriptionIds, isLastGroup }) => {
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedSubscriptionIds = useSortedUngroupedSubscription(subscriptionIds, sortBy, sortOrder)
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  const sortedSubscriptionIds = useSortedUngroupedSubscription({
+    ids: subscriptionIds,
+    sortBy,
+    sortOrder,
+    hideAllReadSubscriptions,
+  })
 
   return sortedSubscriptionIds.map((id, index) => (
     <SubscriptionItem

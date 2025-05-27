@@ -1,3 +1,11 @@
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { entrySyncServices } from "@follow/store/entry/store"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useSubscription } from "@follow/store/subscription/hooks"
+import { summaryActions, summarySyncService } from "@follow/store/summary/store"
+import { translationSyncService } from "@follow/store/translation/store"
 import { setStringAsync } from "expo-clipboard"
 import { useAtom } from "jotai"
 import { useCallback, useEffect, useState } from "react"
@@ -20,14 +28,7 @@ import { StarCuteReIcon } from "@/src/icons/star_cute_re"
 import { Translate2CuteReIcon } from "@/src/icons/translate_2_cute_re"
 import { hideIntelligenceGlowEffect, openLink, showIntelligenceGlowEffect } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { useEntry } from "@/src/store/entry/hooks"
-import { entrySyncServices } from "@/src/store/entry/store"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useSubscription } from "@/src/store/subscription/hooks"
-import { summaryActions, summarySyncService } from "@/src/store/summary/store"
-import { translationSyncService } from "@/src/store/translation/store"
+import { checkLanguage } from "@/src/lib/translation"
 
 import { useEntryContentContext } from "./ctx"
 
@@ -115,10 +116,11 @@ const HeaderRightActionsImpl = ({
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()
-      await summarySyncService.generateSummary(
+      await summarySyncService.generateSummary({
         entryId,
-        showReadability ? "readabilityContent" : "content",
-      )
+        target: showReadability ? "readabilityContent" : "content",
+        actionLanguage: getActionLanguage(),
+      })
       hideGlowEffect()
     }
 
@@ -135,6 +137,7 @@ const HeaderRightActionsImpl = ({
       language: getActionLanguage(),
       withContent: true,
       target: showReadability ? "readabilityContent" : "content",
+      checkLanguage,
     })
     setShowTranslation((prev) => !prev)
   }

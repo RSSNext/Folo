@@ -105,7 +105,9 @@ export const SettingTabbedSegment: Component<{
 }
 
 export const SettingDescription: Component = ({ children, className }) => (
-  <small className={cn("text-text-secondary text-body block w-4/5", className)}>{children}</small>
+  <small className={cn("text-text-secondary text-body block w-4/5 leading-snug", className)}>
+    {children}
+  </small>
 )
 
 export const SettingActionItem = ({
@@ -119,7 +121,7 @@ export const SettingActionItem = ({
 }) => (
   <div className={cn("relative mb-3 mt-4 flex items-center justify-between gap-4")}>
     <div className="text-sm font-medium">{label}</div>
-    <Button buttonClassName="text-xs absolute right-0" variant="outline" onClick={action}>
+    <Button variant="outline" size="sm" onClick={action}>
       {buttonText}
     </Button>
   </div>

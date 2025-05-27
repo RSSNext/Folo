@@ -1,3 +1,4 @@
+import { usePrefetchImageColors } from "@follow/store/image/hooks"
 import { cn } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import { useEffect, useMemo } from "react"
@@ -19,7 +20,6 @@ import { useActiveTrack, useIsPlaying } from "../lib/player"
 import { PlayerScreenContext, usePlayerScreenContext } from "../modules/player/context"
 import { ControlGroup, ProgressBar, VolumeBar } from "../modules/player/control"
 import { useCoverGradient } from "../modules/player/hooks"
-import { usePrefetchImageColors } from "../store/image/hooks"
 
 function CoverArt({ cover }: { cover?: string }) {
   const scale = useSharedValue(1)

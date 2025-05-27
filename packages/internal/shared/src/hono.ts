@@ -18911,6 +18911,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             };
             output: {
                 code: 0;
+                data: {
+                    read: {
+                        [x: string]: number;
+                    };
+                };
             };
             outputFormat: "json";
             status: 200;
@@ -19179,6 +19184,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     feedIds: string[];
                     fee: number;
                 } | null;
+                unread: {
+                    [x: string]: number;
+                };
             };
             outputFormat: "json";
             status: 200;
@@ -19733,6 +19741,10 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     };
                     readCount: number;
                     feedCount: number;
+                    analytics?: {
+                        subscriptionCount: number | null;
+                        listId: string;
+                    } | undefined;
                     subscription?: {
                         createdAt: string;
                         userId: string;

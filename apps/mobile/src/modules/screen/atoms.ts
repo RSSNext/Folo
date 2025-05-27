@@ -1,18 +1,20 @@
 import { FeedViewType } from "@follow/constants"
+import { usePrefetchEntries } from "@follow/store/entry/hooks"
+import type { FetchEntriesProps } from "@follow/store/entry/types"
+import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
+import { useFeed } from "@follow/store/feed/hooks"
+import { useInbox } from "@follow/store/inbox/hooks"
+import { useList } from "@follow/store/list/hooks"
+import { getSubscriptionByCategory } from "@follow/store/subscription/getter"
 import { jotaiStore } from "@follow/utils"
-import { EventBus } from "@follow/utils/src/event-bus"
+import { EventBus } from "@follow/utils/event-bus"
 import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { createContext, use, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { usePrefetchEntries } from "@/src/store/entry/hooks"
-import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useInbox } from "@/src/store/inbox/hooks"
-import { useList } from "@/src/store/list/hooks"
 
 export type SelectedTimeline = {
   type: "view"
@@ -87,12 +89,57 @@ export function useSelectedFeed<T>(
   )
 }
 
+export const getFetchEntryPayload = (
+  selectedFeed: SelectedTimeline | SelectedFeed,
+  view: FeedViewType = FeedViewType.Articles,
+): FetchEntriesProps | null => {
+  if (!selectedFeed) {
+    return null
+  }
+
+  let payload: FetchEntriesProps = {}
+  switch (selectedFeed.type) {
+    case "view": {
+      payload = { view: selectedFeed.viewId }
+      break
+    }
+    case "feed": {
+      payload = { feedId: selectedFeed.feedId }
+      break
+    }
+    case "category": {
+      payload = {
+        feedIdList: getSubscriptionByCategory({ category: selectedFeed.categoryName, view }),
+      }
+      break
+    }
+    case "list": {
+      payload = { listId: selectedFeed.listId }
+      break
+    }
+    case "inbox": {
+      payload = { inboxId: selectedFeed.inboxId }
+      break
+    }
+    // No default
+  }
+  const isCollection =
+    selectedFeed && selectedFeed.type === "feed" && selectedFeed?.feedId === FEED_COLLECTION_LIST
+  if (isCollection) {
+    payload.view = view
+    payload.isCollection = true
+  }
+
+  return payload
+}
+
 export function useFetchEntriesControls() {
   const selectedFeed = useSelectedFeed()
   const view = useSelectedView()
 
   const payload = getFetchEntryPayload(selectedFeed, view)
-  return usePrefetchEntries(payload)
+  const options = useFetchEntriesSettings()
+  return usePrefetchEntries({ ...payload, ...options })
 }
 
 export const useSelectedFeedTitle = () => {
@@ -129,7 +176,7 @@ export const useSelectedFeedTitle = () => {
   }
 }
 
-declare module "@follow/utils/src/event-bus" {
+declare module "@follow/utils/event-bus" {
   export interface CustomEvent {
     SELECT_TIMELINE: {
       view: SelectedTimeline

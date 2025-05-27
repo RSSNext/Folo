@@ -1,10 +1,10 @@
+import { whoami } from "@follow/store/user/getters"
 import { setFirebaseTracker, setOpenPanelTracker, tracker } from "@follow/tracker"
 import { getAnalytics } from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 
 import { getUserAgent } from "../lib/native/user-agent"
 import { op } from "../lib/op"
-import { whoami } from "../store/user/getters"
 
 export const initAnalytics = async () => {
   setOpenPanelTracker(op)

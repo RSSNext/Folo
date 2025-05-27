@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "0.4.7",
+  "version": "0.4.9",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -12,7 +12,7 @@
   },
   "main": "./dist/main/index.js",
   "scripts": {
-    "analyze:web": "cross-env analyzer=1 vite build",
+    "analyze:web": "cross-env analyzer=1 WEB_BUILD=1 vite build",
     "build:electron": "electron-vite build && electron-forge make",
     "build:electron-forge": "electron-forge make",
     "build:electron-forge:macos": "electron-forge make --arch=x64 --platform=darwin && electron-forge make --arch=arm64 --platform=darwin && tsx scripts/merge-yml.ts",
@@ -34,9 +34,8 @@
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
   },
   "dependencies": {
-    "cookie-es": "2.0.0",
-    "react-google-recaptcha": "3.1.0",
-    "react-google-recaptcha-v3": "1.10.1"
+    "@hcaptcha/react-hcaptcha": "1.12.0",
+    "cookie-es": "2.0.0"
   },
   "devDependencies": {
     "@clack/prompts": "0.10.1",
@@ -61,7 +60,6 @@
     "@sentry/vite-plugin": "3.3.1",
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
-    "@types/react-google-recaptcha": "2.1.9",
     "@vitejs/plugin-legacy": "6.1.1",
     "@vitejs/plugin-react": "4.4.1",
     "async-es": "3.2.6",
@@ -95,5 +93,5 @@
     "vite-tsconfig-paths": "5.1.4"
   },
   "productName": "Folo",
-  "mainHash": "1f1e66bd9819bd586b8f50ff585972ecf74b6c0246c9ce25ad13ab08e7ca2f45"
+  "mainHash": "c1310ea7b1278a253bb9f34f38d76e16d3ffd66d910a9af2a071834e789ee180"
 }

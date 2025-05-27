@@ -1,3 +1,4 @@
+import { useGlobalFocusableHasScope } from "@follow/components/common/Focusable/hooks.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { nextFrame, preventDefault } from "@follow/utils/dom"
@@ -25,7 +26,6 @@ import {
   ContextMenuTrigger,
 } from "~/components/ui/context-menu"
 import { HotkeyScope } from "~/constants"
-import { useSwitchHotKeyScope } from "~/hooks/common"
 
 export const ContextMenuProvider: Component = ({ children }) => (
   <>
@@ -37,16 +37,6 @@ export const ContextMenuProvider: Component = ({ children }) => (
 const Handler = () => {
   const ref = useRef<HTMLSpanElement>(null)
   const [contextMenuState, setContextMenuState] = useContextMenuState()
-
-  const switchHotkeyScope = useSwitchHotKeyScope()
-
-  useEffect(() => {
-    if (!contextMenuState.open) return
-    switchHotkeyScope("Menu")
-    return () => {
-      switchHotkeyScope("Home")
-    }
-  }, [contextMenuState.open, switchHotkeyScope])
 
   useEffect(() => {
     if (!contextMenuState.open) return
@@ -111,10 +101,13 @@ const Item = memo(({ item }: { item: FollowMenuItem }) => {
     }
   }, [item])
   const itemRef = useRef<HTMLDivElement>(null)
+
   useHotkeys((item as any as MenuItemText).shortcut!, () => itemRef.current?.click(), {
-    // enabled: item.enabled !== false && item.shortcut !== undefined,
-    enabled: item instanceof MenuItemText && !!item.shortcut,
-    scopes: HotkeyScope.Menu,
+    enabled:
+      useGlobalFocusableHasScope(HotkeyScope.Menu) &&
+      item instanceof MenuItemText &&
+      !!item.shortcut,
+
     preventDefault: true,
   })
 

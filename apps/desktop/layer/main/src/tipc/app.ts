@@ -19,7 +19,7 @@ import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 import { downloadFile } from "../lib/download"
 import { i18n } from "../lib/i18n"
 import type { RendererHandlers } from "../renderer-handlers"
-import { quitAndInstall } from "../updater"
+import { checkForAppUpdates, quitAndInstall } from "../updater"
 import { getMainWindow } from "../window"
 import { t } from "./_instance"
 
@@ -323,6 +323,10 @@ ${content}
 
   revealLogFile: t.procedure.action(async () => {
     return revealLogFile()
+  }),
+
+  checkForUpdates: t.procedure.action(async () => {
+    return checkForAppUpdates()
   }),
 }
 

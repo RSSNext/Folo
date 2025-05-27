@@ -1,10 +1,10 @@
+import { useInbox } from "@follow/store/inbox/hooks"
 import { setStringAsync } from "expo-clipboard"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { toast } from "@/src/lib/toast"
-import { useInbox } from "@/src/store/inbox/hooks"
 
 type InboxContextMenuProps = PropsWithChildren<{
   inboxId: string

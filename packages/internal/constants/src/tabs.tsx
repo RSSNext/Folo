@@ -17,6 +17,7 @@ export interface ViewDefinition {
   view: FeedViewType
   wideMode?: boolean
   gridMode?: boolean
+  activeColor: string
 }
 export const views: ViewDefinition[] = [
   {
@@ -26,6 +27,7 @@ export const views: ViewDefinition[] = [
     peerClassName: "peer-checked:text-accent dark:peer-checked:text-accent",
     translation: "title,description",
     view: FeedViewType.Articles,
+    activeColor: "#FF5C00",
   },
   {
     name: "feed_view_type.social_media",
@@ -35,6 +37,8 @@ export const views: ViewDefinition[] = [
     wideMode: true,
     translation: "content",
     view: FeedViewType.SocialMedia,
+    // sky-500
+    activeColor: "#0ea5e9",
   },
   {
     name: "feed_view_type.pictures",
@@ -45,6 +49,8 @@ export const views: ViewDefinition[] = [
     wideMode: true,
     translation: "title",
     view: FeedViewType.Pictures,
+    // green-500
+    activeColor: "#22c55e",
   },
   {
     name: "feed_view_type.videos",
@@ -55,6 +61,8 @@ export const views: ViewDefinition[] = [
     wideMode: true,
     translation: "title",
     view: FeedViewType.Videos,
+    // red-500
+    activeColor: "#ef4444",
   },
   {
     name: "feed_view_type.audios",
@@ -63,6 +71,8 @@ export const views: ViewDefinition[] = [
     peerClassName: "peer-checked:text-purple-600 peer-checked:dark:text-purple-500",
     translation: "title",
     view: FeedViewType.Audios,
+    // purple-500
+    activeColor: "#a855f7",
   },
   {
     name: "feed_view_type.notifications",
@@ -71,6 +81,8 @@ export const views: ViewDefinition[] = [
     peerClassName: "peer-checked:text-yellow-600 peer-checked:dark:text-yellow-500",
     translation: "title",
     view: FeedViewType.Notifications,
+    // yellow-500
+    activeColor: "#eab308",
   },
 ]
 

@@ -1,6 +1,7 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import katexStyle from "katex/dist/katex.min.css?raw"
 import { createElement, Fragment, memo, useEffect, useMemo, useState } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
 import { parseHtml } from "~/lib/parse-html"

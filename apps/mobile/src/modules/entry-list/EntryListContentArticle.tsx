@@ -1,11 +1,13 @@
 import type { FeedViewType } from "@follow/constants"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { usePlayingUrl } from "@/src/lib/player"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { checkLanguage } from "@/src/lib/translation"
 
 import { useFetchEntriesControls } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -53,7 +55,14 @@ export const EntryListContentArticle = ({
 
   useImperativeHandle(forwardRef, () => ref.current!)
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    language: actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   return (
     <TimelineSelectorList

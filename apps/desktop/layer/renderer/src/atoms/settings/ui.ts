@@ -3,7 +3,7 @@ import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { enhancedUISettingKeys } from "@follow/shared/settings/enhanced"
 import type { UISettings } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils/jotai"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom, useAtomValue } from "jotai"
 import { useEventCallback } from "usehooks-ts"
 
 import { getDefaultLanguage } from "~/lib/language"
@@ -69,10 +69,10 @@ export const useIsZenMode = () => useAtomValue(zenModeAtom)
 export const getIsZenMode = () => jotaiStore.get(zenModeAtom)
 
 export const useSetZenMode = () => {
-  const setZenMode = useSetAtom(zenModeAtom)
-  return useEventCallback((checked: boolean) => {
-    setZenMode(checked)
-  })
+  return setZenMode
+}
+export const setZenMode = (checked: boolean) => {
+  jotaiStore.set(zenModeAtom, checked)
 }
 
 export const useToggleZenMode = () => {

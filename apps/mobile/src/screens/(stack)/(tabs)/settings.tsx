@@ -1,3 +1,4 @@
+import { useWhoami } from "@follow/store/user/hooks"
 import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
@@ -18,7 +19,6 @@ import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { EditProfileScreen } from "@/src/modules/settings/routes/EditProfile"
 import { SettingsList } from "@/src/modules/settings/SettingsList"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
-import { useWhoami } from "@/src/store/user/hooks"
 
 export function Settings() {
   const insets = useSafeAreaInsets()

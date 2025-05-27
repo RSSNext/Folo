@@ -15,38 +15,14 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { env } from "@follow/shared/env.ssr"
 import { tracker } from "@follow/tracker"
+import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useRef, useState } from "react"
-import ReCAPTCHA from "react-google-recaptcha"
+import { useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
-
-function closeRecaptcha(
-  recaptchaRef: React.RefObject<ReCAPTCHA | null>,
-  setIsSubmitting: (value: boolean) => void,
-) {
-  const handleClick = (e: MouseEvent) => {
-    const recaptchaIframeSelector =
-      'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'
-    const recaptchaChallengeIframe = document.querySelector(recaptchaIframeSelector)
-
-    if (
-      e.target instanceof Element &&
-      recaptchaChallengeIframe &&
-      !recaptchaChallengeIframe.contains(e.target) &&
-      !e.target.closest(".g-recaptcha")
-    ) {
-      recaptchaRef.current?.reset()
-      setIsSubmitting(false)
-    }
-  }
-
-  document.addEventListener("click", handleClick)
-  return () => document.removeEventListener("click", handleClick)
-}
 
 export function Component() {
   return (
@@ -72,7 +48,7 @@ function RegisterForm() {
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,19 +63,13 @@ function RegisterForm() {
 
   const { data: authProviders } = useAuthProviders()
 
-  useEffect(() => {
-    if (isSubmitting) {
-      return closeRecaptcha(recaptchaRef, setIsSubmitting)
-    }
-  }, [isSubmitting])
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
 
     try {
-      const token = await recaptchaRef.current?.executeAsync()
+      const response = await captchaRef.current?.execute({ async: true })
 
-      if (!token) {
+      if (!response?.response) {
         return
       }
 
@@ -119,14 +89,11 @@ function RegisterForm() {
             toast.error(context.error.message)
           },
           headers: {
-            "x-token": `r2:${token}`,
+            "x-token": `hc:${response?.response}`,
           },
         },
       })
     } finally {
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset()
-      }
       setIsSubmitting(false)
     }
   }
@@ -178,11 +145,7 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY}
-              size="invisible"
-            />
+            <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
             <Button
               isLoading={isSubmitting}
               disabled={isSubmitting}

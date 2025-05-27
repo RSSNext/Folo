@@ -10,9 +10,9 @@ import {
 import { Input } from "@follow/components/ui/input/Input.js"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { env } from "@follow/shared/env.desktop"
+import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef } from "react"
-import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -42,15 +42,15 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
 
   const { present } = useModalStack()
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const token = await recaptchaRef.current?.executeAsync()
+    const response = await captchaRef.current?.execute({ async: true })
     const res = await loginHandler("credential", runtime, {
       email: values.email,
       password: values.password,
       headers: {
-        "x-token": `r2:${token}`,
+        "x-token": `hc:${response?.response}`,
       },
     })
     if (res?.error) {
@@ -123,7 +123,7 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
           )}
         />
         <div className="flex flex-col space-y-3">
-          <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
+          <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
           <Button
             type="submit"
             isLoading={form.formState.isSubmitting}
@@ -163,10 +163,10 @@ export function RegisterForm() {
 
   const { isValid } = form.formState
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    const token = await recaptchaRef.current?.executeAsync()
+    const response = await captchaRef.current?.execute({ async: true })
     return signUp.email({
       email: values.email,
       password: values.password,
@@ -180,7 +180,7 @@ export function RegisterForm() {
           toast.error(context.error.message)
         },
         headers: {
-          "x-token": `r2:${token}`,
+          "x-token": `hc:${response?.response}`,
         },
       },
     })
@@ -229,7 +229,7 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
+          <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
           <Button disabled={!isValid} type="submit" buttonClassName="w-full" size="lg">
             {t("register.submit")}
           </Button>

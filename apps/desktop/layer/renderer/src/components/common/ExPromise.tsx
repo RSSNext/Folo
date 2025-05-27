@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 const NOT_RESOLVED = Symbol("NOT_RESOLVED")
 export const ExPromise = <T,>({

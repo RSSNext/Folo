@@ -1,5 +1,7 @@
 import { expoClient } from "@better-auth/expo/client"
-import type { authPlugins } from "@follow/shared/src/hono"
+import type { authPlugins } from "@follow/shared/hono"
+import { isNewUserQueryKey } from "@follow/store/user/constants"
+import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
@@ -7,8 +9,6 @@ import type { BetterAuthClientPlugin } from "better-auth/types"
 import * as SecureStore from "expo-secure-store"
 import { Platform } from "react-native"
 
-import { isNewUserQueryKey } from "../store/user/constants"
-import { whoamiQueryKey } from "../store/user/hooks"
 import { proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
 
@@ -41,7 +41,7 @@ const serverPlugins = [
   }),
 ] satisfies BetterAuthClientPlugin[]
 
-const authClient = createAuthClient({
+export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   plugins: [
     twoFactorClient(),

@@ -1,6 +1,8 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 
 import { MenuItemText } from "~/atoms/context-menu"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { CommandActionButton } from "~/components/ui/button/CommandActionButton"
 import { useHasModal } from "~/components/ui/modal/stacked/hooks"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
@@ -22,8 +24,10 @@ export const EntryHeaderActions = ({
 
   const hasModal = useHasModal()
 
+  const when = useGlobalFocusableScopeSelector(FocusablePresets.isEntryRender)
+
   useCommandBinding({
-    when: !!entry?.entries.url && !hasModal,
+    when: !!entry?.entries.url && !hasModal && when,
     commandId: COMMAND_ID.entry.openInBrowser,
     args: [{ entryId }],
   })
@@ -35,7 +39,7 @@ export const EntryHeaderActions = ({
         <CommandActionButton
           active={config.active}
           key={config.id}
-          disableTriggerShortcut={hasModal}
+          disableTriggerShortcut={!when}
           commandId={config.id}
           onClick={config.onClick!}
           shortcut={config.shortcut!}

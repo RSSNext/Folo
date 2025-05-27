@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useMemo } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 import {
   MarkdownImageRecordContext,

@@ -1,3 +1,5 @@
+import { useImageColors, usePrefetchImageColors } from "@follow/store/image/hooks"
+import { useUser } from "@follow/store/user/hooks"
 import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import { useMemo } from "react"
@@ -10,8 +12,6 @@ import { useColor } from "react-native-uikit-colors"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
-import { useImageColors, usePrefetchImageColors } from "@/src/store/image/hooks"
-import { useUser } from "@/src/store/user/hooks"
 
 const defaultGradientColors = ["#000", "#100", "#200"]
 

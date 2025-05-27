@@ -1,7 +1,7 @@
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { subscriptionActions } from "~/store/subscription"
-import { feedUnreadActions } from "~/store/unread"
+import { unreadActions } from "~/store/unread"
 
 export const subscription = {
   all: () =>
@@ -17,5 +17,5 @@ export const subscription = {
       return res.data
     }),
 
-  unreadAll: () => defineQuery(["unread-all"], async () => feedUnreadActions.fetchUnreadAll()),
+  unreadAll: () => defineQuery(["unread-all"], async () => unreadActions.fetchUnreadAll()),
 }

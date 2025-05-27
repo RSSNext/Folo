@@ -27,7 +27,6 @@
       "import": "./src/interface/*.ts"
     }
   },
-  "main": "./exports.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

@@ -16,13 +16,15 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { useEffect } from "react"
 import { Trans } from "react-i18next"
 import { Link } from "react-router"
 import { toast } from "sonner"
 
-import { useAppMessagingToken } from "~/atoms/app"
+import { setAppMessagingToken, useAppMessagingToken } from "~/atoms/app"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
+import { tipcClient } from "~/lib/client"
 import { useMessaging, useTestMessaging } from "~/queries/messaging"
 
 export const SettingNotifications = () => {
@@ -33,6 +35,12 @@ export const SettingNotifications = () => {
   const token = useAppMessagingToken()
 
   const testMessaging = useTestMessaging()
+
+  useEffect(() => {
+    tipcClient?.getMessagingToken().then((credentials) => {
+      setAppMessagingToken(credentials?.fcm?.token || null)
+    })
+  }, [])
 
   return (
     <section className="mt-4">

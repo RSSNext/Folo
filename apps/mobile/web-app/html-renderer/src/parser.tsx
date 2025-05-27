@@ -148,6 +148,11 @@ export const parseHtml = (
             className: tw`w-full my-0`,
           }),
         ),
+      video: ({ node, ...props }) =>
+        createElement("video", {
+          ...props,
+          controls: true,
+        }),
     },
   })
 }

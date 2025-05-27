@@ -1,3 +1,4 @@
+import { useTypeScriptHappyCallback } from "@follow/hooks"
 import PKG from "@pkg"
 import { createElement, Suspense } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -21,12 +22,15 @@ export const MobileSettingModalContent = () => {
           </div>
 
           <SidebarItems
-            onChange={(tab) => {
-              present({
-                title: "",
-                content: () => <Content tab={tab} />,
-              })
-            }}
+            onChange={useTypeScriptHappyCallback(
+              (tab) => {
+                present({
+                  title: "",
+                  content: () => <Content tab={tab} />,
+                })
+              },
+              [present],
+            )}
           />
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useUnreadCounts } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, useState } from "react"
 import { Text, View } from "react-native"
@@ -11,7 +12,6 @@ import { RightCuteFiIcon } from "@/src/icons/right_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { useUnreadCounts } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { SubscriptionFeedCategoryContextMenu } from "../context-menu/feeds"

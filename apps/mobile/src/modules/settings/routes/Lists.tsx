@@ -1,3 +1,5 @@
+import { useOwnedLists, usePrefetchOwnedLists } from "@follow/store/list/hooks"
+import type { ListModel } from "@follow/store/list/store"
 import { createContext, createElement, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
@@ -25,16 +27,13 @@ import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { UserAdd2CuteFiIcon } from "@/src/icons/user_add_2_cute_fi"
 import { Wallet2CuteFiIcon } from "@/src/icons/wallet_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import type { HonoApiClient } from "@/src/morph/types"
 import { ListScreen } from "@/src/screens/(modal)/ListScreen"
-import { useOwnedLists, usePrefetchOwnedLists } from "@/src/store/list/hooks"
-import type { ListModel } from "@/src/store/list/store"
 import { accentColor } from "@/src/theme/colors"
 
 import { SwipeableGroupProvider, SwipeableItem } from "../../../components/common/SwipeableItem"
 import { ManageListScreen } from "./ManageList"
 
-const ListContext = createContext({} as Record<string, HonoApiClient.List_List_Get>)
+const ListContext = createContext({} as Record<string, ListModel>)
 export const ListsScreen = () => {
   const { t } = useTranslation("settings")
   const { isLoading, data } = usePrefetchOwnedLists()
@@ -74,7 +73,7 @@ export const ListsScreen = () => {
                 acc[list.id] = list
                 return acc
               },
-              {} as Record<string, HonoApiClient.List_List_Get>,
+              {} as Record<string, ListModel>,
             ) ?? {},
           [data],
         )}

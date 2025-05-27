@@ -3,7 +3,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { styledButtonVariant } from "@follow/components/ui/button/variants.js"
 import { Divider } from "@follow/components/ui/divider/index.js"
 import { SocialMediaLinks } from "@follow/constants"
-import { MODE, ModeEnum } from "@follow/shared/constants"
+import { IN_ELECTRON, MODE, ModeEnum } from "@follow/shared/constants"
 import { getCurrentEnvironment } from "@follow/utils/environment"
 import PKG, { repository } from "@pkg"
 import { useQuery } from "@tanstack/react-query"
@@ -22,6 +22,10 @@ export const SettingAbout = () => {
   })
 
   const rendererVersion = PKG.version
+
+  const handleCheckForUpdates = () => {
+    tipcClient?.checkForUpdates()
+  }
 
   return (
     <div>
@@ -56,9 +60,15 @@ export const SettingAbout = () => {
             </div>
           </div>
 
-          <div className="shrink-0">
+          <div className="flex shrink-0 gap-2">
+            {IN_ELECTRON && (
+              <Button variant="outline" onClick={handleCheckForUpdates} buttonClassName="h-10">
+                {t("about.checkForUpdates")}
+              </Button>
+            )}
             <Button
               variant="outline"
+              buttonClassName="h-10"
               onClick={() => {
                 window.open(`${repository.url}/releases`, "_blank")
               }}

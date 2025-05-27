@@ -1,4 +1,4 @@
-import type { envProfileMap } from "@follow/shared/src/env.rn"
+import type { envProfileMap } from "@follow/shared/env.rn"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { useMemo } from "react"

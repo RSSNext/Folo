@@ -50,8 +50,9 @@ export const NativeWebView: React.ComponentType<
       sharedCookiesEnabled
       originWhitelist={["*"]}
       allowUniversalAccessFromFileURLs
-      startInLoadingState
+      // startInLoadingState
       allowsBackForwardNavigationGestures
+      allowsFullscreenVideo
       injectedJavaScriptBeforeContentLoaded={atStart}
       onNavigationStateChange={onNavigationStateChange}
       onLoadEnd={useCallback(() => {

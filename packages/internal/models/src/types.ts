@@ -38,6 +38,10 @@ export type FeedAnalyticsModel = ExtractBizResponse<
   typeof _apiClient.feeds.$get
 >["data"]["analytics"]
 
+export type ListAnalyticsModel = ExtractBizResponse<
+  typeof _apiClient.lists.$get
+>["data"]["analytics"]
+
 export type ListModel = Omit<ListModelPoplutedFeeds, "feeds">
 export type ListModelPoplutedFeeds = ExtractBizResponse<
   typeof _apiClient.lists.$get
@@ -57,6 +61,8 @@ export type EntriesResponse = Array<
   | Exclude<Awaited<ReturnType<typeof _apiClient.entries.$post>>["data"], undefined>
   | Exclude<Awaited<ReturnType<typeof _apiClient.entries.inbox.$post>>["data"], undefined>
 >[number]
+
+export type ActionSettings = Exclude<EntriesResponse[number]["settings"], undefined>
 
 export type CombinedEntryModel = Omit<EntriesResponse[number], "feeds"> & {
   entries: {
@@ -84,6 +90,7 @@ export type DataResponse<T> = {
   data?: T
 }
 
+type Nullable<T> = T | null | undefined
 export type ActiveEntryId = Nullable<string>
 
 export type SubscriptionModel = ExtractBizResponse<

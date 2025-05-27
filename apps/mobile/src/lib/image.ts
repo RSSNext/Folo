@@ -1,4 +1,4 @@
-import { getUrlIcon } from "@follow/utils/src/utils"
+import { getUrlIcon } from "@follow/utils/utils"
 
 import type { FeedIconFeed } from "../components/ui/icon/feed-icon"
 

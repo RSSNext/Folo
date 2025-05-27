@@ -1,4 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import ImageEditor from "@react-native-community/image-editor"
 import { requireNativeModule } from "expo"
 import * as FileSystem from "expo-file-system"
@@ -12,10 +16,6 @@ import { findNodeHandle, Image, Pressable } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { useEntry } from "@/src/store/entry/hooks"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 import { ContextMenu } from "../context-menu"
 

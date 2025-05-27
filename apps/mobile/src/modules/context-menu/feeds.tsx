@@ -1,4 +1,10 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntryIdsByFeedId, usePrefetchEntries } from "@follow/store/entry/hooks"
+import { getFeed } from "@follow/store/feed/getter"
+import { getSubscription } from "@follow/store/subscription/getter"
+import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
 import { t } from "i18next"
@@ -8,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
 import { Alert, FlatList, View } from "react-native"
 
+import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { views } from "@/src/constants/views"
@@ -16,12 +23,6 @@ import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { toast } from "@/src/lib/toast"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { useEntryIdsByFeedId, usePrefetchEntries } from "@/src/store/entry/hooks"
-import { getFeed } from "@/src/store/feed/getter"
-import { getSubscription } from "@/src/store/subscription/getter"
-import { getSubscriptionCategory } from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 import { ItemSeparator } from "../entry-list/ItemSeparator"
 import { EntryNormalItem } from "../entry-list/templates/EntryNormalItem"
@@ -308,7 +309,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
                   value={isSelected}
                   // onSelect={onSelect}
                 >
-                  <ContextMenu.ItemTitle>{t(view.name as any)}</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemTitle>{t(view.name, { ns: "common" })}</ContextMenu.ItemTitle>
                 </ContextMenu.CheckboxItem>
               )
             })}
@@ -339,7 +340,8 @@ export const SubscriptionFeedCategoryContextMenu = ({
 const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   const { id: feedId } = props
   const entryIds = useEntryIdsByFeedId(feedId)
-  const { isLoading } = usePrefetchEntries({ feedId, limit: 5 })
+  const options = useFetchEntriesSettings()
+  const { isLoading } = usePrefetchEntries({ feedId, limit: 5, ...options })
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (

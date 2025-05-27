@@ -1,13 +1,15 @@
+import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import type { FlashList } from "@shopify/flash-list"
 import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
+import { fetch as expoFetch } from "expo/fetch"
 import type { RefObject } from "react"
 import { use, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent, ViewStyle } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
-import { debouncedFetchEntryContentByStream } from "@/src/store/entry/store"
-import { unreadSyncService } from "@/src/store/unread/store"
+import { getCookie } from "@/src/lib/auth"
 
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "../screen/PagerListContext"
 
@@ -38,7 +40,10 @@ export function useOnViewableItemsChanged({
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
     setViewableItems(viewableItems)
 
-    debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
+    debouncedFetchEntryContentByStream(
+      viewableItems.map((item) => stableIdExtractor(item)),
+      { cookie: getCookie(), fetch: expoFetch as any },
+    )
     const removed = changed.filter((item) => !item.isViewable)
 
     if (orientation.current === "down") {

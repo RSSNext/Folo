@@ -18,18 +18,11 @@ const parseAccelerator = (
 }
 
 export const registerAppGlobalShortcuts = () => {
-  // @see src/main/menu.ts
+  // @see layer/main/menu.ts
   const shortcuts: ShortcutDefinition[] = [
     {
       accelerator: "CmdOrCtrl+,",
       action: () => window.router.showSettings(),
-    },
-    {
-      accelerator: "Ctrl+Shift+Z",
-      action: () => {
-        const caller = callWindowExposeRenderer()
-        caller.zenMode()
-      },
     },
     {
       accelerator: "CmdOrCtrl+T",

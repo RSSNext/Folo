@@ -86,7 +86,7 @@ export const Header = () => {
                 rel="noreferrer"
                 className="flex items-center"
               >
-                <i className={link.iconClassName} style={{ color: link.color }} />
+                <i className={link.iconClassName} />
               </a>
             ))}
           </div>

@@ -1,3 +1,4 @@
+import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
 import { Text, TouchableWithoutFeedback, View } from "react-native"
@@ -13,7 +14,6 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
-import { whoamiQueryKey } from "@/src/store/user/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 export const TwoFactorAuthScreen: NavigationControllerView = () => {

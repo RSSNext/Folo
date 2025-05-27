@@ -1,14 +1,14 @@
+import { unreadSyncService } from "@follow/store/unread/store"
 import { t } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
+import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { unreadSyncService } from "@/src/store/unread/store"
 
-import { useSelectedFeed, useSelectedView } from "../screen/atoms"
+import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const MarkAllAsReadDialog: DialogComponent = () => {
   const { t } = useTranslation()
@@ -25,7 +25,11 @@ export const MarkAllAsReadDialog: DialogComponent = () => {
 
           if (typeof selectedView === "number") {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            unreadSyncService.markViewAsRead({ view: selectedView, filter: payload })
+            unreadSyncService.markViewAsRead({
+              view: selectedView,
+              filter: payload,
+              excludePrivate: getHideAllReadSubscriptions(),
+            })
           }
         }}
       />

@@ -1,5 +1,5 @@
-import { defaultUISettings } from "@follow/shared/src/settings/defaults"
-import type { UISettings } from "@follow/shared/src/settings/interface"
+import { defaultUISettings } from "@follow/shared/settings/defaults"
+import type { UISettings } from "@follow/shared/settings/interface"
 
 import { getDeviceLanguage } from "@/src/lib/i18n"
 

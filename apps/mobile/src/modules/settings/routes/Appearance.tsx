@@ -1,3 +1,4 @@
+import { getAllUnreadCount } from "@follow/store/unread/getter"
 import { themeNames } from "@shikijs/themes"
 import { useTranslation } from "react-i18next"
 import { useColorScheme, View } from "react-native"
@@ -15,7 +16,6 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
-import { getAllUnreadCount } from "@/src/store/unread/getter"
 
 export const AppearanceScreen = () => {
   const { t } = useTranslation("settings")

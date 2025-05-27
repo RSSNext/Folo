@@ -1,3 +1,5 @@
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
+import { useUnreadCountByView } from "@follow/store/unread/hooks"
 import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -9,9 +11,8 @@ import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
 import type { ViewDefinition } from "@/src/constants/views"
+import { views } from "@/src/constants/views"
 import { selectTimeline, useSelectedFeed } from "@/src/modules/screen/atoms"
-import { useViewWithSubscription } from "@/src/store/subscription/hooks"
-import { useUnreadCountByView } from "@/src/store/unread/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { UnreadCount } from "../subscription/items/UnreadCount"
@@ -37,14 +38,18 @@ export function TimelineViewSelector() {
         contentContainerClassName="flex-row gap-3 items-center px-3"
         showsHorizontalScrollIndicator={false}
       >
-        {activeViews.map((view) => (
-          <ViewItem
-            key={view.name}
-            view={view}
-            scrollViewRef={scrollViewRef}
-            isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
-          />
-        ))}
+        {activeViews.map((v) => {
+          const view = views.find((view) => view.view === v)
+          if (!view) return null
+          return (
+            <ViewItem
+              key={view.name}
+              view={view}
+              scrollViewRef={scrollViewRef}
+              isActive={selectedFeed?.type === "view" && selectedFeed.viewId === view.view}
+            />
+          )
+        })}
       </ScrollView>
     </View>
   )

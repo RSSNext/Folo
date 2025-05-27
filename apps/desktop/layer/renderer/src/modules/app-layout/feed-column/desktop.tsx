@@ -1,10 +1,12 @@
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import type { FeedViewType } from "@follow/constants"
 import { DEV, IN_ELECTRON, PROD } from "@follow/shared/constants"
+import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { preventDefault } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { Slot } from "@radix-ui/react-slot"
@@ -20,7 +22,6 @@ import { setMainContainerElement, setRootContainerElement } from "~/atoms/dom"
 import { getIsZenMode, getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 import {
   getTimelineColumnTempShow,
-  setTimelineColumnShow,
   setTimelineColumnTempShow,
   useTimelineColumnShow,
   useTimelineColumnTempShow,
@@ -30,9 +31,8 @@ import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
-import { HotkeyScope } from "~/constants"
+import { FloatingLayerScope } from "~/constants"
 import { ROOT_CONTAINER_ID } from "~/constants/dom"
-import { useDailyTask } from "~/hooks/biz/useDailyTask"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
 import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
@@ -45,12 +45,11 @@ import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { CornerPlayer } from "~/modules/player/corner-player"
-import { FeedColumn } from "~/modules/timeline-column"
-import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/timeline-column/atom"
+import { FeedColumn } from "~/modules/subscription-column"
+import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/subscription-column/atom"
 import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
-import { useHotkeyScope } from "~/providers/hotkey-provider"
 
 import { NewUserGuide } from "./index.shared"
 
@@ -65,8 +64,6 @@ export function MainDestopLayout() {
   const user = useWhoami()
 
   const containerRef = useRef<HTMLDivElement | null>(null)
-
-  useDailyTask()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -191,11 +188,11 @@ const FeedResponsiveResizerContainer = ({
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>
 } & PropsWithChildren) => {
-  const { isDragging, position, separatorProps, separatorCursor } = useResizable({
+  const { isDragging, position, separatorProps, separatorCursor, setPosition } = useResizable({
     axis: "x",
     min: 256,
     max: 300,
-    initial: getUISettings().feedColWidth,
+    initial: React.useMemo(() => getUISettings().feedColWidth, []),
     containerRef: containerRef as React.RefObject<HTMLElement>,
 
     onResizeEnd({ position }) {
@@ -241,11 +238,14 @@ const FeedResponsiveResizerContainer = ({
     }
   }, [feedColumnShow])
 
-  const activeScopes = useHotkeyScope()
+  const when = useGlobalFocusableScopeSelector(
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
+    React.useCallback((activeScope) => !activeScope.or(...FloatingLayerScope), []),
+  )
 
   useCommandBinding({
-    commandId: COMMAND_ID.layout.toggleTimelineColumn,
-    when: activeScopes.includes(HotkeyScope.Home),
+    commandId: COMMAND_ID.layout.toggleSubscriptionColumn,
+    when,
   })
 
   const [delayShowSplitter, setDelayShowSplitter] = useState(feedColumnShow)
@@ -300,7 +300,8 @@ const FeedResponsiveResizerContainer = ({
           cursor={separatorCursor}
           {...separatorProps}
           onDoubleClick={() => {
-            setTimelineColumnShow(false)
+            setUISetting("feedColWidth", defaultUISettings.feedColWidth)
+            setPosition(defaultUISettings.feedColWidth)
           }}
           tooltip={
             !isDragging && (

@@ -1,7 +1,8 @@
 import { EventBus } from "@follow/utils/event-bus"
+import { useTranslation } from "react-i18next"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 declare module "@follow/utils/event-bus" {
@@ -12,10 +13,10 @@ declare module "@follow/utils/event-bus" {
     "entry-render:previous-entry": never
   }
 }
-const LABEL_PREFIX = "Entry Render"
 
-const category = "follow:entry-render"
+const category: CommandCategory = "category.entry_render"
 export const useRegisterEntryRenderCommand = () => {
+  const { t } = useTranslation("shortcuts")
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.entryRender.scrollDown,
@@ -23,7 +24,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollDown)
       },
       category,
-      label: `${LABEL_PREFIX}: Scroll down`,
+      label: {
+        title: t("command.entry.scroll_down.title"),
+        description: t("command.entry.scroll_down.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.scrollUp,
@@ -31,7 +35,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.scrollUp)
       },
       category,
-      label: `${LABEL_PREFIX}: Scroll up`,
+      label: {
+        title: t("command.entry.scroll_up.title"),
+        description: t("command.entry.scroll_up.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.nextEntry,
@@ -40,7 +47,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.nextEntry)
       },
       category,
-      label: `${LABEL_PREFIX}: Next entry`,
+      label: {
+        title: t("command.entry.next_entry.title"),
+        description: t("command.entry.next_entry.description"),
+      },
     },
     {
       id: COMMAND_ID.entryRender.previousEntry,
@@ -49,7 +59,10 @@ export const useRegisterEntryRenderCommand = () => {
         EventBus.dispatch(COMMAND_ID.entryRender.previousEntry)
       },
       category,
-      label: `${LABEL_PREFIX}: Previous entry`,
+      label: {
+        title: t("command.entry.previous_entry.title"),
+        description: t("command.entry.previous_entry.description"),
+      },
     },
   ])
 }

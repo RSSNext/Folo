@@ -3,25 +3,20 @@ import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { LRUCache } from "@follow/utils/lru-cache"
-import { clsx } from "@follow/utils/utils"
 import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
 import type { HTMLMotionProps } from "motion/react"
 import type { FC, MutableRefObject, ReactNode } from "react"
-import { Fragment, memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { useEntry } from "~/store/entry"
-import { isListSubscription } from "~/store/subscription"
 
-import { DateItem } from "./components/DateItem"
+import { VirtualRowItem } from "./components/VirtualRowItem"
 import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
-import { EntryVirtualListItem } from "./item"
 
 export const EntryEmptyList = ({
   ref,
@@ -235,41 +230,17 @@ export const EntryList: FC<EntryListProps> = memo(
             const isStickyItem = checkIsStickyItem(virtualRow.index)
             const isActiveStickyItem = !isScrollTop && checkIsActiveSticky(virtualRow.index)
             return (
-              <Fragment key={virtualRow.key}>
-                {isStickyItem && (
-                  <div
-                    className={clsx(
-                      "bg-background",
-                      isActiveStickyItem
-                        ? "sticky top-0 z-[1]"
-                        : "absolute left-0 top-0 z-[1] w-full will-change-transform",
-                    )}
-                    style={
-                      !isActiveStickyItem
-                        ? {
-                            transform,
-                          }
-                        : undefined
-                    }
-                  >
-                    <EntryHeadDateItem
-                      entryId={entriesIds[virtualRow.index]!}
-                      isSticky={isActiveStickyItem}
-                    />
-                  </div>
-                )}
-
-                <EntryVirtualListItem
-                  entryId={entriesIds[virtualRow.index]!}
-                  view={view}
-                  data-index={virtualRow.index}
-                  style={{
-                    transform,
-                    paddingTop: isStickyItem ? "1.75rem" : undefined,
-                  }}
-                  ref={rowVirtualizer.measureElement}
-                />
-              </Fragment>
+              <VirtualRowItem
+                key={virtualRow.key}
+                virtualRowKey={virtualRow.key}
+                entriesIds={entriesIds}
+                virtualRowIndex={virtualRow.index}
+                view={view}
+                transform={transform}
+                isStickyItem={isStickyItem}
+                isActiveStickyItem={isActiveStickyItem}
+                measureElement={rowVirtualizer.measureElement}
+              />
             )
           })}
         </div>
@@ -283,23 +254,3 @@ export const EntryList: FC<EntryListProps> = memo(
     )
   },
 )
-
-const EntryHeadDateItem: FC<{
-  entryId: string
-  isSticky?: boolean
-}> = memo(({ entryId, isSticky }) => {
-  const entry = useEntry(entryId)
-
-  const routeParams = useRouteParams()
-  const { feedId, view } = routeParams
-  const isList = isListSubscription(feedId)
-
-  if (!entry) return null
-  const date = new Date(
-    isList ? entry.entries.insertedAt : entry.entries.publishedAt,
-  ).toDateString()
-
-  return <DateItem isSticky={isSticky} date={date} view={view} />
-})
-
-EntryHeadDateItem.displayName = "EntryHeadDateItem"

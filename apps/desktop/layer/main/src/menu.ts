@@ -135,18 +135,7 @@ export const registerAppMenu = () => {
         { role: "zoomIn", label: t("menu.zoomIn") },
         { role: "zoomOut", label: t("menu.zoomOut") },
         { type: "separator" },
-        {
-          type: "normal",
-          label: t("menu.zenMode"),
-          accelerator: "Ctrl+Shift+Z",
-          click: () => {
-            const mainWindow = getMainWindow()
-            if (!mainWindow) return
 
-            const caller = callWindowExpose(mainWindow)
-            caller.zenMode()
-          },
-        },
         { role: "togglefullscreen", label: t("menu.toggleFullScreen") },
       ],
     },

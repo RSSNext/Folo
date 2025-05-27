@@ -1,5 +1,5 @@
 import type { RSSHubCategories } from "@follow/constants"
-import type { RSSHubRouteDeclaration } from "@follow/models/src/rsshub"
+import type { RSSHubRouteDeclaration } from "@follow/models/rsshub"
 import type { FC } from "react"
 import { memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"

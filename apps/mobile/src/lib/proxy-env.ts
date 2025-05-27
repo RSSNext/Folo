@@ -1,5 +1,5 @@
-import type { env, envProfileMap } from "@follow/shared/src/env.rn"
-import { getEnvProfiles__dangerously } from "@follow/shared/src/env.rn"
+import type { env, envProfileMap } from "@follow/shared/env.rn"
+import { getEnvProfiles__dangerously } from "@follow/shared/env.rn"
 import { createAtomHooks } from "@follow/utils"
 import { reloadAppAsync } from "expo"
 import { atomWithStorage } from "jotai/utils"

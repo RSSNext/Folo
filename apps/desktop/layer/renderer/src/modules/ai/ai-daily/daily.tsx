@@ -216,7 +216,6 @@ const DailyReportContent: Component<DailyReportContentProps> = ({
                     return pipeline
                   }}
                   components={{
-                    // @ts-expect-error
                     "snowflake-id": SnowflakeId,
                     a: RelatedEntryLink as Components["a"],
                   }}

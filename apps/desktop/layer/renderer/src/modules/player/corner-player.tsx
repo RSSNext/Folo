@@ -1,16 +1,16 @@
-import { useFocusable } from "@follow/components/common/Focusable/index.js"
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/index.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import { tracker } from "@follow/tracker"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import * as Slider from "@radix-ui/react-slider"
 import dayjs from "dayjs"
 import { AnimatePresence, m } from "motion/react"
 import { useEffect, useMemo, useState } from "react"
 import Marquee from "react-fast-marquee"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -19,14 +19,17 @@ import {
   useAudioPlayerAtomSelector,
   useAudioPlayerAtomValue,
 } from "~/atoms/player"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { VolumeSlider } from "~/components/ui/media/VolumeSlider"
-import { HotkeyScope } from "~/constants"
 import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useListById } from "~/store/list"
+
+import { COMMAND_ID } from "../command/commands/id"
+import { useCommandBinding } from "../command/hooks/use-command-binding"
 
 const handleClickPlay = () => {
   AudioPlayer.togglePlayAndPause()
@@ -115,12 +118,16 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const feed = useFeedById(entry?.feedId)
   const list = useListById(listId)
 
-  const isFocused = useFocusable()
-  useHotkeys("space", handleClickPlay, {
-    preventDefault: true,
-    scopes: HotkeyScope.Home,
-    enabled: isFocused,
+  useCommandBinding({
+    commandId: COMMAND_ID.global.toggleCornerPlay,
+    when: useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionOrTimeline),
   })
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.global.toggleCornerPlay, () => {
+      handleClickPlay()
+    })
+  }, [])
 
   useEffect(() => {
     setNowPlaying({

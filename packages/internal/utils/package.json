@@ -22,7 +22,6 @@
       "types": "./src/*.ts"
     }
   },
-  "main": "./exports.ts",
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit"

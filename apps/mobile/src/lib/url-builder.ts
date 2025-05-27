@@ -1,4 +1,4 @@
-import { UrlBuilder as UrlBuilderClass } from "@follow/utils/src/url-builder"
+import { UrlBuilder as UrlBuilderClass } from "@follow/utils/url-builder"
 
 import { proxyEnv } from "./proxy-env"
 

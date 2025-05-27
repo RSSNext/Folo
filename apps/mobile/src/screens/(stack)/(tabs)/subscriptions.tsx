@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import { useWhoami } from "@follow/store/user/hooks"
 import { useMemo } from "react"
 import { useColor } from "react-native-uikit-colors"
 
@@ -13,7 +14,6 @@ import { EntryListContext } from "@/src/modules/screen/atoms"
 import { PagerList } from "@/src/modules/screen/PagerList"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 import { SubscriptionList } from "@/src/modules/subscription/SubscriptionLists"
-import { useWhoami } from "@/src/store/user/hooks"
 
 export default function Subscriptions() {
   const whoami = useWhoami()

@@ -31,6 +31,8 @@ import { signOut, useSession } from "~/queries/auth"
 import { useWallet } from "~/queries/wallet"
 
 import { useActivationModal } from "../activation"
+import { COMMAND_ID } from "../command/commands/id"
+import { useCommandShortcuts } from "../command/hooks/use-command-binding"
 import { ActivityPoints } from "../wallet/activity-points"
 import { Level } from "../wallet/level"
 import type { LoginProps } from "./LoginButton"
@@ -64,6 +66,8 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const zenModeSetting = useIsZenMode()
   const setZenMode = useSetZenMode()
   const isInMASReview = useIsInMASReview()
+
+  const shortcuts = useCommandShortcuts()
 
   if (status !== "authenticated") {
     return <LoginButton {...props} />
@@ -156,6 +160,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
               setZenMode(true)
             }}
             icon={<MdiMeditation className="size-4" />}
+            shortcut={shortcuts[COMMAND_ID.layout.toggleZenMode]}
           >
             {t("user_button.zen_mode")}
           </DropdownMenuItem>
@@ -188,6 +193,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             settingModalPresent()
           }}
           icon={<i className="i-mgc-settings-7-cute-re" />}
+          shortcut={"$mod+,"}
         >
           {t("user_button.preferences")}
         </DropdownMenuItem>

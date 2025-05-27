@@ -14,7 +14,13 @@ interface EntryItemProps {
   entryId: string
   view?: number
 }
-function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }) {
+const EntryItemImpl = memo(function EntryItemImpl({
+  entry,
+  view,
+}: {
+  entry: FlatEntryModel
+  view?: number
+}) {
   const translation = useEntryTranslation({ entry })
 
   const Item: EntryListItemFC = getItemComponentByView(view as FeedViewType)
@@ -24,7 +30,7 @@ function EntryItemImpl({ entry, view }: { entry: FlatEntryModel; view?: number }
       <Item entryId={entry.entries.id} translation={translation.data} />
     </EntryItemWrapper>
   )
-}
+})
 
 export const EntryItem: FC<EntryItemProps> = memo(({ entryId, view }) => {
   const entry = useEntry(entryId)

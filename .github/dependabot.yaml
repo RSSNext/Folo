@@ -22,10 +22,6 @@ updates:
       - dependency-name: react-native
         versions: [">=0.78.0"]
 
-      # Stuck by unified 11
-      - dependency-name: vfile
-        versions: [">=6.0.0"]
-
       # It's using export map and metro doesn't support it well
       - dependency-name: unist-util-visit-parents
         versions: [">=6.0.0"]
@@ -57,7 +53,6 @@ updates:
           - jsonpointer
           - workbox-precaching
           - "@pengx17/electron-forge-maker-appimage"
-          - devlop
           - "@microflash/remark-callout-directives"
           - react-native-track-player
           - react-native-sheet-transitions

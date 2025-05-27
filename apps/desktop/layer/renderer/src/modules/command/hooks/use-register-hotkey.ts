@@ -1,4 +1,5 @@
 import { useRefValue } from "@follow/hooks"
+import { checkIsEditableElement } from "@follow/utils/dom"
 import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 
@@ -16,8 +17,6 @@ export interface RegisterHotkeyOptions<T extends FollowCommandId> {
 
   options?: HotkeyOptions
 }
-
-const IGNORE_INPUT_ELEMENT = [HTMLInputElement, HTMLTextAreaElement]
 
 const SPECIAL_KEYS_MAPPINGS = {
   "?": "Shift+Slash",
@@ -54,11 +53,7 @@ export const useCommandHotkey = <T extends FollowCommandId>({
 
       keyMap[nextKey] = (event) => {
         const { target } = event
-        if (
-          !options?.forceInputElement &&
-          (IGNORE_INPUT_ELEMENT.some((el) => target instanceof el) ||
-            (target as HTMLElement).getAttribute("contenteditable") === "true")
-        ) {
+        if (!options?.forceInputElement && checkIsEditableElement(target as HTMLElement)) {
           return
         }
 

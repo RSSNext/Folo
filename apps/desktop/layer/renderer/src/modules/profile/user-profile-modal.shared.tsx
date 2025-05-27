@@ -102,7 +102,7 @@ export const SubscriptionGroup: FC<{
           />
         </div>
       </button>
-      <AutoResizeHeight duration={0.2}>
+      <AutoResizeHeight>
         <AnimatePresence mode="popLayout">
           {isOpened && (
             <Fragment>

@@ -29,7 +29,7 @@ import { useEntryStore } from "~/store/entry"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
-import type { Command } from "../types"
+import type { Command, CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterIntegrationCommands = () => {
@@ -43,6 +43,7 @@ export const useRegisterIntegrationCommands = () => {
   useRegisterZoteroCommands()
 }
 
+const category: CommandCategory = "category.integration"
 const useRegisterEagleCommands = () => {
   const { t } = useTranslation()
   const { view } = useRouteParams()
@@ -125,6 +126,7 @@ const useRegisterReadwiseCommands = () => {
           id: COMMAND_ID.integration.saveToReadwise,
           label: t("entry_actions.save_to_readwise"),
           icon: <SimpleIconsReadwise />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -193,6 +195,7 @@ const useRegisterInstapaperCommands = () => {
           id: COMMAND_ID.integration.saveToInstapaper,
           label: t("entry_actions.save_to_instapaper"),
           icon: <SimpleIconsInstapaper />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -302,6 +305,7 @@ const useRegisterObsidianCommands = () => {
           id: COMMAND_ID.integration.saveToObsidian,
           label: t("entry_actions.save_to_obsidian"),
           icon: <SimpleIconsObsidian />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -346,6 +350,7 @@ const useRegisterOutlineCommands = () => {
           id: COMMAND_ID.integration.saveToOutline,
           label: t("entry_actions.save_to_outline"),
           icon: <SimpleIconsOutline />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -409,6 +414,7 @@ const useRegisterReadeckCommands = () => {
           id: COMMAND_ID.integration.saveToReadeck,
           label: t("entry_actions.save_to_readeck"),
           icon: <SimpleIconsReadeck />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -477,6 +483,7 @@ const useRegisterCuboxCommands = () => {
           id: COMMAND_ID.integration.saveToCubox,
           label: t("entry_actions.save_to_cubox"),
           icon: <SimpleIconsCubox />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {
@@ -571,6 +578,7 @@ const useRegisterZoteroCommands = () => {
           id: COMMAND_ID.integration.saveToZotero,
           label: t("entry_actions.save_to_zotero"),
           icon: <SimpleIconsZotero />,
+          category,
           run: async ({ entryId }) => {
             const entry = useEntryStore.getState().flatMapEntries[entryId]
             if (!entry) {

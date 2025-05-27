@@ -11,7 +11,6 @@ import { unified } from "unified"
 import type { Node } from "unist"
 import { visit } from "unist-util-visit"
 import { visitParents } from "unist-util-visit-parents"
-import { VFile } from "vfile"
 
 import type { ParseHtmlOptions } from "./html"
 
@@ -41,7 +40,6 @@ function rehypeTrimEndBrElement() {
 }
 
 export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
-  const file = new VFile(content)
   const { renderInlineStyle = false, noMedia = false, components } = options || {}
 
   const rehypeSchema: Schema = { ...defaultSchema }
@@ -76,6 +74,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
         ? [...rehypeSchema.attributes!["*"]!, "style", "class"]
         : rehypeSchema.attributes!["*"]!,
       video: ["src", "poster"],
+      source: ["src", "type"],
 
       svg: [
         "width",
@@ -126,7 +125,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
 
   // console.log("tree", tree)
 
-  const hastTree = pipeline.runSync(tree, file)
+  const hastTree = pipeline.runSync(tree, content)
 
   const images = [] as string[]
 

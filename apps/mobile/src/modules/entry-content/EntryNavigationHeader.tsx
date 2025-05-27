@@ -1,4 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { use, useState } from "react"
@@ -17,7 +18,6 @@ import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { DefaultHeaderBackButton } from "@/src/components/layouts/header/NavigationHeader"
 import { NavigationBlurEffectHeaderView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
-import { useEntry } from "@/src/store/entry/hooks"
 
 import { useHeaderHeight } from "../screen/hooks/useHeaderHeight"
 import { EntryContentContext } from "./ctx"

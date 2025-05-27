@@ -1,5 +1,10 @@
 import { useActionSheet } from "@expo/react-native-action-sheet"
 import { FeedViewType } from "@follow/constants"
+import { getList } from "@follow/store/list/getters"
+import { useList } from "@follow/store/list/hooks"
+import type { ListModel } from "@follow/store/list/store"
+import { listSyncServices } from "@follow/store/list/store"
+import type { CreateListModel } from "@follow/store/list/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -26,11 +31,6 @@ import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsCont
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
-import { getList } from "@/src/store/list/getters"
-import { useList } from "@/src/store/list/hooks"
-import type { ListModel } from "@/src/store/list/store"
-import { listSyncServices } from "@/src/store/list/store"
-import type { CreateListModel } from "@/src/store/list/types"
 import { accentColor } from "@/src/theme/colors"
 
 const listSchema = z.object({

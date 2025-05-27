@@ -1,7 +1,6 @@
+import { useImageColors } from "@follow/store/image/hooks"
 import { getLuminance, shadeColor } from "@follow/utils"
 import { useMemo } from "react"
-
-import { useImageColors } from "@/src/store/image/hooks"
 
 const defaultBackgroundColor = "#000000"
 
