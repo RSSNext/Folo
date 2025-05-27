@@ -17,7 +17,6 @@ config.resolver.nodeModulesPaths = [
   path.resolve(__dirname, "./node_modules"),
   path.resolve(__dirname, "../../node_modules"),
 ]
-config.resolver.unstable_enablePackageExports = false
 
 config.resolver.extraNodeModules = {
   ...config.resolver.extraNodeModules,

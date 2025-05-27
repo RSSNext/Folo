@@ -1,7 +1,7 @@
 "use dom"
 import "@/src/global.css"
 
-import { parseMarkdown } from "@follow/components/src/utils/parse-markdown"
+import { parseMarkdown } from "@follow/components/utils/parse-markdown.tsx"
 import { cn } from "@follow/utils"
 import { useMemo } from "react"
 import { useDarkMode } from "usehooks-ts"

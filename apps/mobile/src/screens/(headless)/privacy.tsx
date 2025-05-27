@@ -1,4 +1,4 @@
-import { legalMarkdown } from "@follow/legal/dist/index"
+import { legalMarkdown } from "@follow/legal"
 
 import {
   NavigationBlurEffectHeaderView,

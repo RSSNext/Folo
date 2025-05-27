@@ -1,4 +1,4 @@
-import { parseHtml } from "@follow/components/src/ui/markdown/parse-html"
+import { parseHtml } from "@follow/components/ui/markdown/parse-html.ts"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { duplicateIfLengthLessThan } from "@follow/utils"

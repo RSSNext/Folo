@@ -26,6 +26,10 @@ import { SubscriptionsTabScreen } from "./screens/(stack)/(tabs)/subscriptions"
 import { registerSitemap } from "./sitemap"
 
 // @ts-expect-error
+global.APP_NAME = "Folo"
+// @ts-expect-error
+global.ELECTRON = false
+// @ts-expect-error
 globalThis.apiClient = apiClient
 // @ts-expect-error
 globalThis.authClient = authClient

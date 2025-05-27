@@ -14,9 +14,9 @@ export enum ModeEnum {
   production = "production",
 }
 
-export const MODE = import.meta.env.MODE as ModeEnum
+export const MODE = import.meta.env?.MODE as ModeEnum
 
-export const { PROD } = import.meta.env
+export const { PROD } = import.meta.env ?? {}
 
 export const DEV =
   "process" in globalThis ? process.env.NODE_ENV === "development" : import.meta.env.DEV

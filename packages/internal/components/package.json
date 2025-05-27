@@ -3,6 +3,7 @@
   "private": true,
   "sideEffects": false,
   "exports": {
+    ".": "./exports.ts",
     "./assets/*": "./assets/*",
     "./atoms/*": "./src/atoms/*",
     "./common/*": "./src/common/*",
