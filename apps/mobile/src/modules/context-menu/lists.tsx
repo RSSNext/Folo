@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/src/env.rn"
+import { env } from "@follow/shared/env.rn"
 import { getList } from "@follow/store/src/list/getters"
 import { subscriptionSyncService } from "@follow/store/src/subscription/store"
 import { unreadSyncService } from "@follow/store/src/unread/store"

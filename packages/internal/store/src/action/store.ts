@@ -4,7 +4,7 @@ import type {
   ActionId,
   ActionModel,
   ActionRules,
-} from "@follow/models/src/types"
+} from "@follow/models/types"
 import { merge } from "es-toolkit/compat"
 
 import { createImmerSetter, createZustandStore } from "../internal/helper"

@@ -1,4 +1,4 @@
-import type { ActionId } from "@follow/models/src/types"
+import type { ActionId } from "@follow/models/types"
 import { actionActions } from "@follow/store/src/action/store"
 import type { ParseKeys } from "i18next"
 import type { SFSymbol } from "sf-symbols-typescript"

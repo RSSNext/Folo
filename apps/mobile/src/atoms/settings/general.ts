@@ -1,5 +1,5 @@
-import { defaultGeneralSettings } from "@follow/shared/src/settings/defaults"
-import type { GeneralSettings } from "@follow/shared/src/settings/interface"
+import { defaultGeneralSettings } from "@follow/shared/settings/defaults"
+import type { GeneralSettings } from "@follow/shared/settings/interface"
 import type { FetchEntriesPropsSettings } from "@follow/store/src/entry/types"
 import { useMemo } from "react"
 

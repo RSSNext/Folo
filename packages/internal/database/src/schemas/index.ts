@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
-import type { ActionSettings } from "@follow/models/src/types"
-import type { SupportedActionLanguage } from "@follow/shared/src/language"
+import type { ActionSettings } from "@follow/models/types"
+import type { SupportedActionLanguage } from "@follow/shared/language"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 

@@ -1,7 +1,7 @@
 import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/src/schemas/types"
 import { UserService } from "@follow/database/src/services/user"
-import type { AuthSession } from "@follow/shared/src/hono"
+import type { AuthSession } from "@follow/shared/hono"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"

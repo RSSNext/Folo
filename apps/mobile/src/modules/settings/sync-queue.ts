@@ -1,4 +1,4 @@
-import type { GeneralSettings, UISettings } from "@follow/shared/src/settings/interface"
+import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { isEmptyObject, jotaiStore, sleep } from "@follow/utils"
 import { EventBus } from "@follow/utils/src/event-bus"
 import { omit } from "es-toolkit/compat"

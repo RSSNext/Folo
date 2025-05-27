@@ -1,5 +1,5 @@
 import type { AppType } from "@follow/shared"
-import type { authPlugins } from "@follow/shared/src/hono"
+import type { authPlugins } from "@follow/shared/hono"
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
 import type { createAuthClient } from "better-auth/react"
 import type { BetterAuthClientPlugin } from "better-auth/types"

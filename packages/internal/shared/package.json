@@ -25,11 +25,6 @@
       "types": "./src/interface/*.ts",
       "require": "./src/interface/*.ts",
       "import": "./src/interface/*.ts"
-    },
-    "./src/*": {
-      "types": "./src/*.ts",
-      "require": "./src/*.ts",
-      "import": "./src/*.ts"
     }
   },
   "main": "./exports.ts",

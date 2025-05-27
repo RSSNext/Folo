@@ -1,5 +1,5 @@
 import { expoClient } from "@better-auth/expo/client"
-import type { authPlugins } from "@follow/shared/src/hono"
+import type { authPlugins } from "@follow/shared/hono"
 import { isNewUserQueryKey } from "@follow/store/src/user/constants"
 import { whoamiQueryKey } from "@follow/store/src/user/hooks"
 import { useQuery } from "@tanstack/react-query"

@@ -1,4 +1,4 @@
-import type { ActionModel } from "@follow/models/src/types"
+import type { ActionModel } from "@follow/models/types"
 import {
   useActionRules,
   useIsActionDataDirty,

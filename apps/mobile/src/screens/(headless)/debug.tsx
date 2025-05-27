@@ -1,4 +1,4 @@
-import type { envProfileMap } from "@follow/shared/src/env.rn"
+import type { envProfileMap } from "@follow/shared/env.rn"
 import { sleep } from "@follow/utils"
 import { requireNativeModule } from "expo"
 import * as Clipboard from "expo-clipboard"

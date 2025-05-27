@@ -1,6 +1,6 @@
 import type { TranslationSchema } from "@follow/database/src/schemas/types"
 import { TranslationService } from "@follow/database/src/services/translation"
-import type { SupportedLanguages } from "@follow/models/src/types"
+import type { SupportedLanguages } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared"
 
 import { getEntry } from "../entry/getter"

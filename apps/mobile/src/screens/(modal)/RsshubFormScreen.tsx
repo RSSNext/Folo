@@ -1,4 +1,4 @@
-import type { RSSHubParameter, RSSHubParameterObject, RSSHubRoute } from "@follow/models/src/rsshub"
+import type { RSSHubParameter, RSSHubParameterObject, RSSHubRoute } from "@follow/models/rsshub"
 import { feedSyncServices } from "@follow/store/src/feed/store"
 import {
   MissingOptionalParamError,

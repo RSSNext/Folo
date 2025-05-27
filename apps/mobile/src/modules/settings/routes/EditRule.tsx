@@ -1,4 +1,4 @@
-import type { ActionFilter, ActionModel } from "@follow/models/src/types"
+import type { ActionFilter, ActionModel } from "@follow/models/types"
 import { useActionRule } from "@follow/store/src/action/hooks"
 import { actionActions } from "@follow/store/src/action/store"
 import { useTranslation } from "react-i18next"

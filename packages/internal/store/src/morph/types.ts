@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { AuthSession } from "@follow/shared/src/hono"
+import type { AuthSession } from "@follow/shared/hono"
 
 // Add ExtractData type utility
 type ExtractData<T extends (...args: any) => any> =

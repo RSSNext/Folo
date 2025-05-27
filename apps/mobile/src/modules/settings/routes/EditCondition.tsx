@@ -1,4 +1,4 @@
-import type { ActionConditionIndex } from "@follow/models/src/types"
+import type { ActionConditionIndex } from "@follow/models/types"
 import { useActionRuleCondition } from "@follow/store/src/action/hooks"
 import { actionActions } from "@follow/store/src/action/store"
 import { useMemo } from "react"
