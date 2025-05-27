@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import type { MediaModel } from "@follow/database/src/schemas/types"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { useEffect, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {

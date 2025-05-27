@@ -1,4 +1,4 @@
-import { initializeDb } from "@follow/database/src/db"
+import { initializeDb } from "@follow/database/db"
 import { hydrateDatabaseToStore } from "@follow/store/src"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"

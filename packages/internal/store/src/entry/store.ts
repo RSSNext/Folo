@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { EntryService } from "@follow/database/src/services/entry"
+import { EntryService } from "@follow/database/services/entry"
 import { debounce } from "es-toolkit/compat"
 
 import { collectionActions } from "../collection/store"

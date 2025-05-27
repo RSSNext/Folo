@@ -1,5 +1,5 @@
-import type { InboxSchema } from "@follow/database/src/schemas/types"
-import { InboxService } from "@follow/database/src/services/inbox"
+import type { InboxSchema } from "@follow/database/schemas/types"
+import { InboxService } from "@follow/database/services/inbox"
 
 import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"

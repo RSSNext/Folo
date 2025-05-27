@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
-import type { UnreadSchema } from "@follow/database/src/schemas/types"
-import { EntryService } from "@follow/database/src/services/entry"
-import { UnreadService } from "@follow/database/src/services/unread"
+import type { UnreadSchema } from "@follow/database/schemas/types"
+import { EntryService } from "@follow/database/services/entry"
+import { UnreadService } from "@follow/database/services/unread"
 
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"

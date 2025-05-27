@@ -1,5 +1,5 @@
-import type { SummarySchema } from "@follow/database/src/schemas/types"
-import { summaryService } from "@follow/database/src/services/summary"
+import type { SummarySchema } from "@follow/database/schemas/types"
+import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 
 import { getEntry } from "../entry/getter"

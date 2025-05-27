@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import type { MediaModel } from "@follow/database/src/schemas/types"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { useEntry } from "@follow/store/src/entry/hooks"
 import { getFeed } from "@follow/store/src/feed/getter"
 import { unreadSyncService } from "@follow/store/src/unread/store"

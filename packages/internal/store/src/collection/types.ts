@@ -1,3 +1,3 @@
-import type { CollectionSchema } from "@follow/database/src/schemas/types"
+import type { CollectionSchema } from "@follow/database/schemas/types"
 
 export type CollectionModel = CollectionSchema

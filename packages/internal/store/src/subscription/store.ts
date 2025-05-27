@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
-import type { SubscriptionSchema } from "@follow/database/src/schemas/types"
-import { SubscriptionService } from "@follow/database/src/services/subscription"
+import type { SubscriptionSchema } from "@follow/database/schemas/types"
+import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
 
 import { feedActions } from "../feed/store"

@@ -11,7 +11,7 @@
   },
   "sideEffects": false,
   "exports": {
-    "./src/*": {
+    "./*": {
       "types": "./src/*.ts",
       "require": "./src/*.ts",
       "import": "./src/*.ts"

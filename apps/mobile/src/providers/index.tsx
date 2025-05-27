@@ -1,5 +1,5 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet"
-import { sqlite } from "@follow/database/src/db"
+import { sqlite } from "@follow/database/db"
 import { jotaiStore } from "@follow/utils"
 import { PortalProvider } from "@gorhom/portal"
 import { QueryClientProvider } from "@tanstack/react-query"

@@ -1,5 +1,5 @@
-import type { ImageSchema } from "@follow/database/src/schemas/types"
-import { ImagesService } from "@follow/database/src/services/image"
+import type { ImageSchema } from "@follow/database/schemas/types"
+import { ImagesService } from "@follow/database/services/image"
 import ImageColors from "react-native-image-colors"
 
 import type { Hydratable } from "../internal/base"

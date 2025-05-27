@@ -1,8 +1,4 @@
-import type {
-  EntrySchema,
-  ListSchema,
-  SubscriptionSchema,
-} from "@follow/database/src/schemas/types"
+import type { EntrySchema, ListSchema, SubscriptionSchema } from "@follow/database/schemas/types"
 
 import type { EntryModel } from "../entry/types"
 import type { ListModel } from "../list/store"

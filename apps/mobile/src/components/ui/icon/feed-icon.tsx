@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import type { FeedSchema } from "@follow/database/src/schemas/types"
+import type { FeedSchema } from "@follow/database/schemas/types"
 import type { ReactNode } from "react"
 import { useCallback, useMemo, useState } from "react"
 

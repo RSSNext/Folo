@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
-import type { CollectionSchema } from "@follow/database/src/schemas/types"
-import { CollectionService } from "@follow/database/src/services/collection"
+import type { CollectionSchema } from "@follow/database/schemas/types"
+import { CollectionService } from "@follow/database/services/collection"
 
 import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"

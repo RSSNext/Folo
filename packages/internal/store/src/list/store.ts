@@ -1,5 +1,5 @@
-import type { ListSchema } from "@follow/database/src/schemas/types"
-import { ListService } from "@follow/database/src/services/list"
+import type { ListSchema } from "@follow/database/schemas/types"
+import { ListService } from "@follow/database/services/list"
 
 import { feedActions } from "../feed/store"
 import type { Hydratable } from "../internal/base"

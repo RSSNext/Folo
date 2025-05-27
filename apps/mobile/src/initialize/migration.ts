@@ -1,4 +1,4 @@
-import { migrateDb } from "@follow/database/src/db"
+import { migrateDb } from "@follow/database/db"
 import { useSyncExternalStore } from "react"
 
 let storeChangeFn: () => void

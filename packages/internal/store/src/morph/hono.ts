@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import type { FeedSchema, InboxSchema } from "@follow/database/src/schemas/types"
+import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
 
 import type { CollectionModel } from "../collection/types"
 import type { EntryModel } from "../entry/types"
