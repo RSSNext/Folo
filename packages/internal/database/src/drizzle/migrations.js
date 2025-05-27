@@ -22,6 +22,7 @@ import m0018 from "./0018_dashing_the_fury.sql"
 import m0019 from "./0019_wonderful_shape.sql"
 import m0020 from "./0020_little_marauders.sql"
 import m0021 from "./0021_wakeful_onslaught.sql"
+import m0022 from "./0022_tiny_northstar.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -49,5 +50,6 @@ export default {
     m0019,
     m0020,
     m0021,
+    m0022,
   },
 }

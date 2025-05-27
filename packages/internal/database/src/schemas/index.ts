@@ -47,6 +47,8 @@ export const listsTable = sqliteTable("lists", {
   image: text("image"),
   fee: integer("fee"),
   ownerUserId: text("owner_user_id"),
+  subscriptionCount: integer("subscription_count"),
+  purchaseAmount: text("purchase_amount"),
 })
 
 export const unreadTable = sqliteTable("unread", {

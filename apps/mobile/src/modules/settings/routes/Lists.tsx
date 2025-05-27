@@ -1,6 +1,5 @@
 import { useOwnedLists, usePrefetchOwnedLists } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/store"
-import type { HonoApiClient } from "@follow/store/morph/types"
 import { createContext, createElement, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
@@ -34,7 +33,7 @@ import { accentColor } from "@/src/theme/colors"
 import { SwipeableGroupProvider, SwipeableItem } from "../../../components/common/SwipeableItem"
 import { ManageListScreen } from "./ManageList"
 
-const ListContext = createContext({} as Record<string, HonoApiClient.List_List_Get>)
+const ListContext = createContext({} as Record<string, ListModel>)
 export const ListsScreen = () => {
   const { t } = useTranslation("settings")
   const { isLoading, data } = usePrefetchOwnedLists()
@@ -74,7 +73,7 @@ export const ListsScreen = () => {
                 acc[list.id] = list
                 return acc
               },
-              {} as Record<string, HonoApiClient.List_List_Get>,
+              {} as Record<string, ListModel>,
             ) ?? {},
           [data],
         )}

@@ -96,7 +96,7 @@ class ListSyncServices {
     const res = await apiClient.lists.list.$get()
     listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
 
-    return res.data
+    return res.data.map((list) => honoMorph.toList(list))
   }
 
   async createList(params: { list: CreateListModel }) {

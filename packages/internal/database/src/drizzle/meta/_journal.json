@@ -155,6 +155,13 @@
       "when": 1745569856356,
       "tag": "0021_wakeful_onslaught",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1748331571730,
+      "tag": "0022_tiny_northstar",
+      "breakpoints": true
     }
   ]
 }
