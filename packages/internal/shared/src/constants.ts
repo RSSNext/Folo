@@ -14,16 +14,6 @@ export enum ModeEnum {
   production = "production",
 }
 
-declare global {
-  interface ImportMeta {
-    readonly env: {
-      MODE: string
-      DEV: boolean
-      PROD: boolean
-    }
-  }
-}
-
 export const MODE = import.meta.env?.MODE as ModeEnum
 
 export const { PROD } = import.meta.env ?? {}

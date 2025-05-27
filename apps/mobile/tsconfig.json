@@ -12,7 +12,7 @@
       "@locales/*": ["../../locales/*"]
     },
     "jsx": "preserve",
-    "types": ["@follow/types/global"]
+    "types": ["@follow/types/global", "vite/client"]
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
   "exclude": ["./native", "./web-app", "../../node_modules"]
