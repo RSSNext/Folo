@@ -68,6 +68,7 @@ export const ShortcutSetting = () => {
 }
 
 const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowCommandId }) => {
+  const { t } = useTranslation("shortcuts")
   const command = useCommand(commandId)
   const commandShortcuts = useCommandShortcuts()
   const [isEditing, setIsEditing] = useState(false)
@@ -91,15 +92,12 @@ const EditableCommandShortcutItem = memo(({ commandId }: { commandId: FollowComm
           {isUserCustomize && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div
-                  className="bg-accent/10 text-accent hover:bg-accent/20 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-all duration-200"
-                  title="User customized shortcut"
-                >
+                <div className="bg-accent/10 text-accent hover:bg-accent/20 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-all duration-200">
                   <div className="bg-accent mr-1 size-2 rounded-full" />
-                  Custom
+                  {t("settings.shortcuts.custom")}
                 </div>
               </TooltipTrigger>
-              <TooltipContent>This shortcut is customized by you</TooltipContent>
+              <TooltipContent>{t("settings.shortcuts.custom_content")}</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -143,6 +141,7 @@ const ShortcutInputWrapper = memo(
     onEditingChange,
     onShortcutChange,
   }: ShortcutInputWrapperProps) => {
+    const { t } = useTranslation("shortcuts")
     const conflictResult = useIsShortcutConflict(shortcut, commandId as AllowCustomizeCommandId)
 
     const hasConflict = allowCustomize && conflictResult.hasConflict
@@ -180,7 +179,7 @@ const ShortcutInputWrapper = memo(
             type="button"
             data-customized={isUserCustomize}
             className={cn(
-              "flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
+              "relative flex h-full cursor-text justify-end rounded-md border px-1 duration-200",
               allowCustomize && "hover:!border-border hover:!bg-material-medium",
               getBorderColor(),
               getBackgroundColor(),
@@ -210,11 +209,13 @@ const ShortcutInputWrapper = memo(
         </TooltipTrigger>
         {hasConflict && (
           <RootPortal>
-            <TooltipContent className="max-w-xs">
+            <TooltipContent className="max-w-xs p-2">
               <div className="space-y-1">
-                <div className="font-medium text-red-400">Shortcut Conflict</div>
-                <div className="text-xs">
-                  This shortcut conflicts with command:
+                <div className="font-medium text-red-400">{t("settings.shortcuts.conflict")}</div>
+                <div className="leading-6">
+                  <span className="text-text-secondary text-xs">
+                    {t("settings.shortcuts.conflict_command")}
+                  </span>
                   <p className="text-sm font-medium">{conflictCommand?.label.title}</p>
                 </div>
               </div>
@@ -230,6 +231,7 @@ const KeyRecorder: FC<{
   onChange: (keys: string[] | null) => void
   onBlur: () => void
 }> = ({ onChange, onBlur }) => {
+  const { t } = useTranslation("shortcuts")
   const { currentKeys } = useShortcutRecorder()
   const setGlobalScope = useReplaceGlobalFocusableScope()
 
@@ -263,7 +265,7 @@ const KeyRecorder: FC<{
           </KbdCombined>
         </div>
       ) : (
-        <span className="text-text-secondary pr-4">Press keys to record</span>
+        <span className="text-text-secondary pr-4">{t("settings.shortcuts.press_to_record")}</span>
       )}
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
@@ -280,13 +282,15 @@ const KeyRecorder: FC<{
             }}
           >
             {currentKeys.length > 0 ? (
-              <i className="i-mingcute-close-circle-fill size-4" />
-            ) : (
               <FamiconsArrowUndoCircle className="size-4" />
+            ) : (
+              <i className="i-mingcute-close-circle-fill size-4" />
             )}
           </button>
         </TooltipTrigger>
-        <TooltipContent>{currentKeys.length > 0 ? "Undo" : "Reset"}</TooltipContent>
+        <TooltipContent>
+          {currentKeys.length > 0 ? t("settings.shortcuts.undo") : t("settings.shortcuts.reset")}
+        </TooltipContent>
       </Tooltip>
     </div>
   )

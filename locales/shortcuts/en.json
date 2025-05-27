@@ -69,5 +69,12 @@
   "command.timeline.switch_to_previous.title": "Switch to Previous Timeline",
   "command.timeline.toggle_unread_only.description": "Enable/Disable the unread only mode in the timeline",
   "command.timeline.toggle_unread_only.title": "Toggle Unread Only",
-  "settings.shortcuts.description": "Customize the application's shortcuts. Below is a list of some commands that can be customized."
+  "settings.shortcuts.conflict": "Shortcut Conflict",
+  "settings.shortcuts.conflict_command": "This shortcut conflicts with command:",
+  "settings.shortcuts.custom": "Custom",
+  "settings.shortcuts.custom_content": "This shortcut is customized by you",
+  "settings.shortcuts.description": "Customize the application's shortcuts. Below is a list of some commands that can be customized.",
+  "settings.shortcuts.press_to_record": "Press keys to record",
+  "settings.shortcuts.reset": "Reset",
+  "settings.shortcuts.undo": "Undo"
 }

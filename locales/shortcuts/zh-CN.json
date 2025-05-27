@@ -69,5 +69,12 @@
   "command.timeline.switch_to_previous.title": "切换到上一个时间线",
   "command.timeline.toggle_unread_only.description": "在时间线中启用或停用仅显示未读模式。",
   "command.timeline.toggle_unread_only.title": "切换仅显示未读",
-  "settings.shortcuts.description": "自定义应用的快捷键。以下是一些可以自定义的命令列表。"
+  "settings.shortcuts.conflict": "快捷键冲突",
+  "settings.shortcuts.conflict_command": "此快捷键与以下命令冲突：",
+  "settings.shortcuts.custom": "自定义",
+  "settings.shortcuts.custom_content": "此快捷键由您自定义",
+  "settings.shortcuts.description": "自定义应用的快捷键。以下是一些可以自定义的命令列表。",
+  "settings.shortcuts.press_to_record": "按下以记录",
+  "settings.shortcuts.reset": "重置",
+  "settings.shortcuts.undo": "撤销"
 }
