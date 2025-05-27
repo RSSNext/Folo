@@ -104,16 +104,6 @@ export const WrappedScreenItem: FC<
 
     const backgroundColor = useColor("systemBackground")
 
-    // Priority: Ctx > Define on Component
-
-    const mergedScreenOptions = useMemo(
-      () => ({
-        ...screenOptionsProp,
-        ...resolveScreenOptions(screenOptionsFromCtx),
-      }),
-      [screenOptionsFromCtx, screenOptionsProp],
-    )
-
     const handleDismiss = useCallback(
       (
         e: NativeSyntheticEvent<{
@@ -149,8 +139,10 @@ export const WrappedScreenItem: FC<
               { backgroundColor: screenOptionsProp?.transparent ? undefined : backgroundColor },
               style,
             ]}
+            // Priority: Ctx > Define on Component
             {...rest}
-            {...mergedScreenOptions}
+            {...screenOptionsProp}
+            {...resolveScreenOptions(screenOptionsFromCtx)}
             onDismissed={handleDismiss}
             onNativeDismissCancelled={handleDismiss}
           >
