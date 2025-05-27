@@ -14,6 +14,17 @@ const sortObjectKeys = (obj) => {
       return acc
     }, {})
 }
+
+export function cleanJsonText(text) {
+  const cleaned = text.replaceAll(/,\s*\}/g, "}")
+  try {
+    JSON.parse(cleaned)
+    return cleaned
+  } catch {
+    return text
+  }
+}
+
 /**
  * @type {import("eslint").ESLint.Plugin}
  */
@@ -29,7 +40,7 @@ export default {
           Program(node) {
             if (context.filename.endsWith(".json")) {
               const { sourceCode } = context
-              const text = sourceCode.getText()
+              const text = cleanJsonText(sourceCode.getText())
 
               try {
                 const json = JSON.parse(text)
