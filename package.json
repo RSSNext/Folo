@@ -73,7 +73,6 @@
       "jsonpointer": "patches/jsonpointer.patch",
       "workbox-precaching": "patches/workbox-precaching.patch",
       "@pengx17/electron-forge-maker-appimage": "patches/@pengx17__electron-forge-maker-appimage.patch",
-      "devlop": "patches/devlop.patch",
       "@microflash/remark-callout-directives": "patches/@microflash__remark-callout-directives.patch",
       "react-native-track-player": "patches/react-native-track-player.patch",
       "react-native-sheet-transitions": "patches/react-native-sheet-transitions.patch",
@@ -89,9 +88,7 @@
       "react": "19.0.0",
       "react-dom": "19.0.0",
       "react-native-ios-context-menu": "3.1.1",
-      "react-native-ios-utilities": "5.1.5",
-      "unist-util-visit-parents": "5.1.3",
-      "vfile": "5.3.7"
+      "react-native-ios-utilities": "5.1.5"
     }
   },
   "simple-git-hooks": {
