@@ -23666,6 +23666,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             image: string | null;
                         } | null;
                         createdAt: string | null;
+                        usedAt: string | null;
                         toUserId: string | null;
                     }[];
                     referralCycleDays: number;

@@ -34,8 +34,7 @@ export function SettingReferral() {
   const serverConfigs = useServerConfigs()
   const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
   const { data: referralInfo } = useReferralInfo()
-  const validInvitationsAmount =
-    referralInfo?.invitations.filter((invitation) => !!invitation.user?.enabled).length || 0
+  const validInvitationsAmount = referralInfo?.invitations.length || 0
   const user = useWhoami()
   const role = useUserRole()
   const roleEndDate = useUserRoleEndDate()
@@ -142,7 +141,7 @@ export function SettingReferral() {
               </TableCell>
               <TableCell size="sm">{dayjs(row.createdAt).format("MMMM D, YYYY")}</TableCell>
               <TableCell size="sm">
-                {row.user?.enabled
+                {row.usedAt
                   ? t("referral.invited_friend_status.active")
                   : t("referral.invited_friend_status.signed_up")}
               </TableCell>
