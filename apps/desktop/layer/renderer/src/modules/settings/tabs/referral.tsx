@@ -45,15 +45,6 @@ export function SettingReferral() {
   const presentUserProfile = usePresentUserProfileModal("drawer")
   return (
     <section className="mt-4">
-      <Button
-        onClick={() => {
-          subscription.upgrade({
-            plan: "folo pro preview",
-          })
-        }}
-      >
-        hi
-      </Button>
       <div className="mb-4 space-y-2 text-sm">
         <p>
           {t("referral.description", {
@@ -88,19 +79,27 @@ export function SettingReferral() {
               ? t("referral.pro_status.trial")
               : ""}
       </Card>
-      {role === "preview" ? (
-        <div className="mt-4 space-y-2">
-          <p>
-            {`Referral Progress (${validInvitationsAmount}/${requiredInvitationsAmount} for next extension):`}
-          </p>
-          <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
-          <p>
-            {`Invite ${requiredInvitationsAmount - validInvitationsAmount} more friends to extend your Pro Preview indefinitely!`}
-          </p>
-        </div>
-      ) : (
-        <p>{`Total Activated Referrals: ${validInvitationsAmount}`}</p>
-      )}
+      <div className="mt-4 space-y-2">
+        <p>Referral Progress:</p>
+        <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
+        <p>
+          {`Invite ${requiredInvitationsAmount - validInvitationsAmount} more friends to extend your Pro Preview indefinitely!`}
+        </p>
+        {role === "preview" && (
+          <>
+            <p>Alternatively:</p>
+            <Button
+              onClick={() => {
+                subscription.upgrade({
+                  plan: "folo pro preview",
+                })
+              }}
+            >
+              Pay $1 to Extend Pro Preview Now
+            </Button>
+          </>
+        )}
+      </div>
       <Divider className="my-6" />
       <p className="font-semibold">Your Invited Friends</p>
       <Table className="mt-4">
@@ -141,9 +140,16 @@ export function SettingReferral() {
               </TableCell>
               <TableCell size="sm">{dayjs(row.createdAt).format("MMMM D, YYYY")}</TableCell>
               <TableCell size="sm">
-                {row.usedAt
-                  ? t("referral.invited_friend_status.active")
-                  : t("referral.invited_friend_status.signed_up")}
+                {row.usedAt ? (
+                  t("referral.invited_friend_status.active")
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger>{t("referral.invited_friend_status.signed_up")}</TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent>Active status are refreshed daily</TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                )}
               </TableCell>
             </TableRow>
           ))}
