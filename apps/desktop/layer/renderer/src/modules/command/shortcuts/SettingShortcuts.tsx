@@ -1,4 +1,5 @@
 import { useReplaceGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
+import { Button } from "@follow/components/ui/button/index.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
@@ -47,6 +48,15 @@ export const ShortcutsGuideline = () => {
 export const ShortcutSetting = () => {
   const { t } = useTranslation("shortcuts")
   const commandShortcuts = useCommandShortcutItems()
+  const setCustomCommandShortcut = useSetCustomCommandShortcut()
+
+  const resetDefaults = () => {
+    Object.entries(defaultCommandShortcuts).forEach(([commandId, shortcut]) => {
+      if (allowCustomizeCommands.has(commandId as AllowCustomizeCommandId)) {
+        setCustomCommandShortcut(commandId as AllowCustomizeCommandId, shortcut)
+      }
+    })
+  }
 
   return (
     <div>
@@ -63,6 +73,9 @@ export const ShortcutSetting = () => {
           </div>
         </section>
       ))}
+      <div className="flex items-center justify-end">
+        <Button onClick={resetDefaults}>Reset Defaults</Button>
+      </div>
     </div>
   )
 }
