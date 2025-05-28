@@ -20675,7 +20675,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -20686,7 +20685,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     } | undefined;
@@ -20720,7 +20718,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             } | null | undefined;
                             tipUsers?: {
@@ -20731,7 +20728,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             }[] | null | undefined;
                         }[] | undefined;
@@ -20744,7 +20740,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     } | undefined;
@@ -20850,7 +20845,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             } | null | undefined;
                             tipUsers?: {
@@ -20861,7 +20855,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             }[] | null | undefined;
                         }[];
@@ -20942,7 +20935,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     };
@@ -21039,7 +21031,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     };
@@ -21201,7 +21192,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -21212,7 +21202,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -21311,7 +21300,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -21322,7 +21310,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -21479,7 +21466,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -21490,7 +21476,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -21567,7 +21552,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -21578,7 +21562,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -21951,7 +21934,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -21962,7 +21944,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -22020,7 +22001,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             } | null | undefined;
                             tipUsers?: {
@@ -22031,7 +22011,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             }[] | null | undefined;
                         }[] | undefined;
@@ -22044,7 +22023,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     };
@@ -22074,7 +22052,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     };
@@ -22414,7 +22391,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -22425,7 +22401,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     } | null | undefined;
@@ -22614,7 +22589,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             } | null | undefined;
                             tipUsers?: {
@@ -22625,7 +22599,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             }[] | null | undefined;
                         };
@@ -22691,7 +22664,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             } | null | undefined;
                             tipUsers?: {
@@ -22702,7 +22674,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 handle: string | null;
                                 createdAt: string;
                                 updatedAt: string;
-                                stripeCustomerId: string | null;
                                 suspended: boolean | null;
                             }[] | null | undefined;
                         }[] | undefined;
@@ -22715,7 +22686,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                     };
@@ -22783,7 +22753,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -22794,7 +22763,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     }[] | undefined;
@@ -22807,7 +22775,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     } | null | undefined;
                 };
@@ -22887,7 +22854,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -22898,7 +22864,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     }[] | undefined;
@@ -22912,7 +22877,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     } | null | undefined;
                     purchaseAmount?: number | undefined;
@@ -22955,7 +22919,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     } | null | undefined;
                     tipUsers?: {
@@ -22966,7 +22929,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     }[] | null | undefined;
                 }[];
@@ -23091,7 +23053,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     } | null | undefined;
                 };
@@ -23227,7 +23188,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         suspended: boolean | null;
                     } | null | undefined;
                 }[];
@@ -23665,7 +23625,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         } | null | undefined;
                         tipUsers?: {
@@ -23676,7 +23635,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             suspended: boolean | null;
                         }[] | null | undefined;
                     };
@@ -23703,7 +23661,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     invitations: {
                         code: string;
                         user: {
-                            enabled: boolean;
                             id: string;
                             name: string | null;
                             image: string | null;
