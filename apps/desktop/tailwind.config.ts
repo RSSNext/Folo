@@ -100,6 +100,7 @@ export default extendConfig({
       addVariant("windows", ":where(html[data-os='Windows']) &")
     }),
     require("tailwindcss-multi"),
+    require("tailwindcss-content-visibility"),
     plugin(({ addUtilities, matchUtilities, theme }) => {
       addUtilities({
         ".safe-inset-top": {

@@ -38,6 +38,7 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
       email: "",
       password: "",
     },
+    mode: "all",
   })
 
   const { present } = useModalStack()
@@ -123,7 +124,9 @@ export function LoginWithPassword({ runtime }: { runtime: LoginRuntime }) {
           )}
         />
         <div className="flex flex-col space-y-3">
-          <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
+          {!import.meta.env.DEV && (
+            <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
+          )}
           <Button
             type="submit"
             isLoading={form.formState.isSubmitting}
@@ -159,9 +162,8 @@ export function RegisterForm() {
       password: "",
       confirmPassword: "",
     },
+    mode: "all",
   })
-
-  const { isValid } = form.formState
 
   const captchaRef = useRef<HCaptcha>(null)
 
@@ -229,8 +231,10 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
-          <Button disabled={!isValid} type="submit" buttonClassName="w-full" size="lg">
+          {!import.meta.env.DEV && (
+            <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
+          )}
+          <Button type="submit" buttonClassName="w-full" size="lg">
             {t("register.submit")}
           </Button>
         </form>

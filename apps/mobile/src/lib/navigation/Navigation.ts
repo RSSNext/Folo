@@ -59,6 +59,11 @@ export class Navigation {
       sheetGrabberVisible: view.sheetGrabberVisible ?? true,
       sheetInitialDetentIndex: view.sheetInitialDetentIndex ?? 0,
       sheetLargestUndimmedDetentIndex: view.sheetLargestUndimmedDetentIndex ?? "medium",
+      // Transition-related props
+      stackAnimation: view.stackAnimation ?? "default",
+      // Default to "pop" but we specified it as "push" making it more intuitive
+      replaceAnimation: view.replaceAnimation ?? "push",
+      transitionDuration: view.transitionDuration ?? 500,
     }
   }
 
@@ -70,6 +75,24 @@ export class Navigation {
       Component: view,
       props,
       screenOptions,
+    })
+  }
+
+  replaceControllerView<T>(
+    view: NavigationControllerView<T>,
+    props?: T,
+    extractScreenOptions?: NavigationControllerViewExtraProps,
+  ) {
+    const screenOptions = this.resolveScreenOptions(view)
+    this.__replace({
+      id: screenOptions.id,
+      type: "push",
+      Component: view,
+      props,
+      screenOptions: {
+        ...screenOptions,
+        ...extractScreenOptions,
+      },
     })
   }
 
@@ -96,6 +119,16 @@ export class Navigation {
     }
     jotaiStore.set(this.ctxValue.routesAtom, routes.slice(0, -1))
     this.emit("screenChange", { screenId: lastRoute.id, type: "disappear", route: lastRoute })
+  }
+
+  private __replace(route: Route) {
+    const routes = jotaiStore.get(this.ctxValue.routesAtom)
+    const hasRoute = routes.some((r) => r.id === route.id)
+    if (hasRoute) {
+      route.id = `${route.id}-${this.viewIdCounter++}`
+    }
+    jotaiStore.set(this.ctxValue.routesAtom, [...routes.slice(0, -1), route])
+    this.emit("screenChange", { screenId: route.id, type: "appear", route })
   }
 
   /**

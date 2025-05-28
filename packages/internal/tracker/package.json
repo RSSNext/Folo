@@ -5,6 +5,6 @@
   "main": "./src/index.ts",
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "@react-native-firebase/analytics": "21.14.0"
+    "@react-native-firebase/analytics": "22.1.0"
   }
 }

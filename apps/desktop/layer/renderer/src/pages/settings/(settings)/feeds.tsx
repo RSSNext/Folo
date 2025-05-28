@@ -9,7 +9,6 @@ export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.feeds",
   priority,
-  hideIf: (ctx) => ctx.isInMASReview,
 })
 
 export function Component() {

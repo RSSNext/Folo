@@ -24,7 +24,7 @@
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "hono": "4.7.7"
+    "hono": "4.7.10"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*"

@@ -35,13 +35,13 @@
     "@mozilla/readability": "0.6.0",
     "chardet": "2.1.0",
     "clsx": "2.1.1",
-    "dompurify": "3.2.5",
+    "dompurify": "3.2.6",
     "linkedom": "0.18.10",
-    "motion": "12.9.2",
+    "motion": "12.15.0",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
-    "tailwind-merge": "3.2.0",
-    "tldts": "7.0.4",
+    "tailwind-merge": "3.3.0",
+    "tldts": "7.0.7",
     "uniqolor": "1.1.1"
   },
   "devDependencies": {

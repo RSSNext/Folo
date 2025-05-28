@@ -223,6 +223,7 @@ const FeedCardMediaThumbnail: FC<{
           type={entry.media[0].type}
           previewImageUrl={entry.media[0].preview_image_url}
           className="size-full object-cover"
+          mediaContainerClassName="size-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       </div>

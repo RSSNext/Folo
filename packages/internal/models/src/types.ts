@@ -177,3 +177,8 @@ export type EntryReadHistoriesModel = Optional<
 > & {
   entryId: string
 }
+
+export type BizRespose<T> = {
+  data: T
+  code: 0
+}

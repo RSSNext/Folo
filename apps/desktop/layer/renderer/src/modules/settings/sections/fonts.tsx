@@ -41,7 +41,23 @@ const useFontDataWeb = () => {
   return [
     { label: t("appearance.content_font.default"), value: "inherit" },
     { label: t("appearance.font.system"), value: "system-ui" },
-    ...["Arial", "PingFang SC", "Microsoft YaHei", "SF Pro"].map((font) => ({
+    ...[
+      // English
+      "SF Pro",
+      "Segoe UI",
+      "Helvetica",
+      "Arial",
+      // Chinese
+      "PingFang SC",
+      "PingFang TC",
+      "PingFang HK",
+
+      "Microsoft YaHei",
+      "Microsoft JhengHei",
+      // Japanese
+      "Yu Gothic",
+      "Hiragino Sans",
+    ].map((font) => ({
       label: font,
 
       value: font,

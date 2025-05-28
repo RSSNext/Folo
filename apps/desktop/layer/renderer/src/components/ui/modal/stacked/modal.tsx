@@ -366,7 +366,7 @@ export const ModalInternal = memo(function Modal({
                       onPointerDownCapture={handleDrag}
                       onPointerDown={relocateModal}
                     >
-                      {!!icon && <span className="size-4">{icon}</span>}
+                      {!!icon && <span className="center flex size-4">{icon}</span>}
                       <EllipsisHorizontalTextWithTooltip className="truncate">
                         <span>{title}</span>
                       </EllipsisHorizontalTextWithTooltip>

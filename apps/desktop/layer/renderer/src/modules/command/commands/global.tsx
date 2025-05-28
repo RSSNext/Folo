@@ -1,7 +1,7 @@
 import { EventBus } from "@follow/utils/event-bus"
 import { useTranslation } from "react-i18next"
 
-import { useShortcutsModal } from "~/modules/modal/shortcuts"
+import { useShortcutsModal } from "~/modules/modal/hooks/useShortcutsModal"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"

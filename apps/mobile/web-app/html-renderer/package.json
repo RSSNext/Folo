@@ -14,7 +14,7 @@
     "@follow/types": "workspace:*",
     "clsx": "2.1.1",
     "foxact": "0.2.45",
-    "jotai": "2.12.3",
+    "jotai": "2.12.5",
     "react": "19.0.0",
     "react-blurhash": "0.3.0"
   }

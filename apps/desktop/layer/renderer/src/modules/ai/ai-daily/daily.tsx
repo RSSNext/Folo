@@ -215,10 +215,12 @@ const DailyReportContent: Component<DailyReportContentProps> = ({
 
                     return pipeline
                   }}
-                  components={{
-                    "snowflake-id": SnowflakeId,
-                    a: RelatedEntryLink as Components["a"],
-                  }}
+                  components={
+                    {
+                      "snowflake-id": SnowflakeId,
+                      a: RelatedEntryLink as Components["a"],
+                    } as any as Components
+                  }
                   className="prose-sm prose-p:my-1 prose-ul:my-1 prose-ul:list-outside prose-ul:list-disc prose-li:marker:text-accent mt-4 px-6"
                 >
                   {content.data}

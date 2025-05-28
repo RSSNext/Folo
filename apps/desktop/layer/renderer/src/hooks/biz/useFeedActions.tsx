@@ -1,4 +1,3 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
@@ -22,10 +21,9 @@ import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding
 import { FeedForm } from "~/modules/discover/FeedForm"
 import { InboxForm } from "~/modules/discover/InboxForm"
 import { ListForm } from "~/modules/discover/ListForm"
-import {
-  CategoryCreationModalContent,
-  ListCreationModalContent,
-} from "~/modules/settings/tabs/lists/modals"
+import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/useConfirmUnsubscribeSubscriptionModal"
+import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
+import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
 import { getFeedById, useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -40,24 +38,6 @@ import {
 import { useNavigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
 import { useBatchUpdateSubscription, useDeleteSubscription } from "./useSubscriptionActions"
-
-const ConfirmDestroyModalContent = ({ onConfirm }: { onConfirm: () => void }) => {
-  const { t } = useTranslation()
-
-  return (
-    <div className="w-[540px]">
-      <div className="mb-4">
-        <i className="i-mingcute-warning-fill text-red -mb-1 mr-1 size-5" />
-        {t("sidebar.feed_actions.unfollow_feed_many_warning")}
-      </div>
-      <div className="flex justify-end">
-        <Button buttonClassName="bg-red" onClick={onConfirm}>
-          {t("words.confirm")}
-        </Button>
-      </div>
-    </div>
-  )
-}
 
 export const useFeedActions = ({
   feedId,
@@ -89,6 +69,7 @@ export const useFeedActions = ({
     useMemo(() => feedIds || [feedId], [feedId, feedIds]),
   )
   const { present } = useModalStack()
+  const presentDeleteSubscription = useConfirmUnsubscribeSubscriptionModal()
   const deleteSubscription = useDeleteSubscription({})
   const claimFeed = useFeedClaimModal()
 
@@ -99,6 +80,7 @@ export const useFeedActions = ({
   const { mutateAsync: removeFeedFromListMutation } = useRemoveFeedFromFeedList()
   const { mutateAsync: resetFeed } = useResetFeed()
   const { mutate: addFeedsToCategoryMutation } = useBatchUpdateSubscription()
+  const presentCategoryCreationModal = useCategoryCreationModal()
   const openBoostModal = useBoostModal()
 
   const listByView = useOwnedListByView(view!)
@@ -239,20 +221,7 @@ export const useFeedActions = ({
             label: t("sidebar.feed_column.context_menu.create_category"),
             icon: <i className="i-mgc-add-cute-re" />,
             click() {
-              present({
-                title: t("sidebar.feed_column.context_menu.title"),
-                content: () => (
-                  <CategoryCreationModalContent
-                    onSubmit={(category: string) => {
-                      addFeedsToCategoryMutation({
-                        feedIdList: isMultipleSelection ? feedIds : [feedId],
-                        category,
-                        view: view!,
-                      })
-                    }}
-                  />
-                ),
-              })
+              presentCategoryCreationModal(view!, isMultipleSelection ? feedIds : [feedId])
             },
           }),
         ],
@@ -281,17 +250,7 @@ export const useFeedActions = ({
         supportMultipleSelection: true,
         click: () => {
           if (isMultipleSelection) {
-            present({
-              title: t("sidebar.feed_actions.unfollow_feed_many_confirm"),
-              content: ({ dismiss }) => (
-                <ConfirmDestroyModalContent
-                  onConfirm={() => {
-                    deleteSubscription.mutate({ feedIdList: feedIds })
-                    dismiss()
-                  }}
-                />
-              ),
-            })
+            presentDeleteSubscription(feedIds)
             return
           }
           deleteSubscription.mutate({ subscription })
@@ -367,30 +326,32 @@ export const useFeedActions = ({
           item.supportMultipleSelection),
     )
   }, [
+    addFeedToListMutation,
+    addFeedsToCategoryMutation,
+    categories,
+    claimFeed,
+    deleteSubscription,
     feed,
+    feedId,
+    feedIds,
     inbox,
-    t,
-    shortcuts,
     isEntryList,
     isInMASReview,
     isInbox,
-    listByView,
-    categories,
     isMultipleSelection,
-    feedId,
-    feedIds,
-    claimFeed,
-    resetFeed,
-    openBoostModal,
-    addFeedToListMutation,
-    removeFeedFromListMutation,
-    present,
-    subscriptions,
-    subscription,
-    addFeedsToCategoryMutation,
-    view,
-    deleteSubscription,
+    listByView,
     navigateEntry,
+    openBoostModal,
+    present,
+    presentCategoryCreationModal,
+    presentDeleteSubscription,
+    removeFeedFromListMutation,
+    resetFeed,
+    shortcuts,
+    subscription,
+    subscriptions,
+    t,
+    view,
   ])
 
   return items

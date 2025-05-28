@@ -105,7 +105,7 @@ export default defineConfig(
       "package-json-extend": packageJsonExtend,
     },
     rules: {
-      "package-json-extend/ensure-package-version": "warn",
+      "package-json-extend/ensure-package-version": "error",
       "package-json-extend/no-duplicate-package": "error",
     },
   },

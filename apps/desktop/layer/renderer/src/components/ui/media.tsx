@@ -327,7 +327,7 @@ const MediaImpl: FC<MediaProps> = ({
   )
 }
 
-export const Media: FC<MediaProps> = memo((props) => <MediaImpl {...props} key={props.src} />)
+export const Media: FC<MediaProps> = memo((props) => <MediaImpl {...props} />)
 
 const FallbackMedia: FC<MediaProps> = ({ type, mediaContainerClassName, className, ...props }) => (
   <div className={className} style={props.style}>

@@ -73,13 +73,15 @@ export const usePullUpToNext = ({
       if (!dragging.current) return
       const overOffset = e.contentOffset.y - e.contentSize.height + e.layoutMeasurement.height
 
+      // Ratio used to determine when to deactivate the pulling threshold
+      const thresholdRatio = 0.95
       if (overOffset > progressViewOffset) {
         if (!isOverThreshold.current && onRefresh) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
         }
         isOverThreshold.current = true
         setRefreshing(true)
-      } else {
+      } else if (overOffset < progressViewOffset * thresholdRatio) {
         if (isOverThreshold.current && onRefresh) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
         }

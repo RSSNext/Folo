@@ -2,16 +2,14 @@ import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { clsx } from "@follow/utils/utils"
 import { m, useDragControls } from "motion/react"
-import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
-import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 
 import { ShortcutsGuideline } from "../command/shortcuts/SettingShortcuts"
 
-const ShortcutModalContent = () => {
+export const ShortcutModalContent = () => {
   const { dismiss } = useCurrentModal()
   const modalOverlay = useUISettingKey("modalOverlay")
   const dragControls = useDragControls()
@@ -53,29 +51,4 @@ const ShortcutModalContent = () => {
       </ScrollArea.ScrollArea>
     </m.div>
   )
-}
-
-export const useShortcutsModal = () => {
-  const { present, dismiss, getModalStackById } = useModalStack()
-  const id = "shortcuts"
-
-  const showShortcutsModal = useCallback(() => {
-    present({
-      title: "Shortcuts",
-      id,
-      overlay: false,
-      content: () => <ShortcutModalContent />,
-      CustomModalComponent: PlainModal,
-      clickOutsideToDismiss: true,
-    })
-  }, [present])
-
-  return useCallback(() => {
-    const shortcutsModal = getModalStackById(id)
-    if (shortcutsModal && shortcutsModal.modal) {
-      dismiss(id)
-      return
-    }
-    showShortcutsModal()
-  }, [dismiss, getModalStackById, showShortcutsModal])
 }

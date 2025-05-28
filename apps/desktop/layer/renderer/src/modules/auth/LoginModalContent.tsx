@@ -112,8 +112,14 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       )}
       <Divider className="mb-5 mt-6" />
       {isEmail ? (
-        <div className="pb-2 text-center font-medium" onClick={() => setIsEmail(false)}>
-          {t("login.back")}
+        <div className="flex items-center justify-center pb-2">
+          <MotionButtonBase
+            className="cursor-button hover:text-accent flex items-center gap-2 text-center font-medium duration-200"
+            onClick={() => setIsEmail(false)}
+          >
+            <i className="i-mgc-left-cute-fi" />
+            {t("login.back")}
+          </MotionButtonBase>
         </div>
       ) : (
         <div className="pb-2 text-center font-medium" onClick={() => setIsRegister(!isRegister)}>

@@ -1,4 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType, viewList } from "@follow/constants"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "~/constants"
 
@@ -56,3 +56,26 @@ export const listSubscriptionCountSelector = (state: State) => state.listIds.siz
 export const inboxSubscriptionCountSelector = (state: State) => state.inboxIds.size
 
 export const isSubscribedSelector = (feedId: string) => (state: State) => !!state.data[feedId]
+
+export const subscriptionListSelector = (state: State) =>
+  Object.values(state.data).filter((subscription) => subscription.listId)
+
+export const subscriptionInboxSelector = (store: State) =>
+  Object.values(store.data).filter((subscription) => subscription.inboxId)
+
+export const viewWithSubscriptionSelector = (state: State) => {
+  return viewList.filter((view) => {
+    if (
+      view === FeedViewType.Articles ||
+      view === FeedViewType.SocialMedia ||
+      view === FeedViewType.Pictures ||
+      view === FeedViewType.Videos
+    ) {
+      return true
+    } else {
+      return state.feedIdByView[view].length > 0
+    }
+  })
+}
+
+export const categoriesSelector = (state: State) => state.categories || []

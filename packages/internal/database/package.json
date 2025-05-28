@@ -35,12 +35,12 @@
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
-    "drizzle-orm": "0.42.0",
+    "drizzle-orm": "0.43.1",
     "expo-sqlite": "15.2.9",
     "sqlocal": "0.14.1"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "drizzle-kit": "0.31.0"
+    "drizzle-kit": "0.31.1"
   }
 }

@@ -16,6 +16,10 @@ export interface NavigationControllerViewExtraProps
     | "sheetGrabberVisible"
     | "sheetInitialDetentIndex"
     | "sheetLargestUndimmedDetentIndex"
+    // Transition-related props
+    | "stackAnimation"
+    | "replaceAnimation"
+    | "transitionDuration"
   > {
   /**
    * Unique identifier for the view.

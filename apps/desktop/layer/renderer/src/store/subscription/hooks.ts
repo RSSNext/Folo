@@ -1,10 +1,11 @@
-import { FeedViewType, viewList } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 import { useCallback, useMemo } from "react"
 
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
 
 import { useFeedStore } from "../feed"
 import {
+  categoriesSelector,
   categoryOpenStateByViewSelector,
   feedIdByViewSelector,
   feedSubscriptionCountSelector,
@@ -15,7 +16,10 @@ import {
   subscriptionByFeedIdSelector,
   subscriptionByViewSelector,
   subscriptionCategoryExistSelector,
+  subscriptionInboxSelector,
+  subscriptionListSelector,
   subscriptionsByFeedIsdSelector,
+  viewWithSubscriptionSelector,
 } from "./selector"
 import { useSubscriptionStore } from "./store"
 
@@ -34,26 +38,9 @@ export const useSubscriptionByView = (view: FeedViewType) =>
     useCallback((state) => subscriptionByViewSelector(view)(state) || [], [view]),
   )
 
-export const useViewWithSubscription = () =>
-  useSubscriptionStore(
-    useCallback((state) => {
-      return viewList.filter((view) => {
-        if (
-          view === FeedViewType.Articles ||
-          view === FeedViewType.SocialMedia ||
-          view === FeedViewType.Pictures ||
-          view === FeedViewType.Videos
-        ) {
-          return true
-        } else {
-          return state.feedIdByView[view].length > 0
-        }
-      })
-    }, []),
-  )
+export const useViewWithSubscription = () => useSubscriptionStore(viewWithSubscriptionSelector)
 
-export const useCategories = () =>
-  useSubscriptionStore(useCallback((state) => state.categories || [], []))
+export const useCategories = () => useSubscriptionStore(categoriesSelector)
 
 export const useCategoriesByView = (view: FeedViewType) =>
   useSubscriptionStore(
@@ -129,21 +116,11 @@ export const useAllFeeds = () => {
 }
 
 export const useAllLists = () => {
-  return useSubscriptionStore(
-    useCallback(
-      (store) => Object.values(store.data).filter((subscription) => subscription.listId),
-      [],
-    ),
-  )
+  return useSubscriptionStore(subscriptionListSelector)
 }
 
 export const useAllInboxes = () => {
-  return useSubscriptionStore(
-    useCallback(
-      (store) => Object.values(store.data).filter((subscription) => subscription.inboxId),
-      [],
-    ),
-  )
+  return useSubscriptionStore(subscriptionInboxSelector)
 }
 
 export const useFeedsGroupedData = (view: FeedViewType) => {

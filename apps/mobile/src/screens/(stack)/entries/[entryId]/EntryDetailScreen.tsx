@@ -72,12 +72,19 @@ export const EntryDetailScreen: NavigationControllerView<{
     enabled: !!nextEntryId,
     onRefresh: useCallback(() => {
       if (!nextEntryId) return
-      navigation.back()
-      navigation.pushControllerView(EntryDetailScreen, {
-        entryId: nextEntryId,
-        entryIds,
-        view: viewType,
-      })
+      navigation.replaceControllerView(
+        EntryDetailScreen,
+        {
+          entryId: nextEntryId,
+          entryIds,
+          view: viewType,
+        },
+        {
+          // Ensure that the replace animation is used
+          stackAnimation: "fade_from_bottom",
+          transitionDuration: 150,
+        },
+      )
     }, [entryIds, navigation, nextEntryId, viewType]),
   })
 
