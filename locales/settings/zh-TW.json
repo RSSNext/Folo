@@ -1,5 +1,6 @@
 {
   "about.changelog": "更新日誌",
+  "about.checkForUpdates": "檢查更新",
   "about.feedbackInfo": "{{appName}} ({{commitSha}}) 正處於開發早期階段。如果您有任何回饋或建議，請隨時在我們的 GitHub 上 <OpenIssueLink>提交問題</OpenIssueLink> <ExternalLinkIcon />。",
   "about.iconLibrary": "所使用的圖標庫版權由 <IconLibraryLink /> <ExternalLinkIcon /> 所有，不得重新分發。",
   "about.licenseInfo": "版權所有 © {{currentYear}} {{appName}}。保留所有權利。",
@@ -144,8 +145,10 @@
   "discoverFilters.filters": "篩選",
   "discoverFilters.language": "語言",
   "discoverFilters.title": "發現篩選",
+  "feeds.claim": "認領 RSS 摘要",
   "feeds.claimTips": "要認領您的 RSS 摘要並接收贊助，請在您的訂閱列表中右鍵點擊該 RSS 摘要，然後選擇「認領」。",
   "feeds.noFeeds": "沒有已認領的 RSS 摘要",
+  "feeds.subscription": "已訂閱的 RSS 摘要",
   "feeds.tableHeaders.name": "名稱",
   "feeds.tableHeaders.subscriptionCount": "訂閱數",
   "feeds.tableHeaders.tipAmount": "收到的贊助",
