@@ -7081,10 +7081,10 @@ declare const stripeSubscriptions: drizzle_orm_pg_core.PgTableWithColumns<{
             data: string;
             driverParam: string;
             notNull: true;
-            hasDefault: false;
+            hasDefault: true;
             isPrimaryKey: true;
             isAutoincrement: false;
-            hasRuntimeDefault: false;
+            hasRuntimeDefault: true;
             enumValues: [string, ...string[]];
             baseColumn: never;
             identity: undefined;
@@ -9729,7 +9729,9 @@ declare const auth: {
                         };
                     };
                     advanced: {
-                        generateId: false;
+                        database: {
+                            generateId: false;
+                        };
                         defaultCookieAttributes: {
                             sameSite: "none";
                             secure: true;
@@ -12148,7 +12150,9 @@ declare const auth: {
                                 };
                             };
                             advanced: {
-                                generateId: false;
+                                database: {
+                                    generateId: false;
+                                };
                                 defaultCookieAttributes: {
                                     sameSite: "none";
                                     secure: true;
@@ -17798,7 +17802,9 @@ declare const auth: {
             };
         };
         advanced: {
-            generateId: false;
+            database: {
+                generateId: false;
+            };
             defaultCookieAttributes: {
                 sameSite: "none";
                 secure: true;

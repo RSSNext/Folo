@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import { Card } from "@follow/components/ui/card/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Progress } from "@follow/components/ui/progress/index.js"
@@ -23,6 +24,7 @@ import { useTranslation } from "react-i18next"
 import { useServerConfigs } from "~/atoms/server-configs"
 import { useUserRole, useUserRoleEndDate, useWhoami } from "~/atoms/user"
 import { CopyButton } from "~/components/ui/button/CopyButton"
+import { subscription } from "~/lib/auth"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { useReferralInfo } from "~/queries/referral"
@@ -44,6 +46,15 @@ export function SettingReferral() {
   const presentUserProfile = usePresentUserProfileModal("drawer")
   return (
     <section className="mt-4">
+      <Button
+        onClick={() => {
+          subscription.upgrade({
+            plan: "folo pro preview",
+          })
+        }}
+      >
+        hi
+      </Button>
       <div className="mb-4 space-y-2 text-sm">
         <p>
           {t("referral.description", {

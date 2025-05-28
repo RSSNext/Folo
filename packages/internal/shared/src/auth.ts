@@ -1,3 +1,4 @@
+import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
 import type { authPlugins } from "@follow/shared/hono"
 import type { BetterAuthClientPlugin } from "better-auth/client"
@@ -27,7 +28,7 @@ const serverPlugins = [
     },
   }),
 ] satisfies BetterAuthClientPlugin[]
-const plugins = [...serverPlugins, twoFactorClient()]
+const plugins = [...serverPlugins, twoFactorClient(), stripeClient({ subscription: true })]
 
 export type LoginRuntime = "browser" | "app"
 

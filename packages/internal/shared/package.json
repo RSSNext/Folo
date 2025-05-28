@@ -35,7 +35,7 @@
     "@electron-toolkit/tsconfig": "1.0.1",
     "@hono/node-server": "1.14.1",
     "@t3-oss/env-core": "0.13.0",
-    "better-auth": "1.2.7",
+    "better-auth": "1.2.8",
     "drizzle-orm": "0.42.0",
     "hono": "4.7.7",
     "sonner": "2.0.3",
