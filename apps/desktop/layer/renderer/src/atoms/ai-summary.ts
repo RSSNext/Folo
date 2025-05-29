@@ -1,7 +1,6 @@
 import { atom } from "jotai"
 
 import { createAtomHooks } from "~/lib/jotai"
-import type { FlatEntryModel } from "~/store/entry/types"
 
 import { useGeneralSettingKey } from "./settings/general"
 
@@ -12,12 +11,12 @@ export const toggleShowAISummaryOnce = () => setShowAISummaryOnce((prev) => !pre
 export const enableShowAISummaryOnce = () => setShowAISummaryOnce(true)
 export const disableShowAISummaryOnce = () => setShowAISummaryOnce(false)
 
-export const useShowAISummaryAuto = (entry: FlatEntryModel | null) => {
-  return useGeneralSettingKey("summary") || !!entry?.settings?.summary
+export const useShowAISummaryAuto = (settings?: boolean | null) => {
+  return useGeneralSettingKey("summary") || !!settings
 }
 
-export const useShowAISummary = (entry: FlatEntryModel | null) => {
-  const showAISummaryAuto = useShowAISummaryAuto(entry)
+export const useShowAISummary = (settings?: boolean | null) => {
+  const showAISummaryAuto = useShowAISummaryAuto(settings)
   const showAISummaryOnce = useShowAISummaryOnce()
-  return showAISummaryAuto || showAISummaryOnce || !!entry?.settings?.summary
+  return showAISummaryAuto || showAISummaryOnce || !!settings
 }

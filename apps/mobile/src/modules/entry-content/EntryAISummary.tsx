@@ -3,7 +3,10 @@ import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
 import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
 import { useSummaryStore } from "@follow/store/summary/store"
 import { useAtomValue } from "jotai"
+import { fromMarkdown } from "mdast-util-from-markdown"
+import { toString } from "mdast-util-to-string"
 import type { FC } from "react"
+import { useMemo } from "react"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 
@@ -26,9 +29,14 @@ export const EntryAISummary: FC<{
     actionLanguage,
     enabled: showAISummary,
   })
-  const summaryToShow = showReadability
-    ? summary?.readabilitySummary || summary?.summary
-    : summary?.summary
+  const summaryToShow = useMemo(() => {
+    const maybeMarkdown = showReadability
+      ? summary?.readabilitySummary || summary?.summary
+      : summary?.summary
+    if (!maybeMarkdown) return ""
+    const tree = fromMarkdown(maybeMarkdown)
+    return toString(tree)
+  }, [showReadability, summary?.readabilitySummary, summary?.summary])
 
   const status = useSummaryStore((state) => state.generatingStatus[entryId])
   if (!showAISummary) return null

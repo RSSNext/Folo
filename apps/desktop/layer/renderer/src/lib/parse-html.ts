@@ -108,7 +108,6 @@ export const parseHtml = (
         markInlineImage(node)
         return createElement("i", props, props.children)
       },
-      // @ts-expect-error
       math: Math,
       hr: ({ node, ...props }) =>
         createElement("hr", {

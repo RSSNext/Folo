@@ -155,7 +155,8 @@ export const useEntryActions = ({
   const isContentContainsHTMLTags = doesTextContainHTML(entry?.entries.content)
 
   const isShowSourceContent = useShowSourceContent()
-  const isShowAISummaryAuto = useShowAISummaryAuto(entry)
+  const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
+  const isShowAISummaryAuto = useShowAISummaryAuto(summarySetting)
   const isShowAISummaryOnce = useShowAISummaryOnce()
   const isShowAITranslationAuto = useShowAITranslationAuto(entry)
   const isShowAITranslationOnce = useShowAITranslationOnce()

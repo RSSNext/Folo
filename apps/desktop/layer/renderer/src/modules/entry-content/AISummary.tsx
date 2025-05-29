@@ -13,9 +13,10 @@ import { useEntry } from "~/store/entry"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const entry = useEntry(entryId)
+  const entryContentLength = useEntry(entryId, (state) => state.entries.content?.length) || 0
+  const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
-  const showAISummary = useShowAISummary(entry)
+  const showAISummary = useShowAISummary(summarySetting)
   const actionLanguage = useActionLanguage()
   const summary = useAuthQuery(
     Queries.ai.summary({
@@ -33,7 +34,7 @@ export function AISummary({ entryId }: { entryId: string }) {
     },
   )
 
-  if (!showAISummary || (!summary.isLoading && !summary.data)) {
+  if (!showAISummary || entryContentLength < 100 || (!summary.isLoading && !summary.data)) {
     return null
   }
 
