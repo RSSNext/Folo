@@ -92,6 +92,8 @@ export function SettingReferral() {
               onClick={() => {
                 subscription.upgrade({
                   plan: "folo pro preview",
+                  successUrl: env.VITE_WEB_URL,
+                  cancelUrl: env.VITE_WEB_URL,
                 })
               }}
             >

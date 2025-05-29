@@ -11759,7 +11759,7 @@ declare const auth: {
                                             fromUserId: string;
                                             toUserId: string | null;
                                         } | undefined;
-                                        role: "user" | "trial" | "preview";
+                                        role: string;
                                         roleEndDate: Date | undefined;
                                     } | null;
                                 } : {
@@ -11793,7 +11793,7 @@ declare const auth: {
                                         fromUserId: string;
                                         toUserId: string | null;
                                     } | undefined;
-                                    role: "user" | "trial" | "preview";
+                                    role: string;
                                     roleEndDate: Date | undefined;
                                 } | null>;
                                 options: {
@@ -14180,7 +14180,7 @@ declare const auth: {
                                                     fromUserId: string;
                                                     toUserId: string | null;
                                                 } | undefined;
-                                                role: "user" | "trial" | "preview";
+                                                role: string;
                                                 roleEndDate: Date | undefined;
                                             } | null;
                                         } : {
@@ -14214,7 +14214,7 @@ declare const auth: {
                                                 fromUserId: string;
                                                 toUserId: string | null;
                                             } | undefined;
-                                            role: "user" | "trial" | "preview";
+                                            role: string;
                                             roleEndDate: Date | undefined;
                                         } | null>;
                                         options: {
@@ -17746,7 +17746,7 @@ declare const auth: {
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: "user" | "trial" | "preview";
+                    role: string;
                     roleEndDate: Date | undefined;
                 } | null;
             } : {
@@ -17780,7 +17780,7 @@ declare const auth: {
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: "user" | "trial" | "preview";
+                role: string;
                 roleEndDate: Date | undefined;
             } | null>;
             options: {
@@ -19832,7 +19832,7 @@ declare const auth: {
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: "user" | "trial" | "preview";
+                            role: string;
                             roleEndDate: Date | undefined;
                         } | null;
                     } : {
@@ -19866,7 +19866,7 @@ declare const auth: {
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: "user" | "trial" | "preview";
+                        role: string;
                         roleEndDate: Date | undefined;
                     } | null>;
                     options: {
