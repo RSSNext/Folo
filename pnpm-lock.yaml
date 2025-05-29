@@ -21,6 +21,9 @@ overrides:
   react-native-ios-utilities: 5.1.5
 
 patchedDependencies:
+  '@electron-forge/core':
+    hash: 1593e5ff9ff7a772dc06a22a62ecaeb7ebe7ee8e2519800aa887973276a2f6eb
+    path: patches/@electron-forge__core.patch
   '@microflash/remark-callout-directives':
     hash: 6160b1cf0eab6deca36415693dda703746edcd42e0e64b9174294e2210481396
     path: patches/@microflash__remark-callout-directives.patch
@@ -17139,7 +17142,7 @@ snapshots:
 
   '@electron-forge/cli@7.8.1(encoding@0.1.13)':
     dependencies:
-      '@electron-forge/core': 7.8.1(encoding@0.1.13)
+      '@electron-forge/core': 7.8.1(patch_hash=1593e5ff9ff7a772dc06a22a62ecaeb7ebe7ee8e2519800aa887973276a2f6eb)(encoding@0.1.13)
       '@electron-forge/core-utils': 7.8.1
       '@electron-forge/shared-types': 7.8.1
       '@electron/get': 3.1.0
@@ -17170,7 +17173,7 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@electron-forge/core@7.8.1(encoding@0.1.13)':
+  '@electron-forge/core@7.8.1(patch_hash=1593e5ff9ff7a772dc06a22a62ecaeb7ebe7ee8e2519800aa887973276a2f6eb)(encoding@0.1.13)':
     dependencies:
       '@electron-forge/core-utils': 7.8.1
       '@electron-forge/maker-base': 7.8.1
@@ -21030,7 +21033,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       semver: 7.7.2
     transitivePeerDependencies:
@@ -28200,21 +28203,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  metro-config@0.82.4(bufferutil@4.0.9):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     dependencies:
       connect: 3.7.0
@@ -28229,7 +28217,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro-core@0.82.4:
     dependencies:
@@ -28341,7 +28328,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro@0.82.4(bufferutil@4.0.9):
     dependencies:
@@ -28369,7 +28355,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
@@ -28436,7 +28422,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   micromark-core-commonmark@2.0.3:
     dependencies:
