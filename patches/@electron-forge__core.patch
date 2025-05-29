@@ -1,0 +1,13 @@
+diff --git a/src/util/forge-config.ts b/src/util/forge-config.ts
+index 7720736d2c404d2945367a7fa21bdc092095733c..d887316167917369a6f023c40e02019356015cad 100644
+--- a/src/util/forge-config.ts
++++ b/src/util/forge-config.ts
+@@ -151,7 +151,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
+     try {
+       let loadFn;
+       if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
+-        const jiti = createJiti(__filename);
++        const jiti = createJiti(__filename || import.meta.url);
+         loadFn = jiti.import;
+       } else {
+         loadFn = dynamicImportMaybe;
