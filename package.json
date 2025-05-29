@@ -78,8 +78,7 @@
       "react-native-sheet-transitions": "patches/react-native-sheet-transitions.patch",
       "react-native-screens": "patches/react-native-screens.patch",
       "expo-image": "patches/expo-image.patch",
-      "react-native-ios-utilities": "patches/react-native-ios-utilities.patch",
-      "@electron-forge/core": "patches/@electron-forge__core.patch"
+      "react-native-ios-utilities": "patches/react-native-ios-utilities.patch"
     },
     "overrides": {
       "@electron/node-gyp": "10.2.0-electron.2",
