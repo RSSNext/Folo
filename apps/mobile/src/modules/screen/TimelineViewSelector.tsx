@@ -1,5 +1,6 @@
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useUnreadCountByView } from "@follow/store/unread/hooks"
+import { useSetAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -7,6 +8,7 @@ import type { StyleProp, ViewStyle } from "react-native"
 import { ScrollView, Text, useWindowDimensions, View } from "react-native"
 import { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
+import { timelineSearchQueryAtom } from "@/src/atoms/search"
 import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
@@ -121,6 +123,7 @@ function ViewItem({
   isActive: boolean
 }) {
   const textColor = useColor("gray")
+  const setTimelineSearchQuery = useSetAtom(timelineSearchQueryAtom);
   const unreadCount = useUnreadCountByView(view.view)
   const borderColor = useColor("gray5")
   const { t } = useTranslation("common")
@@ -151,7 +154,11 @@ function ViewItem({
       <View ref={itemRef}>
         <ItemWrapper
           isActive={isActive}
-          onPress={() => selectTimeline({ type: "view", viewId: view.view })}
+          onPress={() => {
+            // Reset search query when a new view is selected
+            setTimelineSearchQuery("");
+            selectTimeline({ type: "view", viewId: view.view });
+          }}
           style={isActive ? { backgroundColor: view.activeColor } : undefined}
         >
           <view.icon color={isActive ? "#fff" : textColor} height={21} width={21} />

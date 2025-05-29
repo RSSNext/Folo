@@ -1,10 +1,16 @@
 import type { FeedViewType } from "@follow/constants"
+import { useEntryStore } from "@follow/store/entry" // Corrected import
+import type { EntryModel } from "@follow/store/entry/types"
+import { useFeedStore } from "@follow/store/feed"   // Corrected import
+import type { Feed } from "@follow/store/feed/types"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
+import { useAtomValue } from "jotai"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { timelineSearchQueryAtom } from "@/src/atoms/search"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { usePlayingUrl } from "@/src/lib/player"
 import { checkLanguage } from "@/src/lib/translation"
@@ -26,9 +32,53 @@ export const EntryListContentArticle = ({
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const playingAudioUrl = usePlayingUrl()
+  const searchQuery = useAtomValue(timelineSearchQueryAtom)
+
+  // Access the full map of entries and feeds from the store
+  const entryMap = useEntryStore(state => state.data) || {} // Use correct store and selector
+  const feedMap = useFeedStore(state => state.feeds) || {}   // Use correct store and selector
+
+
+  const filteredEntryIds = useMemo(() => {
+    if (!entryIds) return null // Keep null if original entryIds is null
+
+    if (!searchQuery.trim()) {
+      return entryIds // Return original IDs if search query is empty
+    }
+
+    const lowerCaseQuery = searchQuery.toLowerCase()
+
+    return entryIds.filter((id) => {
+      const entry = entryMap[id]
+      if (!entry) return false
+
+      const feed = entry.feedId ? feedMap[entry.feedId] : undefined
+
+      const titleMatch = entry.title?.toLowerCase().includes(lowerCaseQuery)
+      const feedNameMatch = feed?.title?.toLowerCase().includes(lowerCaseQuery)
+      // Prefer content_text if available, otherwise fallback to description
+      const contentToSearch = entry.content_text || entry.description || ""
+      const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
+      
+      // Assuming authors is an array of objects like { name: string } or an array of strings.
+      // This needs to be confirmed from EntryModel definition.
+      const authorMatch = entry.authors?.some((author) => {
+        if (typeof author === "string") {
+          return author.toLowerCase().includes(lowerCaseQuery)
+        }
+        // If author is an object, check for 'name' or a similar property
+        return author?.name?.toLowerCase().includes(lowerCaseQuery) || 
+               (author && typeof author.name === 'undefined' && Object.values(author).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
+
+      })
+
+      return titleMatch || feedNameMatch || contentMatch || authorMatch
+    })
+  }, [entryIds, searchQuery, entryMap, feedMap])
+  
   const extraData: EntryExtraData = useMemo(
-    () => ({ playingAudioUrl, entryIds }),
-    [playingAudioUrl, entryIds],
+    () => ({ playingAudioUrl, entryIds: filteredEntryIds }),
+    [playingAudioUrl, filteredEntryIds],
   )
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
@@ -36,14 +86,15 @@ export const EntryListContentArticle = ({
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
+      // EntryNormalItem internally uses useEntry(id) and useFeed(feedId), so it will get the correct data
       <EntryNormalItem entryId={id} extraData={extraData as EntryExtraData} view={view} />
     ),
     [view],
   )
 
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
-    [hasNextPage],
+    () => (hasNextPage && (filteredEntryIds && filteredEntryIds.length > 0) ? <EntryItemSkeleton /> : <EntryListFooter />),
+    [hasNextPage, filteredEntryIds],
   )
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
@@ -58,7 +109,8 @@ export const EntryListContentArticle = ({
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   usePrefetchEntryTranslation({
-    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    // Use filteredEntryIds for prefetching if applicable, or ensure original viewableItems are used if prefetch is independent of search
+    entryIds: active && filteredEntryIds ? viewableItems.filter(item => filteredEntryIds.includes(item.key)).map((item) => item.key) : [],
     language: actionLanguage,
     translation,
     checkLanguage,
@@ -69,7 +121,7 @@ export const EntryListContentArticle = ({
       ref={ref}
       onRefresh={refetch}
       isRefetching={isRefetching}
-      data={entryIds}
+      data={filteredEntryIds} // Pass filtered IDs to the list
       extraData={extraData}
       keyExtractor={defaultKeyExtractor}
       estimatedItemSize={100}

@@ -2,6 +2,7 @@ import { EmptyIcon } from "@follow/components/icons/empty.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { useAtomValue } from "jotai" // Added Jotai
 import { LRUCache } from "@follow/utils/lru-cache"
 import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
@@ -11,6 +12,7 @@ import { memo, startTransition, useEffect, useMemo, useRef, useState } from "rea
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
+import { desktopTimelineSearchQueryAtom } from "~/atoms/search" // Added search atom
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
 
@@ -23,7 +25,25 @@ export const EntryEmptyList = ({
   ...props
 }: HTMLMotionProps<"div"> & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const searchQuery = useAtomValue(desktopTimelineSearchQueryAtom) // Read search query
   const { t } = useTranslation()
+
+  if (searchQuery.trim()) {
+    return (
+      <m.div
+        className="absolute -mt-6 flex size-full grow flex-col items-center justify-center gap-2 p-4 text-zinc-400"
+        {...props}
+        ref={ref}
+      >
+        {/* Placeholder for a Search icon, replace i-mgc-search-line with an actual available icon */}
+        <i className="i-mgc-search-line -mt-11 text-3xl" /> 
+        <span className="text-center text-base">
+          {t("entry_list.no_results_found", { query: searchQuery })}
+        </span>
+      </m.div>
+    )
+  }
+
   return (
     <m.div
       className="absolute -mt-6 flex size-full grow flex-col items-center justify-center gap-2 text-zinc-400"

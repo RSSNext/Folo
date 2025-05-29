@@ -2,6 +2,7 @@ import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/ind
 import { DividerVertical } from "@follow/components/ui/divider/index.js"
 import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
+import { useSetAtom } from "jotai"
 import { FeedViewType, views } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
@@ -17,6 +18,7 @@ import { useWhoami } from "~/atoms/user"
 import { FEED_COLLECTION_LIST, ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
+import { desktopTimelineSearchQueryAtom } from "~/atoms/search"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
@@ -24,6 +26,7 @@ import { EntryHeader } from "~/modules/entry-content/header"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { getFeedById, useFeedById, useFeedHeaderTitle } from "~/store/feed"
 
+import { EntrySearchInput } from "../components/EntrySearchInput" // Import the search input
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
 import {
@@ -68,23 +71,31 @@ export const EntryListHeader: FC<{
   const feedColumnShow = useTimelineColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
+  // const setDesktopSearchQuery = useSetAtom(desktopTimelineSearchQueryAtom) // Already handled in TimelineTabs
+
+  // Effect to clear search when feedId or view changes significantly,
+  // though TimelineTabs already handles most cases.
+  // useEffect(() => {
+  //   setDesktopSearchQuery("");
+  // }, [feedId, view, setDesktopSearchQuery]);
+  // This useEffect might be too aggressive or redundant given TimelineTabs handles it.
+
   return (
     <div
       className={cn(
-        "mb-2 flex w-full flex-col pr-4 pt-2.5",
+        "mb-1 flex w-full flex-col pr-4 pt-2", // Reduced mb from mb-2 to mb-1
         !feedColumnShow && "macos:mt-4 macos:pt-margin-macos-traffic-light-y",
         titleStyleBasedView[view],
         isPreview && "px-4",
       )}
     >
-      <div className={"flex w-full justify-between"}>
+      <div className={"flex w-full items-center justify-between"}> {/* Ensure items-center for vertical alignment */}
         {isPreview ? <PreviewHeaderInfoWrapper>{titleInfo}</PreviewHeaderInfoWrapper> : titleInfo}
         {!isPreview && (
           <div
             className={cn(
-              "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
+              "text-text-secondary relative z-[1] flex items-center gap-1", // Removed self-baseline to align with title
               (isInCollectionList || !headerTitle) && "pointer-events-none opacity-0",
-
               "translate-x-[6px]",
             )}
             onClick={stopPropagation}
@@ -150,6 +161,8 @@ export const EntryListHeader: FC<{
           </div>
         )}
       </div>
+      {/* Add Search Input below the title/actions row and above TimelineTabs (which is rendered by parent) */}
+      {!isPreview && <EntrySearchInput currentViewName={headerTitle || "Timeline"} />}
     </div>
   )
 }

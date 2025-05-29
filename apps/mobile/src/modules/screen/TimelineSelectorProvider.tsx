@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { View } from "react-native"
 
+import { TimelineSearchHeader } from "@/src/components/layout/TimelineSearchHeader"
 import { DefaultHeaderBackButton } from "@/src/components/layouts/header/NavigationHeader"
 import { NavigationBlurEffectHeader } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
@@ -14,6 +15,17 @@ import {
 import { TimelineViewSelector } from "@/src/modules/screen/TimelineViewSelector"
 
 import { useEntryListContext, useFetchEntriesControls, useSelectedFeedTitle } from "./atoms"
+
+const SEARCH_BAR_HEIGHT = 44 // Approximate height for the search bar
+
+const TimelineHeaderContentWrapper = ({ viewTitle }: { viewTitle: string }) => {
+  return (
+    <View>
+      <TimelineSearchHeader currentViewTitle={viewTitle} />
+      <TimelineViewSelector />
+    </View>
+  )
+}
 
 export function TimelineHeader({ feedId }: { feedId?: string }) {
   const viewTitle = useSelectedFeedTitle()
@@ -47,8 +59,16 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
           </View>
         )
       }, [feedId])}
-      headerHideableBottom={isTimeline || isSubscriptions ? TimelineViewSelector : undefined}
-      headerHideableBottomHeight={TIMELINE_VIEW_SELECTOR_HEIGHT}
+      headerHideableBottom={
+        isTimeline || isSubscriptions
+          ? () => <TimelineHeaderContentWrapper viewTitle={viewTitle} />
+          : undefined
+      }
+      headerHideableBottomHeight={
+        isTimeline || isSubscriptions
+          ? TIMELINE_VIEW_SELECTOR_HEIGHT + SEARCH_BAR_HEIGHT
+          : 0
+      }
     />
   )
 }

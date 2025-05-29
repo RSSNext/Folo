@@ -1,9 +1,15 @@
+import { useEntryStore } from "@follow/store/entry" // Corrected import
+import type { EntryModel } from "@follow/store/entry/types"
+import { useFeedStore } from "@follow/store/feed"   // Corrected import
+import type { Feed } from "@follow/store/feed/types"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
+import { useAtomValue } from "jotai"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
+import { timelineSearchQueryAtom } from "@/src/atoms/search"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { checkLanguage } from "@/src/lib/translation"
 
@@ -24,7 +30,34 @@ export const EntryListContentSocial = ({
 }) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
     useFetchEntriesControls()
-  const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
+
+  const searchQuery = useAtomValue(timelineSearchQueryAtom)
+  const entryMap = useEntryStore(state => state.data) || {} // Use correct store and selector
+  const feedMap = useFeedStore(state => state.feeds) || {}   // Use correct store and selector
+
+  const filteredEntryIds = useMemo(() => {
+    if (!entryIds) return null
+    if (!searchQuery.trim()) {
+      return entryIds
+    }
+    const lowerCaseQuery = searchQuery.toLowerCase()
+    return entryIds.filter((id) => {
+      const entry = entryMap[id]
+      if (!entry) return false
+      const feed = entry.feedId ? feedMap[entry.feedId] : undefined
+      const titleMatch = entry.title?.toLowerCase().includes(lowerCaseQuery)
+      const feedNameMatch = feed?.title?.toLowerCase().includes(lowerCaseQuery)
+      const contentToSearch = entry.content_text || entry.description || ""
+      const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
+      const authorMatch = entry.authors?.some((author) => {
+        if (typeof author === "string") return author.toLowerCase().includes(lowerCaseQuery)
+        return author?.name?.toLowerCase().includes(lowerCaseQuery) || (author && typeof author.name === 'undefined' && Object.values(author).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
+      })
+      return titleMatch || feedNameMatch || contentMatch || authorMatch
+    })
+  }, [entryIds, searchQuery, entryMap, feedMap])
+
+  const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds: filteredEntryIds }), [filteredEntryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
@@ -37,8 +70,8 @@ export const EntryListContentSocial = ({
   )
 
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
-    [hasNextPage],
+    () => (hasNextPage && (filteredEntryIds && filteredEntryIds.length > 0) ? <EntryItemSkeleton /> : <EntryListFooter />),
+    [hasNextPage, filteredEntryIds],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
@@ -49,7 +82,7 @@ export const EntryListContentSocial = ({
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   usePrefetchEntryTranslation({
-    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    entryIds: active && filteredEntryIds ? viewableItems.filter(item => filteredEntryIds.includes(item.key)).map((item) => item.key) : [],
     language: actionLanguage,
     translation,
     checkLanguage,
@@ -62,7 +95,7 @@ export const EntryListContentSocial = ({
         refetch()
       }}
       isRefetching={isRefetching}
-      data={entryIds}
+      data={filteredEntryIds} // Use filtered IDs
       extraData={extraData}
       keyExtractor={(id) => id}
       estimatedItemSize={100}

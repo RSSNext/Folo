@@ -2,8 +2,10 @@ import { views } from "@follow/constants"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
+import { useAtomValue } from "jotai" // Added Jotai
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
+import { desktopTimelineSearchQueryAtom } from "~/atoms/search" // Added search atom
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
@@ -11,6 +13,7 @@ import { apiClient, apiFetch } from "~/lib/api-fetch"
 import { Queries } from "~/queries"
 import { entries, useEntries } from "~/queries/entries"
 import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
+import { getFeedById } from "~/store/feed" // Added for feed details
 import { useFolderFeedsByFeedId } from "~/store/subscription"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
@@ -212,56 +215,81 @@ const useLocalEntries = (): UseEntriesReturn => {
 
 export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
   const { feedId, view, isCollection, listId } = useRouteParams()
+  const searchQuery = useAtomValue(desktopTimelineSearchQueryAtom) // Read search query
 
   const remoteQuery = useRemoteEntries()
   const localQuery = useLocalEntries()
 
   useFetchEntryContentByStream(remoteQuery.entriesIds)
 
-  // If remote data is not available, we use the local data, get the local data length
-  // FIXME: remote first, then local store data
-  // NOTE: We still can't use the store's data handling directly.
-  // Imagine that the local data may be persistent, and then if there are incremental updates to the data on the server side,
-  // then we have no way to incrementally update the data.
-  // We need to add an interface to incrementally update the data based on the version hash.
-
   const query = remoteQuery.isReady ? remoteQuery : localQuery
-  const entryIds: string[] = query.entriesIds
+  const originalEntryIds: string[] = query.entriesIds
+
+  // Apply client-side filtering
+  const entryMap = entryActions.getFlattenMapEntries() // Get all entries map
+  const filteredEntryIds = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return originalEntryIds
+    }
+    const lowerCaseQuery = searchQuery.toLowerCase()
+    return originalEntryIds.filter((id) => {
+      const entry = entryMap[id]
+      if (!entry) return false
+
+      const feed = entry.feedId ? getFeedById(entry.feedId) : undefined // Get feed details
+
+      const titleMatch = entry.entries.title?.toLowerCase().includes(lowerCaseQuery)
+      const feedNameMatch = feed?.title?.toLowerCase().includes(lowerCaseQuery)
+      // Assuming content_text is available on entry.entries, or fallback to description
+      const contentToSearch = entry.entries.content_text || entry.entries.description || ""
+      const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
+      
+      // Assuming authors structure based on previous mobile implementation
+      const authorMatch = entry.entries.authors?.some((author: any) => { // Use 'any' if type is not strictly defined here
+        if (typeof author === "string") {
+          return author.toLowerCase().includes(lowerCaseQuery)
+        }
+        return author?.name?.toLowerCase().includes(lowerCaseQuery) ||
+               (author && typeof author.name === 'undefined' && Object.values(author).some((val: any) => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
+      })
+
+      return titleMatch || feedNameMatch || contentMatch || authorMatch
+    })
+  }, [originalEntryIds, searchQuery, entryMap]) // feedMap is not needed as a dep if getFeedById is stable
 
   // in unread only entries only can grow the data, but not shrink
   // so we memo this previous data to avoid the flicker
-  const prevEntryIdsRef = useRef(entryIds)
+  const prevEntryIdsRef = useRef(filteredEntryIds) // Use filteredEntryIds here
 
   const isFetchingFirstPage = query.isFetching && !query.isFetchingNextPage
 
   useEffect(() => {
     if (!isFetchingFirstPage) {
-      prevEntryIdsRef.current = entryIds
+      prevEntryIdsRef.current = filteredEntryIds // Use filteredEntryIds here
 
       onReset?.()
     }
-  }, [isFetchingFirstPage])
+  }, [isFetchingFirstPage, filteredEntryIds, onReset]) // Added filteredEntryIds and onReset
 
-  const entryIdsAsDeps = entryIds.toString()
+  const entryIdsAsDeps = filteredEntryIds.toString() // Use filteredEntryIds here
 
   useEffect(() => {
     prevEntryIdsRef.current = []
-  }, [feedId])
+  }, [feedId]) // This effect still clears on feedId change, which is fine.
   useEffect(() => {
     if (!prevEntryIdsRef.current) {
-      prevEntryIdsRef.current = entryIds
-
+      prevEntryIdsRef.current = filteredEntryIds // Use filteredEntryIds here
       return
     }
     // merge the new entries with the old entries, and unique them
-    const nextIds = [...new Set([...prevEntryIdsRef.current, ...entryIds])]
+    const nextIds = [...new Set([...prevEntryIdsRef.current, ...filteredEntryIds])] // Use filteredEntryIds here
     prevEntryIdsRef.current = nextIds
-  }, [entryIdsAsDeps])
+  }, [entryIdsAsDeps]) // entryIdsAsDeps is now based on filteredEntryIds
 
   const sortEntries = useMemo(
     () =>
-      isCollection ? sortEntriesIdByStarAt(entryIds) : sortEntriesIdByEntryPublishedAt(entryIds),
-    [entryIds, isCollection],
+      isCollection ? sortEntriesIdByStarAt(filteredEntryIds) : sortEntriesIdByEntryPublishedAt(filteredEntryIds),
+    [filteredEntryIds, isCollection], // Depend on filteredEntryIds
   )
 
   const groupByDate = useGeneralSettingKey("groupByDate")
