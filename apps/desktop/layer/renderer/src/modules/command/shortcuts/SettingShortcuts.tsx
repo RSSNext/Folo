@@ -5,7 +5,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
 import type { FC, RefObject, SVGProps } from "react"
-import { memo, useEffect, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useOnClickOutside } from "usehooks-ts"
 
@@ -48,7 +48,18 @@ export const ShortcutsGuideline = () => {
 export const ShortcutSetting = () => {
   const { t } = useTranslation("shortcuts")
   const commandShortcuts = useCommandShortcutItems()
+  const currentShortcuts = useCommandShortcuts()
   const setCustomCommandShortcut = useSetCustomCommandShortcut()
+
+  // Check if any shortcuts have been customized
+  const hasCustomizedShortcuts = useMemo(() => {
+    return Object.entries(currentShortcuts).some(([commandId, shortcut]) => {
+      return (
+        allowCustomizeCommands.has(commandId as AllowCustomizeCommandId) &&
+        shortcut !== defaultCommandShortcuts[commandId as keyof typeof defaultCommandShortcuts]
+      )
+    })
+  }, [currentShortcuts])
 
   const resetDefaults = () => {
     Object.entries(defaultCommandShortcuts).forEach(([commandId, shortcut]) => {
@@ -61,6 +72,7 @@ export const ShortcutSetting = () => {
   return (
     <div>
       <p className="mb-6 mt-4 space-y-2 text-sm">{t("settings.shortcuts.description")}</p>
+
       {Object.entries(commandShortcuts).map(([type, commands]) => (
         <section key={type} className="mb-8">
           <div className="text-text border-border mb-4 border-b pb-2 text-base font-medium">
@@ -73,8 +85,13 @@ export const ShortcutSetting = () => {
           </div>
         </section>
       ))}
-      <div className="flex items-center justify-end">
-        <Button onClick={resetDefaults}>Reset Defaults</Button>
+
+      <div className="mb-4 flex min-h-6 items-center justify-end">
+        {hasCustomizedShortcuts && (
+          <Button variant={"outline"} onClick={resetDefaults}>
+            Reset Defaults
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -264,7 +281,7 @@ const KeyRecorder: FC<{
   })
   return (
     <div
-      className="text-text-secondary flex h-full items-center justify-center px-1 text-xs"
+      className="text-text-secondary relative flex h-full items-center justify-center px-1 text-xs"
       tabIndex={-1}
       role="textbox"
       ref={ref}
@@ -282,7 +299,7 @@ const KeyRecorder: FC<{
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="hover:text-text absolute inset-y-0 right-0 z-[1] flex items-center justify-center px-1"
+            className="hover:text-text absolute inset-y-0 -right-1 z-[1] flex items-center justify-center px-1"
             onClick={(e) => {
               e.stopPropagation()
               if (currentKeys.length === 0) {
