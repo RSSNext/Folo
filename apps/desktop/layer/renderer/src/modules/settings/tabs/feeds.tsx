@@ -453,9 +453,9 @@ const FeedListItem = memo(
     if (!subscription) return null
 
     return (
-      <button
+      <div
         data-id={id}
-        type="button"
+        role="button"
         tabIndex={-1}
         className={clsx(
           "hover:bg-material-medium grid h-10 w-full items-center gap-4 rounded px-1",
@@ -551,7 +551,7 @@ const FeedListItem = memo(
             <div className="text-text-secondary">--</div>
           )}
         </div>
-      </button>
+      </div>
     )
   },
 )

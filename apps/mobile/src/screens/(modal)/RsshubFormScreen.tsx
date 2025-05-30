@@ -22,7 +22,7 @@ import {
 import { FormProvider, useFormContext } from "@/src/components/ui/form/FormProvider"
 import { Select } from "@/src/components/ui/form/Select"
 import { TextField } from "@/src/components/ui/form/TextField"
-import { Markdown } from "@/src/components/ui/typography/Markdown"
+import { MarkdownNative } from "@/src/components/ui/typography/MarkdownNative"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -202,11 +202,7 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
 
             {!!route.description && (
               <View className="bg-system-background border-t-hairline border-opaque-separator mt-4 flex-1 px-4">
-                <Markdown
-                  className="bg-system-background py-4"
-                  value={route.description.replaceAll("::: ", ":::")}
-                  webViewProps={{ matchContents: true, scrollEnabled: false }}
-                />
+                <MarkdownNative value={route.description.replaceAll("::: ", ":::")} />
               </View>
             )}
           </SafeNavigationScrollView>

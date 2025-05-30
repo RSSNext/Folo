@@ -171,7 +171,7 @@ const ThumbnailImage = ({
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
 
-  const video = entry?.media?.find((media) => media.type === "video")
+  const video = mediaModel?.type === "video" ? mediaModel : null
   const videoViewRef = useRef<null | VideoView>(null)
   const videoPlayer = useVideoPlayer(video?.url ?? "")
   const [showVideoNativeControlsForAndroid, setShowVideoNativeControlsForAndroid] = useState(false)

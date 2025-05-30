@@ -62,6 +62,7 @@ function Checkbox({ className, onCheckedChange, indeterminate, ...props }: Check
                     opacity: 1,
                     transition: {
                       duration: 0.2,
+                      delay: 0.1,
                     },
                   },
                   hidden: {
@@ -96,6 +97,7 @@ function Checkbox({ className, onCheckedChange, indeterminate, ...props }: Check
                     opacity: 1,
                     transition: {
                       duration: 0.2,
+                      delay: 0.1,
                     },
                   },
                   unchecked: {

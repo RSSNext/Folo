@@ -1,8 +1,5 @@
-import { toJsxRuntime } from "hast-util-to-jsx-runtime"
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { toHast } from "mdast-util-to-hast"
+import { parseMarkdown } from "@follow/components/utils/parse-markdown.tsx"
 import * as React from "react"
-import { Fragment, jsx, jsxs } from "react/jsx-runtime"
 import { Linking, Text, View } from "react-native"
 
 // Helper function to ensure text is wrapped in Text component
@@ -72,11 +69,6 @@ const renderTextChildren = (
 }
 
 export const renderMarkdown = (markdown: string) => {
-  const mdastTree = fromMarkdown(markdown)
-
-  // Convert mdast to hast
-  const hastTree = toHast(mdastTree)
-
   // Fallback component for unknown HTML elements
   const FallbackComponent = ({ children, node, ..._props }: any) => {
     // For text-like elements, use Text
@@ -235,7 +227,7 @@ export const renderMarkdown = (markdown: string) => {
           {renderTextChildren(children)}
         </Text>
       ),
-      // Table elements (simplified for mobile) - GitHub style
+      // Table elements (GFM table support) - GitHub style with improved mobile layout
       table: ({ children, node, ...props }: any) => (
         <View
           className="border-non-opaque-separator mb-4 overflow-hidden rounded-md border"
@@ -255,16 +247,36 @@ export const renderMarkdown = (markdown: string) => {
           {wrapText(children)}
         </View>
       ),
-      th: ({ children, node, ...props }: any) => (
-        <Text className="text-label flex-1 px-3 py-2 font-semibold leading-[20px]" {...props}>
-          {renderTextChildren(children)}
-        </Text>
-      ),
-      td: ({ children, node, ...props }: any) => (
-        <Text className="text-label flex-1 px-3 py-2 text-[14px] leading-[20px]" {...props}>
-          {renderTextChildren(children)}
-        </Text>
-      ),
+      th: ({ children, node, ...props }: any) => {
+        // Get text alignment from node properties if available
+        const align = node?.properties?.align || "left"
+        const textAlignStyle =
+          align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
+
+        return (
+          <Text
+            className={`text-label flex-1 px-3 py-2 font-semibold leading-[20px] ${textAlignStyle}`}
+            {...props}
+          >
+            {renderTextChildren(children)}
+          </Text>
+        )
+      },
+      td: ({ children, node, ...props }: any) => {
+        // Get text alignment from node properties if available
+        const align = node?.properties?.align || "left"
+        const textAlignStyle =
+          align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
+
+        return (
+          <Text
+            className={`text-label flex-1 px-3 py-2 text-[14px] leading-[20px] ${textAlignStyle}`}
+            {...props}
+          >
+            {renderTextChildren(children)}
+          </Text>
+        )
+      },
 
       // Not implemented
       img: ({ src, alt, node, ..._props }: any) => null,
@@ -282,13 +294,9 @@ export const renderMarkdown = (markdown: string) => {
   )
 
   // Convert hast to React Native components
-  const result = toJsxRuntime(hastTree, {
-    Fragment,
-    jsx: (type, props, key) => jsx(type as any, props, key),
-    jsxs: (type, props, key) => jsxs(type as any, props, key),
-    passNode: true,
+  const result = parseMarkdown(markdown, {
     components,
-  })
+  }).content
 
   return {
     ...result,

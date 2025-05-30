@@ -208,7 +208,7 @@ export const TwoFactorForm = () => {
   return totpURI ? (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-center">
-        <QRCode value={totpURI} />
+        <QRCode value={totpURI} className="dark:border dark:border-white" />
       </div>
       <TOTPForm
         message={{

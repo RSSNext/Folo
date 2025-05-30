@@ -84,6 +84,7 @@ export function PagerList({
       style={[styles.PagerView, style]}
       initialPage={activeViewIndex}
       layoutDirection="ltr"
+      offscreenPageLimit={3}
       overdrag
       onPageScroll={pageScrollHandler}
       onPageScrollStateChanged={(e) => {
@@ -99,7 +100,7 @@ export function PagerList({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         }
       }}
-      pageMargin={10}
+      pageMargin={100}
       orientation="horizontal"
     >
       {useMemo(
