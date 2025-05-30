@@ -1,8 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useEntryStore } from "@follow/store/entry" // Corrected import
-import type { EntryModel } from "@follow/store/entry/types"
-import { useFeedStore } from "@follow/store/feed"   // Corrected import
-import type { Feed } from "@follow/store/feed/types"
+import { useFeedStore } from "@follow/store/feed" // Corrected import
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import { useAtomValue } from "jotai"
@@ -35,9 +33,8 @@ export const EntryListContentArticle = ({
   const searchQuery = useAtomValue(timelineSearchQueryAtom)
 
   // Access the full map of entries and feeds from the store
-  const entryMap = useEntryStore(state => state.data) || {} // Use correct store and selector
-  const feedMap = useFeedStore(state => state.feeds) || {}   // Use correct store and selector
-
+  const entryMap = useEntryStore((state) => state.data) || {} // Use correct store and selector
+  const feedMap = useFeedStore((state) => state.feeds) || {} // Use correct store and selector
 
   const filteredEntryIds = useMemo(() => {
     if (!entryIds) return null // Keep null if original entryIds is null
@@ -59,7 +56,7 @@ export const EntryListContentArticle = ({
       // Prefer content_text if available, otherwise fallback to description
       const contentToSearch = entry.content_text || entry.description || ""
       const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
-      
+
       // Assuming authors is an array of objects like { name: string } or an array of strings.
       // This needs to be confirmed from EntryModel definition.
       const authorMatch = entry.authors?.some((author) => {
@@ -67,15 +64,20 @@ export const EntryListContentArticle = ({
           return author.toLowerCase().includes(lowerCaseQuery)
         }
         // If author is an object, check for 'name' or a similar property
-        return author?.name?.toLowerCase().includes(lowerCaseQuery) || 
-               (author && typeof author.name === 'undefined' && Object.values(author).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
-
+        return (
+          author?.name?.toLowerCase().includes(lowerCaseQuery) ||
+          (author &&
+            author.name === undefined &&
+            Object.values(author).some(
+              (val) => typeof val === "string" && val.toLowerCase().includes(lowerCaseQuery),
+            ))
+        )
       })
 
       return titleMatch || feedNameMatch || contentMatch || authorMatch
     })
   }, [entryIds, searchQuery, entryMap, feedMap])
-  
+
   const extraData: EntryExtraData = useMemo(
     () => ({ playingAudioUrl, entryIds: filteredEntryIds }),
     [playingAudioUrl, filteredEntryIds],
@@ -93,7 +95,12 @@ export const EntryListContentArticle = ({
   )
 
   const ListFooterComponent = useMemo(
-    () => (hasNextPage && (filteredEntryIds && filteredEntryIds.length > 0) ? <EntryItemSkeleton /> : <EntryListFooter />),
+    () =>
+      hasNextPage && filteredEntryIds && filteredEntryIds.length > 0 ? (
+        <EntryItemSkeleton />
+      ) : (
+        <EntryListFooter />
+      ),
     [hasNextPage, filteredEntryIds],
   )
 
@@ -110,7 +117,12 @@ export const EntryListContentArticle = ({
   const actionLanguage = useActionLanguage()
   usePrefetchEntryTranslation({
     // Use filteredEntryIds for prefetching if applicable, or ensure original viewableItems are used if prefetch is independent of search
-    entryIds: active && filteredEntryIds ? viewableItems.filter(item => filteredEntryIds.includes(item.key)).map((item) => item.key) : [],
+    entryIds:
+      active && filteredEntryIds
+        ? viewableItems
+            .filter((item) => filteredEntryIds.includes(item.key))
+            .map((item) => item.key)
+        : [],
     language: actionLanguage,
     translation,
     checkLanguage,

@@ -2,11 +2,12 @@ import { Tabs, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.js
 import { useSetAtom } from "jotai"
 import { useCallback } from "react"
 
-import { desktopTimelineSearchQueryAtom } from "../../../atoms/search" // Adjusted path
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { InboxItem, ListItem } from "~/modules/subscription-column/FeedItem"
 import { useSubscriptionStore } from "~/store/subscription"
+
+import { desktopTimelineSearchQueryAtom } from "../../../atoms/search" // Adjusted path
 
 export const TimelineTabs = () => {
   const routerParams = useRouteParams()
@@ -58,13 +59,16 @@ export const TimelineTabs = () => {
         }
         // For specific list/inbox navigations that also go through here if `val` is their ID
         // This might need to be more specific if `val` can be something other than listId/inboxId
-        else if (listsData.find(l => l.listId === val) || inboxData.find(i => i.inboxId === val)) {
-           // The navigation to list/inbox is handled by the Tabs value change itself,
-           // if the `TabsTrigger` for lists/inboxes have their `value` set to their respective IDs
-           // and the main `Tabs` component's `onValueChange` implicitly handles navigation
-           // by changing the `timeline` variable which might be a dependency elsewhere.
-           // If explicit navigation is needed here:
-           // navigate({ listId: val, view }); or navigate({ inboxId: val, view});
+        else if (
+          listsData.find((l) => l.listId === val) ||
+          inboxData.find((i) => i.inboxId === val)
+        ) {
+          // The navigation to list/inbox is handled by the Tabs value change itself,
+          // if the `TabsTrigger` for lists/inboxes have their `value` set to their respective IDs
+          // and the main `Tabs` component's `onValueChange` implicitly handles navigation
+          // by changing the `timeline` variable which might be a dependency elsewhere.
+          // If explicit navigation is needed here:
+          // navigate({ listId: val, view }); or navigate({ inboxId: val, view});
         }
       }}
     >

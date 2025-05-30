@@ -1,3 +1,3 @@
-import { atom } from "jotai";
+import { atom } from "jotai"
 
-export const desktopTimelineSearchQueryAtom = atom("");
+export const desktopTimelineSearchQueryAtom = atom("")

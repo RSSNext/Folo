@@ -2,10 +2,10 @@ import { EmptyIcon } from "@follow/components/icons/empty.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { useAtomValue } from "jotai" // Added Jotai
 import { LRUCache } from "@follow/utils/lru-cache"
 import type { Range, VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual"
+import { useAtomValue } from "jotai" // Added Jotai
 import type { HTMLMotionProps } from "motion/react"
 import type { FC, MutableRefObject, ReactNode } from "react"
 import { memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
@@ -36,7 +36,7 @@ export const EntryEmptyList = ({
         ref={ref}
       >
         {/* Placeholder for a Search icon, replace i-mgc-search-line with an actual available icon */}
-        <i className="i-mgc-search-line -mt-11 text-3xl" /> 
+        <i className="i-mgc-search-line -mt-11 text-3xl" />
         <span className="text-center text-base">
           {t("entry_list.no_results_found", { query: searchQuery })}
         </span>

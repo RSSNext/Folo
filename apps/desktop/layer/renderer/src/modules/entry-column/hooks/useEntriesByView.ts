@@ -243,14 +243,21 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
       // Assuming content_text is available on entry.entries, or fallback to description
       const contentToSearch = entry.entries.content_text || entry.entries.description || ""
       const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
-      
+
       // Assuming authors structure based on previous mobile implementation
-      const authorMatch = entry.entries.authors?.some((author: any) => { // Use 'any' if type is not strictly defined here
+      const authorMatch = entry.entries.authors?.some((author: any) => {
+        // Use 'any' if type is not strictly defined here
         if (typeof author === "string") {
           return author.toLowerCase().includes(lowerCaseQuery)
         }
-        return author?.name?.toLowerCase().includes(lowerCaseQuery) ||
-               (author && typeof author.name === 'undefined' && Object.values(author).some((val: any) => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
+        return (
+          author?.name?.toLowerCase().includes(lowerCaseQuery) ||
+          (author &&
+            author.name === undefined &&
+            Object.values(author).some(
+              (val: any) => typeof val === "string" && val.toLowerCase().includes(lowerCaseQuery),
+            ))
+        )
       })
 
       return titleMatch || feedNameMatch || contentMatch || authorMatch
@@ -288,7 +295,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
 
   const sortEntries = useMemo(
     () =>
-      isCollection ? sortEntriesIdByStarAt(filteredEntryIds) : sortEntriesIdByEntryPublishedAt(filteredEntryIds),
+      isCollection
+        ? sortEntriesIdByStarAt(filteredEntryIds)
+        : sortEntriesIdByEntryPublishedAt(filteredEntryIds),
     [filteredEntryIds, isCollection], // Depend on filteredEntryIds
   )
 

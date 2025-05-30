@@ -1,3 +1,3 @@
-import { atom } from "jotai";
+import { atom } from "jotai"
 
-export const timelineSearchQueryAtom = atom("");
+export const timelineSearchQueryAtom = atom("")

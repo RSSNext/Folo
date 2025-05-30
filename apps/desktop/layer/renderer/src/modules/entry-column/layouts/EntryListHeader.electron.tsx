@@ -2,7 +2,6 @@ import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/ind
 import { DividerVertical } from "@follow/components/ui/divider/index.js"
 import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { useSetAtom } from "jotai"
 import { FeedViewType, views } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
 import { stopPropagation } from "@follow/utils/dom"
@@ -18,7 +17,6 @@ import { useWhoami } from "~/atoms/user"
 import { FEED_COLLECTION_LIST, ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
-import { desktopTimelineSearchQueryAtom } from "~/atoms/search"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
@@ -89,7 +87,9 @@ export const EntryListHeader: FC<{
         isPreview && "px-4",
       )}
     >
-      <div className={"flex w-full items-center justify-between"}> {/* Ensure items-center for vertical alignment */}
+      <div className={"flex w-full items-center justify-between"}>
+        {" "}
+        {/* Ensure items-center for vertical alignment */}
         {isPreview ? <PreviewHeaderInfoWrapper>{titleInfo}</PreviewHeaderInfoWrapper> : titleInfo}
         {!isPreview && (
           <div

@@ -1,8 +1,6 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useEntryStore } from "@follow/store/entry" // Corrected import
-import type { EntryModel } from "@follow/store/entry/types"
-import { useFeedStore } from "@follow/store/feed"   // Corrected import
-import type { Feed } from "@follow/store/feed/types"
+import { useFeedStore } from "@follow/store/feed" // Corrected import
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import { useAtomValue } from "jotai"
@@ -37,8 +35,8 @@ export const EntryListContentPicture = ({
     useFetchEntriesControls()
 
   const searchQuery = useAtomValue(timelineSearchQueryAtom)
-  const entryMap = useEntryStore(state => state.data) || {} // Use correct store and selector
-  const feedMap = useFeedStore(state => state.feeds) || {}   // Use correct store and selector
+  const entryMap = useEntryStore((state) => state.data) || {} // Use correct store and selector
+  const feedMap = useFeedStore((state) => state.feeds) || {} // Use correct store and selector
 
   const filteredEntryIds = useMemo(() => {
     if (!entryIds) return null
@@ -56,7 +54,14 @@ export const EntryListContentPicture = ({
       const contentMatch = contentToSearch.toLowerCase().includes(lowerCaseQuery)
       const authorMatch = entry.authors?.some((author) => {
         if (typeof author === "string") return author.toLowerCase().includes(lowerCaseQuery)
-        return author?.name?.toLowerCase().includes(lowerCaseQuery) || (author && typeof author.name === 'undefined' && Object.values(author).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseQuery)));
+        return (
+          author?.name?.toLowerCase().includes(lowerCaseQuery) ||
+          (author &&
+            author.name === undefined &&
+            Object.values(author).some(
+              (val) => typeof val === "string" && val.toLowerCase().includes(lowerCaseQuery),
+            ))
+        )
       })
       return titleMatch || feedNameMatch || contentMatch || authorMatch
     })
@@ -69,7 +74,12 @@ export const EntryListContentPicture = ({
   const translation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
   usePrefetchEntryTranslation({
-    entryIds: active && filteredEntryIds ? viewableItems.filter(item => filteredEntryIds.includes(item.key)).map((item) => item.key) : [],
+    entryIds:
+      active && filteredEntryIds
+        ? viewableItems
+            .filter((item) => filteredEntryIds.includes(item.key))
+            .map((item) => item.key)
+        : [],
     language: actionLanguage,
     checkLanguage,
     translation,
@@ -91,7 +101,7 @@ export const EntryListContentPicture = ({
       style={hackStyle}
       estimatedItemSize={100}
       ListFooterComponent={
-        (hasNextPage && (filteredEntryIds && filteredEntryIds.length > 0)) ? ( // Consider filtered list for skeleton
+        hasNextPage && filteredEntryIds && filteredEntryIds.length > 0 ? ( // Consider filtered list for skeleton
           <View className="h-20 items-center justify-center">
             <PlatformActivityIndicator />
           </View>

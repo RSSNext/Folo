@@ -65,9 +65,7 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
           : undefined
       }
       headerHideableBottomHeight={
-        isTimeline || isSubscriptions
-          ? TIMELINE_VIEW_SELECTOR_HEIGHT + SEARCH_BAR_HEIGHT
-          : 0
+        isTimeline || isSubscriptions ? TIMELINE_VIEW_SELECTOR_HEIGHT + SEARCH_BAR_HEIGHT : 0
       }
     />
   )

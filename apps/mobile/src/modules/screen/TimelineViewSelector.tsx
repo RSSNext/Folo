@@ -123,7 +123,7 @@ function ViewItem({
   isActive: boolean
 }) {
   const textColor = useColor("gray")
-  const setTimelineSearchQuery = useSetAtom(timelineSearchQueryAtom);
+  const setTimelineSearchQuery = useSetAtom(timelineSearchQueryAtom)
   const unreadCount = useUnreadCountByView(view.view)
   const borderColor = useColor("gray5")
   const { t } = useTranslation("common")
@@ -156,8 +156,8 @@ function ViewItem({
           isActive={isActive}
           onPress={() => {
             // Reset search query when a new view is selected
-            setTimelineSearchQuery("");
-            selectTimeline({ type: "view", viewId: view.view });
+            setTimelineSearchQuery("")
+            selectTimeline({ type: "view", viewId: view.view })
           }}
           style={isActive ? { backgroundColor: view.activeColor } : undefined}
         >
