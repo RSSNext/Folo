@@ -20,7 +20,10 @@ type Tab = {
   value: string
 }
 
-export type TabComponent = FC<{ isSelected: boolean; tab: Tab } & Pick<ViewProps, "onLayout">>
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type TabComponent<T extends {} = {}> = FC<
+  { isSelected: boolean; tab: Tab } & T & Pick<ViewProps, "onLayout">
+>
 interface TabViewProps {
   tabs: Tab[]
   Tab?: TabComponent

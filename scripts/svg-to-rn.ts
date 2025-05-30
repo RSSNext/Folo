@@ -13,7 +13,7 @@ interface SvgNode {
   children?: SvgNode[]
 }
 
-const generatePathElement = (node: SvgNode): string => {
+const generateElement = (node: SvgNode): string => {
   const props = Object.entries(node.properties)
     .map(([key, value]) => {
       const camelKey = key.replaceAll(/-([a-z])/g, (_match, p1: string) => p1.toUpperCase())
@@ -33,8 +33,21 @@ const generatePathElement = (node: SvgNode): string => {
     })
     .join(" ")
 
-  return `      <Path ${props} />`
+  const tagName = `${node.tagName.charAt(0).toUpperCase()}${node.tagName.slice(1)}`
+
+  return `      <${tagName} ${props} />`
 }
+
+const isPureBackgroundPath = (node: any) => {
+  return (
+    node.tagName === "path" &&
+    node.properties.fill === "#fff" &&
+    node.properties["fill-opacity"] === 0.01 &&
+    node.properties.d === "M24 0v24H0V0z"
+  )
+}
+
+const supportedTags = new Set(["path", "circle"])
 
 const convertSvgToRN = (svgContent: string, componentName: string) => {
   const ast = parse(svgContent)
@@ -43,12 +56,13 @@ const convertSvgToRN = (svgContent: string, componentName: string) => {
 
   const pathElements =
     svgNode.children
-      ?.filter((child) => child.tagName === "path")
-      .map((node) => generatePathElement(node))
+      ?.filter((child) => supportedTags.has(child.tagName))
+      .filter((child) => !isPureBackgroundPath(child))
+      .map((node) => generateElement(node))
       .join("\n") ?? ""
 
   return `import * as React from "react"
-import Svg, { Path } from "react-native-svg"
+import Svg, { Circle, Path } from "react-native-svg"
 
 interface ${componentName}Props {
   width?: number

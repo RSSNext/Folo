@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai"
-import { useContext, useMemo } from "react"
+import { use, useMemo } from "react"
 import { View } from "react-native"
 
 import { CenteredToast } from "./CenteredToast"
@@ -7,7 +7,7 @@ import { ToastContainerContext } from "./ctx"
 import type { ToastProps } from "./types"
 
 export const ToastContainer = () => {
-  const stackAtom = useContext(ToastContainerContext)
+  const stackAtom = use(ToastContainerContext)
   const stack = useAtomValue(stackAtom)
 
   const { renderCenterReplaceToast, renderBottomStackToasts } = useMemo(() => {

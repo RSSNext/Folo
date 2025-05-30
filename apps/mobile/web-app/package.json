@@ -1,0 +1,8 @@
+{
+  "name": "@follow/rn-micro-web-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd html-renderer && vite build"
+  }
+}

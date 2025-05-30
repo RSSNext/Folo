@@ -1,66 +1,50 @@
-import { RSSHubCategories } from "@follow/constants"
-import { getDefaultHeaderHeight } from "@react-navigation/elements"
-import { router } from "expo-router"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import type { FC } from "react"
-import { useContext, useEffect, useRef, useState } from "react"
-import type { LayoutChangeEvent } from "react-native"
-import {
-  Animated,
+import { use, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { StyleSheet, Text, TextInput, View } from "react-native"
+import Animated, {
   Easing,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  useAnimatedValue,
-  View,
-} from "react-native"
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { ReAnimatedTouchableOpacity } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
-import { TabBar } from "@/src/components/ui/tabview/TabBar"
+import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
+import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views/NavigationHeaderContext"
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
+import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { accentColor, useColor } from "@/src/theme/colors"
 
-import { RSSHubCategoryCopyMap } from "./copy"
-import { useSearchPageContext } from "./ctx"
-import { DiscoverContext } from "./DiscoverContext"
+import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./ctx"
 import { SearchTabBar } from "./SearchTabBar"
 
-export const SearchHeader: FC<{
-  animatedX: Animated.Value
-  onLayout: (e: LayoutChangeEvent) => void
-}> = ({ animatedX, onLayout }) => {
-  const frame = useSafeAreaFrame()
-  const insets = useSafeAreaInsets()
-  const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
-
+const DynamicBlurEffect = () => {
+  const { reAnimatedScrollY } = use(ScreenItemContext)
+  const blurStyle = useAnimatedStyle(() => ({
+    opacity: Math.max(0, Math.min(1, reAnimatedScrollY.value / 50)),
+  }))
   return (
-    <View
-      style={{ minHeight: headerHeight, paddingTop: insets.top }}
-      className="relative"
-      onLayout={onLayout}
-    >
+    <Animated.View className="absolute inset-0 flex-1" style={blurStyle} pointerEvents={"none"}>
       <BlurEffect />
-      <View style={styles.header}>
-        <ComposeSearchBar />
-      </View>
-      <SearchTabBar animatedX={animatedX} />
-    </View>
+    </Animated.View>
   )
 }
 
 export const DiscoverHeader = () => {
-  return <DiscoverHeaderImpl />
-}
-const DiscoverHeaderImpl = () => {
   const frame = useSafeAreaFrame()
   const insets = useSafeAreaInsets()
-  const headerHeight = getDefaultHeaderHeight(frame, false, insets.top)
-  const { animatedX, currentTabAtom, headerHeightAtom } = useContext(DiscoverContext)
-  const setCurrentTab = useSetAtom(currentTabAtom)
-  const setHeaderHeight = useSetAtom(headerHeightAtom)
+  const sheetModal = useScreenIsInSheetModal()
+  const headerHeight = getDefaultHeaderHeight(frame, sheetModal, insets.top)
+
+  const scrollContainerAnimatedX = useSearchPageScrollContainerAnimatedX()
+  const { searchFocusedAtom } = useSearchPageContext()
+  const isFocused = useAtomValue(searchFocusedAtom)
+
+  const setHeaderHeight = use(SetNavigationHeaderHeightContext)
 
   return (
     <View
@@ -70,74 +54,18 @@ const DiscoverHeaderImpl = () => {
         setHeaderHeight(e.nativeEvent.layout.height)
       }}
     >
-      <BlurEffect />
-      <View style={styles.header}>
-        <PlaceholerSearchBar />
-      </View>
+      <DynamicBlurEffect />
 
-      <TabBar
-        tabs={RSSHubCategories.map((category) => ({
-          name: RSSHubCategoryCopyMap[category],
-          value: category,
-        }))}
-        tabScrollContainerAnimatedX={animatedX}
-        onTabItemPress={(index) => {
-          setCurrentTab(index)
-        }}
-      />
+      <View style={styles.header}>
+        <SearchInput />
+      </View>
+      {isFocused && <SearchTabBar animatedX={scrollContainerAnimatedX} />}
     </View>
   )
 }
 
-const PlaceholerSearchBar = () => {
-  const labelColor = useColor("secondaryLabel")
-  return (
-    <Pressable
-      style={styles.searchbar}
-      className="bg-tertiary-system-fill"
-      onPress={() => {
-        router.push("/search")
-      }}
-    >
-      <View
-        className="absolute inset-0 flex flex-row items-center justify-center"
-        pointerEvents="none"
-      >
-        <Search2CuteReIcon color={labelColor} height={18} width={18} />
-        <Text className="text-secondary-label ml-1" style={styles.searchPlaceholderText}>
-          Search
-        </Text>
-      </View>
-    </Pressable>
-  )
-}
-
-const ComposeSearchBar = () => {
-  const { searchFocusedAtom, searchValueAtom } = useSearchPageContext()
-  const setIsFocused = useSetAtom(searchFocusedAtom)
-  const setSearchValue = useSetAtom(searchValueAtom)
-  return (
-    <>
-      <SearchInput />
-
-      <TouchableOpacity
-        hitSlop={10}
-        onPress={() => {
-          setIsFocused(false)
-          setSearchValue("")
-
-          if (router.canGoBack()) {
-            router.back()
-          }
-        }}
-      >
-        <Text className="ml-2 text-accent">Cancel</Text>
-      </TouchableOpacity>
-    </>
-  )
-}
-
 const SearchInput = () => {
+  const { t } = useTranslation("common")
   const { searchFocusedAtom, searchValueAtom } = useSearchPageContext()
   const [isFocused, setIsFocused] = useAtom(searchFocusedAtom)
   const placeholderTextColor = useColor("secondaryLabel")
@@ -145,9 +73,11 @@ const SearchInput = () => {
   const setSearchValue = useSetAtom(searchValueAtom)
   const inputRef = useRef<TextInput>(null)
 
-  const skeletonOpacityValue = useAnimatedValue(0)
-  const skeletonTranslateXValue = useAnimatedValue(0)
-  const placeholderOpacityValue = useAnimatedValue(1)
+  const skeletonOpacity = useSharedValue(0)
+  const skeletonTranslateX = useSharedValue(0)
+  const placeholderOpacity = useSharedValue(0)
+  const marginRight = useSharedValue(0)
+  const cancelButtonTranslateX = useSharedValue(20)
 
   const [tempSearchValue, setTempSearchValue] = useState(searchValue)
 
@@ -155,48 +85,65 @@ const SearchInput = () => {
 
   useEffect(() => {
     if (focusOrHasValue) {
-      Animated.timing(skeletonOpacityValue, {
-        toValue: 0,
-        duration: 100,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start()
-      Animated.timing(skeletonTranslateXValue, {
-        toValue: -150,
+      skeletonOpacity.value = withTiming(0, { duration: 100 })
+      skeletonTranslateX.value = withTiming(-150, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }).start()
-
-      Animated.timing(placeholderOpacityValue, {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start()
+      })
+      placeholderOpacity.value = withTiming(1, { duration: 200 })
+      marginRight.value = withTiming(64, { duration: 200 })
+      cancelButtonTranslateX.value = withTiming(0, { duration: 200 })
     } else {
-      Animated.timing(skeletonOpacityValue, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start()
-
-      Animated.timing(skeletonTranslateXValue, {
-        toValue: 0,
+      skeletonOpacity.value = withTiming(1, { duration: 100 })
+      skeletonTranslateX.value = withTiming(0, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }).start()
-
-      Animated.timing(placeholderOpacityValue, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start()
+      })
+      placeholderOpacity.value = withTiming(0, { duration: 200 })
+      marginRight.value = withTiming(0, { duration: 200 })
+      cancelButtonTranslateX.value = withTiming(20, { duration: 200 })
     }
-  }, [focusOrHasValue, skeletonOpacityValue, placeholderOpacityValue, skeletonTranslateXValue])
+  }, [
+    focusOrHasValue,
+    placeholderOpacity,
+    skeletonOpacity,
+    skeletonTranslateX,
+    marginRight,
+    cancelButtonTranslateX,
+  ])
+
+  const skeletonAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: skeletonOpacity.value,
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    transform: [{ translateX: skeletonTranslateX.value }],
+  }))
+
+  const placeholderAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: placeholderOpacity.value,
+
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  }))
+
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    marginRight: marginRight.value,
+  }))
+
+  const cancelButtonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: cancelButtonTranslateX.value }],
+  }))
 
   useEffect(() => {
     if (!isFocused) {
@@ -207,67 +154,69 @@ const SearchInput = () => {
   }, [isFocused])
 
   return (
-    <View style={styles.searchbar} className="bg-tertiary-system-fill">
-      {focusOrHasValue && (
-        <Animated.View
-          style={{
-            opacity: placeholderOpacityValue,
+    <Animated.View className="flex-row items-center justify-center" style={containerAnimatedStyle}>
+      <View style={styles.searchbar} className="bg-tertiary-system-fill">
+        {focusOrHasValue && (
+          <Animated.View style={placeholderAnimatedStyle}>
+            <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
+            {!searchValue && !tempSearchValue && (
+              <Text className="text-secondary-label ml-2" style={styles.searchPlaceholderText}>
+                {t("words.search")}
+              </Text>
+            )}
+          </Animated.View>
+        )}
+        <TextInput
+          enterKeyHint="search"
+          autoFocus={isFocused}
+          ref={inputRef}
+          onSubmitEditing={() => {
+            setSearchValue(tempSearchValue)
           }}
-          className="absolute inset-y-0 left-3 flex flex-row items-center justify-center"
-        >
+          defaultValue={searchValue}
+          cursorColor={accentColor}
+          selectionColor={accentColor}
+          style={styles.searchInput}
+          className="text-text"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => !searchValue && !tempSearchValue && setIsFocused(false)}
+          onChangeText={(text) => {
+            setTempSearchValue(text)
+          }}
+        />
+
+        <Animated.View style={skeletonAnimatedStyle} pointerEvents="none">
           <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
-          {!searchValue && !tempSearchValue && (
-            <Text className="text-secondary-label ml-2" style={styles.searchPlaceholderText}>
-              Search
-            </Text>
-          )}
+          <Text className="text-secondary-label ml-1" style={styles.searchPlaceholderText}>
+            {t("words.search")}
+          </Text>
         </Animated.View>
-      )}
-      <TextInput
-        enterKeyHint="search"
-        autoFocus={isFocused}
-        ref={inputRef}
-        onSubmitEditing={() => {
-          setSearchValue(tempSearchValue)
+      </View>
+
+      <ReAnimatedTouchableOpacity
+        hitSlop={10}
+        onPress={() => {
+          setIsFocused(false)
+          setSearchValue("")
           setTempSearchValue("")
         }}
-        defaultValue={searchValue}
-        cursorColor={accentColor}
-        selectionColor={accentColor}
-        style={styles.searchInput}
-        className="text-text"
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onChangeText={(text) => {
-          setTempSearchValue(text)
-        }}
-      />
-
-      <Animated.View
-        style={{
-          opacity: skeletonOpacityValue,
-          transform: [{ translateX: skeletonTranslateXValue }],
-        }}
-        className="absolute inset-0 flex flex-row items-center justify-center"
-        pointerEvents="none"
+        className="absolute -right-20 w-20 pl-4"
+        style={cancelButtonAnimatedStyle}
       >
-        <Search2CuteReIcon color={placeholderTextColor} height={18} width={18} />
-        <Text className="text-secondary-label ml-1" style={styles.searchPlaceholderText}>
-          Search
-        </Text>
-      </Animated.View>
-    </View>
+        <Text className="text-accent text-lg font-medium">Cancel</Text>
+      </ReAnimatedTouchableOpacity>
+    </Animated.View>
   )
 }
 const styles = StyleSheet.create({
   header: {
     flex: 1,
     alignItems: "center",
-    marginTop: -3,
     flexDirection: "row",
-    marginBottom: 6,
+    marginBottom: 14,
     marginHorizontal: 16,
     position: "relative",
+    marginTop: 4,
   },
 
   searchbar: {
@@ -277,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,
-    height: 32,
+    height: 40,
     position: "relative",
   },
   searchInput: {

@@ -1,13 +1,13 @@
-# Contributing to Follow
+# Contributing to Folo
 
-Thank you for considering contributing to Follow! We welcome contributions from the community to help improve and expand the project.
+Thank you for considering contributing to Folo! We welcome contributions from the community to help improve and expand the project.
 
 ## Getting Started
 
 Before you start contributing, please ensure you have enabled [Corepack](https://nodejs.org/api/corepack.html). Corepack ensures you are using the correct version of the package manager specified in the `package.json`.
 
 ```sh
-corepack enable
+corepack enable && corepack prepare
 ```
 
 ### Installing Dependencies
@@ -25,7 +25,7 @@ pnpm install
 For a more convenient development experience, we recommend developing in the browser:
 
 ```sh
-pnpm run dev:web
+cd apps/desktop && pnpm run dev:web
 ```
 
 This will open the browser at `https://app.follow.is/__debug_proxy`, allowing you to access the online API environment for development and debugging.
@@ -33,6 +33,12 @@ This will open the browser at `https://app.follow.is/__debug_proxy`, allowing yo
 ### Develop in Electron
 
 If you prefer to develop in Electron, follow these steps:
+
+0. Go to the `apps/desktop` directory:
+
+   ```sh
+   cd apps/desktop
+   ```
 
 1. Copy the example environment variables file:
 
@@ -45,10 +51,76 @@ If you prefer to develop in Electron, follow these steps:
 3. Run the development server:
 
    ```sh
-   pnpm run dev
+   pnpm run dev:electron
    ```
 
 > **Tip:** If you encounter login issues, copy the `__Secure-better-auth.session_token` from your browser's cookies into the app.
+
+### Develop in External SSR Web App
+
+To develop in SSR, follow these steps:
+
+1. Go to the `apps/ssr` directory:
+
+   ```sh
+   cd apps/ssr
+   ```
+
+2. Run the development server:
+
+   ```sh
+   pnpm run dev
+   ```
+
+### Develop in Mobile App
+
+To develop in the mobile app, follow these steps:
+
+> [!NOTE]
+> You need to have a Mac device to develop in the mobile app.
+>
+> And already installed Xcode and the necessary dependencies.
+
+1. Go to the `apps/mobile` directory:
+
+   ```sh
+   cd apps/mobile
+   ```
+
+2. Build and install Folo(dev) app from source: (This step will take a while and only need to be done once)
+
+   ```sh
+   pnpm expo prebuild --clean # Optional
+   pnpm run ios
+   ```
+
+3. Run the development server:
+
+   ```sh
+   pnpm run dev
+   ```
+
+#### Development Native Modules
+
+To develop native iOS modules, follow these steps:
+
+1. Go to the `apps/mobile` directory:
+
+   ```sh
+   cd apps/mobile/ios
+   ```
+
+2. Open project in Xcode:
+
+   ```sh
+   open Folo.xcworkspace
+   ```
+
+3. Open `Pods` in left sidebar and select `FollowNative`:
+
+![](https://github.com/user-attachments/assets/a449c087-6d55-4cbd-bc4b-c61a08406e98)
+
+4. Build and run the project.
 
 ## Contribution Guidelines
 
@@ -68,4 +140,4 @@ We look forward to your contributions!
 
 ## License
 
-By contributing to Follow, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.
+By contributing to Folo, you agree that your contributions will be licensed under the GNU General Public License version 3, with the special exceptions noted in the `README.md`.

@@ -1,9 +1,6 @@
-import type { Config } from "tailwindcss"
+import { extendConfig } from "@follow/configs/tailwindcss/web"
 
-import { baseTwConfig } from "../../configs/tailwind.base.config"
-
-export default {
-  ...baseTwConfig,
+export default extendConfig({
   darkMode: "media",
   content: ["../../packages/**/*.{ts,tsx}"],
-} satisfies Config
+})

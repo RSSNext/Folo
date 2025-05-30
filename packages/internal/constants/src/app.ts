@@ -1,0 +1,1 @@
+export const APPLE_APP_STORE_ID = "6739802604"

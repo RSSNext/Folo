@@ -1,8 +1,9 @@
 // https://github.com/react-navigation/react-navigation/blob/main/packages/native-stack/src/views/NativeStackView.native.tsx
 
-import { getDefaultHeaderHeight } from "@react-navigation/elements"
 import { Platform } from "react-native"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
+
+import { getDefaultHeaderHeight } from "../components/layouts/utils"
 
 export const useDefaultHeaderHeight = () => {
   const insets = useSafeAreaInsets()

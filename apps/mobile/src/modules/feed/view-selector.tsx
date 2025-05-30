@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
-import { Text, TouchableOpacity, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { Pressable, Text, View } from "react-native"
 
 import { Grid } from "@/src/components/ui/grid"
 import { views } from "@/src/constants/views"
@@ -14,13 +15,14 @@ interface Props {
 }
 
 export const FeedViewSelector = ({ value, onChange, className, readOnly }: Props) => {
+  const { t } = useTranslation("common")
   const secondaryLabelColor = useColor("secondaryLabel")
   return (
     <Grid columns={views.length} gap={5} className={className}>
       {views.map((view) => {
         const isSelected = +value === +view.view
         return (
-          <TouchableOpacity
+          <Pressable
             key={view.name}
             onPress={() => onChange?.(view.view)}
             disabled={readOnly}
@@ -38,10 +40,10 @@ export const FeedViewSelector = ({ value, onChange, className, readOnly }: Props
                   color: isSelected ? view.activeColor : secondaryLabelColor,
                 }}
               >
-                {view.name}
+                {t(view.name)}
               </Text>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         )
       })}
     </Grid>

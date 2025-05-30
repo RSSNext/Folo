@@ -1,145 +1,150 @@
-import { FeedViewType } from "@follow/constants"
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
-import { useHeaderHeight } from "@react-navigation/elements"
-import { useAtom } from "jotai"
-import { memo, useEffect, useMemo, useRef, useState } from "react"
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native"
-import PagerView from "react-native-pager-view"
-import ReAnimated, { LinearTransition } from "react-native-reanimated"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useEventCallback } from "usehooks-ts"
-
-import { ItemPressable } from "@/src/components/ui/pressable/item-pressable"
-import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
-import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
+import type { FeedViewType } from "@follow/constants"
+import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import {
   useGroupedSubscription,
   useInboxSubscription,
   useListSubscription,
-  usePrefetchSubscription,
   useSortedGroupedSubscription,
   useSortedListSubscription,
   useSortedUngroupedSubscription,
-} from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
+} from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
+import type { FlashList } from "@shopify/flash-list"
+import type { ParseKeys } from "i18next"
+import { memo, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Text, View } from "react-native"
+import { useEventCallback } from "usehooks-ts"
 
-import { closeDrawer, selectFeed } from "../feed-drawer/atoms"
-import { useFeedListSortMethod, useFeedListSortOrder, viewAtom } from "./atoms"
+import { useGeneralSettingKey, useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
+import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
+import {
+  GROUPED_ICON_TEXT_GAP,
+  GROUPED_LIST_ITEM_PADDING,
+  GROUPED_LIST_MARGIN,
+  GROUPED_SECTION_BOTTOM_MARGIN,
+  GROUPED_SECTION_TOP_MARGIN,
+} from "@/src/components/ui/grouped/constants"
+import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
+import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
+import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { selectFeed } from "@/src/modules/screen/atoms"
+import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
+import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
+
+import { usePagerListPerformanceHack } from "../entry-list/hooks"
+import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { CategoryGrouped } from "./CategoryGrouped"
-import { ViewTabHeight } from "./constants"
-import { useViewPageCurrentView, ViewPageCurrentViewProvider } from "./ctx"
 import { InboxItem } from "./items/InboxItem"
 import { ListSubscriptionItem } from "./items/ListSubscriptionItem"
 import { SubscriptionItem } from "./items/SubscriptionItem"
-import { ItemSeparator } from "./ItemSeparator"
 
-export const SubscriptionLists = memo(() => {
-  const [currentView, setCurrentView] = useAtom(viewAtom)
-
-  const pagerRef = useRef<PagerView>(null)
-
-  useEffect(() => {
-    pagerRef.current?.setPage(currentView)
-  }, [currentView])
-
-  return (
-    <PagerView
-      pageMargin={1}
-      onPageSelected={({ nativeEvent }) => {
-        setCurrentView(nativeEvent.position)
-      }}
-      scrollEnabled
-      style={style.flex}
-      initialPage={0}
-      ref={pagerRef}
-      offscreenPageLimit={3}
-    >
-      {[
-        FeedViewType.Articles,
-        FeedViewType.SocialMedia,
-        FeedViewType.Pictures,
-        FeedViewType.Videos,
-        FeedViewType.Audios,
-        FeedViewType.Notifications,
-      ].map((view) => {
-        return (
-          <ViewPageCurrentViewProvider key={view} value={view}>
-            <SubscriptionList view={view} additionalOffsetTop={ViewTabHeight * 2 + 23} />
-          </ViewPageCurrentViewProvider>
-        )
-      })}
-    </PagerView>
-  )
-})
 const keyExtractor = (item: string | { category: string; subscriptionIds: string[] }) => {
   if (typeof item === "string") {
     return item
   }
   return item.category
 }
-export const SubscriptionList = ({
+
+const SubscriptionListImpl = ({
   view,
-  additionalOffsetTop,
+  active = true,
 }: {
   view: FeedViewType
-  additionalOffsetTop?: number
+  active?: boolean
 }) => {
-  const headerHeight = useHeaderHeight()
-  const insets = useSafeAreaInsets()
-  const tabHeight = useBottomTabBarHeight()
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const listIds = useListSubscription(view)
+  const sortedListIds = useSortedListSubscription({
+    ids: listIds,
+    sortBy: "alphabet",
+    hideAllReadSubscriptions,
+  })
 
-  usePrefetchSubscription(view)
-  const { grouped, unGrouped } = useGroupedSubscription(view)
+  const inboxes = useInboxSubscription(view)
+
+  const { grouped, unGrouped } = useGroupedSubscription({
+    view,
+    autoGroup,
+  })
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedGrouped = useSortedGroupedSubscription(grouped, sortBy, sortOrder)
-  const sortedUnGrouped = useSortedUngroupedSubscription(unGrouped, sortBy, sortOrder)
+  const sortedGrouped = useSortedGroupedSubscription({
+    view,
+    grouped,
+    sortBy,
+    sortOrder,
+    hideAllReadSubscriptions,
+  })
+  const sortedUnGrouped = useSortedUngroupedSubscription({
+    ids: unGrouped,
+    sortBy,
+    sortOrder,
+    hideAllReadSubscriptions,
+  })
+
   const data = useMemo(
-    () => [...sortedGrouped, ...sortedUnGrouped],
-    [sortedGrouped, sortedUnGrouped],
+    () => [
+      "words.starred",
+      "words.lists",
+      ...sortedListIds,
+      "words.inbox",
+      ...inboxes,
+      "words.feeds",
+      ...sortedGrouped,
+      ...sortedUnGrouped,
+    ],
+    [inboxes, sortedListIds, sortedGrouped, sortedUnGrouped],
   )
+
+  const extraData = useMemo(() => {
+    const listsIndexStart = 2
+    const listsIndexEnd = listsIndexStart + sortedListIds.length - 1
+    const inboxIndexStart = listsIndexEnd + 2
+    const inboxIndexEnd = inboxIndexStart + inboxes.length - 1
+    const feedsIndexStart = inboxIndexEnd + 2
+    const feedsIndexEnd = feedsIndexStart + sortedGrouped.length + sortedUnGrouped.length - 1
+    const groupedIndexStart = inboxIndexEnd + 2
+    const groupedIndexEnd = groupedIndexStart + sortedGrouped.length - 1
+    return {
+      inboxIndexRange: [inboxIndexStart, inboxIndexEnd],
+      feedsIndexRange: [feedsIndexStart, feedsIndexEnd],
+      listsIndexRange: [listsIndexStart, listsIndexEnd],
+      groupedIndexRange: [groupedIndexStart, groupedIndexEnd],
+    }
+  }, [inboxes.length, sortedGrouped.length, sortedListIds.length, sortedUnGrouped.length])
 
   const [refreshing, setRefreshing] = useState(false)
   const onRefresh = useEventCallback(() => {
     return subscriptionSyncService.fetch(view)
   })
 
-  const offsetTop = headerHeight - insets.top + (additionalOffsetTop || 0)
+  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any> | null>(active)
+
+  const { onScroll, style } = usePagerListPerformanceHack(scrollViewRef)
 
   return (
-    <ReAnimated.FlatList
-      refreshControl={
-        <RefreshControl
-          progressViewOffset={headerHeight}
-          onRefresh={() => {
-            setRefreshing(true)
-            onRefresh().finally(() => {
-              setRefreshing(false)
-            })
-          }}
-          refreshing={refreshing}
-        />
-      }
-      className={"bg-system-grouped-background"}
-      contentInsetAdjustmentBehavior="automatic"
-      scrollIndicatorInsets={{
-        bottom: tabHeight - insets.bottom,
-        top: offsetTop,
+    <TimelineSelectorList
+      contentContainerClassName="pb-6"
+      ref={scrollViewRef}
+      onRefresh={() => {
+        setRefreshing(true)
+        onRefresh().finally(() => {
+          setRefreshing(false)
+        })
       }}
-      contentContainerStyle={{
-        paddingTop: offsetTop,
-        paddingBottom: tabHeight,
-      }}
-      ItemSeparatorComponent={ItemSeparator}
+      isRefetching={refreshing}
       data={data}
-      ListHeaderComponent={ListHeaderComponent}
+      estimatedItemSize={50}
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
-      itemLayoutAnimation={LinearTransition}
-      extraData={{
-        total: data.length,
-      }}
+      extraData={extraData}
+      onScroll={onScroll}
+      style={style}
     />
   )
 }
@@ -152,88 +157,121 @@ const ItemRender = ({
   item: string | { category: string; subscriptionIds: string[] }
   index: number
   extraData?: {
-    total: number
+    inboxIndexRange: [number, number]
+    feedsIndexRange: [number, number]
+    listsIndexRange: [number, number]
+    groupedIndexRange: [number, number]
   }
 }) => {
   if (typeof item === "string") {
-    return (
-      <SubscriptionItem
-        id={item}
-        className={extraData && index === extraData.total - 1 ? "border-b-transparent" : ""}
-      />
-    )
+    switch (item) {
+      case "words.starred": {
+        return <StarItem />
+      }
+      case "words.inbox": {
+        if (!extraData) return null
+        const { inboxIndexRange } = extraData
+        if (inboxIndexRange[0] > inboxIndexRange[1]) return null
+        return <SectionTitle transKey={item} />
+      }
+      case "words.lists": {
+        if (!extraData) return null
+        const { listsIndexRange } = extraData
+        if (listsIndexRange[0] > listsIndexRange[1]) return null
+        return <SectionTitle transKey={item} />
+      }
+      case "words.feeds": {
+        if (!extraData) return null
+        const { feedsIndexRange } = extraData
+        if (feedsIndexRange[0] > feedsIndexRange[1]) return null
+        return <SectionTitle transKey={item} />
+      }
+      default: {
+        if (!extraData) return null
+        const { inboxIndexRange, feedsIndexRange, listsIndexRange } = extraData
+
+        if (listsIndexRange[0] <= index && index <= listsIndexRange[1]) {
+          const isFirst = index === listsIndexRange[0]
+          const isLast = index === listsIndexRange[1]
+          return <ListSubscriptionItem id={item} isFirst={isFirst} isLast={isLast} />
+        }
+
+        if (inboxIndexRange[0] <= index && index <= inboxIndexRange[1]) {
+          const isFirst = index === inboxIndexRange[0]
+          const isLast = index === inboxIndexRange[1]
+          return <InboxItem id={item} isFirst={isFirst} isLast={isLast} />
+        }
+
+        if (feedsIndexRange[0] <= index && index <= feedsIndexRange[1]) {
+          const isFirst = index === feedsIndexRange[0]
+          const isLast = index === feedsIndexRange[1]
+          return <SubscriptionItem id={item} isFirst={isFirst} isLast={isLast} />
+        }
+
+        return null
+      }
+    }
   }
+
   const { category, subscriptionIds } = item
 
-  return <CategoryGrouped category={category} subscriptionIds={subscriptionIds} />
-}
-
-const ListHeaderComponent = () => {
-  const view = useViewPageCurrentView()
+  if (!extraData) return null
+  const { feedsIndexRange } = extraData
+  const isFirst = index === feedsIndexRange[0]
+  const isLast = index === feedsIndexRange[1]
 
   return (
-    <>
-      <StarItem />
-      {view === FeedViewType.Articles && <InboxList />}
-      <ListList />
-      <Text className="text-secondary-label mb-2 ml-3 mt-4 text-sm font-medium">Feeds</Text>
-    </>
+    <CategoryGrouped
+      category={category}
+      subscriptionIds={subscriptionIds}
+      isFirst={isFirst}
+      isLast={isLast}
+    />
   )
 }
 
-const InboxList = () => {
-  const inboxes = useInboxSubscription(FeedViewType.Articles)
-  if (inboxes.length === 0) return null
+const SectionTitle = ({ transKey }: { transKey: ParseKeys<"common"> }) => {
+  const { t } = useTranslation("common")
   return (
-    <View>
-      <Text className="text-secondary-label mb-2 ml-3 mt-4 text-sm font-medium">Inboxes</Text>
-
-      <FlatList
-        data={inboxes}
-        renderItem={renderInboxItems}
-        ItemSeparatorComponent={ItemSeparator}
-      />
+    <View
+      style={{
+        marginHorizontal: GROUPED_LIST_MARGIN,
+        marginTop: GROUPED_SECTION_TOP_MARGIN,
+        marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
+        paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+      }}
+    >
+      <Text className="text-secondary-label" ellipsizeMode="tail" numberOfLines={1}>
+        {t(transKey)}
+      </Text>
     </View>
   )
 }
-const renderInboxItems = ({ item }: { item: string }) => <InboxItem id={item} />
 
 const StarItem = () => {
+  const navigation = useNavigation()
+  const { t } = useTranslation("common")
+
   return (
-    <ItemPressable
-      onPress={() => {
-        selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
-        closeDrawer()
-      }}
-      className="mt-4 h-12 w-full flex-row items-center px-3"
-    >
-      <StarCuteFiIcon color="rgb(245, 158, 11)" height={20} width={20} />
-      <Text className="text-text ml-2">Collections</Text>
-    </ItemPressable>
+    <GroupedInsetListCard showSeparator={false} className="mt-4">
+      <ItemPressable
+        itemStyle={ItemPressableStyle.Grouped}
+        onPress={() => {
+          selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
+
+          navigation.pushControllerView(FeedScreen, {
+            feedId: FEED_COLLECTION_LIST,
+          })
+        }}
+        className="h-12 w-full flex-row items-center px-3"
+      >
+        <StarCuteFiIcon color="rgb(245, 158, 11)" height={20} width={20} />
+        <Text className="text-text ml-2 font-medium" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
+          {t("words.starred")}
+        </Text>
+      </ItemPressable>
+    </GroupedInsetListCard>
   )
 }
 
-const ListList = () => {
-  const currentView = useViewPageCurrentView()
-  const listIds = useListSubscription(currentView)
-  const sortedListIds = useSortedListSubscription(listIds, "alphabet")
-  if (sortedListIds.length === 0) return null
-  return (
-    <View className="mt-4">
-      <Text className="text-secondary-label mb-2 ml-3 text-sm font-medium">Lists</Text>
-
-      <FlatList
-        data={sortedListIds}
-        renderItem={renderListItems}
-        ItemSeparatorComponent={ItemSeparator}
-      />
-    </View>
-  )
-}
-const renderListItems = ({ item }: { item: string }) => <ListSubscriptionItem id={item} />
-
-const style = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-})
+export const SubscriptionList = memo(SubscriptionListImpl)

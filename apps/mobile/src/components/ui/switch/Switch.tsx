@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react"
+import { useEffect, useImperativeHandle } from "react"
 import type { SwitchChangeEvent } from "react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 import Animated, {
@@ -32,89 +32,93 @@ export interface SwitchProps {
 export type SwitchRef = {
   value: boolean
 }
-export const Switch = forwardRef<SwitchRef, SwitchProps>(
-  ({ value, onValueChange, onChange, size = "default" }, ref) => {
-    const progress = useSharedValue(value ? 1 : 0)
-    const scale = useSharedValue(1)
-    const translateX = useSharedValue(0)
+export const Switch = ({
+  ref,
+  value,
+  onValueChange,
+  onChange,
+  size = "default",
+}: SwitchProps & { ref?: React.Ref<SwitchRef | null> }) => {
+  const progress = useSharedValue(value ? 1 : 0)
+  const scale = useSharedValue(1)
+  const translateX = useSharedValue(0)
 
-    const onTouchStart = () => {
-      scale.value = withSpring(1.1)
-      if (value) {
-        translateX.value = withSpring(size === "sm" ? -4 : -7)
-      }
+  const onTouchStart = () => {
+    scale.value = withSpring(1.1)
+    if (value) {
+      translateX.value = withSpring(size === "sm" ? -4 : -7)
     }
+  }
 
-    const onTouchEnd = () => {
-      scale.value = withSpring(1)
-      translateX.value = withSpring(0)
+  const onTouchEnd = () => {
+    scale.value = withSpring(1)
+    translateX.value = withSpring(0)
+  }
+
+  useImperativeHandle(ref, () => ({
+    value: !!value,
+  }))
+
+  const activeBgColor = accentColor
+  const inactiveBgColor = useColor("secondarySystemFill")
+
+  const toggleStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      progress.value,
+      [0, 1],
+      [inactiveBgColor, activeBgColor],
+    )
+
+    return {
+      backgroundColor,
     }
+  })
 
-    useImperativeHandle(ref, () => ({
-      value: !!value,
-    }))
+  const circleStyle = useAnimatedStyle(() => {
+    const marginLeft = interpolate(progress.value, [0, 1], size === "sm" ? [2, 20] : [2.3, 22])
 
-    const activeBgColor = accentColor
-    const inactiveBgColor = useColor("secondarySystemFill")
+    const width = interpolate(scale.value, [1, 1.1], size === "sm" ? [18, 21] : [27.8, 35])
 
-    const toggleStyle = useAnimatedStyle(() => {
-      const backgroundColor = interpolateColor(
-        progress.value,
-        [0, 1],
-        [inactiveBgColor, activeBgColor],
-      )
+    return {
+      marginLeft,
+      width,
+      transform: [{ translateX: translateX.value }, { translateY: -0.4 }, { scale: scale.value }],
+    }
+  })
 
-      return {
-        backgroundColor,
-      }
-    })
+  useEffect(() => {
+    // Update progress when value changes
+    if (value && progress.value === 0) {
+      progress.value = withTiming(1)
+    } else if (!value && progress.value === 1) {
+      progress.value = withTiming(0)
+    }
+  }, [progress, value])
 
-    const circleStyle = useAnimatedStyle(() => {
-      const marginLeft = interpolate(progress.value, [0, 1], size === "sm" ? [2, 20] : [2.3, 22])
-
-      const width = interpolate(scale.value, [1, 1.1], size === "sm" ? [18, 21] : [27.8, 35])
-
-      return {
-        marginLeft,
-        width,
-        transform: [{ translateX: translateX.value }, { translateY: -0.4 }, { scale: scale.value }],
-      }
-    })
-
-    useEffect(() => {
-      // Update progress when value changes
-      if (value && progress.value === 0) {
-        progress.value = withTiming(1)
-      } else if (!value && progress.value === 1) {
-        progress.value = withTiming(0)
-      }
-    }, [progress, value])
-
-    return (
-      <View style={styles.container}>
-        <Pressable
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-          onPress={() => {
-            onValueChange?.(!value)
-            onChange?.({ target: { value: !value } as any } as SwitchChangeEvent)
-          }}
+  return (
+    <View style={styles.container}>
+      <Pressable
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onPress={() => {
+          onValueChange?.(!value)
+          onChange?.({ target: { value: !value } as any } as SwitchChangeEvent)
+        }}
+      >
+        <Animated.View
+          style={[size === "sm" ? styles.toggleContainerSm : styles.toggleContainer, toggleStyle]}
         >
           <Animated.View
-            style={[size === "sm" ? styles.toggleContainerSm : styles.toggleContainer, toggleStyle]}
-          >
-            <Animated.View
-              style={[
-                size === "sm" ? styles.toggleWheelStyleSm : styles.toggleWheelStyle,
-                circleStyle,
-              ]}
-            />
-          </Animated.View>
-        </Pressable>
-      </View>
-    )
-  },
-)
+            style={[
+              size === "sm" ? styles.toggleWheelStyleSm : styles.toggleWheelStyle,
+              circleStyle,
+            ]}
+          />
+        </Animated.View>
+      </Pressable>
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
   container: { display: "flex", justifyContent: "space-between" },

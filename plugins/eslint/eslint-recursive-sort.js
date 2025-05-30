@@ -1,19 +1,5 @@
-const sortObjectKeys = (obj) => {
-  if (typeof obj !== "object" || obj === null) {
-    return obj
-  }
+import { cleanJsonText, sortObjectKeys } from "../utils.js"
 
-  if (Array.isArray(obj)) {
-    return obj.map((element) => sortObjectKeys(element))
-  }
-
-  return Object.keys(obj)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = sortObjectKeys(obj[key])
-      return acc
-    }, {})
-}
 /**
  * @type {import("eslint").ESLint.Plugin}
  */
@@ -29,7 +15,7 @@ export default {
           Program(node) {
             if (context.filename.endsWith(".json")) {
               const { sourceCode } = context
-              const text = sourceCode.getText()
+              const text = cleanJsonText(sourceCode.getText())
 
               try {
                 const json = JSON.parse(text)

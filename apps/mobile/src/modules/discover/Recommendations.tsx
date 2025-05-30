@@ -1,43 +1,53 @@
 import { RSSHubCategories } from "@follow/constants"
-import type { RSSHubRouteDeclaration } from "@follow/models/src/rsshub"
+import type { RSSHubRouteDeclaration } from "@follow/models/rsshub"
 import { isASCII } from "@follow/utils"
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import type { ContentStyle } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import { useQuery } from "@tanstack/react-query"
-import { useAtomValue } from "jotai"
 import type { FC } from "react"
-import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
 import {
-  ActivityIndicator,
   Animated,
   Text,
   TouchableOpacity,
+  useAnimatedValue,
   useWindowDimensions,
   View,
 } from "react-native"
 import type { PanGestureHandlerGestureEvent } from "react-native-gesture-handler"
 import { PanGestureHandler } from "react-native-gesture-handler"
+import type { SharedValue } from "react-native-reanimated"
+import { useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { AnimatedScrollView } from "@/src/components/common/AnimatedComponents"
+import { BlurEffect } from "@/src/components/common/BlurEffect"
+import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
+import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { TabBar } from "@/src/components/ui/tabview/TabBar"
 import type { TabComponent } from "@/src/components/ui/tabview/TabView"
-import { apiClient } from "@/src/lib/api-fetch"
+import { MingcuteLeftLineIcon } from "@/src/icons/mingcute_left_line"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { useColor } from "@/src/theme/colors"
 
-import { RSSHubCategoryCopyMap } from "./copy"
-import { DiscoverContext } from "./DiscoverContext"
+import { fetchRsshubPopular } from "./api"
 import { RecommendationListItem } from "./RecommendationListItem"
 
 export const Recommendations = () => {
-  const { animatedX, currentTabAtom } = useContext(DiscoverContext)
-  const currentTab = useAtomValue(currentTabAtom)
+  const { t } = useTranslation("common")
 
+  const animatedX = useAnimatedValue(0)
+  const [currentTab, setCurrentTab] = useState(0)
   const windowWidth = useWindowDimensions().width
-  const contentScrollerRef = useRef<ScrollView>(null)
+  const ref = useRef<ScrollView>(null)
 
   useEffect(() => {
-    contentScrollerRef.current?.scrollTo({ x: currentTab * windowWidth, y: 0, animated: true })
-  }, [currentTab, windowWidth])
+    ref.current?.scrollTo({ x: currentTab * windowWidth, y: 0, animated: true })
+  }, [ref, currentTab, windowWidth])
 
   const [loadedTabIndex, setLoadedTabIndex] = useState(() => new Set())
   useEffect(() => {
@@ -46,71 +56,98 @@ export const Recommendations = () => {
       return new Set(prev)
     })
   }, [currentTab])
+
+  const insets = useSafeAreaInsets()
+  const navigation = useNavigation()
+  const label = useColor("label")
   return (
-    <AnimatedScrollView
-      onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: animatedX } } }], {
-        useNativeDriver: true,
-      })}
-      ref={contentScrollerRef}
-      horizontal
-      pagingEnabled
-      showsHorizontalScrollIndicator={false}
-      nestedScrollEnabled
-    >
-      {RSSHubCategories.map((category, index) => (
-        <View className="flex-1" style={{ width: windowWidth }} key={category}>
-          {loadedTabIndex.has(index) && (
-            <Tab
-              key={category}
-              tab={{ name: RSSHubCategoryCopyMap[category], value: category }}
-              isSelected={currentTab === index}
-            />
-          )}
-        </View>
-      ))}
-    </AnimatedScrollView>
+    <View className="flex-1">
+      <View className="pt-safe absolute inset-x-0 top-0 z-10 flex flex-row items-center">
+        <BlurEffect />
+
+        <UINavigationHeaderActionButton
+          onPress={() => {
+            navigation.back()
+          }}
+          className="-mb-2 ml-4"
+        >
+          <MingcuteLeftLineIcon color={label} height={20} width={20} />
+        </UINavigationHeaderActionButton>
+        <TabBar
+          tabScrollContainerAnimatedX={animatedX}
+          tabbarClassName="pt-2"
+          tabs={RSSHubCategories.map((category) => ({
+            name: t(`discover.category.${category}`),
+            value: category,
+          }))}
+          currentTab={currentTab}
+          onTabItemPress={(tab) => {
+            setCurrentTab(tab)
+          }}
+        />
+      </View>
+      <AnimatedScrollView
+        contentInsetAdjustmentBehavior="never"
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: animatedX } } }], {
+          useNativeDriver: true,
+        })}
+        ref={ref}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled
+      >
+        {RSSHubCategories.map((category, index) => (
+          <View className="flex-1" style={{ width: windowWidth }} key={category}>
+            {loadedTabIndex.has(index) && (
+              <RecommendationTab
+                key={category}
+                insets={{ top: 44 + insets.top - 10, bottom: insets.bottom }}
+                contentContainerStyle={{
+                  paddingTop: 44 + insets.top,
+                  paddingBottom: insets.bottom,
+                }}
+                tab={{ name: t(`discover.category.${category}`), value: category }}
+                isSelected={currentTab === index}
+              />
+            )}
+          </View>
+        ))}
+      </AnimatedScrollView>
+    </View>
   )
 }
 
-const _languageOptions = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "English",
-    value: "en",
-  },
-  {
-    label: "中文",
-    value: "zh-CN",
-  },
-] as const
+const LanguageMap = {
+  all: "all",
+  eng: "en",
+  cmn: "zh-CN",
+} as const
 
-type Language = (typeof _languageOptions)[number]["value"]
-type DiscoverCategories = (typeof RSSHubCategories)[number] | string
-
-const fetchRsshubPopular = (category: DiscoverCategories, lang: Language) => {
-  return apiClient.discover.rsshub.$get({
-    query: {
-      category: "popular",
-      categories: category === "all" ? "popular" : `popular,${category}`,
-      lang: lang === "all" ? undefined : lang,
-    },
-  })
-}
-
-const Tab: TabComponent = ({ tab, ...rest }) => {
-  const tabHeight = useBottomTabBarHeight()
+export const RecommendationTab: TabComponent<{
+  contentContainerStyle?: ContentStyle
+  insets?: { top?: number; bottom?: number }
+  reanimatedScrollY?: SharedValue<number>
+}> = ({
+  tab,
+  isSelected,
+  contentContainerStyle,
+  reanimatedScrollY,
+  insets: customInsets,
+  ...rest
+}) => {
+  const discoverLanguage = useUISettingKey("discoverLanguage")
 
   const { data, isLoading } = useQuery({
-    queryKey: ["rsshub-popular", tab.value],
-    queryFn: () => fetchRsshubPopular(tab.value, "all").then((res) => res.data),
+    queryKey: ["rsshub-popular", "cache", tab.value],
+    queryFn: () =>
+      fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
   })
   const keys = useMemo(() => {
     if (!data) {
       return []
     }
+
     return Object.keys(data).sort((a, b) => {
       const aname = data[a]!.name
       const bname = data[b]!.name
@@ -172,39 +209,68 @@ const Tab: TabComponent = ({ tab, ...rest }) => {
   }, [data, keys])
 
   // Add ref for FlashList
-  const listRef = useRef<FlashList<{ key: string; data: RSSHubRouteDeclaration } | string>>(null)
+  const listRef =
+    useRegisterNavigationScrollView<
+      FlashList<{ key: string; data: RSSHubRouteDeclaration } | string>
+    >(isSelected)
 
-  const getItemType = useCallback((item: string | { key: string }) => {
+  const getItemType = useRef((item: string | { key: string }) => {
     return typeof item === "string" ? "sectionHeader" : "row"
-  }, [])
+  }).current
 
-  const keyExtractor = useCallback((item: string | { key: string }) => {
+  const keyExtractor = useRef((item: string | { key: string }) => {
     return typeof item === "string" ? item : item.key
-  }, [])
+  }).current
 
-  const { headerHeightAtom } = useContext(DiscoverContext)
-  const headerHeight = useAtomValue(headerHeightAtom)
+  const scrollOffsetRef = useRef(0)
+  const animatedY = useSharedValue(0)
+
+  useEffect(() => {
+    if (isSelected) {
+      animatedY.value = scrollOffsetRef.current
+    }
+  }, [animatedY, isSelected])
 
   const insets = useSafeAreaInsets()
+
   if (isLoading) {
-    return <ActivityIndicator className="flex-1 items-center justify-center" />
+    return <PlatformActivityIndicator className="flex-1 items-center justify-center" />
+  }
+
+  if (keys.length === 0) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-secondary-label">This is a barren wasteland of knowledge.</Text>
+      </View>
+    )
   }
 
   return (
     <View className="bg-system-background flex-1" {...rest}>
       <FlashList
+        onScroll={(e) => {
+          scrollOffsetRef.current = e.nativeEvent.contentOffset.y
+          animatedY.value = scrollOffsetRef.current
+          if (reanimatedScrollY) {
+            reanimatedScrollY.value = scrollOffsetRef.current
+          }
+        }}
+        scrollEventThrottle={16}
         estimatedItemSize={150}
         ref={listRef}
         data={alphabetGroups}
         keyExtractor={keyExtractor}
         getItemType={getItemType}
         renderItem={ItemRenderer}
+        automaticallyAdjustContentInsets={false}
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustsScrollIndicatorInsets={false}
+        contentContainerStyle={contentContainerStyle}
         scrollIndicatorInsets={{
           right: -2,
-          top: headerHeight - insets.top,
-          bottom: tabHeight - insets.bottom,
+          top: customInsets?.top ?? 0,
+          bottom: customInsets?.bottom ?? insets.bottom,
         }}
-        contentContainerStyle={{ paddingBottom: tabHeight, paddingTop: headerHeight }}
         removeClippedSubviews
       />
       {/* Right Sidebar */}
@@ -221,8 +287,9 @@ const ItemRenderer = ({
   if (typeof item === "string") {
     // Rendering header
     return (
-      <View className="border-b-opaque-separator border-b-hairline mx-6 mb-1 mt-2 pb-1">
-        <Text className="text-secondary-label text-base">{item}</Text>
+      <View className="border-b-opaque-separator mx-6 mb-1 mt-6 pb-1">
+        <Text className="text-label mb-4 text-xl font-semibold">{item}</Text>
+        <View className="bg-opaque-separator/30 mr-6 h-px" />
       </View>
     )
   } else {
@@ -237,7 +304,7 @@ const ItemRenderer = ({
 
 const NavigationSidebar: FC<{
   alphabetGroups: (string | { key: string; data: RSSHubRouteDeclaration })[]
-  listRef: React.RefObject<FlashList<string | { key: string; data: RSSHubRouteDeclaration }>>
+  listRef: React.RefObject<FlashList<string | { key: string; data: RSSHubRouteDeclaration }> | null>
 }> = memo(({ alphabetGroups, listRef }) => {
   const scrollToLetter = useCallback(
     (letter: string, animated = true) => {
@@ -289,15 +356,8 @@ const NavigationSidebar: FC<{
     [scrollToLetter, titles],
   )
 
-  const { headerHeightAtom } = useContext(DiscoverContext)
-  const headerHeight = useAtomValue(headerHeightAtom)
-  const tabHeight = useBottomTabBarHeight()
-
   return (
-    <View
-      className="absolute inset-y-0 right-1 h-full items-center justify-center"
-      style={{ paddingTop: headerHeight, paddingBottom: tabHeight }}
-    >
+    <View className="absolute inset-y-0 right-1 h-full items-center justify-center">
       <PanGestureHandler onGestureEvent={handleGesture}>
         <View className="gap-0.5">
           {titles.map((title) => (

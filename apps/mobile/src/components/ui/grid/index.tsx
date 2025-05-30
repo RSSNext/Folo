@@ -20,6 +20,9 @@ export const Grid = ({
   style,
   className,
 }: GridProps & PropsWithChildren) => {
+  if (columns < 1) {
+    throw new Error("Columns must be greater than 0")
+  }
   const rowsChildren = useMemo(() => {
     const childrenArray = React.Children.toArray(children)
     const rows = []

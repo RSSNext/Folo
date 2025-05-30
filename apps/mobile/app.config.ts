@@ -5,107 +5,155 @@ import type { ConfigContext, ExpoConfig } from "expo/config"
 import PKG from "./package.json"
 
 // const roundedIconPath = resolve(__dirname, "../../resources/icon.png")
-const iconPath = resolve(__dirname, "./assets/icon.png")
+const iconPathMap = {
+  production: resolve(__dirname, "./assets/icon.png"),
+  development: resolve(__dirname, "./assets/icon-dev.png"),
+  "ios-simulator": resolve(__dirname, "./assets/icon-dev.png"),
+  preview: resolve(__dirname, "./assets/icon-staging.png"),
+} as Record<string, string>
+const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap.production
+
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
 
-  extra: {
-    eas: {
-      projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
-    },
-  },
-  owner: "follow",
-  updates: {
-    url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
-  },
-  runtimeVersion: {
-    policy: "appVersion",
-  },
+const isDev = process.env.NODE_ENV === "development"
 
-  name: "Follow",
-  slug: "follow",
-  version: process.env.NODE_ENV === "development" ? "dev" : PKG.version,
-  orientation: "portrait",
-  icon: iconPath,
-  scheme: "follow",
-  userInterfaceStyle: "automatic",
-  newArchEnabled: true,
-  ios: {
-    supportsTablet: true,
-    bundleIdentifier: "is.follow",
-    usesAppleSignIn: true,
-    infoPlist: {
-      LSApplicationCategoryType: "public.app-category.news",
-    },
-  },
-  android: {
-    package: "is.follow",
-    adaptiveIcon: {
-      foregroundImage: adaptiveIconPath,
-      backgroundColor: "#FF5C00",
-    },
-  },
-  web: {
-    bundler: "metro",
-    output: "static",
-    favicon: iconPath,
-  },
-  plugins: [
-    [
-      "expo-document-picker",
-      {
-        iCloudContainerEnvironment: "Production",
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const result: ExpoConfig = {
+    ...config,
+
+    extra: {
+      eas: {
+        projectId: "a6335b14-fb84-45aa-ba80-6f6ab8926920",
       },
-    ],
-    "expo-localization",
-    [
-      "expo-router",
-      {
-        root: "./src/screens",
+    },
+    owner: "follow",
+    updates: {
+      url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
+    },
+    runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
+
+    name: "Folo",
+    slug: "follow",
+    version: PKG.version,
+    orientation: "portrait" as const,
+    icon: iconPath,
+    scheme: ["follow", "folo"],
+    userInterfaceStyle: "automatic" as const,
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "is.follow",
+      usesAppleSignIn: true,
+      infoPlist: {
+        LSApplicationCategoryType: "public.app-category.news",
+        ITSAppUsesNonExemptEncryption: false,
+        UIBackgroundModes: ["audio"],
+        LSApplicationQueriesSchemes: ["bilibili", "youtube"],
+        CFBundleAllowMixedLocalizations: true,
+        // apps/mobile/src/@types/constants.ts currentSupportedLanguages
+        CFBundleLocalizations: ["en", "ja", "zh-CN", "zh-TW"],
+        CFBundleDevelopmentRegion: "en",
       },
-    ],
-    [
-      "expo-splash-screen",
-      {
-        backgroundColor: "#ffffff",
-        dark: {
-          backgroundColor: "#000000",
+      googleServicesFile: "./build/GoogleService-Info.plist",
+    },
+    android: {
+      package: "is.follow",
+      // Suppress warning about EDGE_TO_EDGE_PLUGIN
+      // Learn more: https://expo.dev/blog/edge-to-edge-display-now-streamlined-for-android
+      edgeToEdgeEnabled: true,
+      adaptiveIcon: {
+        foregroundImage: adaptiveIconPath,
+        backgroundColor: "#FF5C00",
+      },
+      googleServicesFile: "./build/google-services.json",
+    },
+    androidStatusBar: {
+      translucent: true,
+    },
+    // web: {
+    //   bundler: "metro",
+    //   output: "static",
+    //   favicon: iconPath,
+    // },
+    plugins: [
+      [
+        "expo-document-picker",
+        {
+          iCloudContainerEnvironment: "Production",
         },
-      },
+      ],
+      "expo-localization",
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#ffffff",
+          dark: {
+            backgroundColor: "#000000",
+          },
+          android: {
+            image: iconPath,
+            imageWidth: 200,
+          },
+        },
+      ],
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            useFrameworks: "static",
+          },
+        },
+      ],
+      "expo-sqlite",
+      [
+        "expo-media-library",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+          savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
+          isAccessMediaLocationEnabled: true,
+        },
+      ],
+      "expo-apple-authentication",
+      "expo-web-browser",
+      [
+        "expo-video",
+        {
+          supportsBackgroundPlayback: true,
+          supportsPictureInPicture: true,
+        },
+      ],
+      [
+        require("./plugins/with-follow-assets.js"),
+        {
+          // Add asset directory paths, the plugin copies the files in the given paths to the app bundle folder named Assets
+          assetsPath: resolve(__dirname, "..", "..", "out", "rn-web"),
+        },
+      ],
+
+      require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+      "expo-secure-store",
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-image-picker",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+        },
+      ],
+      [
+        "expo-notifications",
+        {
+          enableBackgroundRemoteNotifications: true,
+        },
+      ],
+      "expo-background-task",
     ],
-    "expo-build-properties",
-    "expo-sqlite",
-    [
-      "expo-font",
-      {
-        fonts: [
-          "./assets/font/sn-pro/SNPro-Black.otf",
-          "./assets/font/sn-pro/SNPro-BlackItalic.otf",
-          "./assets/font/sn-pro/SNPro-Bold.otf",
-          "./assets/font/sn-pro/SNPro-BoldItalic.otf",
-          "./assets/font/sn-pro/SNPro-Heavy.otf",
-          "./assets/font/sn-pro/SNPro-HeavyItalic.otf",
-          "./assets/font/sn-pro/SNPro-Light.otf",
-          "./assets/font/sn-pro/SNPro-LightItalic.otf",
-          "./assets/font/sn-pro/SNPro-Medium.otf",
-          "./assets/font/sn-pro/SNPro-MediumItalic.otf",
-          "./assets/font/sn-pro/SNPro-Regular.otf",
-          "./assets/font/sn-pro/SNPro-RegularItalic.otf",
-          "./assets/font/sn-pro/SNPro-Semibold.otf",
-          "./assets/font/sn-pro/SNPro-SemiboldItalic.otf",
-          "./assets/font/sn-pro/SNPro-Thin.otf",
-          "./assets/font/sn-pro/SNPro-ThinItalic.otf",
-        ],
-      },
-    ],
-    "expo-apple-authentication",
-    "expo-av",
-    [require("./scripts/with-follow-assets.js")],
-    [require("./scripts/with-follow-app-delegate.js")],
-    "expo-secure-store",
-  ],
-  experiments: {
-    typedRoutes: true,
-  },
-})
+  }
+
+  if (process.env.PROFILE !== "production") {
+    result.plugins ||= []
+    result.plugins.push(require("./plugins/android-trust-user-certs.js"))
+  }
+
+  return result
+}

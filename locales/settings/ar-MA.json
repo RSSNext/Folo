@@ -1,188 +1,0 @@
-{
-  "about.changelog": "سجل التغييرات",
-  "about.feedbackInfo": "{{appName}} ({{commitSha}}) مازال فالمراحل الأولية ديال التطوير. إلى كان عندك شي ملاحظات ولا اقتراحات، مرحبا بك <OpenIssueLink>تفتح موضوع</OpenIssueLink> <ExternalLinkIcon /> على GitHub ديالنا.",
-  "about.iconLibrary": "المكتبة ديال الأيقونات مستعملة محفوظة بحقوق الطبع والنشر من طرف <IconLibraryLink /> <ExternalLinkIcon /> وما يمكنش توزع من جديد.",
-  "about.sidebar_title": "حول",
-  "about.socialMedia": "وسائل التواصل الاجتماعي",
-  "actions.actionName": "الإجراء {{number}}",
-  "actions.action_card.add": "إضافة",
-  "actions.action_card.all": "الكل",
-  "actions.action_card.block_rules": "قواعد الحظر",
-  "actions.action_card.custom_filters": "فلاتر مخصصة",
-  "actions.action_card.enable_readability": "تشغيل القراية المريحة",
-  "actions.action_card.feed_options.feed_url": "رابط التغذية",
-  "actions.action_card.feed_options.site_url": "رابط الموقع",
-  "actions.action_card.field": "حقل",
-  "actions.action_card.from": "من",
-  "actions.action_card.generate_summary": "توليد ملخص باستخدام الذكاء الاصطناعي",
-  "actions.action_card.name": "الاسم",
-  "actions.action_card.operation_options.contains": "كيتضمن",
-  "actions.action_card.operation_options.does_not_contain": "ما كيتضمنش",
-  "actions.action_card.operation_options.is_equal_to": "مساوي ل",
-  "actions.action_card.operation_options.is_greater_than": "أكبر من",
-  "actions.action_card.operation_options.is_less_than": "أقل من",
-  "actions.action_card.operation_options.is_not_equal_to": "ماشي مساوي ل",
-  "actions.action_card.operation_options.matches_regex": "كيطابق التعبير العادي",
-  "actions.action_card.operator": "المشغل",
-  "actions.action_card.rewrite_rules": "إعادة كتابة القواعد",
-  "actions.action_card.then_do": "ثم دير...",
-  "actions.action_card.to": "إلى",
-  "actions.action_card.translate_into": "ترجمة إلى",
-  "actions.action_card.value": "القيمة",
-  "actions.action_card.when_feeds_match": "فاش التغذية كتطابق...",
-  "actions.newRule": "قاعدة جديدة",
-  "actions.save": "حفظ",
-  "actions.saveSuccess": "🎉 تم حفظ الإجراءات.",
-  "actions.sidebar_title": "الإجراءات",
-  "actions.title": "الإجراءات",
-  "appearance.code_highlight_theme": "موضوع تمييز الكود",
-  "appearance.content": "المحتوى",
-  "appearance.content_font": "خط المحتوى",
-  "appearance.custom_font": "خط مخصص",
-  "appearance.fonts": "الخطوط",
-  "appearance.general": "عام",
-  "appearance.guess_code_language.description": "اللغات البرمجية الرئيسية اللي كتستعمل نماذج لتخمين الكودات الغير موسومة",
-  "appearance.guess_code_language.label": "تخمين لغة الكود",
-  "appearance.misc": "متنوع",
-  "appearance.modal_overlay.description": "عرض تراكب النافذة المنبثقة",
-  "appearance.modal_overlay.label": "عرض التراكب",
-  "appearance.opaque_sidebars.label": "أشرطة جانبية غير شفافة",
-  "appearance.reader_render_inline_style.description": "تمكين عرض الأنماط المضمنة لـ HTML الأصلي.",
-  "appearance.reader_render_inline_style.label": "عرض الأنماط المضمنة",
-  "appearance.reduce_motion.description": "تقليل حركة العناصر باش تحسن الأداء وتقلل استهلاك الطاقة",
-  "appearance.reduce_motion.label": "تقليل الحركة",
-  "appearance.save": "حفظ",
-  "appearance.show_dock_badge.label": "عرض كشارة Dock",
-  "appearance.sidebar_show_unread_count.label": "عرض فالشريط الجانبي",
-  "appearance.sidebar_title": "المظهر",
-  "appearance.text_size": "حجم النص",
-  "appearance.theme.dark": "داكن",
-  "appearance.theme.label": "السمة",
-  "appearance.theme.light": "فاتح",
-  "appearance.theme.system": "نظام",
-  "appearance.title": "المظهر",
-  "appearance.ui_font": "خط واجهة المستخدم",
-  "appearance.unread_count": "عدد غير المقروء",
-  "general.app": "التطبيق",
-  "general.data_persist.description": "حفظ البيانات محليًا باش تمكن الوصول بلا إنترنت والبحث المحلي.",
-  "general.data_persist.label": "حفظ البيانات للاستخدام بلا إنترنت",
-  "general.group_by_date.description": "تجميع المدخلات حسب التاريخ.",
-  "general.group_by_date.label": "تجميع حسب التاريخ",
-  "general.language": "اللغة",
-  "general.launch_at_login": "التشغيل عند تسجيل الدخول",
-  "general.mark_as_read.hover.description": "تحديد المدخلات كمقروءة تلقائيًا فاش كتدير عليها الماوس.",
-  "general.mark_as_read.hover.label": "تحديد كمقروء عند التمرير",
-  "general.mark_as_read.render.description": "تحديد المدخلات كمقروءة تلقائيًا فاش كتوصل للعرض.",
-  "general.mark_as_read.render.label": "تحديد كمقروء عند العرض",
-  "general.mark_as_read.scroll.description": "تحديد المدخلات كمقروءة تلقائيًا فاش كتخرج من العرض.",
-  "general.mark_as_read.scroll.label": "تحديد كمقروء عند التمرير",
-  "general.rebuild_database.button": "إعادة بناء",
-  "general.rebuild_database.description": "إلى كنتي كتواجه مشاكل فالعرض، إعادة بناء قاعدة البيانات غادي يحلها.",
-  "general.rebuild_database.label": "إعادة بناء قاعدة البيانات",
-  "general.rebuild_database.title": "إعادة بناء قاعدة البيانات",
-  "general.rebuild_database.warning.line1": "إعادة بناء قاعدة البيانات غادي تمسح جميع بياناتك المحلية.",
-  "general.rebuild_database.warning.line2": "واش متأكد بلي بغيتي تكمل؟",
-  "general.send_anonymous_data.description": "باختيار إرسال بيانات مجهولة، كتساهم ف تحسين تجربة المستخدم العامة ديال Follow.",
-  "general.send_anonymous_data.label": "إرسال بيانات مجهولة",
-  "general.show_unread_on_launch.description": "عرض المحتوى الغير مقروء عند التشغيل",
-  "general.show_unread_on_launch.label": "عرض المحتوى الغير مقروء عند التشغيل",
-  "general.sidebar_title": "عام",
-  "general.timeline": "الجدول الزمني",
-  "general.unread": "غير مقروء",
-  "general.voices": "الأصوات",
-  "integration.eagle.enable.description": "عرض زر 'حفظ الوسائط لـ Eagle' إلا كان متوفر.",
-  "integration.eagle.enable.label": "تشغيل",
-  "integration.eagle.title": "Eagle",
-  "integration.instapaper.enable.description": "عرض زر 'حفظ إلى Instapaper' إلا كان متوفر.",
-  "integration.instapaper.enable.label": "تشغيل",
-  "integration.instapaper.password.label": "كلمة مرور Instapaper",
-  "integration.instapaper.title": "Instapaper",
-  "integration.instapaper.username.label": "اسم مستخدم Instapaper",
-  "integration.obsidian.enable.description": "عرض زر 'حفظ في Obsidian' إلا كان متوفر.",
-  "integration.obsidian.enable.label": "تشغيل",
-  "integration.obsidian.title": "Obsidian",
-  "integration.obsidian.vaultPath.description": "المسار لخزنة Obsidian ديالك.",
-  "integration.obsidian.vaultPath.label": "مسار خزنة Obsidian",
-  "integration.readwise.enable.description": "عرض زر 'حفظ إلى Readwise' إلا كان متوفر.",
-  "integration.readwise.enable.label": "تشغيل",
-  "integration.readwise.title": "Readwise",
-  "integration.readwise.token.description": "يمكنك الحصول عليه هنا: ",
-  "integration.readwise.token.label": "رمز الوصول لـ Readwise",
-  "integration.sidebar_title": "التكامل",
-  "integration.tip": "نصيحة: البيانات الحساسة ديالك كتحفظ محليا وما كتترفعش للسيرفر.",
-  "integration.title": "التكامل",
-  "invitation.activate": "تفعيل",
-  "invitation.codeOptions.betaUser": "1. قلب على مستخدم بيتا باش يعاود دعوة ليك.",
-  "invitation.codeOptions.discord": "2. دخل معانا ف سيرفر Discord الخاص بنا وخد هدايا من وقت لآخر.",
-  "invitation.codeOptions.xAccount": "3. تابع الحساب ديالنا ف X وخد هدايا من وقت لآخر",
-  "invitation.confirmModal.cancel": "إلغاء",
-  "invitation.confirmModal.confirm": "بغيت تكمّل؟",
-  "invitation.confirmModal.continue": "استمر",
-  "invitation.confirmModal.message": "إنشاء كود الدعوة غادي يكلفك {{INVITATION_PRICE}} <PowerIcon /> باور.",
-  "invitation.confirmModal.title": "تأكيد",
-  "invitation.earlyAccess": "Follow حاليا في <strong>الوصول المبكر</strong> وخصك كود دعوة باش تستعملو.",
-  "invitation.earlyAccessMessage": "😰 آسف، Follow دابا في الوصول المبكر وخصك كود دعوة باش تستعملو.",
-  "invitation.generateButton": "إنشاء كود جديد",
-  "invitation.generateCost": "تقدر تصرف {{INVITATION_PRICE}} <PowerIcon /> باور باش تنشئ كود دعوة لأصدقائك.",
-  "invitation.getCodeMessage": "تقدر تحصل على كود الدعوة بطرق التالية:",
-  "invitation.newInvitationSuccess": "🎉 تم إنشاء دعوة جديدة، الكود نسخ.",
-  "invitation.noInvitations": "ما كايناش دعوات",
-  "invitation.notUsed": "ما استعملش",
-  "invitation.sidebar_title": "الدعوات",
-  "invitation.tableHeaders.code": "الكود",
-  "invitation.tableHeaders.creationTime": "وقت الإنشاء",
-  "invitation.tableHeaders.usedBy": "مستعمل من طرف",
-  "invitation.title": "كود الدعوة",
-  "profile.avatar.label": "الصورة الشخصية",
-  "profile.handle.description": "المعرف الفريد ديالك.",
-  "profile.handle.label": "الاسم المستعار",
-  "profile.name.description": "اسم العرض العلني ديالك.",
-  "profile.name.label": "اسم العرض",
-  "profile.sidebar_title": "الملف الشخصي",
-  "profile.submit": "إرسال",
-  "profile.title": "إعدادات الملف الشخصي",
-  "profile.updateSuccess": "تم تحديث الملف الشخصي.",
-  "titles.about": "حول",
-  "titles.actions": "الإجراءات",
-  "titles.appearance": "المظهر",
-  "titles.general": "عام",
-  "titles.integration": "التكامل",
-  "titles.invitations": "الدعوات",
-  "titles.power": "باور",
-  "titles.profile": "الملف الشخصي",
-  "titles.shortcuts": "الاختصارات",
-  "wallet.address.title": "العنوان ديالك",
-  "wallet.balance.title": "الرصيد ديالك",
-  "wallet.balance.withdrawable": "قابل للسحب",
-  "wallet.balance.withdrawableTooltip": "الرصيد القابل للسحب كيشمل الإكراميات اللي وصلاتك والباور اللي شحنتي.",
-  "wallet.claim.button.claim": "طالب بالباور اليومي",
-  "wallet.claim.button.claimed": "طالبتي اليوم",
-  "wallet.claim.tooltip.alreadyClaimed": "طالبتي دابا اليوم.",
-  "wallet.claim.tooltip.canClaim": "تقدر تطالب دابا ب {{amount}} باور يومي!",
-  "wallet.create.button": "إنشاء محفظة",
-  "wallet.create.description": "صاوب محفظة مجانية باش تلقى <PowerIcon /> <strong>باور</strong> اللي ممكن تستعملو باش تكافئ المبدعين، أو حتى تتكافئ على المساهمات ديالك.",
-  "wallet.power.dailyClaim": "يمكن ليك تطالب ب {{amount}} باور مجاني يومي، اللي ممكن تستعملو باش تقدم إكراميات لمقالات RSS على Follow.",
-  "wallet.sidebar_title": "باور",
-  "wallet.transactions.amount": "المبلغ",
-  "wallet.transactions.date": "التاريخ",
-  "wallet.transactions.from": "من",
-  "wallet.transactions.noTransactions": "ما كايناش معاملات",
-  "wallet.transactions.title": "المعاملات",
-  "wallet.transactions.to": "إلى",
-  "wallet.transactions.tx": "Tx",
-  "wallet.transactions.type": "النوع",
-  "wallet.transactions.types.burn": "حرق",
-  "wallet.transactions.types.mint": "سك",
-  "wallet.transactions.types.purchase": "شراء",
-  "wallet.transactions.types.tip": "إكرامية",
-  "wallet.transactions.types.withdraw": "سحب",
-  "wallet.transactions.you": "أنت",
-  "wallet.withdraw.addressLabel": "عنوان الإيثريوم الخاص بك",
-  "wallet.withdraw.amountLabel": "المبلغ",
-  "wallet.withdraw.availableBalance": "عندك <Balance></Balance> باور قابل للسحب في المحفظة ديالك.",
-  "wallet.withdraw.button": "سحب",
-  "wallet.withdraw.error": "فشل السحب: {{error}}",
-  "wallet.withdraw.modalTitle": "سحب باور",
-  "wallet.withdraw.submitButton": "إرسال",
-  "wallet.withdraw.success": "السحب تمت بنجاح!"
-}

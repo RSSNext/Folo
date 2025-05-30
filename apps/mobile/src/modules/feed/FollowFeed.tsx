@@ -1,37 +1,39 @@
 import { FeedViewType } from "@follow/constants"
+import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
+import type { SubscriptionForm } from "@follow/store/subscription/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { StackActions } from "@react-navigation/native"
-import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { ActivityIndicator, ScrollView, Text, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { Text, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  ModalHeaderCloseButton,
-  ModalHeaderSubmitButton,
-} from "@/src/components/common/ModalSharedComponents"
+  NavigationBlurEffectHeaderView,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
 import { TextField } from "@/src/components/ui/form/TextField"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
-import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
-import { useIsRouteOnlyOne } from "@/src/hooks/useIsRouteOnlyOne"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
+import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
+import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
-import { useFeed, usePrefetchFeed } from "@/src/store/feed/hooks"
-import { useSubscriptionByFeedId } from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
-import type { SubscriptionForm } from "@/src/store/subscription/types"
 
 const formSchema = z.object({
-  view: z.string(),
+  view: z.coerce.number(),
   category: z.string().nullable().optional(),
   isPrivate: z.boolean().optional(),
   title: z.string().optional(),
 })
-const defaultValues = { view: FeedViewType.Articles.toString() }
+
 export function FollowFeed(props: { id: string }) {
   const { id } = props
   const feed = useFeed(id as string)
@@ -40,50 +42,89 @@ export function FollowFeed(props: { id: string }) {
   if (isLoading) {
     return (
       <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <ActivityIndicator />
+        <PlatformActivityIndicator />
       </View>
     )
   }
 
-  return <FollowImpl />
+  return <FollowImpl feedId={id} />
 }
-function FollowImpl() {
-  const { id } = useLocalSearchParams()
 
-  const feed = useFeed(id as string)!
-  const isSubscribed = useSubscriptionByFeedId(feed?.id || "")
+export function FollowUrl(props: { url: string }) {
+  const { url } = props
+
+  const { isLoading, data, error } = usePrefetchFeedByUrl(url)
+
+  if (isLoading) {
+    return (
+      <View className="mt-24 flex-1 flex-row items-start justify-center">
+        <PlatformActivityIndicator />
+      </View>
+    )
+  }
+
+  if (!data) {
+    return <Text className="text-label">{error?.message}</Text>
+  }
+
+  return <FollowImpl feedId={data.id} />
+}
+
+function FollowImpl(props: { feedId: string }) {
+  const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
+  const { feedId: id } = props
+
+  const feed = useFeed(id)
+  const subscription = useSubscriptionByFeedId(feed?.id)
+  const isSubscribed = !!subscription
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      category: subscription?.category ?? "",
+      isPrivate: subscription?.isPrivate ?? false,
+      title: subscription?.title ?? "",
+      view: subscription?.view ?? FeedViewType.Articles,
+    },
   })
 
   const [isLoading, setIsLoading] = useState(false)
-  const routeOnlyOne = useIsRouteOnlyOne()
+
   const navigate = useNavigation()
-  const parentRoute = navigate.getParent()
+
+  const canDismiss = useCanDismiss()
   const submit = async () => {
     setIsLoading(true)
     const values = form.getValues()
     const body: SubscriptionForm = {
-      url: feed.url,
-      view: Number.parseInt(values.view),
+      url: feed?.url,
+      view: values.view,
       category: values.category ?? "",
       isPrivate: values.isPrivate ?? false,
       title: values.title ?? "",
-      feedId: feed.id,
+      feedId: feed?.id,
     }
 
-    await subscriptionSyncService.subscribe(body).finally(() => {
-      setIsLoading(false)
-    })
+    if (isSubscribed) {
+      await subscriptionSyncService
+        .edit({
+          ...subscription,
+          ...body,
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } else {
+      await subscriptionSyncService.subscribe(body).finally(() => {
+        setIsLoading(false)
+      })
+    }
 
-    if (router.canDismiss()) {
-      router.dismissAll()
-
-      if (!routeOnlyOne) {
-        parentRoute?.dispatch(StackActions.popToTop())
-      }
+    if (canDismiss) {
+      navigate.dismiss()
+    } else {
+      navigate.back()
     }
   }
 
@@ -91,87 +132,95 @@ function FollowImpl() {
 
   const { isValid, isDirty } = form.formState
 
+  const setScreenOptions = useSetModalScreenOptions()
+  useEffect(() => {
+    setScreenOptions({
+      preventNativeDismiss: isDirty,
+    })
+  }, [isDirty, setScreenOptions])
+
   if (!feed?.id) {
     return <Text className="text-label">Feed ({id}) not found</Text>
   }
 
   return (
-    <ScrollView
+    <SafeNavigationScrollView
       className="bg-system-grouped-background"
-      contentContainerClassName="pt-4 gap-y-4"
+      contentViewClassName="gap-y-4 mt-2"
       contentContainerStyle={{ paddingBottom: insets.bottom }}
-    >
-      <Stack.Screen
-        options={{
-          title: `${isSubscribed ? "Edit" : "Follow"} - ${feed?.title}`,
-          headerLeft: ModalHeaderCloseButton,
-          gestureEnabled: !isDirty,
-          headerRight: () => (
-            <ModalHeaderSubmitButton
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${feed?.title}`}
+          headerRight={
+            <HeaderSubmitTextButton
               isValid={isValid}
               onPress={form.handleSubmit(submit)}
               isLoading={isLoading}
+              label={isSubscribed ? tCommon("words.save") : tCommon("words.follow")}
             />
-          ),
-        }}
-      />
-
+          }
+        />
+      }
+    >
       {/* Group 1 */}
-      <GroupedInsetListCard className="px-5 py-4">
-        <View className="flex flex-row gap-4">
-          <View className="size-[50px] overflow-hidden rounded-lg">
-            <FeedIcon feed={feed} size={50} />
-          </View>
-          <View className="flex-1 flex-col gap-y-1">
-            <Text className="text-text text-lg font-semibold">{feed?.title}</Text>
-            <Text className="text-secondary-label text-sm">{feed?.description}</Text>
-          </View>
-        </View>
+      <GroupedInsetListCard>
+        <FeedSummary
+          className="px-5 py-4"
+          item={{
+            feed: {
+              ...feed,
+              type: "feed",
+            },
+          }}
+        />
       </GroupedInsetListCard>
       {/* Group 2 */}
-      <GroupedInsetListCard className="gap-y-4 px-5 py-4">
+      <GroupedInsetListCard className="gap-y-4 p-4">
         <FormProvider form={form}>
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="title"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Title"
-                  description="Custom title for this Feed. Leave empty to use the default."
+                  label={t("subscription_form.title")}
+                  description={t("subscription_form.title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="category"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Category"
-                  description="By default, your follows will be grouped by website."
+                  label={t("subscription_form.category")}
+                  description={t("subscription_form.category_description")}
                   onChangeText={onChange}
                   value={value || ""}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-1">
             <Controller
               name="isPrivate"
               control={form.control}
               render={({ field: { onChange, value } }) => (
                 <FormSwitch
+                  size="sm"
                   value={value}
-                  label="Private"
-                  description="Private feeds are only visible to you."
+                  label={t("subscription_form.private_follow")}
+                  description={t("subscription_form.private_follow_description")}
                   onValueChange={onChange}
                 />
               )}
@@ -179,7 +228,7 @@ function FollowImpl() {
           </View>
 
           <View className="-mx-4">
-            <FormLabel className="mb-4 pl-5" label="View" optional />
+            <FormLabel className="mb-4 pl-4" label={t("subscription_form.view")} optional />
 
             <Controller
               name="view"
@@ -191,6 +240,6 @@ function FollowImpl() {
           </View>
         </FormProvider>
       </GroupedInsetListCard>
-    </ScrollView>
+    </SafeNavigationScrollView>
   )
 }

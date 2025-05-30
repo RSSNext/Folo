@@ -7,23 +7,42 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: On which platforms does this bug occur?
+      multiple: true
+      options:
+        - Desktop - macOS
+        - Desktop - Windows
+        - Desktop - Linux
+        - Desktop - Web
+        - Mobile - iOS
+        - Mobile - Android
+        - Mobile - Web
+    validations:
+      required: true
+
   - type: textarea
     id: bug-description
     attributes:
       label: Describe the bug
       description: A clear and concise description of what the bug is. If you intend to submit a PR for this issue, tell us in the description. Thanks!
       placeholder: Bug description
+    validations:
+      required: true
 
-    validations:
-      required: true
   - type: textarea
-    id: feed-info
+    id: relevant-information
     attributes:
-      label: Feed Info
-      description: Please provide your feed id, feed url, and any other information that can help us reproduce the issue.
-      placeholder: Feed ID, Feed URL, etc.
+      label: Relevant Information
+      description: Please provide your user id, feed id, feed url, or any other information that can help us reproduce the issue.
+      placeholder: User ID, Feed ID, Feed URL, etc.
     validations:
-      required: true
+      required: false
+
   - type: textarea
     id: reproduction
     attributes:
@@ -36,7 +55,7 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Please provide the environment in which you are using the application. You can find this information by going to Settings > About and clicking the copy button next to the version tag.
+      description: Please provide the environment in which you are using the application. You can find this information by going to Preferences > About and clicking the copy button next to the version tag.
 
   - type: checkboxes
     id: checkboxes
@@ -50,6 +69,7 @@ body:
           required: true
         - label: This issue is valid
           required: true
+
   - type: checkboxes
     id: contributions
     attributes:

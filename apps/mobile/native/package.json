@@ -14,27 +14,8 @@
     "follow-native",
     "FollowNative"
   ],
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
   "scripts": {
-    "//prepare": "expo-module prepare",
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "expo-module": "expo-module",
-    "lint": "expo-module lint",
     "open:android": "open -a \"Android Studio\" example/android",
-    "open:ios": "xed example/ios",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
-  "peerDependencies": {
-    "expo": "*",
-    "react": "*",
-    "react-native": "npm:react-native@0.77.0"
-  },
-  "devDependencies": {
-    "@types/react": "^19.0.8",
-    "expo": "~52.0.0",
-    "expo-module-scripts": "^4.0.3",
-    "react-native": "npm:react-native@0.77.0"
+    "open:ios": "xed example/ios"
   }
 }

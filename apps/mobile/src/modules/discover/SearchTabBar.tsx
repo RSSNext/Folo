@@ -16,6 +16,7 @@ export const SearchTabBar: FC<{
 
   return (
     <TabBar
+      tabbarClassName="border-b border-b-opaque-separator/40"
       tabScrollContainerAnimatedX={animatedX}
       tabs={SearchTabs}
       currentTab={SearchTabs.findIndex((tab) => tab.value === searchType)}

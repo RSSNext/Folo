@@ -47,8 +47,14 @@ export function CustomRefreshControl({ refreshing, pullProgress }: CustomRefresh
 
   const strokeDashoffset = CIRCUMFERENCE * (1 - Math.max(Math.min(pullProgress - 0.2, 1), 0))
 
+  const opacityStyle = useAnimatedStyle(() => {
+    return {
+      opacity: pullProgress > 0 ? 1 : 0,
+    }
+  })
+
   return (
-    <Animated.View style={[styles.container, { opacity: pullProgress > 0 ? 1 : 0 }]}>
+    <Animated.View style={[styles.container, opacityStyle]}>
       <Animated.View style={[styles.circleContainer, animatedStyle]}>
         <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
           <Circle

@@ -1,6 +1,30 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "apps/mobile/native"
+  - apps/*
+  - packages/**/*
+  - apps/desktop/layer/*
+  - "!apps/mobile/native/example"
+  - apps/mobile/web-app
   - "!**/example"
-  - "!**/example/*"
+  - "!**/example/**"
+onlyBuiltDependencies:
+  - "@firebase/util"
+  - "@sentry/cli"
+  - "@tsslint/core"
+  - "@tsslint/eslint"
+  - bufferutil
+  - core-js
+  - dtrace-provider
+  - electron
+  - electron-winstaller
+  - esbuild
+  - fast-folder-size
+  - fs-xattr
+  - macos-alias
+  - msedge-tts
+  - protobufjs
+  - sharp
+  - simple-git-hooks
+  - utf-8-validate
+
+catalog:
+  typescript: "5.8.3"

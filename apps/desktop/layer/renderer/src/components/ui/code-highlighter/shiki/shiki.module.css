@@ -1,0 +1,109 @@
+.shiki-wrapper {
+  @apply overflow-hidden rounded-md;
+
+  pre {
+    @apply bg-transparent;
+  }
+
+  &.transparent {
+    :global {
+      .shiki,
+      code {
+        @apply !bg-transparent;
+      }
+    }
+  }
+
+  :global {
+    .shiki {
+      @apply !m-0 !px-0;
+
+      font-family:
+        "OperatorMonoSSmLig Nerd Font",
+        "Cascadia Code PL",
+        "FantasqueSansMono Nerd Font",
+        "Operator Mono",
+        JetBrainsMono,
+        "Fira Code Retina",
+        "Fira Code",
+        "Consolas",
+        Monaco,
+        "Hannotate SC",
+        monospace,
+        -apple-system,
+        system-ui,
+        sans-serif;
+    }
+
+    pre {
+      @apply !m-0 overflow-auto p-4;
+
+      font-size: 0.875em;
+    }
+
+    pre code {
+      @apply flex flex-col;
+    }
+
+    .line {
+      @apply block px-5;
+
+      & > span:last-child {
+        @apply mr-5;
+      }
+
+      /* Expand the row without content */
+      &::after {
+        content: " ";
+      }
+    }
+
+    .highlighted,
+    .diff {
+      @apply relative break-all;
+
+      &::before {
+        @apply absolute left-0 top-0 h-full w-[2px];
+        content: "";
+      }
+    }
+
+    .diff.add {
+      @apply bg-green-100 dark:bg-green-900;
+
+      &::before {
+        @apply bg-green;
+      }
+
+      &::after {
+        content: " +";
+        @apply text-green absolute left-0;
+      }
+    }
+
+    .diff.remove {
+      @apply bg-red-100 dark:bg-red-900;
+
+      &::before {
+        @apply bg-red-500;
+      }
+
+      &::after {
+        content: " -";
+        @apply text-red absolute left-0;
+      }
+    }
+
+    .highlighted {
+      @apply bg-accent/20;
+
+      &::before {
+        @apply bg-accent;
+      }
+    }
+  }
+
+  pre {
+    @apply rounded-none;
+  }
+}

@@ -1,4 +1,3 @@
-import { forwardRef } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { Text, View } from "react-native"
 
@@ -16,23 +15,29 @@ interface Props {
   size?: "sm" | "default"
 }
 
-export const FormSwitch = forwardRef<SwitchRef, Props & SwitchProps>(
-  ({ wrapperClassName, wrapperStyle, label, description, size = "default", ...rest }, ref) => {
-    const Trigger = <Switch size={size} ref={ref} {...rest} />
+export const FormSwitch = ({
+  ref,
+  wrapperClassName,
+  wrapperStyle,
+  label,
+  description,
+  size = "default",
+  ...rest
+}: Props & SwitchProps & { ref?: React.Ref<SwitchRef | null> }) => {
+  const Trigger = <Switch size={size} ref={ref} {...rest} />
 
-    if (!label) {
-      return Trigger
-    }
-    return (
-      <View className={"w-full flex-row"}>
-        <View className="flex-1">
-          <FormLabel className="pl-1" label={label} optional />
-          {!!description && (
-            <Text className="text-secondary-label mb-1 pl-1 text-sm">{description}</Text>
-          )}
-        </View>
-        {Trigger}
+  if (!label) {
+    return Trigger
+  }
+  return (
+    <View className={"w-full flex-row"}>
+      <View className="flex-1 gap-1">
+        <FormLabel className="pl-1" label={label} optional />
+        {!!description && (
+          <Text className="text-secondary-label mb-1 pl-1 text-sm">{description}</Text>
+        )}
       </View>
-    )
-  },
-)
+      {Trigger}
+    </View>
+  )
+}

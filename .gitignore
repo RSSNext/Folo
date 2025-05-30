@@ -6,6 +6,7 @@ out
 .env
 .eslintcache
 .env.*
+!.env.example
 
 # Sentry Config File
 .env.sentry-build-plugin
@@ -15,14 +16,9 @@ stats.html
 electron.vite.config.*.mjs
 vite.config.*.mjs
 
-# apps/server/**/fonts-data.ts
-# apps/server/**/index.template.ts
-
 .generated
 .turbo
 
-apps/renderer/dev-dist
+apps/desktop/src/renderer/dev-dist
 tsconfig.tsbuildinfo
-
-apps/mobile/ios
-apps/mobile/android
+buildServer.json

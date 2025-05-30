@@ -1,0 +1,46 @@
+{
+  "name": "@follow/database",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "sideEffects": false,
+  "exports": {
+    "./*": {
+      "types": "./src/*.ts",
+      "require": "./src/*.ts",
+      "import": "./src/*.ts"
+    },
+    "./schemas/*": {
+      "types": "./src/schemas/*.ts",
+      "require": "./src/schemas/*.ts",
+      "import": "./src/schemas/*.ts"
+    },
+    "./services/*": {
+      "types": "./src/services/*.ts",
+      "require": "./src/services/*.ts",
+      "import": "./src/services/*.ts"
+    }
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@follow/constants": "workspace:*",
+    "@follow/models": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "drizzle-orm": "0.43.1",
+    "expo-sqlite": "15.2.9",
+    "sqlocal": "0.14.1"
+  },
+  "devDependencies": {
+    "@follow/configs": "workspace:*",
+    "drizzle-kit": "0.31.1"
+  }
+}

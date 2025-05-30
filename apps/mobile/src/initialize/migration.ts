@@ -1,9 +1,5 @@
-import { migrate } from "drizzle-orm/expo-sqlite/migrator"
+import { migrateDb } from "@follow/database/db"
 import { useSyncExternalStore } from "react"
-
-import migrations from "@/drizzle/migrations"
-
-import { db } from "../database"
 
 let storeChangeFn: () => void
 const subscribe = (onStoreChange: () => void) => {
@@ -18,19 +14,18 @@ const migrateStore = {
   error: null as Error | null,
 }
 
-export const migrateDatabase = () => {
-  return migrate(db, migrations)
-    .then(() => {
-      migrateStore.success = true
-      storeChangeFn?.()
-    })
-    .catch((error) => {
-      migrateStore.error = error
+export const migrateDatabase = async () => {
+  try {
+    await migrateDb()
+    migrateStore.success = true
+    storeChangeFn?.()
+  } catch (error) {
+    migrateStore.error = error as Error
 
-      console.error(error)
+    console.error(error)
 
-      storeChangeFn?.()
-    })
+    storeChangeFn?.()
+  }
 }
 
 const getSnapshot = () => {

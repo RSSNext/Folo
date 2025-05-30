@@ -1,11 +1,13 @@
 import type { FeedViewType } from "@follow/constants"
-import { getUrlIcon } from "@follow/utils/src/utils"
-import type { ImageProps } from "expo-image"
-import { Image } from "expo-image"
+import type { FeedSchema } from "@follow/database/schemas/types"
 import type { ReactNode } from "react"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 
-import type { FeedSchema } from "@/src/database/schemas/types"
+import { getFeedIconSource } from "@/src/lib/image"
+
+import type { ImageProps } from "../image/Image"
+import { Image } from "../image/Image"
+import { FallbackIcon } from "./fallback-icon"
 
 export type FeedIconRequiredFeed = Pick<
   FeedSchema,
@@ -14,13 +16,8 @@ export type FeedIconRequiredFeed = Pick<
   type: FeedViewType
   siteUrl?: string
 }
-type FeedIconFeed = FeedIconRequiredFeed | FeedSchema
+export type FeedIconFeed = FeedIconRequiredFeed | FeedSchema
 
-const getFeedIconSrc = (siteUrl: string, fallback: boolean) => {
-  const ret = getUrlIcon(siteUrl, fallback)
-
-  return [ret.src, ret.fallbackUrl]
-}
 interface FeedIconProps {
   feed?: FeedIconFeed
   fallbackUrl?: string
@@ -43,21 +40,27 @@ export function FeedIcon({
   siteUrl,
   ...props
 }: FeedIconProps & ImageProps) {
+  const [isError, setIsError] = useState(false)
   const src = useMemo(() => {
-    switch (true) {
-      case !feed && !!siteUrl: {
-        const [src] = getFeedIconSrc(siteUrl, fallback)
-        return src
-      }
-      case !!feed && !!feed.image: {
-        return feed.image
-      }
-      case !!feed && !feed.image && !!feed.siteUrl: {
-        const [src] = getFeedIconSrc(feed.siteUrl, fallback)
-        return src
-      }
-    }
+    return getFeedIconSource(feed, siteUrl, fallback)
   }, [fallback, feed, siteUrl])
 
-  return <Image style={{ height: size, width: size }} source={src} {...props} />
+  const handleError = useCallback(() => setIsError(true), [])
+
+  if (!src || isError) {
+    return <FallbackIcon title={feed?.title ?? ""} size={size} />
+  }
+  return (
+    <Image
+      proxy={{
+        width: size,
+        height: size,
+      }}
+      className="rounded"
+      style={{ height: size, width: size }}
+      source={{ uri: src }}
+      onError={handleError}
+      {...props}
+    />
+  )
 }

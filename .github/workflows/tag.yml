@@ -24,7 +24,7 @@ jobs:
           const execSync = require("child_process").execSync;
           const fs = require("fs");
           const commitMessage = execSync("git log -1 --pretty=%B").toString("utf-8");
-          const semverRegex = /chore: Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
+          const semverRegex = /release\(desktop\): Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
           const match = commitMessage.match(semverRegex);
           if (match) {
             fs.appendFileSync(process.env.GITHUB_ENV, `tag_version=${match[1]}\n`);
@@ -39,11 +39,20 @@ jobs:
         run: |
           git tag ${{ env.tag_version }}
           git push origin ${{ env.tag_version }}
-      - name: Trigger Build Workflow
+      - name: Trigger Build Desktop Workflow
         if: ${{ env.tag_version }}
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"main", "inputs": {"tag_version": "${{ env.tag_version }}"}}'
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-desktop.yml/dispatches \
+            -d '{"ref":"main", "inputs": {"tag_version": "true"}}'
+
+      - name: Trigger Build Android Workflow
+        if: ${{ env.tag_version }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-android.yml/dispatches \
+            -d '{"ref":"main", "inputs": {"release": "true"}}'

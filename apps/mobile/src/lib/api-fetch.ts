@@ -1,17 +1,20 @@
 /* eslint-disable no-console */
 import type { AppType } from "@follow/shared"
-import { router } from "expo-router"
+import { userActions } from "@follow/store/user/store"
 import { FetchError, ofetch } from "ofetch"
 
+import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
 import { getCookie } from "./auth"
-import { getApiUrl } from "./env"
+import { getUserAgent } from "./native/user-agent"
+import { Navigation } from "./navigation/Navigation"
+import { proxyEnv } from "./proxy-env"
 
 const { hc } = require("hono/dist/cjs/client/client") as typeof import("hono/client")
 
 export const apiFetch = ofetch.create({
   retry: false,
 
-  baseURL: getApiUrl(),
+  baseURL: proxyEnv.API_URL,
   onRequest: async (ctx) => {
     const { options, request } = ctx
     if (__DEV__) {
@@ -40,22 +43,32 @@ export const apiFetch = ofetch.create({
       console.log(`<--- [Error] ${response.status} ${options.method} ${request as string}`)
     }
     if (response.status === 401) {
-      router.replace("/login")
+      userActions.removeCurrentUser()
     } else {
-      console.error(error)
+      try {
+        const json = JSON.parse(response._data)
+        console.error(`Request ${request as string} failed with status ${response.status}`, json)
+
+        if (json.code.toString().startsWith("11")) {
+          Navigation.rootNavigation.presentControllerView(InvitationScreen)
+        }
+      } catch {
+        console.error(`Request ${request as string} failed with status ${response.status}`, error)
+      }
     }
   },
 })
 
-export const apiClient = hc<AppType>(getApiUrl(), {
+export const apiClient = hc<AppType>(proxyEnv.API_URL, {
   fetch: async (input: any, options = {}) =>
     apiFetch(input.toString(), options).catch((err) => {
       throw err
     }),
-  headers() {
+  async headers() {
     return {
-      "X-App-Name": "Follow Mobile",
+      "X-App-Name": "Folo Mobile",
       cookie: getCookie(),
+      "User-Agent": await getUserAgent(),
     }
   },
 })

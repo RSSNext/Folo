@@ -13,6 +13,8 @@ export interface ToastProps {
   duration: number
   icon?: React.ReactNode | false
   canClose?: boolean
+
+  position?: "top" | "center" | "bottom"
 }
 
 export type CenterToastProps = Partial<
@@ -27,5 +29,5 @@ export type BottomToastProps = Partial<ToastProps> & {
 }
 
 export interface ToastRef {
-  dimiss: () => Promise<void>
+  dismiss: () => Promise<void>
 }

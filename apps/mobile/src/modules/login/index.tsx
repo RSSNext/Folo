@@ -1,146 +1,152 @@
-import { noop } from "es-toolkit/compat"
-import { router } from "expo-router"
-import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react"
-import { TouchableWithoutFeedback, View } from "react-native"
-import BouncyCheckbox from "react-native-bouncy-checkbox"
+import { useCallback, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
+import { Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
-import Animated, {
-  runOnUI,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated"
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import * as ContextMenu from "zeego/context-menu"
 
-import { ThemedText } from "@/src/components/common/ThemedText"
-import { ContextMenu } from "@/src/components/ui/context-menu"
 import { Logo } from "@/src/components/ui/logo"
-import {
-  LoginTeamsCheckedContext,
-  LoginTeamsCheckGuardContext,
-} from "@/src/contexts/LoginTeamsContext"
-import { isIOS } from "@/src/lib/platform"
-import { toast } from "@/src/lib/toast"
-import { TeamsMarkdown } from "@/src/screens/(headless)/terms"
+import { useNavigation } from "@/src/lib/navigation/hooks"
+import { NavigationLink } from "@/src/lib/navigation/NavigationLink"
+import { useScaleHeight } from "@/src/lib/responsive"
+import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScreen"
+import { TermsMarkdown, TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
-import { EmailLogin } from "./email"
+import { EmailLogin, EmailSignUp } from "./email"
 import { SocialLogin } from "./social"
 
 export function Login() {
-  const [isChecked, setIsChecked] = useState(false)
+  const insets = useSafeAreaInsets()
+  const scaledHeight = useScaleHeight()
+  const logoSize = scaledHeight(80)
+  const gapSize = scaledHeight(28)
+  const fontSize = scaledHeight(28)
+  const lineHeight = scaledHeight(32)
+  const { t } = useTranslation()
 
-  const teamsCheckBoxRef = useRef<{ shake: () => void }>(null)
+  const [isRegister, setIsRegister] = useState(true)
+  const [isEmail, setIsEmail] = useState(false)
+
   return (
-    <LoginTeamsCheckedContext.Provider value={isChecked}>
-      <LoginTeamsCheckGuardContext.Provider
-        value={useCallback(
-          (callback: () => void) => {
-            if (isChecked) {
-              callback()
-            } else {
-              toast.info("Please accept the Terms of Service and Privacy Policy")
-
-              teamsCheckBoxRef.current?.shake()
-            }
-          },
-          [isChecked],
-        )}
+    <View className="pb-safe-or-2 flex-1 justify-between" style={{ paddingTop: insets.top + 56 }}>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          KeyboardController.dismiss()
+        }}
+        accessible={false}
       >
-        <View className="flex-1 p-safe">
-          <TouchableWithoutFeedback
-            onPress={() => {
-              KeyboardController.dismiss()
+        <View
+          className="items-center"
+          style={{
+            gap: gapSize,
+          }}
+        >
+          <Logo style={{ width: logoSize, height: logoSize }} />
+          <Text
+            className="text-label"
+            style={{
+              fontSize,
+              lineHeight,
             }}
-            accessible={false}
           >
-            <View className="flex-1 items-center gap-8 pt-20">
-              <Logo style={{ width: 80, height: 80 }} />
-              <ThemedText className="text-2xl font-bold">Login to Follow</ThemedText>
+            <Text className="font-semibold">{`${isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")} `}</Text>
+            <Text className="font-bold">Folo</Text>
+          </Text>
+          {isEmail ? (
+            isRegister ? (
+              <EmailSignUp />
+            ) : (
               <EmailLogin />
-            </View>
-          </TouchableWithoutFeedback>
-          <TeamsCheckBox ref={teamsCheckBoxRef} isChecked={isChecked} setIsChecked={setIsChecked} />
-          <View className="border-t-opaque-separator border-t-hairline mx-28" />
-          <View className="mt-2 items-center">
-            <View className="mb-4 flex w-full max-w-sm flex-row items-center gap-4">
-              <View className="bg-separator my-4 h-[0.5px] flex-1" />
-              <ThemedText className="text-secondary-label text-lg">or</ThemedText>
-              <View className="bg-separator my-4 h-[0.5px] flex-1" />
-            </View>
-            <SocialLogin />
-          </View>
+            )
+          ) : (
+            <SocialLogin onPressEmail={() => setIsEmail(true)} />
+          )}
         </View>
-      </LoginTeamsCheckGuardContext.Provider>
-    </LoginTeamsCheckedContext.Provider>
+      </TouchableWithoutFeedback>
+      <TermsCheckBox />
+      <View className="mt-14">
+        {isEmail ? (
+          <Text
+            className="text-label pb-2 text-center text-lg font-medium"
+            onPress={() => setIsEmail(false)}
+          >
+            {t("login.back")}
+          </Text>
+        ) : (
+          <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
+            <Text className="text-label pb-2 text-center text-lg font-medium">
+              <Trans
+                t={t}
+                i18nKey={isRegister ? "login.have_account" : "login.no_account"}
+                components={{
+                  strong: <Text className="text-accent" />,
+                }}
+              />
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
   )
 }
 
-const TeamsCheckBox = forwardRef<
-  { shake: () => void },
-  {
-    isChecked: boolean
-    setIsChecked: (isChecked: boolean) => void
-  }
->(({ isChecked, setIsChecked }, ref) => {
+const TermsCheckBox = () => {
   const shakeSharedValue = useSharedValue(0)
   const shakeStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: shakeSharedValue.value }],
   }))
-  useImperativeHandle(ref, () => ({
-    shake: () => {
-      const animations = [-10, 10, -8, 8, -6, 6, 0]
-
-      runOnUI(() => {
-        "worklet"
-        shakeSharedValue.value = 0
-
-        const runAnimation = (index: number) => {
-          "worklet"
-          if (index < animations.length) {
-            shakeSharedValue.value = withTiming(animations[index]!, { duration: 100 }, () => {
-              runAnimation(index + 1)
-            })
-          }
-        }
-
-        runAnimation(0)
-      })()
-    },
-  }))
   return (
-    <Animated.View className="mb-4 flex-row items-center gap-2 px-8" style={shakeStyle}>
-      <BouncyCheckbox
-        isChecked={isChecked}
-        onPress={setIsChecked}
-        size={14}
-        textComponent={<TeamsText />}
-        onLongPress={() => {
-          if (!isIOS) {
-            router.push("/terms")
-          }
-        }}
-      />
+    <Animated.View
+      className="mt-4 w-full flex-row items-center justify-center gap-2 px-8"
+      style={shakeStyle}
+    >
+      <TermsText />
     </Animated.View>
   )
-})
+}
 
-const TeamsText = () => {
+const TermsText = () => {
+  const navigation = useNavigation()
   return (
-    <ContextMenu
-      className="overflow-hidden rounded-full px-2"
-      config={{ items: [] }}
-      onPressMenuItem={noop}
-      onPressPreview={() => {
-        router.push("/terms")
-      }}
-      renderPreview={() => (
-        <View className="flex-1">
-          <TeamsMarkdown />
+    <ContextMenu.Root>
+      <ContextMenu.Trigger className="w-full overflow-hidden rounded-full">
+        <Text className="text-secondary-label text-center text-sm">
+          By continuing, you agree to our{" "}
+        </Text>
+        <View className="flex-row items-center">
+          <NavigationLink
+            destination={TermsScreen}
+            suppressHighlighting
+            className="text-secondary-label"
+          >
+            <Text className="font-semibold">Terms of Service</Text>
+          </NavigationLink>
+          <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
+          <NavigationLink
+            destination={PrivacyPolicyScreen}
+            suppressHighlighting
+            className="text-secondary-label"
+          >
+            <Text className="font-semibold">Privacy Policy</Text>
+          </NavigationLink>
         </View>
-      )}
-    >
-      <ThemedText className="text-secondary-label text-sm">
-        I agree to the Terms of Service and Privacy Policy
-      </ThemedText>
-    </ContextMenu>
+      </ContextMenu.Trigger>
+
+      <ContextMenu.Content>
+        <ContextMenu.Preview
+          size="STRETCH"
+          onPress={useCallback(() => {
+            navigation.pushControllerView(TermsScreen)
+          }, [navigation])}
+        >
+          {() => (
+            <View className="bg-system-background flex-1">
+              <TermsMarkdown />
+            </View>
+          )}
+        </ContextMenu.Preview>
+      </ContextMenu.Content>
+    </ContextMenu.Root>
   )
 }

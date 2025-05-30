@@ -1,5 +1,5 @@
 import { withOpacity } from "@follow/utils"
-import { createElement, useContext, useEffect, useState } from "react"
+import { createElement, use, useEffect, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import Animated, { FadeOut } from "react-native-reanimated"
 
@@ -11,10 +11,10 @@ export const CenteredToast = (props: ToastProps) => {
   const renderMessage = props.render ? null : props.message ? (
     <Text className="font-semibold text-white">{props.message}</Text>
   ) : null
-  const { register } = useContext(ToastActionContext)
+  const { register } = use(ToastActionContext)
   useEffect(() => {
     const disposer = register(props.currentIndex, {
-      dimiss: async () => {},
+      dismiss: async () => {},
     })
     return () => {
       disposer()

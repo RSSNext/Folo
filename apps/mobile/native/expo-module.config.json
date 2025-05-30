@@ -1,9 +1,27 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["SharedWebViewModule"]
+    "modules": [
+      "SharedWebViewModule",
+      "HelperModule",
+      "ToasterModule",
+      "AppleIntelligenceGlowEffectModule",
+      "FollowNative.GaleriaModule",
+      "GaleriaAccessoryModule",
+      "TabBarModule",
+      "TabScreenModule",
+      "TabBarPortalModule",
+      "EnhancePagerViewModule",
+      "EnhancePageViewModule",
+      "ItemPressableModule"
+    ]
   },
   "android": {
-    "modules": []
+    "modules": [
+      "expo.modules.follownative.tabbar.TabBarModule",
+      "expo.modules.follownative.tabbar.TabScreenModule",
+      "expo.modules.follownative.tabbar.TabBarPortalModule",
+      "expo.modules.follownative.itempressable.ItemPressableModule"
+    ]
   }
 }

@@ -3,13 +3,17 @@
   "compilerOptions": {
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
     "noImplicitOverride": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "follow-native": ["./native/src/index.ts"],
-      "follow-native/*": ["./native/*"]
+      "@locales/*": ["../../locales/*"]
     },
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "types": ["@follow/types/global", "vite/client"]
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
+  "exclude": ["./native", "./web-app", "../../node_modules"]
 }

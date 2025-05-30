@@ -1,5 +1,6 @@
 import { useRefValue } from "@follow/hooks"
 import { createAtomHooks } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import type { SetStateAction, WritableAtom } from "jotai"
 import { atom as jotaiAtom, useAtomValue } from "jotai"
 import { atomWithStorage, selectAtom } from "jotai/utils"
@@ -116,6 +117,13 @@ export const createSettingAtom = <T extends object>(
     value: ReturnType<typeof getSettings>[K],
   ) => {
     const updated = Date.now()
+
+    EventBus.dispatch("SETTING_CHANGE_EVENT", {
+      key: settingKey as "general" | "ui",
+      payload: {
+        [key]: value,
+      },
+    })
     setSettings({
       ...getSettings(),
       [key]: value,

@@ -1,44 +1,49 @@
 import { FeedViewType } from "@follow/constants"
+import { useList } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { router, Stack } from "expo-router"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import { z } from "zod"
 
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
-  ModalHeaderCloseButton,
-  ModalHeaderSubmitButton,
-} from "@/src/components/common/ModalSharedComponents"
+  NavigationBlurEffectHeaderView,
+  SafeNavigationScrollView,
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
 import { TextField } from "@/src/components/ui/form/TextField"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
+import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { PowerIcon } from "@/src/icons/power"
-import { apiClient } from "@/src/lib/api-fetch"
+import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
+import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
-import { useList } from "@/src/store/list/hooks"
-import { listSyncServices } from "@/src/store/list/store"
-import { useSubscriptionByListId } from "@/src/store/subscription/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
-  const list = useList(id as string)
+  const list = useList(id)
   const { isLoading } = useQuery({
     queryKey: ["list", id],
-    queryFn: () => listSyncServices.fetchListById({ id: id as string }),
+    queryFn: () => listSyncServices.fetchListById({ id }),
     enabled: !list,
   })
 
   if (isLoading) {
     return (
       <View className="mt-24 flex-1 flex-row items-start justify-center">
-        <ActivityIndicator />
+        <PlatformActivityIndicator />
       </View>
     )
   }
@@ -47,25 +52,34 @@ export const FollowList = (props: { id: string }) => {
 }
 
 const formSchema = z.object({
-  view: z.string(),
-  isPrivate: z.boolean().optional(),
+  view: z.number(),
+  isPrivate: z.boolean().default(false),
   title: z.string().optional(),
 })
-const defaultValues = { view: FeedViewType.Articles.toString() }
 
 const Impl = (props: { id: string }) => {
+  const { t } = useTranslation()
+  const { t: tCommon } = useTranslation("common")
   const { id } = props
-  const list = useList(id as string)!
+  const list = useList(id)
 
-  const isSubscribed = useSubscriptionByListId(id as string)
+  const subscription = useSubscriptionByListId(id)
+  const isSubscribed = !!subscription
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      view: list?.view ?? FeedViewType.Articles,
+      isPrivate: subscription?.isPrivate,
+      title: subscription?.title ?? undefined,
+    },
   })
   const { isValid, isDirty } = form.formState
 
+  const isModal = useScreenIsInSheetModal()
+  const navigation = useNavigation()
   const submit = async () => {
+    if (!list) return
     const payload = form.getValues()
 
     const subscribeOrUpdate = async () => {
@@ -76,12 +90,21 @@ const Impl = (props: { id: string }) => {
         isPrivate: payload.isPrivate,
         title: payload.title,
       }
-      const $method = isSubscribed ? apiClient.subscriptions.$patch : apiClient.subscriptions.$post
 
-      await $method({
-        json: body,
-      })
-      router.dismiss()
+      if (isSubscribed) {
+        await subscriptionSyncService.edit({
+          ...subscription,
+          ...body,
+        })
+      } else {
+        await subscriptionSyncService.subscribe(body)
+      }
+
+      if (isModal) {
+        navigation.dismiss()
+      } else {
+        navigation.back()
+      }
       toast.success(isSubscribed ? "List updated" : "List followed")
     }
     if (list.fee && !isSubscribed) {
@@ -109,23 +132,35 @@ const Impl = (props: { id: string }) => {
 
   const isLoading = false
 
+  const setModalOptions = useSetModalScreenOptions()
+  useEffect(() => {
+    setModalOptions({
+      gestureEnabled: !isDirty,
+    })
+  }, [isDirty, setModalOptions])
+
+  if (!list) {
+    return null
+  }
+
   return (
-    <ScrollView className="bg-system-grouped-background" contentContainerClassName="pt-4 gap-y-4">
-      <Stack.Screen
-        options={{
-          title: `${isSubscribed ? "Edit" : "Follow"} - ${list?.title}`,
-          headerLeft: ModalHeaderCloseButton,
-          gestureEnabled: !isDirty,
-          headerRight: () => (
-            <ModalHeaderSubmitButton
+    <SafeNavigationScrollView
+      className="bg-system-grouped-background"
+      contentViewClassName="gap-y-4 mt-2"
+      Header={
+        <NavigationBlurEffectHeaderView
+          title={`${isSubscribed ? tCommon("words.edit") : tCommon("words.follow")} - ${list?.title}`}
+          headerRight={
+            <HeaderSubmitTextButton
               isValid={isValid}
               onPress={form.handleSubmit(submit)}
               isLoading={isLoading}
+              label={isSubscribed ? tCommon("words.save") : tCommon("words.follow")}
             />
-          ),
-        }}
-      />
-
+          }
+        />
+      }
+    >
       <GroupedInsetListCard className="px-5 py-4">
         <View className="flex flex-row gap-4">
           <View className="size-[50px] overflow-hidden rounded-lg">
@@ -147,36 +182,37 @@ const Impl = (props: { id: string }) => {
       <GroupedInsetListCard className="gap-y-6 px-5 py-4">
         <FormProvider form={form}>
           <View className="-mx-4">
-            <FormLabel className="mb-4 pl-5" label="View" optional />
+            <FormLabel className="mb-4 pl-4" label={t("subscription_form.view")} optional />
 
             <FeedViewSelector readOnly value={list.view} />
           </View>
 
-          <View>
+          <View className="-mx-2.5">
             <Controller
               name="title"
               control={form.control}
               render={({ field: { onChange, ref, value } }) => (
                 <TextField
-                  label="Title"
-                  description="Custom title for this Feed. Leave empty to use the default."
+                  label={t("subscription_form.title")}
+                  description={t("subscription_form.title_description")}
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
+                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View>
+          <View className="-mx-1">
             <Controller
               name="isPrivate"
               control={form.control}
               render={({ field: { onChange, value } }) => (
                 <FormSwitch
                   value={value}
-                  label="Private"
-                  description="Private feeds are only visible to you."
+                  label={t("subscription_form.private_follow")}
+                  description={t("subscription_form.private_follow_description")}
                   onValueChange={onChange}
                   size="sm"
                 />
@@ -200,7 +236,7 @@ const Impl = (props: { id: string }) => {
           )}
         </FormProvider>
       </GroupedInsetListCard>
-    </ScrollView>
+    </SafeNavigationScrollView>
   )
 }
 

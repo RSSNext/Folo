@@ -1,74 +1,82 @@
-import type { FeedViewType } from "@follow/constants"
-import { useIsFocused } from "@react-navigation/native"
-import { useEffect } from "react"
-
-import { useSelectedFeed, useSetDrawerSwipeDisabled } from "@/src/modules/feed-drawer/atoms"
+import { FeedViewType } from "@follow/constants"
 import {
   useEntryIdsByCategory,
   useEntryIdsByFeedId,
   useEntryIdsByInboxId,
+  useEntryIdsByListId,
   useEntryIdsByView,
-} from "@/src/store/entry/hooks"
-import { useList } from "@/src/store/list/hooks"
+} from "@follow/store/entry/hooks"
+import { memo, useMemo } from "react"
 
-import { EntryListScreen } from "./entry-list"
+import { useSelectedFeed, useSelectedView } from "@/src/modules/screen/atoms"
+import { PagerList } from "@/src/modules/screen/PagerList"
+import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 
+import { EntryListSelector } from "./EntryListSelector"
+
+const renderViewItem = (view: FeedViewType, active: boolean) => (
+  <ViewEntryList key={view} viewId={view} active={active} />
+)
 export function EntryList() {
-  const setDrawerSwipeDisabled = useSetDrawerSwipeDisabled()
-  const isFocused = useIsFocused()
-  useEffect(() => {
-    if (isFocused) {
-      setDrawerSwipeDisabled(false)
-    } else {
-      setDrawerSwipeDisabled(true)
-    }
-  }, [setDrawerSwipeDisabled, isFocused])
-
   const selectedFeed = useSelectedFeed()
 
-  switch (selectedFeed.type) {
-    case "view": {
-      return <ViewEntryList viewId={selectedFeed.viewId} />
+  const Content = useMemo(() => {
+    if (!selectedFeed) return null
+    switch (selectedFeed.type) {
+      case "view": {
+        return <PagerList renderItem={renderViewItem} />
+      }
+      case "feed": {
+        return <FeedEntryList feedId={selectedFeed.feedId} />
+      }
+      case "category": {
+        return <CategoryEntryList categoryName={selectedFeed.categoryName} />
+      }
+      case "list": {
+        return <ListEntryList listId={selectedFeed.listId} />
+      }
+      case "inbox": {
+        return <InboxEntryList inboxId={selectedFeed.inboxId} />
+      }
     }
-    case "feed": {
-      return <FeedEntryList feedId={selectedFeed.feedId} />
-    }
-    case "category": {
-      return <CategoryEntryList categoryName={selectedFeed.categoryName} />
-    }
-    case "list": {
-      return <ListEntryList listId={selectedFeed.listId} />
-    }
-    case "inbox": {
-      return <InboxEntryList inboxId={selectedFeed.inboxId} />
-    }
-    // No default
-  }
+  }, [selectedFeed])
+  if (!Content) return null
+
+  return (
+    <>
+      <TimelineHeader />
+      {Content}
+    </>
+  )
 }
 
-function ViewEntryList({ viewId }: { viewId: FeedViewType }) {
+const ViewEntryList = memo(({ viewId, active }: { viewId: FeedViewType; active: boolean }) => {
   const entryIds = useEntryIdsByView(viewId)
-  return <EntryListScreen entryIds={entryIds} />
-}
 
-function FeedEntryList({ feedId }: { feedId: string }) {
+  return <EntryListSelector entryIds={entryIds} viewId={viewId} active={active} />
+})
+
+const FeedEntryList = memo(({ feedId }: { feedId: string }) => {
+  const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByFeedId(feedId)
-  return <EntryListScreen entryIds={entryIds} />
-}
+  return <EntryListSelector entryIds={entryIds} viewId={view} />
+})
 
-function CategoryEntryList({ categoryName }: { categoryName: string }) {
+const CategoryEntryList = memo(({ categoryName }: { categoryName: string }) => {
+  const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByCategory(categoryName)
-  return <EntryListScreen entryIds={entryIds} />
-}
+  return <EntryListSelector entryIds={entryIds} viewId={view} />
+})
 
-function ListEntryList({ listId }: { listId: string }) {
-  const list = useList(listId)
-  if (!list) return null
+const ListEntryList = memo(({ listId }: { listId: string }) => {
+  const view = useSelectedView() ?? FeedViewType.Articles
+  const entryIds = useEntryIdsByListId(listId)
+  if (!entryIds) return null
+  return <EntryListSelector entryIds={entryIds} viewId={view} />
+})
 
-  return <EntryListScreen entryIds={list.entryIds ?? []} />
-}
-
-function InboxEntryList({ inboxId }: { inboxId: string }) {
+const InboxEntryList = memo(({ inboxId }: { inboxId: string }) => {
+  const view = useSelectedView() ?? FeedViewType.Articles
   const entryIds = useEntryIdsByInboxId(inboxId)
-  return <EntryListScreen entryIds={entryIds} />
-}
+  return <EntryListSelector entryIds={entryIds} viewId={view} />
+})

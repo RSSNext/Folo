@@ -2,19 +2,19 @@ import { cn } from "@follow/utils"
 import { useEffect, useMemo, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { Text, View } from "react-native"
-import { useEventCallback } from "usehooks-ts"
+import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { MingcuteDownLineIcon } from "@/src/icons/mingcute_down_line"
 import { accentColor } from "@/src/theme/colors"
 
-import { DropdownMenu } from "../dropdown/DropdownMenu"
 import { FormLabel } from "./Label"
 
 interface SelectProps<T> {
-  options: { label: string; value: T }[]
+  options: { label: string; value: T; subLabel?: string }[]
 
   value: T
   onValueChange: (value: T) => void
+  displayValue?: string
 
   wrapperClassName?: string
   wrapperStyle?: StyleProp<ViewStyle>
@@ -25,16 +25,16 @@ export function Select<T>({
   options,
   value,
   onValueChange,
+  displayValue,
   wrapperClassName,
   wrapperStyle,
   label,
 }: SelectProps<T>) {
-  const [currentValue, setCurrentValue] = useState(() => {
-    if (!value) {
-      return options[0]!.value
-    }
-    return value
-  })
+  const [currentValue, setCurrentValue] = useState(() => value)
+
+  useEffect(() => {
+    setCurrentValue(value)
+  }, [value])
 
   const valueToLabelMap = useMemo(() => {
     return options.reduce((acc, option) => {
@@ -43,44 +43,56 @@ export function Select<T>({
     }, new Map<T, string>())
   }, [options])
 
-  const handleChangeValue = useEventCallback((value: T) => {
-    setCurrentValue(value)
-    onValueChange(value)
-  })
-
   useEffect(() => {
     onValueChange(currentValue)
   }, [])
 
   const Trigger = (
-    <DropdownMenu<T>
-      options={options.map((option) => ({
-        label: option.label,
-        value: option.value,
-      }))}
-      currentValue={currentValue}
-      handleChangeValue={handleChangeValue}
-    >
-      <View
-        className={cn(
-          "flex-1 shrink flex-row items-center rounded-lg pl-3",
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <View
+          className={cn(
+            "min-w-24 flex-1 shrink flex-row items-center rounded-lg pl-3",
 
-          wrapperClassName,
-        )}
-        style={wrapperStyle}
-      >
-        <Text
-          className="min-w-0 flex-1 text-right font-semibold text-accent"
-          ellipsizeMode="middle"
-          numberOfLines={1}
+            wrapperClassName,
+          )}
+          style={wrapperStyle}
         >
-          {valueToLabelMap.get(currentValue)}
-        </Text>
-        <View className="ml-auto shrink-0 pl-1">
-          <MingcuteDownLineIcon color={accentColor} height={18} width={18} />
+          <Text
+            className="text-accent flex-1 text-right font-semibold"
+            ellipsizeMode="middle"
+            numberOfLines={1}
+          >
+            {displayValue || valueToLabelMap.get(currentValue) || "Select"}
+          </Text>
+          <View className="ml-auto shrink-0 pl-1">
+            <MingcuteDownLineIcon color={accentColor} height={18} width={18} />
+          </View>
         </View>
-      </View>
-    </DropdownMenu>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Content>
+        {options.map((option) => {
+          const isSelected = currentValue === option.value
+          const handleSelect = () => {
+            setCurrentValue(option.value)
+            onValueChange(option.value)
+          }
+          return (
+            <DropdownMenu.CheckboxItem
+              key={option.label}
+              value={isSelected}
+              onSelect={handleSelect}
+            >
+              <DropdownMenu.ItemTitle>{option.label}</DropdownMenu.ItemTitle>
+              {!!option.subLabel && (
+                <DropdownMenu.ItemSubtitle>{option.subLabel}</DropdownMenu.ItemSubtitle>
+              )}
+            </DropdownMenu.CheckboxItem>
+          )
+        })}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   )
 
   if (!label) {

@@ -1,5 +1,10 @@
 name: Setup Version
 description: "Setup Version"
+inputs:
+  type:
+    required: true
+    description: "Type of the app, either 'desktop' or 'mobile'"
+    default: "desktop"
 outputs:
   APP_VERSION:
     description: "App Version"
@@ -14,7 +19,11 @@ runs:
         if [ "${{ github.ref_type }}" == "tag" ]; then
           APP_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
         else
-          APP_VERSION=$(node -p "require('./package.json').version")
+          if [ "${{ inputs.type }}" == "desktop" ]; then
+            APP_VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          else
+            APP_VERSION=$(node -p "require('./apps/mobile/package.json').version")
+          fi
         fi
         echo $APP_VERSION
         echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_OUTPUT"

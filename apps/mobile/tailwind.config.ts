@@ -10,7 +10,6 @@ export default withUIKit({
   theme: {
     extend: {
       fontFamily: {
-        sn: "SN Pro",
         mono: "monospace",
       },
       colors: {

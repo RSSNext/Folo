@@ -1,0 +1,12 @@
+diff --git a/Readability-readerable.js b/Readability-readerable.js
+index e50a6e8a9b6e409a39adff0b77d35159cd9deb74..ae4496260700b09d5028616f30f4dd32f401feab 100644
+--- a/Readability-readerable.js
++++ b/Readability-readerable.js
+@@ -32,6 +32,7 @@ function isNodeVisible(node) {
+   return (
+     (!node.style || node.style.display != "none") &&
+     !node.hasAttribute("hidden") &&
++    !node.id.startsWith("S:") &&
+     //check for "fallback-image" so that wikimedia math images are displayed
+     (!node.hasAttribute("aria-hidden") ||
+       node.getAttribute("aria-hidden") != "true" ||

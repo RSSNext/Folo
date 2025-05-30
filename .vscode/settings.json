@@ -1,10 +1,10 @@
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc]": {
-    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
-    },
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
   },
   "files.associations": {
     "*.css": "tailwindcss"
@@ -18,8 +18,8 @@
   ],
   "tailwindCSS.experimental.configFile": {
     "apps/mobile/tailwind.config.ts": "apps/mobile/**",
-    "apps/server/tailwind.config.ts": "apps/server/**",
-    "tailwind.config.ts": ["!apps/mobile/**", "!apps/server/**", "**"]
+    "apps/ssr/tailwind.config.ts": "apps/ssr/**",
+    "apps/desktop/tailwind.config.ts": ["!apps/mobile/**", "!apps/ssr/**", "**"]
   },
   "typescript.tsserver.maxTsServerMemory": 8096,
   "typescript.tsserver.nodePath": "node",
@@ -76,5 +76,9 @@
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{namespaces}/{locale}.json",
   "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
-  "lldb.launch.expressions": "native"
+  "lldb.launch.expressions": "native",
+  "[swift]": {
+    "editor.defaultFormatter": "swiftlang.swift-vscode"
+  },
+  "npm.exclude": "**/packages/**"
 }

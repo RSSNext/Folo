@@ -1,0 +1,12 @@
+diff --git a/index.js b/index.js
+index 8ec2624b2ed049733788311aed0852432dbefb42..d872e82d5a12d175d17579e7449fe38de5f02bde 100644
+--- a/index.js
++++ b/index.js
+@@ -378,6 +378,7 @@ export default function contextMenu(options = {}) {
+ 		};
+ 
+ 		webContents(win).once('destroyed', disposable);
++		disposables.push(disposable);
+ 	};
+ 
+ 	const dispose = () => {

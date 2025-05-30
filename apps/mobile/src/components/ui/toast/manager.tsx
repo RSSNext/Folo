@@ -28,6 +28,9 @@ export class ToastManager {
   private toastRefs = {} as Record<number, ToastRef>
 
   private register(currentIndex: number, ref: ToastRef) {
+    if (currentIndex in this.toastRefs) {
+      console.warn("Conflict toast ref", currentIndex, this.toastRefs[currentIndex], ref)
+    }
     this.toastRefs[currentIndex] = ref
     return () => {
       delete this.toastRefs[currentIndex]
@@ -39,11 +42,11 @@ export class ToastManager {
       (
         <FullWindowOverlay>
           <Provider store={jotaiStore}>
-            <ToastContainerContext.Provider value={this.stackAtom}>
-              <ToastActionContext.Provider value={{ register: this.register.bind(this) }}>
+            <ToastContainerContext value={this.stackAtom}>
+              <ToastActionContext value={{ register: this.register.bind(this) }}>
                 <ToastContainer />
-              </ToastActionContext.Provider>
-            </ToastContainerContext.Provider>
+              </ToastActionContext>
+            </ToastContainerContext>
           </Provider>
         </FullWindowOverlay>
       ),
@@ -71,7 +74,7 @@ export class ToastManager {
     }
 
     setTimeout(async () => {
-      await this.toastRefs[index]!.dimiss()
+      await this.toastRefs[index]?.dismiss()
       this.remove(index)
     }, props.duration)
   }

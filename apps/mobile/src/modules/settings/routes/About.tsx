@@ -1,11 +1,12 @@
-import Constants from "expo-constants"
-import { Link } from "expo-router"
+import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
+import { Trans, useTranslation } from "react-i18next"
 import { Linking, Text, View } from "react-native"
 
+import { Link } from "@/src/components/common/Link"
 import {
-  NavigationBlurEffectHeader,
+  NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
-} from "@/src/components/common/SafeNavigationScrollView"
+} from "@/src/components/layouts/views/SafeNavigationScrollView"
 import {
   GroupedInsetListBaseCell,
   GroupedInsetListCard,
@@ -15,21 +16,21 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Logo } from "@/src/components/ui/logo"
 import { DiscordCuteFiIcon } from "@/src/icons/discord_cute_fi"
-import { Github2CuteFiIcon } from "@/src/icons/github_2_cute_fi"
+import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
 import { SocialXCuteReIcon } from "@/src/icons/social_x_cute_re"
 
 const links = [
   {
-    title: "Github",
-    icon: Github2CuteFiIcon,
-    url: "https://github.com/RSSNext/follow",
+    title: "GitHub",
+    icon: GithubCuteFiIcon,
+    url: "https://github.com/RSSNext/Folo",
     iconBackgroundColor: "#000000",
     iconColor: "#FFFFFF",
   },
   {
     title: "X",
     icon: SocialXCuteReIcon,
-    url: "https://x.com/follow_app_",
+    url: "https://x.com/intent/follow?screen_name=follow_app_",
     iconBackgroundColor: "#000000",
     iconColor: "#FFFFFF",
   },
@@ -43,62 +44,90 @@ const links = [
 ]
 
 export const AboutScreen = () => {
-  const buildId = Constants.expoConfig?.extra?.eas?.buildId || "Development"
-  const appVersion = Constants.expoConfig?.version || "0.0.0"
+  const { t } = useTranslation("settings")
+  const buildId = nativeBuildVersion
+  const appVersion = nativeApplicationVersion
 
   return (
-    <SafeNavigationScrollView className="bg-system-grouped-background">
-      <NavigationBlurEffectHeader title="About" />
-
+    <SafeNavigationScrollView
+      Header={<NavigationBlurEffectHeaderView title={t("titles.about")} />}
+      className="bg-system-grouped-background"
+      contentViewClassName="pt-6"
+    >
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell className="flex-col py-6">
           <View className="flex-1 items-center justify-center">
             <Logo height={80} width={80} />
-            <Text className="text-label font-sn mt-4 text-2xl font-semibold">Follow</Text>
+            <Text className="text-label mt-4 text-2xl font-semibold">Folo</Text>
             <Text className="text-tertiary-label font-mono text-sm">
               {appVersion} ({buildId})
             </Text>
           </View>
           <View className="mt-6 flex-1">
-            <Text className="text-label text-[15px]">
-              Follow is in the early stages of development. If you have any feedback or suggestions,
-              please feel free to open an issue on the{" "}
-              <Link className="text-accent" href="https://github.com/RSSNext/follow">
-                GitHub repository
-              </Link>
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.feedbackInfo"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label text-[15px]">{children}</Text>
+              )}
+              values={{
+                appName: "Folo",
+                commitSha: `${appVersion}-${buildId}`,
+              }}
+              components={{
+                OpenIssueLink: (
+                  <Link className="text-accent" href="https://github.com/RSSNext/follow" />
+                ),
+                ExternalLinkIcon: <View />,
+              }}
+            />
 
-            <Text className="text-label mt-4 text-[15px]">
-              The icon library used is copyrighted by{" "}
-              <Link className="text-accent" href="https://mgc.mingcute.com/">
-                https://mgc.mingcute.com/
-              </Link>{" "}
-              and cannot be redistributed.
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.iconLibrary"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+              )}
+              components={{
+                IconLibraryLink: (
+                  <Link className="text-accent" href="https://mgc.mingcute.com/">
+                    https://mgc.mingcute.com/
+                  </Link>
+                ),
+                ExternalLinkIcon: <View />,
+              }}
+            />
 
-            <Text className="text-label mt-4 text-[15px]">
-              Copyright © 2025 Follow. All rights reserved.
-            </Text>
+            <Trans
+              ns="settings"
+              i18nKey="about.licenseInfo"
+              parent={({ children }: { children: React.ReactNode }) => (
+                <Text className="text-label mt-4 text-[15px]">{children}</Text>
+              )}
+              values={{
+                currentYear: new Date().getFullYear(),
+                appName: "Folo",
+              }}
+            />
           </View>
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
-      <View className="mt-10">
-        <GroupedInsetListSectionHeader label="Social Links" />
-        <GroupedInsetListCard>
-          {links.map((link) => (
-            <GroupedInsetListNavigationLink
-              key={link.title}
-              label={link.title}
-              icon={
-                <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
-                  <link.icon color={link.iconColor} height={18} width={18} />
-                </GroupedInsetListNavigationLinkIcon>
-              }
-              onPress={() => Linking.openURL(link.url)}
-            />
-          ))}
-        </GroupedInsetListCard>
-      </View>
+
+      <GroupedInsetListSectionHeader label={t("about.socialMedia")} />
+      <GroupedInsetListCard>
+        {links.map((link) => (
+          <GroupedInsetListNavigationLink
+            key={link.title}
+            label={link.title}
+            icon={
+              <GroupedInsetListNavigationLinkIcon backgroundColor={link.iconBackgroundColor}>
+                <link.icon color={link.iconColor} height={18} width={18} />
+              </GroupedInsetListNavigationLinkIcon>
+            }
+            onPress={() => Linking.openURL(link.url)}
+          />
+        ))}
+      </GroupedInsetListCard>
     </SafeNavigationScrollView>
   )
 }

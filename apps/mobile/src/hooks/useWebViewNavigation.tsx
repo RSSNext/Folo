@@ -4,12 +4,10 @@ import { useCallback } from "react"
 import type WebView from "react-native-webview"
 import type { WebViewNavigation } from "react-native-webview"
 
-import { useOpenLink } from "../lib/hooks/use-open-link"
+import { openLink } from "../lib/native"
 
 const allowHosts = new Set(["app.follow.is"])
 export function useWebViewNavigation({ webViewRef }: { webViewRef: RefObject<WebView> }) {
-  const openLink = useOpenLink()
-
   const onNavigationStateChange = useCallback(
     (newNavState: WebViewNavigation) => {
       const { url: urlStr } = newNavState
@@ -27,7 +25,7 @@ export function useWebViewNavigation({ webViewRef }: { webViewRef: RefObject<Web
       }
       openLink(urlStr)
     },
-    [openLink, webViewRef],
+    [webViewRef],
   )
 
   return { onNavigationStateChange }

@@ -1,26 +1,0 @@
-{
-  "feed.followsAndReads": "{{subscriptionCount}} {{subscriptionNoun}} مع {{readCount}} {{readNoun}} على {{appName}}",
-  "feed.read_one": "قراءة",
-  "feed.read_other": "قراءات",
-  "header.app": "تطبيق",
-  "header.download": "تحميل",
-  "invitation.activate": "تفعيل",
-  "invitation.codeOptions.1": "ابحث عن أي مستخدم اختبار ألفا لدعوتك.",
-  "invitation.codeOptions.2": "انضم إلى سيرفر Discord الخاص بنا للحصول على هدايا بين الحين والآخر.",
-  "invitation.codeOptions.3": "تابع حسابنا على X للحصول على هدايا بين الحين والآخر.",
-  "invitation.earlyAccess": "التطبيق في مرحلة الوصول المبكر ويحتاج إلى رمز دعوة للاستخدام.",
-  "invitation.earlyAccessMessage": "😰 عذرًا، التطبيق في مرحلة الوصول المبكر ويحتاج إلى رمز دعوة للاستخدام.",
-  "invitation.generateButton": "إنشاء رمز جديد",
-  "invitation.generateCost": "يمكنك إنفاق {{INVITATION_PRICE}} Power لإنشاء رمز دعوة لأصدقائك.",
-  "invitation.getCodeMessage": "يمكنك الحصول على رمز دعوة عبر الطرق التالية:",
-  "invitation.title": "رمز الدعوة",
-  "login.backToWebApp": "العودة إلى التطبيق على الويب",
-  "login.logInTo": "تسجيل الدخول إلى ",
-  "login.openApp": "فتح التطبيق",
-  "login.redirecting": "إعادة التوجيه",
-  "login.welcomeTo": "مرحبًا بك في ",
-  "redirect.continueInBrowser": "المتابعة في المتصفح",
-  "redirect.instruction": "حان الوقت الآن لفتح {{app_name}} وإغلاق هذه الصفحة بأمان.",
-  "redirect.openApp": "افتح {{app_name}}",
-  "redirect.successMessage": "لقد تم الاتصال بنجاح بحسابك على {{app_name}}."
-}

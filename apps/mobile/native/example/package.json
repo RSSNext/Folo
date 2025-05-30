@@ -5,19 +5,20 @@
   "main": "index.ts",
   "scripts": {
     "android": "expo run:android",
+    "dev": "pnpm install --ignore-workspace && expo start --dev-client",
     "ios": "expo run:ios",
     "start": "expo start",
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "^52.0.0",
-    "react": "18.3.1",
-    "react-native": "0.76.6"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@types/react": "~18.3.12",
-    "typescript": "^5.3.3"
+    "expo": "53.0.4",
+    "nativewind": "4.1.23",
+    "react": "19.0.0",
+    "react-native": "0.79.1",
+    "react-native-css-interop": "0.1.22",
+    "react-native-reanimated": "3.17.4",
+    "react-native-safe-area-context": "5.3.0",
+    "react-native-uikit-colors": "0.6.2"
   },
   "expo": {
     "autolinking": {

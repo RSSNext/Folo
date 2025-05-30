@@ -7,6 +7,8 @@
   "1003": "Invalid invitation",
   "1004": "No permission",
   "1005": "Internal error",
+  "1006": "Email not verified",
+  "1007": "Captcha verification failed",
   "1100": "Trial user max feed subscription exceeded",
   "1101": "Trial user max list subscription exceeded",
   "1102": "Trial user max inbox subscription exceeded",
@@ -45,6 +47,7 @@
   "8001": "List permission denied",
   "8002": "List limit exceeded",
   "8003": "Feed already added to list",
+  "8004": "Cannot delete a list with subscriptions.",
   "9000": "Achievement not completed",
   "9001": "Achievement already received",
   "9002": "Achievement is under audit",
@@ -60,5 +63,9 @@
   "13003": "RSSHub not found",
   "13004": "RSSHub user limit exceeded",
   "13005": "RSSHub purchase not found",
-  "13006": "RSSHub config invalid"
+  "13006": "RSSHub config invalid",
+  "13007": "This RSSHub instance is unavailable currently",
+  "14000": "Invalid file",
+  "14001": "File too large",
+  "14002": "Upload failed"
 }
