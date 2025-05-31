@@ -89,7 +89,7 @@ const usePlayerTracker = () => {
 
     window.addEventListener("beforeunload", handler)
     return () => window.removeEventListener("beforeunload", handler)
-  }, [])
+  }, [playerOpenAt])
 
   useEffect(() => {
     if (!show) {
@@ -100,7 +100,7 @@ const usePlayerTracker = () => {
         trigger: "manual",
       })
     }
-  }, [show])
+  }, [playerOpenAt, show])
 }
 const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const isMobile = useMobile()
