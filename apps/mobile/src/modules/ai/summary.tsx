@@ -118,7 +118,7 @@ export const AISummary: FC<{
         </View>
       </Animated.View>
 
-      <View className="absolute opacity-0">
+      <View className="absolute w-full opacity-0">
         <View onLayout={measureContent}>
           {error ? (
             <View className="mt-3">
