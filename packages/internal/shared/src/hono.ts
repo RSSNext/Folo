@@ -17910,7 +17910,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 } & {
     "/rsshub-analytics": {
         $get: {
-            input: {};
+            input: {
+                query: {
+                    lang?: string | undefined;
+                };
+            };
             output: {
                 data: {
                     [x: string]: {

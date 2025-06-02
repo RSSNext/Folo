@@ -49,7 +49,7 @@ export const Component = () => {
 
   const data: RouteData = rsshubPopular.data as any
 
-  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics(), {
+  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics({ lang }), {
     staleTime: 1000 * 60 * 60 * 24, // 1 day
     placeholderData: keepPreviousData,
   })
