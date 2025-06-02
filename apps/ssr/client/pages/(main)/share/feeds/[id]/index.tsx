@@ -3,7 +3,6 @@ import { MainContainer } from "@client/components/layout/main"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
-import { useEntriesPreview } from "@client/query/entries"
 import { useFeed } from "@client/query/feed"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
@@ -29,9 +28,13 @@ export function Component() {
   const feedData = feed.data?.feed
   const analytics = feed.data?.analytics
   const isSubscribed = !!feed.data?.subscription
-  const entries = useEntriesPreview({
-    id,
-  })
+  const entries = feed.data?.entries.map((entry) => ({
+    ...entry,
+    id: entry.guid,
+    content: entry.description,
+    feedId: feed.data?.feed.id,
+    insertedAt: entry.publishedAt,
+  }))
 
   useTitle(feed.data?.feed.title)
 
@@ -109,11 +112,7 @@ export function Component() {
           </div>
         </div>
         <div className={cn("w-full pb-12 pt-8", "flex flex-col gap-2")}>
-          {entries.isLoading && !entries.data ? (
-            <LoadingCircle size="large" className="center mt-12" />
-          ) : (
-            <Item entries={entries.data} feed={feed.data} view={view} />
-          )}
+          <Item entries={entries} feed={feed.data} view={view} />
         </div>
       </div>
     </MainContainer>

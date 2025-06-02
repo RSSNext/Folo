@@ -3068,6 +3068,23 @@ declare const feeds: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        nsfw: drizzle_orm_pg_core.PgColumn<{
+            name: "nsfw";
+            tableName: "feeds";
+            dataType: "boolean";
+            columnType: "PgBoolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -3089,6 +3106,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: zod.ZodNullable<zod.ZodString>;
     rsshubRoute: zod.ZodNullable<zod.ZodString>;
     rsshubNamespace: zod.ZodNullable<zod.ZodString>;
+    nsfw: zod.ZodNullable<zod.ZodBoolean>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     id: string;
     image: string | null;
@@ -3107,6 +3125,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: string | null;
     rsshubRoute: string | null;
     rsshubNamespace: string | null;
+    nsfw: boolean | null;
 }, {
     id: string;
     image: string | null;
@@ -3125,6 +3144,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: string | null;
     rsshubRoute: string | null;
     rsshubNamespace: string | null;
+    nsfw: boolean | null;
 }>;
 declare const feedsRelations: drizzle_orm.Relations<"feeds", {
     subscriptions: drizzle_orm.Many<"subscriptions">;
@@ -5926,6 +5946,23 @@ declare const trendingFeeds: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        nsfw: drizzle_orm_pg_core.PgColumn<{
+            name: "nsfw";
+            tableName: "trendings_feeds";
+            dataType: "boolean";
+            columnType: "PgBoolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -5941,9 +5978,11 @@ declare const trendingFeedsOpenAPISchema: zod.ZodObject<{
     score30d: zod.ZodString;
     view: zod.ZodNumber;
     language: zod.ZodString;
+    nsfw: zod.ZodNullable<zod.ZodBoolean>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     view: number;
     language: string;
+    nsfw: boolean | null;
     feedId: string;
     rankedAt: string;
     score1d: string;
@@ -5953,6 +5992,7 @@ declare const trendingFeedsOpenAPISchema: zod.ZodObject<{
 }, {
     view: number;
     language: string;
+    nsfw: boolean | null;
     feedId: string;
     rankedAt: string;
     score1d: string;
@@ -18542,6 +18582,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                 query: {
                     id?: string | undefined;
                     url?: string | undefined;
+                    entriesLimit?: number | undefined;
                 };
             };
             output: {
@@ -19142,6 +19183,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     migrateTo: string | null;
                     rsshubRoute: string | null;
                     rsshubNamespace: string | null;
+                    nsfw: boolean | null;
                 } | null;
                 list: {
                     id: string;
