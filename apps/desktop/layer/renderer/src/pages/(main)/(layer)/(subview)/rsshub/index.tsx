@@ -98,10 +98,10 @@ function List({ data }: { data?: RSSHubModel[] }) {
           <TableCell>
             <span className="flex items-center gap-2">
               <Logo className="size-6" />
-              Follow
+              Folo
             </span>
           </TableCell>
-          <TableCell>Follow Built-in RSSHub</TableCell>
+          <TableCell>Folo Built-in RSSHub</TableCell>
           <TableCell>
             <span className="flex items-center justify-end gap-1">
               0 <i className="i-mgc-power text-accent" />
