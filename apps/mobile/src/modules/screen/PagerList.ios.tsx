@@ -27,6 +27,7 @@ export function PagerList({
     () => activeViews.indexOf(viewId as FeedViewType),
     [activeViews, viewId],
   )
+  const [initialPageIndex] = useState(activeViewIndex)
   const pagerRef = useRef<PagerRef>(null)
   const rid = useId()
   useEffect(() => {
@@ -41,7 +42,7 @@ export function PagerList({
   return (
     <PagerView
       ref={pagerRef}
-      initialPageIndex={activeViewIndex}
+      initialPageIndex={initialPageIndex}
       onScrollBegin={() => setDragging(true)}
       onScrollEnd={() => setDragging(false)}
       pageContainerClassName="flex-1"
