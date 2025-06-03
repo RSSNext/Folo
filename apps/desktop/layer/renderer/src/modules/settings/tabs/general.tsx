@@ -23,7 +23,7 @@ import {
 import { useProxyValue, useSetProxy } from "~/hooks/biz/useProxySetting"
 import { useMinimizeToTrayValue, useSetMinimizeToTray } from "~/hooks/biz/useTraySetting"
 import { fallbackLanguage } from "~/i18n"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { setTranslationCache } from "~/modules/entry-content/atoms"
 
 import { SettingDescription, SettingInput, SettingSwitch } from "../control"
@@ -40,15 +40,21 @@ const { defineSettingItem: _defineSettingItem, SettingBuilder } = createSetting(
 )
 
 const saveLoginSetting = (checked: boolean) => {
-  tipcClient?.setLoginItemSettings(checked)
+  ipcServices?.setting.setLoginItemSettings({
+    openAtLogin: checked,
+    openAsHidden: true,
+    args: ["--startup"],
+  })
   setGeneralSetting("appLaunchOnStartup", checked)
 }
 
 export const SettingGeneral = () => {
   const { t } = useTranslation("settings")
   useEffect(() => {
-    tipcClient?.getLoginItemSettings().then((settings) => {
-      setGeneralSetting("appLaunchOnStartup", settings.openAtLogin)
+    ipcServices?.setting.getLoginItemSettings().then((settings) => {
+      if (settings) {
+        setGeneralSetting("appLaunchOnStartup", settings.openAtLogin)
+      }
     })
   }, [])
 
@@ -73,7 +79,7 @@ export const SettingGeneral = () => {
 
           defineSettingItem("appLaunchOnStartup", {
             label: t("general.launch_at_login"),
-            disabled: !tipcClient,
+            disabled: !ipcServices,
             onChange(value) {
               saveLoginSetting(value)
             },
@@ -173,7 +179,7 @@ const VoiceSelector = () => {
   const { t } = useTranslation("settings")
 
   const { data } = useQuery({
-    queryFn: () => tipcClient?.getVoices(),
+    queryFn: () => ipcServices?.reader.getVoices(),
     queryKey: ["voices"],
     meta: {
       persist: true,

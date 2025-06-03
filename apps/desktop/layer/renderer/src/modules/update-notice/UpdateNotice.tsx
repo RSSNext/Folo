@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
 import { getUpdaterStatus, setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 export const UpdateNotice = () => {
   const updaterStatus = useUpdaterStatus()
@@ -21,11 +21,11 @@ export const UpdateNotice = () => {
     })
     switch (status.type) {
       case "app": {
-        tipcClient?.quitAndInstall()
+        ipcServices?.app.quitAndInstall()
         break
       }
       case "renderer": {
-        tipcClient?.rendererUpdateReload()
+        ipcServices?.app.rendererUpdateReload()
         break
       }
       case "pwa": {

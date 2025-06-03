@@ -99,11 +99,6 @@ export abstract class IpcService {
     const channel = `${this.groupName}.${methodName}`
     this.handler.registerMethod(channel, handler)
   }
-
-  // Helper method to send events to renderer
-  protected sendToRenderer<T>(webContents: WebContents, event: string, data: T) {
-    this.handler.sendToRenderer(webContents, `${this.groupName}.${event}`, data)
-  }
 }
 
 // Extract method signatures from service class, removing context parameter
@@ -113,9 +108,11 @@ export type ExtractServiceMethods<T> = {
     ...args: infer Args
   ) => infer Output
     ? Args extends []
-      ? () => Output
+      ? () => AlwaysPromise<Output>
       : Args extends [infer Input]
-        ? (input: Input) => Output
-        : (...args: Args) => Output
+        ? (input: Input) => AlwaysPromise<Output>
+        : (...args: Args) => AlwaysPromise<Output>
     : never
 }
+
+type AlwaysPromise<T> = Promise<Awaited<T>>

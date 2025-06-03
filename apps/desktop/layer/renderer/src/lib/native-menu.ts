@@ -1,6 +1,6 @@
 import type { MenuItemConstructorOptions } from "electron"
 
-import { tipcClient } from "./client"
+import { ipcServices } from "./client"
 
 export type ElectronMenuItem = Omit<MenuItemConstructorOptions, "click" | "submenu"> & {
   click?: () => void
@@ -21,34 +21,34 @@ export const showElectronContextMenu = async (items: Array<ElectronMenuItem>) =>
     },
   )
   const itemsWithoutClick = removeClick(items)
-  await tipcClient?.showContextMenu({ items: itemsWithoutClick })
+  await ipcServices?.menu.showContextMenu({ items: itemsWithoutClick })
   dispose()
 }
 
-const removeClick = (item: ElectronMenuItem[]): ElectronMenuItem[] =>
-  item.map(({ click, ...rest }) => {
-    if (rest.submenu)
-      return {
-        ...rest,
-        submenu: removeClick(rest.submenu),
-      }
-    return rest
-  })
-
-// Function to retrieve the menu item based on the provided path
-const getMenuItemByPath = (items: ElectronMenuItem[], path: number[]): ElectronMenuItem | null => {
-  let currentItems = items
-  let currentItem: ElectronMenuItem | null = null
+function getMenuItemByPath(
+  items: Array<ElectronMenuItem>,
+  path: number[],
+): ElectronMenuItem | null {
+  let current: ElectronMenuItem | null = null
+  let currentLevel = items
 
   for (const index of path) {
-    if (!currentItems || index >= currentItems.length) return null
-    currentItem = currentItems[index]!
-
-    if (currentItem.submenu && Array.isArray(currentItem.submenu)) {
-      currentItems = currentItem.submenu
-    } else {
-      currentItems = []
+    if (index >= currentLevel.length) {
+      return null
+    }
+    current = currentLevel[index] || null
+    if (current?.submenu && path.indexOf(index) < path.length - 1) {
+      currentLevel = current.submenu
     }
   }
-  return currentItem
+
+  return current
+}
+
+function removeClick(items: Array<ElectronMenuItem>): Array<ElectronMenuItem> {
+  return items.map((item) => ({
+    ...item,
+    click: undefined,
+    submenu: item.submenu ? removeClick(item.submenu) : undefined,
+  }))
 }

@@ -19,7 +19,7 @@ import { useUserRole } from "~/atoms/user"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
@@ -286,7 +286,7 @@ export const useRegisterEntryCommands = () => {
           if (!entry.entries.url) return
 
           if (IN_ELECTRON) {
-            return tipcClient?.showShareMenu(entry.entries.url)
+            return ipcServices?.menu.showShareMenu(entry.entries.url)
           } else {
             const { title, description } = entry.entries
             navigator.share({
@@ -362,7 +362,7 @@ export const useRegisterEntryCommands = () => {
             if (!entryContent) {
               return
             }
-            const filePath = await tipcClient?.tts({
+            const filePath = await ipcServices?.reader.tts({
               id: entryId,
               text: parseHtml(entryContent).toText(),
               voice,

@@ -3,7 +3,7 @@ import { getOS, transformShortcut } from "@follow/utils/utils"
 import { atom } from "jotai"
 import { useCallback } from "react"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { createAtomHooks } from "~/lib/jotai"
 import type { ElectronMenuItem } from "~/lib/native-menu"
 import { showElectronContextMenu } from "~/lib/native-menu"
@@ -118,7 +118,7 @@ function withDebugMenu(menuItems: Array<FollowMenuItem>, e: MouseEvent | React.M
       new MenuItemText({
         label: "Inspect Element",
         click: () => {
-          tipcClient?.inspectElement({
+          ipcServices?.debug.inspectElement({
             x: e.pageX,
             y: e.pageY,
           })

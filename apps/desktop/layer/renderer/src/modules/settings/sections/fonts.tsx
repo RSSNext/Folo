@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingSelector } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 const FALLBACK_FONT = "Default (UI Font)"
 const DEFAULT_FONT = "SN Pro"
@@ -19,7 +19,7 @@ const CUSTOM_FONT = "Custom"
 const useFontDataElectron = () => {
   const { t } = useTranslation("settings")
   const { data } = useQuery({
-    queryFn: () => tipcClient?.getSystemFonts(),
+    queryFn: () => ipcServices?.setting.getSystemFonts(),
     queryKey: ["systemFonts"],
   })
 

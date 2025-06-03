@@ -20,7 +20,7 @@ import { getReadabilityContent, getReadabilityStatus, ReadabilityStatus } from "
 import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { parseHtml } from "~/lib/parse-html"
 import { queryClient } from "~/lib/query-client"
 import { Queries } from "~/queries"
@@ -90,7 +90,7 @@ const useRegisterEagleCommands = () => {
               })
               return
             }
-            const response = await tipcClient?.saveToEagle({
+            const response = await ipcServices?.integration.saveToEagle({
               url: entry.entries.url,
               mediaUrls: entry.entries.media.map((m) => m.url),
             })
@@ -283,7 +283,7 @@ const useRegisterObsidianCommands = () => {
       publishedAt: string
       vaultPath: string
     }) => {
-      return await tipcClient?.saveToObsidian(data)
+      return await ipcServices?.integration.saveToObsidian(data)
     },
     onSuccess: (data) => {
       if (data?.success) {

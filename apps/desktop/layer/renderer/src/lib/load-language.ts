@@ -10,7 +10,7 @@ import { defaultResources } from "~/@types/default-resource"
 import { i18nAtom, langChain, LocaleCache } from "~/i18n"
 import { jotaiStore } from "~/lib/jotai"
 
-import { tipcClient } from "./client"
+import { ipcServices } from "./client"
 import { appLog } from "./log"
 
 const loadingLangLock = new Set<string>()
@@ -29,7 +29,7 @@ export const loadLanguageAndApply = async (lang: string) => {
     })
   }
 
-  tipcClient?.switchAppLocale(lang)
+  ipcServices?.app.switchAppLocale(lang)
 
   const { t } = jotaiStore.get(i18nAtom)
   if (loadingLangLock.has(lang)) return
@@ -78,7 +78,8 @@ export const loadLanguageAndApply = async (lang: string) => {
 
     if (IN_ELECTRON) {
       importFilePath =
-        (await tipcClient?.resolveAppAsarPath(`dist/renderer/locales/${lang}.js`)) || ""
+        (await (ipcServices as any)?.app.resolveAppAsarPath(`dist/renderer/locales/${lang}.js`)) ||
+        ""
     } else {
       importFilePath = `/locales/${lang}.js`
     }

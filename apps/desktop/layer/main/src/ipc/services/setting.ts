@@ -71,13 +71,13 @@ export class SettingService extends IpcService {
   }
 
   @IpcMethod()
-  getProxyConfig(_context: IpcContext): any {
+  getProxyConfig(_context: IpcContext) {
     const proxy = store.get("proxy")
     return proxy ?? undefined
   }
 
   @IpcMethod()
-  setProxyConfig(_context: IpcContext, config: any): any {
+  setProxyConfig(_context: IpcContext, config: string) {
     const result = setProxyConfig(config)
     updateProxy()
     return result

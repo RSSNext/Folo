@@ -18,7 +18,7 @@ import {
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
 import { apiClient } from "~/lib/api-fetch"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
@@ -58,7 +58,7 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
         })
       }
     } catch {
-      const result = await tipcClient?.readability({ url })
+      const result = await ipcServices?.reader.readability({ url })
       if (result) {
         setReadabilityContent({
           [id]: result,

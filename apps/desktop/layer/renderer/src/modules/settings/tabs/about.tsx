@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Trans, useTranslation } from "react-i18next"
 
 import { CopyButton } from "~/components/ui/button/CopyButton"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 
 export const SettingAbout = () => {
@@ -18,13 +18,13 @@ export const SettingAbout = () => {
   const currentEnvironment = getCurrentEnvironment().join("\n")
   const { data: appVersion } = useQuery({
     queryKey: ["appVersion"],
-    queryFn: () => tipcClient?.getAppVersion() || "",
+    queryFn: () => ipcServices?.app.getAppVersion(),
   })
 
   const rendererVersion = PKG.version
 
   const handleCheckForUpdates = () => {
-    tipcClient?.checkForUpdates()
+    ipcServices?.app.checkForUpdates()
   }
 
   return (

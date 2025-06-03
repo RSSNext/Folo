@@ -5,20 +5,17 @@ import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog } from "electron"
 
+import { registerMenuAndContextMenu } from "~/init"
+import { i18n } from "~/lib/i18n"
+import { registerAppTray } from "~/lib/tray"
 import { logger } from "~/logger"
 import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
 import { downloadFile } from "../../lib/download"
-import { quitAndInstall } from "../../updater"
+import { checkForAppUpdates, quitAndInstall } from "../../updater"
 import { getMainWindow } from "../../window"
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"
-
-// Input types
-interface SaveToEagleInput {
-  url: string
-  mediaUrls: string[]
-}
 
 interface WindowActionInput {
   action: "close" | "minimize" | "maximum"
@@ -39,34 +36,22 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  async saveToEagle(context: IpcContext, input: SaveToEagleInput): Promise<any> {
-    try {
-      const res = await fetch("http://localhost:41595/api/item/addFromURLs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          items: input.mediaUrls?.map((media) => ({
-            url: media,
-            website: input.url,
-            headers: {
-              referer: input.url,
-            },
-          })),
-        }),
-      })
-      return await res.json()
-    } catch {
-      return null
-    }
+  getAppVersion(): string {
+    return app.getVersion()
   }
 
   @IpcMethod()
-  invalidateQuery(context: IpcContext, input: (string | number | undefined)[]): void {
-    const mainWindow = getMainWindow()
-    if (!mainWindow) return
-    this.sendToRenderer(mainWindow.webContents, "invalidateQuery", input)
+  checkForUpdates(): void {
+    checkForAppUpdates()
+  }
+
+  @IpcMethod()
+  switchAppLocale(context: IpcContext, input: string): void {
+    i18n.changeLanguage(input)
+    registerMenuAndContextMenu()
+    registerAppTray()
+
+    app.commandLine.appendSwitch("lang", input)
   }
 
   @IpcMethod()
@@ -75,8 +60,7 @@ export class AppService extends IpcService {
     const allWindows = BrowserWindow.getAllWindows()
     const dynamicRenderEntry = loadDynamicRenderEntry()
 
-    const appLoadEntry =
-      dynamicRenderEntry || path.resolve(__dirname, "../../../../renderer/index.html")
+    const appLoadEntry = dynamicRenderEntry || path.resolve(__dirname, "../renderer/index.html")
     logger.info("appLoadEntry", appLoadEntry)
     const mainWindow = getMainWindow()
 
