@@ -14,10 +14,13 @@ export function useEntryTranslation({
   entryId?: string
   extraFields?: string[]
 }) {
-  const entry = useEntry(entryId, (state) => ({ view: state.view }))
+  const entry = useEntry(entryId, (state) => ({
+    view: state.view,
+    translation: state.settings?.translation,
+  }))
   const actionLanguage = useActionLanguage()
-  const showAITranslationFinal = useShowAITranslation(entryId)
-  const showAITranslationAuto = useShowAITranslationAuto(entryId)
+  const showAITranslationFinal = useShowAITranslation(!!entry?.translation)
+  const showAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const showAITranslation =
     !extraFields || extraFields.length === 0 ? showAITranslationAuto : showAITranslationFinal
 

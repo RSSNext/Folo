@@ -20,11 +20,11 @@ export const toggleShowAITranslationOnce = () => setShowAITranslationOnce((prev)
 export const enableShowAITranslationOnce = () => setShowAITranslationOnce(true)
 export const disableShowAITranslationOnce = () => setShowAITranslationOnce(false)
 
-export const useShowAITranslationAuto = (settings?: boolean | string | null) => {
+export const useShowAITranslationAuto = (settings?: boolean | null) => {
   return useGeneralSettingKey("translation") || !!settings
 }
 
-export const useShowAITranslation = (settings?: boolean | string | null) => {
+export const useShowAITranslation = (settings?: boolean | null) => {
   const showAITranslationAuto = useShowAITranslationAuto(settings)
   const showAITranslationOnce = useShowAITranslationOnce()
   return showAITranslationAuto || showAITranslationOnce

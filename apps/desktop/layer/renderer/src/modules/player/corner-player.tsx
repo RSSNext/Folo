@@ -119,11 +119,13 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     const { authorAvatar, id, title } = state.entries
 
     const media = state.entries.media || []
+    const firstMedia = media[0]
     const firstPhoto = media.find((a) => a.type === "photo")
     const firstPhotoUrl = firstPhoto?.url
+    const entryCoverImage = firstMedia?.preview_image_url || firstMedia?.url || firstPhotoUrl
     const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
-    return { authorAvatar, feedId, iconEntry, id, inboxId, title, view }
+    return { authorAvatar, feedId, iconEntry, id, inboxId, title, view, entryCoverImage }
   })
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
@@ -141,11 +143,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   }, [])
 
   useEffect(() => {
-    const coverImage =
-      entry?.entries.media?.[0]?.preview_image_url ||
-      entry?.entries.media?.[0]?.url ||
-      entry?.entries.authorAvatar ||
-      feed?.image
+    const coverImage = entry?.entryCoverImage || feed?.image
 
     setNowPlaying({
       title: entry?.title || undefined,

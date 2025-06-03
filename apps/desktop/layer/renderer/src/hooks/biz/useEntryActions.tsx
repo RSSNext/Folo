@@ -184,7 +184,7 @@ export const useEntryActions = ({
   const isShowSourceContent = useShowSourceContent()
   const isShowAISummaryAuto = useShowAISummaryAuto(entry?.summary)
   const isShowAISummaryOnce = useShowAISummaryOnce()
-  const isShowAITranslationAuto = useShowAITranslationAuto(entry?.translation)
+  const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
 
   const runCmdFn = useRunCommandFn()
