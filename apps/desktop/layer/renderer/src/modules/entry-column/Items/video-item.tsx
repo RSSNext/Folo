@@ -37,14 +37,16 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
     const attachments = state.entries.attachments || []
     const { duration_in_seconds } =
       attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
-    const seconds = duration_in_seconds ? Number.parseInt(duration_in_seconds.toString()) : 0
+    const seconds = duration_in_seconds
+      ? Number.parseInt(duration_in_seconds.toString())
+      : undefined
     const duration = formatDuration(seconds)
 
     const media = state.entries.media || []
     const videos = media.filter((a) => a.type === "video")
-    const firstVideo = videos[0]
+    const firstMedia = media[0]
 
-    return { attachments, duration, firstVideo, id, url, videos }
+    return { attachments, duration, firstMedia, id, url, videos }
   })
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
@@ -127,12 +129,12 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
                 isActive && "rounded-b-none",
               )}
             />
-          ) : entry.firstVideo ? (
+          ) : entry.firstMedia ? (
             <Media
-              key={entry.firstVideo.url}
-              src={entry.firstVideo.url}
-              type={entry.firstVideo.type}
-              previewImageUrl={entry.firstVideo.preview_image_url}
+              key={entry.firstMedia.url}
+              src={entry.firstMedia.url}
+              type={entry.firstMedia.type}
+              previewImageUrl={entry.firstMedia.preview_image_url}
               className={cn(
                 "aspect-video w-full shrink-0 rounded-md object-cover",
                 isActive && "rounded-b-none",
