@@ -3,7 +3,7 @@ import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 
 import { PagerView } from "@/src/components/native/PagerView"
@@ -27,6 +27,7 @@ export function PagerList({
     () => activeViews.indexOf(viewId as FeedViewType),
     [activeViews, viewId],
   )
+  const [initialPageIndex] = useState(activeViewIndex)
   const pagerRef = useRef<PagerRef>(null)
   const rid = useId()
   useEffect(() => {
@@ -41,16 +42,19 @@ export function PagerList({
   return (
     <PagerView
       ref={pagerRef}
-      initialPageIndex={activeViewIndex}
-      onScrollBegin={() => setDragging(true)}
-      onScrollEnd={() => setDragging(false)}
+      initialPageIndex={initialPageIndex}
+      onScrollBegin={useCallback(() => setDragging(true), [])}
+      onScrollEnd={useCallback(() => setDragging(false), [])}
       pageContainerClassName="flex-1"
       containerClassName="flex-1 absolute inset-0"
       containerStyle={style}
-      onPageChange={(targetIndex) => {
-        selectTimeline({ type: "view", viewId: activeViews[targetIndex]! }, rid)
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      }}
+      onPageChange={useTypeScriptHappyCallback(
+        (targetIndex) => {
+          selectTimeline({ type: "view", viewId: activeViews[targetIndex]! }, rid)
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        },
+        [activeViews, rid],
+      )}
       renderPage={useTypeScriptHappyCallback(
         (index) => (
           <PagerListVisibleContext value={index === activeViewIndex} key={activeViews[index]!}>
