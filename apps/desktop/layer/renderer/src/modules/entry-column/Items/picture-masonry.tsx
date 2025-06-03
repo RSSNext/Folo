@@ -31,7 +31,7 @@ import { useEventCallback } from "usehooks-ts"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { MediaContainerWidthProvider } from "~/components/ui/media"
 import { useEntryTranslation } from "~/store/ai/hook"
-import { getEntry, useEntry } from "~/store/entry"
+import { getEntry } from "~/store/entry"
 import { imageActions } from "~/store/image"
 
 import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
@@ -258,8 +258,7 @@ const MasonryRender: React.ComponentType<
   }>
 > = ({ data, index }) => {
   const firstScreenReady = use(FirstScreenReadyContext)
-  const entry = useEntry(data.entryId)
-  const translation = useEntryTranslation({ entry })
+  const translation = useEntryTranslation({ entryId: data.entryId })
 
   if (data.entryId.startsWith("placeholder")) {
     return <LoadingSkeletonItem />

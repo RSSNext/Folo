@@ -25,7 +25,7 @@ import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
-import { entryActions, useEntryStore } from "~/store/entry"
+import { entryActions, getEntry, useEntryStore } from "~/store/entry"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -354,10 +354,14 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_content.header.play_tts"),
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
-        run: async ({ entryId, entryContent }) => {
+        run: async ({ entryId }) => {
           if (getAudioPlayerAtomValue().entryId === entryId) {
             AudioPlayer.togglePlayAndPause()
           } else {
+            const entryContent = getEntry(entryId)?.entries.content
+            if (!entryContent) {
+              return
+            }
             const filePath = await tipcClient?.tts({
               id: entryId,
               text: parseHtml(entryContent).toText(),
@@ -509,7 +513,7 @@ export type ImageGalleryCommand = Command<{
 
 export type TTSCommand = Command<{
   id: typeof COMMAND_ID.entry.tts
-  fn: (data: { entryId: string; entryContent: string }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type ReadabilityCommand = Command<{

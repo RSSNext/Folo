@@ -11,7 +11,10 @@ import { PreviewMediaContent } from "./preview-media"
 export const usePreviewMedia = (children?: React.ReactNode) => {
   const { present } = useModalStack()
   return useCallback(
-    (media: PreviewMediaProps[], initialIndex = 0) => {
+    (media?: PreviewMediaProps[], initialIndex = 0) => {
+      if (!media || media.length === 0) {
+        return
+      }
       if (isMobile()) {
         window.open(replaceImgUrlIfNeed(media[initialIndex]!.url))
         return

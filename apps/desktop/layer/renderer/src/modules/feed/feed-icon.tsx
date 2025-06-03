@@ -1,5 +1,5 @@
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
-import type { CombinedEntryModel, FeedModel, FeedOrListRespModel } from "@follow/models/types"
+import type { FeedModel, FeedOrListRespModel } from "@follow/models/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
@@ -73,7 +73,7 @@ type FeedIconFeed =
     })
   | FeedOrListRespModel
 
-type FeedIconEntry = Pick<CombinedEntryModel["entries"], "media" | "authorAvatar">
+export type FeedIconEntry = { authorAvatar?: string | null; firstPhotoUrl?: string | null }
 const fadeInVariant = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
@@ -111,9 +111,7 @@ export function FeedIcon({
 }) {
   const marginClassName = noMargin ? "" : "mr-2"
   const image =
-    (useMedia
-      ? entry?.media?.find((i) => i.type === "photo")?.url || entry?.authorAvatar
-      : entry?.authorAvatar) || feed?.image
+    (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || feed?.image
 
   const colors = useMemo(
     () => getBackgroundGradient(feed?.title || (feed as FeedModel)?.url || siteUrl || ""),

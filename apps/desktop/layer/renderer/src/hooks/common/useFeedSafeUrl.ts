@@ -6,13 +6,24 @@ import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
 export const useFeedSafeUrl = (entryId: string) => {
-  const entry = useEntry(entryId)
-  const feed = useFeedById(entry?.feedId)
+  const entry = useEntry(entryId, (state) => {
+    return {
+      feedId: state.feedId,
+      inboxId: state.inboxId,
+      url: state.entries.url,
+      authorUrl: state.entries.authorUrl,
+    }
+  })
+
+  const feed = useFeedById(entry?.feedId, (feed) => ({
+    type: feed?.type,
+    siteUrl: feed?.siteUrl,
+  }))
   const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
 
   return useMemo(() => {
-    if (inbox) return entry?.entries.authorUrl
-    const href = entry?.entries.url
+    if (inbox) return entry?.authorUrl
+    const href = entry?.url
     if (!href) return "#"
 
     if (href.startsWith("http")) {
@@ -21,8 +32,8 @@ export const useFeedSafeUrl = (entryId: string) => {
 
       return href
     }
-    const feedSiteUrl = feed?.type === "feed" ? feed.siteUrl : null
+    const feedSiteUrl = feed?.type === "feed" ? feed?.siteUrl : null
     if (feedSiteUrl) return resolveUrlWithBase(href, feedSiteUrl)
     return href
-  }, [entry?.entries.authorUrl, entry?.entries.url, feed?.type, inbox])
+  }, [entry?.authorUrl, entry?.url, feed?.type, feed?.siteUrl, inbox])
 }

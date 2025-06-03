@@ -25,7 +25,7 @@ import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
 import type { EntryHeaderProps } from "./header.shared"
 
 function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, () => ({}))
   const sortedActionConfigs = useSortedEntryActions({ entryId, view })
   const actionConfigs = sortedActionConfigs.mainAction
 
@@ -36,7 +36,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
 
   const shouldShowMeta = (hideRecentReader || !isAtTop) && !!entryTitleMeta?.title
 
-  if (!entry?.entries) return null
+  if (!entry) return null
 
   return (
     <div

@@ -18,7 +18,7 @@ import { useTipModal } from "../../wallet/hooks"
 
 export const SupportCreator = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({ feedId: state.feedId }))
   const feed = useFeedById(entry?.feedId)
   const { data: feedBoosters } = useFeedBoostersQuery(entry?.feedId)
 

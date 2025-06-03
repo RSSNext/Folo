@@ -2,6 +2,7 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import { formatDuration } from "@follow/utils/duration"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
@@ -25,21 +26,96 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import type { FlatEntryModel } from "~/store/entry"
-import { entryActions } from "~/store/entry"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
+import { entryActions, useEntry } from "~/store/entry"
 
 export const EntryItemWrapper: FC<
   {
-    entry: FlatEntryModel
+    entryId: string
     view?: number
     itemClassName?: string
     style?: React.CSSProperties
   } & PropsWithChildren
-> = ({ entry, view, children, itemClassName, style }) => {
-  const actionConfigs = useEntryActions({ entryId: entry.entries.id })
+> = ({ entryId, view, children, itemClassName, style }) => {
+  const entry = useEntry(entryId, (state) => {
+    /// keep-sorted
+    const { collections, feedId, inboxId, read, view } = state
+    /// keep-sorted
+    const { readability, summary, translation } = state.settings || {}
+    /// keep-sorted
+    const {
+      author,
+      authorAvatar,
+      authorUrl,
+      content,
+      description,
+      guid,
+      id,
+      insertedAt,
+      publishedAt,
+      title,
+      url,
+    } = state.entries
+    const hasContent = !!content
+    const isInCollection = !!collections
+
+    const attachments = state.entries.attachments || []
+    const { duration_in_seconds } =
+      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
+    const seconds = duration_in_seconds ? Number.parseInt(duration_in_seconds.toString()) : 0
+    const duration = formatDuration(seconds)
+
+    const media = state.entries.media || []
+    const videos = media.filter((a) => a.type === "video")
+    const videosLength = videos.length
+    const firstVideo = videos[0]
+    const firstVideoUrl = firstVideo?.preview_image_url
+    const photos = media.filter((a) => a.type === "photo")
+    const photosLength = photos.length
+    const firstPhoto = photos[0]
+    const firstPhotoUrl = firstPhoto?.url
+    const iconEntry: FeedIconEntry = {
+      firstPhotoUrl,
+      authorAvatar,
+    }
+
+    /// keep-sorted
+    return {
+      attachments,
+      author,
+      authorUrl,
+      content,
+      description,
+      duration,
+      feedId,
+      firstVideo,
+      firstVideoUrl,
+      guid,
+      hasContent,
+      iconEntry,
+      id,
+      inboxId,
+      insertedAt,
+      isInCollection,
+      media,
+      photosLength,
+      publishedAt,
+      read,
+      readability,
+      seconds,
+      summary,
+      title,
+      translation,
+      url,
+      videos,
+      videosLength,
+      view,
+    }
+  })
+  const actionConfigs = useEntryActions({ entryId })
 
   const feedItems = useFeedActions({
-    feedId: entry.feedId || entry.inboxId,
+    feedId: entry?.feedId || entry?.inboxId || "",
     view,
     type: "entryList",
   })
@@ -47,14 +123,11 @@ export const EntryItemWrapper: FC<
 
   const { t } = useTranslation("common")
 
-  const isActive = useRouteParamsSelector(
-    ({ entryId }) => entryId === entry.entries.id,
-    [entry.entries.id],
-  )
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
 
-  const asRead = useEntryIsRead(entry)
+  const asRead = useEntryIsRead(entry?.read)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const handleMouseEnter = useDebounceCallback(
@@ -62,8 +135,9 @@ export const EntryItemWrapper: FC<
       if (!hoverMarkUnread) return
       if (!document.hasFocus()) return
       if (asRead) return
+      if (!entry?.feedId) return
 
-      entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
+      entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
     },
     233,
     {
@@ -76,10 +150,11 @@ export const EntryItemWrapper: FC<
     (e) => {
       e.stopPropagation()
 
-      const shouldNavigate = getRouteParams().entryId !== entry.entries.id
+      const shouldNavigate = getRouteParams().entryId !== entry?.id
       if (!shouldNavigate) return
+      if (!entry?.feedId) return
       if (!asRead) {
-        entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
+        entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
       }
 
       setTimeout(
@@ -88,14 +163,14 @@ export const EntryItemWrapper: FC<
       )
 
       navigate({
-        entryId: entry.entries.id,
+        entryId: entry.id,
       })
     },
-    [asRead, entry.entries.id, entry.feedId, navigate],
+    [asRead, entry?.id, entry?.feedId, navigate],
   )
   const handleDoubleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
-    () => entry.entries.url && window.open(entry.entries.url, "_blank"),
-    [entry.entries.url],
+    () => entry?.url && window.open(entry.url, "_blank"),
+    [entry?.url],
   )
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
@@ -153,7 +228,7 @@ export const EntryItemWrapper: FC<
           new MenuItemText({
             label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
             click: () => {
-              navigator.clipboard.writeText(entry.entries.id)
+              navigator.clipboard.writeText(entry?.id || "")
             },
           }),
         ],
@@ -164,7 +239,7 @@ export const EntryItemWrapper: FC<
   })
 
   return (
-    <div data-entry-id={entry.entries.id} style={style}>
+    <div data-entry-id={entry?.id} style={style}>
       <div
         className={cn(
           "hover:bg-theme-item-hover relative duration-200",

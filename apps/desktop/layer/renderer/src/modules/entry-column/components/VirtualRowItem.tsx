@@ -24,15 +24,18 @@ const EntryHeadDateItem: FC<{
   entryId: string
   isSticky?: boolean
 }> = ({ entryId, isSticky }) => {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => {
+    const { insertedAt, publishedAt } = state.entries
+
+    return { insertedAt, publishedAt }
+  })
+
   const routeParams = useRouteParams()
   const { feedId, view } = routeParams
   const isList = isListSubscription(feedId)
 
   if (!entry) return null
-  const date = new Date(
-    isList ? entry.entries.insertedAt : entry.entries.publishedAt,
-  ).toDateString()
+  const date = new Date(isList ? entry.insertedAt : entry.publishedAt).toDateString()
 
   return <DateItem isSticky={isSticky} date={date} view={view} />
 }

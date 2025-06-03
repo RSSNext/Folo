@@ -23,6 +23,7 @@ import { FocusablePresets } from "~/components/common/Focusable"
 import { VolumeSlider } from "~/components/ui/media/VolumeSlider"
 import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
@@ -50,7 +51,7 @@ interface ControlButtonProps {
 export const CornerPlayer = ({ className, ...rest }: ControlButtonProps) => {
   const show = useAudioPlayerAtomSelector((v) => v.show)
   const entryId = useAudioPlayerAtomSelector((v) => v.entryId)
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({ feedId: state.feedId }))
   const feed = useFeedById(entry?.feedId)
 
   return (
@@ -113,7 +114,17 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
   const playerValue = { entryId, status, isMute }
 
-  const entry = useEntry(playerValue.entryId)
+  const entry = useEntry(playerValue.entryId, (state) => {
+    const { feedId, inboxId, view } = state
+    const { authorAvatar, id, title } = state.entries
+
+    const media = state.entries.media || []
+    const firstPhoto = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = firstPhoto?.url
+    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+
+    return { authorAvatar, feedId, iconEntry, id, inboxId, title, view }
+  })
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
   const list = useListById(listId)
@@ -131,10 +142,10 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
   useEffect(() => {
     setNowPlaying({
-      title: entry?.entries.title || undefined,
+      title: entry?.title || undefined,
       artist: feed?.title || undefined,
       album: feed?.image || undefined,
-      artwork: [{ src: entry?.entries.authorAvatar || feed?.image || "" }],
+      artwork: [{ src: entry?.authorAvatar || feed?.image || "" }],
     })
   }, [entry, feed])
 
@@ -154,7 +165,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const navigateOptions = useMemo<NavigateEntryOptions | null>(() => {
     if (!entry) return null
     const options: NavigateEntryOptions = {
-      entryId: entry.entries.id,
+      entryId: entry.id,
     }
     if (isInbox) {
       Object.assign(options, {
@@ -190,7 +201,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         <div className="relative h-[3.625rem] shrink-0">
           <FeedIcon
             feed={feed}
-            entry={entry.entries}
+            entry={entry.iconEntry}
             size={isMobile ? 65.25 : 58}
             fallback={false}
             noMargin
@@ -223,7 +234,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
             className="mask-horizontal font-medium"
             speed={30}
           >
-            {entry.entries.title}
+            {entry.title}
           </Marquee>
           <div
             className={cn(

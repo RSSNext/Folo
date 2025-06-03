@@ -49,14 +49,15 @@ export interface EntryContentClassNames {
 export const TitleMetaHandler: Component<{
   entryId: string
 }> = ({ entryId }) => {
-  const {
-    entries: { title: entryTitle },
-    feedId,
-    inboxId,
-  } = useEntry(entryId)!
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxId } = state
+    const { title } = state.entries
 
-  const feed = useFeedById(feedId)
-  const inbox = useInboxById(inboxId)
+    return { feedId, inboxId, title }
+  })
+
+  const feed = useFeedById(entry?.feedId)
+  const inbox = useInboxById(entry?.inboxId)
   const feedTitle = feed?.title || inbox?.title
   const atTop = useIsSoFWrappedElement()
   useEffect(() => {
@@ -67,13 +68,13 @@ export const TitleMetaHandler: Component<{
   }, [atTop])
 
   useEffect(() => {
-    if (entryTitle && feedTitle) {
-      setEntryTitleMeta({ title: entryTitle, description: feedTitle })
+    if (entry?.title && feedTitle) {
+      setEntryTitleMeta({ title: entry.title, description: feedTitle })
     }
     return () => {
       setEntryTitleMeta(null)
     }
-  }, [entryId, entryTitle, feedTitle])
+  }, [entryId, entry?.title, feedTitle])
   return null
 }
 
