@@ -55,7 +55,7 @@ export const EntryItemWrapper: FC<
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
 
-  const asRead = useEntryIsRead(entry?.read)
+  const asRead = useEntryIsRead(entry)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
   const handleMouseEnter = useDebounceCallback(

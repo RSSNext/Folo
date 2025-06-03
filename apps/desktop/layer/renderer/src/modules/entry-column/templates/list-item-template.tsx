@@ -66,7 +66,7 @@ export function ListItem({
     }
   })
 
-  const isRead = useEntryIsRead(entry?.read)
+  const isRead = useEntryIsRead(entry)
 
   const inInCollection = useRouteParamsSelector((s) => s.feedId === FEED_COLLECTION_LIST)
 

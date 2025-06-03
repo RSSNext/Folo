@@ -68,7 +68,7 @@ export const GridItemFooter = ({
 
   const feeds = useFeedById(entry?.feedId)
 
-  const asRead = useEntryIsRead(entry?.read)
+  const asRead = useEntryIsRead(entry)
 
   if (!entry) return null
   return (

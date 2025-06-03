@@ -1,14 +1,14 @@
 import { useRouteParamsSelector } from "./useRouteParams"
 
-export function useEntryIsRead(read: Nullable<boolean>) {
+export function useEntryIsRead<T extends { read: Nullable<boolean> }>(entry?: T | null) {
   return useRouteParamsSelector(
     (params) => {
       if (params.isCollection) {
         return true
       }
-      if (!read) return false
-      return read
+      if (!entry?.read) return false
+      return entry.read
     },
-    [read],
+    [entry?.read],
   )
 }

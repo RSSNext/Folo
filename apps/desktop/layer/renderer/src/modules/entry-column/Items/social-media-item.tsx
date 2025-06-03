@@ -63,7 +63,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
     }
   })
 
-  const asRead = useEntryIsRead(entry?.read)
+  const asRead = useEntryIsRead(entry)
   const feed = useFeedById(entry?.feedId)
 
   const ref = useRef<HTMLDivElement>(null)
