@@ -13,6 +13,7 @@ export type UserModel = Omit<
   | "twoFactorEnabled"
   | "isAnonymous"
   | "suspended"
+  | "stripeCustomerId"
 > & {
   email?: string
 }

@@ -15,4 +15,5 @@ export enum Routes {
 export enum UserRole {
   Trial = "trial",
   User = "user",
+  Preview = "preview",
 }

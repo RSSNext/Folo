@@ -17,3 +17,7 @@ export const [, , useLoginModalShow, useSetLoginModalShow, getLoginModalShow, se
 export const [, , useUserRole, , getUserRole, setUserRole] = createAtomHooks(
   atom<Nullable<UserRole>>(null),
 )
+
+export const [, , useUserRoleEndDate, , getUserRoleEndDate, setUserRoleEndDate] = createAtomHooks(
+  atom<Nullable<Date>>(null),
+)
