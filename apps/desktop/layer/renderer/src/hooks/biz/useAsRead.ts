@@ -6,7 +6,7 @@ export function useEntryIsRead<T extends { read: Nullable<boolean> }>(entry?: T 
       if (params.isCollection) {
         return true
       }
-      if (!entry?.read) return false
+      if (!entry) return false
       return entry.read
     },
     [entry?.read],
