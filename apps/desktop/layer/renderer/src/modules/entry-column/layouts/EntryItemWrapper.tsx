@@ -2,7 +2,6 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
-import { formatDuration } from "@follow/utils/duration"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
@@ -26,7 +25,6 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { entryActions, useEntry } from "~/store/entry"
 
 export const EntryItemWrapper: FC<
@@ -38,79 +36,9 @@ export const EntryItemWrapper: FC<
   } & PropsWithChildren
 > = ({ entryId, view, children, itemClassName, style }) => {
   const entry = useEntry(entryId, (state) => {
-    /// keep-sorted
-    const { collections, feedId, inboxId, read, view } = state
-    /// keep-sorted
-    const { readability, summary, translation } = state.settings || {}
-    /// keep-sorted
-    const {
-      author,
-      authorAvatar,
-      authorUrl,
-      content,
-      description,
-      guid,
-      id,
-      insertedAt,
-      publishedAt,
-      title,
-      url,
-    } = state.entries
-    const hasContent = !!content
-    const isInCollection = !!collections
-
-    const attachments = state.entries.attachments || []
-    const { duration_in_seconds } =
-      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
-    const seconds = duration_in_seconds ? Number.parseInt(duration_in_seconds.toString()) : 0
-    const duration = formatDuration(seconds)
-
-    const media = state.entries.media || []
-    const videos = media.filter((a) => a.type === "video")
-    const videosLength = videos.length
-    const firstVideo = videos[0]
-    const firstVideoUrl = firstVideo?.preview_image_url
-    const photos = media.filter((a) => a.type === "photo")
-    const photosLength = photos.length
-    const firstPhoto = photos[0]
-    const firstPhotoUrl = firstPhoto?.url
-    const iconEntry: FeedIconEntry = {
-      firstPhotoUrl,
-      authorAvatar,
-    }
-
-    /// keep-sorted
-    return {
-      attachments,
-      author,
-      authorUrl,
-      content,
-      description,
-      duration,
-      feedId,
-      firstVideo,
-      firstVideoUrl,
-      guid,
-      hasContent,
-      iconEntry,
-      id,
-      inboxId,
-      insertedAt,
-      isInCollection,
-      media,
-      photosLength,
-      publishedAt,
-      read,
-      readability,
-      seconds,
-      summary,
-      title,
-      translation,
-      url,
-      videos,
-      videosLength,
-      view,
-    }
+    const { feedId, inboxId, read } = state
+    const { id, url } = state.entries
+    return { feedId, id, inboxId, read, url }
   })
   const actionConfigs = useEntryActions({ entryId })
 
