@@ -24,6 +24,7 @@ import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
+import type { FlatEntryModel } from "~/store/entry"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
@@ -129,6 +130,34 @@ export class EntryActionMenuItem extends MenuItemText {
 }
 export type EntryActionItem = EntryActionMenuItem | MenuItemSeparator
 
+const entrySelector = (state: FlatEntryModel) => {
+  const content = state.entries.content || ""
+  const hasContent = !!content
+  const doesContentContainsHTMLTags = doesTextContainHTML(content)
+
+  const { summary, translation, readability } = state.settings || {}
+
+  const media = state.entries.media || []
+  const images = media.filter((a) => a.type === "photo")
+  const imagesLength = images.length
+
+  return {
+    feedId: state.feedId,
+    inboxId: state.inboxId,
+    url: state.entries.url,
+    publishedAt: state.entries.publishedAt,
+    view: state.view,
+    read: state.read,
+    summary,
+    translation,
+    readability,
+    isInCollection: !!state.collections,
+    hasContent,
+    doesContentContainsHTMLTags,
+    imagesLength,
+  }
+}
+
 export const useEntryActions = ({
   entryId,
   view,
@@ -138,33 +167,7 @@ export const useEntryActions = ({
   view?: FeedViewType
   compact?: boolean
 }) => {
-  const entry = useEntry(entryId, (state) => {
-    const content = state.entries.content || ""
-    const hasContent = !!content
-    const doesContentContainsHTMLTags = doesTextContainHTML(content)
-
-    const { summary, translation, readability } = state.settings || {}
-
-    const media = state.entries.media || []
-    const images = media.filter((a) => a.type === "photo")
-    const imagesLength = images.length
-
-    return {
-      feedId: state.feedId,
-      inboxId: state.inboxId,
-      url: state.entries.url,
-      publishedAt: state.entries.publishedAt,
-      view: state.view,
-      read: state.read,
-      summary,
-      translation,
-      readability,
-      isInCollection: !!state.collections,
-      hasContent,
-      doesContentContainsHTMLTags,
-      imagesLength,
-    }
-  })
+  const entry = useEntry(entryId, entrySelector)
   const isEntryInReadability = useEntryIsInReadability(entryId)
 
   const feed = useFeedById(entry?.feedId, (feed) => {
