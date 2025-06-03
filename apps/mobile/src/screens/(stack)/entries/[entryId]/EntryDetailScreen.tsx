@@ -1,9 +1,8 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
-import type { EntryWithTranslation } from "@follow/store/entry/types"
 import { useFeed } from "@follow/store/feed/hooks"
-import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { useAutoMarkAsRead } from "@follow/store/unread/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import { atom, useAtomValue, useSetAtom } from "jotai"
@@ -38,27 +37,24 @@ export const EntryDetailScreen: NavigationControllerView<{
   view: FeedViewType
 }> = ({ entryId, entryIds, view: viewType }) => {
   useAutoMarkAsRead(entryId)
-  const entry = useEntry(entryId)
-  const actionLanguage = useActionLanguage()
-  const translation = useEntryTranslation(entryId, actionLanguage)
-  const entryWithTranslation = useMemo(() => {
-    if (!entry) return entry
-    return {
-      ...entry,
-      translation,
-    } as EntryWithTranslation
-  }, [entry, translation])
+  const entry = useEntry(entryId, (state) => ({
+    title: state.title,
+    url: state.url,
+    summary: state.settings?.summary,
+    translation: state.settings?.translation,
+    readability: state.settings?.readability,
+  }))
 
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(
     () => ({
-      showAISummaryAtom: atom(entry?.settings?.summary || false),
-      showAITranslationAtom: atom(!!entry?.settings?.translation || false),
-      showReadabilityAtom: atom(entry?.settings?.readability || false),
+      showAISummaryAtom: atom(entry?.summary || false),
+      showAITranslationAtom: atom(!!entry?.translation || false),
+      showReadabilityAtom: atom(entry?.readability || false),
 
       titleHeightAtom: atom(0),
     }),
-    [entry?.settings?.readability, entry?.settings?.summary, entry?.settings?.translation],
+    [entry?.readability, entry?.summary, entry?.translation],
   )
 
   const navigation = useNavigation()
@@ -114,9 +110,9 @@ export const EntryDetailScreen: NavigationControllerView<{
               )}
             </ItemPressable>
             <EntryAISummary entryId={entryId} />
-            {entryWithTranslation && (
+            {entry && (
               <View className="mt-3">
-                <EntryContentWebViewWithContext entry={entryWithTranslation} />
+                <EntryContentWebViewWithContext entryId={entryId} />
               </View>
             )}
             {viewType === FeedViewType.SocialMedia && (
@@ -131,18 +127,23 @@ export const EntryDetailScreen: NavigationControllerView<{
   )
 }
 
-const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation }) => {
+const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
   const showReadability = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const showTranslation = useAtomValue(showAITranslationAtom)
-  const entryId = entry.id
   const actionLanguage = useActionLanguage()
   const translation = useGeneralSettingKey("translation")
+
+  const entry = useEntry(entryId, (state) => ({
+    content: state.content,
+    readabilityContent: state.readabilityContent,
+  }))
+
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     withContent: true,
-    target: showReadability && entry.readabilityContent ? "readabilityContent" : "content",
+    target: showReadability && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
     checkLanguage,
     translation,
@@ -152,10 +153,10 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
   const setShowReadability = useSetAtom(showReadabilityAtom)
   const { isPending } = usePrefetchEntryDetail(entryId)
   useEffect(() => {
-    if (!isPending && !entry.content) {
+    if (!isPending && !entry?.content) {
       setShowReadability(true)
     }
-  }, [isPending, entry.content, setShowReadability])
+  }, [isPending, entry?.content, setShowReadability])
 
   useEffect(() => {
     if (showReadability) {
@@ -165,7 +166,7 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
 
   return (
     <EntryContentWebView
-      entry={entry}
+      entryId={entryId}
       showReadability={showReadability}
       showTranslation={translationSetting || showTranslation}
     />
@@ -173,7 +174,10 @@ const EntryContentWebViewWithContext = ({ entry }: { entry: EntryWithTranslation
 }
 
 const EntryInfo = ({ entryId }: { entryId: string }) => {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({
+    publishedAt: state.publishedAt,
+    feedId: state.feedId,
+  }))
   const feed = useFeed(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
 
@@ -203,14 +207,15 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
 }
 
 const EntryInfoSocial = ({ entryId }: { entryId: string }) => {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({
+    publishedAt: state.publishedAt,
+  }))
 
   if (!entry) return null
-  const { publishedAt } = entry
   return (
     <View className="mt-3 px-4">
       <Text className="text-secondary-label">
-        {publishedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+        {entry.publishedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
       </Text>
     </View>
   )

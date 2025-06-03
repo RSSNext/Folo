@@ -6,6 +6,7 @@ import Marquee from "react-fast-marquee"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { RelativeTime } from "~/components/ui/datetime"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { PlayerProgress } from "~/modules/player/corner-player"
 import { useEntry } from "~/store/entry"
@@ -20,7 +21,15 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
   const isMute = useAudioPlayerAtomSelector((v) => v.isMute)
   const playerValue = { entryId, status, isMute }
 
-  const entry = useEntry(playerValue.entryId)
+  const entry = useEntry(playerValue.entryId, (state) => {
+    const { authorAvatar, publishedAt, title } = state.entries
+
+    const media = state.entries.media || []
+    const firstPhotoUrl = media.find((a) => a.type === "photo")?.url
+    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+
+    return { iconEntry, title, publishedAt }
+  })
 
   if (!entry || !feed) return null
 
@@ -30,21 +39,19 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
       content={
         <>
           <div className="mb-6 flex gap-4">
-            <FeedIcon feed={feed} entry={entry.entries} size={58} fallback={false} noMargin />
+            <FeedIcon feed={feed} entry={entry.iconEntry} size={58} fallback={false} noMargin />
             <div className="flex flex-col justify-center">
               <Marquee
                 play={playerValue.status === "playing"}
                 className="mask-horizontal font-medium"
                 speed={30}
               >
-                {entry.entries.title}
+                {entry.title}
               </Marquee>
               <div className="text-text mt-0.5 overflow-hidden truncate text-xs">
                 <span>{feed.title}</span>
                 <span> · </span>
-                <span>
-                  {!!entry.entries.publishedAt && <RelativeTime date={entry.entries.publishedAt} />}
-                </span>
+                <span>{!!entry.publishedAt && <RelativeTime date={entry.publishedAt} />}</span>
               </div>
             </div>
           </div>

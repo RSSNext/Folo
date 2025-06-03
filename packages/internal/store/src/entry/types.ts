@@ -1,9 +1,6 @@
 import type { EntrySchema } from "@follow/database/schemas/types"
 
-import type { EntryTranslation } from "../translation/types"
-
 export type EntryModel = EntrySchema
-export type EntryWithTranslation = EntryModel & { translation?: EntryTranslation }
 export type FetchEntriesProps = {
   feedId?: string
   feedIdList?: string[]

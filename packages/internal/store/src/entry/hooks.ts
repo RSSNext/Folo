@@ -54,13 +54,13 @@ export const usePrefetchEntryDetail = (entryId: string) => {
 }
 
 const defaultSelector = (state: EntryModel) => state
-export function useEntry(id: string): EntryModel | undefined
-export function useEntry<T>(id: string, selector: (state: EntryModel) => T): T | undefined
-export function useEntry(
-  id: string,
-  selector: (state: EntryModel) => EntryModel = defaultSelector,
-) {
+
+export function useEntry<T>(
+  id: string | undefined,
+  selector: (state: EntryModel) => T,
+): T | undefined {
   return useEntryStore((state) => {
+    if (!id) return
     const entry = state.data[id]
     if (!entry) return
     return selector(entry)
@@ -150,6 +150,19 @@ export const useEntryIdsByListId = (listId: string) => {
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
       [listId],
+    ),
+  )
+}
+
+export const useEntryIsInbox = (entryId: string) => {
+  return useEntryStore(
+    useCallback(
+      (state) => {
+        const entry = state.data[entryId]
+        if (!entry) return false
+        return !!entry.inboxHandle
+      },
+      [entryId],
     ),
   )
 }
