@@ -1,14 +1,14 @@
 import { env } from "@follow/shared/env.desktop"
 import type { AuthSession } from "@follow/shared/hono"
-import { setOpenPanelTracker, tracker } from "@follow/tracker"
+import { setOpenPanelTracker, setPostHogTracker, tracker } from "@follow/tracker"
+// const firebaseConfig = env.VITE_FIREBASE_CONFIG ? JSON.parse(env.VITE_FIREBASE_CONFIG) : null
+import posthog from "posthog-js"
 
 // import { getAnalytics, logEvent, setUserId, setUserProperties } from "firebase/analytics"
 // import { initializeApp } from "firebase/app"
 import { QUERY_PERSIST_KEY } from "~/constants/app"
 
 import { op } from "./op"
-
-// const firebaseConfig = env.VITE_FIREBASE_CONFIG ? JSON.parse(env.VITE_FIREBASE_CONFIG) : null
 
 export const initAnalytics = async () => {
   if (env.VITE_OPENPANEL_CLIENT_ID === undefined) return
@@ -20,6 +20,14 @@ export const initAnalytics = async () => {
   })
 
   setOpenPanelTracker(op)
+
+  setPostHogTracker(
+    posthog.init(env.VITE_POSTHOG_KEY, {
+      api_host: env.VITE_POSTHOG_HOST,
+      person_profiles: "identified_only",
+      defaults: "2025-05-24",
+    }),
+  )
 
   // TODO: firebase analytics is not working on pages using without http protocol
   // if (firebaseConfig) {
