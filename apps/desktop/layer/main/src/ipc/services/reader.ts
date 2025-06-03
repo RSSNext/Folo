@@ -9,12 +9,13 @@ import type { ModelResult } from "vscode-languagedetection"
 
 import { detectCodeStringLanguage } from "../../modules/language-detection"
 import type { IpcContext } from "../base"
-import { IpcService } from "../base"
+import { IpcMethod, IpcService } from "../base"
 
 const tts = new MsEdgeTTS()
 
 interface ReadabilityInput {
   url: string
+  html?: string
 }
 
 interface TtsInput {
@@ -32,13 +33,7 @@ export class ReaderService extends IpcService {
     super("reader")
   }
 
-  protected registerMethods(): void {
-    this.registerMethod("readability", this.readability.bind(this))
-    this.registerMethod("tts", this.tts.bind(this))
-    this.registerMethod("getVoices", this.getVoices.bind(this))
-    this.registerMethod("detectCodeStringLanguage", this.detectCodeStringLanguage.bind(this))
-  }
-
+  @IpcMethod()
   async readability(_context: IpcContext, input: ReadabilityInput) {
     const { url } = input
 
@@ -50,6 +45,7 @@ export class ReaderService extends IpcService {
     return result
   }
 
+  @IpcMethod()
   async tts(context: IpcContext, input: TtsInput): Promise<string | null> {
     const { id, text, voice } = input
     if (!text) {
@@ -89,6 +85,7 @@ export class ReaderService extends IpcService {
     }
   }
 
+  @IpcMethod()
   async getVoices(context: IpcContext) {
     const window = BrowserWindow.fromWebContents(context.sender)
     try {
@@ -105,6 +102,7 @@ export class ReaderService extends IpcService {
     }
   }
 
+  @IpcMethod()
   async detectCodeStringLanguage(
     _context: IpcContext,
     input: DetectCodeStringLanguageInput,

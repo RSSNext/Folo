@@ -1,26 +1,18 @@
-import fs from "node:fs"
-import fsp from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
-import type { BrowserWindow } from "electron"
-import { app, clipboard, dialog, shell } from "electron"
+import { app, BrowserWindow, clipboard, dialog } from "electron"
 
-import { filePathToAppUrl } from "../../helper"
-import { registerMenuAndContextMenu } from "../../init"
-import { clearAllData, getCacheSize } from "../../lib/cleaner"
+import { logger } from "~/logger"
+import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
+
 import { downloadFile } from "../../lib/download"
-import { i18n } from "../../lib/i18n"
-import { store, StoreKey } from "../../lib/store"
-import { registerAppTray } from "../../lib/tray"
-import { logger, revealLogFile } from "../../logger"
-import { checkForAppUpdates, quitAndInstall } from "../../updater"
-import { cleanupOldRender, loadDynamicRenderEntry } from "../../updater/hot-updater"
+import { quitAndInstall } from "../../updater"
 import { getMainWindow } from "../../window"
 import type { IpcContext } from "../base"
-import { IpcService } from "../base"
+import { IpcMethod, IpcService } from "../base"
 
 // Input types
 interface SaveToEagleInput {
@@ -46,19 +38,7 @@ export class AppService extends IpcService {
     super("app")
   }
 
-  protected registerMethods(): void {
-    this.registerMethod("saveToEagle", this.saveToEagle.bind(this))
-    this.registerMethod("invalidateQuery", this.invalidateQuery.bind(this))
-    this.registerMethod("windowAction", this.windowAction.bind(this))
-    this.registerMethod("quitAndInstall", this.quitAndInstall.bind(this))
-    this.registerMethod("readClipboard", this.readClipboard.bind(this))
-    this.registerMethod("search", this.search.bind(this))
-    this.registerMethod("clearSearch", this.clearSearch.bind(this))
-    this.registerMethod("download", this.download.bind(this))
-    this.registerMethod("getAppPath", this.getAppPath.bind(this))
-    this.registerMethod("resolveAppAsarPath", this.resolveAppAsarPath.bind(this))
-  }
-
+  @IpcMethod()
   async saveToEagle(context: IpcContext, input: SaveToEagleInput): Promise<any> {
     try {
       const res = await fetch("http://localhost:41595/api/item/addFromURLs", {
@@ -82,12 +62,40 @@ export class AppService extends IpcService {
     }
   }
 
+  @IpcMethod()
   invalidateQuery(context: IpcContext, input: (string | number | undefined)[]): void {
     const mainWindow = getMainWindow()
     if (!mainWindow) return
     this.sendToRenderer(mainWindow.webContents, "invalidateQuery", input)
   }
 
+  @IpcMethod()
+  rendererUpdateReload(): void {
+    const __dirname = fileURLToPath(new URL(".", import.meta.url))
+    const allWindows = BrowserWindow.getAllWindows()
+    const dynamicRenderEntry = loadDynamicRenderEntry()
+
+    const appLoadEntry =
+      dynamicRenderEntry || path.resolve(__dirname, "../../../../renderer/index.html")
+    logger.info("appLoadEntry", appLoadEntry)
+    const mainWindow = getMainWindow()
+
+    for (const window of allWindows) {
+      if (window === mainWindow) {
+        if (DEV) {
+          logger.verbose("[rendererUpdateReload]: skip reload in dev")
+          break
+        }
+        window.loadFile(appLoadEntry)
+      } else window.destroy()
+    }
+
+    setTimeout(() => {
+      cleanupOldRender()
+    }, 1000)
+  }
+
+  @IpcMethod()
   windowAction(context: IpcContext, input: WindowActionInput): void {
     if (context.sender.getType() === "window") {
       const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()
@@ -114,14 +122,17 @@ export class AppService extends IpcService {
     }
   }
 
+  @IpcMethod()
   quitAndInstall(_context: IpcContext): void {
     quitAndInstall()
   }
 
+  @IpcMethod()
   readClipboard(_context: IpcContext): string {
     return clipboard.readText()
   }
 
+  @IpcMethod()
   async search(context: IpcContext, input: SearchInput): Promise<Electron.Result | null> {
     const { sender: webContents } = context
 
@@ -135,10 +146,12 @@ export class AppService extends IpcService {
     return promise
   }
 
+  @IpcMethod()
   clearSearch(context: IpcContext): void {
     context.sender.stopFindInPage("keepSelection")
   }
 
+  @IpcMethod()
   async download(context: IpcContext, input: string): Promise<void> {
     const result = await dialog.showSaveDialog({
       defaultPath: input.split("/").pop(),
@@ -165,10 +178,12 @@ export class AppService extends IpcService {
     }
   }
 
+  @IpcMethod()
   getAppPath(_context: IpcContext): string {
     return app.getAppPath()
   }
 
+  @IpcMethod()
   resolveAppAsarPath(context: IpcContext, input: string): string {
     if (input.startsWith("file://")) {
       input = fileURLToPath(input)

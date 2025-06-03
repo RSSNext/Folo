@@ -12,12 +12,12 @@ import type { Event } from "electron/main"
 import { START_IN_TRAY_ARGS } from "./constants/app"
 import { isMacOS, isWindows, isWindows11 } from "./env"
 import { filePathToAppUrl, getIconPath } from "./helper"
+import { services } from "./ipc"
 import { t } from "./lib/i18n"
 import { store } from "./lib/store"
 import { getTrayConfig } from "./lib/tray"
 import { refreshBound } from "./lib/utils"
 import { logger } from "./logger"
-import { cancelPollingUpdateUnreadCount, pollingUpdateUnreadCount } from "./tipc/dock"
 import { loadDynamicRenderEntry } from "./updater/hot-updater"
 
 const windows = {
@@ -313,7 +313,7 @@ export const createMainWindow = () => {
   })
 
   window.on("show", () => {
-    cancelPollingUpdateUnreadCount()
+    services.dock.pollingUpdateUnreadCount()
 
     const caller = callWindowExpose(window)
 
@@ -325,7 +325,7 @@ export const createMainWindow = () => {
     const settings = await caller.getUISettings()
 
     if (settings?.showDockBadge) {
-      pollingUpdateUnreadCount()
+      services.dock.pollingUpdateUnreadCount()
     }
   })
 

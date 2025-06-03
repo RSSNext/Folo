@@ -2,96 +2,89 @@ import { createRequire } from "node:module"
 
 import { app, nativeTheme } from "electron"
 
-import { START_IN_TRAY_ARGS } from "../../constants/app"
 import { setDockCount } from "../../lib/dock"
 import { setProxyConfig, updateProxy } from "../../lib/proxy"
 import { store } from "../../lib/store"
 import { getTrayConfig, setTrayConfig } from "../../lib/tray"
 import { showSetting } from "../../window"
 import type { IpcContext } from "../base"
-import { IpcService } from "../base"
+import { IpcMethod, IpcService } from "../base"
 
 const require = createRequire(import.meta.url)
+
+interface SetLoginItemSettingsInput {
+  openAtLogin: boolean
+  openAsHidden?: boolean
+  path?: string
+  args?: string[]
+}
 
 export class SettingService extends IpcService {
   constructor() {
     super("setting")
   }
 
-  protected registerMethods(): void {
-    this.registerMethod("getLoginItemSettings", this.getLoginItemSettings.bind(this))
-    this.registerMethod("setLoginItemSettings", this.setLoginItemSettings.bind(this))
-    this.registerMethod("openSettingWindow", this.openSettingWindow.bind(this))
-    this.registerMethod("getSystemFonts", this.getSystemFonts.bind(this))
-    this.registerMethod("getAppearance", this.getAppearance.bind(this))
-    this.registerMethod("setAppearance", this.setAppearance.bind(this))
-    this.registerMethod("getMinimizeToTray", this.getMinimizeToTray.bind(this))
-    this.registerMethod("setMinimizeToTray", this.setMinimizeToTray.bind(this))
-    this.registerMethod("setDockBadge", this.setDockBadge.bind(this))
-    this.registerMethod("getProxyConfig", this.getProxyConfig.bind(this))
-    this.registerMethod("setProxyConfig", this.setProxyConfig.bind(this))
-    this.registerMethod("getMessagingToken", this.getMessagingToken.bind(this))
-  }
-
-  async getLoginItemSettings(_context: IpcContext): Promise<Electron.LoginItemSettings> {
+  @IpcMethod()
+  getLoginItemSettings(_context: IpcContext): Electron.LoginItemSettings {
     return app.getLoginItemSettings()
   }
 
-  async setLoginItemSettings(_context: IpcContext, input: boolean): Promise<void> {
-    app.setLoginItemSettings({
-      openAtLogin: input,
-      openAsHidden: true,
-      args: [START_IN_TRAY_ARGS],
-    })
+  @IpcMethod()
+  setLoginItemSettings(_context: IpcContext, input: SetLoginItemSettingsInput): void {
+    app.setLoginItemSettings(input)
   }
 
-  async openSettingWindow(_context: IpcContext): Promise<void> {
-    await showSetting()
+  @IpcMethod()
+  openSettingWindow(_context: IpcContext): void {
+    showSetting()
   }
 
+  @IpcMethod()
   async getSystemFonts(_context: IpcContext): Promise<string[]> {
-    return new Promise((resolve) => {
-      require("font-list")
-        .getFonts()
-        .then((fonts: any[]) => {
-          resolve(fonts.map((font) => font.replaceAll('"', "")))
-        })
-    })
+    const fonts = await require("font-list").getFonts()
+    return fonts.map((font: string) => font.replaceAll('"', ""))
   }
 
-  async getAppearance(_context: IpcContext): Promise<"light" | "dark" | "system"> {
+  @IpcMethod()
+  getAppearance(_context: IpcContext): "light" | "dark" | "system" {
     return nativeTheme.themeSource
   }
 
-  async setAppearance(_context: IpcContext, input: "light" | "dark" | "system"): Promise<void> {
-    nativeTheme.themeSource = input
-    store.set("appearance", input)
+  @IpcMethod()
+  setAppearance(_context: IpcContext, appearance: "light" | "dark" | "system"): void {
+    nativeTheme.themeSource = appearance
   }
 
-  async getMinimizeToTray(_context: IpcContext): Promise<boolean> {
+  @IpcMethod()
+  getMinimizeToTray(_context: IpcContext): boolean {
     return getTrayConfig()
   }
 
-  async setMinimizeToTray(_context: IpcContext, input: boolean): Promise<void> {
-    await setTrayConfig(input)
+  @IpcMethod()
+  setMinimizeToTray(_context: IpcContext, minimize: boolean): void {
+    setTrayConfig(minimize)
   }
 
-  async setDockBadge(_context: IpcContext, input: number): Promise<void> {
-    setDockCount(input)
+  @IpcMethod()
+  setDockBadge(_context: IpcContext, count: number): void {
+    setDockCount(count)
   }
 
-  async getProxyConfig(_context: IpcContext): Promise<string | undefined> {
+  @IpcMethod()
+  getProxyConfig(_context: IpcContext): any {
     const proxy = store.get("proxy")
     return proxy ?? undefined
   }
 
-  async setProxyConfig(_context: IpcContext, input: string): Promise<any> {
-    const result = setProxyConfig(input)
+  @IpcMethod()
+  setProxyConfig(_context: IpcContext, config: any): any {
+    const result = setProxyConfig(config)
     updateProxy()
     return result
   }
 
-  async getMessagingToken(_context: IpcContext): Promise<any> {
-    return store.get("notifications-credentials")
+  @IpcMethod()
+  getMessagingToken(_context: IpcContext): string | null {
+    return store.get("notifications-credentials") as string | null
   }
 }

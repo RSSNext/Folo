@@ -7,6 +7,26 @@ export interface IpcContext {
   event: IpcMainInvokeEvent
 }
 
+// Metadata storage for decorated methods
+const methodMetadata = new WeakMap<any, Map<string, string>>()
+
+// Decorator for IPC methods
+export function IpcMethod(methodName?: string) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const { constructor } = target
+
+    if (!methodMetadata.has(constructor)) {
+      methodMetadata.set(constructor, new Map())
+    }
+
+    const methods = methodMetadata.get(constructor)!
+    const finalMethodName = methodName || propertyKey
+    methods.set(propertyKey, finalMethodName)
+
+    return descriptor
+  }
+}
+
 // Handler registry for IPC methods
 export class IpcHandler {
   private static instance: IpcHandler
@@ -58,7 +78,19 @@ export abstract class IpcService {
     this.registerMethods()
   }
 
-  protected abstract registerMethods(): void
+  protected registerMethods(): void {
+    const { constructor } = this
+    const methods = methodMetadata.get(constructor)
+
+    if (methods) {
+      for (const [propertyKey, methodName] of methods) {
+        const method = (this as any)[propertyKey]
+        if (typeof method === "function") {
+          this.registerMethod(methodName, method.bind(this))
+        }
+      }
+    }
+  }
 
   protected registerMethod<TOutput>(
     methodName: string,

@@ -1,5 +1,5 @@
 import type { IpcContext } from "../base"
-import { IpcService } from "../base"
+import { IpcMethod, IpcService } from "../base"
 
 interface InspectElementInput {
   x: number
@@ -11,10 +11,7 @@ export class DebugService extends IpcService {
     super("debug")
   }
 
-  protected registerMethods(): void {
-    this.registerMethod("inspectElement", this.inspectElement.bind(this))
-  }
-
+  @IpcMethod()
   inspectElement(context: IpcContext, input: InspectElementInput): void {
     context.sender.inspectElement(input.x, input.y)
   }

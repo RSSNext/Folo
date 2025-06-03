@@ -2,7 +2,7 @@ import type { MenuItemConstructorOptions, MessageBoxOptions } from "electron"
 import { dialog, Menu, ShareMenu } from "electron"
 
 import type { IpcContext } from "../base"
-import { IpcService } from "../base"
+import { IpcMethod, IpcService } from "../base"
 
 type SerializableMenuItem = Omit<MenuItemConstructorOptions, "click" | "submenu"> & {
   submenu?: SerializableMenuItem[]
@@ -21,12 +21,6 @@ interface ShowConfirmDialogInput {
 export class MenuService extends IpcService {
   constructor() {
     super("menu")
-  }
-
-  protected registerMethods(): void {
-    this.registerMethod("showContextMenu", this.showContextMenu.bind(this))
-    this.registerMethod("showConfirmDialog", this.showConfirmDialog.bind(this))
-    this.registerMethod("showShareMenu", this.showShareMenu.bind(this))
   }
 
   private normalizeMenuItems(
@@ -49,6 +43,7 @@ export class MenuService extends IpcService {
     })
   }
 
+  @IpcMethod()
   async showContextMenu(context: IpcContext, input: ShowContextMenuInput): Promise<void> {
     const defer = Promise.withResolvers<void>()
     const normalizedMenuItems = this.normalizeMenuItems(input.items, context)
@@ -60,6 +55,7 @@ export class MenuService extends IpcService {
     return defer.promise
   }
 
+  @IpcMethod()
   async showConfirmDialog(_context: IpcContext, input: ShowConfirmDialogInput): Promise<boolean> {
     const result = await dialog.showMessageBox({
       message: input.title,
@@ -70,6 +66,7 @@ export class MenuService extends IpcService {
     return result.response === 0
   }
 
+  @IpcMethod()
   async showShareMenu(context: IpcContext, input: string): Promise<void> {
     const menu = new ShareMenu({
       urls: [input],

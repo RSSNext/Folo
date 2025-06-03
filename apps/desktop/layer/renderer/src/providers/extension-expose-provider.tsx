@@ -7,11 +7,13 @@ import { toast } from "sonner"
 import { setWindowState } from "~/atoms/app"
 import { getGeneralSettings } from "~/atoms/settings/general"
 import { getUISettings, useToggleZenMode } from "~/atoms/settings/ui"
-import { setUpdaterStatus } from "~/atoms/updater"
+import { setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
 import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useDiscoverRSSHubRouteModal } from "~/hooks/biz/useDiscoverRSSHubRoute"
 import { useFollow } from "~/hooks/biz/useFollow"
+import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { oneTimeToken } from "~/lib/auth"
+import { queryClient } from "~/lib/query-client"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { handleSessionChanges } from "~/queries/auth"
@@ -26,7 +28,17 @@ declare module "@follow/components/providers/stable-router-provider.js" {
 export const ExtensionExposeProvider = () => {
   const { present } = useModalStack()
   const showSettings = useSettingModal()
-
+  const updaterStatus = useUpdaterStatus()
+  useLayoutEffect(() => {
+    registerGlobalContext({
+      updateDownloaded() {
+        setUpdaterStatus({
+          type: "app",
+          status: "ready",
+        })
+      },
+    })
+  }, [updaterStatus])
   useLayoutEffect(() => {
     registerGlobalContext({
       showSetting: (path) => window.router.showSettings(path),
@@ -55,6 +67,12 @@ export const ExtensionExposeProvider = () => {
           status: "ready",
         })
       },
+      invalidateQuery(queryKey: string | string[]) {
+        queryClient.invalidateQueries({
+          queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
+        })
+      },
+      navigateEntry,
     })
   }, [])
   useEffect(() => {

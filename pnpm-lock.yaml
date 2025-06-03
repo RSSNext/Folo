@@ -330,9 +330,6 @@ importers:
 
   apps/desktop/layer/main:
     dependencies:
-      '@egoist/tipc':
-        specifier: 0.3.2
-        version: 0.3.2(electron@35.1.5)(react@19.0.0)
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@35.1.5)
@@ -451,9 +448,6 @@ importers:
       '@dnd-kit/sortable':
         specifier: 10.0.0
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
-      '@egoist/tipc':
-        specifier: 0.3.2
-        version: 0.3.2(electron@35.1.5)(react@19.0.0)
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@35.1.5)
@@ -2698,11 +2692,6 @@ packages:
     resolution: {integrity: sha512-xWA9cUy6hzlK7Y6TaoRIcwmilSXiTJ8rbXcEdf9uht7yzDgw/yIgF4rThIQMrpD2Y2v4od51+r2y6Z7GStanDQ==}
     peerDependencies:
       tailwindcss: '*'
-
-  '@egoist/tipc@0.3.2':
-    resolution: {integrity: sha512-p8g35BhErVkYIgDqkw/HQJSli1TOsZRIUU9U7PYnYfwru6J/Ep1lwFGH2N6+sQMFi1HkqGTTUlJEISJ1DClfQw==}
-    peerDependencies:
-      electron: '>=26.0.0'
 
   '@electron-forge/cli@7.8.0':
     resolution: {integrity: sha512-XZ+Hg7pxeE9pgrahqcpMlND+VH0l0UTZLyO5wkI+YfanNyBQksB2mw24XeEtCA6x8F2IaEYdIGgijmPF6qpjzA==}
@@ -6035,9 +6024,6 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
 
-  '@tanstack/query-core@5.74.7':
-    resolution: {integrity: sha512-X3StkN/Y6KGHndTjJf8H8th7AX4bKfbRpiVhVqevf0QWlxl6DhyJ0TYG3R0LARa/+xqDwzU9mA4pbJxzPCI29A==}
-
   '@tanstack/query-core@5.77.2':
     resolution: {integrity: sha512-1lqJwPsR6GX6nZFw06erRt518O19tWU6Q+x0fJUygl4lxHCYF2nhzBPwLKk2NPjYOrpR0K567hxPc5K++xDe9Q==}
 
@@ -6060,11 +6046,6 @@ packages:
     resolution: {integrity: sha512-rE+mYxxwovtMWKcpSj9AU1eLtKRv+bsYVzlXZ/3WNZN8DohUc7BWr5WFWzR0QfFhMtDQN3yLUd7Z0Y8x5pgohg==}
     peerDependencies:
       '@tanstack/react-query': ^5.77.2
-      react: 19.0.0
-
-  '@tanstack/react-query@5.74.7':
-    resolution: {integrity: sha512-u4o/RIWnnrq26orGZu2NDPwmVof1vtAiiV6KYUXd49GuK+8HX+gyxoAYqIaZogvCE1cqOuZAhQKcrKGYGkrLxg==}
-    peerDependencies:
       react: 19.0.0
 
   '@tanstack/react-query@5.77.2':
@@ -17141,14 +17122,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@egoist/tipc@0.3.2(electron@35.1.5)(react@19.0.0)':
-    dependencies:
-      electron: 35.1.5
-    optionalDependencies:
-      '@tanstack/react-query': 5.74.7(react@19.0.0)
-    transitivePeerDependencies:
-      - react
-
   '@electron-forge/cli@7.8.0(encoding@0.1.13)':
     dependencies:
       '@electron-forge/core': 7.8.0(encoding@0.1.13)
@@ -21662,9 +21635,6 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.23)(typescript@5.8.3))
 
-  '@tanstack/query-core@5.74.7':
-    optional: true
-
   '@tanstack/query-core@5.77.2': {}
 
   '@tanstack/query-devtools@5.76.0': {}
@@ -21689,12 +21659,6 @@ snapshots:
       '@tanstack/query-persist-client-core': 5.77.2
       '@tanstack/react-query': 5.77.2(react@19.0.0)
       react: 19.0.0
-
-  '@tanstack/react-query@5.74.7(react@19.0.0)':
-    dependencies:
-      '@tanstack/query-core': 5.74.7
-      react: 19.0.0
-    optional: true
 
   '@tanstack/react-query@5.77.2(react@19.0.0)':
     dependencies:

@@ -66,6 +66,11 @@ interface RenderGlobalContext {
 
   // View
   zenMode: () => void
+
+  // Utils
+  invalidateQuery: (queryKey: string | string[]) => void
+  navigateEntry: (options: { feedId: string; entryId: string; view: number }) => void
+  updateDownloaded: () => void
 }
 
 export const registerGlobalContext = (context: Partial<RenderGlobalContext>) => {
