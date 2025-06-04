@@ -1,4 +1,9 @@
 import type { ActionFilter, ActionModel } from "@follow/models/types"
+import {
+  availableActionList,
+  filterFieldOptions,
+  filterOperatorOptions,
+} from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
@@ -21,11 +26,27 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import type { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { accentColor, useColors } from "@/src/theme/colors"
 
-import { availableActionList, filterFieldOptions, filterOperatorOptions } from "../actions/constant"
 import { EditConditionScreen } from "./EditCondition"
+import { EditRewriteRulesScreen } from "./EditRewriteRules"
+import { EditWebhooksScreen } from "./EditWebhooks"
+
+const extendedAvailableActionList = availableActionList.map((action) => ({
+  ...action,
+  onNavigate:
+    action.value === "rewriteRules"
+      ? (router: Navigation, index: number) => {
+          router.pushControllerView(EditRewriteRulesScreen, { index })
+        }
+      : action.value === "webhooks"
+        ? (router: Navigation, index: number) => {
+            router.pushControllerView(EditWebhooksScreen, { index })
+          }
+        : undefined,
+}))
 
 export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
   const { t } = useTranslation("settings")
@@ -228,10 +249,10 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
 
 const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
-  const enabledActions = availableActionList.filter(
+  const enabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] !== undefined,
   )
-  const notEnabledActions = availableActionList.filter(
+  const notEnabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] === undefined,
   )
 

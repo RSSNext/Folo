@@ -1,13 +1,8 @@
-import type { ActionId } from "@follow/models/types"
-import { actionActions } from "@follow/store/action/store"
+import type { ActionId, SupportedLanguages } from "@follow/models/types"
 import type { ParseKeys } from "i18next"
 import type { SFSymbol } from "sf-symbols-typescript"
 
-import type { SupportedLanguages } from "@/src/lib/language"
-import type { Navigation } from "@/src/lib/navigation/Navigation"
-
-import { EditRewriteRulesScreen } from "../routes/EditRewriteRules"
-import { EditWebhooksScreen } from "../routes/EditWebhooks"
+import { actionActions } from "./store"
 
 export const filterFieldOptions: Array<{
   label: Extract<ParseKeys<"settings">, `actions.action_card.feed_options.${string}`>
@@ -109,7 +104,6 @@ export const availableActionList: Array<{
   value: ActionId
   label: Extract<ParseKeys<"settings">, `actions.action_card.${string}`>
   onEnable?: (index: number) => void
-  onNavigate?: (router: Navigation, index: number) => void
   icon: SFSymbol
 }> = [
   {
@@ -157,19 +151,7 @@ export const availableActionList: Array<{
     label: "actions.action_card.rewrite_rules",
     icon: "pencil.and.outline",
     onEnable: (index: number) => {
-      actionActions.patchRule(index, {
-        result: {
-          rewriteRules: [
-            {
-              from: "",
-              to: "",
-            },
-          ],
-        },
-      })
-    },
-    onNavigate: (router, index) => {
-      router.pushControllerView(EditRewriteRulesScreen, { index })
+      actionActions.addRewriteRule(index)
     },
   },
   {
@@ -177,10 +159,7 @@ export const availableActionList: Array<{
     label: "actions.action_card.webhooks",
     icon: "arrow.up.right.square",
     onEnable: (index) => {
-      actionActions.patchRule(index, { result: { webhooks: [""] } })
-    },
-    onNavigate: (router, index) => {
-      router.pushControllerView(EditWebhooksScreen, { index })
+      actionActions.addWebhook(index)
     },
   },
 ]
