@@ -1,6 +1,7 @@
 import { cn } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { Text, View } from "react-native"
+import { useColor } from "react-native-uikit-colors"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
@@ -21,6 +22,7 @@ export const Trending = ({
   className?: string
   itemClassName?: string
 }) => {
+  const label = useColor("label")
   const discoverLanguage = useUISettingKey("discoverLanguage")
   const { data, isLoading } = useQuery({
     queryKey: ["trending", "feeds", discoverLanguage],
@@ -36,7 +38,7 @@ export const Trending = ({
     <View className={className}>
       <View className={cn("flex-row items-center justify-between pb-1 pt-4", itemClassName)}>
         <View className="flex-row items-center gap-2">
-          <TrendingUpCuteReIcon width={24} height={24} />
+          <TrendingUpCuteReIcon width={24} height={24} color={label} />
           <Text className="text-label text-2xl font-bold leading-[1.1]">Trending</Text>
         </View>
         <ItemPressable
@@ -46,7 +48,7 @@ export const Trending = ({
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}
         >
-          <FilterCuteReIcon width={20} height={20} />
+          <FilterCuteReIcon width={20} height={20} color={label} />
         </ItemPressable>
       </View>
 
@@ -73,10 +75,10 @@ export const Trending = ({
                           index === 1 && "bg-accent/90",
                           index === 2 && "bg-accent/80",
                         )
-                      : "bg-gray-5/60",
+                      : "bg-gray-5/60 dark:bg-white/60",
                   )}
                 >
-                  <Text className={cn("text-xs font-medium", index < 3 && "text-white")}>
+                  <Text className={cn("text-text text-xs font-medium", index < 3 && "text-white")}>
                     {index + 1}
                   </Text>
                 </View>

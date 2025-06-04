@@ -12,7 +12,7 @@ import type { EntryFilter, FlatEntryModel } from "./types"
 
 export const useEntry = <T = FlatEntryModel>(
   entryId: Nullable<string>,
-  selector?: (state: FlatEntryModel) => T,
+  selector: (state: FlatEntryModel) => T,
 ): T | null =>
   useEntryStore(
     useCallback(
@@ -22,7 +22,7 @@ export const useEntry = <T = FlatEntryModel>(
 
         if (!data) return null
 
-        return selector ? selector(data) : (data as T)
+        return selector(data)
       },
       [entryId, selector],
     ),

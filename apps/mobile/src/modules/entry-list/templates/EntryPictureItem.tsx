@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeed } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
@@ -14,7 +15,12 @@ import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
 import { getFeedIconSource } from "@/src/lib/image"
 
 export function EntryPictureItem({ id }: { id: string }) {
-  const item = useEntry(id)
+  const item = useEntry(id, (state) => ({
+    media: state.media,
+    feedId: state.feedId,
+    publishedAt: state.publishedAt,
+    author: state.author,
+  }))
 
   if (!item || !item.media) {
     return null
@@ -50,7 +56,8 @@ export function EntryPictureItem({ id }: { id: string }) {
             avatarUrl: getFeedIconSource(feed, "", true) ?? "",
             publishedAt: item.publishedAt.toISOString(),
           })
-          preloadWebViewEntry(item)
+          const fullEntry = getEntry(id)
+          preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)
         }}
       />

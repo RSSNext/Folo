@@ -31,25 +31,41 @@ import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 export function VideoItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  const entry = useEntry(entryId) || entryPreview
+  const entry = useEntry(entryId, (state) => {
+    const { id, url } = state.entries
 
-  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.entries.id)
+    const attachments = state.entries.attachments || []
+    const { duration_in_seconds } =
+      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
+    const seconds = duration_in_seconds
+      ? Number.parseInt(duration_in_seconds.toString())
+      : undefined
+    const duration = formatDuration(seconds)
+
+    const media = state.entries.media || []
+    const videos = media.filter((a) => a.type === "video")
+    const firstMedia = media[0]
+
+    return { attachments, duration, firstMedia, id, url, videos }
+  })
+
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
 
   const [miniIframeSrc, iframeSrc] = useMemo(
     () => [
       transformVideoUrl({
-        url: entry?.entries.url ?? "",
+        url: entry?.url ?? "",
         mini: true,
         isIframe: !IN_ELECTRON,
-        attachments: entry?.entries.attachments,
+        attachments: entry?.attachments,
       }),
       transformVideoUrl({
-        url: entry?.entries.url ?? "",
+        url: entry?.url ?? "",
         isIframe: !IN_ELECTRON,
-        attachments: entry?.entries.attachments,
+        attachments: entry?.attachments,
       }),
     ],
-    [entry?.entries.attachments, entry?.entries.url],
+    [entry?.attachments, entry?.url],
   )
   const modalStack = useModalStack()
   const previewMedia = usePreviewMedia()
@@ -78,24 +94,14 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
     }
   }, [hovered])
 
-  const duration = useMemo(() => {
-    const seconds = entry?.entries.attachments?.find(
-      (attachment) => attachment.duration_in_seconds,
-    )?.duration_in_seconds
-    if (seconds) {
-      return formatDuration(Number.parseInt(seconds.toString()))
-    }
-    return 0
-  }, [entry?.entries.attachments])
-
   if (!entry) return null
   return (
     <GridItem entryId={entryId} entryPreview={entryPreview} translation={translation}>
       <div
         className="cursor-card w-full"
         onClick={(e) => {
-          if (isMobile() && entry.entries.url) {
-            window.open(entry.entries.url, "_blank")
+          if (isMobile() && entry.url) {
+            window.open(entry.url, "_blank")
             e.stopPropagation()
             return
           }
@@ -110,11 +116,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
               overlay: true,
             })
           } else {
-            const videoMediaList =
-              entry.entries.media?.filter((media) => media.type === "video") || []
-            if (videoMediaList.length > 0) {
-              previewMedia(videoMediaList)
-            }
+            previewMedia(entry.videos)
           }
         }}
       >
@@ -127,12 +129,12 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
                 isActive && "rounded-b-none",
               )}
             />
-          ) : entry.entries.media?.[0] ? (
+          ) : entry.firstMedia ? (
             <Media
-              key={entry.entries.media[0].url}
-              src={entry.entries.media[0].url}
-              type={entry.entries.media[0].type}
-              previewImageUrl={entry.entries.media[0].preview_image_url}
+              key={entry.firstMedia.url}
+              src={entry.firstMedia.url}
+              type={entry.firstMedia.type}
+              previewImageUrl={entry.firstMedia.preview_image_url}
               className={cn(
                 "aspect-video w-full shrink-0 rounded-md object-cover",
                 isActive && "rounded-b-none",
@@ -150,9 +152,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
               No media available
             </div>
           )}
-          {!!duration && (
+          {!!entry.duration && (
             <div className="absolute bottom-2 right-2 rounded-md bg-black/50 px-1 py-0.5 text-xs font-medium text-white">
-              {duration}
+              {entry.duration}
             </div>
           )}
         </div>
@@ -165,9 +167,9 @@ const PreviewVideoModalContent: ModalContentComponent<{
   src: string
   entryId: string
 }> = ({ dismiss, src, entryId }) => {
-  const entry = useEntry(entryId)
-  const translation = useEntryTranslation({ entry, extraFields: ["content"] })
-  const content = translation.data?.content || entry?.entries.content
+  const entry = useEntry(entryId, (state) => ({ content: state.entries.content }))
+  const translation = useEntryTranslation({ entryId, extraFields: ["content"] })
+  const content = translation.data?.content || entry?.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
 
   const renderStyle = useRenderStyle()

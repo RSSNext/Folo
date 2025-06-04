@@ -4,3 +4,5 @@ export { ExternalJumpInProvider as LazyExternalJumpInProvider } from "../externa
 export { LottieRenderContainer as LazyLottieRenderContainer } from "~/components/ui/lottie-container"
 export const LazyReloadPrompt = () => null
 export const LazyPWAPrompt = () => null
+
+export { PopoverProvider as LazyPopoverProvider } from "../popover-provider"

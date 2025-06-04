@@ -4,8 +4,10 @@ import { LinearGradient } from "expo-linear-gradient"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Pressable, StyleSheet, Text, View } from "react-native"
+import { useColor } from "react-native-uikit-colors"
 
 import { Grid } from "@/src/components/ui/grid"
+import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { Grid2CuteReIcon } from "@/src/icons/grid_2_cute_re"
@@ -16,21 +18,23 @@ import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendati
 
 export const Category = () => {
   const navigation = useNavigation()
+  const label = useColor("label")
 
   return (
     <>
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
         <View className="flex-row items-center gap-2">
-          <Grid2CuteReIcon width={24} height={24} />
+          <Grid2CuteReIcon width={24} height={24} color={label} />
           <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>
         </View>
         <ItemPressable
           className="rounded-lg p-1"
+          itemStyle={ItemPressableStyle.UnStyled}
           onPress={() => {
             navigation.presentControllerView(DiscoverSettingsScreen)
           }}
         >
-          <FilterCuteReIcon width={20} height={20} />
+          <FilterCuteReIcon width={20} height={20} color={label} />
         </ItemPressable>
       </View>
 

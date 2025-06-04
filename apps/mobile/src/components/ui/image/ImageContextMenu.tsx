@@ -35,7 +35,10 @@ const getIOSNativeImageActions = () => {
 
 export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageContextMenuProps) => {
   const { t } = useTranslation()
-  const entry = useEntry(entryId!)
+  const entry = useEntry(entryId, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+  }))
   const feedId = entry?.feedId
 
   const isEntryStarred = useIsEntryStarred(entryId!)

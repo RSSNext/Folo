@@ -27,7 +27,6 @@ import { getGeneralSettings } from "~/atoms/settings/general"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
-import { tipcClient } from "~/lib/client"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 import { entries as entriesQuery } from "~/queries/entries"
@@ -241,12 +240,10 @@ const ListInnerForm = ({
         unreadActions.upsertMany(unread)
       }
       subscriptionQuery.all().invalidate()
-      tipcClient?.invalidateQuery(subscriptionQuery.all().key)
 
       const listId = list.id
       if (listId) {
         listsQuery.byId({ id: listId }).invalidate()
-        tipcClient?.invalidateQuery(listsQuery.byId({ id: listId }).key)
       }
       toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,

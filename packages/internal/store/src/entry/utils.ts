@@ -1,7 +1,5 @@
 import { FeedViewType } from "@follow/constants"
 
-import type { EntryModel } from "./types"
-
 /// Feed
 export const FEED_COLLECTION_LIST = "collections"
 
@@ -61,12 +59,12 @@ export function getEntriesParams({
   }
 }
 
-export function getInboxFrom(entry?: EntryModel) {
+export function getInboxFrom(entry?: { inboxHandle?: string | null; authorUrl?: string | null }) {
   if (isInboxEntry(entry)) {
-    return entry.authorUrl?.replace("mailto:", "")
+    return entry?.authorUrl?.replace("mailto:", "")
   }
 }
 
-export function isInboxEntry(entry?: EntryModel): entry is EntryModel {
+export function isInboxEntry(entry?: { inboxHandle?: string | null }) {
   return !!entry?.inboxHandle
 }

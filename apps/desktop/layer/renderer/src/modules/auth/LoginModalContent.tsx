@@ -16,6 +16,7 @@ import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
 import { LegalModalContent } from "./LegalModal"
+import { TokenModalContent } from "./TokenModal"
 
 interface LoginModalContentProps {
   runtime: LoginRuntime
@@ -46,6 +47,14 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       resizeable: true,
       clickOutsideToDismiss: true,
       max: true,
+    })
+  }
+
+  const handleOpenToken = () => {
+    present({
+      id: "token",
+      title: t("login.enter_token"),
+      content: () => <TokenModalContent />,
     })
   }
 
@@ -108,9 +117,26 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   <span>{t("login.continueWith", { provider: provider.name })}</span>
                 </MotionButtonBase>
               ))}
+
+          <div className="text-text-secondary -mb-1.5 mt-1 text-center text-xs leading-4">
+            <a onClick={() => handleOpenToken()} className="hover:underline">
+              {t("login.enter_token")}
+            </a>
+          </div>
+          <div className="text-text-secondary text-center text-xs leading-4">
+            <span>{t("login.agree_to")}</span>{" "}
+            <a onClick={() => handleOpenLegal("tos")} className="text-accent hover:underline">
+              {t("login.terms")}
+            </a>{" "}
+            &{" "}
+            <a onClick={() => handleOpenLegal("privacy")} className="text-accent hover:underline">
+              {t("login.privacy")}
+            </a>
+          </div>
         </div>
       )}
-      <Divider className="mb-5 mt-6" />
+
+      <Divider className="mb-5 mt-4" />
       {isEmail ? (
         <div className="flex items-center justify-center pb-2">
           <MotionButtonBase
@@ -132,23 +158,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           />
         </div>
       )}
-
-      <div className="text-text-secondary mt-3 text-center text-xs leading-5">
-        <span>{t("login.agree_to")}</span> <br />
-        <a
-          onClick={() => handleOpenLegal("tos")}
-          className="text-accent cursor-pointer hover:underline"
-        >
-          {t("login.terms")}
-        </a>{" "}
-        &{" "}
-        <a
-          onClick={() => handleOpenLegal("privacy")}
-          className="text-accent cursor-pointer hover:underline"
-        >
-          {t("login.privacy")}
-        </a>
-      </div>
     </>
   )
   if (isMobile) {
@@ -166,7 +175,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div
           onClick={stopPropagation}
           tabIndex={-1}
-          className="bg-background w-[25rem] rounded-xl border p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
+          className="bg-background w-[26rem] rounded-xl border p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
         >
           {Inner}
         </div>

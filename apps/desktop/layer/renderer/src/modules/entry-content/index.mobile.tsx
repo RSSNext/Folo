@@ -67,10 +67,16 @@ export const EntryContent: Component<{
     }
   }, [navigateEntry, params])
 
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxId } = state
+    const { readability, sourceContent } = state.settings || {}
+    const { title, url } = state.entries
+
+    return { feedId, inboxId, readability, sourceContent, title, url }
+  })
   const mediaInfo = useEntryMediaInfo(entryId)
 
-  useTitle(entry?.entries.title)
+  useTitle(entry?.title)
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
@@ -98,7 +104,7 @@ export const EntryContent: Component<{
       <ScrollElementContext value={scrollElement}>
         <div className="flex h-screen flex-col">
           <EntryHeader
-            entryId={entry.entries.id}
+            entryId={entryId}
             view={view}
             className={cn(
               "bg-background @container sticky top-0 z-[12] h-[55px] shrink-0 px-3",
@@ -123,7 +129,7 @@ export const EntryContent: Component<{
 
             <div
               className="animate-in fade-in slide-in-from-bottom-24 f-motion-reduce:fade-in-0 f-motion-reduce:slide-in-from-bottom-0 duration-200 ease-in-out"
-              key={entry.entries.id}
+              key={entryId}
             >
               <article
                 onContextMenu={stopPropagation}
@@ -137,8 +143,8 @@ export const EntryContent: Component<{
 
                 <WrappedElementProvider boundingDetection>
                   <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto select-text text-[0.94rem]">
-                    <TitleMetaHandler entryId={entry.entries.id} />
-                    <AISummary entryId={entry.entries.id} />
+                    <TitleMetaHandler entryId={entryId} />
+                    <AISummary entryId={entryId} />
                     <ErrorBoundary fallback={RenderError}>
                       <ReadabilityNotice entryId={entryId} />
                       <ShadowDOM injectHostStyles={!isInbox}>
@@ -163,11 +169,8 @@ export const EntryContent: Component<{
                   </div>
                 </WrappedElementProvider>
 
-                {entry.settings?.readability && (
-                  <ReadabilityAutoToggleEffect
-                    id={entry.entries.id}
-                    url={entry.entries.url ?? ""}
-                  />
+                {entry.readability && (
+                  <ReadabilityAutoToggleEffect id={entryId} url={entry.url ?? ""} />
                 )}
 
                 {!content && (
@@ -187,9 +190,9 @@ export const EntryContent: Component<{
                       </div>
                     ) : (
                       <NoContent
-                        id={entry.entries.id}
-                        url={entry.entries.url ?? ""}
-                        sourceContent={entry.settings?.sourceContent}
+                        id={entryId}
+                        url={entry.url ?? ""}
+                        sourceContent={entry.sourceContent}
                       />
                     )}
                   </div>

@@ -7,6 +7,20 @@ import { useSubscriptionStore } from "../subscription"
 import { useEntryStore } from "./store"
 import type { EntryFilter } from "./types"
 
+export const getSortedEntryIds = (entriesIds: string[]) => {
+  const state = useEntryStore.getState()
+  const idsSorted = entriesIds.sort((a, b) => {
+    const entryA = state.flatMapEntries[a]
+    const entryB = state.flatMapEntries[b]
+    if (!entryA || !entryB) return 0
+    return (
+      new Date(entryB.entries.publishedAt).getTime() -
+      new Date(entryA.entries.publishedAt).getTime()
+    )
+  })
+  return idsSorted
+}
+
 export const getFilteredFeedIds = (feedIds: string[], filter?: EntryFilter) => {
   const state = useEntryStore.getState()
   const ids = [] as string[]
@@ -24,9 +38,9 @@ export const getFilteredFeedIds = (feedIds: string[], filter?: EntryFilter) => {
         result.push(entryId)
       }
     }
-    return result
+    return getSortedEntryIds(result)
   }
-  return ids
+  return getSortedEntryIds(ids)
 }
 
 const unread = create({

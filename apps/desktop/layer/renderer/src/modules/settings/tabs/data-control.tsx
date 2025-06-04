@@ -24,7 +24,7 @@ import { z } from "zod"
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { exportDB } from "~/database"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { queryClient } from "~/lib/query-client"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
@@ -117,7 +117,7 @@ export const SettingDataControl = () => {
             description: t("general.log_file.description"),
             buttonText: t("general.log_file.button"),
             action: () => {
-              tipcClient?.revealLogFile()
+              ;(ipcServices as any)?.revealLogFile?.()
             },
           },
         ]}
@@ -247,7 +247,7 @@ const CleanElectronCache = () => {
             {t("data_control.clean_cache.button")}
             <MotionButtonBase
               onClick={() => {
-                tipcClient?.openCacheFolder()
+                ;(ipcServices as any)?.openCacheFolder?.()
               }}
               className="center flex"
             >
@@ -256,7 +256,7 @@ const CleanElectronCache = () => {
           </span>
         }
         action={async () => {
-          await tipcClient?.clearCache()
+          await (ipcServices as any)?.clearCache?.()
           queryClient.setQueryData(["app", "cache", "size"], 0)
         }}
         buttonText={t("data_control.clean_cache.button")}
@@ -270,7 +270,7 @@ const AppCacheLimit = () => {
   const { data: cacheSize, isLoading: isLoadingCacheSize } = useQuery({
     queryKey: ["app", "cache", "size"],
     queryFn: async () => {
-      const byteSize = (await tipcClient?.getCacheSize()) ?? 0
+      const byteSize = (await (ipcServices as any)?.getCacheSize?.()) ?? 0
       return Math.round(byteSize / 1024 / 1024)
     },
     refetchOnMount: "always",
@@ -282,13 +282,13 @@ const AppCacheLimit = () => {
   } = useQuery({
     queryKey: ["app", "cache", "limit"],
     queryFn: async () => {
-      const size = (await tipcClient?.getCacheLimit()) ?? 0
+      const size = (await (ipcServices as any)?.getCacheLimit?.()) ?? 0
       return size
     },
   })
 
   const onChange = (value: number[]) => {
-    tipcClient?.limitCacheSize(value[0]!)
+    ;(ipcServices as any)?.limitCacheSize?.(value[0]!)
     refetchCacheLimit()
   }
 

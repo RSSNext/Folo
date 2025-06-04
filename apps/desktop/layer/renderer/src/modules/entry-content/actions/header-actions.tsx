@@ -20,14 +20,14 @@ export const EntryHeaderActions = ({
   compact?: boolean
 }) => {
   const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view, compact })
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({ url: state.entries.url }))
 
   const hasModal = useHasModal()
 
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isEntryRender)
 
   useCommandBinding({
-    when: !!entry?.entries.url && !hasModal && when,
+    when: !!entry?.url && !hasModal && when,
     commandId: COMMAND_ID.entry.openInBrowser,
     args: [{ entryId }],
   })

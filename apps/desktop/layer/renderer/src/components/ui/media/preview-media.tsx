@@ -17,7 +17,7 @@ import { useWindowSize } from "usehooks-ts"
 
 import { m } from "~/components/common/Motion"
 import { COPY_MAP } from "~/constants"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 
 import { FixedModalCloseButton } from "../modal/components/close"
@@ -114,7 +114,7 @@ const Wrapper: Component<{
                       <ActionButton
                         tooltip={t("common:words.download")}
                         onClick={() => {
-                          tipcClient?.download(src)
+                          ipcServices?.app.download(src)
                         }}
                       >
                         <i className="i-mgc-download-2-cute-re" />

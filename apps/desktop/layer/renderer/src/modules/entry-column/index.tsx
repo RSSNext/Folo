@@ -44,7 +44,10 @@ function EntryColumnImpl() {
     isCollection,
   } = useRouteParams()
 
-  const activeEntry = useEntry(activeEntryId)
+  const entry = useEntry(activeEntryId, (state) => {
+    const { feedId } = state
+    return { feedId }
+  })
   const feed = useFeedById(routeFeedId)
   const title = useFeedHeaderTitle()
   useTitle(title)
@@ -53,12 +56,10 @@ function EntryColumnImpl() {
     if (!activeEntryId) return
 
     if (isCollection || isPendingEntry) return
+    if (!entry?.feedId) return
 
-    const feedId = activeEntry?.feedId
-    if (!feedId) return
-
-    entryActions.markRead({ feedId, entryId: activeEntryId, read: true })
-  }, [activeEntry?.feedId, activeEntryId, isCollection, isPendingEntry])
+    entryActions.markRead({ feedId: entry.feedId, entryId: activeEntryId, read: true })
+  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry])
 
   const isInteracted = useRef(false)
 

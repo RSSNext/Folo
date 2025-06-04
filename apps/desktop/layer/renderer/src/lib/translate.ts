@@ -6,7 +6,7 @@ import { duplicateIfLengthLessThan } from "@follow/utils/utils"
 import { franc } from "franc-min"
 
 import { getReadabilityContent } from "~/atoms/readability"
-import type { FlatEntryModel } from "~/store/entry"
+import { getEntry } from "~/store/entry"
 
 import { apiClient } from "./api-fetch"
 
@@ -34,27 +34,28 @@ export const checkLanguage = ({
 }
 
 export async function translate({
-  entry,
+  entryId,
   view,
   language,
   extraFields,
   part,
 }: {
-  entry?: FlatEntryModel | null
-  view?: number
+  entryId?: string | null
+  view?: number | null
   language?: SupportedActionLanguage
   extraFields?: string[]
   part?: string
 }) {
-  if (!language || !entry) {
+  if (!language || !entryId) {
     return null
   }
-  let fields = language && view !== undefined ? views[view!]!.translation.split(",") : []
+  let fields = language && typeof view === "number" ? views[view!]!.translation.split(",") : []
   if (extraFields) {
     fields = [...fields, ...extraFields]
   }
 
-  const readabilityContent = getReadabilityContent()[entry.entries.id]?.content
+  const readabilityContent = getReadabilityContent()[entryId]?.content
+  const entries = getEntry(entryId)?.entries
   fields = fields.filter((field) => {
     if (language && field === "readabilityContent") {
       if (!readabilityContent) return false
@@ -65,9 +66,9 @@ export async function translate({
       return !isLanguageMatch
     }
 
-    if (language && entry.entries[field]) {
+    if (language && entries?.[field]) {
       const isLanguageMatch = checkLanguage({
-        content: entry.entries[field],
+        content: entries[field],
         language,
       })
       return !isLanguageMatch
@@ -82,7 +83,7 @@ export async function translate({
 
   const res = await apiClient.ai.translation.$get({
     query: {
-      id: entry.entries.id,
+      id: entryId,
       language,
       fields: fields?.join(",") || "title",
       part,
@@ -97,7 +98,7 @@ export async function translate({
   } = {}
 
   fields.forEach((field) => {
-    const content = field === "readabilityContent" ? readabilityContent : entry.entries[field]
+    const content = field === "readabilityContent" ? readabilityContent : entries?.[field]
     if (content !== res.data?.[field]) {
       data[field] = res.data?.[field]
     }

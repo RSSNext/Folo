@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
@@ -14,7 +15,7 @@ import {
 import type { ScreenStackHeaderConfigProps } from "react-native-screens"
 import { ScreenStack } from "react-native-screens"
 
-import { isAndroid } from "../platform"
+import { isAndroid, isIOS } from "../platform"
 import {
   AttachNavigationScrollViewContext,
   SetAttachNavigationScrollViewContext,
@@ -199,6 +200,7 @@ const ModalScreenStackItems: FC<{
           {...modalScreenOptions}
         >
           <ModalSafeAreaInsetsContext hasTopInset={isFullScreen}>
+            {isIOS && <StatusBar style="light" />}
             <ScreenStack style={StyleSheet.absoluteFill}>
               <WrappedScreenItem
                 screenId={rootModalRoute.id}

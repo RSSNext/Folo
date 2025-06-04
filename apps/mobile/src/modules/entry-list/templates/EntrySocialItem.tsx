@@ -28,7 +28,16 @@ import { EntryTranslation } from "./EntryTranslation"
 
 export const EntrySocialItem = memo(
   ({ entryId, extraData }: { entryId: string; extraData: EntryExtraData }) => {
-    const entry = useEntry(entryId)
+    const entry = useEntry(entryId, (state) => ({
+      feedId: state.feedId,
+      media: state.media,
+      description: state.description,
+      publishedAt: state.publishedAt,
+      read: state.read,
+      authorAvatar: state.authorAvatar,
+      author: state.author,
+      translation: state.settings?.translation,
+    }))
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
 
@@ -112,7 +121,7 @@ export const EntrySocialItem = memo(
               className="text-label ml-12 text-base"
               source={description}
               target={translation?.description}
-              showTranslation={!!entry.settings?.translation}
+              showTranslation={!!entry?.translation}
             />
           </View>
 

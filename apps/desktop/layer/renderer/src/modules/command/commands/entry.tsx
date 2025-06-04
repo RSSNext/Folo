@@ -1,3 +1,4 @@
+import { getMousePosition } from "@follow/components/hooks/useMouse.js"
 import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn, resolveUrlWithBase } from "@follow/utils/utils"
@@ -8,6 +9,7 @@ import { toast } from "sonner"
 import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
 import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
 import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
+import { showPopover } from "~/atoms/popover"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
@@ -16,16 +18,17 @@ import {
   useSourceContentModal,
 } from "~/atoms/source-content"
 import { useUserRole } from "~/atoms/user"
+import { SharePanel } from "~/components/common/SharePanel"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
-import { entryActions, useEntryStore } from "~/store/entry"
+import { entryActions, getEntry, useEntryStore } from "~/store/entry"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -283,19 +286,15 @@ export const useRegisterEntryCommands = () => {
             toast.error("Failed to share: url is not available", { duration: 3000 })
             return
           }
-          if (!entry.entries.url) return
 
-          if (IN_ELECTRON) {
-            return tipcClient?.showShareMenu(entry.entries.url)
-          } else {
-            const { title, description } = entry.entries
-            navigator.share({
-              title: title || undefined,
-              text: description || undefined,
-              url: entry.entries.url,
-            })
-          }
-          return
+          const xy = getMousePosition()
+          showPopover(
+            {
+              x: xy.x,
+              y: xy.y + 20,
+            },
+            <SharePanel entryId={entry.entries.id} />,
+          )
         },
       },
       {
@@ -354,11 +353,15 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_content.header.play_tts"),
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
-        run: async ({ entryId, entryContent }) => {
+        run: async ({ entryId }) => {
           if (getAudioPlayerAtomValue().entryId === entryId) {
             AudioPlayer.togglePlayAndPause()
           } else {
-            const filePath = await tipcClient?.tts({
+            const entryContent = getEntry(entryId)?.entries.content
+            if (!entryContent) {
+              return
+            }
+            const filePath = await ipcServices?.reader.tts({
               id: entryId,
               text: parseHtml(entryContent).toText(),
               voice,
@@ -509,7 +512,7 @@ export type ImageGalleryCommand = Command<{
 
 export type TTSCommand = Command<{
   id: typeof COMMAND_ID.entry.tts
-  fn: (data: { entryId: string; entryContent: string }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type ReadabilityCommand = Command<{

@@ -1,5 +1,4 @@
-import { useEntry } from "@follow/store/entry/hooks"
-import { isInboxEntry } from "@follow/store/entry/utils"
+import { useEntryIsInbox } from "@follow/store/entry/hooks"
 import { userActions } from "@follow/store/user/store"
 import { useQuery } from "@tanstack/react-query"
 import { Pressable, View } from "react-native"
@@ -10,7 +9,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
 
 export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
-  const entry = useEntry(entryId)
+  const isInboxEntry = useEntryIsInbox(entryId)
   const { data } = useQuery({
     queryKey: ["entry-read-history", entryId],
     queryFn: () => {
@@ -24,7 +23,7 @@ export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
       })
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !isInboxEntry(entry),
+    enabled: !isInboxEntry,
   })
   const navigation = useNavigation()
   if (!data?.data.entryReadHistories) return null

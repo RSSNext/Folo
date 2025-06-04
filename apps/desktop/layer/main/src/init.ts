@@ -1,7 +1,7 @@
 import path from "node:path"
 
-import { getRendererHandlers, registerIpcMain } from "@egoist/tipc/main"
 import { PushReceiver } from "@eneris/push-receiver"
+import { callWindowExpose } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { MessagingData } from "@follow/shared/hono"
@@ -9,15 +9,14 @@ import { app, nativeTheme, Notification, protocol, shell } from "electron"
 import contextMenu from "electron-context-menu"
 
 import { getIconPath } from "./helper"
+import { initializeIpcServices } from "./ipc"
 import { checkAndCleanCodeCache, clearCacheCronJob } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { store } from "./lib/store"
 import { updateNotificationsToken } from "./lib/user"
 import { logger } from "./logger"
 import { registerAppMenu } from "./menu"
-import type { RendererHandlers } from "./renderer-handlers"
 import { initializeSentry } from "./sentry"
-import { router } from "./tipc"
 import { getMainWindowOrCreate } from "./window"
 
 if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
@@ -29,6 +28,7 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  */
 export function initializeAppStage0() {
   initializeSentry()
+  initializeIpcServices()
 }
 export const initializeAppStage1 = () => {
   const protocols = [LEGACY_APP_PROTOCOL, APP_PROTOCOL]
@@ -42,8 +42,6 @@ export const initializeAppStage1 = () => {
       app.setAsDefaultProtocolClient(protocol)
     }
   }
-
-  registerIpcMain(router)
 
   if (app.dock) {
     app.dock.setIcon(getIconPath())
@@ -189,8 +187,8 @@ const registerPushNotifications = async () => {
           const mainWindow = getMainWindowOrCreate()
           mainWindow.restore()
           mainWindow.focus()
-          const handlers = getRendererHandlers<RendererHandlers>(mainWindow.webContents)
-          handlers.navigateEntry.send({
+          const handlers = callWindowExpose(mainWindow)
+          handlers.navigateEntry({
             feedId: data.feedId,
             entryId: data.entryId,
             view: Number.parseInt(data.view),

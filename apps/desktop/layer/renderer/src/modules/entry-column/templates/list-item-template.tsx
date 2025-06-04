@@ -13,6 +13,7 @@ import { FEED_COLLECTION_LIST } from "~/constants"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryTranslation } from "~/modules/entry-column/translation"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { useEntry } from "~/store/entry/hooks"
@@ -31,7 +32,39 @@ export function ListItem({
   simple?: boolean
 }) {
   const isMobile = useMobile()
-  const entry = useEntry(entryId) || entryPreview
+  const entry = useEntry(entryId, (state) => {
+    const { collections, feedId, inboxId, read } = state
+    const { authorAvatar, authorUrl, description, publishedAt, title } = state.entries
+    const isInCollection = !!collections
+    const collectionCreatedAt = collections?.createdAt
+
+    const audios = state.entries.attachments?.filter(
+      (a) => a.mime_type?.startsWith("audio") && a.url,
+    )
+    const firstAudio = audios?.[0]
+    const media = state.entries.media || []
+    const firstMedia = media?.[0]
+    const photo = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = photo?.url
+    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+
+    const titleEntry = { authorUrl }
+
+    return {
+      collectionCreatedAt,
+      description,
+      feedId,
+      firstAudio,
+      firstMedia,
+      iconEntry,
+      inboxId,
+      isInCollection,
+      publishedAt,
+      read,
+      title,
+      titleEntry,
+    }
+  })
 
   const isRead = useEntryIsRead(entry)
 
@@ -79,19 +112,15 @@ export function ListItem({
     }
   }, [settingWideMode, simple, translation?.description, translation?.title, bilingual])
 
-  const audioAttachment = useMemo(() => {
-    return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
-  }, [entry?.entries?.attachments])
-
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
   if (!entry || !(feed || inbox)) return null
 
-  const displayTime = inInCollection ? entry.collections?.createdAt : entry.entries.publishedAt
+  const displayTime = inInCollection ? entry?.collectionCreatedAt : entry?.publishedAt
 
   const related = feed || inbox
 
-  const hasAudio = simple ? false : !!audioAttachment
-  const hasMedia = simple ? false : !!entry.entries?.media?.[0]?.url
+  const hasAudio = simple ? false : !!entry.firstAudio?.url
+  const hasMedia = simple ? false : !!entry.firstMedia?.url
 
   const marginWidth = 8 * (isMobile ? 1.125 : 1)
   // calculate the max width to have a correct truncation
@@ -120,7 +149,7 @@ export function ListItem({
         settingWideMode ? "py-3" : "py-4",
       )}
     >
-      <FeedIcon feed={related} fallback entry={entry.entries} />
+      <FeedIcon feed={related} fallback entry={entry?.iconEntry} />
       <div
         className={cn("-mt-0.5 flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
@@ -131,13 +160,13 @@ export function ListItem({
           className={cn(
             "flex gap-1 text-[10px] font-bold",
             "text-text-secondary",
-            entry.collections && "text-text-secondary",
+            entry?.isInCollection && "text-text-secondary",
           )}
         >
           <EllipsisHorizontalTextWithTooltip className="truncate">
             <FeedTitle
               feed={related}
-              title={getPreferredTitle(related, entry.entries)}
+              title={getPreferredTitle(related, entry?.titleEntry)}
               className="space-x-0.5"
             />
           </EllipsisHorizontalTextWithTooltip>
@@ -148,41 +177,41 @@ export function ListItem({
           className={cn(
             "relative my-0.5 break-words",
             "text-text",
-            !!entry.collections && "pr-5",
-            entry.entries.title ? "font-medium" : "text-[13px]",
+            !!entry?.isInCollection && "pr-5",
+            entry?.title ? "font-medium" : "text-[13px]",
           )}
         >
-          {entry.entries.title ? (
+          {entry?.title ? (
             <EntryTranslation
               className={cn("hyphens-auto font-medium", lineClamp.title)}
-              source={titleCase(entry.entries.title ?? "")}
+              source={titleCase(entry?.title ?? "")}
               target={titleCase(translation?.title ?? "")}
             />
           ) : (
             <EntryTranslation
               className={cn("hyphens-auto", lineClamp.description)}
-              source={entry.entries.description}
+              source={entry?.description}
               target={translation?.description}
             />
           )}
-          {!!entry.collections && <StarIcon className="absolute right-0 top-0" />}
+          {!!entry?.isInCollection && <StarIcon className="absolute right-0 top-0" />}
         </div>
         {!simple && (
           <div className={cn("text-[13px]", "text-text-secondary")}>
             <EntryTranslation
               className={cn("hyphens-auto", lineClamp.description)}
-              source={entry.entries.description}
+              source={entry?.description}
               target={translation?.description}
             />
           </div>
         )}
       </div>
 
-      {hasAudio && (
+      {hasAudio && entry.firstAudio && (
         <AudioCover
           entryId={entryId}
-          src={audioAttachment!.url}
-          durationInSeconds={audioAttachment?.duration_in_seconds}
+          src={entry.firstAudio.url}
+          durationInSeconds={entry.firstAudio.duration_in_seconds}
           feedIcon={
             <FeedIcon
               fallback={true}
@@ -196,7 +225,7 @@ export function ListItem({
                 />
               }
               feed={feed || inbox}
-              entry={entry.entries}
+              entry={entry?.iconEntry}
               size={settingWideMode ? 65 : 80}
               className="m-0 rounded"
               useMedia
@@ -206,12 +235,12 @@ export function ListItem({
         />
       )}
 
-      {!simple && !hasAudio && entry.entries.media?.[0] && (
+      {!simple && !hasAudio && entry.firstMedia && (
         <Media
           thumbnail
-          src={entry.entries.media[0].url}
-          type={entry.entries.media[0].type}
-          previewImageUrl={entry.entries.media[0].preview_image_url}
+          src={entry.firstMedia.url}
+          type={entry.firstMedia.type}
+          previewImageUrl={entry.firstMedia.preview_image_url}
           className={cn(
             "center ml-2 flex shrink-0 rounded",
             settingWideMode ? "size-12" : "size-20",
@@ -223,9 +252,9 @@ export function ListItem({
             width: 160,
             height: thumbnailRatio === "square" ? 160 : 0,
           }}
-          height={entry.entries.media[0].height}
-          width={entry.entries.media[0].width}
-          blurhash={entry.entries.media[0].blurhash}
+          height={entry.firstMedia.height}
+          width={entry.firstMedia.width}
+          blurhash={entry.firstMedia.blurhash}
         />
       )}
     </div>

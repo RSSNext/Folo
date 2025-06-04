@@ -1,5 +1,6 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
 import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import { openInFollowApp } from "@client/lib/helper"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -58,10 +59,18 @@ export function Login() {
     }
   }, [])
 
+  const [openFailed, setOpenFailed] = useState(false)
+  const [callbackUrl, setCallbackUrl] = useState<string>()
   const handleOpenApp = useCallback(async () => {
     const callbackUrl = await getCallbackUrl()
     if (!callbackUrl) return
-    window.open(callbackUrl.url, "_top")
+    setCallbackUrl(callbackUrl.url)
+    openInFollowApp({
+      deeplink: callbackUrl.url,
+      fallback: () => {
+        setOpenFailed(true)
+      },
+    })
   }, [getCallbackUrl])
 
   const onceRef = useRef(false)
@@ -120,6 +129,20 @@ export function Login() {
                 {t("redirect.openApp", { app_name: APP_NAME })}
               </Button>
             </div>
+            {openFailed && callbackUrl && (
+              <div className="text-text mt-8 w-[31rem] space-y-2 text-center text-sm">
+                <p>{t("login.enter_token")}</p>
+                <p className="bg-fill-tertiary flex items-center justify-center gap-4 rounded-lg p-3">
+                  <span className="blur-sm hover:blur-none">{callbackUrl}</span>
+                  <i
+                    className="i-mgc-copy-2-cute-re size-4 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(callbackUrl)
+                    }}
+                  />
+                </p>
+              </div>
+            )}
           </div>
         )
       }
@@ -179,7 +202,17 @@ export function Login() {
         )
       }
     }
-  }, [authProviders, handleOpenApp, isAuthenticated, refetch, t, isEmail, navigate])
+  }, [
+    authProviders,
+    handleOpenApp,
+    isAuthenticated,
+    refetch,
+    t,
+    isEmail,
+    navigate,
+    openFailed,
+    callbackUrl,
+  ])
   const Content = useMemo(() => {
     switch (true) {
       case redirecting: {

@@ -9,10 +9,20 @@ import { EntryInfoContext } from "../context"
 
 export const TimeStamp = (props: { time: string }) => {
   const { entryId } = use(EntryInfoContext)
-  const entry = useEntry(entryId)
-  const mediaDuration = formatTimeToSeconds(entry?.entries.attachments?.[0]?.duration_in_seconds)
+  const entry = useEntry(entryId, (state) => {
+    const attachments = state.entries.attachments || []
+    const firstAttachment = attachments[0]
+    const { duration_in_seconds, url: firstAttachmentUrl } = firstAttachment || {}
+    const seconds = duration_in_seconds ? (formatTimeToSeconds(duration_in_seconds) ?? 0) : 0
 
-  const src = entry?.entries?.attachments?.[0]?.url
+    return {
+      firstAttachmentUrl,
+      seconds,
+    }
+  })
+  const src = entry?.firstAttachmentUrl
+  const mediaDuration = entry?.seconds
+
   if (!src) return <span>{props.time}</span>
 
   const seekTo = timeStringToSeconds(props.time)

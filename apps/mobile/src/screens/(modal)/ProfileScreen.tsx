@@ -166,7 +166,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       <Animated.View
         style={useAnimatedStyle(() => ({
           opacity: interpolate(headerOpacity.value, [0, 1], [1, 0]),
-          top: insets.top,
+          top: insets.top + 17,
         }))}
         className="absolute flex w-full flex-row items-center justify-between px-4"
       >

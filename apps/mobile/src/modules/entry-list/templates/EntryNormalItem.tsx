@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
-import type { EntryModel } from "@follow/store/entry/types"
 import { getInboxFrom } from "@follow/store/entry/utils"
 import { useFeed } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
@@ -43,7 +43,18 @@ export const EntryNormalItem = memo(
     extraData: EntryExtraData
     view: FeedViewType
   }) => {
-    const entry = useEntry(entryId)
+    const entry = useEntry(entryId, (state) => ({
+      id: state.id,
+      feedId: state.feedId,
+      inboxHandle: state.inboxHandle,
+      authorUrl: state.authorUrl,
+      attachments: state.attachments,
+      read: state.read,
+      publishedAt: state.publishedAt,
+      translation: state.settings?.translation,
+      title: state.title,
+      description: state.description,
+    }))
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
     const from = getInboxFrom(entry)
@@ -51,7 +62,8 @@ export const EntryNormalItem = memo(
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
       if (entry) {
-        preloadWebViewEntry(entry)
+        const fullEntry = getEntry(entryId)
+        preloadWebViewEntry(fullEntry)
         tracker.navigateEntry({
           feedId: entry.feedId!,
           entryId: entry.id,
@@ -124,7 +136,7 @@ export const EntryNormalItem = memo(
                 )}
                 source={entry.title}
                 target={translation?.title}
-                showTranslation={!!entry.settings?.translation}
+                showTranslation={!!entry.translation}
                 inline
               />
             )}
@@ -134,13 +146,13 @@ export const EntryNormalItem = memo(
                 className="text-secondary-label my-0 text-sm"
                 source={entry.description}
                 target={translation?.description}
-                showTranslation={!!entry.settings?.translation}
+                showTranslation={!!entry.translation}
                 inline
               />
             )}
           </View>
           {view !== FeedViewType.Notifications && (
-            <ThumbnailImage entry={entry} playingAudioUrl={extraData.playingAudioUrl} />
+            <ThumbnailImage entryId={entryId} playingAudioUrl={extraData.playingAudioUrl} />
           )}
         </ItemPressable>
       </EntryItemContextMenu>
@@ -152,11 +164,18 @@ EntryNormalItem.displayName = "EntryNormalItem"
 
 const ThumbnailImage = ({
   playingAudioUrl,
-  entry,
+  entryId,
 }: {
   playingAudioUrl: string | null
-  entry: EntryModel
+  entryId: string
 }) => {
+  const entry = useEntry(entryId, (state) => ({
+    feedId: state.feedId,
+    media: state.media,
+    attachments: state.attachments,
+    title: state.title,
+  }))
+
   const feed = useFeed(entry?.feedId as string)
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 

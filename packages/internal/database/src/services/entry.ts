@@ -63,6 +63,51 @@ class EntryServiceStatic implements Resetable {
   getEntryAll() {
     return db.query.entriesTable.findMany()
   }
+
+  async getEntriesToHydrate() {
+    const [entries, subscriptions] = await Promise.all([
+      db.query.entriesTable.findMany({
+        orderBy: (t, { desc }) => desc(t.publishedAt),
+      }),
+      db.query.subscriptionsTable.findMany(),
+    ])
+
+    const entryIdCountMap = new Map<string, number>(
+      subscriptions.map((s) => [s.listId || s.inboxId || s.feedId || "", 0] as const),
+    )
+
+    const result: typeof entries = []
+    const idsToClear = new Set<string>()
+
+    for (const entry of entries) {
+      const possibleIdList = [
+        ...(entry.sources?.filter((s) => s !== "feed") ?? []),
+        entry.inboxHandle,
+        entry.feedId,
+      ].filter(Boolean) as string[]
+
+      if (possibleIdList.length === 0) continue
+
+      for (const id of possibleIdList) {
+        const count = entryIdCountMap.get(id)
+        if (count === undefined) continue
+
+        if (count >= 20) {
+          idsToClear.add(entry.id)
+        } else {
+          result.push(entry)
+          entryIdCountMap.set(id, count + 1)
+        }
+      }
+    }
+
+    await db
+      .delete(entriesTable)
+      .where(inArray(entriesTable.id, Array.from(idsToClear)))
+      .execute()
+
+    return result
+  }
 }
 
 export const EntryService = new EntryServiceStatic()

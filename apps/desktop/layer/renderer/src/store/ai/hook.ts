@@ -5,24 +5,28 @@ import { useActionLanguage } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { Queries } from "~/queries"
 
-import type { FlatEntryModel } from "../entry/types"
+import { useEntry } from "../entry"
 
 export function useEntryTranslation({
-  entry,
+  entryId,
   extraFields,
 }: {
-  entry: FlatEntryModel | null
+  entryId?: string
   extraFields?: string[]
 }) {
+  const entry = useEntry(entryId, (state) => ({
+    view: state.view,
+    translation: state.settings?.translation,
+  }))
   const actionLanguage = useActionLanguage()
-  const showAITranslationFinal = useShowAITranslation(entry)
-  const showAITranslationAuto = useShowAITranslationAuto(entry)
+  const showAITranslationFinal = useShowAITranslation(!!entry?.translation)
+  const showAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const showAITranslation =
     !extraFields || extraFields.length === 0 ? showAITranslationAuto : showAITranslationFinal
 
   const res = useAuthQuery(
     Queries.ai.translation({
-      entry,
+      entryId,
       view: entry?.view,
       language: actionLanguage,
       extraFields,

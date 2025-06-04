@@ -31,7 +31,6 @@ import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hoo
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
-import { tipcClient } from "~/lib/client"
 import { toastFetchError } from "~/lib/error-parser"
 import { entries as entriesQuery } from "~/queries/entries"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
@@ -264,12 +263,10 @@ const FeedInnerForm = ({
         unreadActions.upsertMany(data.unread)
       }
       subscriptionQuery.all().invalidate()
-      tipcClient?.invalidateQuery(subscriptionQuery.all().key)
 
       const feedId = feed.id
       if (feedId) {
         feedQuery.byId({ id: feedId }).invalidate()
-        tipcClient?.invalidateQuery(feedQuery.byId({ id: feedId }).key)
       }
       toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,

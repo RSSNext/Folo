@@ -42,7 +42,11 @@ export const useGalleryModal = () => {
 }
 
 export const useEntryContent = (entryId: string) => {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => {
+    const { inboxId } = state
+    const { content } = state.entries
+    return { inboxId, content }
+  })
   const isInbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
   const { error, data, isPending } = useAuthQuery(
     isInbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
@@ -55,14 +59,14 @@ export const useEntryContent = (entryId: string) => {
   const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const readabilityContent = useEntryReadabilityContent(entryId)
   const contentTranslated = useEntryTranslation({
-    entry,
+    entryId,
     extraFields: isReadabilitySuccess ? ["readabilityContent"] : ["content"],
   })
 
   return useMemo(() => {
     const entryContent = isInReadabilityMode
       ? readabilityContent?.content
-      : (entry?.entries.content ?? data?.entries.content)
+      : (entry?.content ?? data?.entries.content)
     const translatedContent = isInReadabilityMode
       ? contentTranslated.data?.readabilityContent
       : contentTranslated.data?.content
@@ -76,7 +80,7 @@ export const useEntryContent = (entryId: string) => {
     contentTranslated.data?.content,
     contentTranslated.data?.readabilityContent,
     data?.entries.content,
-    entry?.entries.content,
+    entry?.content,
     error,
     isInReadabilityMode,
     isPending,

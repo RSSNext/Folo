@@ -16,7 +16,7 @@ import { m } from "~/components/common/Motion"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -35,7 +35,7 @@ const CmdNPanel = () => {
   })
 
   useLayoutEffect(() => {
-    tipcClient?.readClipboard().then((clipboardText) => {
+    ipcServices?.app.readClipboard().then((clipboardText) => {
       if (clipboardText) {
         form.setValue("url", clipboardText)
         form.control._setValid()

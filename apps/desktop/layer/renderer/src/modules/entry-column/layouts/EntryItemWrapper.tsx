@@ -25,21 +25,25 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import type { FlatEntryModel } from "~/store/entry"
-import { entryActions } from "~/store/entry"
+import { entryActions, useEntry } from "~/store/entry"
 
 export const EntryItemWrapper: FC<
   {
-    entry: FlatEntryModel
+    entryId: string
     view?: number
     itemClassName?: string
     style?: React.CSSProperties
   } & PropsWithChildren
-> = ({ entry, view, children, itemClassName, style }) => {
-  const actionConfigs = useEntryActions({ entryId: entry.entries.id })
+> = ({ entryId, view, children, itemClassName, style }) => {
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxId, read } = state
+    const { id, url } = state.entries
+    return { feedId, id, inboxId, read, url }
+  })
+  const actionConfigs = useEntryActions({ entryId })
 
   const feedItems = useFeedActions({
-    feedId: entry.feedId || entry.inboxId,
+    feedId: entry?.feedId || entry?.inboxId || "",
     view,
     type: "entryList",
   })
@@ -47,10 +51,7 @@ export const EntryItemWrapper: FC<
 
   const { t } = useTranslation("common")
 
-  const isActive = useRouteParamsSelector(
-    ({ entryId }) => entryId === entry.entries.id,
-    [entry.entries.id],
-  )
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id, [entry?.id])
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
   useContextMenuActionShortCutTrigger(actionConfigs, isActive && when)
 
@@ -62,8 +63,9 @@ export const EntryItemWrapper: FC<
       if (!hoverMarkUnread) return
       if (!document.hasFocus()) return
       if (asRead) return
+      if (!entry?.feedId) return
 
-      entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
+      entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
     },
     233,
     {
@@ -76,10 +78,11 @@ export const EntryItemWrapper: FC<
     (e) => {
       e.stopPropagation()
 
-      const shouldNavigate = getRouteParams().entryId !== entry.entries.id
+      const shouldNavigate = getRouteParams().entryId !== entry?.id
       if (!shouldNavigate) return
+      if (!entry?.feedId) return
       if (!asRead) {
-        entryActions.markRead({ feedId: entry.feedId, entryId: entry.entries.id, read: true })
+        entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
       }
 
       setTimeout(
@@ -88,14 +91,14 @@ export const EntryItemWrapper: FC<
       )
 
       navigate({
-        entryId: entry.entries.id,
+        entryId: entry.id,
       })
     },
-    [asRead, entry.entries.id, entry.feedId, navigate],
+    [asRead, entry?.id, entry?.feedId, navigate],
   )
   const handleDoubleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
-    () => entry.entries.url && window.open(entry.entries.url, "_blank"),
-    [entry.entries.url],
+    () => entry?.url && window.open(entry.url, "_blank"),
+    [entry?.url],
   )
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
@@ -153,7 +156,7 @@ export const EntryItemWrapper: FC<
           new MenuItemText({
             label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
             click: () => {
-              navigator.clipboard.writeText(entry.entries.id)
+              navigator.clipboard.writeText(entry?.id || "")
             },
           }),
         ],
@@ -164,7 +167,7 @@ export const EntryItemWrapper: FC<
   })
 
   return (
-    <div data-entry-id={entry.entries.id} style={style}>
+    <div data-entry-id={entry?.id} style={style}>
       <div
         className={cn(
           "hover:bg-theme-item-hover relative duration-200",

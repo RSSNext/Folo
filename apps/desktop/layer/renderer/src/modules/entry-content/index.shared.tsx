@@ -23,7 +23,7 @@ import {
 import { enableShowSourceContent } from "~/atoms/source-content"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
+import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
@@ -49,14 +49,15 @@ export interface EntryContentClassNames {
 export const TitleMetaHandler: Component<{
   entryId: string
 }> = ({ entryId }) => {
-  const {
-    entries: { title: entryTitle },
-    feedId,
-    inboxId,
-  } = useEntry(entryId)!
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxId } = state
+    const { title } = state.entries
 
-  const feed = useFeedById(feedId)
-  const inbox = useInboxById(inboxId)
+    return { feedId, inboxId, title }
+  })
+
+  const feed = useFeedById(entry?.feedId)
+  const inbox = useInboxById(entry?.inboxId)
   const feedTitle = feed?.title || inbox?.title
   const atTop = useIsSoFWrappedElement()
   useEffect(() => {
@@ -67,13 +68,13 @@ export const TitleMetaHandler: Component<{
   }, [atTop])
 
   useEffect(() => {
-    if (entryTitle && feedTitle) {
-      setEntryTitleMeta({ title: entryTitle, description: feedTitle })
+    if (entry?.title && feedTitle) {
+      setEntryTitleMeta({ title: entry.title, description: feedTitle })
     }
     return () => {
       setEntryTitleMeta(null)
     }
-  }, [entryId, entryTitle, feedTitle])
+  }, [entryId, entry?.title, feedTitle])
   return null
 }
 
@@ -163,16 +164,8 @@ export const ViewSourceContentAutoToggleEffect = () => {
 }
 
 export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {
-  const onceRef = useRef(false)
-
   useEffect(() => {
-    if (!onceRef.current) {
-      onceRef.current = true
-      setReadabilityStatus({
-        [id]: ReadabilityStatus.INITIAL,
-      })
-      toggleEntryReadability({ id, url })
-    }
+    enableEntryReadability({ id, url })
   }, [id, url])
 
   return null
@@ -263,7 +256,7 @@ export const ContainerToc = memo(
               className={cn(
                 "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
                 "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",
-                "@[700px]:-translate-x-12 @[800px]:-translate-x-16 @[900px]:translate-x-0 @[900px]:items-start",
+                "@[700px]:-translate-x-12 @[800px]:-translate-x-4 @[900px]:translate-x-0 @[900px]:items-start",
               )}
             />
 

@@ -20,7 +20,13 @@ export const EntryGridFooter = ({
   descriptionClassName?: string
   view: FeedViewType
 }) => {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({
+    title: state.title,
+    feedId: state.feedId,
+    publishedAt: state.publishedAt,
+    read: state.read,
+    translation: state.settings?.translation,
+  }))
   const actionLanguage = useActionLanguage()
   const translation = useEntryTranslation(entryId, actionLanguage)
   const feed = useFeed(entry?.feedId || "")
@@ -41,7 +47,7 @@ export const EntryGridFooter = ({
             )}
             source={entry.title}
             target={translation?.title}
-            showTranslation={!!entry.settings?.translation}
+            showTranslation={!!entry.translation}
             inline
           />
         )}

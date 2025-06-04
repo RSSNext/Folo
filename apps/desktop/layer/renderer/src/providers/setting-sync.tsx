@@ -8,7 +8,7 @@ import { I18N_LOCALE_KEY } from "~/constants"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
 import { unreadActions } from "~/store/unread"
 
@@ -38,9 +38,12 @@ const useUISettingSync = () => {
 
   useEffect(() => {
     if (setting.showDockBadge) {
-      return unreadActions.subscribeUnreadCount((count) => tipcClient?.setDockBadge(count), true)
+      return unreadActions.subscribeUnreadCount(
+        (count) => ipcServices?.setting.setDockBadge(count),
+        true,
+      )
     } else {
-      tipcClient?.setDockBadge(0)
+      ipcServices?.setting.setDockBadge(0)
     }
     return
   }, [setting.showDockBadge])

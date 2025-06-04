@@ -18,7 +18,7 @@ export const useInboxStore = createZustandStore<InboxState>("inbox")(() => defau
 const set = useInboxStore.setState
 class InboxActions implements Hydratable {
   async hydrate() {
-    const inboxes = await InboxService.getInbox()
+    const inboxes = await InboxService.getInboxAll()
     inboxActions.upsertManyInSession(inboxes)
   }
   async upsertManyInSession(inboxes: InboxSchema[]) {

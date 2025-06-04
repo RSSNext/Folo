@@ -10,6 +10,7 @@
     "noUnusedParameters": false,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "@pkg": ["../../package.json"],

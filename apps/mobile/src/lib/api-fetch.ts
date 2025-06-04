@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import type { AppType } from "@follow/shared"
 import { userActions } from "@follow/store/user/store"
+import { hc } from "hono/client"
 import { FetchError, ofetch } from "ofetch"
 
 import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
@@ -8,8 +9,6 @@ import { getCookie } from "./auth"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
 import { proxyEnv } from "./proxy-env"
-
-const { hc } = require("hono/dist/cjs/client/client") as typeof import("hono/client")
 
 export const apiFetch = ofetch.create({
   retry: false,

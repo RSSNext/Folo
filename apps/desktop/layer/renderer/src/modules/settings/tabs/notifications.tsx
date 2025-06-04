@@ -24,7 +24,7 @@ import { toast } from "sonner"
 import { setAppMessagingToken, useAppMessagingToken } from "~/atoms/app"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { useMessaging, useTestMessaging } from "~/queries/messaging"
 
 export const SettingNotifications = () => {
@@ -37,8 +37,8 @@ export const SettingNotifications = () => {
   const testMessaging = useTestMessaging()
 
   useEffect(() => {
-    tipcClient?.getMessagingToken().then((credentials) => {
-      setAppMessagingToken(credentials?.fcm?.token || null)
+    ipcServices?.setting.getMessagingToken().then((credentials) => {
+      setAppMessagingToken(credentials || null)
     })
   }, [])
 

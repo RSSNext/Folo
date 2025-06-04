@@ -48,7 +48,7 @@ const TimelineItem = ({ id }: { id: string }) => {
     title: e.entries.title,
     read: e.read,
   }))
-  const asRead = useEntryIsRead(entry!)
+  const asRead = useEntryIsRead(entry)
   const navigate = useNavigateEntry()
 
   const isActive = useRouteParamsSelector((r) => r.entryId === id)

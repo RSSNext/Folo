@@ -41,6 +41,7 @@
   "login.confirm_password.label": "确认密码",
   "login.continueWith": "使用 {{provider}} 登录",
   "login.email": "邮件地址",
+  "login.enter_token": "如果未自动重定向，请复制下方令牌并粘贴到桌面应用的“输入授权令牌以继续”表单中。",
   "login.errors.unknown": "未知错误",
   "login.forget_password.description": "请输入与你的帐户关联的邮件地址，我们将向你发送一封关于如何重置密码的邮件。",
   "login.forget_password.email_invalid": "无效的邮箱地址",

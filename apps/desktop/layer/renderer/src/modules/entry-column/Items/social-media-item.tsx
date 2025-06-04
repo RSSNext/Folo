@@ -3,7 +3,6 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { MediaModel } from "@follow/shared/hono"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
@@ -23,6 +22,7 @@ import { jotaiStore } from "~/lib/jotai"
 import { parseSocialMedia } from "~/lib/parsers"
 import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
 import { MoreActions } from "~/modules/entry-content/actions/more-actions"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { useEntry } from "~/store/entry/hooks"
@@ -32,8 +32,36 @@ import { StarIcon } from "../star-icon"
 import type { EntryItemStatelessProps, EntryListItemFC } from "../types"
 
 const socialMediaContentWidthAtom = atom(0)
-export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, translation }) => {
-  const entry = useEntry(entryId) || entryPreview
+export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
+  const entry = useEntry(entryId, (state) => {
+    const { collections, feedId, read } = state
+    const { author, authorAvatar, authorUrl, content, description, guid, publishedAt, url } =
+      state.entries
+
+    const isInCollection = !!collections
+
+    const media = state.entries.media || []
+    const photo = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = photo?.url
+    const iconEntry: FeedIconEntry = {
+      firstPhotoUrl,
+      authorAvatar,
+    }
+
+    return {
+      author,
+      authorUrl,
+      content,
+      description,
+      feedId,
+      guid,
+      iconEntry,
+      isInCollection,
+      publishedAt,
+      read,
+      url,
+    }
+  })
 
   const asRead = useEntryIsRead(entry)
   const feed = useFeedById(entry?.feedId)
@@ -60,10 +88,9 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
   const titleRef = useRef<HTMLDivElement>(null)
   if (!entry || !feed) return null
 
-  const content = entry.entries.content || entry.entries.description
+  const content = entry.content || entry.description
 
-  const parsed = parseSocialMedia(entry.entries)
-  const { media } = entry.entries
+  const parsed = parseSocialMedia(entry.authorUrl || entry.url || entry.guid)
   const EntryContentWrapper = autoExpandLongSocialMedia
     ? PassviseFragment
     : CollapsedSocialMediaItem
@@ -79,12 +106,12 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
           "before:bg-accent before:absolute before:left-1 before:top-8 before:block before:size-2 before:rounded-full md:before:-left-2 lg:before:left-2",
       )}
     >
-      <FeedIcon fallback feed={feed} entry={entry.entries} size={32} className="mt-1" />
+      <FeedIcon fallback feed={feed} entry={entry.iconEntry} size={32} className="mt-1" />
       <div ref={ref} className="ml-2 min-w-0 flex-1">
         <div className="-mt-0.5 flex-1 text-sm">
           <div className="flex select-none flex-wrap space-x-1 leading-6" ref={titleRef}>
             <span className="inline-flex min-w-0 items-center gap-1 text-base font-semibold">
-              <FeedTitle feed={feed} title={entry.entries.author || feed.title} />
+              <FeedTitle feed={feed} title={entry.author || feed.title} />
               {parsed?.type === "x" && (
                 <i className="i-mgc-twitter-cute-fi size-3 text-[#4A99E9]" />
               )}
@@ -101,10 +128,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
             )}
             <span className="text-zinc-500">·</span>
             <span className="text-zinc-500">
-              <RelativeTime date={entry.entries.publishedAt} />
+              <RelativeTime date={entry.publishedAt} />
             </span>
           </div>
-          <div className={cn("relative mt-1 text-base", !!entry.collections && "pr-5")}>
+          <div className={cn("relative mt-1 text-base", entry.isInCollection && "pr-5")}>
             <EntryContentWrapper entryId={entryId}>
               <HTML
                 as="div"
@@ -118,10 +145,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, entryPreview, transl
                 {translation?.content || content}
               </HTML>
             </EntryContentWrapper>
-            {!!entry.collections && <StarIcon className="absolute right-0 top-0" />}
+            {entry.isInCollection && <StarIcon className="absolute right-0 top-0" />}
           </div>
         </div>
-        {!!media?.length && <SocialMediaGallery media={media} />}
+        <SocialMediaGallery entryId={entryId} />
       </div>
 
       {showAction && !isMobile && <ActionBar entryId={entryId} />}
@@ -216,13 +243,16 @@ export const SocialMediaItemSkeleton = (
   </div>
 )
 
-const SocialMediaGallery = ({ media }: { media: MediaModel[] }) => {
+const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
+  const entry = useEntry(entryId, (state) => ({ media: state.entries.media }))
+  const media = useMemo(() => entry?.media || [], [entry?.media])
+
   const previewMedia = usePreviewMedia()
 
   const isAllMediaSameRatio = useMemo(() => {
     let ratio = 0
     for (const m of media) {
-      if (m.height && m.width) {
+      if (m?.height && m?.width) {
         const currentRatio = m.height / m.width
         if (ratio === 0) {
           ratio = currentRatio
@@ -235,6 +265,8 @@ const SocialMediaGallery = ({ media }: { media: MediaModel[] }) => {
     }
     return true
   }, [media])
+
+  if (media.length === 0) return null
 
   // all media has same ratio, use horizontal layout
   if (isAllMediaSameRatio) {

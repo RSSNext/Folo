@@ -12,7 +12,7 @@ import type { FC } from "react"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useDebounceCallback, useEventCallback } from "usehooks-ts"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { observeResize } from "~/lib/observe-resize"
 
 const CmdFImpl: FC<{
@@ -28,8 +28,8 @@ const CmdFImpl: FC<{
   const [scrollLeft, setScrollLeft] = useState(0)
 
   useLayoutEffect(() => {
-    tipcClient?.readClipboard().then((text) => {
-      if (!currentValue.current) {
+    Promise.resolve(ipcServices?.app.readClipboard()).then((text) => {
+      if (!currentValue.current && text) {
         setValue(text)
       }
     })
@@ -76,20 +76,21 @@ const CmdFImpl: FC<{
 
       let findNext = true
       if (!text) {
-        await tipcClient?.clearSearch().finally(() => {
+        Promise.resolve(ipcServices?.app.clearSearch()).finally(() => {
           if (searchId === searchIdRef.current) {
             setIsSearching(false)
           }
         })
       } else {
-        await tipcClient
-          ?.search({
+        Promise.resolve(
+          ipcServices?.app.search({
             text,
             options: {
               findNext,
               forward: dir === "forward",
             },
-          })
+          }),
+        )
           .then((result) => {
             setMatches(result?.matches || 0)
             setActiveMatchOrdinal(result?.activeMatchOrdinal || 0)

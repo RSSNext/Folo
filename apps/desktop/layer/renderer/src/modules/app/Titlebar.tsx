@@ -4,7 +4,7 @@ import { preventDefault } from "@follow/utils/dom"
 import { useWindowState } from "~/atoms/app"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "~/constants"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 export const Titlebar = () => {
   const isMaximized = useWindowState() === WindowState.MAXIMIZED
@@ -24,7 +24,7 @@ export const Titlebar = () => {
         className="no-drag-region hover:bg-theme-item-active pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200"
         type="button"
         onClick={() => {
-          tipcClient?.windowAction({ action: "minimize" })
+          ipcServices?.app.windowAction({ action: "minimize" })
         }}
       >
         <i className="i-mingcute-minimize-line" />
@@ -34,7 +34,7 @@ export const Titlebar = () => {
         type="button"
         className="no-drag-region hover:bg-theme-item-active pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200"
         onClick={async () => {
-          await tipcClient?.windowAction({ action: "maximum" })
+          await ipcServices?.app.windowAction({ action: "maximum" })
         }}
       >
         {isMaximized ? (
@@ -48,7 +48,7 @@ export const Titlebar = () => {
         type="button"
         className="no-drag-region pointer-events-auto flex h-full w-[50px] items-center justify-center duration-200 hover:bg-red-500 hover:!text-white"
         onClick={() => {
-          tipcClient?.windowAction({ action: "close" })
+          ipcServices?.app.windowAction({ action: "close" })
         }}
       >
         <i className="i-mingcute-close-line" />

@@ -8,8 +8,9 @@ class InboxServiceStatic implements Resetable {
   async reset() {
     await db.delete(inboxesTable).execute()
   }
-  async getInbox(): Promise<InboxSchema[]> {
-    return await db.select().from(inboxesTable)
+
+  getInboxAll() {
+    return db.query.inboxesTable.findMany()
   }
 
   async upsertMany(inboxes: InboxSchema[]) {

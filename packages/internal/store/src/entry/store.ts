@@ -55,7 +55,7 @@ const immerSet = createImmerSetter(useEntryStore)
 
 class EntryActions implements Hydratable {
   async hydrate(options?: HydrationOptions) {
-    const entries = await EntryService.getEntryAll()
+    const entries = await EntryService.getEntriesToHydrate()
 
     entryActions.upsertManyInSession(
       entries.map((e) => dbStoreMorph.toEntryModel(e)),
