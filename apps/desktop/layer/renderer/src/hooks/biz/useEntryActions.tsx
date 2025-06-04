@@ -328,7 +328,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.share,
         onClick: runCmdFn(COMMAND_ID.entry.share, [{ entryId }]),
-        hide: !entry.url || !("share" in navigator || IN_ELECTRON),
+        hide: !entry.url,
         shortcut: shortcuts[COMMAND_ID.entry.share],
         entryId,
       }),

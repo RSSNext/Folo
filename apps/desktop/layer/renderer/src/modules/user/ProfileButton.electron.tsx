@@ -28,16 +28,12 @@ import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 import { signOut, useSession } from "~/queries/auth"
-import { useWallet } from "~/queries/wallet"
 
 import { useActivationModal } from "../activation"
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandShortcuts } from "../command/hooks/use-command-binding"
-import { ActivityPoints } from "../wallet/activity-points"
-import { Level } from "../wallet/level"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
-import { PowerButton } from "./ProfileButton.shared"
 import { UserAvatar } from "./UserAvatar"
 
 const rsshubLogo = new URL(rsshubLogoUrl, import.meta.url).href
@@ -59,9 +55,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const navigate = useNavigate()
 
   const role = useUserRole()
-  const wallet = useWallet()
-  const { isLoading: isLoadingWallet } = wallet
-  const myWallet = wallet.data?.[0]
   const presentActivationModal = useActivationModal()
   const zenModeSetting = useIsZenMode()
   const setZenMode = useSetZenMode()
@@ -106,25 +99,6 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </div>
         </DropdownMenuLabel>
 
-        {!isInMASReview && (
-          <DropdownMenuItem
-            highlightColor="gray"
-            onClick={() => {
-              navigate("/power")
-            }}
-          >
-            <div className="flex w-full items-center justify-between gap-6 px-1.5 font-semibold">
-              <PowerButton isLoading={isLoadingWallet} myWallet={myWallet} />
-              <Level level={myWallet?.level?.level || 0} isLoading={isLoadingWallet} />
-              <ActivityPoints
-                className="text-sm"
-                points={myWallet?.level?.prevActivityPoints || 0}
-                isLoading={isLoadingWallet}
-              />
-            </div>
-          </DropdownMenuItem>
-        )}
-
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
@@ -150,6 +124,18 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         >
           {t("user_button.achievement")}
         </DropdownMenuItem>
+
+        {!isInMASReview && (
+          <DropdownMenuItem
+            className="pl-3"
+            onClick={() => {
+              navigate("/power")
+            }}
+            icon={<i className="i-mgc-power-outline" />}
+          >
+            {t("user_button.power")}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

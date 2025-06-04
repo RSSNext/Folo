@@ -11,16 +11,12 @@ import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
 import { useUserRole, useWhoami } from "~/atoms/user"
 import { UrlBuilder } from "~/lib/url-builder"
 import { signOut } from "~/queries/auth"
-import { useWallet } from "~/queries/wallet"
 
 import { useAchievementModal } from "../achievement/hooks"
 import { useActivationModal } from "../activation"
 import { usePresentUserProfileModal } from "../profile/hooks"
 import { useSettingModal } from "../settings/modal/use-setting-modal-hack"
-import { ActivityPoints } from "../wallet/activity-points"
-import { Level } from "../wallet/level"
 import type { ProfileButtonProps } from "./ProfileButton.electron"
-import { PowerButton } from "./ProfileButton.shared"
 import { UserAvatar } from "./UserAvatar"
 
 export const ProfileButton: FC<ProfileButtonProps> = () => {
@@ -31,9 +27,6 @@ export const ProfileButton: FC<ProfileButtonProps> = () => {
   const { t } = useTranslation()
 
   const role = useUserRole()
-  const wallet = useWallet()
-  const { isLoading: isLoadingWallet } = wallet
-  const myWallet = wallet.data?.[0]
   const presentActivationModal = useActivationModal()
   const settingModalPresent = useSettingModal()
   return (
@@ -56,19 +49,6 @@ export const ProfileButton: FC<ProfileButtonProps> = () => {
               )}
             </div>
           </div>
-
-          <Link
-            to="/power"
-            className="mx-auto flex w-[300px] items-center justify-between font-semibold"
-          >
-            <PowerButton isLoading={isLoadingWallet} myWallet={myWallet} />
-            <Level level={myWallet?.level?.level || 0} isLoading={isLoadingWallet} />
-            <ActivityPoints
-              className="text-sm"
-              points={myWallet?.level?.prevActivityPoints || 0}
-              isLoading={isLoadingWallet}
-            />
-          </Link>
 
           <Divider className="!bg-border h-px" />
 

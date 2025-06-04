@@ -256,7 +256,7 @@ export const ContainerToc = memo(
               className={cn(
                 "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
                 "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",
-                "@[700px]:-translate-x-12 @[800px]:-translate-x-16 @[900px]:translate-x-0 @[900px]:items-start",
+                "@[700px]:-translate-x-12 @[800px]:-translate-x-4 @[900px]:translate-x-0 @[900px]:items-start",
               )}
             />
 

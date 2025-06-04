@@ -4,7 +4,6 @@ import { TransactionTypes } from "@follow/models/types"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { useWhoami } from "~/atoms/user"
 import { getBlockchainExplorerUrl } from "~/lib/utils"
 import { SettingSectionTitle } from "~/modules/settings/section"
@@ -27,18 +26,11 @@ export const TransactionsSection: Component = ({ className }) => {
     type: type === "all" ? undefined : (type as (typeof TransactionTypes)[number]),
   })
 
-  const serverConfigs = useServerConfigs()
-
   if (!myWallet) return null
 
   return (
     <div className="relative flex min-w-0 grow flex-col">
       <SettingSectionTitle title={t("wallet.transactions.title")} />
-      <p className="mb-4 text-sm">
-        {t("wallet.transactions.description", {
-          percentage: Number.parseInt(serverConfigs?.TAX_POINT || "0") / 100,
-        })}
-      </p>
       <Tabs value={type} onValueChange={(val) => setType(val)}>
         <TabsList className="relative border-b-transparent">
           {tabs.map((tab) => (
