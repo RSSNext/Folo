@@ -1,19 +1,22 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
-import { useMutation } from "@tanstack/react-query"
+import {
+  useActionRules,
+  useIsActionDataDirty,
+  usePrefetchActions,
+  useUpdateActionsMutation,
+} from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
 import { unstable_usePrompt } from "react-router"
 import { toast } from "sonner"
 
-import { toastFetchError } from "~/lib/error-parser"
 import { queryClient } from "~/lib/query-client"
 import { ActionCard } from "~/modules/action/action-card"
-import { useActionsQuery } from "~/queries/actions"
-import { actionActions, useActions, useIsActionDataDirty } from "~/store/action"
 
 export const ActionSetting = () => {
-  const actionQuery = useActionsQuery()
-  const actionLength = useActions((actions) => actions.length)
+  const actionQuery = usePrefetchActions()
+  const actionLength = useActionRules((actions) => actions.length)
 
   if (actionQuery.isPending) {
     return <LoadingWithIcon icon={<i className="i-mgc-magic-2-cute-re" />} size="large" />
@@ -32,7 +35,7 @@ export const ActionSetting = () => {
 function ActionSettingOperations() {
   const { t } = useTranslation("settings")
 
-  const actionLength = useActions((actions) => actions.length)
+  const actionLength = useActionRules((actions) => actions.length)
   const isDirty = useIsActionDataDirty()
   unstable_usePrompt({
     message: t("actions.navigate.prompt"),
@@ -40,8 +43,7 @@ function ActionSettingOperations() {
       isDirty && currentLocation.pathname !== nextLocation.pathname,
   })
 
-  const mutation = useMutation({
-    mutationFn: () => actionActions.updateRemoteActions(),
+  const mutation = useUpdateActionsMutation({
     onSuccess: () => {
       // apply new action settings
       queryClient.invalidateQueries({
@@ -50,7 +52,7 @@ function ActionSettingOperations() {
       toast(t("actions.saveSuccess"))
     },
     onError: (error) => {
-      toastFetchError(error)
+      toast.error(error)
     },
   })
 
@@ -59,7 +61,7 @@ function ActionSettingOperations() {
       <Button
         variant={actionLength > 0 ? "outline" : "primary"}
         onClick={() => {
-          actionActions.insertNewEmptyAction(t("actions.actionName", { number: actionLength + 1 }))
+          actionActions.addRule((number) => t("actions.actionName", { number }))
         }}
       >
         <i className="i-mgc-add-cute-re mr-1" />

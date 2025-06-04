@@ -11,7 +11,7 @@ import { createImmerSetter, createZustandStore } from "../internal/helper"
 
 type ActionStore = {
   rules: ActionRules
-  isDirty?: boolean
+  isDirty: boolean
 }
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
@@ -63,10 +63,10 @@ class ActionActions {
     })
   }
 
-  addRule() {
+  addRule(getName: (index: number) => string) {
     immerSet((state) => {
       state.rules.push({
-        name: `Action ${state.rules.length + 1}`,
+        name: getName(state.rules.length + 1),
         condition: [],
         index: state.rules.length,
         result: {},
@@ -156,8 +156,26 @@ class ActionActions {
       const rule = state.rules[index]
       if (!rule) return
       const { webhooks } = rule.result
+      if (!webhooks) {
+        rule.result.webhooks = [""]
+      } else {
+        webhooks.push("")
+      }
+      state.isDirty = true
+    })
+  }
+
+  deleteWebhook(index: number, webhookIndex: number) {
+    immerSet((state) => {
+      const rule = state.rules[index]
+      if (!rule) return
+      const { webhooks } = rule.result
       if (!webhooks) return
-      webhooks.push("")
+      if (webhooks.length === 1) {
+        delete rule.result.webhooks
+      } else {
+        webhooks.splice(webhookIndex, 1)
+      }
       state.isDirty = true
     })
   }
@@ -186,8 +204,31 @@ class ActionActions {
       const rule = state.rules[index]
       if (!rule) return
       const { rewriteRules } = rule.result
+      if (!rewriteRules) {
+        rule.result.rewriteRules = [
+          {
+            from: "",
+            to: "",
+          },
+        ]
+      } else {
+        rewriteRules.push({ from: "", to: "" })
+      }
+      state.isDirty = true
+    })
+  }
+
+  deleteRewriteRule(index: number, rewriteIdx: number) {
+    immerSet((state) => {
+      const rule = state.rules[index]
+      if (!rule) return
+      const { rewriteRules } = rule.result
       if (!rewriteRules) return
-      rewriteRules.push({ from: "", to: "" })
+      if (rewriteRules.length === 1) {
+        delete rule.result.rewriteRules
+      } else {
+        rewriteRules.splice(rewriteIdx, 1)
+      }
       state.isDirty = true
     })
   }

@@ -17,6 +17,7 @@
     "@electron-toolkit/preload": "3.0.2",
     "@follow/electron-main": "workspace:*",
     "@follow/shared": "workspace:*",
+    "@follow/store": "workspace:*",
     "@follow/tracker": "workspace:*",
     "@fontsource/sn-pro": "5.2.5",
     "@headlessui/react": "2.2.4",

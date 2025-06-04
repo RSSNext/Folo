@@ -8,11 +8,19 @@ import * as React from "react"
 import ReactDOM from "react-dom/client"
 import { RouterProvider } from "react-router/dom"
 
+import { apiClient } from "~/lib/api-fetch"
+import { authClient } from "~/lib/auth"
+
 import { setAppIsReady } from "./atoms/app"
 import { ElECTRON_CUSTOM_TITLEBAR_HEIGHT } from "./constants"
 import { initializeApp } from "./initialize"
 import { registerAppGlobalShortcuts } from "./initialize/global-shortcuts"
 import { router } from "./router"
+
+// @ts-expect-error
+globalThis.apiClient = apiClient
+// @ts-expect-error
+globalThis.authClient = authClient
 
 initializeApp().finally(() => {
   import("./push-notification").then(({ registerWebPushNotifications }) => {

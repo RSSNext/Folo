@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.
 import { Input } from "@follow/components/ui/input/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
+import { useActionRule } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { clsx } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
-
-import { actionActions, useActionByIndex } from "~/store/action"
 
 import { FeedFilter } from "./feed-filter"
 import { TargetActionList } from "./target-action-list"
@@ -23,7 +23,7 @@ export const ActionCard = ({ index }: { index: number }) => {
               "absolute -right-2 -top-2 z-[1] opacity-100 duration-200 hover:!opacity-100 group-hover:opacity-70 lg:opacity-0",
             )}
             onClick={() => {
-              actionActions.removeByIndex(index)
+              actionActions.deleteRule(index)
             }}
           >
             <i className="i-mgc-close-cute-re text-lg" />
@@ -44,10 +44,9 @@ export const ActionCard = ({ index }: { index: number }) => {
 const ActionCardToolbar = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
 
-  const name = useActionByIndex(index, (a) => a.name)
-  const disabled = useActionByIndex(index, (a) => a.result.disabled)
+  const name = useActionRule(index, (a) => a.name)
+  const disabled = useActionRule(index, (a) => a.result.disabled)
 
-  const onChange = actionActions.updateByIndex.bind(null, index)
   return (
     <div className="flex w-full items-center gap-3">
       <p className="shrink-0 font-medium text-zinc-500">{t("actions.action_card.name")}</p>
@@ -55,9 +54,7 @@ const ActionCardToolbar = ({ index }: { index: number }) => {
         value={name}
         className="h-8 max-w-64"
         onChange={(e) => {
-          onChange((data) => {
-            data.name = e.target.value
-          })
+          actionActions.patchRule(index, { name: e.target.value })
         }}
       />
       <div className="grow" />
@@ -65,8 +62,8 @@ const ActionCardToolbar = ({ index }: { index: number }) => {
       <Switch
         checked={!disabled}
         onCheckedChange={(checked) => {
-          onChange((data) => {
-            data.result.disabled = !checked
+          actionActions.patchRule(index, {
+            result: { disabled: !checked },
           })
         }}
       />

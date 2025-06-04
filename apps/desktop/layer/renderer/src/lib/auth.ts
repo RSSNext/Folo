@@ -6,6 +6,8 @@ const auth = new Auth({
   webURL: env.VITE_WEB_URL,
 })
 
+export const { authClient } = auth
+
 // @keep-sorted
 export const {
   changeEmail,

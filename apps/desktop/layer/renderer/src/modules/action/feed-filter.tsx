@@ -10,12 +10,13 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import type { ActionFeedField, ActionOperation } from "@follow/models/types"
+import { useActionRule } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { cn } from "@follow/utils/utils"
 import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ViewSelectContent } from "~/modules/feed/view-select-content"
-import { actionActions, useActionByIndex } from "~/store/action"
 
 export const FeedFilter = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
@@ -72,10 +73,9 @@ export const FeedFilter = ({ index }: { index: number }) => {
     ]
   }, [t])
 
-  const disabled = useActionByIndex(index, (a) => a.result.disabled)
-  const condition = useActionByIndex(index, (a) => a.condition)
+  const disabled = useActionRule(index, (a) => a.result.disabled)
+  const condition = useActionRule(index, (a) => a.condition)
 
-  const onChange = actionActions.updateByIndex.bind(null, index)
   return (
     <div className="w-full shrink space-y-3 overflow-auto">
       <p className="font-medium text-zinc-500">{t("actions.action_card.when_feeds_match")}</p>
@@ -83,12 +83,8 @@ export const FeedFilter = ({ index }: { index: number }) => {
         <RadioGroup
           value={condition.length > 0 ? "filter" : "all"}
           onValueChange={(value) => {
-            onChange((data) => {
-              if (value === "all") {
-                data.condition = []
-              } else {
-                data.condition = [[{}]]
-              }
+            actionActions.patchRule(index, {
+              condition: value === "all" ? [] : [[{}]],
             })
           }}
         >
@@ -108,12 +104,15 @@ export const FeedFilter = ({ index }: { index: number }) => {
             <div className="mt-2">
               {condition.flatMap((orConditions, orConditionIdx) => {
                 return orConditions.map((condition, conditionIdx) => {
+                  const actionConditionIndex = {
+                    ruleIndex: index,
+                    groupIndex: orConditionIdx,
+                    conditionIndex: conditionIdx,
+                  }
+
                   const change = (key: string, value: string | number) => {
-                    onChange((data) => {
-                      if (!data.condition[orConditionIdx]) {
-                        data.condition[orConditionIdx] = [{}]
-                      }
-                      data.condition[orConditionIdx][conditionIdx]![key] = value
+                    actionActions.pathCondition(actionConditionIndex, {
+                      [key]: value,
                     })
                   }
                   const type =
@@ -164,9 +163,7 @@ export const FeedFilter = ({ index }: { index: number }) => {
                             variant="outline"
                             disabled={disabled}
                             onClick={() => {
-                              onChange((data) => {
-                                data.condition[orConditionIdx]!.push({})
-                              })
+                              actionActions.addConditionItem(actionConditionIndex)
                             }}
                           >
                             {t("actions.action_card.and")}
@@ -176,9 +173,7 @@ export const FeedFilter = ({ index }: { index: number }) => {
                             buttonClassName="w-full max-sm:hidden"
                             disabled={disabled}
                             onClick={() => {
-                              onChange((data) => {
-                                data.condition[orConditionIdx]!.push({})
-                              })
+                              actionActions.addConditionItem(actionConditionIndex)
                             }}
                           >
                             {t("actions.action_card.and")}
@@ -187,13 +182,7 @@ export const FeedFilter = ({ index }: { index: number }) => {
                             variant="ghost"
                             disabled={disabled}
                             onClick={() => {
-                              onChange((data) => {
-                                if (data.condition[orConditionIdx]!.length === 1) {
-                                  data.condition.splice(orConditionIdx, 1)
-                                } else {
-                                  data.condition[orConditionIdx]!.splice(conditionIdx, 1)
-                                }
-                              })
+                              actionActions.deleteConditionItem(actionConditionIndex)
                             }}
                           >
                             <i className="i-mgc-delete-2-cute-re size-5 text-zinc-600" />
@@ -221,9 +210,7 @@ export const FeedFilter = ({ index }: { index: number }) => {
             variant="outline"
             buttonClassName="mt-4 w-full gap-1 py-1"
             onClick={() => {
-              onChange((data) => {
-                data.condition.push([{}])
-              })
+              actionActions.addConditionGroup({ ruleIndex: index })
             }}
             disabled={disabled}
           >
