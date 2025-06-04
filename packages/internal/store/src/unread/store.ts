@@ -3,6 +3,7 @@ import type { UnreadSchema } from "@follow/database/schemas/types"
 import { EntryService } from "@follow/database/services/entry"
 import { UnreadService } from "@follow/database/services/unread"
 
+import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import type { Hydratable } from "../internal/base"
@@ -22,7 +23,7 @@ const set = useUnreadStore.setState
 
 class UnreadSyncService {
   async resetFromRemote() {
-    const res = await apiClient.reads.$get({
+    const res = await apiClient().reads.$get({
       query: {},
     })
 
@@ -60,7 +61,7 @@ class UnreadSyncService {
     time?: PublishAtTimeRangeFilter
     excludePrivate: boolean
   }) {
-    await apiClient.reads.all.$post({
+    await apiClient().reads.all.$post({
       json: {
         view,
         excludePrivate,
@@ -88,7 +89,7 @@ class UnreadSyncService {
   async markFeedAsRead(feedId: string | string[], time?: PublishAtTimeRangeFilter) {
     const feedIds = Array.isArray(feedId) ? feedId : [feedId]
 
-    await apiClient.reads.all.$post({
+    await apiClient().reads.all.$post({
       json: {
         feedIdList: feedIds,
         ...time,
@@ -102,7 +103,7 @@ class UnreadSyncService {
     const list = getList(listId)
     if (!list) return
 
-    await apiClient.reads.all.$post({
+    await apiClient().reads.all.$post({
       json: {
         listId,
 
@@ -139,7 +140,7 @@ class UnreadSyncService {
     })
 
     tx.request(() => {
-      apiClient.reads.$post({
+      apiClient().reads.$post({
         json: { entryIds: [entryId] },
       })
     })
@@ -177,7 +178,7 @@ class UnreadSyncService {
     })
 
     tx.request(() => {
-      apiClient.reads.$delete({
+      apiClient().reads.$delete({
         json: { entryId },
       })
     })

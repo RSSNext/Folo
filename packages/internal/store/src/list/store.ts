@@ -1,6 +1,7 @@
 import type { ListSchema } from "@follow/database/schemas/types"
 import { ListService } from "@follow/database/services/list"
 
+import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
@@ -85,7 +86,7 @@ export const listActions = new ListActions()
 
 class ListSyncServices {
   async fetchListById(params: { id: string }) {
-    const list = await apiClient.lists.$get({ query: { listId: params.id } })
+    const list = await apiClient().lists.$get({ query: { listId: params.id } })
 
     listActions.upsertMany([honoMorph.toList(list.data.list)])
 
@@ -93,14 +94,14 @@ class ListSyncServices {
   }
 
   async fetchOwnedLists() {
-    const res = await apiClient.lists.list.$get()
+    const res = await apiClient().lists.list.$get()
     listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
 
     return res.data.map((list) => honoMorph.toList(list))
   }
 
   async createList(params: { list: CreateListModel }) {
-    const res = await apiClient.lists.$post({
+    const res = await apiClient().lists.$post({
       json: {
         title: params.list.title,
         description: params.list.description,
@@ -123,7 +124,7 @@ class ListSyncServices {
       fee: params.list.fee || 0,
       listId: params.listId,
     }
-    await apiClient.lists.$patch({
+    await apiClient().lists.$patch({
       json: nextModel,
     })
 
@@ -139,12 +140,12 @@ class ListSyncServices {
   }
 
   async deleteList(params: { listId: string }) {
-    await apiClient.lists.$delete({ json: { listId: params.listId } })
+    await apiClient().lists.$delete({ json: { listId: params.listId } })
     listActions.deleteList({ listId: params.listId })
   }
 
   async addFeedsToFeedList(params: { listId: string; feedIds: string[] }) {
-    const feeds = await apiClient.lists.feeds.$post({
+    const feeds = await apiClient().lists.feeds.$post({
       json: params,
     })
     const list = get().lists[params.listId]

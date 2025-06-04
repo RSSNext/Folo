@@ -26,6 +26,11 @@
       "require": "./src/collection/*.ts",
       "import": "./src/collection/*.ts"
     },
+    "./context": {
+      "types": "./src/context.ts",
+      "require": "./src/context.ts",
+      "import": "./src/context.ts"
+    },
     "./entry/*": {
       "types": "./src/entry/*.ts",
       "require": "./src/entry/*.ts",
@@ -35,6 +40,11 @@
       "types": "./src/feed/*.ts",
       "require": "./src/feed/*.ts",
       "import": "./src/feed/*.ts"
+    },
+    "./hydrate": {
+      "types": "./src/hydrate.ts",
+      "require": "./src/hydrate.ts",
+      "import": "./src/hydrate.ts"
     },
     "./image/*": {
       "types": "./src/image/*.ts",

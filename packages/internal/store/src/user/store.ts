@@ -3,6 +3,7 @@ import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthSession } from "@follow/shared/hono"
 
+import { apiClient, authClient } from "../context"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { honoMorph } from "../morph/hono"
@@ -31,7 +32,7 @@ const immerSet = createImmerSetter(useUserStore)
 
 class UserSyncService {
   async whoami() {
-    const res = (await (apiClient["better-auth"] as any)[
+    const res = (await (apiClient()["better-auth"] as any)[
       "get-session"
     ].$get()) as AuthSession | null
     if (res) {
@@ -61,7 +62,7 @@ class UserSyncService {
     })
 
     tx.request(async () => {
-      await authClient.updateUser({
+      await authClient().updateUser({
         ...data,
       })
     })
@@ -86,7 +87,7 @@ class UserSyncService {
   async sendVerificationEmail() {
     const me = get().whoami
     if (!me?.email) return
-    await authClient.sendVerificationEmail({ email: me.email! })
+    await authClient().sendVerificationEmail({ email: me.email! })
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {
@@ -95,8 +96,8 @@ class UserSyncService {
     if (!me) throw new Error("user not login")
 
     const res = enabled
-      ? await authClient.twoFactor.enable({ password })
-      : await authClient.twoFactor.disable({ password })
+      ? await authClient().twoFactor.enable({ password })
+      : await authClient().twoFactor.disable({ password })
 
     if (!res.error) {
       immerSet((state) => {
@@ -123,7 +124,7 @@ class UserSyncService {
     tx.request(async () => {
       const { whoami } = get()
       if (!whoami) return
-      await authClient.changeEmail({ newEmail: email })
+      await authClient().changeEmail({ newEmail: email })
     })
     tx.rollback(() => {
       immerSet((state) => {
@@ -140,7 +141,7 @@ class UserSyncService {
   }
 
   async applyInvitationCode(code: string) {
-    const res = await apiClient.invitations.use.$post({ json: { code } })
+    const res = await apiClient().invitations.use.$post({ json: { code } })
     if (res.code === 0) {
       immerSet((state) => {
         state.role = UserRole.User
@@ -151,7 +152,7 @@ class UserSyncService {
   }
 
   async fetchUser(userId: string) {
-    const res = await apiClient.profiles.$get({ query: { id: userId } })
+    const res = await apiClient().profiles.$get({ query: { id: userId } })
     if (res.code === 0) {
       const { whoami } = get()
       immerSet((state) => {

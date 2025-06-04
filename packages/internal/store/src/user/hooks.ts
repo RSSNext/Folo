@@ -2,6 +2,7 @@ import { tracker } from "@follow/tracker"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 
+import { apiClient } from "../context"
 import type { GeneralQueryOptions } from "../types"
 import { isNewUserQueryKey } from "./constants"
 import { userSyncService, useUserStore } from "./store"
@@ -40,7 +41,7 @@ export function useIsNewUser(options?: GeneralQueryOptions) {
     enabled: options?.enabled,
     queryKey: isNewUserQueryKey,
     queryFn: async () => {
-      const subscriptions = await apiClient.subscriptions.$get({ query: {} })
+      const subscriptions = await apiClient().subscriptions.$get({ query: {} })
       return subscriptions.data.length < 5
     },
   })

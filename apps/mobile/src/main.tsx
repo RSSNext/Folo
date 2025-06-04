@@ -1,5 +1,6 @@
 import "./global.css"
 
+import { apiClientSimpleContext, authClientSimpleContext } from "@follow/store/context"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -29,10 +30,8 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
-// @ts-expect-error
-globalThis.apiClient = apiClient
-// @ts-expect-error
-globalThis.authClient = authClient
+apiClientSimpleContext.provider(apiClient)
+authClientSimpleContext.provider(authClient)
 
 enableFreeze(true)
 ;[Image, LinearGradient].forEach((Component) => {

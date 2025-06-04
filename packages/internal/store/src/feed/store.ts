@@ -1,6 +1,7 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
 import { FeedService } from "@follow/database/services/feed"
 
+import { apiClient } from "../context"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import type { FeedModel } from "./types"
@@ -66,7 +67,7 @@ type FeedQueryParams = {
 
 class FeedSyncServices {
   async fetchFeedById({ id, url }: FeedQueryParams) {
-    const res = await apiClient.feeds.$get({
+    const res = await apiClient().feeds.$get({
       query: {
         id,
         url,
@@ -85,7 +86,7 @@ class FeedSyncServices {
   }
 
   async fetchFeedByUrl({ url }: FeedQueryParams) {
-    const res = await apiClient.feeds.$get({
+    const res = await apiClient().feeds.$get({
       query: {
         url,
       },

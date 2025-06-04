@@ -3,6 +3,7 @@ import type { SubscriptionSchema } from "@follow/database/schemas/types"
 import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
 
+import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
 import type { Hydratable } from "../internal/base"
@@ -141,7 +142,7 @@ class SubscriptionActions implements Hydratable {
 
 class SubscriptionSyncService {
   async fetch(view?: FeedViewType) {
-    const res = await apiClient.subscriptions.$get({
+    const res = await apiClient().subscriptions.$get({
       query: {
         view: view !== undefined ? String(view) : undefined,
       },
@@ -210,7 +211,7 @@ class SubscriptionSyncService {
       })
     })
     tx.request(async () => {
-      await apiClient.subscriptions.$patch({
+      await apiClient().subscriptions.$patch({
         json: {
           view: subscription.view,
           feedId: subscription.feedId ?? undefined,
@@ -230,7 +231,7 @@ class SubscriptionSyncService {
   }
 
   async subscribe(subscription: SubscriptionForm) {
-    const data = await apiClient.subscriptions.$post({
+    const data = await apiClient().subscriptions.$post({
       json: {
         url: subscription.url,
         view: subscription.view,
@@ -299,7 +300,7 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await apiClient.subscriptions.$delete({
+      await apiClient().subscriptions.$delete({
         json: {
           feedId: subscription.feedId ?? undefined,
           listId: subscription.listId ?? undefined,

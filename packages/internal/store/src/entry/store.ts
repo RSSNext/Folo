@@ -3,6 +3,7 @@ import { EntryService } from "@follow/database/services/entry"
 import { debounce } from "es-toolkit/compat"
 
 import { collectionActions } from "../collection/store"
+import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
 import type { Hydratable, HydrationOptions } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
@@ -397,7 +398,7 @@ class EntrySyncServices {
       feedIdList,
     })
     const res = params.inboxId
-      ? await apiClient.entries.inbox.$post({
+      ? await apiClient().entries.inbox.$post({
           json: {
             publishedAfter: pageParam,
             read,
@@ -407,7 +408,7 @@ class EntrySyncServices {
             ...params,
           },
         })
-      : await apiClient.entries.$post({
+      : await apiClient().entries.$post({
           json: {
             publishedAfter: pageParam,
             read,
@@ -478,8 +479,8 @@ class EntrySyncServices {
   async fetchEntryDetail(entryId: EntryId) {
     const currentEntry = getEntry(entryId)
     const res = currentEntry?.inboxHandle
-      ? await apiClient.entries.inbox.$get({ query: { id: entryId } })
-      : await apiClient.entries.$get({ query: { id: entryId } })
+      ? await apiClient().entries.inbox.$get({ query: { id: entryId } })
+      : await apiClient().entries.$get({ query: { id: entryId } })
     const entry = honoMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])
@@ -504,7 +505,7 @@ class EntrySyncServices {
     const entry = getEntry(entryId)
 
     if (entry?.url && entry?.readabilityContent === null) {
-      const { data: contentByFetch } = await apiClient.entries.readability.$get({
+      const { data: contentByFetch } = await apiClient().entries.readability.$get({
         query: {
           id: entryId,
         },
@@ -547,17 +548,20 @@ class EntrySyncServices {
     const readStream = async () => {
       // https://github.com/facebook/react-native/issues/37505
       // TODO: And it seems we can not just use fetch from expo for ofetch, need further investigation
-      const response = await (options?.fetch || fetch)(apiClient.entries.stream.$url().toString(), {
-        method: "POST",
-        headers: options?.cookie
-          ? {
-              cookie: options.cookie,
-            }
-          : undefined,
-        body: JSON.stringify({
-          ids: nextIds,
-        }),
-      })
+      const response = await (options?.fetch || fetch)(
+        apiClient().entries.stream.$url().toString(),
+        {
+          method: "POST",
+          headers: options?.cookie
+            ? {
+                cookie: options.cookie,
+              }
+            : undefined,
+          body: JSON.stringify({
+            ids: nextIds,
+          }),
+        },
+      )
       if (!response.ok) {
         console.error("Failed to fetch stream:", response.statusText, await response.text())
         return

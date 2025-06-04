@@ -2,6 +2,7 @@ import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
 
+import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
 import { SummaryGeneratingStatus } from "./enum"
@@ -118,8 +119,8 @@ class SummarySyncService {
     })
 
     // Use Our AI to generate summary
-    const pendingPromise = apiClient.ai.summary
-      .$get({
+    const pendingPromise = apiClient()
+      .ai.summary.$get({
         query: {
           id: entryId,
           language: actionLanguage,

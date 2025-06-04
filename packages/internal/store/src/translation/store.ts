@@ -3,6 +3,7 @@ import { TranslationService } from "@follow/database/services/translation"
 import type { SupportedLanguages } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared"
 
+import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
@@ -103,7 +104,7 @@ class TranslationSyncService {
 
     if (fields.length === 0) return null
 
-    const res = await apiClient.ai.translation.$get({
+    const res = await apiClient().ai.translation.$get({
       query: { id: entryId, language, fields: fields.join(",") },
     })
 

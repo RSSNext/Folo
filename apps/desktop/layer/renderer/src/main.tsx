@@ -3,6 +3,7 @@ import "@follow/components/tailwind"
 import "./styles/main.css"
 
 import { IN_ELECTRON, WEB_BUILD } from "@follow/shared/constants"
+import { apiClientSimpleContext, authClientSimpleContext } from "@follow/store/context"
 import { getOS } from "@follow/utils/utils"
 import * as React from "react"
 import ReactDOM from "react-dom/client"
@@ -17,10 +18,8 @@ import { initializeApp } from "./initialize"
 import { registerAppGlobalShortcuts } from "./initialize/global-shortcuts"
 import { router } from "./router"
 
-// @ts-expect-error
-globalThis.apiClient = apiClient
-// @ts-expect-error
-globalThis.authClient = authClient
+apiClientSimpleContext.provider(apiClient)
+authClientSimpleContext.provider(authClient)
 
 initializeApp().finally(() => {
   import("./push-notification").then(({ registerWebPushNotifications }) => {
