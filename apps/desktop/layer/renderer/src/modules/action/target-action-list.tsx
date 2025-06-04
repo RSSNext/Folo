@@ -65,6 +65,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
       ActionId,
       ActionAction & {
         config?: () => React.ReactNode
+        configInline?: boolean
       }
     > = merge(availableActionMap, {
       rewriteRules: {
@@ -229,7 +230,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
                       </Button>
                     )}
                   </div>
-                  {!!action.config && action.config()}
+                  {action.configInline && action.config && action.config()}
 
                   <Button
                     buttonClassName="absolute opacity-100 group-hover/action:opacity-70 hover:!opacity-100 duration-200 lg:opacity-0 left-0 z-[1] size-5 rounded-full border"
@@ -242,7 +243,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
                     <i className="i-mgc-close-cute-re size-3" />
                   </Button>
                 </div>
-                {!!action.config && action.config()}
+                {!action.configInline && action.config && action.config()}
                 {index !== enabledActions.length - 1 && <Divider className="my-2" />}
               </Fragment>
             )
