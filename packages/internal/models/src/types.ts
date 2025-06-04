@@ -142,7 +142,7 @@ export type ActionModel = Omit<ActionRulesRes, "condition"> & {
   condition: ActionFilter
   index: number
 }
-export type ActionId = Exclude<keyof ActionModel["result"], "disabled">
+export type ActionId = Exclude<keyof ActionModel["result"], "disabled" | "blockRules">
 export type ActionRules = ActionModel[]
 
 export type ActionConditionIndex = {

@@ -10,8 +10,11 @@ import {
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
 import type { ActionId } from "@follow/models/types"
+import type { ActionAction } from "@follow/store/action/constant"
+import { availableActionMap } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import { merge } from "es-toolkit/compat"
 import { Fragment, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -23,17 +26,6 @@ import {
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 
 import { useSettingModal } from "../settings/modal/use-setting-modal"
-
-type Action = {
-  title: string
-  value: ActionId
-  icon: React.ReactNode
-  config?: () => React.ReactNode
-  configInline?: boolean
-  enabled: boolean
-  settingsPath?: string
-  onInit?: () => void
-}
 
 const AddTableRow = ({ onClick, disabled }: { onClick?: () => void; disabled?: boolean }) => {
   const { t } = useTranslation("settings")
@@ -59,14 +51,8 @@ const DeleteTableCell = ({ disabled, onClick }: { disabled?: boolean; onClick?: 
 )
 
 export const TargetActionList = ({ index }: { index: number }) => {
-  const summary = useActionRule(index, (a) => a.result.summary)
-  const translation = useActionRule(index, (a) => a.result.translation)
-  const readability = useActionRule(index, (a) => a.result.readability)
-  const sourceContent = useActionRule(index, (a) => a.result.sourceContent)
-  const newEntryNotification = useActionRule(index, (a) => a.result.newEntryNotification)
-  const silence = useActionRule(index, (a) => a.result.silence)
-  const block = useActionRule(index, (a) => a.result.block)
-  const star = useActionRule(index, (a) => a.result.star)
+  const result = useActionRule(index, (a) => a.result)
+
   const rewriteRules = useActionRule(index, (a) => a.result.rewriteRules)
   const webhooks = useActionRule(index, (a) => a.result.webhooks)
   const settingModalPresent = useSettingModal()
@@ -74,67 +60,14 @@ export const TargetActionList = ({ index }: { index: number }) => {
   const disabled = useActionRule(index, (a) => a.result.disabled)
   const { t } = useTranslation("settings")
 
-  const availableActions: Action[] = useMemo(
-    () => [
-      {
-        value: "summary",
-        title: t("actions.action_card.generate_summary"),
-        icon: <i className="i-mgc-ai-cute-re" />,
-        enabled: !!summary,
-        settingsPath: "general",
-      },
-      {
-        value: "translation",
-        title: t("actions.action_card.translate_into"),
-        icon: <i className="i-mgc-translate-2-ai-cute-re" />,
-        enabled: !!translation,
-        settingsPath: "general",
-      },
-      {
-        value: "readability",
-        title: t("actions.action_card.enable_readability"),
-        icon: <i className="i-mgc-docment-cute-re" />,
-        enabled: !!readability,
-      },
-      {
-        value: "sourceContent",
-        title: t("actions.action_card.source_content"),
-        icon: <i className="i-mgc-web-cute-re" />,
-        enabled: !!sourceContent,
-      },
-      {
-        value: "newEntryNotification",
-        title: t("actions.action_card.new_entry_notification"),
-        icon: <i className="i-mgc-notification-cute-re" />,
-        settingsPath: "notifications",
-        enabled: !!newEntryNotification,
-      },
-      {
-        value: "silence",
-        title: t("actions.action_card.silence"),
-        icon: <i className="i-mgc-volume-mute-cute-re" />,
-        enabled: !!silence,
-      },
-      {
-        value: "block",
-        title: t("actions.action_card.block"),
-        icon: <i className="i-mgc-delete-2-cute-re" />,
-        enabled: !!block,
-      },
-      {
-        value: "star",
-        title: t("actions.action_card.star"),
-        icon: <i className="i-mgc-star-cute-re" />,
-        enabled: !!star,
-      },
-      {
-        value: "rewriteRules",
-        title: t("actions.action_card.rewrite_rules"),
-        icon: <i className="i-mgc-quill-pen-cute-re" />,
-        enabled: !!rewriteRules,
-        onInit: () => {
-          actionActions.addRewriteRule(index)
-        },
+  const availableActions = useMemo(() => {
+    const extendedAvailableActionMap: Record<
+      ActionId,
+      ActionAction & {
+        config?: () => React.ReactNode
+      }
+    > = merge(availableActionMap, {
+      rewriteRules: {
         config: () => (
           <>
             <Table className="mt-2">
@@ -193,14 +126,7 @@ export const TargetActionList = ({ index }: { index: number }) => {
           </>
         ),
       },
-      {
-        value: "webhooks",
-        title: t("actions.action_card.webhooks"),
-        icon: <i className="i-mgc-webhook-cute-re" />,
-        enabled: !!webhooks,
-        onInit: () => {
-          actionActions.addWebhook(index)
-        },
+      webhooks: {
         config: () => (
           <>
             {webhooks?.map((webhook, webhookIdx) => {
@@ -237,30 +163,16 @@ export const TargetActionList = ({ index }: { index: number }) => {
           </>
         ),
       },
-    ],
-    [
-      block,
-      disabled,
-      index,
-      newEntryNotification,
-      readability,
-      rewriteRules,
-      silence,
-      sourceContent,
-      star,
-      summary,
-      t,
-      translation,
-      webhooks,
-    ],
-  )
+    })
+    return Object.values(extendedAvailableActionMap)
+  }, [disabled, index, rewriteRules, t, webhooks])
   const enabledActions = useMemo(
-    () => availableActions.filter((action) => action.enabled),
-    [availableActions],
+    () => availableActions.filter((action) => !!result?.[action.value]),
+    [availableActions, result],
   )
   const notEnabledActions = useMemo(
-    () => availableActions.filter((action) => !action.enabled),
-    [availableActions],
+    () => availableActions.filter((action) => !result?.[action.value]),
+    [availableActions, result],
   )
 
   return (
@@ -277,18 +189,18 @@ export const TargetActionList = ({ index }: { index: number }) => {
             {notEnabledActions.map((action) => {
               return (
                 <DropdownMenuItem
-                  key={action.title}
+                  key={action.label}
                   onClick={() => {
-                    if (action.onInit) {
-                      action.onInit()
+                    if (action.onEnable) {
+                      action.onEnable(index)
                     } else {
                       actionActions.patchRule(index, { result: { [action.value]: true } })
                     }
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    {action.icon}
-                    {action.title}
+                    <i className={action.iconClassname} />
+                    {t(action.label)}
                   </div>
                 </DropdownMenuItem>
               )
@@ -297,46 +209,44 @@ export const TargetActionList = ({ index }: { index: number }) => {
         </DropdownMenu>
 
         <section className="pl-6">
-          {enabledActions
-            .filter((action) => action.enabled)
-            .map((action, index) => {
-              return (
-                <Fragment key={action.title}>
-                  <div className="group/action mt-3 flex w-full items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {action.icon}
-                      <span className="shrink grow truncate">{action.title}</span>
-                      {action.settingsPath && (
-                        <Button
-                          buttonClassName="ml-4"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            settingModalPresent(action.settingsPath)
-                          }}
-                        >
-                          {t("actions.action_card.settings")}
-                        </Button>
-                      )}
-                    </div>
-                    {action.configInline && action.config && action.config()}
-
-                    <Button
-                      buttonClassName="absolute opacity-100 group-hover/action:opacity-70 hover:!opacity-100 duration-200 lg:opacity-0 left-0 z-[1] size-5 rounded-full border"
-                      variant={"ghost"}
-                      disabled={disabled}
-                      onClick={() => {
-                        actionActions.deleteRuleAction(index, action.value)
-                      }}
-                    >
-                      <i className="i-mgc-close-cute-re size-3" />
-                    </Button>
+          {enabledActions.map((action, index) => {
+            return (
+              <Fragment key={action.label}>
+                <div className="group/action mt-3 flex w-full items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <i className={action.iconClassname} />
+                    <span className="shrink grow truncate">{t(action.label)}</span>
+                    {action.settingsPath && (
+                      <Button
+                        buttonClassName="ml-4"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          settingModalPresent(action.settingsPath)
+                        }}
+                      >
+                        {t("actions.action_card.settings")}
+                      </Button>
+                    )}
                   </div>
-                  {!action.configInline && action.config && action.config()}
-                  {index !== enabledActions.length - 1 && <Divider className="my-2" />}
-                </Fragment>
-              )
-            })}
+                  {!!action.config && action.config()}
+
+                  <Button
+                    buttonClassName="absolute opacity-100 group-hover/action:opacity-70 hover:!opacity-100 duration-200 lg:opacity-0 left-0 z-[1] size-5 rounded-full border"
+                    variant={"ghost"}
+                    disabled={disabled}
+                    onClick={() => {
+                      actionActions.deleteRuleAction(index, action.value)
+                    }}
+                  >
+                    <i className="i-mgc-close-cute-re size-3" />
+                  </Button>
+                </div>
+                {!!action.config && action.config()}
+                {index !== enabledActions.length - 1 && <Divider className="my-2" />}
+              </Fragment>
+            )
+          })}
         </section>
       </div>
     </div>

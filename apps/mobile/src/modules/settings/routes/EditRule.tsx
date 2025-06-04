@@ -1,11 +1,13 @@
 import type { ActionFilter, ActionModel } from "@follow/models/types"
+import type { ActionAction } from "@follow/store/action/constant"
 import {
-  availableActionList,
+  availableActionMap,
   filterFieldOptions,
   filterOperatorOptions,
 } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import { merge } from "es-toolkit/compat"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -33,20 +35,6 @@ import { accentColor, useColors } from "@/src/theme/colors"
 import { EditConditionScreen } from "./EditCondition"
 import { EditRewriteRulesScreen } from "./EditRewriteRules"
 import { EditWebhooksScreen } from "./EditWebhooks"
-
-const extendedAvailableActionList = availableActionList.map((action) => ({
-  ...action,
-  onNavigate:
-    action.value === "rewriteRules"
-      ? (router: Navigation, index: number) => {
-          router.pushControllerView(EditRewriteRulesScreen, { index })
-        }
-      : action.value === "webhooks"
-        ? (router: Navigation, index: number) => {
-            router.pushControllerView(EditWebhooksScreen, { index })
-          }
-        : undefined,
-}))
 
 export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
   const { t } = useTranslation("settings")
@@ -246,6 +234,21 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
     </View>
   )
 }
+
+const extendedAvailableActionList = Object.values(
+  merge(availableActionMap, {
+    rewriteRules: {
+      onNavigate: (router: Navigation, index: number) => {
+        router.pushControllerView(EditRewriteRulesScreen, { index })
+      },
+    },
+    webhooks: {
+      onNavigate: (router: Navigation, index: number) => {
+        router.pushControllerView(EditWebhooksScreen, { index })
+      },
+    },
+  }),
+) as (ActionAction & { onNavigate?: (router: Navigation, index: number) => void })[]
 
 const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
