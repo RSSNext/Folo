@@ -141,6 +141,8 @@
   "entry_actions.saved_to_obsidian": "已儲存到 Obsidian。",
   "entry_actions.saved_to_outline": "已儲存到 Outline。",
   "entry_actions.saved_to_readeck": "已儲存到 Readeck。",
+  "entry_actions.saved_to_readwise": "已儲存到 Readwise。",
+  "entry_actions.saved_to_zotero": "已儲存到 Zotero。",
   "entry_actions.share": "分享",
   "entry_actions.star": "收藏",
   "entry_actions.starred": "已收藏",
