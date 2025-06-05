@@ -5,7 +5,7 @@ import { useCallback } from "react"
 
 import { getFeed } from "../feed/getter"
 import { getList } from "../list/getters"
-import { getUnreadById } from "../unread/getter"
+import { getUnreadById } from "../unread/getters"
 import {
   getFeedSubscriptionByView,
   getSubscription,

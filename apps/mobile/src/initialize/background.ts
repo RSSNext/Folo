@@ -1,4 +1,4 @@
-import { getUnreadAll } from "@follow/store/unread/getter"
+import { getUnreadAll } from "@follow/store/unread/getters"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { whoami } from "@follow/store/user/getters"
 import * as BackgroundTask from "expo-background-task"
