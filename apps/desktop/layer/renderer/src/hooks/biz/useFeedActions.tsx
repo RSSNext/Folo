@@ -96,7 +96,7 @@ export const useFeedActions = ({
     const related = feed || inbox
     if (!related) return []
 
-    const isFeedOwner = "ownerUserId" in related && related.ownerUserId === whoami()?.id
+    const isFeedOwner = related.ownerUserId === whoami()?.id
 
     const items: MenuItemInput[] = [
       new MenuItemText({
@@ -109,8 +109,7 @@ export const useFeedActions = ({
           }),
         supportMultipleSelection: true,
       }),
-      "ownerUserId" in related &&
-        !related.ownerUserId &&
+      !related.ownerUserId &&
         !!isBizId(related.id) &&
         related.type === "feed" &&
         new MenuItemText({
