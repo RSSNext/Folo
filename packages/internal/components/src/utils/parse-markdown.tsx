@@ -9,7 +9,6 @@ import type { Components } from "hast-util-to-jsx-runtime"
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import { Fragment, jsx, jsxs } from "react/jsx-runtime"
 import rehypeStringify from "rehype-stringify"
-import remarkDirective from "remark-directive"
 import remarkGfm from "remark-gfm"
 import remarkGithubAlerts from "remark-gh-alerts"
 import remarkParse from "remark-parse"
@@ -26,7 +25,6 @@ export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>)
   const { components, applyMiddleware } = options || {}
 
   let pipeline: Processor<any, any, any, any, any> = unified()
-    .use(remarkDirective)
     .use(remarkParse)
 
     .use(remarkGfm)
