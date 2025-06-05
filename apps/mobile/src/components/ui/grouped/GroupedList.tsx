@@ -4,7 +4,7 @@ import type { FC, PropsWithChildren } from "react"
 import * as React from "react"
 import { Fragment } from "react"
 import type { PressableProps, ViewProps } from "react-native"
-import { Pressable, StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
 
@@ -195,10 +195,15 @@ export const GroupedInsetListCell: FC<
     description?: string
     children?: React.ReactNode
     icon?: SFSymbol
+    onPress?: () => void
   } & BaseCellClassNames
-> = ({ label, description, children, leftClassName, rightClassName, icon }) => {
+> = ({ label, description, children, leftClassName, rightClassName, icon, onPress }) => {
   return (
-    <GroupedInsetListBaseCell className="bg-secondary-system-grouped-background flex-1">
+    <GroupedInsetListBaseCell
+      className="bg-secondary-system-grouped-background flex-1"
+      as={onPress ? TouchableOpacity : undefined}
+      {...(onPress ? { onPress } : {})}
+    >
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}

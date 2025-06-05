@@ -35,7 +35,7 @@ export function FeedIcon({
   fallbackUrl,
   className,
   size = 20,
-  fallback = true,
+  fallback,
   fallbackElement,
   siteUrl,
   ...props

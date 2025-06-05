@@ -53,7 +53,7 @@ export function EntryPictureItem({ id }: { id: string }) {
 
           showEntryGaleriaAccessory({
             author: item.author || "",
-            avatarUrl: getFeedIconSource(feed, "", true) ?? "",
+            avatarUrl: getFeedIconSource(feed, "") ?? "",
             publishedAt: item.publishedAt.toISOString(),
           })
           const fullEntry = getEntry(id)

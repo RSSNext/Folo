@@ -201,8 +201,8 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
             <Maintainers maintainers={route.maintainers} />
 
             {!!route.description && (
-              <View className="bg-system-background border-t-hairline border-opaque-separator mt-4 flex-1 px-4">
-                <MarkdownNative value={route.description.replaceAll("::: ", ":::")} />
+              <View className="mt-4 flex-1 p-4">
+                <MarkdownNative value={route.description.replaceAll(":::", "")} />
               </View>
             )}
           </SafeNavigationScrollView>

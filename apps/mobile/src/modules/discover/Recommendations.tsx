@@ -4,20 +4,10 @@ import { isASCII } from "@follow/utils"
 import type { ContentStyle } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import { useQuery } from "@tanstack/react-query"
-import type { FC } from "react"
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import {
-  Animated,
-  Text,
-  TouchableOpacity,
-  useAnimatedValue,
-  useWindowDimensions,
-  View,
-} from "react-native"
-import type { PanGestureHandlerGestureEvent } from "react-native-gesture-handler"
-import { PanGestureHandler } from "react-native-gesture-handler"
+import { Animated, Text, useAnimatedValue, useWindowDimensions, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import { useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -34,7 +24,7 @@ import { MingcuteLeftLineIcon } from "@/src/icons/mingcute_left_line"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useColor } from "@/src/theme/colors"
 
-import { fetchRsshubPopular } from "./api"
+import { fetchRsshubAnalysis, fetchRsshubPopular } from "./api"
 import { RecommendationListItem } from "./RecommendationListItem"
 
 export const Recommendations = () => {
@@ -142,7 +132,15 @@ export const RecommendationTab: TabComponent<{
     queryKey: ["rsshub-popular", "cache", tab.value],
     queryFn: () =>
       fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
+    staleTime: 1000 * 60 * 60 * 24, // 1 day
   })
+
+  const { data: analysisData } = useQuery({
+    queryKey: ["rsshub-analysis", "cache", discoverLanguage],
+    queryFn: () => fetchRsshubAnalysis(LanguageMap[discoverLanguage]).then((res) => res.data),
+    staleTime: 1000 * 60 * 60 * 24, // 1 day
+  })
+
   const keys = useMemo(() => {
     if (!data) {
       return []
@@ -169,50 +167,47 @@ export const RecommendationTab: TabComponent<{
   }, [data])
 
   const alphabetGroups = useMemo(() => {
-    const groups = keys.reduce(
-      (acc, key) => {
-        // A-Z -> A-Z, 0-9 -> #, other -> #, # push to the end
-        const firstChar = key[0]!.toUpperCase()
-        if (/[A-Z]/.test(firstChar)) {
-          acc[firstChar] = acc[firstChar] || []
-          acc[firstChar].push(key)
-        } else {
-          acc["#"] = acc["#"] || []
-          acc["#"].push(key)
-        }
-
-        return acc
-      },
-      {} as Record<string, string[]>,
-    )
-
-    const sortedGroups = Object.entries(groups).sort((a, b) => {
-      const aLetter = a[0]
-      const bLetter = b[0]
-
-      return aLetter.localeCompare(bLetter)
-    })
-
-    const result = [] as ({ key: string; data: RSSHubRouteDeclaration } | string)[]
-    for (const [letter, items] of sortedGroups) {
-      result.push(letter)
-
-      for (const item of items) {
-        if (!data) {
-          continue
-        }
-        result.push({ key: item, data: data[item]! })
+    const result = [] as { key: string; data: RSSHubRouteDeclaration }[]
+    for (const item of keys) {
+      if (!data) {
+        continue
       }
+      const dataWithAnalysis = data[item]! as RSSHubRouteDeclaration
+      for (const route in dataWithAnalysis.routes) {
+        const routeData = dataWithAnalysis.routes[route]!
+        routeData.heat = analysisData?.[`/${item}${route}`]?.subscriptionCount || 0
+        routeData.topFeeds = analysisData?.[`/${item}${route}`]?.topFeeds || []
+      }
+      result.push({
+        key: item,
+        data: dataWithAnalysis,
+      })
     }
 
+    result.sort((a, b) => {
+      let aHeat = 0
+      let bHeat = 0
+      if (typeof a === "string") {
+        aHeat = 0
+      } else {
+        aHeat = Object.values(a.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
+      }
+      if (typeof b === "string") {
+        bHeat = 0
+      } else {
+        bHeat = Object.values(b.data.routes).reduce((acc, route) => acc + (route.heat || 0), 0)
+      }
+      return bHeat - aHeat
+    })
+
     return result
-  }, [data, keys])
+  }, [data, keys, analysisData])
 
   // Add ref for FlashList
   const listRef =
-    useRegisterNavigationScrollView<
-      FlashList<{ key: string; data: RSSHubRouteDeclaration } | string>
-    >(isSelected)
+    useRegisterNavigationScrollView<FlashList<{ key: string; data: RSSHubRouteDeclaration }>>(
+      isSelected,
+    )
 
   const getItemType = useRef((item: string | { key: string }) => {
     return typeof item === "string" ? "sectionHeader" : "row"
@@ -246,7 +241,7 @@ export const RecommendationTab: TabComponent<{
   }
 
   return (
-    <View className="bg-system-background flex-1" {...rest}>
+    <View className="bg-system-grouped-background flex-1" {...rest}>
       <FlashList
         onScroll={(e) => {
           scrollOffsetRef.current = e.nativeEvent.contentOffset.y
@@ -273,106 +268,10 @@ export const RecommendationTab: TabComponent<{
         }}
         removeClippedSubviews
       />
-      {/* Right Sidebar */}
-      <NavigationSidebar alphabetGroups={alphabetGroups} listRef={listRef} />
     </View>
   )
 }
 
-const ItemRenderer = ({
-  item,
-}: {
-  item: string | { key: string; data: RSSHubRouteDeclaration }
-}) => {
-  if (typeof item === "string") {
-    // Rendering header
-    return (
-      <View className="border-b-opaque-separator mx-6 mb-1 mt-6 pb-1">
-        <Text className="text-label mb-4 text-xl font-semibold">{item}</Text>
-        <View className="bg-opaque-separator/30 mr-6 h-px" />
-      </View>
-    )
-  } else {
-    // Render item
-    return (
-      <View className="mr-4">
-        <RecommendationListItem data={item.data} routePrefix={item.key} />
-      </View>
-    )
-  }
+const ItemRenderer = ({ item }: { item: { key: string; data: RSSHubRouteDeclaration } }) => {
+  return <RecommendationListItem data={item.data} routePrefix={item.key} />
 }
-
-const NavigationSidebar: FC<{
-  alphabetGroups: (string | { key: string; data: RSSHubRouteDeclaration })[]
-  listRef: React.RefObject<FlashList<string | { key: string; data: RSSHubRouteDeclaration }> | null>
-}> = memo(({ alphabetGroups, listRef }) => {
-  const scrollToLetter = useCallback(
-    (letter: string, animated = true) => {
-      const index = alphabetGroups.findIndex((group) => {
-        if (typeof group !== "string") return false
-        const firstChar = group[0]!.toUpperCase()
-        const firstCharIsAlphabet = /[A-Z]/.test(firstChar)
-        if (firstCharIsAlphabet) {
-          return firstChar === letter
-        }
-
-        if (letter === "#" && !firstCharIsAlphabet) {
-          return true
-        }
-
-        return false
-      })
-
-      if (index !== -1) {
-        listRef.current?.scrollToIndex({
-          animated,
-          index,
-        })
-      }
-    },
-    [alphabetGroups, listRef],
-  )
-  const titles = useMemo(() => {
-    return alphabetGroups.filter((item) => typeof item === "string")
-  }, [alphabetGroups])
-  // Replace PanResponder with gesture handler
-  const handleGesture = useCallback(
-    (event: PanGestureHandlerGestureEvent) => {
-      const { y } = event.nativeEvent
-      const letterHeight = 20 // Approximate height of each letter
-      const letter = titles[Math.floor(y / letterHeight)]
-      if (!letter) {
-        return
-      }
-
-      const firstChar = letter[0]!.toUpperCase()
-      const firstCharIsAlphabet = /[A-Z]/.test(firstChar)
-      if (firstCharIsAlphabet) {
-        scrollToLetter(letter, false)
-      } else {
-        scrollToLetter("#", false)
-      }
-    },
-    [scrollToLetter, titles],
-  )
-
-  return (
-    <View className="absolute inset-y-0 right-1 h-full items-center justify-center">
-      <PanGestureHandler onGestureEvent={handleGesture}>
-        <View className="gap-0.5">
-          {titles.map((title) => (
-            <TouchableOpacity
-              hitSlop={5}
-              key={title}
-              onPress={() => {
-                scrollToLetter(title)
-              }}
-            >
-              <Text className="text-tertiary-label text-sm">{title}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </PanGestureHandler>
-    </View>
-  )
-})
