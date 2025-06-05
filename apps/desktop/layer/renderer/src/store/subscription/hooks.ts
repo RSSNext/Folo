@@ -167,25 +167,6 @@ export const useListsGroupedData = (view: FeedViewType) => {
   }, [data])
 }
 
-export const useInboxesGroupedData = (view: FeedViewType) => {
-  const data = useSubscriptionByView(view)
-
-  return useMemo(() => {
-    if (!data || data.length === 0) return {}
-
-    const inboxes = data.filter((s) => s && "inboxId" in s)
-
-    const groupFolder = {} as Record<string, string[]>
-
-    for (const subscription of inboxes.filter((s) => !!s)) {
-      if (!subscription.inboxId) continue
-      groupFolder[subscription.inboxId] = [subscription.inboxId]
-    }
-
-    return groupFolder
-  }, [data])
-}
-
 export const useIsSubscribed = (feedId: string) =>
   useSubscriptionStore(useCallback((state) => isSubscribedSelector(feedId)(state), [feedId]))
 
