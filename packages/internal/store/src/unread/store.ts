@@ -251,7 +251,8 @@ class UnreadActions implements Hydratable, Resetable {
     const state = useUnreadStore.getState()
     const cur = state.data[id] ?? 0
     if (count <= 0) return cur
-    return this.upsertMany([{ id, count: Math.max(0, cur - count) }])
+    this.upsertMany([{ id, count: Math.max(0, cur - count) }])
+    return cur
   }
 
   incrementById(id: FeedIdOrInboxHandle, count: number) {
@@ -293,5 +294,6 @@ class UnreadActions implements Hydratable, Resetable {
     await tx.run()
   }
 }
+
 export const unreadActions = new UnreadActions()
 export const unreadSyncService = new UnreadSyncService()
