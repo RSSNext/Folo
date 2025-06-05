@@ -8,7 +8,7 @@ type ContextValue<T> = T | typeof NO_VALUE_DEFAULT
 function createSimpleContext<T>() {
   let contextValue: ContextValue<T> = NO_VALUE_DEFAULT
 
-  const provider = (value: T) => {
+  const provide = (value: T) => {
     contextValue = value
   }
 
@@ -20,7 +20,7 @@ function createSimpleContext<T>() {
   }
 
   return {
-    provider,
+    provide,
     consumer,
   }
 }

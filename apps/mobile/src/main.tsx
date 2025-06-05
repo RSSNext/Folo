@@ -30,8 +30,8 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
-apiClientSimpleContext.provider(apiClient)
-authClientSimpleContext.provider(authClient)
+apiClientSimpleContext.provide(apiClient)
+authClientSimpleContext.provide(authClient)
 
 enableFreeze(true)
 ;[Image, LinearGradient].forEach((Component) => {

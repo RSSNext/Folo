@@ -18,8 +18,8 @@ import { initializeApp } from "./initialize"
 import { registerAppGlobalShortcuts } from "./initialize/global-shortcuts"
 import { router } from "./router"
 
-apiClientSimpleContext.provider(apiClient)
-authClientSimpleContext.provider(authClient)
+apiClientSimpleContext.provide(apiClient)
+authClientSimpleContext.provide(authClient)
 
 initializeApp().finally(() => {
   import("./push-notification").then(({ registerWebPushNotifications }) => {
