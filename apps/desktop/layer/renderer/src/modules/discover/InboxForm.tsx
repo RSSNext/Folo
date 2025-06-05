@@ -11,8 +11,9 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { FeedViewType } from "@follow/constants"
-import type { InboxModel } from "@follow/models/types"
 import { env } from "@follow/shared/env.desktop"
+import { useInboxById } from "@follow/store/inbox/hooks"
+import type { InboxModel } from "@follow/store/inbox/types"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -24,20 +25,13 @@ import { z } from "zod"
 import { apiClient } from "~/lib/api-fetch"
 import { createErrorToaster } from "~/lib/error-parser"
 import { FollowSummary } from "~/modules/feed/feed-summary"
-import { useInbox } from "~/queries/inboxes"
-import { useInboxById } from "~/store/inbox"
 import { subscriptionActions } from "~/store/subscription"
 
 export const InboxForm: Component<{
   id?: string
   asWidget?: boolean
   onSuccess?: () => void
-}> = ({ id: _id, asWidget, onSuccess }) => {
-  const queryParams = { id: _id }
-
-  const feedQuery = useInbox(queryParams)
-
-  const id = feedQuery.data?.id || _id
+}> = ({ id, asWidget, onSuccess }) => {
   const inbox = useInboxById(id)
 
   const isSubscribed = true

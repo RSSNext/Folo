@@ -14,7 +14,7 @@ export const FeedTitle = ({
   title,
   style,
 }: {
-  feed: FeedOrListRespModel | null
+  feed?: FeedOrListRespModel | null
   className?: string
   titleClassName?: string
   title?: string | null

@@ -7,6 +7,7 @@ import type {
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
+import { inboxActions } from "@follow/store/inbox/store"
 import { unreadActions } from "@follow/store/unread/store"
 import {
   getInboxFeedIdWithPrefix,
@@ -24,7 +25,6 @@ import { EntryService } from "~/services/entry"
 
 import { feedActions } from "../feed"
 import { imageActions } from "../image"
-import { inboxActions } from "../inbox"
 import { getSubscriptionByFeedId } from "../subscription"
 import { createTransaction, createZustandStore } from "../utils/helper"
 import { internal_batchMarkRead } from "./helper"

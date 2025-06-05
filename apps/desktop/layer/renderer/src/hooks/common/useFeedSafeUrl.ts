@@ -1,9 +1,9 @@
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { resolveUrlWithBase } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 export const useFeedSafeUrl = (entryId: string) => {
   const entry = useEntry(entryId, (state) => {
@@ -19,7 +19,7 @@ export const useFeedSafeUrl = (entryId: string) => {
     type: feed?.type,
     siteUrl: feed?.siteUrl,
   }))
-  const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
+  const inbox = useInboxById(entry?.inboxId)
 
   return useMemo(() => {
     if (inbox) return entry?.authorUrl

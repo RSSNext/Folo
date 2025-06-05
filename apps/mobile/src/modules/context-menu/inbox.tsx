@@ -1,4 +1,4 @@
-import { useInbox } from "@follow/store/inbox/hooks"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { setStringAsync } from "expo-clipboard"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
@@ -12,7 +12,7 @@ type InboxContextMenuProps = PropsWithChildren<{
 
 export const InboxContextMenu = ({ inboxId, children }: InboxContextMenuProps) => {
   const { t } = useTranslation()
-  const inbox = useInbox(inboxId)
+  const inbox = useInboxById(inboxId)
 
   if (!inbox) {
     return children

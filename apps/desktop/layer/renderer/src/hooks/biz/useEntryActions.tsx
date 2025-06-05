@@ -1,6 +1,7 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
@@ -27,7 +28,6 @@ import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 import type { FlatEntryModel } from "~/store/entry"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 export const enableEntryReadability = async ({ id, url }: { id: string; url: string }) => {
   const status = getReadabilityStatus()[id]

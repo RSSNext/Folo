@@ -1,0 +1,1 @@
+ALTER TABLE `inboxes` ADD `secret` text DEFAULT '' NOT NULL;

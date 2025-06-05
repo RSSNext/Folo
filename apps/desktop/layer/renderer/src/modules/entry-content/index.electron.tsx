@@ -10,6 +10,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useSmoothScroll, useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
@@ -32,7 +33,6 @@ import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -81,7 +81,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
 
-  const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
+  const inbox = useInboxById(entry?.inboxId)
   const isInbox = !!inbox
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 

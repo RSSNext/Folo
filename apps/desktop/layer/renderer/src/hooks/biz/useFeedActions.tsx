@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -26,7 +27,6 @@ import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
 import { getFeedById, useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 import { listActions, useListById, useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,
@@ -96,7 +96,7 @@ export const useFeedActions = ({
     const related = feed || inbox
     if (!related) return []
 
-    const isFeedOwner = related.ownerUserId === whoami()?.id
+    const isFeedOwner = "ownerUserId" in related && related.ownerUserId === whoami()?.id
 
     const items: MenuItemInput[] = [
       new MenuItemText({
@@ -109,7 +109,8 @@ export const useFeedActions = ({
           }),
         supportMultipleSelection: true,
       }),
-      !related.ownerUserId &&
+      "ownerUserId" in related &&
+        !related.ownerUserId &&
         !!isBizId(related.id) &&
         related.type === "feed" &&
         new MenuItemText({

@@ -3,7 +3,7 @@ import { usePrefetchEntries } from "@follow/store/entry/hooks"
 import type { FetchEntriesProps } from "@follow/store/entry/types"
 import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import { useFeed } from "@follow/store/feed/hooks"
-import { useInbox } from "@follow/store/inbox/hooks"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { useList } from "@follow/store/list/hooks"
 import { getSubscriptionByCategory } from "@follow/store/subscription/getter"
 import { jotaiStore } from "@follow/utils"
@@ -150,7 +150,9 @@ export const useSelectedFeedTitle = () => {
   )
   const feed = useFeed(selectedFeed && selectedFeed.type === "feed" ? selectedFeed.feedId : "")
   const list = useList(selectedFeed && selectedFeed.type === "list" ? selectedFeed.listId : "")
-  const inbox = useInbox(selectedFeed && selectedFeed.type === "inbox" ? selectedFeed.inboxId : "")
+  const inbox = useInboxById(
+    selectedFeed && selectedFeed.type === "inbox" ? selectedFeed.inboxId : "",
+  )
   const { t } = useTranslation("common")
 
   if (!selectedFeed) {
