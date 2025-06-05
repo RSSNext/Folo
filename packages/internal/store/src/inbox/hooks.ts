@@ -1,4 +1,5 @@
 import { useInboxStore } from "./store"
+import type { InboxModel } from "./types"
 
 export const useIsInbox = (inboxId?: string) => {
   return useInboxStore((state) => {
@@ -14,8 +15,11 @@ export const useInboxById = (inboxId?: string) => {
   })
 }
 
-export const useInboxList = () => {
+export function useInboxList(): InboxModel[]
+export function useInboxList<T>(selector: (inboxes: InboxModel[]) => T): T
+export function useInboxList<T>(selector?: (inboxes: InboxModel[]) => T) {
   return useInboxStore((state) => {
-    return Object.values(state.inboxes)
+    const inboxes = Object.values(state.inboxes)
+    return selector ? selector(inboxes) : inboxes
   })
 }

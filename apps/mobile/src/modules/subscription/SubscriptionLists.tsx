@@ -1,8 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useGroupedSubscription,
-  useInboxSubscription,
   useListSubscription,
   useSortedGroupedSubscription,
   useSortedListSubscription,
@@ -64,7 +64,7 @@ const SubscriptionListImpl = ({
     hideAllReadSubscriptions,
   })
 
-  const inboxes = useInboxSubscription(view)
+  const inboxes = useInboxList((inboxes) => inboxes.map((inbox) => inbox.id))
 
   const { grouped, unGrouped } = useGroupedSubscription({
     view,

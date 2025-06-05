@@ -263,17 +263,6 @@ export const useSortedListSubscription = ({
   )
 }
 
-export const useInboxSubscription = (view: FeedViewType) => {
-  return useSubscriptionStore(
-    useCallback(
-      (state) => {
-        return Array.from(state.inboxIdByView[view])
-      },
-      [view],
-    ),
-  )
-}
-
 export const useSubscriptionCategory = (view?: FeedViewType) => {
   return useSubscriptionStore(
     useCallback(
