@@ -7,6 +7,7 @@ import type {
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
+import { unreadActions } from "@follow/store/unread/store"
 import { omitObjectUndefinedValue, omitShallow } from "@follow/utils/utils"
 import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
@@ -22,7 +23,6 @@ import { feedActions } from "../feed"
 import { imageActions } from "../image"
 import { inboxActions } from "../inbox"
 import { getSubscriptionByFeedId } from "../subscription"
-import { unreadActions } from "../unread"
 import { createTransaction, createZustandStore } from "../utils/helper"
 import { internal_batchMarkRead } from "./helper"
 import type { EntryState, FlatEntryModel } from "./types"

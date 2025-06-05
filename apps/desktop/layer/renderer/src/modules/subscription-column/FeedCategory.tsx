@@ -6,6 +6,7 @@ import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
+import { useSortedIdsByUnread, useUnreadCounts } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
@@ -32,7 +33,6 @@ import {
   subscriptionCategoryExist,
   useSubscriptionByFeedId,
 } from "~/store/subscription"
-import { useSortedIdsByUnread, useUnreadByIds } from "~/store/unread/hooks"
 
 import { useModalStack } from "../../components/ui/modal/stacked/hooks"
 import { ListCreationModalContent } from "../settings/tabs/lists/modals"
@@ -133,7 +133,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
     }
   }
 
-  const unread = useUnreadByIds(ids)
+  const unread = useUnreadCounts(ids)
 
   const isActive = useRouteParamsSelector(
     (routerParams) => routerParams.feedId === `${ROUTE_FEED_IN_FOLDER}${folderName}`,
@@ -349,7 +349,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
 }
 
 function FilterReadFeedCategory(props: FeedCategoryProps) {
-  const unread = useUnreadByIds(props.data)
+  const unread = useUnreadCounts(props.data)
   if (!unread) return null
   return <FeedCategoryImpl {...props} />
 }

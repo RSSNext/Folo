@@ -1,4 +1,5 @@
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
+import { unreadActions } from "@follow/store/unread/store"
 import { useMutation } from "@tanstack/react-query"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
@@ -8,7 +9,6 @@ import { apiClient } from "~/lib/api-fetch"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
 import type { SubscriptionFlatModel } from "~/store/subscription"
 import { subscriptionActions } from "~/store/subscription"
-import { unreadActions } from "~/store/unread"
 
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"

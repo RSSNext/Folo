@@ -1,3 +1,4 @@
+import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
 
 import { clearUISettings } from "~/atoms/settings/ui"
@@ -9,7 +10,6 @@ import { clearImageDimensionsDb } from "../image/db"
 import { inboxActions } from "../inbox"
 import { listActions } from "../list"
 import { subscriptionActions } from "../subscription"
-import { unreadActions } from "../unread"
 
 export const clearLocalPersistStoreData = async () => {
   // All clear and reset method will aggregate here
@@ -21,7 +21,8 @@ export const clearLocalPersistStoreData = async () => {
     listActions,
     inboxActions,
   ].forEach((actions) => {
-    actions.clear()
+    "clear" in actions && actions.clear()
+    "reset" in actions && actions.reset()
   })
 
   clearUISettings()

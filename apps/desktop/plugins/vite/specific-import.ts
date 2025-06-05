@@ -11,18 +11,19 @@ export function createPlatformSpecificImportPlugin(platform: Platform): Plugin {
       }
 
       const allowExts = [".js", ".jsx", ".ts", ".tsx"]
-      const sharedExts = [".desktop.ts", ".desktop.tsx", ".desktop.js", ".desktop.jsx"]
+      const sharedExts = [".desktop", ".desktop.ts", ".desktop.tsx", ".desktop.js", ".desktop.jsx"]
 
       if (!allowExts.some((ext) => importer.endsWith(ext))) return null
 
       if (importer.includes("node_modules")) return null
       const [path, query] = source.split("?")
 
-      if (path.startsWith(".") || path.startsWith("/")) {
+      if (path.startsWith(".") || path.startsWith("/") || path.startsWith("@follow/")) {
         let priorities: string[] = []
         switch (platform) {
           case "electron": {
             priorities = [
+              ".electron",
               ".electron.ts",
               ".electron.tsx",
               ".electron.js",
@@ -34,7 +35,15 @@ export function createPlatformSpecificImportPlugin(platform: Platform): Plugin {
             break
           }
           case "web": {
-            priorities = [".web.ts", ".web.tsx", ".web.js", ".web.jsx", ...sharedExts, ...allowExts]
+            priorities = [
+              ".web",
+              ".web.ts",
+              ".web.tsx",
+              ".web.js",
+              ".web.jsx",
+              ...sharedExts,
+              ...allowExts,
+            ]
 
             break
           }
@@ -43,16 +52,20 @@ export function createPlatformSpecificImportPlugin(platform: Platform): Plugin {
         }
 
         for (const ext of priorities) {
-          const resolvedPath = await this.resolve(
-            `${path}${ext}${query ? `?${query}` : ""}`,
-            importer,
-            {
-              skipSelf: true,
-            },
-          )
+          try {
+            const resolvedPath = await this.resolve(
+              `${path}${ext}${query ? `?${query}` : ""}`,
+              importer,
+              {
+                skipSelf: true,
+              },
+            )
 
-          if (resolvedPath) {
-            return resolvedPath.id
+            if (resolvedPath) {
+              return resolvedPath.id
+            }
+          } catch {
+            /* empty */
           }
         }
       }

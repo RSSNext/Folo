@@ -52,7 +52,7 @@ export const listsTable = sqliteTable("lists", {
 })
 
 export const unreadTable = sqliteTable("unread", {
-  subscriptionId: text("subscription_id").notNull().primaryKey(),
+  id: text("subscription_id").notNull().primaryKey(),
   count: integer("count").notNull(),
 })
 

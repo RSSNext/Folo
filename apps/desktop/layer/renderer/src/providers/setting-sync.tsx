@@ -1,4 +1,5 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { unreadActions } from "@follow/store/unread/store"
 import i18next from "i18next"
 import { useEffect, useInsertionEffect, useLayoutEffect } from "react"
 
@@ -10,7 +11,6 @@ import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
 import { ipcServices } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
-import { unreadActions } from "~/store/unread"
 
 const useUISettingSync = () => {
   const setting = useUISettingValue()

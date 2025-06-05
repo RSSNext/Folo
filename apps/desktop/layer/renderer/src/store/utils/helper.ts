@@ -37,8 +37,8 @@ export const createZustandStore =
   <S, T extends StateCreator<S, [], []> = StateCreator<S, [], []>>(name: string) =>
   (store: T) => {
     if (import.meta.env.DEV && window[`store_${name}`]) {
-      import.meta.hot?.send("message", "The store has been changed, reloading...")
-      globalThis.location.reload()
+      // import.meta.hot?.send("message", "The store has been changed, reloading...")
+      // globalThis.location.reload()
     }
 
     const newStore = import.meta.env.DEV

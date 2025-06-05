@@ -11,6 +11,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import type { FeedViewType } from "@follow/constants"
 import { useInputComposition } from "@follow/hooks"
+import { getUnreadCount } from "@follow/store/unread/getter"
 import { tracker } from "@follow/tracker"
 import { clsx, cn } from "@follow/utils/utils"
 import { Command } from "cmdk"
@@ -32,7 +33,6 @@ import { searchActions, useSearchStore, useSearchType } from "~/store/search"
 import { SearchType } from "~/store/search/constants"
 import type { SearchInstance } from "~/store/search/types"
 import { getSubscriptionByFeedId } from "~/store/subscription"
-import { getUnreadById } from "~/store/unread/getters"
 
 import styles from "./cmdk.module.css"
 
@@ -209,7 +209,7 @@ export const SearchCmdK: React.FC = () => {
                       entryId={ROUTE_ENTRY_PENDING}
                       id={feed.item.id!}
                       icon={feed.item.type === "feed" ? feed.item.siteUrl : undefined}
-                      subtitle={getUnreadById(feed.item.id)?.toString()}
+                      subtitle={getUnreadCount(feed.item.id)?.toString()}
                     />
                   ))}
                 </Command.Group>

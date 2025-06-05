@@ -2,6 +2,8 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { useUnreadCountByView } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
@@ -18,13 +20,13 @@ import { useRouteFeedId } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import { subscriptionActions, useCategoryOpenStateByView } from "~/store/subscription"
-import { useUnreadByView } from "~/store/unread/hooks"
 
 import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "./atom"
 import { feedColumnStyles } from "./styles"
 import { UnreadNumber } from "./UnreadNumber"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
+  usePrefetchSubscription()
   useAuthQuery(Queries.subscription.all())
   useAuthQuery(Queries.subscription.unreadAll(), {
     // 10 minute
@@ -37,7 +39,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
   const categoryOpenStateData = useCategoryOpenStateByView(view)
   const expansion = Object.values(categoryOpenStateData).every((value) => value === true)
 
-  const totalUnread = useUnreadByView(view)
+  const totalUnread = useUnreadCountByView(view)
 
   const navigateEntry = useNavigateEntry()
 

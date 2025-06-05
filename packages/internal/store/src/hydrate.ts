@@ -1,7 +1,8 @@
+import { initializeDb, migrateDb } from "@follow/database/db"
+
 import { collectionActions } from "./collection/store"
 import { entryActions } from "./entry/store"
 import { feedActions } from "./feed/store"
-import { imageActions } from "./image/store"
 import { inboxActions } from "./inbox/store"
 import type { Hydratable, HydrationOptions } from "./internal/base"
 import { listActions } from "./list/store"
@@ -19,10 +20,11 @@ const hydrates: Hydratable[] = [
   userActions,
   entryActions,
   collectionActions,
-  imageActions,
   translationActions,
 ]
 
 export const hydrateDatabaseToStore = async (options?: HydrationOptions) => {
+  initializeDb()
+  await migrateDb()
   await Promise.all(hydrates.map((h) => h.hydrate(options)))
 }

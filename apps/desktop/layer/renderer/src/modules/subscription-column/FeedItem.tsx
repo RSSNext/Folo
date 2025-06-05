@@ -10,6 +10,7 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
+import { useListUnreadCount, useUnreadCount } from "@follow/store/unread/hooks"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
 import { createElement, memo, use, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -33,7 +34,6 @@ import { getPreferredTitle, useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
-import { useUnreadById, useUnreadByListId } from "~/store/unread/hooks"
 
 import { useSelectedFeedIdsState } from "./atom"
 import { DraggableContext } from "./context"
@@ -111,7 +111,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
     [feedId, navigate, setSelectedFeedIds, view],
   )
 
-  const feedUnread = useUnreadById(feedId)
+  const feedUnread = useUnreadCount(feedId)
 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.feedId === feedId)
 
@@ -229,7 +229,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 }
 
 const FilterReadFeedItem: Component<FeedItemProps> = (props) => {
-  const feedUnread = useUnreadById(props.feedId)
+  const feedUnread = useUnreadCount(props.feedId)
 
   if (!feedUnread) return null
   return createElement(FeedItemImpl, props)
@@ -265,7 +265,7 @@ const ListItemImpl: Component<ListItemProps> = ({
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
   useContextMenuActionShortCutTrigger(items, when && isActive)
 
-  const listUnread = useUnreadByListId(listId)
+  const listUnread = useListUnreadCount(listId)
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const subscription = useSubscriptionByFeedId(listId)!
@@ -348,7 +348,7 @@ const ListItemImpl: Component<ListItemProps> = ({
 export const ListItem = memo(ListItemImpl)
 
 const FilterReadListItem: Component<ListItemProps> = (props) => {
-  const listUnread = useUnreadByListId(props.listId)
+  const listUnread = useListUnreadCount(props.listId)
 
   if (!listUnread) return null
   return createElement(ListItem, props)
@@ -375,7 +375,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
   useContextMenuActionShortCutTrigger(items, when && isActive)
 
-  const inboxUnread = useUnreadById(inboxId)
+  const inboxUnread = useUnreadCount(inboxId)
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const navigate = useNavigateEntry()

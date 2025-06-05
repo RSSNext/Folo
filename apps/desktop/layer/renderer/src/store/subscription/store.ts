@@ -5,6 +5,7 @@ import type {
   ListModelPoplutedFeeds,
   SubscriptionModel,
 } from "@follow/models/types"
+import { unreadActions } from "@follow/store/unread/store"
 import { capitalizeFirstLetter, omitShallow } from "@follow/utils/utils"
 import { produce } from "immer"
 import { parse } from "tldts"
@@ -23,7 +24,6 @@ import { entryActions } from "../entry"
 import { feedActions, getFeedById } from "../feed"
 import { inboxActions } from "../inbox"
 import { getListById, listActions } from "../list"
-import { unreadActions } from "../unread"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 export type SubscriptionFlatModel = Omit<SubscriptionModel, "feeds"> & {

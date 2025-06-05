@@ -1,5 +1,4 @@
 import { browserDB } from "~/database"
-import { unreadActions } from "~/store/unread"
 
 import type { Hydratable } from "./interface"
 
@@ -26,11 +25,7 @@ class ServiceStatic implements Hydratable {
     return unreadModel.bulkDelete(ids)
   }
 
-  async hydrate() {
-    const unread = await UnreadService.getAll()
-
-    return unreadActions.hydrate(unread)
-  }
+  async hydrate() {}
 }
 
 export const UnreadService = new ServiceStatic()
