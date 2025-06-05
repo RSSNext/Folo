@@ -59,7 +59,8 @@ class Morph {
 
         collections.inboxes.push({
           id: inbox.id,
-          title: inbox.title!,
+          title: inbox.title,
+          secret: inbox.secret,
         })
       }
 

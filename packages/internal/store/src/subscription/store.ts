@@ -18,7 +18,6 @@ import { getInboxStoreId, getSubscriptionStoreId } from "./utils"
 
 type FeedId = string
 type ListId = string
-type InboxId = string
 export type SubscriptionModel = Omit<SubscriptionSchema, "id">
 
 interface SubscriptionState {
@@ -32,7 +31,6 @@ interface SubscriptionState {
 
   listIdByView: Record<FeedViewType, Set<ListId>>
 
-  inboxIdByView: Record<FeedViewType, Set<InboxId>>
   /**
    * All named categories names set
    */
@@ -55,7 +53,6 @@ const defaultState: SubscriptionState = {
   data: {},
   feedIdByView: { ...emptyDataSetByView },
   listIdByView: { ...emptyDataSetByView },
-  inboxIdByView: { ...emptyDataSetByView },
   categories: { ...emptyDataSetByView },
   subscriptionIdSet: new Set(),
 }
@@ -93,7 +90,6 @@ class SubscriptionActions implements Hydratable {
         if (subscription.inboxId && subscription.type === "inbox") {
           draft.data[getInboxStoreId(subscription.inboxId)] = subscription
           draft.subscriptionIdSet.add(`${subscription.type}/${subscription.inboxId}`)
-          draft.inboxIdByView[subscription.view as FeedViewType].add(subscription.inboxId)
         }
       }
     })
@@ -127,7 +123,6 @@ class SubscriptionActions implements Hydratable {
     immerSet((draft) => {
       draft.feedIdByView[view] = new Set()
       draft.listIdByView[view] = new Set()
-      draft.inboxIdByView[view] = new Set()
       draft.categories[view] = new Set()
       draft.subscriptionIdSet = new Set()
     })
@@ -288,8 +283,6 @@ class SubscriptionSyncService {
           draft.feedIdByView[subscription.view as FeedViewType].delete(subscription.feedId)
         if (subscription.listId)
           draft.listIdByView[subscription.view as FeedViewType].delete(subscription.listId)
-        if (subscription.inboxId)
-          draft.inboxIdByView[subscription.view as FeedViewType].delete(subscription.inboxId)
         if (subscription.category)
           draft.categories[subscription.view as FeedViewType].delete(subscription.category)
       })
@@ -317,8 +310,6 @@ class SubscriptionSyncService {
           draft.feedIdByView[subscription.view as FeedViewType].add(subscription.feedId)
         if (subscription.listId)
           draft.listIdByView[subscription.view as FeedViewType].add(subscription.listId)
-        if (subscription.inboxId)
-          draft.inboxIdByView[subscription.view as FeedViewType].add(subscription.inboxId)
         if (subscription.category)
           draft.categories[subscription.view as FeedViewType].add(subscription.category)
       })

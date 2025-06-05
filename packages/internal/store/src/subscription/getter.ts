@@ -1,5 +1,6 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 
+import { getInboxList } from "../inbox/getters"
 import { getListFeedIds } from "../list/getters"
 import type { SubscriptionModel } from "./store"
 import { useSubscriptionStore } from "./store"
@@ -14,7 +15,7 @@ export const getSubscription = (id?: string): SubscriptionModel | undefined => {
 export const getSubscriptionByView = (view: FeedViewType): string[] => {
   const state = get()
   return Array.from(state.feedIdByView[view])
-    .concat(Array.from(state.inboxIdByView[view]))
+    .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
     .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
 }
 

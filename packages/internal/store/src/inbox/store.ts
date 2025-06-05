@@ -1,11 +1,14 @@
 import type { InboxSchema } from "@follow/database/schemas/types"
 import { InboxService } from "@follow/database/services/inbox"
+import { UnreadService } from "@follow/database/services/unread"
 
-import type { Hydratable } from "../internal/base"
-import { createTransaction, createZustandStore } from "../internal/helper"
+import { apiClient } from "../context"
+import type { Hydratable, Resetable } from "../internal/base"
+import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import type { InboxModel } from "./types"
 
 interface InboxState {
-  inboxes: Record<string, InboxSchema>
+  inboxes: Record<string, InboxModel>
 }
 
 const defaultState = {
@@ -14,9 +17,11 @@ const defaultState = {
 
 export const useInboxStore = createZustandStore<InboxState>("inbox")(() => defaultState)
 
-// const get = useInboxStore.getState
+const get = useInboxStore.getState
 const set = useInboxStore.setState
-class InboxActions implements Hydratable {
+const immerSet = createImmerSetter(useInboxStore)
+
+class InboxActions implements Hydratable, Resetable {
   async hydrate() {
     const inboxes = await InboxService.getInboxAll()
     inboxActions.upsertManyInSession(inboxes)
@@ -27,7 +32,10 @@ class InboxActions implements Hydratable {
       ...state.inboxes,
     }
     inboxes.forEach((inbox) => {
-      nextInboxes[inbox.id] = inbox
+      nextInboxes[inbox.id] = {
+        type: "inbox",
+        ...inbox,
+      }
     })
     set({
       ...state,
@@ -45,9 +53,96 @@ class InboxActions implements Hydratable {
     tx.run()
   }
 
-  reset() {
-    set(defaultState)
+  deleteById(id: string) {
+    immerSet((state) => {
+      delete state.inboxes[id]
+    })
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set(defaultState)
+    })
+
+    tx.persist(() => {
+      return UnreadService.reset()
+    })
+
+    await tx.run()
+  }
+}
+
+class InboxSyncService {
+  async createInbox({ handle, title }: { handle: string; title: string }) {
+    const newInbox = {
+      id: handle,
+      title,
+      secret: "",
+    }
+    const tx = createTransaction()
+    tx.store(async () => {
+      await inboxActions.upsertManyInSession([newInbox])
+    })
+    tx.request(async () => {
+      await apiClient().inboxes.$post({
+        json: {
+          handle,
+          title,
+        },
+      })
+    })
+
+    tx.persist(() => InboxService.upsertMany([newInbox]))
+    tx.rollback(() => inboxActions.deleteById(handle))
+    await tx.run()
+  }
+
+  async updateInbox({ handle, title }: { handle: string; title: string }) {
+    const existingInbox = get().inboxes[handle]
+    if (!existingInbox) return
+
+    const newInbox = {
+      ...existingInbox,
+      title,
+    }
+    const tx = createTransaction()
+    tx.store(async () => {
+      await inboxActions.upsertManyInSession([newInbox])
+    })
+    tx.request(async () => {
+      await apiClient().inboxes.$put({
+        json: {
+          handle,
+          title,
+        },
+      })
+    })
+
+    tx.persist(() => InboxService.upsertMany([newInbox]))
+    tx.rollback(() => inboxActions.upsertMany([existingInbox]))
+    await tx.run()
+  }
+
+  async deleteInbox(inboxId: string) {
+    const inbox = get().inboxes[inboxId]
+    if (!inbox) return
+
+    const tx = createTransaction(inbox)
+    tx.store(async () => inboxActions.deleteById(inboxId))
+    tx.request(async () => {
+      await apiClient().inboxes.$delete({
+        json: {
+          handle: inboxId,
+        },
+      })
+    })
+
+    tx.persist(() => InboxService.deleteById(inboxId))
+    tx.rollback(async (inbox) => inboxActions.upsertMany([inbox]))
+    await tx.run()
   }
 }
 
 export const inboxActions = new InboxActions()
+export const inboxSyncService = new InboxSyncService()

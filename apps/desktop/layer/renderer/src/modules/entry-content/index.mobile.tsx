@@ -2,6 +2,7 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import { ScrollElementContext } from "@follow/components/ui/scroll-area/ctx.js"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
@@ -17,7 +18,6 @@ import { usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
@@ -80,8 +80,7 @@ export const EntryContent: Component<{
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
-  const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
-  const isInbox = !!inbox
+  const isInbox = useIsInbox(entry?.inboxId)
 
   const { error, content, isPending } = useEntryContent(entryId)
 

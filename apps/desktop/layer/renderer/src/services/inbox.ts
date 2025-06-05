@@ -1,7 +1,6 @@
 import type { InboxModel } from "@follow/models/types"
 
 import { browserDB } from "~/database"
-import { inboxActions } from "~/store/inbox"
 
 import { BaseService } from "./base"
 import { CleanerService } from "./cleaner"
@@ -32,10 +31,7 @@ class ServiceStatic extends BaseService<{ id: string }> implements Hydratable {
     return this.table.bulkDelete(ids)
   }
 
-  async hydrate() {
-    const data = await this.findAll()
-    inboxActions.upsertMany(data)
-  }
+  async hydrate() {}
 }
 
 export const InboxService = new ServiceStatic()

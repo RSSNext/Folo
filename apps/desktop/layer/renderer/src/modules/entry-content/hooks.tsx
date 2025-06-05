@@ -1,3 +1,4 @@
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { tracker } from "@follow/tracker"
 import { createElement, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,7 +14,6 @@ import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { Queries } from "~/queries"
 import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry } from "~/store/entry/hooks"
-import { useInboxById } from "~/store/inbox/hooks"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
 
@@ -47,7 +47,7 @@ export const useEntryContent = (entryId: string) => {
     const { content } = state.entries
     return { inboxId, content }
   })
-  const isInbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
+  const isInbox = useIsInbox(entry?.inboxId)
   const { error, data, isPending } = useAuthQuery(
     isInbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
     {

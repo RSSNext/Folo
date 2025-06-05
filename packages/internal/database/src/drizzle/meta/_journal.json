@@ -162,6 +162,20 @@
       "when": 1748331571730,
       "tag": "0022_tiny_northstar",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1749126453373,
+      "tag": "0023_tidy_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1749126847204,
+      "tag": "0024_curvy_inertia",
+      "breakpoints": true
     }
   ]
 }

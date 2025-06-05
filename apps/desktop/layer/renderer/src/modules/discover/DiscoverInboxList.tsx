@@ -7,7 +7,6 @@ import { useEventCallback } from "usehooks-ts"
 import { useUserRole } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { CustomSafeError } from "~/errors/CustomSafeError"
-import { useInboxList } from "~/queries/inboxes"
 
 import { useActivationModal } from "../activation"
 import { InboxForm } from "./InboxForm"
@@ -39,7 +38,6 @@ const useCanCreateMoreInboxAndNotify = () => {
 }
 export function DiscoverInboxList() {
   const { t } = useTranslation()
-  const { refetch } = useInboxList()
 
   const { present } = useModalStack()
 
@@ -68,15 +66,7 @@ export function DiscoverInboxList() {
             preCheck() &&
             present({
               title: t("sidebar.feed_actions.new_inbox"),
-              content: ({ dismiss }) => (
-                <InboxForm
-                  asWidget
-                  onSuccess={() => {
-                    refetch()
-                    dismiss()
-                  }}
-                />
-              ),
+              content: () => <InboxForm asWidget />,
             })
           }
         >

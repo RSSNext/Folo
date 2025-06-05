@@ -5,6 +5,7 @@ import {
   useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions, isKeyForMultiSelectPressed } from "@follow/utils/utils"
@@ -22,7 +23,6 @@ import { useList } from "~/queries/lists"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useInboxesGroupedData,
   useListsGroupedData,
 } from "~/store/subscription"
 
@@ -46,7 +46,10 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.share
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
-  const inboxesData = useInboxesGroupedData(view)
+
+  const inboxesData = useInboxList((inboxes) =>
+    Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]])),
+  )
 
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 

@@ -1,6 +1,6 @@
 import type { FeedModel, FeedOrListRespModel } from "@follow/models"
+import type { useInboxStore } from "@follow/store/inbox/store"
 
-import type { useInboxStore } from "../inbox"
 import type { useListStore } from "../list"
 import type { useFeedStore } from "./store"
 import type { FeedQueryParams } from "./types"

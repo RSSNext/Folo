@@ -1,5 +1,5 @@
 import { views } from "@follow/constants"
-import type { FeedModel, FeedOrListRespModel, InboxModel, ListModel } from "@follow/models/types"
+import type { FeedModel, FeedOrListRespModel, ListModel } from "@follow/models/types"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -11,14 +11,12 @@ import {
 } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
-import { useInboxStore } from "../inbox"
 import { useListStore } from "../list"
 import {
   feedByIdOrUrlSelector,
   feedByIdSelector,
   feedByIdSelectorWithTransform,
   feedByIdWithTransformSelector,
-  inboxByIdSelectorWithTransform,
   listByIdSelectorWithTransform,
 } from "./selector"
 import { getPreferredTitle, useFeedStore } from "./store"
@@ -60,17 +58,6 @@ export const useListByIdSelector = <T>(
     useCallback(
       (state) => listByIdSelectorWithTransform(listId, selector)(state),
       [listId, selector],
-    ),
-  )
-
-export const useInboxByIdSelector = <T>(
-  inboxId: Nullable<string>,
-  selector: (inbox: InboxModel) => T,
-) =>
-  useInboxStore(
-    useCallback(
-      (state) => inboxByIdSelectorWithTransform(inboxId, selector)(state),
-      [inboxId, selector],
     ),
   )
 

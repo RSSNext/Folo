@@ -1,4 +1,5 @@
 import { views } from "@follow/constants"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils/utils"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
@@ -10,7 +11,6 @@ import { Queries } from "~/queries"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useInboxesGroupedData,
   useListsGroupedData,
 } from "~/store/subscription"
 
@@ -22,7 +22,9 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.share
 const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
-  const inboxesData = useInboxesGroupedData(view)
+  const inboxesData = useInboxList((inboxes) =>
+    Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]])),
+  )
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
   const hasData =

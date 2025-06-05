@@ -1,3 +1,4 @@
+import { inboxActions } from "@follow/store/inbox/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
 
@@ -7,7 +8,6 @@ import { browserDB } from "~/database"
 import { entryActions } from "../entry"
 import { feedActions } from "../feed"
 import { clearImageDimensionsDb } from "../image/db"
-import { inboxActions } from "../inbox"
 import { listActions } from "../list"
 import { subscriptionActions } from "../subscription"
 

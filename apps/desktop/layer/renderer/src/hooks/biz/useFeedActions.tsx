@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -26,7 +27,6 @@ import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
 import { getFeedById, useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 import { listActions, useListById, useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,
@@ -448,11 +448,11 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
 
 export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation()
-  const inbox = useInboxById(inboxId)
+  const isInbox = useIsInbox(inboxId)
   const { present } = useModalStack()
 
   const items = useMemo(() => {
-    if (!inbox) return []
+    if (!isInbox) return []
 
     const items: FollowMenuItem[] = [
       new MenuItemText({
@@ -461,7 +461,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         click: () => {
           present({
             title: t("sidebar.feed_actions.edit_inbox"),
-            content: ({ dismiss }) => <InboxForm asWidget id={inboxId} onSuccess={dismiss} />,
+            content: () => <InboxForm asWidget id={inboxId} />,
           })
         },
       }),
@@ -476,7 +476,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
     ]
 
     return items
-  }, [inbox, t, inboxId, present])
+  }, [isInbox, t, inboxId, present])
 
   return { items }
 }
