@@ -1,5 +1,12 @@
 import { useInboxStore } from "./store"
 
+export const useIsInbox = (inboxId?: string) => {
+  return useInboxStore((state) => {
+    if (!inboxId) return false
+    return !!state.inboxes[inboxId]
+  })
+}
+
 export const useInboxById = (inboxId?: string) => {
   return useInboxStore((state) => {
     if (!inboxId) return

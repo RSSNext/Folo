@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
-import { useInboxById } from "@follow/store/inbox/hooks"
+import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -448,11 +448,11 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
 
 export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation()
-  const inbox = useInboxById(inboxId)
+  const isInbox = useIsInbox(inboxId)
   const { present } = useModalStack()
 
   const items = useMemo(() => {
-    if (!inbox) return []
+    if (!isInbox) return []
 
     const items: FollowMenuItem[] = [
       new MenuItemText({
@@ -476,7 +476,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
     ]
 
     return items
-  }, [inbox, t, inboxId, present])
+  }, [isInbox, t, inboxId, present])
 
   return { items }
 }

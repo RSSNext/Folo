@@ -10,7 +10,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useSmoothScroll, useTitle } from "@follow/hooks"
 import type { FeedModel, InboxModel } from "@follow/models/types"
-import { useInboxById } from "@follow/store/inbox/hooks"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
@@ -81,8 +81,7 @@ export const EntryContent: Component<EntryContentProps> = ({
 
   const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
 
-  const inbox = useInboxById(entry?.inboxId)
-  const isInbox = !!inbox
+  const isInbox = useIsInbox(entry?.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 
   const { error, content, isPending } = useEntryContent(entryId)

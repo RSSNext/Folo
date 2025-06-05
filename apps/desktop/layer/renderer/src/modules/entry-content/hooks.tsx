@@ -1,4 +1,4 @@
-import { useInboxById } from "@follow/store/inbox/hooks"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { tracker } from "@follow/tracker"
 import { createElement, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -47,7 +47,7 @@ export const useEntryContent = (entryId: string) => {
     const { content } = state.entries
     return { inboxId, content }
   })
-  const isInbox = useInboxById(entry?.inboxId)
+  const isInbox = useIsInbox(entry?.inboxId)
   const { error, data, isPending } = useAuthQuery(
     isInbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
     {

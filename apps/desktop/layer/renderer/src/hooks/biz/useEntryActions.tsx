@@ -1,7 +1,7 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { useInboxById } from "@follow/store/inbox/hooks"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
@@ -186,8 +186,7 @@ export const useEntryActions = ({
     }
   })
 
-  const inbox = useInboxById(entry?.inboxId)
-  const isInbox = !!inbox
+  const isInbox = useIsInbox(entry?.inboxId)
   const isShowSourceContent = useShowSourceContent()
   const isShowAISummaryAuto = useShowAISummaryAuto(entry?.summary)
   const isShowAISummaryOnce = useShowAISummaryOnce()
