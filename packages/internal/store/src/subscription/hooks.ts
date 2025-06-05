@@ -5,7 +5,7 @@ import { useCallback } from "react"
 
 import { getFeed } from "../feed/getter"
 import { getList } from "../list/getters"
-import { getUnreadCount } from "../unread/getter"
+import { getUnreadById } from "../unread/getter"
 import {
   getFeedSubscriptionByView,
   getSubscription,
@@ -119,7 +119,7 @@ const sortByUnread = (_leftSubscriptionId: string, _rightSubscriptionId: string)
   const rightSubscriptionId = rightSubscription?.feedId || rightSubscription?.listId
 
   if (!leftSubscriptionId || !rightSubscriptionId) return 0
-  return getUnreadCount(rightSubscriptionId) - getUnreadCount(leftSubscriptionId)
+  return getUnreadById(rightSubscriptionId) - getUnreadById(leftSubscriptionId)
 }
 
 const sortGroupedSubscriptionByUnread = (
@@ -131,10 +131,10 @@ const sortGroupedSubscriptionByUnread = (
   const rightFeedIds = getSubscriptionByCategory({ category: rightCategory, view })
 
   const leftUnreadCount = leftFeedIds.reduce((acc, feedId) => {
-    return acc + getUnreadCount(feedId)
+    return acc + getUnreadById(feedId)
   }, 0)
   const rightUnreadCount = rightFeedIds.reduce((acc, feedId) => {
-    return acc + getUnreadCount(feedId)
+    return acc + getUnreadById(feedId)
   }, 0)
   return -(rightUnreadCount - leftUnreadCount)
 }
@@ -162,7 +162,7 @@ export const useSortedGroupedSubscription = ({
       })
       const sortedList = [] as { category: string; subscriptionIds: string[] }[]
       for (const category of sortedCategories) {
-        if (!hideAllReadSubscriptions || grouped[category]?.some((id) => getUnreadCount(id) > 0)) {
+        if (!hideAllReadSubscriptions || grouped[category]?.some((id) => getUnreadById(id) > 0)) {
           sortedList.push({ category, subscriptionIds: grouped[category]! })
         }
       }
@@ -186,7 +186,7 @@ export const useSortedUngroupedSubscription = ({
     useCallback(() => {
       return ids
         .filter((id) => {
-          return !hideAllReadSubscriptions || getUnreadCount(id) > 0
+          return !hideAllReadSubscriptions || getUnreadById(id) > 0
         })
         .sort((a, b) => {
           const sortMethod =
@@ -249,7 +249,7 @@ export const useSortedListSubscription = ({
     useCallback(() => {
       return ids
         .concat()
-        .filter((id) => !hideAllReadSubscriptions || getUnreadCount(id) > 0)
+        .filter((id) => !hideAllReadSubscriptions || getUnreadById(id) > 0)
         .sort((a, b) => {
           const leftList = getList(a)
           const rightList = getList(b)
