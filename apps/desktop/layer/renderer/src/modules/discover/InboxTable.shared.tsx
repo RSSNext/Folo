@@ -1,5 +1,4 @@
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
-import { FeedViewType } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
 import { inboxSyncService } from "@follow/store/inbox/store"
 import { useMutation } from "@tanstack/react-query"
@@ -9,7 +8,6 @@ import { toast } from "sonner"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { createErrorToaster } from "~/lib/error-parser"
-import { subscriptionActions } from "~/store/subscription"
 
 import { InboxForm } from "./InboxForm"
 
@@ -81,7 +79,6 @@ const ConfirmDestroyModalContent = ({ id }: { id: string }) => {
       return inboxSyncService.deleteInbox(id)
     },
     onSuccess: () => {
-      subscriptionActions.fetchByView(FeedViewType.Articles)
       toast.success(t("discover.inbox_destroy_success"))
     },
     onMutate: () => {
