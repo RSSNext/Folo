@@ -12,8 +12,11 @@ import { isDev } from "~/lib/env"
 import { MetaError } from "~/meta-handler"
 import { staticRoute } from "~/router/static"
 
+import { defineGlobalConstants } from "./global"
 import { globalRoute } from "./src/router/global"
 import { ogRoute } from "./src/router/og"
+
+defineGlobalConstants()
 
 const isVercel = process.env.VERCEL === "1"
 
@@ -92,6 +95,7 @@ if (!isVercel) {
     if (ip) console.info(`Server is running on http://${ip}:2234`)
   })
 }
+
 function getIPAddress() {
   const interfaces = require("node:os").networkInterfaces()
   for (const devName in interfaces) {

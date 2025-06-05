@@ -14,7 +14,7 @@ export const defaultCommandShortcuts = {
   // Layout commands
   [COMMAND_ID.layout.toggleSubscriptionColumn]: transformShortcut("$mod+B"),
   [COMMAND_ID.layout.toggleWideMode]: transformShortcut("$mod+["),
-  [COMMAND_ID.layout.toggleZenMode]: transformShortcut("$mod+Shift+Z"),
+  [COMMAND_ID.layout.toggleZenMode]: transformShortcut("Shift+$mod+Z"),
 
   // Subscription commands
   [COMMAND_ID.subscription.markAllAsRead]: transformShortcut("Shift+$mod+A"),

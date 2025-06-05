@@ -350,7 +350,32 @@ export function transformShortcut(shortcut: string, platform: OS = getOS()): str
   if (platform === "macOS") {
     return shortcut.replace("$mod", "Meta")
   }
-  return shortcut.replace("$mod", "Ctrl")
+  return shortcut.replace("$mod", "Control")
+}
+
+const F_KEY_REGEX = /^F(?:[1-9]|1[0-2])$/
+
+function getKeySortValue(key: string): number {
+  const order = ["Shift", "Control", "Meta", "Alt"]
+
+  if (order.includes(key)) {
+    return order.indexOf(key)
+  }
+
+  if (F_KEY_REGEX.test(key)) return 4
+  return 5
+}
+
+export function sortShortcutKeys(keys: string[]): string[] {
+  return [...keys].sort((a, b) => {
+    const sortValueA = getKeySortValue(a)
+    const sortValueB = getKeySortValue(b)
+    if (sortValueA !== sortValueB) {
+      return sortValueA - sortValueB
+    }
+
+    return a.localeCompare(b)
+  })
 }
 
 // time like 1:30:00

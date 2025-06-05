@@ -64,6 +64,7 @@
     "masonic": "4.1.0",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
+    "tailwindcss-uikit-colors": "0.6.2",
     "tsup": "8.5.0",
     "tsx": "4.19.4",
     "typescript": "catalog:",

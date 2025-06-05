@@ -1275,6 +1275,9 @@ importers:
       path-to-regexp:
         specifier: 8.2.0
         version: 8.2.0
+      tailwindcss-uikit-colors:
+        specifier: 0.6.2
+        version: 0.6.2
       tsup:
         specifier: 8.5.0
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)

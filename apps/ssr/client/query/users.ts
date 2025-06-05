@@ -2,9 +2,30 @@ import { apiClient } from "@client/lib/api-fetch"
 import { getProviders } from "@client/lib/auth"
 import { getHydrateData } from "@client/lib/helper"
 import type { LoginHydrateData } from "@client/pages/(login)/login/metadata"
+import type { ExtractBizResponse } from "@follow/models"
 import { capitalizeFirstLetter, isBizId, parseUrl } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 
+const groupSubscriptions = (subscriptions: SubscriptionResult) => {
+  const groupFolder = {} as Record<string, typeof subscriptions>
+  for (const subscription of subscriptions.filter((s) => !s.isPrivate) || []) {
+    if (!subscription.category && "feeds" in subscription) {
+      const { siteUrl } = subscription.feeds
+      if (!siteUrl) continue
+      const parsed = parseUrl(siteUrl)
+      parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
+    }
+    if (subscription.category) {
+      if (!groupFolder[subscription.category]) {
+        groupFolder[subscription.category] = []
+      }
+      groupFolder[subscription.category]!.push(subscription)
+    }
+  }
+  return groupFolder
+}
+
+type SubscriptionResult = ExtractBizResponse<typeof apiClient.subscriptions.$get>["data"]
 export const useUserSubscriptionsQuery = (userId: string | undefined) => {
   return useQuery({
     queryKey: ["subscriptions", "group", userId],
@@ -12,24 +33,11 @@ export const useUserSubscriptionsQuery = (userId: string | undefined) => {
       const res = await apiClient.subscriptions.$get({
         query: { userId },
       })
-      const groupFolder = {} as Record<string, typeof res.data>
-      for (const subscription of res.data.filter((s) => !s.isPrivate) || []) {
-        if (!subscription.category && "feeds" in subscription) {
-          const { siteUrl } = subscription.feeds
-          if (!siteUrl) continue
-          const parsed = parseUrl(siteUrl)
-          parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
-        }
-        if (subscription.category) {
-          if (!groupFolder[subscription.category]) {
-            groupFolder[subscription.category] = []
-          }
-          groupFolder[subscription.category]!.push(subscription)
-        }
-      }
-      return groupFolder
+      return res.data
     },
+    select: groupSubscriptions,
     enabled: !!userId,
+    initialData: getHydrateData(`subscriptions.$get,query:userId=${userId}`),
   })
 }
 

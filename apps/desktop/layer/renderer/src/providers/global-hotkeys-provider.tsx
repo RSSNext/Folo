@@ -1,3 +1,4 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { highlightElement } from "@follow/components/common/Focusable/utils.js"
 import {
   checkIsEditableElement,
@@ -9,6 +10,7 @@ import { useEffect } from "react"
 import { tinykeys } from "tinykeys"
 import { useEventListener } from "usehooks-ts"
 
+import { FocusablePresets } from "~/components/common/Focusable"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
@@ -32,6 +34,7 @@ export const GlobalHotkeysProvider = () => {
   const commandShortcuts = useCommandShortcuts()
 
   const runCommandFn = useRunCommandFn()
+  const isNormalLayer = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
   useEffect(() => {
     const preHandler = (e: Event) => {
       stopPropagation(e)
@@ -44,11 +47,12 @@ export const GlobalHotkeysProvider = () => {
         highlightElement(document.activeElement as HTMLElement)
       },
       [commandShortcuts[COMMAND_ID.layout.toggleZenMode]]: (e) => {
+        if (!isNormalLayer) return
         preHandler(e)
         runCommandFn(COMMAND_ID.layout.toggleZenMode, [])()
       },
     })
-  }, [commandShortcuts, runCommandFn])
+  }, [commandShortcuts, runCommandFn, isNormalLayer])
 
   return null
 }

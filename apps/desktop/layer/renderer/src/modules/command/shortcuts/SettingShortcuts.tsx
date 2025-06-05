@@ -3,7 +3,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
-import { cn } from "@follow/utils/utils"
+import { cn, sortShortcutKeys } from "@follow/utils/utils"
 import type { FC, RefObject, SVGProps } from "react"
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -372,27 +372,6 @@ const MODIFIER_KEYS_SET = new Set<string>(Object.values(MODIFIER_KEYS_MAP))
 
 const F_KEY_REGEX = /^F(?:[1-9]|1[0-2])$/
 
-function getKeySortValue(key: string): number {
-  if (key === MODIFIER_KEYS_MAP.Meta) return 0
-  if (key === MODIFIER_KEYS_MAP.Control) return 1
-  if (key === MODIFIER_KEYS_MAP.Alt) return 2
-  if (key === MODIFIER_KEYS_MAP.Shift) return 3
-  if (F_KEY_REGEX.test(key)) return 4
-  return 5
-}
-
-function sortShortcutKeys(keys: string[]): string[] {
-  return [...keys].sort((a, b) => {
-    const sortValueA = getKeySortValue(a)
-    const sortValueB = getKeySortValue(b)
-    if (sortValueA !== sortValueB) {
-      return sortValueA - sortValueB
-    }
-
-    return a.localeCompare(b)
-  })
-}
-
 const useShortcutRecorder = () => {
   const [currentKeys, setCurrentKeys] = useState<string[]>([])
 
@@ -414,11 +393,10 @@ const useShortcutRecorder = () => {
 
       const pressedKeysSet = new Set<string>()
 
-      // 添加修饰键
+      if (shiftKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Shift)
       if (metaKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Meta)
       if (ctrlKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Control)
       if (altKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Alt)
-      if (shiftKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Shift)
 
       // If mainKeyPressed (from event.key) is not a modifier key, add it as the main key.
       // If mainKeyPressed is a modifier key (e.g., user only pressed Shift key, event.key is "Shift"),

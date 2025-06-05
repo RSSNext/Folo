@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+You need to find the available UI components in the project.
+
+For web applications (apps/dekstop)
+
+Components are located at `packages/internal/components` and `apps/desktop/layer/renderer/src/components/ui`
+
+For rn applications (apps/mobile)
+
+Components are located at `apps/mobile/src/components`

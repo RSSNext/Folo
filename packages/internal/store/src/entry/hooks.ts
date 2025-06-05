@@ -39,6 +39,7 @@ export const usePrefetchEntries = (
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
+    staleTime: 3 * 60 * 1000,
     getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,

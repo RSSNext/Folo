@@ -11,10 +11,47 @@ import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
 import { cn } from "@follow/utils/utils"
+import { Fragment, memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 
 const numberFormatter = new Intl.NumberFormat()
+
+const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
+  return (
+    <a
+      className="border-border/40 bg-card hover:border-border group relative flex cursor-pointer items-start justify-between rounded-lg border p-4 transition-all duration-200 hover:shadow-sm hover:shadow-black/5 dark:hover:shadow-white/5"
+      href={`/share/feeds/${feed.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <div className="flex min-w-0 flex-1 items-start space-x-3">
+        <div className="shrink-0">
+          <FeedIcon fallback feed={feed} className="mask-squircle mask" size={40} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center space-x-2">
+            <h3 className="group-hover:text-accent truncate font-medium text-zinc-900 transition-colors dark:text-zinc-100">
+              {feed.title}
+            </h3>
+            <FeedCertification feed={feed} />
+          </div>
+          {feed.description && (
+            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              {feed.description}
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="ml-3 shrink-0">
+        <i className="i-mingcute-arrow-right-line text-zinc-400 transition-transform group-hover:translate-x-1" />
+      </div>
+    </a>
+  )
+})
+
+FeedRow.displayName = "FeedRow"
+
 export function Component() {
   const { id } = useParams()
 
@@ -44,112 +81,147 @@ export function Component() {
     })
   }
 
+  if (list.isLoading) {
+    return <LoadingCircle size="large" className="center fixed inset-0" />
+  }
+
+  if (!list.data?.list) {
+    return null
+  }
+
   return (
-    <MainContainer className="items-center">
-      {list.isLoading ? (
-        <LoadingCircle size="large" className="center fixed inset-0" />
-      ) : (
-        list.data?.list && (
-          <div className="w-full max-w-full">
-            <div className="mx-auto my-4 flex max-w-prose flex-col items-center space-y-5 px-2">
-              <FeedIcon
-                fallback
-                feed={list.data.list}
-                className="mask-squircle mask shrink-0"
-                size={64}
-                noMargin
-              />
-              <div className="flex flex-col items-center">
-                <div className="mb-2 flex items-center text-2xl font-bold">
-                  <h1>{list.data.list.title}</h1>
-                </div>
+    <MainContainer className="bg-background min-h-screen">
+      <Fragment>
+        {/* Hero Section */}
+        <div>
+          <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:px-8 sm:py-20">
+            {/* List Icon */}
+            <div className="mb-6">
+              <div className="relative mx-auto inline-block">
+                <FeedIcon
+                  fallback
+                  feed={list.data.list}
+                  className="mask-squircle mask border-border border"
+                  size={80}
+                  noMargin
+                />
+              </div>
+            </div>
+
+            {/* List Info */}
+            <div className="space-y-4">
+              <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
+                {list.data.list.title}
+              </h1>
+
+              {/* Owner */}
+              <div className="flex justify-center">
                 <a
                   href={`/share/users/${list.data.list.owner?.id}`}
                   target="_blank"
-                  className="flex items-center gap-1 text-sm text-zinc-500"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
                 >
-                  <span>{t("feed.madeby")}</span>
-                  <Avatar className="inline-flex aspect-square size-5 rounded-full">
+                  <span className="text-sm">{t("feed.madeby")}</span>
+                  <Avatar className="border-border/60 size-6 border">
                     <AvatarImage src={list.data.list.owner?.image || undefined} />
-                    <AvatarFallback>{list.data.list.owner?.name?.slice(0, 2)}</AvatarFallback>
+                    <AvatarFallback className="text-xs">
+                      {list.data.list.owner?.name?.slice(0, 2)}
+                    </AvatarFallback>
                   </Avatar>
+                  <span className="text-sm font-medium">{list.data.list.owner?.name}</span>
                 </a>
               </div>
-              {list.data.list.description && (
-                <div className="line-clamp-2 text-balance text-center text-zinc-600">
-                  {list.data.list.description}
-                </div>
-              )}
-              <div className="flex justify-between gap-4">
-                <div className="flex items-center gap-4 text-base text-zinc-500 dark:text-zinc-400">
-                  {!!list.data?.subscriptionCount && (
-                    <div className="flex items-center gap-1">
-                      <i className="i-mgc-user-3-cute-re" />
 
-                      <span>
-                        {numberFormatter.format(list.data?.subscriptionCount)}{" "}
-                        {t("feed.follower", { count: list.data?.subscriptionCount })}
-                      </span>
+              {list.data.list.description && (
+                <p className="mx-auto max-w-2xl text-balance text-zinc-600 dark:text-zinc-400">
+                  {list.data.list.description}
+                </p>
+              )}
+
+              {/* Stats */}
+              <div className="!mt-8 flex justify-center">
+                <div className="divide-material-ultra-thick flex items-center divide-x">
+                  <div className="px-4 text-center">
+                    <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                      {list.data.list.feedIds?.length || 0}
+                    </div>
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                      {(list.data.list.feedIds?.length || 0) > 1 ? "Feeds" : "Feed"}
+                    </div>
+                  </div>
+
+                  {!!list.data?.subscriptionCount && (
+                    <div className="px-4 text-center">
+                      <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                        {numberFormatter.format(list.data.subscriptionCount)}
+                      </div>
+                      <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                        {t("feed.follower", { count: list.data.subscriptionCount })}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
-              <div className="center flex gap-4">
+
+              {/* Follow Button */}
+              <div className="!mt-8">
                 <Button
-                  variant={isSubscribed ? "outline" : undefined}
-                  onClick={() => {
-                    handleOpenInFollowApp()
-                  }}
+                  variant={isSubscribed ? "outline" : "primary"}
                   size="lg"
+                  onClick={handleOpenInFollowApp}
                 >
-                  <FollowIcon className="mr-2 size-3" />
+                  <FollowIcon className="mr-2 size-4" />
                   {isSubscribed
                     ? t("feed.actions.followed")
                     : t("feed.actions.open", { which: APP_NAME })}
                 </Button>
               </div>
-              <div className="flex w-full max-w-3xl flex-col gap-4 pb-12 pt-8">
-                {listData!.feedIds
-                  ?.slice(0, 7)
-                  .map((feedId) => <FeedRow feed={feedMap[feedId]!} key={feedId} />)}
-                {"feedCount" in list.data && (
-                  <div onClick={handleOpenInFollowApp} className="text-sm text-zinc-500">
-                    {t("feed.follow_to_view_all", {
-                      count: list.data.feedCount || 0,
-                    })}
-                  </div>
-                )}
-              </div>
             </div>
-            {!!list.data.entries?.length && (
-              <>
-                <div className="mt-8 text-center text-zinc-500">{t("feed.preview")}</div>
-                <div className={cn("w-full pb-12 pt-8", "flex flex-col gap-2")}>
-                  <Item entries={list.data.entries} view={list.data.list.view} />
-                </div>
-              </>
-            )}
           </div>
-        )
-      )}
-    </MainContainer>
-  )
-}
+        </div>
 
-const FeedRow = ({ feed }: { feed: Feed["feed"] }) => {
-  return (
-    <a
-      className="relative flex cursor-pointer items-center justify-between text-base"
-      href={`/share/feeds/${feed.id}`}
-      target="_blank"
-      key={feed.id}
-    >
-      <div className="flex shrink-0 items-center">
-        <FeedIcon fallback feed={feed} className="mask-squircle mask mr-2 shrink-0" size={20} />
-        <div className="shrink-0">{feed.title}</div>
-        <FeedCertification feed={feed} />
-      </div>
-      <div className="ml-4 truncate break-all text-sm text-zinc-500">{feed.description}</div>
-    </a>
+        {/* Feeds Section */}
+        <div className="mx-auto max-w-6xl px-6 pb-8 sm:px-8">
+          <div className="border-border/40 mb-6 border-b pb-3">
+            <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">
+              Feeds in this List
+            </h2>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
+            {listData.feedIds
+              ?.slice(0, 7)
+              .map((feedId) => <FeedRow feed={feedMap[feedId]!} key={feedId} />)}
+          </div>
+
+          {"feedCount" in list.data && list.data.feedCount > 7 && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={handleOpenInFollowApp}
+                className="hover:text-accent text-sm text-zinc-500 transition-colors dark:text-zinc-400"
+              >
+                {t("feed.follow_to_view_all", {
+                  count: list.data.feedCount || 0,
+                })}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Entries Preview */}
+        {!!list.data.entries?.length && (
+          <div className="mx-auto max-w-6xl px-6 pb-16 sm:px-8">
+            <div className="border-border/40 mb-6 border-b pb-3">
+              <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Recent Posts</h2>
+            </div>
+
+            <div className={cn("w-full", "flex flex-col gap-2")}>
+              <Item entries={list.data.entries} view={list.data.list.view} />
+            </div>
+          </div>
+        )}
+      </Fragment>
+    </MainContainer>
   )
 }

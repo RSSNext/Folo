@@ -23,13 +23,18 @@ interface MetaTitle {
   title: string
 }
 
+interface MetaDescription {
+  type: "description"
+  description: string
+}
+
 interface MetaHydrateData {
   type: "hydrate"
   data: any
   path: string
   key: string
 }
-export type MetaTag = MetaTagdata | MetaOpenGraph | MetaTitle | MetaHydrateData
+export type MetaTag = MetaTagdata | MetaOpenGraph | MetaTitle | MetaHydrateData | MetaDescription
 
 export async function injectMetaHandler(
   req: FastifyRequest,

@@ -9,6 +9,7 @@ import { FetchError } from "ofetch"
 import xss from "xss"
 
 import { isDev } from "~/lib/env"
+import { NotFoundError } from "~/lib/not-found"
 import { buildSeoMetaTags } from "~/lib/seo"
 
 import { injectMetaHandler, MetaError } from "../meta-handler"
@@ -102,6 +103,12 @@ async function safeInjectMetaToTemplate(
   } catch (e) {
     console.error("inject meta error", e)
 
+    if (e instanceof NotFoundError) {
+      res.code(404)
+      document.documentElement.dataset.notFound = "true"
+      return document
+    }
+
     if (e instanceof FetchError && e.response?.status) {
       res.code(e.response.status)
     }
@@ -114,12 +121,7 @@ async function safeInjectMetaToTemplate(
 }
 
 async function injectMetaToTemplate(document: Document, req: FastifyRequest, res: FastifyReply) {
-  const injectMetadata = await injectMetaHandler(req, res).catch((err) => {
-    if (isDev) {
-      throw err
-    }
-    return []
-  })
+  const injectMetadata = await injectMetaHandler(req, res)
 
   if (!injectMetadata) {
     return document
@@ -161,6 +163,13 @@ async function injectMetaToTemplate(document: Document, req: FastifyRequest, res
             }
           }
         }
+        break
+      }
+      case "description": {
+        const $meta = document.createElement("meta")
+        $meta.setAttribute("name", "description")
+        $meta.setAttribute("content", xss(meta.description))
+        document.head.append($meta)
         break
       }
       case "hydrate": {
