@@ -11,6 +11,7 @@ import { createTransaction, createZustandStore } from "../internal/helper"
 import { getList, getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
 import type {
+  FeedIdOrInboxHandle,
   PublishAtTimeRangeFilter,
   UnreadState,
   UnreadStoreModel,
@@ -203,6 +204,7 @@ class UnreadActions implements Hydratable, Resetable {
     const unreads = await UnreadService.getUnreadAll()
     this.upsertManyInSession(unreads)
   }
+
   upsertManyInSession(unreads: UnreadSchema[], options?: UnreadUpdateOptions) {
     const state = useUnreadStore.getState()
     const nextData = options?.reset ? {} : { ...state.data }
@@ -237,30 +239,29 @@ class UnreadActions implements Hydratable, Resetable {
     await this.upsertMany(dataToUpsert)
   }
 
-  async addUnread(id: string, count = 1) {
+  addUnread(id: FeedIdOrInboxHandle, count = 1) {
     const state = useUnreadStore.getState()
-    const currentCount = state.data[id] || 0
-    await this.upsertMany([{ id, count: currentCount + count }])
+    const cur = state.data[id] ?? 0
+    if (count <= 0) return cur
+    this.upsertMany([{ id, count: cur + count }])
+    return cur
   }
 
-  async removeUnread(id: string, count = 1) {
+  removeUnread(id: FeedIdOrInboxHandle, count = 1) {
     const state = useUnreadStore.getState()
-    const currentCount = state.data[id] || 0
-    await this.upsertMany([{ id, count: Math.max(0, currentCount - count) }])
+    const cur = state.data[id] ?? 0
+    if (count <= 0) return cur
+    return this.upsertMany([{ id, count: Math.max(0, cur - count) }])
   }
 
-  incrementById(id: string, count: number) {
-    const state = useUnreadStore.getState()
-    const currentCount = state.data[id] || 0
-    const newCount = currentCount + count
-    this.upsertMany([{ id, count: newCount }])
-    return currentCount
+  incrementById(id: FeedIdOrInboxHandle, count: number) {
+    return count > 0 ? this.addUnread(id, count) : this.removeUnread(id, -count)
   }
 
-  async updateById(id: string, count: number) {
+  async updateById(id: FeedIdOrInboxHandle, count: number) {
     const state = useUnreadStore.getState()
-    const currentCount = state.data[id] || 0
-    if (currentCount === count) return
+    const cur = state.data[id] ?? 0
+    if (cur === count) return
     await this.upsertMany([{ id, count }])
   }
 
@@ -268,7 +269,7 @@ class UnreadActions implements Hydratable, Resetable {
     const handler = (state: UnreadState): void => {
       let unread = 0
       for (const key in state.data) {
-        unread += state.data[key]!
+        unread += state.data[key] ?? 0
       }
 
       fn(unread)

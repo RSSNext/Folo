@@ -7,7 +7,7 @@ export interface UnreadUpdateOptions {
   reset?: boolean
 }
 
-type FeedIdOrInboxHandle = string
+export type FeedIdOrInboxHandle = string
 export type UnreadStoreModel = Record<FeedIdOrInboxHandle, number>
 export interface UnreadState {
   data: UnreadStoreModel
