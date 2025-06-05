@@ -10,7 +10,7 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
-import { useListUnreadCount, useUnreadCount } from "@follow/store/unread/hooks"
+import { useUnreadById, useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
 import { createElement, memo, use, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -111,7 +111,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
     [feedId, navigate, setSelectedFeedIds, view],
   )
 
-  const feedUnread = useUnreadCount(feedId)
+  const feedUnread = useUnreadById(feedId)
 
   const isActive = useRouteParamsSelector((routerParams) => routerParams.feedId === feedId)
 
@@ -229,7 +229,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
 }
 
 const FilterReadFeedItem: Component<FeedItemProps> = (props) => {
-  const feedUnread = useUnreadCount(props.feedId)
+  const feedUnread = useUnreadById(props.feedId)
 
   if (!feedUnread) return null
   return createElement(FeedItemImpl, props)
@@ -265,7 +265,7 @@ const ListItemImpl: Component<ListItemProps> = ({
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
   useContextMenuActionShortCutTrigger(items, when && isActive)
 
-  const listUnread = useListUnreadCount(listId)
+  const listUnread = useUnreadByListId(listId)
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const subscription = useSubscriptionByFeedId(listId)!
@@ -348,7 +348,7 @@ const ListItemImpl: Component<ListItemProps> = ({
 export const ListItem = memo(ListItemImpl)
 
 const FilterReadListItem: Component<ListItemProps> = (props) => {
-  const listUnread = useListUnreadCount(props.listId)
+  const listUnread = useUnreadByListId(props.listId)
 
   if (!listUnread) return null
   return createElement(ListItem, props)
@@ -375,7 +375,7 @@ const InboxItemImpl: Component<InboxItemProps> = ({ view, inboxId, className, ic
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isSubscriptionList)
   useContextMenuActionShortCutTrigger(items, when && isActive)
 
-  const inboxUnread = useUnreadCount(inboxId)
+  const inboxUnread = useUnreadById(inboxId)
 
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const navigate = useNavigateEntry()

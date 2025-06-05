@@ -10,13 +10,13 @@ import type { Hydratable, Resetable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 import { getList, getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
-import type { PublishAtTimeRangeFilter, UnreadUpdateOptions } from "./types"
+import type {
+  PublishAtTimeRangeFilter,
+  UnreadState,
+  UnreadStoreModel,
+  UnreadUpdateOptions,
+} from "./types"
 
-type FeedIdOrInboxHandle = string
-type UnreadStoreModel = Record<FeedIdOrInboxHandle, number>
-interface UnreadState {
-  data: UnreadStoreModel
-}
 const initialUnreadStore: UnreadState = {
   data: {},
 }

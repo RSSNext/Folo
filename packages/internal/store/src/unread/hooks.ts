@@ -4,6 +4,7 @@ import { useCallback, useEffect } from "react"
 
 import { useListFeedIds } from "../list/hooks"
 import { useSubscriptionByView } from "../subscription/hooks"
+import { unreadCountAllSelector, unreadCountIdSelector, unreadCountIdsSelector } from "./selectors"
 import { unreadSyncService, useUnreadStore } from "./store"
 
 export const usePrefetchUnread = () => {
@@ -23,36 +24,40 @@ export const useAutoMarkAsRead = (entryId: string) => {
   }, [entryId, mutate])
 }
 
-export const useUnreadCount = (subscriptionId: string) => {
-  return useUnreadStore((state) => state.data[subscriptionId])
-}
-
-export const useListUnreadCount = (listId: string) => {
-  const feedIds = useListFeedIds(listId)
-  return useUnreadCounts(feedIds ?? [])
-}
-
-export const useUnreadCounts = (subscriptionIds?: string[]): number => {
+export const useUnreadById = (id: string) => {
   return useUnreadStore(
     useCallback(
       (state) => {
-        if (!subscriptionIds)
-          return Object.values(state.data).reduce((acc, unread) => acc + unread, 0)
-
-        let count = 0
-        for (const subscriptionId of subscriptionIds) {
-          count += state.data[subscriptionId] ?? 0
-        }
-        return count
+        return unreadCountIdSelector(id)(state)
       },
-      [subscriptionIds?.toString()],
+      [id],
     ),
   )
 }
 
-export const useUnreadCountByView = (view: FeedViewType) => {
+export const useUnreadByIds = (ids: string[]): number => {
+  return useUnreadStore(
+    useCallback(
+      (state) => {
+        return unreadCountIdsSelector(ids)(state)
+      },
+      [ids?.toString()],
+    ),
+  )
+}
+
+export const useUnreadAll = (): number => {
+  return useUnreadStore(unreadCountAllSelector)
+}
+
+export const useUnreadByListId = (listId: string) => {
+  const feedIds = useListFeedIds(listId)
+  return useUnreadByIds(feedIds ?? [])
+}
+
+export const useUnreadByView = (view: FeedViewType) => {
   const subscriptionIds = useSubscriptionByView(view)
-  return useUnreadCounts(subscriptionIds)
+  return useUnreadByIds(subscriptionIds)
 }
 
 export const useSortedIdsByUnread = (ids: string[], isDesc?: boolean) => {

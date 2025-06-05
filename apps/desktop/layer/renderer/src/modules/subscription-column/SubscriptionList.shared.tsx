@@ -3,7 +3,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
-import { useUnreadCountByView } from "@follow/store/unread/hooks"
+import { useUnreadByView } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
@@ -39,7 +39,7 @@ export const ListHeader = ({ view }: { view: FeedViewType }) => {
   const categoryOpenStateData = useCategoryOpenStateByView(view)
   const expansion = Object.values(categoryOpenStateData).every((value) => value === true)
 
-  const totalUnread = useUnreadCountByView(view)
+  const totalUnread = useUnreadByView(view)
 
   const navigateEntry = useNavigateEntry()
 
