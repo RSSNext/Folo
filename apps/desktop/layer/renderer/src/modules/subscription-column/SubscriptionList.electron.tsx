@@ -46,8 +46,10 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.share
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view)
   const listsData = useListsGroupedData(view)
-  const inboxList = useInboxList()
-  const inboxesData = Object.fromEntries(inboxList.map((inbox) => [inbox.id, [inbox.id]]))
+
+  const inboxesData = useInboxList((inboxes) =>
+    Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]])),
+  )
 
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
