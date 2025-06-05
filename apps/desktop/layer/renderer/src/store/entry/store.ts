@@ -8,7 +8,10 @@ import type {
   InboxModel,
 } from "@follow/models/types"
 import { unreadActions } from "@follow/store/unread/store"
-import { getInboxFeedIdWithPrefix } from "@follow/store/unread/utils"
+import {
+  getInboxFeedIdWithPrefix,
+  getInboxHandleOrFeedIdFromFeedId,
+} from "@follow/store/unread/utils"
 import { omitObjectUndefinedValue, omitShallow } from "@follow/utils/utils"
 import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
@@ -460,7 +463,10 @@ class EntryActions {
     const tx = createTransaction<unknown, { prevUnread: number }>({})
 
     tx.optimistic((_, ctx) => {
-      const prevUnread = unreadActions.incrementById(feedId, read ? -1 : 1)!
+      const prevUnread = unreadActions.incrementById(
+        getInboxHandleOrFeedIdFromFeedId(feedId),
+        read ? -1 : 1,
+      )!
       ctx.prevUnread = prevUnread
 
       this.patch(entryId, {
@@ -491,7 +497,7 @@ class EntryActions {
     })
 
     tx.rollback((_, ctx) => {
-      unreadActions.updateById(feedId, ctx.prevUnread)
+      unreadActions.updateById(getInboxHandleOrFeedIdFromFeedId(feedId), ctx.prevUnread)
       this.patch(entryId, {
         read: !read,
       })
@@ -587,7 +593,7 @@ class EntryActions {
 
     tx.optimistic((entry, ctx) => {
       const { inboxId, read } = entry
-      const fullInboxId = `inbox-${inboxId}`
+      const fullInboxId = getInboxFeedIdWithPrefix(inboxId)
 
       if (!read) {
         unreadActions.incrementById(inboxId, -1)
