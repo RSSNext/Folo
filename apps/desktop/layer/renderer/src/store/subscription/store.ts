@@ -6,13 +6,13 @@ import type {
   SubscriptionModel,
 } from "@follow/models/types"
 import { unreadActions } from "@follow/store/unread/store"
+import { getInboxFeedIdWithPrefix } from "@follow/store/unread/utils"
 import { capitalizeFirstLetter, omitShallow } from "@follow/utils/utils"
 import { produce } from "immer"
 import { parse } from "tldts"
 
 import { setFeedUnreadDirty } from "~/atoms/feed"
 import { whoami } from "~/atoms/user"
-import { getInboxIdWithPrefix } from "~/constants"
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { queryClient } from "~/lib/query-client"
@@ -351,7 +351,7 @@ class SubscriptionActions {
         }
       } else if (inboxId) {
         !filter && unreadActions.updateById(inboxId, 0)
-        entryActions.patchManyById(getInboxIdWithPrefix(inboxId), { read: true }, filter)
+        entryActions.patchManyById(getInboxFeedIdWithPrefix(inboxId), { read: true }, filter)
       } else {
         for (const feedId of stableFeedIds) {
           // We can not process this logic in local, so skip it. and then we will fetch the unread count from server.

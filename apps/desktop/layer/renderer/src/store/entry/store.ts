@@ -8,12 +8,12 @@ import type {
   InboxModel,
 } from "@follow/models/types"
 import { unreadActions } from "@follow/store/unread/store"
+import { getInboxFeedIdWithPrefix } from "@follow/store/unread/utils"
 import { omitObjectUndefinedValue, omitShallow } from "@follow/utils/utils"
 import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
 
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty, setFeedUnreadDirty } from "~/atoms/feed"
-import { getInboxIdWithPrefix } from "~/constants/app"
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { getEntriesParams } from "~/lib/utils"
@@ -316,7 +316,7 @@ class EntryActions {
 
           // Is related to inbox
           if (item.inboxes) {
-            const inboxId = getInboxIdWithPrefix(item.inboxes.id)
+            const inboxId = getInboxFeedIdWithPrefix(item.inboxes.id)
             if (!draft.entries[inboxId]) {
               draft.entries[inboxId] = []
             }
