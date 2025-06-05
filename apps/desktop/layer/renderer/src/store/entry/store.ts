@@ -7,12 +7,16 @@ import type {
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
+import { unreadActions } from "@follow/store/unread/store"
+import {
+  getInboxFeedIdWithPrefix,
+  getInboxHandleOrFeedIdFromFeedId,
+} from "@follow/store/unread/utils"
 import { omitObjectUndefinedValue, omitShallow } from "@follow/utils/utils"
 import { isNil, merge } from "es-toolkit/compat"
 import { produce } from "immer"
 
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty, setFeedUnreadDirty } from "~/atoms/feed"
-import { getInboxIdWithPrefix } from "~/constants/app"
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { getEntriesParams } from "~/lib/utils"
@@ -22,7 +26,6 @@ import { feedActions } from "../feed"
 import { imageActions } from "../image"
 import { inboxActions } from "../inbox"
 import { getSubscriptionByFeedId } from "../subscription"
-import { unreadActions } from "../unread"
 import { createTransaction, createZustandStore } from "../utils/helper"
 import { internal_batchMarkRead } from "./helper"
 import type { EntryState, FlatEntryModel } from "./types"
@@ -316,7 +319,7 @@ class EntryActions {
 
           // Is related to inbox
           if (item.inboxes) {
-            const inboxId = getInboxIdWithPrefix(item.inboxes.id)
+            const inboxId = getInboxFeedIdWithPrefix(item.inboxes.id)
             if (!draft.entries[inboxId]) {
               draft.entries[inboxId] = []
             }
@@ -460,7 +463,10 @@ class EntryActions {
     const tx = createTransaction<unknown, { prevUnread: number }>({})
 
     tx.optimistic((_, ctx) => {
-      const prevUnread = unreadActions.incrementById(feedId, read ? -1 : 1)!
+      const prevUnread = unreadActions.incrementById(
+        getInboxHandleOrFeedIdFromFeedId(feedId),
+        read ? -1 : 1,
+      )!
       ctx.prevUnread = prevUnread
 
       this.patch(entryId, {
@@ -491,7 +497,7 @@ class EntryActions {
     })
 
     tx.rollback((_, ctx) => {
-      unreadActions.updateById(feedId, ctx.prevUnread)
+      unreadActions.updateById(getInboxHandleOrFeedIdFromFeedId(feedId), ctx.prevUnread)
       this.patch(entryId, {
         read: !read,
       })
@@ -587,7 +593,7 @@ class EntryActions {
 
     tx.optimistic((entry, ctx) => {
       const { inboxId, read } = entry
-      const fullInboxId = `inbox-${inboxId}`
+      const fullInboxId = getInboxFeedIdWithPrefix(inboxId)
 
       if (!read) {
         unreadActions.incrementById(inboxId, -1)

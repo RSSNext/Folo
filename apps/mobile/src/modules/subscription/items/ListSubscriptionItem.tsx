@@ -1,6 +1,6 @@
 import { useList } from "@follow/store/list/hooks"
 import { useSubscription } from "@follow/store/subscription/hooks"
-import { useListUnreadCount } from "@follow/store/unread/hooks"
+import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
 import { Text, View } from "react-native"
@@ -28,7 +28,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
 
   const list = useList(id)
   const subscription = useSubscription(id)
-  const unreadCount = useListUnreadCount(id)
+  const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
 
   if (!list) return null

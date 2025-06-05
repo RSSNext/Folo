@@ -2,7 +2,7 @@ import { cn } from "@follow/utils/utils"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 
-export const UnreadNumber = ({ unread, className }: { unread: number; className?: string }) => {
+export const UnreadNumber = ({ unread, className }: { unread?: number; className?: string }) => {
   const showUnreadCount = useUISettingKey("sidebarShowUnreadCount")
 
   if (!unread) return null

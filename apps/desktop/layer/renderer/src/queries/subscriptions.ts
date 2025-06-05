@@ -1,7 +1,8 @@
+import { unreadSyncService } from "@follow/store/unread/store"
+
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { subscriptionActions } from "~/store/subscription"
-import { unreadActions } from "~/store/unread"
 
 export const subscription = {
   all: () =>
@@ -17,5 +18,5 @@ export const subscription = {
       return res.data
     }),
 
-  unreadAll: () => defineQuery(["unread-all"], async () => unreadActions.fetchUnreadAll()),
+  unreadAll: () => defineQuery(["unread-all"], async () => unreadSyncService.resetFromRemote()),
 }

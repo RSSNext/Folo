@@ -1,6 +1,5 @@
+import { useSortedCategoriesByUnread } from "@follow/store/unread/hooks"
 import { Fragment } from "react"
-
-import { useSortedCategoriesByUnread } from "~/store/unread/hooks"
 
 import { useFeedListSortSelector } from "../atom"
 import { FeedCategoryAutoHideUnread } from "../FeedCategory"

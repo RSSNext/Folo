@@ -4,4 +4,8 @@ export interface Hydratable {
   hydrate: (options?: HydrationOptions) => Promise<void>
 }
 
+export interface Resetable {
+  reset: () => Promise<void>
+}
+
 export type HydrationOptions = FetchEntriesPropsSettings

@@ -1,5 +1,5 @@
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
-import { useUnreadCountByView } from "@follow/store/unread/hooks"
+import { useUnreadByView } from "@follow/store/unread/hooks"
 import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -121,7 +121,7 @@ function ViewItem({
   isActive: boolean
 }) {
   const textColor = useColor("gray")
-  const unreadCount = useUnreadCountByView(view.view)
+  const unreadCount = useUnreadByView(view.view)
   const borderColor = useColor("gray5")
   const { t } = useTranslation("common")
   const itemRef = React.useRef<View>(null)
