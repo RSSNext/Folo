@@ -66,14 +66,7 @@ export function DiscoverInboxList() {
             preCheck() &&
             present({
               title: t("sidebar.feed_actions.new_inbox"),
-              content: ({ dismiss }) => (
-                <InboxForm
-                  asWidget
-                  onSuccess={() => {
-                    dismiss()
-                  }}
-                />
-              ),
+              content: () => <InboxForm asWidget />,
             })
           }
         >

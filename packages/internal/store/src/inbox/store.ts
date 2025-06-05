@@ -74,6 +74,56 @@ class InboxActions implements Hydratable, Resetable {
 }
 
 class InboxSyncService {
+  async createInbox({ handle, title }: { handle: string; title: string }) {
+    const newInbox = {
+      id: handle,
+      title,
+      secret: "",
+    }
+    const tx = createTransaction()
+    tx.store(async () => {
+      await inboxActions.upsertManyInSession([newInbox])
+    })
+    tx.request(async () => {
+      await apiClient().inboxes.$post({
+        json: {
+          handle,
+          title,
+        },
+      })
+    })
+
+    tx.persist(() => InboxService.upsertMany([newInbox]))
+    tx.rollback(() => inboxActions.deleteById(handle))
+    await tx.run()
+  }
+
+  async updateInbox({ handle, title }: { handle: string; title: string }) {
+    const existingInbox = get().inboxes[handle]
+    if (!existingInbox) return
+
+    const newInbox = {
+      ...existingInbox,
+      title,
+    }
+    const tx = createTransaction()
+    tx.store(async () => {
+      await inboxActions.upsertManyInSession([newInbox])
+    })
+    tx.request(async () => {
+      await apiClient().inboxes.$put({
+        json: {
+          handle,
+          title,
+        },
+      })
+    })
+
+    tx.persist(() => InboxService.upsertMany([newInbox]))
+    tx.rollback(() => inboxActions.upsertMany([existingInbox]))
+    await tx.run()
+  }
+
   async deleteInbox(inboxId: string) {
     const inbox = get().inboxes[inboxId]
     if (!inbox) return

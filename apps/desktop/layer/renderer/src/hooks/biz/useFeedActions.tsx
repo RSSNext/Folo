@@ -462,7 +462,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         click: () => {
           present({
             title: t("sidebar.feed_actions.edit_inbox"),
-            content: ({ dismiss }) => <InboxForm asWidget id={inboxId} onSuccess={dismiss} />,
+            content: () => <InboxForm asWidget id={inboxId} />,
           })
         },
       }),

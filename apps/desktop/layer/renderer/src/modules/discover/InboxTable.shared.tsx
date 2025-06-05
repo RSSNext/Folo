@@ -62,7 +62,7 @@ export const InboxActions = ({ id }: { id: string }) => {
         onClick={() => {
           present({
             title: t("sidebar.feed_actions.edit_inbox"),
-            content: ({ dismiss }) => <InboxForm asWidget id={id} onSuccess={dismiss} />,
+            content: () => <InboxForm asWidget id={id} />,
           })
         }}
       >
