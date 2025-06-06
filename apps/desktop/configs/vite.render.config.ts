@@ -33,6 +33,9 @@ const getChangelogFileContent = () => {
 
 const changelogFile = getChangelogFileContent()
 export const viteRenderBaseConfig = {
+  worker: {
+    format: "es",
+  },
   optimizeDeps: {
     exclude: ["sqlocal"],
   },
