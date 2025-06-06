@@ -1,0 +1,50 @@
+diff --git a/dev/lib/directive-text.js b/dev/lib/directive-text.js
+index 38f926006bee77997610f13d7c628aca57810389..d658160aca9ed4e9078a3c0671e2123ce10d9b04 100644
+--- a/dev/lib/directive-text.js
++++ b/dev/lib/directive-text.js
+@@ -4,6 +4,7 @@
+ 
+ import {ok as assert} from 'devlop'
+ import {codes, types} from 'micromark-util-symbol'
++import {asciiDigit} from 'micromark-util-character'
+ import {factoryAttributes} from './factory-attributes.js'
+ import {factoryLabel} from './factory-label.js'
+ import {factoryName} from './factory-name.js'
+@@ -35,18 +36,36 @@ function previous(code) {
+  */
+ function tokenizeDirectiveText(effects, ok, nok) {
+   const self = this
++  let colonCount = 0
+ 
+   return start
+ 
+   /** @type {State} */
+   function start(code) {
+     assert(code === codes.colon, 'expected `:`')
++    colonCount++
+     assert(previous.call(self, self.previous), 'expected correct previous')
+     effects.enter('directiveText')
+     effects.enter('directiveTextMarker')
+     effects.consume(code)
+     effects.exit('directiveTextMarker')
+-    return factoryName.call(self, effects, afterName, nok, 'directiveTextName')
++    return beforeName
++  }
++
++  /** @type {State} */
++  function beforeName(code) {
++    // Only return false when like single colon and number :Number
++    if (colonCount === 1 && asciiDigit(code)) {
++      return nok(code)
++    }
++
++    return factoryName.call(
++      self,
++      effects,
++      afterName,
++      nok,
++      'directiveTextName'
++    )(code)
+   }
+ 
+   /** @type {State} */
