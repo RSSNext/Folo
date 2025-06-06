@@ -1,10 +1,10 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
 import type { FeedOrListRespModel } from "@follow/models/types"
 import type { FeedModel } from "@follow/store/feed/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
@@ -51,6 +51,7 @@ const FallbackableImage = function FallbackableImage({
   }) {
   return (
     <img
+      crossOrigin="anonymous"
       onError={(e) => {
         if (fallbackUrl && e.currentTarget.src !== fallbackUrl) {
           e.currentTarget.src = fallbackUrl

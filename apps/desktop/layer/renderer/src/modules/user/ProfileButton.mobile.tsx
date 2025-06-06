@@ -90,7 +90,9 @@ export const ProfileButton: FC<ProfileButtonProps> = () => {
             <Item
               label={t("words.rsshub")}
               link="/rsshub"
-              icon={<img src={rsshubLogoUrl} className="size-3 grayscale" />}
+              icon={
+                <img crossOrigin="anonymous" src={rsshubLogoUrl} className="size-3 grayscale" />
+              }
             />
             <Item
               label={t("user_button.log_out")}

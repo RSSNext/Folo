@@ -166,7 +166,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             onClick={() => {
               navigate("/rsshub")
             }}
-            icon={<img src={rsshubLogo} className="size-3 grayscale" />}
+            icon={<img crossOrigin="anonymous" src={rsshubLogo} className="size-3 grayscale" />}
           >
             {t("words.rsshub")}
           </DropdownMenuItem>

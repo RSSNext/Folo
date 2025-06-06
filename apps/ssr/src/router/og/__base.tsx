@@ -153,6 +153,7 @@ export const OGAvatar: React.FC<{ base64?: Nullable<string>; title: string }> = 
           }}
         >
           <img
+            crossOrigin="anonymous"
             src={base64}
             style={{
               width: 180,

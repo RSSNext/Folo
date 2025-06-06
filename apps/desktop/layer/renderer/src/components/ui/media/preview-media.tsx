@@ -436,6 +436,7 @@ const FallbackableImage: FC<
             }}
           >
             <img
+              crossOrigin="anonymous"
               ref={ref}
               data-blurhash={blurhash}
               src={currentSrc}

@@ -171,6 +171,7 @@ function RegisterForm() {
               className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
             >
               <img
+                crossOrigin="anonymous"
                 className="absolute left-9 h-5"
                 style={{
                   color: provider.color,

@@ -188,6 +188,7 @@ const MediaImpl: FC<MediaProps> = ({
         const { cacheDimensions, ...props } = rest
         return (
           <img
+            crossOrigin="anonymous"
             height={finalHeight}
             width={finalWidth}
             {...(props as ImgHTMLAttributes<HTMLImageElement>)}
@@ -422,6 +423,7 @@ const VideoPreview: FC<{
     >
       {!isInitVideoPlayer ? (
         <img
+          crossOrigin="anonymous"
           src={previewImageUrl}
           className="size-full object-cover"
           onMouseEnter={() => {
