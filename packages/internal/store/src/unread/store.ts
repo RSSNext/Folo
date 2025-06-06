@@ -8,7 +8,7 @@ import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import type { Hydratable, Resetable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
-import { getList, getListFeedIds } from "../list/getters"
+import { getListById, getListFeedIds } from "../list/getters"
 import { getSubscriptionByView } from "../subscription/getter"
 import type {
   FeedIdOrInboxHandle,
@@ -105,7 +105,7 @@ class UnreadSyncService {
   }
 
   async markListAsRead(listId: string, time?: PublishAtTimeRangeFilter) {
-    const list = getList(listId)
+    const list = getListById(listId)
     if (!list) return
 
     await apiClient().reads.all.$post({

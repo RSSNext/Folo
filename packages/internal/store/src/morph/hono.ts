@@ -4,7 +4,7 @@ import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
 import type { CollectionModel } from "../collection/types"
 import type { EntryModel } from "../entry/types"
 import type { FeedModel } from "../feed/types"
-import type { ListModel } from "../list/store"
+import type { ListModel } from "../list/types"
 import type { SubscriptionModel } from "../subscription/store"
 import type { MeModel } from "../user/store"
 import type { HonoApiClient } from "./types"
@@ -79,6 +79,9 @@ class Morph {
             ownerUserId: list.owner.id,
             feedIds: list.feedIds!,
             fee: list.fee!,
+            subscriptionCount: null,
+            purchaseAmount: null,
+            type: "list",
           })
       }
 
@@ -98,8 +101,9 @@ class Morph {
       ownerUserId: data.ownerUserId!,
       feedIds: data.feedIds!,
       fee: data.fee!,
-      subscriptionCount: "subscriptionCount" in data ? data.subscriptionCount : null,
+      subscriptionCount: "subscriptionCount" in data ? (data.subscriptionCount ?? null) : null,
       purchaseAmount: "purchaseAmount" in data ? String(data.purchaseAmount) : null,
+      type: "list",
     }
   }
 

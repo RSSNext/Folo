@@ -4,7 +4,7 @@ import type { FetchEntriesProps } from "@follow/store/entry/types"
 import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
-import { useList } from "@follow/store/list/hooks"
+import { useListById } from "@follow/store/list/hooks"
 import { getSubscriptionByCategory } from "@follow/store/subscription/getter"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
@@ -149,7 +149,7 @@ export const useSelectedFeedTitle = () => {
     selectedFeed && selectedFeed.type === "view" ? selectedFeed.viewId : undefined,
   )
   const feed = useFeedById(selectedFeed && selectedFeed.type === "feed" ? selectedFeed.feedId : "")
-  const list = useList(selectedFeed && selectedFeed.type === "list" ? selectedFeed.listId : "")
+  const list = useListById(selectedFeed && selectedFeed.type === "list" ? selectedFeed.listId : "")
   const inbox = useInboxById(
     selectedFeed && selectedFeed.type === "inbox" ? selectedFeed.inboxId : "",
   )

@@ -8,6 +8,8 @@ import type {
 import { getFeedById } from "@follow/store/feed/getter"
 import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
+import { getListById } from "@follow/store/list/getters"
+import { listActions } from "@follow/store/list/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { getInboxFeedIdWithPrefix } from "@follow/store/unread/utils"
 import { capitalizeFirstLetter, omitShallow } from "@follow/utils/utils"
@@ -24,7 +26,6 @@ import { Queries } from "~/queries"
 import { SubscriptionService } from "~/services"
 
 import { entryActions } from "../entry"
-import { getListById, listActions } from "../list"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 
 export type SubscriptionFlatModel = Omit<SubscriptionModel, "feeds"> & {
@@ -182,7 +183,18 @@ class SubscriptionActions {
 
     this.updateCategoryOpenState(transformedData.filter((s) => s.category || s.defaultCategory))
     feedActions.upsertMany(feeds)
-    listActions.upsertMany(lists)
+    listActions.upsertMany(
+      lists.map((list) => {
+        return {
+          ...list,
+          title: list.title || "",
+          description: list.description || "",
+          userId: "",
+          subscriptionCount: null,
+          purchaseAmount: null,
+        }
+      }),
+    )
     inboxActions.upsertMany(inboxes)
 
     return null

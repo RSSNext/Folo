@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
 import { getFeedById } from "../feed/getter"
-import { getList } from "../list/getters"
+import { getListById } from "../list/getters"
 import { getUnreadById } from "../unread/getters"
 import {
   getFeedSubscriptionByView,
@@ -251,11 +251,11 @@ export const useSortedListSubscription = ({
         .concat()
         .filter((id) => !hideAllReadSubscriptions || getUnreadById(id) > 0)
         .sort((a, b) => {
-          const leftList = getList(a)
-          const rightList = getList(b)
+          const leftList = getListById(a)
+          const rightList = getListById(b)
           if (!leftList || !rightList) return 0
           if (sortBy === "alphabet") {
-            return sortByAlphabet(leftList.title, rightList.title)
+            return sortByAlphabet(leftList.title || "", rightList.title || "")
           }
           return sortByUnread(a, b)
         })

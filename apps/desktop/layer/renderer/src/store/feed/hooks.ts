@@ -1,6 +1,7 @@
 import { views } from "@follow/constants"
 import type { CombinedEntryModel, FeedOrListRespModel } from "@follow/models/types"
 import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -11,7 +12,6 @@ import {
 } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
-import { useListById } from "../list"
 import { getSubscriptionByFeedId } from "../subscription/getters"
 
 export const getPreferredTitle = (

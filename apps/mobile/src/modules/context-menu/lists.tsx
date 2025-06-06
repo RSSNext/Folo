@@ -1,5 +1,5 @@
 import { env } from "@follow/shared/env.rn"
-import { getList } from "@follow/store/list/getters"
+import { getListById } from "@follow/store/list/getters"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import type { FC, PropsWithChildren } from "react"
@@ -31,7 +31,7 @@ export const SubscriptionListItemContextMenu: FC<
         {
           title: t("operation.edit"),
           onSelect: () => {
-            const list = getList(id)
+            const list = getListById(id)
             if (!list) return
             navigation.presentControllerView(FollowScreen, {
               type: "list",
@@ -42,7 +42,7 @@ export const SubscriptionListItemContextMenu: FC<
         {
           title: t("operation.copy_which", { which: t("operation.copy.link") }),
           onSelect: () => {
-            const list = getList(id)
+            const list = getListById(id)
             if (!list) return
             toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
             Clipboard.setString(`${env.WEB_URL}/share/lists/${list.id}`)

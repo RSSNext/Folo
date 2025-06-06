@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
 import type { FeedOrListRespModel } from "@follow/models/types"
 import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
@@ -69,10 +70,8 @@ const FallbackableImage = function FallbackableImage({
 }
 
 type FeedIconFeed =
-  | (Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image"> & {
-      type: FeedOrListRespModel["type"]
-      siteUrl?: string
-    })
+  | Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image" | "siteUrl" | "type">
+  | ListModel
   | FeedOrListRespModel
 
 export type FeedIconEntry = { authorAvatar?: string | null; firstPhotoUrl?: string | null }

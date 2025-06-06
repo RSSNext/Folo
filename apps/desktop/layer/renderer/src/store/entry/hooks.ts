@@ -1,10 +1,10 @@
 import type { FeedViewType } from "@follow/constants"
 import type { EntryReadHistoriesModel } from "@follow/models/types"
+import { useListsFeedIds } from "@follow/store/list/hooks"
 import { useCallback } from "react"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "~/constants"
 
-import { useListsFeedIds } from "../list"
 import { useFeedIdByView, useNonPrivateSubscriptionIds } from "../subscription"
 import { getEntryIsInView, getFilteredFeedIds } from "./helper"
 import { useEntryStore } from "./store"

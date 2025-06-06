@@ -7,6 +7,7 @@ import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
 import { useFeedStore } from "@follow/store/feed/store"
+import { useOwnedListByView } from "@follow/store/list/hooks"
 import { useSortedIdsByUnread, useUnreadByIds } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
@@ -28,7 +29,6 @@ import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRoutePara
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { createErrorToaster } from "~/lib/error-parser"
 import { getPreferredTitle } from "~/store/feed/hooks"
-import { useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,
   subscriptionCategoryExist,

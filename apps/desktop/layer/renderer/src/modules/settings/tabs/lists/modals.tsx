@@ -22,6 +22,7 @@ import {
 } from "@follow/components/ui/table/index.jsx"
 import { views } from "@follow/constants"
 import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -41,8 +42,6 @@ import { UrlBuilder } from "~/lib/url-builder"
 import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
-import { Queries } from "~/queries"
-import { useListById } from "~/store/list"
 import { subscriptionActions, useAllFeeds } from "~/store/subscription"
 
 const formSchema = z.object({
@@ -91,7 +90,7 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
     },
     onSuccess: (_, values) => {
       toast.success(t(id ? "lists.edit.success" : "lists.created.success"))
-      Queries.lists.list().invalidate()
+      // Queries.lists.list().invalidate()
       dismiss()
 
       if (!list) return

@@ -1,5 +1,5 @@
 import { useFeedById } from "@follow/store/feed/hooks"
-import { useList, usePrefetchOwnedLists } from "@follow/store/list/hooks"
+import { useListById, usePrefetchOwnedLists } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import {
   useFeedSubscriptionByView,
@@ -37,7 +37,7 @@ const ManageListContext = createContext<{
 
 export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id }) => {
   usePrefetchOwnedLists()
-  const list = useList(id)
+  const list = useListById(id)
   const { t } = useTranslation("settings")
 
   const nextSelectedFeedIdRef = useRef(new Set<string>())
@@ -98,7 +98,7 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
 
 const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   const { t } = useTranslation("settings")
-  const list = useList(id)!
+  const list = useListById(id)!
   usePrefetchSubscription(list.view)
 
   const subscriptionIds = useFeedSubscriptionByView(list.view)

@@ -12,12 +12,15 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
-import type { ListAnalyticsModel, ListModel } from "@follow/models/types"
+import type { ListAnalyticsModel } from "@follow/models/types"
+import { useListById } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import type { ListModel } from "@follow/store/list/types"
 import { unreadActions } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -31,9 +34,7 @@ import { apiClient } from "~/lib/api-fetch"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 import { entries as entriesQuery } from "~/queries/entries"
-import { lists as listsQuery, useList } from "~/queries/lists"
 import { subscription as subscriptionQuery } from "~/queries/subscriptions"
-import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
@@ -57,9 +58,13 @@ export const ListForm: Component<{
 
   onSuccess?: () => void
 }> = ({ id: _id, defaultValues = defaultValue, onSuccess }) => {
-  const queryParams = { id: _id }
-
-  const feedQuery = useList(queryParams)
+  const feedQuery = useQuery({
+    queryKey: ["list", "byId", _id],
+    queryFn: async () => {
+      return listSyncServices.fetchListById({ id: _id! })
+    },
+    enabled: !!_id,
+  })
 
   const id = feedQuery.data?.list.id || _id
   const list = useListById(id)
@@ -243,7 +248,7 @@ const ListInnerForm = ({
 
       const listId = list.id
       if (listId) {
-        listsQuery.byId({ id: listId }).invalidate()
+        // listsQuery.byId({ id: listId }).invalidate()
       }
       toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,
@@ -273,7 +278,16 @@ const ListInnerForm = ({
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <FeedSummary feed={list} analytics={analytics} showAnalytics />
+      <FeedSummary
+        feed={{
+          ...list,
+          fee: list.fee || 0,
+          createdAt: null,
+          updatedAt: null,
+        }}
+        analytics={analytics}
+        showAnalytics
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col gap-y-4">
           <FormField

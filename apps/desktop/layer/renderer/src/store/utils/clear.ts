@@ -1,5 +1,6 @@
 import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
+import { listActions } from "@follow/store/list/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
 
@@ -8,7 +9,6 @@ import { browserDB } from "~/database"
 
 import { entryActions } from "../entry"
 import { clearImageDimensionsDb } from "../image/db"
-import { listActions } from "../list"
 import { subscriptionActions } from "../subscription"
 
 export const clearLocalPersistStoreData = async () => {
