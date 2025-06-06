@@ -78,7 +78,7 @@ export const EntryDetailScreen: NavigationControllerView<{
         {
           // Ensure that the replace animation is used
           stackAnimation: "fade_from_bottom",
-          transitionDuration: 150,
+          transitionDuration: 300,
         },
       )
     }, [entryIds, navigation, nextEntryId, viewType]),

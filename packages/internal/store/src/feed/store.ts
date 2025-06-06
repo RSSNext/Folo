@@ -76,7 +76,12 @@ class FeedSyncServices {
 
     const nonce = Math.random().toString(36).slice(2, 15)
 
-    const finalData = res.data.feed as FeedModel
+    const finalData = {
+      ...res.data.feed,
+      updatesPerWeek: res.data.analytics?.updatesPerWeek,
+      subscriptionCount: res.data.analytics?.subscriptionCount,
+      latestEntryPublishedAt: res.data.analytics?.latestEntryPublishedAt,
+    } as FeedModel
     if (!finalData.id) {
       finalData["nonce"] = nonce
     }
@@ -94,7 +99,12 @@ class FeedSyncServices {
 
     const nonce = Math.random().toString(36).slice(2, 15)
 
-    const finalData = res.data.feed as FeedModel
+    const finalData = {
+      ...res.data.feed,
+      updatesPerWeek: res.data.analytics?.updatesPerWeek,
+      subscriptionCount: res.data.analytics?.subscriptionCount,
+      latestEntryPublishedAt: res.data.analytics?.latestEntryPublishedAt,
+    } as FeedModel
     if (!finalData.id) {
       finalData["nonce"] = nonce
       finalData["id"] = nonce

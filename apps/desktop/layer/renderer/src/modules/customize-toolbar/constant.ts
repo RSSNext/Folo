@@ -13,14 +13,13 @@ export const ENTRY_ITEM_HIDE_IN_HEADER = new Set<UniqueIdentifier>([
 ])
 
 const MAIN_ACTIONS = [
-  COMMAND_ID.entry.readability,
-  COMMAND_ID.entry.tts,
+  COMMAND_ID.entry.read,
   COMMAND_ID.entry.star,
 
   COMMAND_ID.entry.toggleAISummary,
-  COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.entry.readability,
 
-  COMMAND_ID.entry.imageGallery,
+  COMMAND_ID.entry.viewSourceContent,
   COMMAND_ID.entry.share,
 ]
 const MAIN_ACTIONS_SET = new Set<UniqueIdentifier>(MAIN_ACTIONS)

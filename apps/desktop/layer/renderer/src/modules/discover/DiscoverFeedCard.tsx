@@ -96,7 +96,7 @@ interface DiscoverFeedCardProps {
 export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   ({ item, onSuccess, className }) => {
     const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
-    const { t } = useTranslation()
+    const { t } = useTranslation("common")
 
     const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")
 

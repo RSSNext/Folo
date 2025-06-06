@@ -1,5 +1,8 @@
 import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics"
+import type { PostHog } from "posthog-js"
 
+import { FirebaseAdapter, OpenPanelAdapter, PostHogAdapter } from "./adapters"
+import { TrackerManager } from "./manager"
 import type { OpenPanel } from "./op"
 
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
@@ -13,8 +16,16 @@ type IdentifyPayload = {
 }
 
 type Tracker = (code: number, properties?: Record<string, unknown>) => Promise<any>
-class TrackManager {
+class TrackManager extends TrackerManager {
   private trackFns: Tracker[] = []
+
+  constructor() {
+    super({
+      enableBatchProcessing: false,
+      enableErrorRetry: true,
+      maxRetries: 2,
+    })
+  }
 
   setTrackFn(fn: Tracker) {
     this.trackFns.push(fn)
@@ -25,131 +36,37 @@ class TrackManager {
   }
 
   getTrackFn(): Tracker {
-    if (this.trackFns.length === 0) {
+    if (this.trackFns.length === 0 && this.getEnabledAdapters().length === 0) {
       console.error("[Tracker warn]: Track function not set")
     }
-    return (name, properties) => {
-      return Promise.all(this.trackFns.map((fn) => fn(name, properties)))
+    return (code, properties) => {
+      const legacyPromises = this.trackFns.map((fn) => fn(code, properties))
+      const modernPromise = this.track(code as TrackerMapper, properties)
+      return Promise.all([...legacyPromises, modernPromise])
     }
   }
 
   setOpenPanelTracker(op: Optional<OpenPanel, "setHeaders">) {
-    this.trackFns.push((code, properties) => {
-      const name = CodeToTrackerName(code)
-
-      switch (code) {
-        case TrackerMapper.Identify: {
-          const payload = properties as IdentifyPayload
-          return op.identify({
-            profileId: payload.id,
-            email: payload.email ?? undefined,
-            avatar: payload.image ?? undefined,
-            lastName: payload.name ?? undefined,
-            properties: {
-              handle: payload.handle,
-              name: payload.name,
-            },
-          })
-        }
-        default: {
-          return op.track(name, { ...properties, __code: code })
-        }
-      }
-    })
+    const adapter = new OpenPanelAdapter({ instance: op })
+    this.addAdapter(adapter)
   }
 
   setFirebaseTracker(
     tracker: Pick<FirebaseAnalyticsTypes.Module, "logEvent" | "setUserId" | "setUserProperties">,
   ) {
-    this.trackFns.push((code, properties) => {
-      switch (code) {
-        case TrackerMapper.Identify: {
-          const payload = properties as IdentifyPayload
-          tracker?.setUserId(payload.id)
-          tracker?.setUserProperties({
-            email: payload.email ?? null,
-            name: payload.name ?? null,
-            image: payload.image ?? null,
-            handle: payload.handle ?? null,
-          })
-          break
-        }
-        case TrackerMapper.OnBoarding: {
-          if (properties?.step === 0) {
-            tracker?.logEvent("tutorial_begin")
-          } else if (properties?.done) {
-            tracker?.logEvent("tutorial_complete")
-          }
-          break
-        }
-        case TrackerMapper.NavigateEntry: {
-          tracker?.logEvent("select_content", {
-            content_type: "entry",
-            item_id: `${properties?.feedId}/${properties?.entryId}`,
-          })
-          break
-        }
-        case TrackerMapper.UserLogin: {
-          tracker?.logEvent("login", {
-            method: properties?.type as string,
-          })
-          break
-        }
-        case TrackerMapper.Register: {
-          tracker?.logEvent("sign_up", {
-            method: properties?.type as string,
-          })
-          break
-        }
-        case TrackerMapper.Subscribe: {
-          let group_id
-          if (properties?.listId) {
-            group_id = `list/${properties.listId}/${properties.view}`
-          } else if (properties?.feedId) {
-            group_id = `feed/${properties.feedId}/${properties.view}`
-          }
-          if (group_id) {
-            tracker?.logEvent("join_group", {
-              group_id,
-            })
-          }
-          break
-        }
-        case TrackerMapper.BoostSent: {
-          tracker?.logEvent("purchase", {
-            currency: "POWER",
-            value: properties?.amount,
-            items: `feed/${properties?.feedId}`,
-            transaction_id: properties?.transactionId,
-          })
-          break
-        }
-        case TrackerMapper.DailyRewardClaimed: {
-          tracker?.logEvent("earn_virtual_currency", {
-            virtual_currency_name: "POWER",
-          })
-          break
-        }
-        case TrackerMapper.TipSent: {
-          tracker?.logEvent("purchase", {
-            currency: "POWER",
-            value: properties?.amount,
-            items: `entry/${properties?.entryId}`,
-            transaction_id: properties?.transactionId,
-          })
-          break
-        }
-        default: {
-          const name = CodeToTrackerName(code)
-          tracker?.logEvent(name, properties)
-        }
-      }
-      return Promise.resolve()
-    })
+    const adapter = new FirebaseAdapter({ instance: tracker })
+    this.addAdapter(adapter)
+  }
+
+  setPostHogTracker(posthog: PostHog) {
+    const adapter = new PostHogAdapter({ instance: posthog })
+    this.addAdapter(adapter)
   }
 }
 
 export const trackManager = new TrackManager()
+export const improvedTrackManager = trackManager // Alias for backward compatibility
+
 export enum TrackerMapper {
   Identify = 1000,
   UserLogin = 1001,
@@ -197,6 +114,7 @@ export const CodeToTrackerName = (code: number) => {
 export class TrackerPoints {
   // App
   identify(props: IdentifyPayload) {
+    this.manager.identify(props)
     this.track(TrackerMapper.Identify, props)
   }
 
@@ -219,7 +137,7 @@ export class TrackerPoints {
    * For desktop UI only
    */
   uiRenderInit(spentTime: number) {
-    this.track(TrackerMapper.UiRenderInit, { time: spentTime })
+    this.track(TrackerMapper.UiRenderInit, { spent_time: spentTime })
   }
 
   navigateEntry(props: { feedId?: string; entryId?: string; timelineId?: string }) {
@@ -318,15 +236,16 @@ export class TrackerPoints {
   }
 
   private track(code: TrackerMapper, properties?: Record<string, unknown>) {
-    Reflect.apply(trackManager.getTrackFn(), null, [code, { ...properties }])
+    trackManager.getTrackFn()(code, properties)
+  }
+
+  get manager() {
+    return trackManager
   }
 }
+
 const snakeCase = (string: string) => {
-  return string
-    .replaceAll(/\W+/g, " ")
-    .split(/ |\B(?=[A-Z])/)
-    .map((word) => word.toLowerCase())
-    .join("_")
+  return string.replaceAll(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).replace(/^_/, "")
 }
 
 export type AllTrackers = keyof TrackerPoints

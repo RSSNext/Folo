@@ -23,6 +23,8 @@
   "discover.category.traditional-media": "ニュース",
   "discover.category.travel": "旅行",
   "discover.category.university": "大学",
+  "feed.follower_one": "フォロワー",
+  "feed.follower_other": "フォロワー",
   "feed_view_type.articles": "記事",
   "feed_view_type.audios": "オーディオ",
   "feed_view_type.notifications": "通知",

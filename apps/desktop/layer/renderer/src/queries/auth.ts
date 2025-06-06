@@ -1,4 +1,5 @@
 import type { AuthSession } from "@follow/shared/hono"
+import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
 
@@ -87,6 +88,7 @@ export const signOut = async () => {
   // Clear local storage
   clearStorage()
   // Sign out
+  await tracker.manager.clear()
   await ipcServices?.auth.signOut()
   await signOutFn()
   window.location.reload()

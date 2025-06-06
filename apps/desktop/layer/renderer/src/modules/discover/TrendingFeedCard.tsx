@@ -11,7 +11,7 @@ import { FeedCardActions } from "./DiscoverFeedCard"
 export const TrendingFeedCard: FC<{
   item: DiscoverItem
 }> = ({ item }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("common")
   const { analytics } = item
   const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
   const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")

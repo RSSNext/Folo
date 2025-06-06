@@ -9,6 +9,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
+import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 
@@ -83,7 +84,12 @@ export const Trending = ({
                   </Text>
                 </View>
               }
-            />
+            >
+              <View className="flex flex-row items-center gap-1 opacity-60">
+                <User3CuteReIcon width={13} height={13} />
+                <Text className="text-text text-sm">{item.analytics.subscriptionCount}</Text>
+              </View>
+            </FeedSummary>
           ))
         )}
       </View>

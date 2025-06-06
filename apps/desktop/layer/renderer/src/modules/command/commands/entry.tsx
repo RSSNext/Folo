@@ -244,7 +244,10 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.viewSourceContent,
-        label: t("entry_actions.view_source_content"),
+        label: {
+          title: t("entry_actions.view_source_content"),
+          description: t("entry_actions.view_source_content_description"),
+        },
         icon: <i className="i-mgc-web-cute-re" />,
         category,
         run: ({ entryId, siteUrl }) => {
@@ -341,7 +344,10 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.imageGallery,
-        label: t("entry_actions.image_gallery"),
+        label: {
+          title: t("entry_actions.image_gallery"),
+          description: t("entry_actions.image_gallery_description"),
+        },
         icon: <i className="i-mgc-pic-cute-fi" />,
         category,
         run: ({ entryId }) => {
@@ -350,7 +356,10 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.tts,
-        label: t("entry_content.header.play_tts"),
+        label: {
+          title: t("entry_content.header.play_tts"),
+          description: t("entry_content.header.play_tts_description"),
+        },
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
         run: async ({ entryId }) => {

@@ -16,7 +16,7 @@ export interface FeedSummaryProps {
   showAnalytics?: boolean
 }
 export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalytics = true }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("common")
   const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
   return (
     <div>
