@@ -2,36 +2,39 @@ import type { FeedSchema } from "@follow/database/schemas/types"
 import { FeedService } from "@follow/database/services/feed"
 
 import { apiClient } from "../context"
-import type { Hydratable } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { whoami } from "../user/getters"
 import type { FeedModel } from "./types"
 
 interface FeedState {
   feeds: Record<string, FeedModel>
 }
 
-export const useFeedStore = createZustandStore<FeedState>("feed")(() => ({
+const initialFeedStore: FeedState = {
   feeds: {},
-}))
+}
 
+export const useFeedStore = createZustandStore<FeedState>("feed")(() => initialFeedStore)
+
+const get = useFeedStore.getState
 const set = useFeedStore.setState
 const immerSet = createImmerSetter(useFeedStore)
 // const get = useFeedStore.getState
 // const distanceTime = 1000 * 60 * 60 * 9
-class FeedActions implements Hydratable {
+class FeedActions implements Hydratable, Resetable {
   async hydrate() {
     const feeds = await FeedService.getFeedAll()
     feedActions.upsertManyInSession(feeds)
   }
 
-  clear() {
-    set({ feeds: {} })
-  }
-
   upsertManyInSession(feeds: FeedSchema[]) {
     immerSet((draft) => {
       for (const feed of feeds) {
-        draft.feeds[feed.id] = feed
+        draft.feeds[feed.id] = {
+          ...feed,
+          type: "feed",
+        }
       }
     })
   }
@@ -51,12 +54,25 @@ class FeedActions implements Hydratable {
     tx.run()
   }
 
-  private patch(feedId: string, patch: Partial<FeedSchema>) {
+  patch(feedId: string, patch: Partial<FeedSchema>) {
     immerSet((state) => {
       const feed = state.feeds[feedId]
       if (!feed) return
       Object.assign(feed, patch)
     })
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set(initialFeedStore)
+    })
+
+    tx.persist(() => {
+      return FeedService.reset()
+    })
+
+    await tx.run()
   }
 }
 
@@ -82,7 +98,11 @@ class FeedSyncServices {
     }
     feedActions.upsertMany([finalData])
 
-    return !finalData.id ? { ...finalData, id: nonce } : finalData
+    const feed = !finalData.id ? { ...finalData, id: nonce } : finalData
+    return {
+      ...res.data,
+      ...feed,
+    }
   }
 
   async fetchFeedByUrl({ url }: FeedQueryParams) {
@@ -102,6 +122,40 @@ class FeedSyncServices {
     feedActions.upsertMany([finalData])
 
     return finalData
+  }
+
+  async claimFeed(feedId: string) {
+    const curFeed = get().feeds[feedId]
+    if (!curFeed) return
+
+    const tx = createTransaction()
+    tx.store(() => {
+      feedActions.patch(feedId, {
+        ownerUserId: whoami()?.id || null,
+      })
+    })
+
+    tx.request(async () => {
+      await apiClient().feeds.claim.challenge.$post({
+        json: {
+          feedId,
+        },
+      })
+    })
+
+    tx.persist(() => {
+      const newFeed = get().feeds[feedId]
+      if (!newFeed) return
+      return FeedService.upsertMany([newFeed])
+    })
+
+    tx.rollback(() => {
+      feedActions.patch(feedId, {
+        ownerUserId: curFeed.ownerUserId,
+      })
+    })
+
+    await tx.run()
   }
 }
 export const feedSyncServices = new FeedSyncServices()

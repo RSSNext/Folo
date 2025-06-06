@@ -1,6 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { getFeedById } from "@follow/store/feed/getter"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
@@ -26,7 +28,6 @@ import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/us
 import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
-import { getFeedById, useFeedById } from "~/store/feed"
 import { listActions, useListById, useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,

@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntryIdsByFeedId, usePrefetchEntries } from "@follow/store/entry/hooks"
-import { getFeed } from "@follow/store/feed/getter"
+import { getFeedById } from "@follow/store/feed/getter"
 import { getSubscription } from "@follow/store/subscription/getter"
 import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
@@ -57,7 +57,7 @@ export const SubscriptionFeedItemContextMenu: FC<
 const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => {
   const view = getSelectedView()
 
-  const feed = getFeed(id)
+  const feed = getFeedById(id)
   const allCategories = getSubscriptionCategory(view)
 
   return (
@@ -201,7 +201,7 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
           switch (subscription.type) {
             case "feed": {
               if (!subscription.feedId) return
-              const feed = getFeed(subscription.feedId)
+              const feed = getFeedById(subscription.feedId)
               if (!feed) return
               setStringAsync(feed.url)
               toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))

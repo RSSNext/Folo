@@ -1,5 +1,5 @@
 import { useEntry } from "@follow/store/entry/hooks"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { useSetAtom } from "jotai"
 import { use } from "react"
@@ -44,7 +44,7 @@ export const EntrySocialTitle = ({ entryId }: { entryId: string }) => {
     }
   })
 
-  const feed = useFeed(entry?.feedId as string)
+  const feed = useFeedById(entry?.feedId as string)
 
   return (
     <View className="flex-row items-center gap-3 px-4">

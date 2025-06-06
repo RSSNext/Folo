@@ -1,3 +1,4 @@
+import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
@@ -6,7 +7,6 @@ import { clearUISettings } from "~/atoms/settings/ui"
 import { browserDB } from "~/database"
 
 import { entryActions } from "../entry"
-import { feedActions } from "../feed"
 import { clearImageDimensionsDb } from "../image/db"
 import { listActions } from "../list"
 import { subscriptionActions } from "../subscription"

@@ -193,15 +193,17 @@ class Morph {
 
   toFeed(data: HonoApiClient.Feed_Get["feed"]): FeedModel {
     return {
+      type: "feed",
       id: data.id,
-      title: data.title!,
+      title: data.title,
       url: data.url,
-      image: data.image!,
-      description: data.description!,
-      ownerUserId: data.ownerUserId!,
-      errorAt: data.errorAt!,
-      errorMessage: data.errorMessage!,
-      siteUrl: data.siteUrl!,
+      image: data.image,
+      description: data.description,
+      ownerUserId: data.ownerUserId,
+      errorAt: data.errorAt,
+      errorMessage: data.errorMessage,
+      siteUrl: data.siteUrl,
+      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 

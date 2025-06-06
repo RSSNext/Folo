@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getInboxFrom } from "@follow/store/entry/utils"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
@@ -58,7 +58,7 @@ export const EntryNormalItem = memo(
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
     const from = getInboxFrom(entry)
-    const feed = useFeed(entry?.feedId as string)
+    const feed = useFeedById(entry?.feedId as string)
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
       if (entry) {
@@ -176,7 +176,7 @@ const ThumbnailImage = ({
     title: state.title,
   }))
 
-  const feed = useFeed(entry?.feedId as string)
+  const feed = useFeedById(entry?.feedId as string)
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
   const mediaModel = entry?.media?.find(

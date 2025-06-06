@@ -1,4 +1,5 @@
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 
@@ -8,7 +9,6 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 import { useEntry } from "~/store/entry/hooks"
-import { useFeedById } from "~/store/feed"
 
 import { StarIcon } from "../star-icon"
 import type { UniversalItemProps } from "../types"

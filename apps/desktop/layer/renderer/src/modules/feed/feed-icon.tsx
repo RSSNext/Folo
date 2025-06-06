@@ -1,5 +1,6 @@
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
-import type { FeedModel, FeedOrListRespModel } from "@follow/models/types"
+import type { FeedOrListRespModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/store/feed/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"

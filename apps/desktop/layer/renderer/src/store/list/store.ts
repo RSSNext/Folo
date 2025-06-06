@@ -1,11 +1,11 @@
 import type { FeedModel, ListModel, ListModelPoplutedFeeds } from "@follow/models/types"
+import { feedActions } from "@follow/store/feed/store"
 import { sleep } from "@follow/utils/utils"
 
 import { runTransactionInScope } from "~/database"
 import { apiClient } from "~/lib/api-fetch"
 import { ListService } from "~/services/list"
 
-import { feedActions } from "../feed"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 import type { ListState } from "./types"
 

@@ -1,8 +1,9 @@
+import { useFeedStore } from "@follow/store/feed/store"
 import { getInboxHandleOrFeedIdFromFeedId } from "@follow/store/unread/utils"
 import { sortByAlphabet } from "@follow/utils/utils"
 import { Fragment, useCallback } from "react"
 
-import { getPreferredTitle, useFeedStore } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 import { useSubscriptionStore } from "~/store/subscription"
 
 import { useFeedListSortSelector } from "../atom"

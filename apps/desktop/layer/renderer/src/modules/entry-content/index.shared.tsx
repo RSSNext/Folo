@@ -5,6 +5,7 @@ import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { WEB_BUILD } from "@follow/shared/constants"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
@@ -32,7 +33,6 @@ import {
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 

@@ -13,6 +13,8 @@ import { storeDbMorph } from "../morph/store-db"
 import { getSubscription } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
 import type { PublishAtTimeRangeFilter } from "../unread/types"
+import { whoami } from "../user/getters"
+import { userActions } from "../user/store"
 import { getEntry } from "./getter"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 import { getEntriesParams } from "./utils"
@@ -466,12 +468,16 @@ class EntrySyncServices {
       await collectionActions.upsertMany(collections)
     }
 
-    const feeds =
-      res.data
-        ?.map((e) => e.feeds)
-        .filter((f) => f.type === "feed")
-        .map((f) => honoMorph.toFeed(f)) ?? []
+    const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
+    const feeds = dataFeeds?.map((f) => honoMorph.toFeed(f)) ?? []
+    const users = dataFeeds?.flatMap((f) => f.tipUsers).filter((u) => !!u) ?? []
     feedActions.upsertMany(feeds)
+    userActions.upsertMany(
+      users.map((u) => ({
+        ...u,
+        isMe: u.id === whoami()?.id,
+      })),
+    )
 
     return res
   }

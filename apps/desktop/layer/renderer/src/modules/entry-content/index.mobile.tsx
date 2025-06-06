@@ -1,7 +1,8 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { ScrollElementContext } from "@follow/components/ui/scroll-area/ctx.js"
 import { useTitle } from "@follow/hooks"
-import type { FeedModel, InboxModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/models/types"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -17,7 +18,6 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
@@ -78,7 +78,7 @@ export const EntryContent: Component<{
 
   useTitle(entry?.title)
 
-  const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
+  const feed = useFeedById(entry?.feedId)
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const isInbox = useIsInbox(entry?.inboxId)
 
@@ -152,7 +152,7 @@ export const EntryContent: Component<{
                         )}
                         <EntryContentHTMLRenderer
                           view={view}
-                          feedId={feed?.id}
+                          feedId={feed?.id || ""}
                           entryId={entryId}
                           mediaInfo={mediaInfo}
                           noMedia={noMedia}

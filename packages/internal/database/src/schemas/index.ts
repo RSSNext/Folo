@@ -16,6 +16,7 @@ export const feedsTable = sqliteTable("feeds", {
   siteUrl: text("site_url"),
   ownerUserId: text("owner_user_id"),
   errorMessage: text("error_message"),
+  tipUserIds: text("tip_users", { mode: "json" }).$type<string[]>(),
 })
 
 export const subscriptionsTable = sqliteTable("subscriptions", {
@@ -63,7 +64,7 @@ export const usersTable = sqliteTable("users", {
   handle: text("handle"),
   name: text("name"),
   image: text("image"),
-  isMe: integer("is_me", { mode: "boolean" }).notNull(),
+  isMe: integer("is_me", { mode: "boolean" }),
   emailVerified: integer("email_verified", { mode: "boolean" }),
 })
 

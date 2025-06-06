@@ -3,7 +3,7 @@ import { sortByAlphabet } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
-import { getFeed } from "../feed/getter"
+import { getFeedById } from "../feed/getter"
 import { getList } from "../list/getters"
 import { getUnreadById } from "../unread/getters"
 import {
@@ -33,8 +33,8 @@ const sortUngroupedSubscriptionByAlphabet = (
   if (!leftSubscription || !rightSubscription) return 0
 
   if (!leftSubscription.feedId || !rightSubscription.feedId) return 0
-  const leftFeed = getFeed(leftSubscription.feedId)
-  const rightFeed = getFeed(rightSubscription.feedId)
+  const leftFeed = getFeedById(leftSubscription.feedId)
+  const rightFeed = getFeedById(rightSubscription.feedId)
 
   if (!leftFeed || !rightFeed) return 0
 
@@ -202,8 +202,8 @@ export const useSortedFeedSubscriptionByAlphabet = (ids: string[]) => {
   return useSubscriptionStore(
     useCallback(() => {
       return ids.sort((a, b) => {
-        const leftFeed = getFeed(a)
-        const rightFeed = getFeed(b)
+        const leftFeed = getFeedById(a)
+        const rightFeed = getFeedById(b)
         if (!leftFeed || !rightFeed) return 0
         return sortByAlphabet(leftFeed.title!, rightFeed.title!)
       })

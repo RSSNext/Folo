@@ -6,6 +6,7 @@ import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
+import { useFeedStore } from "@follow/store/feed/store"
 import { useSortedIdsByUnread, useUnreadByIds } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
@@ -26,7 +27,7 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { createErrorToaster } from "~/lib/error-parser"
-import { getPreferredTitle, useFeedStore } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 import { useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,

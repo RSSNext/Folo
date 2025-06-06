@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
-import { getFeed } from "@follow/store/feed/getter"
+import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
@@ -42,7 +42,7 @@ export function EntryPictureItem({ id }: { id: string }) {
         media={item.media}
         entryId={id}
         onPreview={() => {
-          const feed = getFeed(item.feedId!)
+          const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
           }

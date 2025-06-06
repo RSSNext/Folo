@@ -5,9 +5,12 @@ import { feedSyncServices, useFeedStore } from "./store"
 import type { FeedModel } from "./types"
 
 const defaultSelector = (feed: FeedModel) => feed
-export function useFeed(id?: string | null): FeedModel | undefined
-export function useFeed<T>(id: string, selector: (feed: FeedModel) => T): T | undefined
-export function useFeed<T>(
+export function useFeedById(id: string | undefined | null): FeedModel | undefined
+export function useFeedById<T>(
+  id: string | undefined | null,
+  selector: (feed: FeedModel) => T,
+): T | undefined
+export function useFeedById<T>(
   id: string | undefined | null,
   // @ts-expect-error
   selector: (feed: FeedModel) => T = defaultSelector,
@@ -23,6 +26,27 @@ export function useFeed<T>(
       [id],
     ),
   )
+}
+
+export function useFeedByUrl(url: string | undefined | null): FeedModel | undefined {
+  return useFeedStore(
+    useCallback(
+      (state) => {
+        if (!url) return
+        const feed = Object.values(state.feeds).find((feed) => feed.url === url)
+        if (!feed) return
+        return feed
+      },
+      [url],
+    ),
+  )
+}
+
+export function useFeedByIdOrUrl(params: { id?: string; url?: string }): FeedModel | undefined {
+  const { id, url } = params
+  const feedById = useFeedById(id)
+  const feedByUrl = useFeedByUrl(url)
+  return feedById || feedByUrl
 }
 
 export const usePrefetchFeed = (id: string, options?: { enabled?: boolean }) => {

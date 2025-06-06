@@ -1,7 +1,6 @@
 import type { FeedModel, FeedOrListModel } from "@follow/models/types"
 
 import { browserDB } from "~/database"
-import { feedActions } from "~/store/feed"
 
 import { BaseService } from "./base"
 import { CleanerService } from "./cleaner"
@@ -31,10 +30,7 @@ class ServiceStatic extends BaseService<FeedModelWithId> implements Hydratable {
     return this.table.bulkDelete(ids)
   }
 
-  async hydrate() {
-    const feeds = await FeedService.findAll()
-    feedActions.upsertMany(feeds)
-  }
+  async hydrate() {}
 }
 
 export const FeedService = new ServiceStatic()

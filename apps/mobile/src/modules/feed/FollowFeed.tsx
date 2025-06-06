@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
+import { useFeedById, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
@@ -36,7 +36,7 @@ const formSchema = z.object({
 
 export function FollowFeed(props: { id: string }) {
   const { id } = props
-  const feed = useFeed(id as string)
+  const feed = useFeedById(id as string)
   const { isLoading } = usePrefetchFeed(id as string, { enabled: !feed })
 
   if (isLoading) {
@@ -75,7 +75,7 @@ function FollowImpl(props: { feedId: string }) {
   const { t: tCommon } = useTranslation("common")
   const { feedId: id } = props
 
-  const feed = useFeed(id)
+  const feed = useFeedById(id)
   const subscription = useSubscriptionByFeedId(feed?.id)
   const isSubscribed = !!subscription
 

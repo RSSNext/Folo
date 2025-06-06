@@ -1,9 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
+import { useFeedStore } from "@follow/store/feed/store"
 import { useCallback, useMemo } from "react"
 
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
 
-import { useFeedStore } from "../feed"
 import {
   categoriesSelector,
   categoryOpenStateByViewSelector,
