@@ -1,4 +1,5 @@
 import { UserRole } from "@follow/constants"
+import { getFeedByIdOrUrl } from "@follow/store/feed/getter"
 import { t } from "i18next"
 import { useCallback } from "react"
 import { withoutTrailingSlash, withTrailingSlash } from "ufo"
@@ -13,7 +14,6 @@ import type { FeedFormDataValuesType } from "~/modules/discover/FeedForm"
 import { FeedForm } from "~/modules/discover/FeedForm"
 import type { ListFormDataValuesType } from "~/modules/discover/ListForm"
 import { ListForm } from "~/modules/discover/ListForm"
-import { getFeedByIdOrUrl } from "~/store/feed"
 import {
   getSubscriptionByFeedId,
   useFeedSubscriptionCount,

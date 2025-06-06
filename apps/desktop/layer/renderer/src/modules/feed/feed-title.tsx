@@ -5,7 +5,7 @@ import { cn } from "@follow/utils/utils"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { BoostCertification } from "~/modules/boost/boost-certification"
 import { FeedCertification } from "~/modules/feed/feed-certification"
-import { getPreferredTitle } from "~/store/feed/store"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 export const FeedTitle = ({
   feed,

@@ -1,13 +1,14 @@
 import type { FeedViewType } from "@follow/constants"
+import { getFeedByIdOrUrl } from "@follow/store/feed/getter"
 
-import type { FeedQueryParams } from "../feed"
-import { getFeedByIdOrUrl } from "../feed"
 import {
   folderFeedsByFeedIdSelector,
   subscriptionByViewSelector,
   subscriptionCategoryExistSelector,
 } from "./selector"
 import { useSubscriptionStore } from "./store"
+
+type FeedQueryParams = { id?: string; url?: string }
 
 export const getSubscriptionByFeedId = (feedId?: FeedId) => {
   if (!feedId) return

@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { getFeedById } from "@follow/store/feed/getter"
 import { useMemo } from "react"
 import type { JSX } from "react/jsx-runtime"
 
@@ -10,7 +11,6 @@ import type { HTMLProps } from "~/components/ui/markdown/HTML"
 import { HTML } from "~/components/ui/markdown/HTML"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
 import { useEntry } from "~/store/entry/hooks"
-import { getFeedById } from "~/store/feed"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"

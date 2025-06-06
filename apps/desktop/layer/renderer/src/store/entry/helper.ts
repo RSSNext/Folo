@@ -1,8 +1,8 @@
+import { getFeedById } from "@follow/store/feed/getter"
 import { create, keyResolver, windowScheduler } from "@yornaath/batshit"
 
 import { apiClient } from "~/lib/api-fetch"
 
-import { useFeedStore } from "../feed"
 import { useSubscriptionStore } from "../subscription"
 import { useEntryStore } from "./store"
 import type { EntryFilter } from "./types"
@@ -76,7 +76,7 @@ export const getEntryIsInView = (entryId: string) => {
   const entry = state.flatMapEntries[entryId]
   if (!entry) return
   const { feedId } = entry
-  const feed = useFeedStore.getState().feeds[feedId]
+  const feed = getFeedById(feedId)
   if (!feed?.id) return
   const subscription = useSubscriptionStore.getState().data[feed.id]
   if (!subscription) return

@@ -36,6 +36,12 @@ export const useUser = (userId?: string) => {
   return useUserStore((state) => (userId ? state.users[userId] : undefined))
 }
 
+export const useUserList = (userIds: string[]) => {
+  return useUserStore((state) => {
+    return userIds.map((id) => state.users[id]).filter((i) => !!i)
+  })
+}
+
 export function useIsNewUser(options?: GeneralQueryOptions) {
   const { data } = useQuery({
     enabled: options?.enabled,

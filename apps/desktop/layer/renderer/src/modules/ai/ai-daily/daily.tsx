@@ -9,6 +9,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
 import { noop } from "foxact/noop"
@@ -51,7 +52,6 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { Queries } from "~/queries"
 import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { remarkSnowflakeId } from "./plugins/parse-snowflake"
 import type { DailyItemProps, DailyView } from "./types"

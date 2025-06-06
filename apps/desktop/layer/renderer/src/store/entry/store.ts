@@ -7,6 +7,7 @@ import type {
   FeedOrListRespModel,
   InboxModel,
 } from "@follow/models/types"
+import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
 import { unreadActions } from "@follow/store/unread/store"
 import {
@@ -23,7 +24,6 @@ import { apiClient } from "~/lib/api-fetch"
 import { getEntriesParams } from "~/lib/utils"
 import { EntryService } from "~/services/entry"
 
-import { feedActions } from "../feed"
 import { imageActions } from "../image"
 import { getSubscriptionByFeedId } from "../subscription"
 import { createTransaction, createZustandStore } from "../utils/helper"

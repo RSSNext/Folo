@@ -1,5 +1,5 @@
 import { PresentSheet } from "@follow/components/ui/sheet/Sheet.js"
-import type { FeedModel } from "@follow/models"
+import type { FeedModel } from "@follow/store/feed/types"
 import { cn } from "@follow/utils/utils"
 import { useState } from "react"
 import Marquee from "react-fast-marquee"

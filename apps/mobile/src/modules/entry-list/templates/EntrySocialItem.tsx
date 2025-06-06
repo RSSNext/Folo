@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
@@ -41,7 +41,7 @@ export const EntrySocialItem = memo(
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
 
-    const feed = useFeed(entry?.feedId || "")
+    const feed = useFeedById(entry?.feedId || "")
 
     const navigation = useNavigation()
     const handlePress = useCallback(() => {

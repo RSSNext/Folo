@@ -1,4 +1,4 @@
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useList, usePrefetchOwnedLists } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import {
@@ -128,7 +128,7 @@ const SeparatorComponent = () => {
 }
 
 const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
-  const feed = useFeed(props.feedId)
+  const feed = useFeedById(props.feedId)
 
   const { nextSelectedFeedIdRef } = use(ManageListContext)
 

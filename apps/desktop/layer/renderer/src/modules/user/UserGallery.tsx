@@ -1,9 +1,9 @@
+import type { UserModel } from "@follow/store/user/store"
+
 import { UserAvatar } from "~/modules/user/UserAvatar"
 
-import type { User } from "./utils"
-
 interface UserGalleryProps {
-  users: User[]
+  users: UserModel[]
   dedupe?: boolean
   limit?: number
 }

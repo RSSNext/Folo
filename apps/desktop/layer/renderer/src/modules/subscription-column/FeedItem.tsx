@@ -10,6 +10,7 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useUnreadById, useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
@@ -31,7 +32,7 @@ import { getNewIssueUrl } from "~/lib/issues"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { getPreferredTitle, useFeedById } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 import { useListById } from "~/store/list"
 import { useSubscriptionByFeedId } from "~/store/subscription"
 
@@ -81,7 +82,6 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       image: feed.image,
       siteUrl: feed.siteUrl,
       ownerUserId: feed.ownerUserId,
-      owner: feed.owner,
     }
   })
 

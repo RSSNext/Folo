@@ -5,6 +5,8 @@ import type {
   ListModelPoplutedFeeds,
   SubscriptionModel,
 } from "@follow/models/types"
+import { getFeedById } from "@follow/store/feed/getter"
+import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { getInboxFeedIdWithPrefix } from "@follow/store/unread/utils"
@@ -22,7 +24,6 @@ import { Queries } from "~/queries"
 import { SubscriptionService } from "~/services"
 
 import { entryActions } from "../entry"
-import { feedActions, getFeedById } from "../feed"
 import { getListById, listActions } from "../list"
 import { createImmerSetter, createTransaction, createZustandStore } from "../utils/helper"
 

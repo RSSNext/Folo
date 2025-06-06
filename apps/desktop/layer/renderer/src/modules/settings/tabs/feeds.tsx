@@ -22,6 +22,8 @@ import {
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { views } from "@follow/constants"
 import type { ExtractBizResponse } from "@follow/models"
+import { getFeedById } from "@follow/store/feed/getter"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { jotaiStore } from "@follow/utils"
 import { sortByAlphabet } from "@follow/utils/utils"
 import clsx from "clsx"
@@ -51,7 +53,6 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/useConfirmUnsubscribeSubscriptionModal"
 import { Balance } from "~/modules/wallet/balance"
 import { Queries } from "~/queries"
-import { getFeedById, useFeedById } from "~/store/feed"
 import { getSubscriptionByFeedId, useAllFeeds, useSubscriptionByFeedId } from "~/store/subscription"
 
 type Analytics = ExtractBizResponse<typeof apiClient.feeds.analytics.$post>["data"]["analytics"]

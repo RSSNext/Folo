@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
 import { views } from "@follow/constants"
-import type { FeedModel } from "@follow/models/types"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -42,7 +42,6 @@ import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
 import { Queries } from "~/queries"
-import { useFeedById } from "~/store/feed"
 import { useListById } from "~/store/list"
 import { subscriptionActions, useAllFeeds } from "~/store/subscription"
 
@@ -294,7 +293,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
 }
 
 const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
-  const feed = useFeedById(feedId) as FeedModel
+  const feed = useFeedById(feedId)
 
   const removeMutation = useRemoveFeedFromFeedList()
   if (!feed) return null

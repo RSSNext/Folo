@@ -1,3 +1,4 @@
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
@@ -11,7 +12,7 @@ import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useEntryTranslation } from "~/store/ai/hook"
 import { useEntry, useEntryReadHistory } from "~/store/entry"
-import { getPreferredTitle, useFeedById } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { EntryTranslation } from "../../entry-column/translation"
 

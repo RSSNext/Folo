@@ -9,7 +9,8 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useSmoothScroll, useTitle } from "@follow/hooks"
-import type { FeedModel, InboxModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/models/types"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
@@ -32,7 +33,6 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -79,7 +79,7 @@ export const EntryContent: Component<EntryContentProps> = ({
   })
   useTitle(entry?.title)
 
-  const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
+  const feed = useFeedById(entry?.feedId)
 
   const isInbox = useIsInbox(entry?.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
@@ -194,7 +194,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                       <Renderer
                         entryId={entryId}
                         view={view}
-                        feedId={feed?.id}
+                        feedId={feed?.id || ""}
                         noMedia={noMedia}
                         content={content}
                       />

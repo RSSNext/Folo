@@ -2,7 +2,7 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useSubscription } from "@follow/store/subscription/hooks"
 import { summaryActions, summarySyncService } from "@follow/store/summary/store"
 import { translationSyncService } from "@follow/store/translation/store"
@@ -84,7 +84,7 @@ const HeaderRightActionsImpl = ({
     useGeneralSettingKey("translation") || !!entry?.settings?.translation
   const showReadabilitySetting = !!entry?.settings?.readability
 
-  const feed = useFeed(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
+  const feed = useFeedById(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
   const subscription = useSubscription(feed?.feedId as string)
 
   const handleToggleStar = () => {

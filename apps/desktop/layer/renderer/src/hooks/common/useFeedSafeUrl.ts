@@ -1,9 +1,9 @@
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { resolveUrlWithBase } from "@follow/utils/utils"
 import { useMemo } from "react"
 
 import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 export const useFeedSafeUrl = (entryId: string) => {
   const entry = useEntry(entryId, (state) => {

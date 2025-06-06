@@ -7,7 +7,7 @@ import {
   useEntryIdsByListId,
 } from "@follow/store/entry/hooks"
 import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useMemo } from "react"
 import { RootSiblingParent } from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -22,7 +22,7 @@ export const FeedScreen: NavigationControllerView<{
   feedId: string
 }> = ({ feedId: feedIdentifier }) => {
   const insets = useSafeAreaInsets()
-  const feed = useFeed(feedIdentifier)
+  const feed = useFeedById(feedIdentifier)
 
   const isCollection = feedIdentifier === FEED_COLLECTION_LIST
   const view = useSelectedView() ?? FeedViewType.Articles

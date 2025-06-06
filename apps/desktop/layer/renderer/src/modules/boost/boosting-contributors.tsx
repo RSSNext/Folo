@@ -1,12 +1,12 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.js"
+import type { UserModel } from "@follow/store/user/store"
 
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useFeedBoostersQuery } from "~/modules/boost/query"
 
 import { usePresentUserProfileModal } from "../profile/hooks"
 import { UserGallery } from "../user/UserGallery"
-import type { User } from "../user/utils"
 
 export const BoostingContributors = ({ feedId }: { feedId: string }) => {
   const { data: boosters, isLoading } = useFeedBoostersQuery(feedId)
@@ -36,7 +36,13 @@ export const BoostingContributors = ({ feedId }: { feedId: string }) => {
   )
 }
 
-const UserListItem = ({ user, onClick }: { user: User; onClick: (userId: string) => void }) => {
+const UserListItem = ({
+  user,
+  onClick,
+}: {
+  user: UserModel
+  onClick: (userId: string) => void
+}) => {
   return (
     <li
       key={user.id}
