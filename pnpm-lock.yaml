@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    typescript:
+      specifier: 5.8.3
+      version: 5.8.3
+
 overrides:
   '@electron/node-gyp': 10.2.0-electron.2
   is-core-module: npm:@nolyfill/is-core-module@1.0.39
@@ -1488,7 +1494,7 @@ importers:
         version: 7.56.4(react@19.0.0)
       react-i18next:
         specifier: 15.5.2
-        version: 15.5.2(i18next@25.2.1(typescript@5.8.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
+        version: 15.5.2(i18next@25.2.1(typescript@5.8.3))(react-dom@19.0.0(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       rehype-infer-description-meta:
         specifier: 2.0.0
         version: 2.0.0
@@ -1501,6 +1507,9 @@ importers:
       rehype-stringify:
         specifier: 10.0.1
         version: 10.0.1
+      remark-directive:
+        specifier: 4.0.0
+        version: 4.0.0
       remark-gfm:
         specifier: 4.0.1
         version: 4.0.1
@@ -11104,6 +11113,9 @@ packages:
   md5@2.3.0:
     resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
 
+  mdast-util-directive@3.1.0:
+    resolution: {integrity: sha512-I3fNFt+DHmpWCYAT7quoM6lHf9wuqtI+oCOfvILnoicNIqjh5E3dEJWiXuYME2gNe8vl1iMQwyUHa7bgFmak6Q==}
+
   mdast-util-find-and-replace@3.0.2:
     resolution: {integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==}
 
@@ -11239,6 +11251,9 @@ packages:
 
   micromark-core-commonmark@2.0.3:
     resolution: {integrity: sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==}
+
+  micromark-extension-directive@4.0.0:
+    resolution: {integrity: sha512-/C2nqVmXXmiseSSuCdItCMho7ybwwop6RrrRPk0KbOHW21JKoCldC+8rFOaundDoRBUWBnJJcxeA/Kvi34WQXg==}
 
   micromark-extension-gfm-autolink-literal@2.1.0:
     resolution: {integrity: sha512-oOg7knzhicgQ3t4QCjCWgTmfNhvQbDDnJeVu9v81r7NltNCVmhPy1fJRX27pISafdjL+SVc4d3l48Gb6pbRypw==}
@@ -13213,6 +13228,9 @@ packages:
   relateurl@0.2.7:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
     engines: {node: '>= 0.10'}
+
+  remark-directive@4.0.0:
+    resolution: {integrity: sha512-7sxn4RfF1o3izevPV1DheyGDD6X4c9hrGpfdUpm7uC++dqrnJxIZVkk7CoKqcLm0VUMAuOol7Mno3m6g8cfMuA==}
 
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
@@ -24044,10 +24062,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.1(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
@@ -27979,6 +27993,20 @@ snapshots:
       crypt: 0.0.2
       is-buffer: 1.1.6
 
+  mdast-util-directive@3.1.0:
+    dependencies:
+      '@types/mdast': 4.0.4
+      '@types/unist': 3.0.3
+      ccount: 2.0.1
+      devlop: 1.1.0
+      mdast-util-from-markdown: 2.0.2
+      mdast-util-to-markdown: 2.1.2
+      parse-entities: 4.0.2
+      stringify-entities: 4.0.4
+      unist-util-visit-parents: 6.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-find-and-replace@3.0.2:
     dependencies:
       '@types/mdast': 4.0.4
@@ -28433,6 +28461,16 @@ snapshots:
       micromark-util-symbol: 2.0.1
       micromark-util-types: 2.0.2
 
+  micromark-extension-directive@4.0.0:
+    dependencies:
+      devlop: 1.1.0
+      micromark-factory-space: 2.0.1
+      micromark-factory-whitespace: 2.0.1
+      micromark-util-character: 2.1.1
+      micromark-util-symbol: 2.0.1
+      micromark-util-types: 2.0.2
+      parse-entities: 4.0.2
+
   micromark-extension-gfm-autolink-literal@2.1.0:
     dependencies:
       micromark-util-character: 2.1.1
@@ -28586,7 +28624,7 @@ snapshots:
   micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       decode-named-character-reference: 1.1.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -29928,16 +29966,6 @@ snapshots:
       react-native: 0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)
       typescript: 5.8.3
 
-  react-i18next@15.5.2(i18next@25.2.1(typescript@5.8.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3):
-    dependencies:
-      '@babel/runtime': 7.27.3
-      html-parse-stringify: 3.0.1
-      i18next: 25.2.1(typescript@5.8.3)
-      react: 19.0.0
-    optionalDependencies:
-      react-dom: 19.0.0(react@19.0.0)
-      typescript: 5.8.3
-
   react-intersection-observer@9.16.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -30544,6 +30572,15 @@ snapshots:
       unified: 11.0.5
 
   relateurl@0.2.7: {}
+
+  remark-directive@4.0.0:
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-directive: 3.1.0
+      micromark-extension-directive: 4.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
 
   remark-gfm@4.0.1:
     dependencies:

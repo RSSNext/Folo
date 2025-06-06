@@ -223,6 +223,7 @@ export default ({ mode }) => {
         ["zustand", "jotai", "use-context-selector", "immer", "dexie"],
         // Remark
         [
+          "remark-directive",
           "remark-gfm",
           "remark-parse",
           "remark-stringify",
