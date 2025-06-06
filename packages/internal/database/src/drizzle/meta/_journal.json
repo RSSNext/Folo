@@ -176,6 +176,13 @@
       "when": 1749126847204,
       "tag": "0024_curvy_inertia",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1749175510474,
+      "tag": "0025_tan_mandroid",
+      "breakpoints": true
     }
   ]
 }
