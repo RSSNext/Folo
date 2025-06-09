@@ -80,7 +80,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="macos:bg-material-opaque min-w-[180px] overflow-visible px-1 pt-6"
+        className="macos:bg-material-opaque min-w-[240px] overflow-visible px-1 pt-6"
         side="bottom"
         align="center"
       >

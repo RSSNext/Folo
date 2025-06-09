@@ -67,7 +67,7 @@ export const SettingFeeds = () => {
   )
 }
 
-const GRID_COLS_CLASSNAME = tw`grid-cols-[30px_auto_150px_120px_100px]`
+const GRID_COLS_CLASSNAME = tw`grid-cols-[30px_auto_150px_150px_100px]`
 
 const SubscriptionFeedsSection = () => {
   const { t } = useTranslation("settings")
@@ -499,7 +499,7 @@ const FeedListItem = memo(
           {views[subscription.view]!.icon}
           <span>{tCommon(views[subscription.view]!.name)}</span>
         </div>
-        <div className="pr-1 text-center">
+        <div className="whitespace-nowrap pr-1 text-center">
           <RelativeDay date={new Date(subscription.createdAt)} />
         </div>
         <div className="text-center text-xs">
