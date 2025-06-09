@@ -1,36 +1,21 @@
 import { Tabs, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
-import { useCallback } from "react"
+import {
+  useCategories,
+  useFeedSubscription,
+  useListSubscription,
+} from "@follow/store/subscription/hooks"
 
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { InboxItem, ListItem } from "~/modules/subscription-column/FeedItem"
-import { useSubscriptionStore } from "~/store/subscription"
 
 export const TimelineTabs = () => {
   const routerParams = useRouteParams()
   const { view, listId, inboxId, folderName } = routerParams
 
-  const listsData = useSubscriptionStore(
-    useCallback((state) => Array.from(state.listIds).map((id) => state.data[id]), []),
-  )
-  const inboxData = useSubscriptionStore(
-    useCallback((state) => Array.from(state.inboxIds).map((id) => state.data[id]), []),
-  )
-  const categoriesData = useSubscriptionStore(
-    useCallback(
-      (state) => {
-        const categoryNames = new Set<string>()
-        for (const subId of state.feedIdByView[view]) {
-          const sub = state.data[subId]!
-          if (sub.category) {
-            categoryNames.add(sub.category)
-          }
-        }
-        return Array.from(categoryNames)
-      },
-      [view],
-    ),
-  )
+  const listsData = useListSubscription(view)
+  const inboxData = useFeedSubscription(view)
+  const categoriesData = useCategories(view)
   const hasData = listsData.length > 0 || inboxData.length > 0
 
   const timeline = listId || inboxId || folderName || ""

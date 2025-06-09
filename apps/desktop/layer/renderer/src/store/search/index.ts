@@ -1,4 +1,5 @@
 import type { EntryModel } from "@follow/models/types"
+import type { SubscriptionModel } from "@follow/store/subscription/types"
 import { getStorageNS } from "@follow/utils/ns"
 import type { IFuseOptions } from "fuse.js"
 import Fuse from "fuse.js"
@@ -8,7 +9,6 @@ import { atomWithStorage } from "jotai/utils"
 import { jotaiStore } from "~/lib/jotai"
 import { EntryService, FeedService, SubscriptionService } from "~/services"
 
-import type { SubscriptionFlatModel } from "../subscription"
 import { createZustandStore } from "../utils/helper"
 import { SearchType } from "./constants"
 import { defineSearchInstance } from "./helper"
@@ -78,10 +78,7 @@ class SearchActions {
           }
         }
 
-        const processedSubscriptions = [] as SearchResult<
-          SubscriptionFlatModel,
-          { feedId: string }
-        >[]
+        const processedSubscriptions = [] as SearchResult<SubscriptionModel, { feedId: string }>[]
         for (const subscription of subscriptions) {
           const { feedId } = subscription.item
           if (feedId) {

@@ -7,6 +7,11 @@ import {
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
+import {
+  useCategoryOpenStateByView,
+  useFeedsGroupedData,
+  useListsGroupedData,
+} from "@follow/store/subscription/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions, isKeyForMultiSelectPressed } from "@follow/utils/utils"
@@ -15,14 +20,10 @@ import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useFeedQuery } from "~/queries/feed"
-import {
-  useCategoryOpenStateByView,
-  useFeedsGroupedData,
-  useListsGroupedData,
-} from "~/store/subscription"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -42,7 +43,8 @@ import type { SubscriptionProps } from "./SubscriptionList"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
-  const feedsData = useFeedsGroupedData(view)
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const feedsData = useFeedsGroupedData(view, autoGroup)
   const listsData = useListsGroupedData(view)
 
   const inboxesData = useInboxList((inboxes) =>

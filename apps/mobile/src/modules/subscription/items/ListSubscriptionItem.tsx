@@ -1,5 +1,5 @@
 import { useListById } from "@follow/store/list/hooks"
-import { useSubscription } from "@follow/store/subscription/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
@@ -27,7 +27,7 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
   const colorLabel = useColor("label")
 
   const list = useListById(id)
-  const subscription = useSubscription(id)
+  const subscription = useSubscriptionById(id)
   const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
 

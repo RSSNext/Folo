@@ -1,11 +1,14 @@
 import type { FeedViewType } from "@follow/constants"
 import type { EntryReadHistoriesModel } from "@follow/models/types"
 import { useListsFeedIds } from "@follow/store/list/hooks"
+import {
+  useFeedSubscriptionIdsByView,
+  useNonPrivateSubscriptionIds,
+} from "@follow/store/subscription/hooks"
 import { useCallback } from "react"
 
 import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "~/constants"
 
-import { useFeedIdByView, useNonPrivateSubscriptionIds } from "../subscription"
 import { getEntryIsInView, getFilteredFeedIds } from "./helper"
 import { useEntryStore } from "./store"
 import type { EntryFilter, FlatEntryModel } from "./types"
@@ -81,7 +84,7 @@ export const useEntryIdsByFeedId = (feedId: string, filter?: EntryFilter) =>
   )
 
 export const useEntryIdsByView = (view: FeedViewType, filter?: EntryFilter) => {
-  const feedIds = useFeedIdByView(view)
+  const feedIds = useFeedSubscriptionIdsByView(view)
   const nonPrivateFeedIds = useNonPrivateSubscriptionIds(feedIds)
   const finalFeedIds = filter?.excludePrivate ? nonPrivateFeedIds : feedIds
   const listFeedIds = useListsFeedIds(finalFeedIds)

@@ -1,17 +1,14 @@
 import { FeedViewType, views } from "@follow/constants"
 import { sortByAlphabet } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 
 import { getFeedById } from "../feed/getter"
-import { getListById } from "../list/getters"
+import { getInboxList } from "../inbox/getters"
+import { getListById, getListFeedIds } from "../list/getters"
 import { getUnreadById } from "../unread/getters"
-import {
-  getFeedSubscriptionByView,
-  getSubscription,
-  getSubscriptionByCategory,
-  getSubscriptionByView,
-} from "./getter"
+import { getSubscriptionByCategory, getSubscriptionById } from "./getter"
+import { folderFeedsByFeedIdSelector } from "./selectors"
 import { subscriptionSyncService, useSubscriptionStore } from "./store"
 import { getDefaultCategory } from "./utils"
 
@@ -27,8 +24,8 @@ const sortUngroupedSubscriptionByAlphabet = (
   leftSubscriptionId: string,
   rightSubscriptionId: string,
 ) => {
-  const leftSubscription = getSubscription(leftSubscriptionId)
-  const rightSubscription = getSubscription(rightSubscriptionId)
+  const leftSubscription = getSubscriptionById(leftSubscriptionId)
+  const rightSubscription = getSubscriptionById(rightSubscriptionId)
 
   if (!leftSubscription || !rightSubscription) return 0
 
@@ -44,12 +41,54 @@ const sortUngroupedSubscriptionByAlphabet = (
   return sortByAlphabet(comparedLeftTitle, comparedRightTitle)
 }
 
-export const useSubscriptionByView = (view: FeedViewType) => {
-  return useSubscriptionStore(useCallback(() => getSubscriptionByView(view), [view]))
+export const useSubscriptionIdsByView = (view: FeedViewType) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return Array.from(state.feedIdByView[view])
+          .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
+          .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
+      },
+      [view],
+    ),
+  )
+}
+
+export const useFeedSubscriptionIdsByView = (view: FeedViewType | undefined) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return typeof view === "number" ? Array.from(state.feedIdByView[view]) : []
+      },
+      [view],
+    ),
+  )
 }
 
 export const useFeedSubscriptionByView = (view: FeedViewType) => {
-  return useSubscriptionStore(useCallback(() => getFeedSubscriptionByView(view), [view]))
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return Array.from(state.feedIdByView[view])
+          .map((feedId) => state.data[feedId])
+          .filter((feed) => !!feed)
+      },
+      [view],
+    ),
+  )
+}
+
+export const useListSubscriptionByView = (view: FeedViewType) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return Array.from(state.listIdByView[view])
+          .map((listId) => state.data[listId])
+          .filter((list) => !!list)
+      },
+      [view],
+    ),
+  )
 }
 
 export const useGroupedSubscription = ({
@@ -112,8 +151,8 @@ export const useGroupedSubscription = ({
 }
 
 const sortByUnread = (_leftSubscriptionId: string, _rightSubscriptionId: string) => {
-  const leftSubscription = getSubscription(_leftSubscriptionId)
-  const rightSubscription = getSubscription(_rightSubscriptionId)
+  const leftSubscription = getSubscriptionById(_leftSubscriptionId)
+  const rightSubscription = getSubscriptionById(_rightSubscriptionId)
 
   const leftSubscriptionId = leftSubscription?.feedId || leftSubscription?.listId
   const rightSubscriptionId = rightSubscription?.feedId || rightSubscription?.listId
@@ -211,11 +250,30 @@ export const useSortedFeedSubscriptionByAlphabet = (ids: string[]) => {
   )
 }
 
-export const useSubscription = (id: string) => {
-  return useSubscriptionStore((state) => {
-    return state.data[id]
-  })
+export const useSubscriptionById = (id: string | undefined) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return id ? state.data[id] : undefined
+      },
+      [id],
+    ),
+  )
 }
+export const useSubscriptionsByIds = (ids: string[]) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return ids.map((id) => state.data[id])
+      },
+      [ids.toString()],
+    ),
+  )
+}
+
+export const useSubscriptionByFeedId = (feedId: string | undefined) => useSubscriptionById(feedId)
+export const useSubscriptionsByFeedIds = (feedIds: string[]) => useSubscriptionsByIds(feedIds)
+export const useSubscriptionByListId = (listId: string | undefined) => useSubscriptionById(listId)
 
 export const useAllListSubscription = () => {
   return useSubscriptionStore(
@@ -228,11 +286,61 @@ export const useAllListSubscription = () => {
 export const useListSubscription = (view: FeedViewType) => {
   return useSubscriptionStore(
     useCallback(
+      (state) => Array.from(state.listIdByView[view]).map((listId) => state.data[listId]),
+      [view],
+    ),
+  )
+}
+
+export const useListSubscriptionIds = (view: FeedViewType) => {
+  return useSubscriptionStore(useCallback((state) => Array.from(state.listIdByView[view]), [view]))
+}
+
+export const useFeedSubscription = (view: FeedViewType) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => Array.from(state.feedIdByView[view]).map((feedId) => state.data[feedId]),
+      [view],
+    ),
+  )
+}
+
+export const useFeedSubscriptionIds = (view: FeedViewType) => {
+  return useSubscriptionStore(
+    useCallback(
       (state) => {
-        return Array.from(state.listIdByView[view])
+        return Array.from(state.feedIdByView[view])
       },
       [view],
     ),
+  )
+}
+
+export const useAllFeedSubscription = () => {
+  return useSubscriptionStore(
+    useCallback((state) => {
+      return Object.values(state.feedIdByView).flatMap((feedId) =>
+        Array.from(feedId)
+          .map((id) => state.data[id])
+          .filter((feed) => !!feed),
+      )
+    }, []),
+  )
+}
+
+export const useAllFeedSubscriptionIds = () => {
+  return useSubscriptionStore(
+    useCallback((state) => {
+      return Object.values(state.feedIdByView).flatMap((feedId) => Array.from(feedId))
+    }, []),
+  )
+}
+
+export const useAllSubscription = () => {
+  return useSubscriptionStore(
+    useCallback((state) => {
+      return Object.values(state.data).filter((subscription) => !!subscription)
+    }, []),
   )
 }
 
@@ -263,13 +371,27 @@ export const useSortedListSubscription = ({
   )
 }
 
-export const useSubscriptionCategory = (view?: FeedViewType) => {
+export const useCategories = (view?: FeedViewType) => {
   return useSubscriptionStore(
     useCallback(
       (state) => {
-        return view === undefined ? [] : Array.from(state.categories[view])
+        return view === undefined
+          ? Object.values(state.categories).flatMap((category) => Array.from(category))
+          : Array.from(state.categories[view])
       },
       [view],
+    ),
+  )
+}
+
+export const useSubscriptionCategoryExist = (categoryId: string | undefined | null) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        if (!categoryId) return false
+        return Object.values(state.categories).some((category) => category.has(categoryId))
+      },
+      [categoryId],
     ),
   )
 }
@@ -278,12 +400,6 @@ export const getSubscriptionCategory = (view?: FeedViewType) => {
   const state = useSubscriptionStore.getState()
   return view === undefined ? [] : Array.from(state.categories[view])
 }
-
-export const useSubscriptionByFeedId = (feedId?: string) =>
-  useSubscriptionStore(useCallback((state) => (feedId ? state.data[feedId] : undefined), [feedId]))
-
-export const useSubscriptionByListId = (listId: string) =>
-  useSubscriptionStore(useCallback((state) => state.data[listId] || null, [listId]))
 
 export const useViewWithSubscription = () =>
   useSubscriptionStore(
@@ -304,3 +420,143 @@ export const useViewWithSubscription = () =>
         .map((v) => v.view)
     }, []),
   )
+
+export const useCategoriesByView = (view: FeedViewType) => {
+  return useSubscriptionStore(useCallback((state) => state.categories[view], [view]))
+}
+
+export const useListSubscriptionCount = () => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => Array.from(state.subscriptionIdSet).filter((id) => id.startsWith("list/")).length,
+      [],
+    ),
+  )
+}
+
+export const useFeedSubscriptionCount = () => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => Array.from(state.subscriptionIdSet).filter((id) => id.startsWith("feed/")).length,
+      [],
+    ),
+  )
+}
+
+export const useIsSubscribed = (id: string | undefined) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        if (!id) return false
+        return (
+          state.subscriptionIdSet.has(id) ||
+          state.subscriptionIdSet.has(`feed/${id}`) ||
+          state.subscriptionIdSet.has(`list/${id}`) ||
+          state.subscriptionIdSet.has(`inbox/${id}`)
+        )
+      },
+      [id],
+    ),
+  )
+}
+
+export const useIsListSubscription = (id: string | undefined) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        if (!id) return false
+        return state.subscriptionIdSet.has(`list/${id}`)
+      },
+      [id],
+    ),
+  )
+}
+
+export const useFolderFeedsByFeedId = ({
+  feedId,
+  view,
+}: {
+  feedId: string | undefined
+  view: FeedViewType
+}) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return folderFeedsByFeedIdSelector({ feedId, view })(state)
+      },
+      [feedId, view],
+    ),
+  )
+}
+
+export const useFeedsGroupedData = (view: FeedViewType, autoGroup: boolean) => {
+  const data = useFeedSubscriptionByView(view)
+
+  return useMemo(() => {
+    if (!data || data.length === 0) return {}
+
+    const groupFolder = {} as Record<string, string[]>
+
+    for (const subscription of data.filter((s) => !!s)) {
+      const category =
+        subscription.category ||
+        (autoGroup ? getDefaultCategory(subscription) : subscription.feedId)
+
+      if (category) {
+        if (!groupFolder[category]) {
+          groupFolder[category] = []
+        }
+        if (subscription.feedId) {
+          groupFolder[category].push(subscription.feedId)
+        }
+      }
+    }
+
+    return groupFolder
+  }, [autoGroup, data])
+}
+
+export const useListsGroupedData = (view: FeedViewType) => {
+  const lists = useListSubscriptionByView(view)
+
+  return useMemo(() => {
+    if (!lists || lists.length === 0) return {}
+
+    const groupFolder = {} as Record<string, string[]>
+
+    for (const subscription of lists.filter((s) => !!s)) {
+      if (!subscription.listId) continue
+      groupFolder[subscription.listId] = [subscription.listId]
+    }
+
+    return groupFolder
+  }, [lists])
+}
+
+export const useCategoryOpenStateByView = (view: FeedViewType) => {
+  return useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return state.categoryOpenStateByView[view]
+      },
+      [view],
+    ),
+  )
+}
+
+export const useNonPrivateSubscriptionIds = (ids: string[]) => {
+  const nonPrivateSubscriptions = useSubscriptionStore(
+    useCallback(
+      (state) => {
+        return ids
+          .map((id) => state.data[id])
+          .filter((s) => !s?.isPrivate)
+          .map((s) => s?.listId || s?.feedId)
+          .filter((id) => typeof id === "string")
+      },
+      [ids.toString()],
+    ),
+  )
+
+  return nonPrivateSubscriptions
+}

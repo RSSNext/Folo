@@ -9,6 +9,7 @@ import type {
 } from "@follow/models/types"
 import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { unreadActions } from "@follow/store/unread/store"
 import {
   getInboxFeedIdWithPrefix,
@@ -25,7 +26,6 @@ import { getEntriesParams } from "~/lib/utils"
 import { EntryService } from "~/services/entry"
 
 import { imageActions } from "../image"
-import { getSubscriptionByFeedId } from "../subscription"
 import { createTransaction, createZustandStore } from "../utils/helper"
 import { internal_batchMarkRead } from "./helper"
 import type { EntryState, FlatEntryModel } from "./types"

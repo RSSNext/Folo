@@ -6,6 +6,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { SubscriptionModel } from "@follow/models/types"
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
@@ -19,7 +20,6 @@ import { useI18n } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { useSubscriptionStore } from "~/store/subscription"
 
 type ItemVariant = "loose" | "compact"
 
@@ -119,7 +119,7 @@ const SubscriptionItem: FC<{
   variant: ItemVariant
 }> = ({ subscription, variant }) => {
   const t = useI18n()
-  const isFollowed = !!useSubscriptionStore((state) => state.data[subscription.feedId])
+  const isFollowed = useIsSubscribed(subscription.feedId)
   const follow = useFollow()
   const isLoose = variant === "loose"
   const handleFollow = useEventCallback((e: React.MouseEvent) => {

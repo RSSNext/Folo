@@ -1,9 +1,9 @@
 import { getFeedById } from "@follow/store/feed/getter"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { create, keyResolver, windowScheduler } from "@yornaath/batshit"
 
 import { apiClient } from "~/lib/api-fetch"
 
-import { useSubscriptionStore } from "../subscription"
 import { useEntryStore } from "./store"
 import type { EntryFilter } from "./types"
 
@@ -78,7 +78,7 @@ export const getEntryIsInView = (entryId: string) => {
   const { feedId } = entry
   const feed = getFeedById(feedId)
   if (!feed?.id) return
-  const subscription = useSubscriptionStore.getState().data[feed.id]
+  const subscription = getSubscriptionByFeedId(feed.id)
   if (!subscription) return
   return subscription.view
 }

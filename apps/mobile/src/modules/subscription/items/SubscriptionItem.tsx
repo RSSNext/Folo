@@ -1,5 +1,5 @@
 import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
-import { useSubscription } from "@follow/store/subscription/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, use } from "react"
@@ -28,7 +28,7 @@ export const SubscriptionItem = memo(
   ({ id, isFirst, isLast, className }: SubscriptionItemBaseProps) => {
     const red = useColor("red")
     const colorLabel = useColor("label")
-    const subscription = useSubscription(id)
+    const subscription = useSubscriptionById(id)
     const unreadCount = useUnreadById(id)
     const feed = useFeedById(id)!
     const inGrouped = !!use(GroupedContext)

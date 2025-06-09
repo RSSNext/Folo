@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedModel } from "@follow/store/feed/types"
 import type { ListModel } from "@follow/store/list/types"
-import { getSubscription } from "@follow/store/subscription/getter"
+import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
@@ -282,7 +282,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
     className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
     style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
     onPress={() => {
-      if (getSubscription(item.id))
+      if (getSubscriptionById(item.id))
         Navigation.rootNavigation.pushControllerView(FeedScreen, {
           feedId: item.id,
         })
@@ -317,7 +317,7 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
       className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
       style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
       onPress={() => {
-        if (getSubscription(item.id))
+        if (getSubscriptionById(item.id))
           Navigation.rootNavigation.pushControllerView(FeedScreen, {
             feedId: item.id,
           })

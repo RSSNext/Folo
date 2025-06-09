@@ -3,7 +3,7 @@ import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
-import { useSubscription } from "@follow/store/subscription/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { summaryActions, summarySyncService } from "@follow/store/summary/store"
 import { translationSyncService } from "@follow/store/translation/store"
 import { setStringAsync } from "expo-clipboard"
@@ -85,7 +85,7 @@ const HeaderRightActionsImpl = ({
   const showReadabilitySetting = !!entry?.settings?.readability
 
   const feed = useFeedById(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
-  const subscription = useSubscription(feed?.feedId as string)
+  const subscription = useSubscriptionById(feed?.feedId as string)
 
   const handleToggleStar = () => {
     if (!entry || !feed || !subscription) return

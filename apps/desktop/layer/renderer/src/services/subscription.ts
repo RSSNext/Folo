@@ -1,13 +1,11 @@
 import { uniq } from "es-toolkit/compat"
 
 import { browserDB } from "~/database"
-import type { SubscriptionFlatModel } from "~/store/subscription"
-import { subscriptionActions } from "~/store/subscription/store"
 
 import { BaseService } from "./base"
 import type { Hydratable } from "./interface"
 
-type SubscriptionModelWithId = SubscriptionFlatModel & { id: string }
+type SubscriptionModelWithId = any & { id: string }
 
 class SubscriptionServiceStatic extends BaseService<SubscriptionModelWithId> implements Hydratable {
   constructor() {
@@ -27,7 +25,7 @@ class SubscriptionServiceStatic extends BaseService<SubscriptionModelWithId> imp
     )
   }
 
-  override async upsertMany(data: SubscriptionFlatModel[]) {
+  override async upsertMany(data: any[]) {
     return this.table.bulkPut(
       data.map(({ feeds, lists, inboxes, ...d }: any) => ({
         ...d,
@@ -36,7 +34,7 @@ class SubscriptionServiceStatic extends BaseService<SubscriptionModelWithId> imp
     )
   }
 
-  override upsert(data: SubscriptionFlatModel) {
+  override upsert(data: any) {
     return this.table.put({
       ...data,
       id: this.uniqueId(data.userId, data.feedId),
@@ -85,11 +83,7 @@ class SubscriptionServiceStatic extends BaseService<SubscriptionModelWithId> imp
       .modify({ category })
   }
 
-  async hydrate() {
-    const subscriptions = await SubscriptionService.findAll()
-
-    subscriptionActions.upsertMany(subscriptions)
-  }
+  async hydrate() {}
 }
 
 export const SubscriptionService = new SubscriptionServiceStatic()

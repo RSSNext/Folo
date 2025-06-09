@@ -1,6 +1,7 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { RelativeTime } from "@follow/components/ui/datetime/index.js"
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
@@ -13,7 +14,6 @@ import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import type { apiClient } from "~/lib/api-fetch"
-import { useIsSubscribed } from "~/store/subscription"
 
 import { FollowSummary } from "../feed/feed-summary"
 

@@ -1,4 +1,6 @@
 import { views } from "@follow/constants"
+import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
@@ -8,10 +10,8 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient, apiFetch } from "~/lib/api-fetch"
-import { Queries } from "~/queries"
 import { entries, useEntries } from "~/queries/entries"
 import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
-import { useFolderFeedsByFeedId } from "~/store/subscription"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
@@ -46,6 +46,7 @@ const fallbackReturn: UseEntriesReturn = {
   hasNextPage: false,
   error: null,
 }
+
 const useRemoteEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId } = useRouteParams()
   const isPreview = useIsPreviewFeed()
@@ -301,7 +302,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     hasUpdate: query.hasUpdate,
     refetch: useCallback(() => {
       const promise = query.refetch()
-      Queries.subscription.unreadAll().invalidate()
+      unreadSyncService.resetFromRemote()
       return promise
     }, [query]),
     entriesIds: sortEntries,

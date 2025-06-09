@@ -24,6 +24,8 @@ import { views } from "@follow/constants"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
+import { useAllFeedSubscription } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -42,7 +44,6 @@ import { UrlBuilder } from "~/lib/url-builder"
 import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
-import { subscriptionActions, useAllFeeds } from "~/store/subscription"
 
 const formSchema = z.object({
   view: z.string(),
@@ -95,7 +96,10 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
 
       if (!list) return
       if (id)
-        subscriptionActions.changeListView(id, views[list.view]!.view, views[values.view].view)
+        subscriptionSyncService.changeListView({
+          listId: id,
+          view: views[values.view].view,
+        })
     },
     onError: createErrorToaster(id ? t("lists.edit.error") : t("lists.created.error")),
   })
@@ -223,13 +227,13 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
     },
   })
 
-  const allFeeds = useAllFeeds()
+  const allFeeds = useAllFeedSubscription()
   const autocompleteSuggestions: Suggestion[] = useMemo(() => {
     return allFeeds
-      .filter((feed) => !list?.feedIds?.includes(feed.id))
+      .filter((feed) => !feed.feedId || !list?.feedIds?.includes(feed.feedId))
       .map((feed) => ({
-        name: feed.title,
-        value: feed.id,
+        name: feed.title || "",
+        value: feed.feedId || "",
       }))
   }, [allFeeds, list?.feedIds])
 

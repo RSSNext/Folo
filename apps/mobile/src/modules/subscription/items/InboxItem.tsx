@@ -1,4 +1,4 @@
-import { useSubscription } from "@follow/store/subscription/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { getInboxStoreId } from "@follow/store/subscription/utils"
 import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
@@ -20,7 +20,7 @@ import type { SubscriptionItemBaseProps } from "./types"
 import { UnreadCount } from "./UnreadCount"
 
 export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProps) => {
-  const subscription = useSubscription(getInboxStoreId(id))
+  const subscription = useSubscriptionById(getInboxStoreId(id))
   const unreadCount = useUnreadById(id)
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()

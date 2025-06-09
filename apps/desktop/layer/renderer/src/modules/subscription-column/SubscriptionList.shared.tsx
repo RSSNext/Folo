@@ -2,8 +2,12 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
-import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
-import { useUnreadByView } from "@follow/store/unread/hooks"
+import {
+  useCategoryOpenStateByView,
+  usePrefetchSubscription,
+} from "@follow/store/subscription/hooks"
+import { subscriptionActions } from "@follow/store/subscription/store"
+import { usePrefetchUnread, useUnreadByView } from "@follow/store/unread/hooks"
 import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -18,9 +22,6 @@ import { IconOpacityTransition } from "~/components/ux/transition/icon"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteFeedId } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
-import { subscriptionActions, useCategoryOpenStateByView } from "~/store/subscription"
 
 import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "./atom"
 import { feedColumnStyles } from "./styles"
@@ -29,13 +30,7 @@ import { UnreadNumber } from "./UnreadNumber"
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
   usePrefetchSubscription()
   usePrefetchSessionUser()
-  useAuthQuery(Queries.subscription.all())
-  useAuthQuery(Queries.subscription.unreadAll(), {
-    // 10 minute
-    refetchInterval: 1000 * 60 * 10,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-  })
+  usePrefetchUnread()
 
   const { t } = useTranslation()
   const categoryOpenStateData = useCategoryOpenStateByView(view)

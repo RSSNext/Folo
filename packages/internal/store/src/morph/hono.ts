@@ -5,7 +5,7 @@ import type { CollectionModel } from "../collection/types"
 import type { EntryModel } from "../entry/types"
 import type { FeedModel } from "../feed/types"
 import type { ListModel } from "../list/types"
-import type { SubscriptionModel } from "../subscription/store"
+import type { SubscriptionModel } from "../subscription/types"
 import type { MeModel } from "../user/store"
 import type { HonoApiClient } from "./types"
 

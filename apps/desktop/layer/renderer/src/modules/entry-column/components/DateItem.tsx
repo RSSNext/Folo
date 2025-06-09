@@ -1,5 +1,6 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { FeedViewType } from "@follow/constants"
+import { useIsListSubscription } from "@follow/store/subscription/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
@@ -11,7 +12,6 @@ import { SafeFragment } from "~/components/common/Fragment"
 import { RelativeDay } from "~/components/ui/datetime"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { isListSubscription } from "~/store/subscription"
 
 import { markAllByRoute } from "../hooks/useMarkAll"
 
@@ -83,7 +83,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   const W = Wrapper ?? SafeFragment
 
   const { feedId } = useRouteParams()
-  const isList = isListSubscription(feedId)
+  const isList = useIsListSubscription(feedId)
 
   const RelativeElement = (
     <span key="b" className="inline-flex items-center">

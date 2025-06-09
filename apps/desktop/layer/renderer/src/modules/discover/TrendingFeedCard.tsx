@@ -1,8 +1,7 @@
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import type { FC } from "react"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-
-import { useIsSubscribed } from "~/store/subscription"
 
 import { FollowSummary } from "../feed/feed-summary"
 import type { DiscoverItem } from "./DiscoverFeedCard"

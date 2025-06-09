@@ -10,7 +10,7 @@ import { createImmerSetter, createTransaction, createZustandStore } from "../int
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
-import { getSubscription } from "../subscription/getter"
+import { getSubscriptionById } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
 import type { PublishAtTimeRangeFilter } from "../unread/types"
 import { whoami } from "../user/getters"
@@ -81,7 +81,7 @@ class EntryActions implements Hydratable {
   }) {
     if (!feedId) return
 
-    const subscription = getSubscription(feedId)
+    const subscription = getSubscriptionById(feedId)
     const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
     if (typeof subscription?.view === "number" && !ignore) {
@@ -90,7 +90,7 @@ class EntryActions implements Hydratable {
 
     // lists
     for (const s of sources ?? []) {
-      const subscription = getSubscription(s)
+      const subscription = getSubscriptionById(s)
       const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
       if (typeof subscription?.view === "number" && !ignore) {
@@ -109,7 +109,7 @@ class EntryActions implements Hydratable {
     entryId: EntryId
   }) {
     if (!feedId) return
-    const subscription = getSubscription(feedId)
+    const subscription = getSubscriptionById(feedId)
     const category = subscription?.category || getDefaultCategory(subscription)
     if (!category) return
     const entryIdSetByCategory = draft.entryIdByCategory[category]
@@ -440,7 +440,7 @@ class EntrySyncServices {
       }
 
       if (params.feedIdList && params.feedIdList.length > 0) {
-        const firstSubscription = getSubscription(params.feedIdList[0])
+        const firstSubscription = getSubscriptionById(params.feedIdList[0])
         const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
         if (category) {
           entryActions.resetByCategory({ category, entries })

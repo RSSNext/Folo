@@ -2,7 +2,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById, usePrefetchLists } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import {
-  useFeedSubscriptionByView,
+  useFeedSubscriptionIdsByView,
   usePrefetchSubscription,
   useSortedFeedSubscriptionByAlphabet,
 } from "@follow/store/subscription/hooks"
@@ -101,7 +101,7 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   const list = useListById(id)!
   usePrefetchSubscription(list.view)
 
-  const subscriptionIds = useFeedSubscriptionByView(list.view)
+  const subscriptionIds = useFeedSubscriptionIdsByView(list.view)
 
   const sortedSubscriptionIds = useSortedFeedSubscriptionByAlphabet(subscriptionIds)
 

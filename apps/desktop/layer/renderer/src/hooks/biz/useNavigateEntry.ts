@@ -2,6 +2,7 @@ import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/at
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
 import type { FeedViewType } from "@follow/constants"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
 import { useCallback } from "react"
 
@@ -17,14 +18,13 @@ import {
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
-import { getSubscriptionByFeedId } from "~/store/subscription"
 
 export type NavigateEntryOptions = Partial<{
   timelineId: string
   feedId: string | null
   entryId: string | null
   view: FeedViewType
-  folderName: string
+  folderName: string | null
   inboxId: string
   listId: string
   backPath: string

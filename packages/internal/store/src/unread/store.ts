@@ -259,7 +259,8 @@ class UnreadActions implements Hydratable, Resetable {
     return count > 0 ? this.addUnread(id, count) : this.removeUnread(id, -count)
   }
 
-  async updateById(id: FeedIdOrInboxHandle, count: number) {
+  async updateById(id: FeedIdOrInboxHandle | undefined | null, count: number) {
+    if (!id) return
     const state = useUnreadStore.getState()
     const cur = state.data[id] ?? 0
     if (cur === count) return

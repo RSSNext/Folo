@@ -1,5 +1,3 @@
-import type { SubscriptionFlatModel } from "~/store/subscription"
-
-export type DB_Subscription = SubscriptionFlatModel & {
+export type DB_Subscription = any & {
   id: string
 }

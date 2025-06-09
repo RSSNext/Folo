@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect } from "react"
 
 import { useListFeedIds } from "../list/hooks"
-import { useSubscriptionByView } from "../subscription/hooks"
+import { useSubscriptionIdsByView } from "../subscription/hooks"
 import { unreadCountAllSelector, unreadCountIdSelector, unreadCountIdsSelector } from "./selectors"
 import { unreadSyncService, useUnreadStore } from "./store"
 
@@ -56,7 +56,7 @@ export const useUnreadByListId = (listId: string) => {
 }
 
 export const useUnreadByView = (view: FeedViewType) => {
-  const subscriptionIds = useSubscriptionByView(view)
+  const subscriptionIds = useSubscriptionIdsByView(view)
   return useUnreadByIds(subscriptionIds)
 }
 

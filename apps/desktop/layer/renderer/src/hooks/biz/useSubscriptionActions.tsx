@@ -1,4 +1,6 @@
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
+import type { SubscriptionModel } from "@follow/store/subscription/types"
 import { unreadActions } from "@follow/store/unread/store"
 import { useMutation } from "@tanstack/react-query"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -6,9 +8,6 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { apiClient } from "~/lib/api-fetch"
-import { subscription as subscriptionQuery } from "~/queries/subscriptions"
-import type { SubscriptionFlatModel } from "~/store/subscription"
-import { subscriptionActions } from "~/store/subscription"
 
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -21,19 +20,19 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
       subscription,
       feedIdList,
     }: {
-      subscription?: SubscriptionFlatModel
+      subscription?: SubscriptionModel
       feedIdList?: string[]
     }) => {
       if (feedIdList) {
-        await subscriptionActions.unfollow(feedIdList)
+        await subscriptionSyncService.unsubscribe(feedIdList)
         toast.success(t("notify.unfollow_feed_many"))
         return
       }
 
       if (!subscription) return
 
-      subscriptionActions.unfollow([subscription.feedId]).then(([feed]) => {
-        subscriptionQuery.all().invalidate()
+      subscriptionSyncService.unsubscribe([subscription.feedId]).then(([feed]) => {
+        subscriptionSyncService.fetch()
         unreadActions.updateById(subscription.feedId, 0)
 
         if (!subscription) return
@@ -51,7 +50,7 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
           })
           unreadActions.upsertMany(unread)
 
-          subscriptionQuery.all().invalidate()
+          subscriptionSyncService.fetch()
 
           toast.dismiss(toastId)
         }
@@ -115,9 +114,9 @@ export const useBatchUpdateSubscription = () => {
       category?: string | null
       view: number
     }) => {
-      await subscriptionActions.batchUpdateSubscription({
+      await subscriptionSyncService.batchUpdateSubscription({
         category,
-        feedIdList,
+        feedIds: feedIdList,
         view,
       })
     },

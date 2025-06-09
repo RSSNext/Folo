@@ -1,10 +1,10 @@
 import { useFeedStore } from "@follow/store/feed/store"
+import { useSubscriptionStore } from "@follow/store/subscription/store"
 import { getInboxHandleOrFeedIdFromFeedId } from "@follow/store/unread/utils"
 import { sortByAlphabet } from "@follow/utils/utils"
 import { Fragment, useCallback } from "react"
 
 import { getPreferredTitle } from "~/store/feed/hooks"
-import { useSubscriptionStore } from "~/store/subscription"
 
 import { useFeedListSortSelector } from "../atom"
 import { FeedCategoryAutoHideUnread } from "../FeedCategory"

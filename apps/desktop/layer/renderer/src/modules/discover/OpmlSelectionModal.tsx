@@ -4,6 +4,7 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import type { BizRespose } from "@follow/models"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { cn } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import Fuse from "fuse.js"
@@ -14,7 +15,6 @@ import { toast } from "sonner"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { apiFetch } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
-import { Queries } from "~/queries"
 
 import type { ParsedFeedItem, ParsedOpmlData } from "./types"
 
@@ -55,7 +55,7 @@ export const OpmlSelectionModal = ({
       return data
     },
     onSuccess: (data) => {
-      Queries.subscription.all().invalidateRoot()
+      subscriptionSyncService.fetch()
 
       const { successfulItems, conflictItems, parsedErrorItems } = data
 

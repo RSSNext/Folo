@@ -3,7 +3,7 @@ import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useGroupedSubscription,
-  useListSubscription,
+  useListSubscriptionIds,
   useSortedGroupedSubscription,
   useSortedListSubscription,
   useSortedUngroupedSubscription,
@@ -57,7 +57,7 @@ const SubscriptionListImpl = ({
 }) => {
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
   const autoGroup = useGeneralSettingKey("autoGroup")
-  const listIds = useListSubscription(view)
+  const listIds = useListSubscriptionIds(view)
   const sortedListIds = useSortedListSubscription({
     ids: listIds,
     sortBy: "alphabet",

@@ -6,6 +6,12 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
 import { useListById, useOwnedListByView } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
+import {
+  useCategoriesByView,
+  useSubscriptionByFeedId,
+  useSubscriptionsByFeedIds,
+} from "@follow/store/subscription/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -29,12 +35,6 @@ import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/us
 import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
-import {
-  subscriptionActions,
-  useCategoriesByView,
-  useSubscriptionByFeedId,
-  useSubscriptionsByFeedIds,
-} from "~/store/subscription"
 
 import { useNavigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -64,7 +64,7 @@ export const useFeedActions = ({
 
   const inbox = useInboxById(feedId)
   const isInbox = !!inbox
-  const subscription = useSubscriptionByFeedId(feedId)!
+  const subscription = useSubscriptionByFeedId(feedId)
 
   const subscriptions = useSubscriptionsByFeedIds(
     useMemo(() => feedIds || [feedId], [feedId, feedIds]),
@@ -104,10 +104,7 @@ export const useFeedActions = ({
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         disabled: isEntryList,
-        click: () =>
-          subscriptionActions.markReadByIds({
-            feedIds: isMultipleSelection ? feedIds : [feedId],
-          }),
+        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
         supportMultipleSelection: true,
       }),
       !related.ownerUserId &&
@@ -387,9 +384,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         click: () => {
-          subscriptionActions.markReadByIds({
-            feedIds: list.feedIds,
-          })
+          unreadSyncService.markFeedAsRead(list.feedIds)
         },
       }),
       MenuItemSeparator.default,

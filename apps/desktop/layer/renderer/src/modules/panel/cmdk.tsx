@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/t
 import type { FeedViewType } from "@follow/constants"
 import { useInputComposition } from "@follow/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { getUnreadById } from "@follow/store/unread/getters"
 import { tracker } from "@follow/tracker"
 import { clsx, cn } from "@follow/utils/utils"
@@ -32,7 +33,6 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { searchActions, useSearchStore, useSearchType } from "~/store/search"
 import { SearchType } from "~/store/search/constants"
 import type { SearchInstance } from "~/store/search/types"
-import { getSubscriptionByFeedId } from "~/store/subscription"
 
 import styles from "./cmdk.module.css"
 

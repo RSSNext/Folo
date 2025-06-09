@@ -15,6 +15,8 @@ import { FeedViewType } from "@follow/constants"
 import type { ListAnalyticsModel } from "@follow/models/types"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { unreadActions } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
@@ -33,8 +35,6 @@ import { apiClient } from "~/lib/api-fetch"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 import { entries as entriesQuery } from "~/queries/entries"
-import { subscription as subscriptionQuery } from "~/queries/subscriptions"
-import { useSubscriptionByFeedId } from "~/store/subscription"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
@@ -237,7 +237,7 @@ const ListInnerForm = ({
         const { unread } = data
         unreadActions.upsertMany(unread)
       }
-      subscriptionQuery.all().invalidate()
+      subscriptionSyncService.fetch()
 
       const listId = list.id
       if (listId) {

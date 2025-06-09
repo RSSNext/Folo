@@ -1,7 +1,7 @@
 import { capitalizeFirstLetter, parseUrl } from "@follow/utils/utils"
 
 import { getFeedById } from "../feed/getter"
-import type { SubscriptionModel } from "./store"
+import type { SubscriptionModel } from "./types"
 
 export const getInboxStoreId = (inboxId: string) => `inbox/${inboxId}`
 
