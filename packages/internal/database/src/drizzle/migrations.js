@@ -23,10 +23,6 @@ import m0019 from "./0019_wonderful_shape.sql"
 import m0020 from "./0020_little_marauders.sql"
 import m0021 from "./0021_wakeful_onslaught.sql"
 import m0022 from "./0022_tiny_northstar.sql"
-import m0023 from "./0023_tidy_alex_power.sql"
-import m0024 from "./0024_curvy_inertia.sql"
-import m0025 from "./0025_tan_mandroid.sql"
-import m0026 from "./0026_acoustic_eddie_brock.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -55,9 +51,5 @@ export default {
     m0020,
     m0021,
     m0022,
-    m0023,
-    m0024,
-    m0025,
-    m0026,
   },
 }
