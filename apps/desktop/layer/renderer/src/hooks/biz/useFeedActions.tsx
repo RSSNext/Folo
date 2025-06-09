@@ -17,7 +17,6 @@ import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useBoostModal } from "~/modules/boost/hooks"
 import { useFeedClaimModal } from "~/modules/claim"
@@ -492,17 +491,7 @@ export const useAddFeedToFeedList = (options?: {
     mutationFn: async (
       payload: { feedId: string; listId: string } | { feedIds: string[]; listId: string },
     ) => {
-      const feeds = await apiClient.lists.feeds.$post({
-        json: payload,
-      })
-
-      feeds.data.forEach((feed) =>
-        listSyncServices.addFeedsToFeedList({
-          // payload.listId, feed
-          listId: payload.listId,
-          feedIds: [feed.id],
-        }),
-      )
+      await listSyncServices.addFeedsToFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.add.success"))
@@ -523,16 +512,7 @@ export const useRemoveFeedFromFeedList = (options?: {
   const { t } = useTranslation("settings")
   return useMutation({
     mutationFn: async (payload: { feedId: string; listId: string }) => {
-      listSyncServices.removeFeedFromFeedList({
-        listId: payload.listId,
-        feedId: payload.feedId,
-      })
-      await apiClient.lists.feeds.$delete({
-        json: {
-          listId: payload.listId,
-          feedId: payload.feedId,
-        },
-      })
+      await listSyncServices.removeFeedFromFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.delete.success"))

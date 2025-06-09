@@ -149,7 +149,9 @@ class ListSyncServices {
     await tx.run()
   }
 
-  async addFeedsToFeedList(params: { listId: string; feedIds: string[] }) {
+  async addFeedsToFeedList(
+    params: { listId: string; feedIds: string[] } | { listId: string; feedId: string },
+  ) {
     const feeds = await apiClient().lists.feeds.$post({
       json: params,
     })
