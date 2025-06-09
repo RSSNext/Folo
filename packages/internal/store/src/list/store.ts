@@ -1,18 +1,14 @@
-import type { ListSchema } from "@follow/database/schemas/types"
 import { ListService } from "@follow/database/services/list"
 
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
-import type { Hydratable } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
-import { getList } from "./getters"
-import type { CreateListModel } from "./types"
+import { getListById } from "./getters"
+import type { CreateListModel, ListModel } from "./types"
 
-export type ListModel = Omit<ListSchema, "feedIds"> & {
-  feedIds: string[]
-}
 type ListId = string
 interface ListState {
   lists: Record<ListId, ListModel>
@@ -29,13 +25,14 @@ export const useListStore = createZustandStore<ListState>("list")(() => defaultS
 const get = useListStore.getState
 const set = useListStore.setState
 const immerSet = createImmerSetter(useListStore)
-class ListActions implements Hydratable {
+class ListActions implements Hydratable, Resetable {
   async hydrate() {
     const lists = await ListService.getListAll()
     listActions.upsertManyInSession(
       lists.map((list) => ({
         ...list,
         feedIds: JSON.parse(list.feedIds || "[]") as string[],
+        type: "list" as const,
       })),
     )
   }
@@ -61,31 +58,25 @@ class ListActions implements Hydratable {
     tx.run()
   }
 
-  deleteList(params: { listId: string }) {
+  async reset() {
     const tx = createTransaction()
     tx.store(() => {
-      immerSet((draft) => {
-        delete draft.lists[params.listId]
-        draft.listIds = draft.listIds.filter((id) => id !== params.listId)
-      })
+      set(defaultState)
     })
 
     tx.persist(() => {
-      return ListService.deleteList(params)
+      return ListService.reset()
     })
 
-    tx.run()
-  }
-
-  reset() {
-    set(defaultState)
+    await tx.run()
   }
 }
 
 export const listActions = new ListActions()
 
 class ListSyncServices {
-  async fetchListById(params: { id: string }) {
+  async fetchListById(params: { id: string | undefined }) {
+    if (!params.id) return null
     const list = await apiClient().lists.$get({ query: { listId: params.id } })
 
     listActions.upsertMany([honoMorph.toList(list.data.list)])
@@ -93,7 +84,7 @@ class ListSyncServices {
     return list.data
   }
 
-  async fetchOwnedLists() {
+  async fetchLists() {
     const res = await apiClient().lists.list.$get()
     listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
 
@@ -128,7 +119,7 @@ class ListSyncServices {
       json: nextModel,
     })
 
-    const list = getList(params.listId)
+    const list = getListById(params.listId)
     if (!list) return
 
     listActions.upsertMany([
@@ -140,11 +131,28 @@ class ListSyncServices {
   }
 
   async deleteList(params: { listId: string }) {
-    await apiClient().lists.$delete({ json: { listId: params.listId } })
-    listActions.deleteList({ listId: params.listId })
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet((draft) => {
+        delete draft.lists[params.listId]
+        draft.listIds = draft.listIds.filter((id) => id !== params.listId)
+      })
+    })
+
+    tx.persist(async () => {
+      await apiClient().lists.$delete({ json: { listId: params.listId } })
+    })
+
+    tx.persist(() => {
+      return ListService.deleteList(params)
+    })
+
+    await tx.run()
   }
 
-  async addFeedsToFeedList(params: { listId: string; feedIds: string[] }) {
+  async addFeedsToFeedList(
+    params: { listId: string; feedIds: string[] } | { listId: string; feedId: string },
+  ) {
     const feeds = await apiClient().lists.feeds.$post({
       json: params,
     })
@@ -157,6 +165,17 @@ class ListSyncServices {
     listActions.upsertMany([
       { ...list, feedIds: [...list.feedIds, ...feeds.data.map((feed) => feed.id)] },
     ])
+  }
+
+  async removeFeedFromFeedList(params: { listId: string; feedId: string }) {
+    await apiClient().lists.feeds.$delete({
+      json: params,
+    })
+    const list = get().lists[params.listId]
+    if (!list) return
+
+    const feedIds = list.feedIds.filter((id) => id !== params.feedId)
+    listActions.upsertMany([{ ...list, feedIds }])
   }
 }
 

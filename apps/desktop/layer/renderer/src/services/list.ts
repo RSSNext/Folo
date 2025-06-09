@@ -1,7 +1,6 @@
 import type { ListModel } from "@follow/models/types"
 
 import { browserDB } from "~/database"
-import { listActions } from "~/store/list"
 
 import { BaseService } from "./base"
 import { CleanerService } from "./cleaner"
@@ -34,10 +33,7 @@ class ServiceStatic extends BaseService<{ id: string }> implements Hydratable {
     return this.table.bulkDelete(ids)
   }
 
-  async hydrate() {
-    const lists = await ListService.findAll()
-    listActions.upsertMany(lists)
-  }
+  async hydrate() {}
 }
 
 export const ListService = new ServiceStatic()

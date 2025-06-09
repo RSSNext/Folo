@@ -17,6 +17,7 @@ export const feedsTable = sqliteTable("feeds", {
   ownerUserId: text("owner_user_id"),
   errorMessage: text("error_message"),
   tipUserIds: text("tip_users", { mode: "json" }).$type<string[]>(),
+  updatedAt: integer("published_at", { mode: "timestamp" }),
 })
 
 export const subscriptionsTable = sqliteTable("subscriptions", {
@@ -41,7 +42,7 @@ export const inboxesTable = sqliteTable("inboxes", {
 
 export const listsTable = sqliteTable("lists", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull(),
+  userId: text("user_id"),
   title: text("title").notNull(),
   feedIds: text("feed_ids", { mode: "json" }).$type<string>(),
   description: text("description"),

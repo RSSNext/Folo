@@ -6,8 +6,6 @@ import { useTranslation } from "react-i18next"
 
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
@@ -35,7 +33,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   const { t } = useTranslation()
 
   // Data prefetch
-  useAuthQuery(Queries.lists.list())
+  // useAuthQuery(Queries.lists.list())
 
   const hasListData = Object.keys(listsData).length > 0
   const hasInboxData = Object.keys(inboxesData).length > 0

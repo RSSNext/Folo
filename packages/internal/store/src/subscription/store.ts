@@ -247,6 +247,9 @@ class SubscriptionSyncService {
         {
           ...data.list,
           userId: data.list.ownerUserId,
+          type: "list",
+          subscriptionCount: null,
+          purchaseAmount: null,
         },
       ])
       tracker.subscribe({ listId: data.list.id, view: subscription.view })

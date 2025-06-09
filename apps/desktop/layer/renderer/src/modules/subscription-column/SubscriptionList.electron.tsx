@@ -6,6 +6,7 @@ import {
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { useInboxList } from "@follow/store/inbox/hooks"
+import { useListById } from "@follow/store/list/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions, isKeyForMultiSelectPressed } from "@follow/utils/utils"
@@ -16,10 +17,7 @@ import { useEventCallback, useEventListener } from "usehooks-ts"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
 import { useFeedQuery } from "~/queries/feed"
-import { useList } from "~/queries/lists"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
@@ -61,7 +59,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const { t } = useTranslation()
 
   // Data prefetch
-  useAuthQuery(Queries.lists.list())
+  // useAuthQuery(Queries.lists.list())
 
   const hasListData = Object.keys(listsData).length > 0
   const hasInboxData = Object.keys(inboxesData).length > 0
@@ -139,7 +137,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const isListPreview = isPreview && listId
 
   useFeedQuery({ id: isFeedPreview ? feedId : undefined })
-  useList({ id: isListPreview ? listId : undefined })
+  useListById(isListPreview ? listId : undefined)
 
   useRegisterCommand()
 

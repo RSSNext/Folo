@@ -22,6 +22,8 @@ import {
 } from "@follow/components/ui/table/index.jsx"
 import { views } from "@follow/constants"
 import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -35,14 +37,11 @@ import type { Suggestion } from "~/components/ui/auto-completion"
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useAddFeedToFeedList, useRemoveFeedFromFeedList } from "~/hooks/biz/useFeedActions"
-import { apiClient } from "~/lib/api-fetch"
 import { createErrorToaster } from "~/lib/error-parser"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
-import { Queries } from "~/queries"
-import { useListById } from "~/store/list"
 import { subscriptionActions, useAllFeeds } from "~/store/subscription"
 
 const formSchema = z.object({
@@ -73,16 +72,16 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
   const createMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       if (id) {
-        await apiClient.lists.$patch({
-          json: {
-            listId: id,
+        await listSyncServices.updateList({
+          listId: id,
+          list: {
             ...values,
             view: Number.parseInt(values.view),
           },
         })
       } else {
-        await apiClient.lists.$post({
-          json: {
+        await listSyncServices.createList({
+          list: {
             ...values,
             view: Number.parseInt(values.view),
           },
@@ -91,7 +90,7 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
     },
     onSuccess: (_, values) => {
       toast.success(t(id ? "lists.edit.success" : "lists.created.success"))
-      Queries.lists.list().invalidate()
+      // Queries.lists.list().invalidate()
       dismiss()
 
       if (!list) return

@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedModel } from "@follow/store/feed/types"
-import type { ListModel } from "@follow/store/list/store"
+import type { ListModel } from "@follow/store/list/types"
 import { getSubscription } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { useUser, useWhoami } from "@follow/store/user/hooks"

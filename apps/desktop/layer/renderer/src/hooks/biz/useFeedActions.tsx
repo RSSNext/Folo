@@ -4,6 +4,8 @@ import { env } from "@follow/shared/env.desktop"
 import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
+import { useListById, useOwnedListByView } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -15,7 +17,6 @@ import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useBoostModal } from "~/modules/boost/hooks"
 import { useFeedClaimModal } from "~/modules/claim"
@@ -28,7 +29,6 @@ import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/us
 import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
-import { listActions, useListById, useOwnedListByView } from "~/store/list"
 import {
   subscriptionActions,
   useCategoriesByView,
@@ -491,11 +491,7 @@ export const useAddFeedToFeedList = (options?: {
     mutationFn: async (
       payload: { feedId: string; listId: string } | { feedIds: string[]; listId: string },
     ) => {
-      const feeds = await apiClient.lists.feeds.$post({
-        json: payload,
-      })
-
-      feeds.data.forEach((feed) => listActions.addFeedToFeedList(payload.listId, feed))
+      await listSyncServices.addFeedsToFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.add.success"))
@@ -516,13 +512,7 @@ export const useRemoveFeedFromFeedList = (options?: {
   const { t } = useTranslation("settings")
   return useMutation({
     mutationFn: async (payload: { feedId: string; listId: string }) => {
-      listActions.removeFeedFromFeedList(payload.listId, payload.feedId)
-      await apiClient.lists.feeds.$delete({
-        json: {
-          listId: payload.listId,
-          feedId: payload.feedId,
-        },
-      })
+      await listSyncServices.removeFeedFromFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.delete.success"))
