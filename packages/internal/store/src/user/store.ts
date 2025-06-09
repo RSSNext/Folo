@@ -151,7 +151,8 @@ class UserSyncService {
     return res
   }
 
-  async fetchUser(userId: string) {
+  async fetchUser(userId: string | undefined) {
+    if (!userId) return null
     const res = await apiClient().profiles.$get({ query: { id: userId } })
     if (res.code === 0) {
       const { whoami } = get()

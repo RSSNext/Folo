@@ -1,7 +1,8 @@
+import { userActions } from "@follow/store/user/store"
+
 import { apiClient } from "~/lib/api-fetch"
 
 import { entryActions } from "../entry/store"
-import { userActions } from "../user"
 
 class EntryHistoryActions {
   async fetchEntryHistory(entryId: string) {
@@ -15,7 +16,7 @@ class EntryHistoryActions {
       },
     })
 
-    userActions.upsert(data.users)
+    userActions.upsertMany(Object.values(data.users || {}))
     if (data.entryReadHistories) {
       entryActions.updateReadHistory(entryId, data.entryReadHistories)
     }

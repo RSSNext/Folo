@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { clsx, cn } from "@follow/utils/utils"
@@ -17,13 +18,9 @@ import { useTranslation } from "react-i18next"
 import { m } from "~/components/common/Motion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
-import { defineQuery } from "~/lib/defineQuery"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { useUserById } from "~/store/user"
 
 import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
 import { SubscriptionItems } from "./user-profile-modal.shared"
@@ -39,14 +36,7 @@ const itemVariantAtom = atomWithStorage(
 )
 export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ userId, variant }) => {
   const { t } = useTranslation()
-  const user = useAuthQuery(
-    defineQuery(["profiles", userId], async () => {
-      const res = await apiClient.profiles.$get({
-        query: { id: userId! },
-      })
-      return res.data
-    }),
-  )
+  const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
   const userInfo = user.data

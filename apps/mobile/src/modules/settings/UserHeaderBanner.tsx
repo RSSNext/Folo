@@ -1,5 +1,5 @@
 import { useImageColors, usePrefetchImageColors } from "@follow/store/image/hooks"
-import { useUser } from "@follow/store/user/hooks"
+import { useUserById } from "@follow/store/user/hooks"
 import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import { useMemo } from "react"
@@ -25,7 +25,7 @@ export const UserHeaderBanner = ({
   const bgColor = useColor("systemGroupedBackground")
   const avatarIconColor = useColor("secondaryLabel")
 
-  const user = useUser(userId)
+  const user = useUserById(userId)
   usePrefetchImageColors(user?.image)
   const insets = useSafeAreaInsets()
 
