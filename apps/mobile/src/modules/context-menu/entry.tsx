@@ -157,7 +157,6 @@ export const EntryItemContextMenu = ({
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId: id,
                   view,
                 })

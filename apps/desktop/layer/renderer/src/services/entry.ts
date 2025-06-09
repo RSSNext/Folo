@@ -1,9 +1,6 @@
 import type { EntryModel } from "@follow/models/types"
 
 import { browserDB } from "~/database"
-import { appLog } from "~/lib/log"
-import type { FlatEntryModel } from "~/store/entry"
-import { entryActions, useEntryStore } from "~/store/entry"
 
 import { BaseService } from "./base"
 import { CleanerService } from "./cleaner"
@@ -92,48 +89,7 @@ class EntryServiceStatic extends BaseService<EntryModel> implements Hydratable {
     ])
   }
 
-  async hydrate() {
-    const [entries, entryRelated, feedEntries, collections] = await Promise.all([
-      EntryService.findAll(),
-
-      EntryRelatedService.findAll(EntryRelatedKey.READ),
-      EntryRelatedService.findAll(EntryRelatedKey.FEED_ID),
-      EntryRelatedService.findAll(EntryRelatedKey.COLLECTION),
-    ])
-
-    const storeValue = [] as FlatEntryModel[]
-    const dirtyEntryIds = [] as string[]
-    for (const entry of entries) {
-      const entryRelatedFeedId = entry.feedId || feedEntries[entry.id]
-      if (!entryRelatedFeedId) {
-        appLog(`[Data hydrate warning]: Entry ${entry.id} has no related feed id`)
-        dirtyEntryIds.push(entry.id)
-        continue
-      }
-
-      storeValue.push({
-        entries: entry,
-        feedId: entryRelatedFeedId,
-        read: entryRelated[entry.id] || false,
-        collections: collections[entry.id] as {
-          createdAt: string
-        },
-        inboxId: entry.inboxId,
-      })
-    }
-    entryActions.hydrate(storeValue)
-    useEntryStore.setState({
-      starIds: new Set(Object.keys(collections)),
-    })
-
-    if (dirtyEntryIds.length > 0) {
-      // Remove entries that have no related feed id
-      EntryService.deleteEntries(dirtyEntryIds)
-      appLog(
-        `[Data hydrate warning]: Entry ${dirtyEntryIds.join(", ")} has no related feed id, cleanup..`,
-      )
-    }
-  }
+  async hydrate() {}
 }
 
 export const EntryService = new EntryServiceStatic()

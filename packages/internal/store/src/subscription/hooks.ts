@@ -250,7 +250,7 @@ export const useSortedFeedSubscriptionByAlphabet = (ids: string[]) => {
   )
 }
 
-export const useSubscriptionById = (id: string | undefined) => {
+export const useSubscriptionById = (id: string | undefined | null) => {
   return useSubscriptionStore(
     useCallback(
       (state) => {
@@ -271,9 +271,11 @@ export const useSubscriptionsByIds = (ids: string[]) => {
   )
 }
 
-export const useSubscriptionByFeedId = (feedId: string | undefined) => useSubscriptionById(feedId)
+export const useSubscriptionByFeedId = (feedId: string | undefined | null) =>
+  useSubscriptionById(feedId)
 export const useSubscriptionsByFeedIds = (feedIds: string[]) => useSubscriptionsByIds(feedIds)
-export const useSubscriptionByListId = (listId: string | undefined) => useSubscriptionById(listId)
+export const useSubscriptionByListId = (listId: string | undefined | null) =>
+  useSubscriptionById(listId)
 
 export const useAllListSubscription = () => {
   return useSubscriptionStore(

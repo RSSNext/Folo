@@ -1,16 +1,16 @@
+import { useEntry } from "@follow/store/entry/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { formatTimeToSeconds } from "@follow/utils/utils"
 import { use } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
-import { useEntry } from "~/store/entry"
 
 import { EntryInfoContext } from "../context"
 
 export const TimeStamp = (props: { time: string }) => {
   const { entryId } = use(EntryInfoContext)
   const entry = useEntry(entryId, (state) => {
-    const attachments = state.entries.attachments || []
+    const attachments = state.attachments || []
     const firstAttachment = attachments[0]
     const { duration_in_seconds, url: firstAttachmentUrl } = firstAttachment || {}
     const seconds = duration_in_seconds ? (formatTimeToSeconds(duration_in_seconds) ?? 0) : 0

@@ -2,6 +2,7 @@ import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDanger
 import { ScrollElementContext } from "@follow/components/ui/scroll-area/ctx.js"
 import { useTitle } from "@follow/hooks"
 import type { FeedModel } from "@follow/models/types"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
@@ -17,7 +18,6 @@ import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
-import { useEntry } from "~/store/entry"
 
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
@@ -68,11 +68,11 @@ export const EntryContent: Component<{
   }, [navigateEntry, params])
 
   const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxId } = state
+    const { feedId, inboxHandle } = state
     const { readability, sourceContent } = state.settings || {}
-    const { title, url } = state.entries
+    const { title, url } = state
 
-    return { feedId, inboxId, readability, sourceContent, title, url }
+    return { feedId, inboxId: inboxHandle, readability, sourceContent, title, url }
   })
   const mediaInfo = useEntryMediaInfo(entryId)
 

@@ -9,7 +9,9 @@ import { useMasonryColumn } from "@follow/components/ui/masonry/hooks.js"
 import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
+import { FeedViewType } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
+import { getEntry } from "@follow/store/entry/getter"
 import { clsx } from "@follow/utils/utils"
 import type { RenderComponentProps } from "masonic"
 import { useInfiniteLoader } from "masonic"
@@ -31,7 +33,6 @@ import { useEventCallback } from "usehooks-ts"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { MediaContainerWidthProvider } from "~/components/ui/media"
 import { useEntryTranslation } from "~/store/ai/hook"
-import { getEntry } from "~/store/entry"
 import { imageActions } from "~/store/image"
 
 import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
@@ -58,7 +59,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
       const entry = getEntry(entryId)
       if (!entry) return
 
-      images.push(...imageActions.getImagesFromEntry(entry.entries))
+      images.push(...imageActions.getImagesFromEntry(entry))
     })
     return imageActions.fetchDimensionsFromDb(images)
   })
@@ -258,7 +259,7 @@ const MasonryRender: React.ComponentType<
   }>
 > = ({ data, index }) => {
   const firstScreenReady = use(FirstScreenReadyContext)
-  const translation = useEntryTranslation({ entryId: data.entryId })
+  const translation = useEntryTranslation({ entryId: data.entryId, view: FeedViewType.Pictures })
 
   if (data.entryId.startsWith("placeholder")) {
     return <LoadingSkeletonItem />

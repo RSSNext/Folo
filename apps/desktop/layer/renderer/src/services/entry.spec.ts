@@ -2,9 +2,7 @@ import { sleep } from "@follow/utils/utils"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 
 import { browserDB } from "~/database"
-import { entryActions } from "~/store/entry/store"
 
-import mockEntiresData from "./__mock__data__/entries.json"
 import { EntryService } from "./entry"
 import { EntryRelatedKey, EntryRelatedService } from "./entry-related"
 
@@ -16,7 +14,7 @@ describe.concurrent("Entry Service", () => {
   })
   beforeEach(async () => {
     await browserDB.open()
-    entryActions.upsertMany(mockEntiresData as any[])
+    // entryActions.upsertMany(mockEntiresData as any[])
     await sleep(1)
   })
 

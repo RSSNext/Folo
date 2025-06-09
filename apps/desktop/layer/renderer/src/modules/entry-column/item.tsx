@@ -1,9 +1,9 @@
 import type { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import type { FC } from "react"
 import { memo } from "react"
 
 import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry } from "~/store/entry/hooks"
 
 import { getItemComponentByView } from "./Items/getItemComponentByView"
 import { EntryItemWrapper } from "./layouts/EntryItemWrapper"
@@ -11,18 +11,18 @@ import type { EntryListItemFC } from "./types"
 
 interface EntryItemProps {
   entryId: string
-  view?: number
+  view: FeedViewType
 }
 const EntryItemImpl = memo(function EntryItemImpl({
   entryId,
   view,
 }: {
   entryId: string
-  view?: number
+  view: FeedViewType
 }) {
-  const translation = useEntryTranslation({ entryId })
+  const translation = useEntryTranslation({ entryId, view })
 
-  const Item: EntryListItemFC = getItemComponentByView(view as FeedViewType)
+  const Item: EntryListItemFC = getItemComponentByView(view)
 
   return (
     <EntryItemWrapper itemClassName={Item.wrapperClassName} entryId={entryId} view={view}>

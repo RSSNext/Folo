@@ -1,5 +1,6 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
 import { FeedService } from "@follow/database/services/feed"
+import { isBizId } from "@follow/utils"
 
 import { apiClient } from "../context"
 import type { Hydratable, Resetable } from "../internal/base"
@@ -83,6 +84,11 @@ type FeedQueryParams = {
 
 class FeedSyncServices {
   async fetchFeedById({ id, url }: FeedQueryParams) {
+    const isFeedId = isBizId(id)
+    if (!isFeedId) {
+      return null
+    }
+
     const res = await apiClient().feeds.$get({
       query: {
         id,

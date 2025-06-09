@@ -3,8 +3,10 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
@@ -27,7 +29,6 @@ import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useEntry } from "~/store/entry"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -115,20 +116,29 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const playerValue = { entryId, status, isMute }
 
   const entry = useEntry(playerValue.entryId, (state) => {
-    const { feedId, inboxId, view } = state
-    const { authorAvatar, id, title } = state.entries
+    const { feedId, inboxHandle } = state
+    const { authorAvatar, id, title } = state
 
-    const media = state.entries.media || []
+    const media = state.media || []
     const firstMedia = media[0]
     const firstPhoto = media.find((a) => a.type === "photo")
     const firstPhotoUrl = firstPhoto?.url
     const entryCoverImage = firstMedia?.preview_image_url || firstMedia?.url || firstPhotoUrl
     const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 
-    return { authorAvatar, feedId, iconEntry, id, inboxId, title, view, entryCoverImage }
+    return {
+      authorAvatar,
+      feedId,
+      iconEntry,
+      id,
+      inboxId: inboxHandle,
+      title,
+      entryCoverImage,
+    }
   })
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
+  const subscription = useSubscriptionByFeedId(entry?.feedId)
   const list = useListById(listId)
 
   useCommandBinding({
@@ -188,13 +198,13 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     } else if (feed) {
       Object.assign(options, {
         feedId: feed.id,
-        view: entry.view ?? FeedViewType.Audios,
+        view: subscription?.view ?? FeedViewType.Audios,
       })
     } else {
       return null
     }
     return options
-  }, [entry, feed, isInbox, list])
+  }, [entry, feed, isInbox, list, subscription?.view])
   if (!entry || !feed) return null
 
   return (

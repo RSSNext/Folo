@@ -1,4 +1,4 @@
-import { useIsInbox } from "@follow/store/inbox/hooks"
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { tracker } from "@follow/tracker"
 import { createElement, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -10,10 +10,7 @@ import {
   useEntryReadabilityContent,
 } from "~/atoms/readability"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useAuthQuery } from "~/hooks/common/useBizQuery"
-import { Queries } from "~/queries"
 import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry } from "~/store/entry/hooks"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
 
@@ -43,17 +40,10 @@ export const useGalleryModal = () => {
 
 export const useEntryContent = (entryId: string) => {
   const entry = useEntry(entryId, (state) => {
-    const { inboxId } = state
-    const { content } = state.entries
-    return { inboxId, content }
+    const { inboxHandle, content } = state
+    return { inboxId: inboxHandle, content }
   })
-  const isInbox = useIsInbox(entry?.inboxId)
-  const { error, data, isPending } = useAuthQuery(
-    isInbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
-    {
-      staleTime: 300_000,
-    },
-  )
+  const { error, data, isPending } = usePrefetchEntryDetail(entryId)
 
   const isInReadabilityMode = useEntryIsInReadability(entryId)
   const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
@@ -61,12 +51,13 @@ export const useEntryContent = (entryId: string) => {
   const contentTranslated = useEntryTranslation({
     entryId,
     extraFields: isReadabilitySuccess ? ["readabilityContent"] : ["content"],
+    view: undefined,
   })
 
   return useMemo(() => {
     const entryContent = isInReadabilityMode
       ? readabilityContent?.content
-      : (entry?.content ?? data?.entries.content)
+      : (entry?.content ?? data?.content)
     const translatedContent = isInReadabilityMode
       ? contentTranslated.data?.readabilityContent
       : contentTranslated.data?.content
@@ -79,7 +70,7 @@ export const useEntryContent = (entryId: string) => {
   }, [
     contentTranslated.data?.content,
     contentTranslated.data?.readabilityContent,
-    data?.entries.content,
+    data?.content,
     entry?.content,
     error,
     isInReadabilityMode,
@@ -91,7 +82,7 @@ export const useEntryContent = (entryId: string) => {
 export const useEntryMediaInfo = (entryId: string) => {
   return useEntry(entryId, (entry) =>
     Object.fromEntries(
-      entry?.entries.media
+      entry?.media
         ?.filter((m) => m.type === "photo")
         .map((cur) => [
           cur.url,

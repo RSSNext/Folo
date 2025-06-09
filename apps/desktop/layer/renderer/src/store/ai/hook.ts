@@ -1,3 +1,5 @@
+import type { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useMemo } from "react"
 
 import { useShowAITranslation, useShowAITranslationAuto } from "~/atoms/ai-translation"
@@ -5,17 +7,16 @@ import { useActionLanguage } from "~/atoms/settings/general"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { Queries } from "~/queries"
 
-import { useEntry } from "../entry"
-
 export function useEntryTranslation({
   entryId,
   extraFields,
+  view,
 }: {
   entryId?: string
   extraFields?: string[]
+  view: FeedViewType | undefined
 }) {
   const entry = useEntry(entryId, (state) => ({
-    view: state.view,
     translation: state.settings?.translation,
   }))
   const actionLanguage = useActionLanguage()
@@ -27,7 +28,7 @@ export function useEntryTranslation({
   const res = useAuthQuery(
     Queries.ai.translation({
       entryId,
-      view: entry?.view,
+      view,
       language: actionLanguage,
       extraFields,
     }),

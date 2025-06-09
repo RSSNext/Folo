@@ -94,7 +94,6 @@ const HeaderRightActionsImpl = ({
       ? collectionSyncService.unstarEntry(entryId)
       : collectionSyncService.starEntry({
           entryId,
-          feedId: feed.feedId,
           view: subscription.view,
         })
   }

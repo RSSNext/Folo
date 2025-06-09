@@ -1,11 +1,11 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { getEntry } from "@follow/store/entry/getter"
 import { cn } from "@follow/utils/utils"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
-import { getEntry } from "~/store/entry"
 
 interface SharePanelProps {
   entryId: string
@@ -71,7 +71,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
     (entry: ReturnType<typeof getEntry>) => {
       if (!entry) return null
 
-      const { title, description } = entry.entries
+      const { title, description } = entry
       const shareUrl = globalThis.location.href
 
       // Limit text to 50 characters with ellipsis
@@ -183,7 +183,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
         <h3 className="text-text mb-2 mt-1 font-semibold">{t("share.title")}</h3>
         {(() => {
           const entry = getEntry(entryId)
-          const title = entry?.entries?.title
+          const title = entry?.title
           return title ? (
             <p className="text-text-secondary mt-1 min-w-0 text-wrap text-left text-sm font-medium">
               {title}

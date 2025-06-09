@@ -85,7 +85,6 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
                   toast.success("Unstarred")
                 } else {
                   collectionSyncService.starEntry({
-                    feedId,
                     entryId,
                     view,
                   })

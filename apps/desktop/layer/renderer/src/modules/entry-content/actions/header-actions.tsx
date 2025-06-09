@@ -1,5 +1,6 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import type { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -8,7 +9,6 @@ import { useHasModal } from "~/components/ui/modal/stacked/hooks"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
-import { useEntry } from "~/store/entry/hooks"
 
 export const EntryHeaderActions = ({
   entryId,
@@ -16,11 +16,11 @@ export const EntryHeaderActions = ({
   compact,
 }: {
   entryId: string
-  view?: FeedViewType
+  view: FeedViewType
   compact?: boolean
 }) => {
   const { mainAction: actionConfigs } = useSortedEntryActions({ entryId, view, compact })
-  const entry = useEntry(entryId, (state) => ({ url: state.entries.url }))
+  const entry = useEntry(entryId, (state) => ({ url: state.url }))
 
   const hasModal = useHasModal()
 

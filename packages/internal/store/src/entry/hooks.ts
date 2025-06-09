@@ -103,10 +103,11 @@ export const useEntryIdsByView = (view: FeedViewType) => {
   )
 }
 
-export const useEntryIdsByFeedId = (feedId: string) => {
+export const useEntryIdsByFeedId = (feedId: string | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        if (!feedId) return null
         const ids = state.entryIdByFeed[feedId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -116,10 +117,24 @@ export const useEntryIdsByFeedId = (feedId: string) => {
   )
 }
 
-export const useEntryIdsByInboxId = (inboxId: string) => {
+export const useEntryIdsByFeedIds = (feedIds: string[]) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        const ids = feedIds.flatMap((feedId) => Array.from(state.entryIdByFeed[feedId] || []))
+        if (!ids) return null
+        return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
+      },
+      [feedIds.toString()],
+    ),
+  )
+}
+
+export const useEntryIdsByInboxId = (inboxId: string | undefined) => {
+  return useEntryStore(
+    useCallback(
+      (state) => {
+        if (!inboxId) return null
         const ids = state.entryIdByInbox[inboxId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -142,10 +157,11 @@ export const useEntryIdsByCategory = (category: string) => {
   )
 }
 
-export const useEntryIdsByListId = (listId: string) => {
+export const useEntryIdsByListId = (listId: string | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        if (!listId) return null
         const ids = state.entryIdByList[listId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -166,4 +182,18 @@ export const useEntryIsInbox = (entryId: string) => {
       [entryId],
     ),
   )
+}
+
+export const useEntryReadHistory = (entryId: string) => {
+  const isInboxEntry = useEntryIsInbox(entryId)
+  const { data } = useQuery({
+    queryKey: ["entry-read-history", entryId],
+    queryFn: () => {
+      return entrySyncServices.fetchEntryReadHistory(entryId)
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !isInboxEntry,
+  })
+
+  return data
 }

@@ -1,4 +1,5 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -9,11 +10,10 @@ import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
-import { useEntry } from "~/store/entry"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const entryContentLength = useEntry(entryId, (state) => state.entries.content?.length) || 0
+  const entryContentLength = useEntry(entryId, (state) => state.content?.length) || 0
   const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const showAISummary = useShowAISummary(summarySetting)

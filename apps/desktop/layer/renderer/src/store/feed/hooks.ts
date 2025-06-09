@@ -1,5 +1,6 @@
 import { views } from "@follow/constants"
-import type { CombinedEntryModel, FeedOrListRespModel } from "@follow/models/types"
+import type { FeedOrListRespModel } from "@follow/models/types"
+import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
@@ -15,7 +16,7 @@ import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
 export const getPreferredTitle = (
   feed?: Pick<FeedOrListRespModel, "type" | "id" | "title"> | null,
-  entry?: Pick<CombinedEntryModel["entries"], "authorUrl"> | null,
+  entry?: Pick<EntryModel, "authorUrl"> | null,
 ) => {
   if (!feed?.id) {
     return feed?.title

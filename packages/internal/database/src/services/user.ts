@@ -11,6 +11,7 @@ class UserServiceStatic {
   }
 
   async upsertMany(users: UserSchema[]) {
+    if (users.length === 0) return
     await db
       .insert(usersTable)
       .values(users)

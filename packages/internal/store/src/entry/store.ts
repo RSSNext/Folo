@@ -1,11 +1,12 @@
 import { FeedViewType } from "@follow/constants"
 import { EntryService } from "@follow/database/services/entry"
+import { cloneDeep } from "es-toolkit"
 import { debounce } from "es-toolkit/compat"
 
 import { collectionActions } from "../collection/store"
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
-import type { Hydratable, HydrationOptions } from "../internal/base"
+import type { Hydratable, HydrationOptions, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
@@ -54,9 +55,10 @@ const defaultState: EntryState = {
 
 export const useEntryStore = createZustandStore<EntryState>("entry")(() => defaultState)
 
+const get = useEntryStore.getState
 const immerSet = createImmerSetter(useEntryStore)
 
-class EntryActions implements Hydratable {
+class EntryActions implements Hydratable, Resetable {
   async hydrate(options?: HydrationOptions) {
     const entries = await EntryService.getEntriesToHydrate()
 
@@ -64,6 +66,11 @@ class EntryActions implements Hydratable {
       entries.map((e) => dbStoreMorph.toEntryModel(e)),
       options,
     )
+  }
+
+  getFlattenMapEntries() {
+    const state = get()
+    return state.data
   }
 
   private addEntryIdToView({
@@ -376,6 +383,30 @@ class EntryActions implements Hydratable {
       draft.entryIdByList[listId] = new Set(entries.map((e) => e.id))
     })
   }
+
+  deleteInboxEntryById(entryId: EntryId) {
+    const entry = get().data[entryId]
+    if (!entry || !entry.inboxHandle) return
+
+    immerSet((draft) => {
+      delete draft.data[entryId]
+      draft.entryIdSet.delete(entryId)
+      draft.entryIdByInbox[entry.inboxHandle!]?.delete(entryId)
+    })
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet(() => defaultState)
+    })
+
+    tx.persist(() => {
+      return EntryService.reset()
+    })
+
+    await tx.run()
+  }
 }
 
 class EntrySyncServices {
@@ -399,6 +430,7 @@ class EntrySyncServices {
       view,
       feedIdList,
     })
+
     const res = params.inboxId
       ? await apiClient().entries.inbox.$post({
           json: {
@@ -614,6 +646,42 @@ class EntrySyncServices {
     }
 
     readStream()
+  }
+
+  async fetchEntryReadHistory(entryId: EntryId) {
+    const res = await apiClient().entries["read-histories"][":id"].$get({
+      param: {
+        id: entryId,
+      },
+      query: {
+        size: 6,
+      },
+    })
+
+    await userActions.upsertMany(Object.values(res.data.users))
+
+    return res.data
+  }
+
+  async deleteInboxEntry(entryId: string) {
+    const entry = get().data[entryId]
+    if (!entry || !entry.inboxHandle) return
+    const tx = createTransaction()
+    const currentEntry = cloneDeep(entry)
+
+    tx.store(() => {
+      entryActions.deleteInboxEntryById(entryId)
+    })
+    tx.request(async () => {
+      await apiClient().entries.inbox.$delete({ json: { entryId } })
+    })
+    tx.rollback(() => {
+      entryActions.upsertManyInSession([currentEntry])
+    })
+    tx.persist(() => {
+      return EntryService.deleteMany([entryId])
+    })
+    await tx.run()
   }
 }
 

@@ -96,7 +96,11 @@ export const initializeApp = async () => {
   })
 
   // should after hydrateSettings
-  const { dataPersist: enabledDataPersist } = getGeneralSettings()
+  const {
+    dataPersist: enabledDataPersist,
+    hidePrivateSubscriptionsInTimeline,
+    unreadOnly,
+  } = getGeneralSettings()
 
   initSentry()
   await apm("i18n", initI18n)
@@ -105,7 +109,12 @@ export const initializeApp = async () => {
   // Initialize the database
   if (enabledDataPersist) {
     dataHydratedTime = await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
-    await apm("hydrateSqliteDatabaseToStore", hydrateSqliteDatabaseToStore)
+    await apm("hydrateSqliteDatabaseToStore", () => {
+      return hydrateSqliteDatabaseToStore({
+        hidePrivateSubscriptionsInTimeline,
+        unreadOnly,
+      })
+    })
 
     CleanerService.cleanOutdatedData()
   }

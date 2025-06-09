@@ -5,6 +5,7 @@ import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { WEB_BUILD } from "@follow/shared/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { springScrollTo } from "@follow/utils/scroller"
@@ -32,7 +33,6 @@ import {
   useWrappedElement,
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
-import { useEntry } from "~/store/entry"
 
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
@@ -50,10 +50,10 @@ export const TitleMetaHandler: Component<{
   entryId: string
 }> = ({ entryId }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxId } = state
-    const { title } = state.entries
+    const { feedId, inboxHandle } = state
+    const { title } = state
 
-    return { feedId, inboxId, title }
+    return { feedId, inboxId: inboxHandle, title }
   })
 
   const feed = useFeedById(entry?.feedId)

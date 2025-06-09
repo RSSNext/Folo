@@ -5,6 +5,7 @@ import {
   useSetStableMasonryItemRatio,
 } from "@follow/components/ui/masonry/contexts.jsx"
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import type { PropsWithChildren } from "react"
 import { memo, use, useEffect, useMemo, useState } from "react"
@@ -13,7 +14,6 @@ import { useTranslation } from "react-i18next"
 import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content"
-import { useEntry } from "~/store/entry/hooks"
 import { useImageDimensions } from "~/store/image"
 
 import { usePreviewMedia } from "../../../components/ui/media/hooks"
@@ -22,7 +22,7 @@ import { GridItem, GridItemFooter } from "../templates/grid-item-template"
 import type { UniversalItemProps } from "../types"
 
 export function PictureItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  const entry = useEntry(entryId, (state) => ({ media: state.entries.media, id: state.entries.id }))
+  const entry = useEntry(entryId, (state) => ({ media: state.media, id: state.id }))
   const entryMedia = entry?.media || entryPreview?.entries?.media || []
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
@@ -71,8 +71,8 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   className,
 }: UniversalItemProps & { index: number; className?: string }) {
   const entry = useEntry(entryId, (state) => ({
-    media: state.entries.media,
-    id: state.entries.id,
+    media: state.media,
+    id: state.id,
   }))
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)

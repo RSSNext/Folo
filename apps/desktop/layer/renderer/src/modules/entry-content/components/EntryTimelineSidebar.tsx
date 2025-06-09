@@ -1,4 +1,5 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import type { Target, TargetAndTransition } from "motion/react"
 import { m } from "motion/react"
@@ -8,7 +9,6 @@ import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useGetEntryIdInRange } from "~/modules/entry-column/hooks/useEntryIdListSnap"
-import { useEntry } from "~/store/entry"
 
 export const EntryTimelineSidebar = ({ entryId }: { entryId: string }) => {
   const isZenMode = useIsZenMode()
@@ -45,7 +45,7 @@ const animateButton: TargetAndTransition = {
 
 const TimelineItem = ({ id }: { id: string }) => {
   const entry = useEntry(id, (e) => ({
-    title: e.entries.title,
+    title: e.title,
     read: e.read,
   }))
   const asRead = useEntryIsRead(entry)

@@ -1,3 +1,4 @@
+import { entryActions } from "@follow/store/entry/store"
 import { feedActions } from "@follow/store/feed/store"
 import { inboxActions } from "@follow/store/inbox/store"
 import { listActions } from "@follow/store/list/store"
@@ -8,7 +9,6 @@ import { getStorageNS } from "@follow/utils/ns"
 import { clearUISettings } from "~/atoms/settings/ui"
 import { browserDB } from "~/database"
 
-import { entryActions } from "../entry"
 import { clearImageDimensionsDb } from "../image/db"
 
 export const clearLocalPersistStoreData = async () => {
@@ -21,8 +21,7 @@ export const clearLocalPersistStoreData = async () => {
     listActions,
     inboxActions,
   ].forEach((actions) => {
-    "clear" in actions && actions.clear()
-    "reset" in actions && actions.reset()
+    actions.reset()
   })
 
   clearUISettings()

@@ -61,7 +61,6 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId,
                   view: FeedViewType.Videos,
                 })

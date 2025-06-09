@@ -1,5 +1,7 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
+import { useCollectionEntry, useIsEntryStarred } from "@follow/store/collection/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@follow/utils/utils"
@@ -18,7 +20,6 @@ import { EntryTranslation } from "~/modules/entry-column/translation"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { useEntry } from "~/store/entry/hooks"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { StarIcon } from "../star-icon"
@@ -34,16 +35,12 @@ export function ListItem({
 }) {
   const isMobile = useMobile()
   const entry = useEntry(entryId, (state) => {
-    const { collections, feedId, inboxId, read } = state
-    const { authorAvatar, authorUrl, description, publishedAt, title } = state.entries
-    const isInCollection = !!collections
-    const collectionCreatedAt = collections?.createdAt
+    const { feedId, inboxHandle, read } = state
+    const { authorAvatar, authorUrl, description, publishedAt, title } = state
 
-    const audios = state.entries.attachments?.filter(
-      (a) => a.mime_type?.startsWith("audio") && a.url,
-    )
+    const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
     const firstAudio = audios?.[0]
-    const media = state.entries.media || []
+    const media = state.media || []
     const firstMedia = media?.[0]
     const photo = media.find((a) => a.type === "photo")
     const firstPhotoUrl = photo?.url
@@ -52,20 +49,21 @@ export function ListItem({
     const titleEntry = { authorUrl }
 
     return {
-      collectionCreatedAt,
       description,
       feedId,
       firstAudio,
       firstMedia,
       iconEntry,
-      inboxId,
-      isInCollection,
+      inboxId: inboxHandle,
       publishedAt,
       read,
       title,
       titleEntry,
     }
   })
+
+  const isInCollection = useIsEntryStarred(entryId)
+  const collectionCreatedAt = useCollectionEntry(entryId)?.createdAt
 
   const isRead = useEntryIsRead(entry)
 
@@ -116,7 +114,7 @@ export function ListItem({
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
   if (!entry || !(feed || inbox)) return null
 
-  const displayTime = inInCollection ? entry?.collectionCreatedAt : entry?.publishedAt
+  const displayTime = inInCollection ? collectionCreatedAt : entry?.publishedAt
 
   const related = feed || inbox
 
@@ -161,7 +159,7 @@ export function ListItem({
           className={cn(
             "flex gap-1 text-[10px] font-bold",
             "text-text-secondary",
-            entry?.isInCollection && "text-text-secondary",
+            isInCollection && "text-text-secondary",
           )}
         >
           <EllipsisHorizontalTextWithTooltip className="truncate">
@@ -178,7 +176,7 @@ export function ListItem({
           className={cn(
             "relative my-0.5 break-words",
             "text-text",
-            !!entry?.isInCollection && "pr-5",
+            !!isInCollection && "pr-5",
             entry?.title ? "font-medium" : "text-[13px]",
           )}
         >
@@ -195,7 +193,7 @@ export function ListItem({
               target={translation?.description}
             />
           )}
-          {!!entry?.isInCollection && <StarIcon className="absolute right-0 top-0" />}
+          {!!isInCollection && <StarIcon className="absolute right-0 top-0" />}
         </div>
         {!simple && (
           <div className={cn("text-[13px]", "text-text-secondary")}>

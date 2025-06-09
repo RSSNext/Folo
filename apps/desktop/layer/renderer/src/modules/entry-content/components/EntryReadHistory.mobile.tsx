@@ -1,16 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.js"
 import { PresentSheet } from "@follow/components/ui/sheet/Sheet.js"
+import { useEntryReadHistory } from "@follow/store/entry/hooks"
 import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { lazy } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useWhoami } from "~/atoms/user"
 import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
-import { useAuthQuery } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { Queries } from "~/queries"
-import { useEntryReadHistory } from "~/store/entry"
 
 const LazyUserProfileModalContent = lazy(() =>
   import("~/modules/profile/user-profile-modal").then((mod) => ({
@@ -21,11 +19,8 @@ const LazyUserProfileModalContent = lazy(() =>
 const LIMIT = 8
 export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) => {
   const me = useWhoami()
-  const entryHistory = useEntryReadHistory(entryId)
-
-  const { data } = useAuthQuery(Queries.entries.entryReadingHistory(entryId), {
-    refetchInterval: 1000 * 60,
-  })
+  const data = useEntryReadHistory(entryId)
+  const entryHistory = data?.entryReadHistories
 
   const totalCount = data?.total || 0
 
@@ -116,7 +111,10 @@ const EntryUser: Component<{ userId: string; i: number }> = ({ userId, i }) => {
   )
 }
 const Content: Component<{
-  entryHistory: ReturnType<typeof useEntryReadHistory>
+  entryHistory: {
+    userIds: string[]
+    readCount: number
+  }
 }> = ({ entryHistory }) => {
   const me = useWhoami()
 

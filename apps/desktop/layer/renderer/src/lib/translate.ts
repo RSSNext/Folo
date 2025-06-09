@@ -2,11 +2,11 @@ import { parseHtml } from "@follow/components/ui/markdown/parse-html.js"
 import { views } from "@follow/constants"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
+import { getEntry } from "@follow/store/entry/getter"
 import { duplicateIfLengthLessThan } from "@follow/utils/utils"
 import { franc } from "franc-min"
 
 import { getReadabilityContent } from "~/atoms/readability"
-import { getEntry } from "~/store/entry"
 
 import { apiClient } from "./api-fetch"
 
@@ -55,7 +55,7 @@ export async function translate({
   }
 
   const readabilityContent = getReadabilityContent()[entryId]?.content
-  const entries = getEntry(entryId)?.entries
+  const entries = getEntry(entryId)
   fields = fields.filter((field) => {
     if (language && field === "readabilityContent") {
       if (!readabilityContent) return false

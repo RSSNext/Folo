@@ -1,17 +1,16 @@
+import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { resolveUrlWithBase } from "@follow/utils/utils"
 import { useMemo } from "react"
 
-import { useEntry } from "~/store/entry"
-
 export const useFeedSafeUrl = (entryId: string) => {
   const entry = useEntry(entryId, (state) => {
     return {
       feedId: state.feedId,
-      inboxId: state.inboxId,
-      url: state.entries.url,
-      authorUrl: state.entries.authorUrl,
+      inboxId: state.inboxHandle,
+      url: state.url,
+      authorUrl: state.authorUrl,
     }
   })
 

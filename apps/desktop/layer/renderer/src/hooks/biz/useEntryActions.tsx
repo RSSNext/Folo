@@ -1,6 +1,9 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
+import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
@@ -26,8 +29,6 @@ import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
-import type { FlatEntryModel } from "~/store/entry"
-import { useEntry } from "~/store/entry"
 
 export const enableEntryReadability = async ({ id, url }: { id: string; url: string }) => {
   const status = getReadabilityStatus()[id]
@@ -137,28 +138,26 @@ export class EntryActionMenuItem extends MenuItemText {
 }
 export type EntryActionItem = EntryActionMenuItem | MenuItemSeparator
 
-const entrySelector = (state: FlatEntryModel) => {
-  const content = state.entries.content || ""
+const entrySelector = (state: EntryModel) => {
+  const content = state.content || ""
   const hasContent = !!content
   const doesContentContainsHTMLTags = doesTextContainHTML(content)
 
   const { summary, translation, readability } = state.settings || {}
 
-  const media = state.entries.media || []
+  const media = state.media || []
   const images = media.filter((a) => a.type === "photo")
   const imagesLength = images.length
 
   return {
     feedId: state.feedId,
-    inboxId: state.inboxId,
-    url: state.entries.url,
-    publishedAt: state.entries.publishedAt,
-    view: state.view,
+    inboxId: state.inboxHandle,
+    url: state.url,
+    publishedAt: state.publishedAt.toISOString(),
     read: state.read,
     summary,
     translation,
     readability,
-    isInCollection: !!state.collections,
     hasContent,
     doesContentContainsHTMLTags,
     imagesLength,
@@ -171,10 +170,11 @@ export const useEntryActions = ({
   compact,
 }: {
   entryId: string
-  view?: FeedViewType
+  view: FeedViewType
   compact?: boolean
 }) => {
   const entry = useEntry(entryId, entrySelector)
+  const isInCollection = useIsEntryStarred(entryId)
   const isEntryInReadability = useEntryIsInReadability(entryId)
 
   const feed = useFeedById(entry?.feedId, (feed) => {
@@ -257,7 +257,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.star,
         onClick: runCmdFn(COMMAND_ID.entry.star, [{ entryId, view }]),
-        active: entry.isInCollection,
+        active: isInCollection,
         shortcut: shortcuts[COMMAND_ID.entry.star],
         entryId,
       }),
@@ -306,7 +306,7 @@ export const useEntryActions = ({
         hide:
           isShowAISummaryAuto ||
           ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            entry.view,
+            view,
           ),
         active: isShowAISummaryOnce,
         disabled: userRole === UserRole.Trial,
@@ -318,7 +318,7 @@ export const useEntryActions = ({
         hide:
           isShowAITranslationAuto ||
           ([FeedViewType.SocialMedia, FeedViewType.Videos] as (number | undefined)[]).includes(
-            entry.view,
+            view,
           ),
         active: isShowAITranslationOnce,
         disabled: userRole === UserRole.Trial,
@@ -334,13 +334,13 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.publishedAt }]),
-        hide: !!entry.isInCollection,
+        hide: !!isInCollection,
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!entry.isInCollection,
+        hide: !!isInCollection,
         active: !!entry.read,
         shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
@@ -348,7 +348,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
-        hide: !!entry.isInCollection,
+        hide: !!isInCollection,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
@@ -398,11 +398,10 @@ export const useEntryActions = ({
     isInbox,
     shortcuts,
     view,
-    entry?.isInCollection,
+    isInCollection,
     entry?.url,
     entry?.publishedAt,
     entry?.hasContent,
-    entry?.view,
     entry?.read,
     entry?.readability,
     entry?.imagesLength,
@@ -426,7 +425,7 @@ export const useSortedEntryActions = ({
   compact,
 }: {
   entryId: string
-  view?: FeedViewType
+  view: FeedViewType
   compact?: boolean
 }) => {
   const entryActions = useEntryActions({ entryId, view, compact })
