@@ -1,11 +1,11 @@
 import type { SupportedLanguages } from "@follow/models/types"
+import { getEntry } from "@follow/store/entry/getter"
 
 import { getReadabilityContent } from "~/atoms/readability"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { parseHtml } from "~/lib/parse-html"
 import { translate } from "~/lib/translate"
-import { getEntry } from "~/store/entry"
 
 export const ai = {
   translation: ({
@@ -37,7 +37,7 @@ export const ai = {
       const content =
         target === "readabilityContent"
           ? getReadabilityContent()[entryId]?.content
-          : getEntry(entryId)?.entries.content
+          : getEntry(entryId)?.content
       if (!content) {
         return null
       }

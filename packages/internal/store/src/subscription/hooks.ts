@@ -104,7 +104,7 @@ export const useGroupedSubscription = ({
         const feedIds = state.feedIdByView[view]
 
         const grouped = {} as Record<string, string[]>
-        const unGrouped = []
+        const unGrouped = [] as string[]
 
         const autoGrouped = {} as Record<string, string[]>
 
