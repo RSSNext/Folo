@@ -4,6 +4,7 @@ import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { useUnreadByView } from "@follow/store/unread/hooks"
+import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
@@ -27,6 +28,7 @@ import { UnreadNumber } from "./UnreadNumber"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
   usePrefetchSubscription()
+  usePrefetchSessionUser()
   useAuthQuery(Queries.subscription.all())
   useAuthQuery(Queries.subscription.unreadAll(), {
     // 10 minute

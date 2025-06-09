@@ -68,10 +68,11 @@ const ConfirmDestroyModalContent = ({ listId }: { listId: string }) => {
 
 export const SettingLists = () => {
   const t = useI18n()
-  const { isLoading, data } = usePrefetchOwnedLists()
+  const { isLoading } = usePrefetchOwnedLists()
+  const ownedLists = useOwnedLists()
   const listDataMap = useMemo(() => {
-    if (!data) return {}
-    return data?.reduce(
+    if (!ownedLists) return {}
+    return ownedLists?.reduce(
       (acc, curr) => {
         acc[curr.id] = {
           id: curr.id,
@@ -89,9 +90,7 @@ export const SettingLists = () => {
         }
       >,
     )
-  }, [data])
-
-  const ownedLists = useOwnedLists()
+  }, [ownedLists])
 
   const { present } = useModalStack()
 
