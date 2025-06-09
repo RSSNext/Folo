@@ -162,6 +162,13 @@
       "when": 1748331571730,
       "tag": "0022_tiny_northstar",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1749121539199,
+      "tag": "0023_pink_namor",
+      "breakpoints": true
     }
   ]
 }

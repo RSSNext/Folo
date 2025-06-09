@@ -13,7 +13,6 @@ import { Queries } from "~/queries"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const entryContentLength = useEntry(entryId, (state) => state.content?.length) || 0
   const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const showAISummary = useShowAISummary(summarySetting)
@@ -34,7 +33,7 @@ export function AISummary({ entryId }: { entryId: string }) {
     },
   )
 
-  if (!showAISummary || entryContentLength < 100 || (!summary.isLoading && !summary.data)) {
+  if (!showAISummary || (!summary.isLoading && !summary.data)) {
     return null
   }
 

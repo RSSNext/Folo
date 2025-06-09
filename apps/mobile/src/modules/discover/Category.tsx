@@ -25,7 +25,7 @@ export const Category = () => {
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
         <View className="flex-row items-center gap-2">
           <Grid2CuteReIcon width={24} height={24} color={label} />
-          <Text className="text-label text-2xl font-bold leading-[1.1]">Categories</Text>
+          <Text className="text-label pb-2 text-2xl font-bold leading-[1.1]">Categories</Text>
         </View>
         <ItemPressable
           className="rounded-lg p-1"

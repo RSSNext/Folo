@@ -1,10 +1,11 @@
+import { parseHtml } from "@follow/components/ui/markdown/parse-html.ts"
 import { useEntry } from "@follow/store/entry/hooks"
 import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
 import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
 import { useSummaryStore } from "@follow/store/summary/store"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Text } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -21,14 +22,30 @@ export const EntryAISummary: FC<{
   const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
-  const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
+  const entry = useEntry(
+    entryId,
+    useCallback(
+      (state) => {
+        const content = showReadability ? state.readabilityContent : state.content
+        const target =
+          showReadability && state.readabilityContent ? "readabilityContent" : "content"
+        const textLength = content ? parseHtml(content).toText().length : 0
+
+        return {
+          target,
+          isShortContent: textLength < 100,
+        } as const
+      },
+      [showReadability],
+    ),
+  )
   const summary = useSummary(entryId)
   const actionLanguage = useActionLanguage()
   usePrefetchSummary({
     entryId,
-    target: showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    target: entry?.target || "content",
     actionLanguage,
-    enabled: showAISummary,
+    enabled: showAISummary && !entry?.isShortContent,
   })
   const summaryToShow = useMemo(() => {
     const maybeMarkdown = showReadability

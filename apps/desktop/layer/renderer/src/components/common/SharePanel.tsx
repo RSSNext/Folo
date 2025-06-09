@@ -64,6 +64,30 @@ const socialOptions: SocialShareOption[] = [
   },
 ]
 
+const getShareUrl = (entryId: string) => {
+  const entry = getEntry(entryId)
+  if (!entry) return ""
+
+  // Temporarily use the original link
+  return entry.url!
+  // const params = getRouteParams()
+
+  // let subscriptionId = "all"
+
+  // if (params.feedId) {
+  //   subscriptionId = params.feedId
+  // } else if (params.inboxId) {
+  //   subscriptionId = params.inboxId
+  // } else if (params.listId) {
+  //   subscriptionId = params.listId
+  // }
+
+  // return UrlBuilder.shareEntry(entryId, {
+  //   view: params.view,
+  //   subscriptionId,
+  // })
+}
+
 export const SharePanel = ({ entryId }: SharePanelProps) => {
   const { t } = useTranslation()
 
@@ -72,14 +96,14 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
       if (!entry) return null
 
       const { title, description } = entry
-      const shareUrl = globalThis.location.href
+      const shareUrl = getShareUrl(entryId)
 
       // Limit text to 50 characters with ellipsis
       const truncateText = (text: string, maxLength = 50) => {
         return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text
       }
 
-      const shareTitle = `${title || t("share.default_title")} - Follow`
+      const shareTitle = `${title || t("share.default_title")} - Folo`
       const baseText = description || title || t("share.default_description")
       const truncatedText = truncateText(baseText)
       const shareText = `${truncatedText} | ${t("share.discover_more")}`
@@ -90,7 +114,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
         url: shareUrl,
       }
     },
-    [t],
+    [entryId, t],
   )
 
   const handleNativeShare = useCallback(async () => {
@@ -127,14 +151,14 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
   }, [entryId, generateShareContent, t])
 
   const handleCopyLink = useCallback(async () => {
-    const shareUrl = globalThis.location.href
+    const shareUrl = getShareUrl(entryId)
     try {
       await navigator.clipboard.writeText(shareUrl)
       toast.success(t("share.link_copied"))
     } catch {
       toast.error(t("share.copy_failed"))
     }
-  }, [t])
+  }, [entryId, t])
 
   const handleSocialShare = useCallback(
     (shareUrlTemplate: string) => {

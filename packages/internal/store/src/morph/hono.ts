@@ -101,8 +101,11 @@ class Morph {
       ownerUserId: data.ownerUserId!,
       feedIds: data.feedIds!,
       fee: data.fee!,
-      subscriptionCount: "subscriptionCount" in data ? (data.subscriptionCount ?? null) : null,
-      purchaseAmount: "purchaseAmount" in data ? String(data.purchaseAmount) : null,
+      subscriptionCount: "subscriptionCount" in data ? data.subscriptionCount : null,
+      purchaseAmount:
+        "purchaseAmount" in data && data.purchaseAmount !== null
+          ? String(data.purchaseAmount)
+          : null,
       type: "list",
     }
   }

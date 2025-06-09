@@ -43,7 +43,10 @@ export const AppearanceScreen = () => {
         marginSize="small"
       />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("appearance.unread_count.badge.label")}>
+        <GroupedInsetListCell
+          label={t("appearance.unread_count.badge.label")}
+          description={t("appearance.unread_count.badge.description")}
+        >
           <Switch
             size="sm"
             value={showUnreadCountBadgeMobile}
@@ -53,7 +56,10 @@ export const AppearanceScreen = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell label={t("appearance.unread_count.view_and_subscription.label")}>
+        <GroupedInsetListCell
+          label={t("appearance.unread_count.view_and_subscription.label")}
+          description={t("appearance.unread_count.view_and_subscription.description")}
+        >
           <Switch
             size="sm"
             value={showUnreadCountViewAndSubscriptionMobile}
@@ -99,18 +105,19 @@ export const AppearanceScreen = () => {
 
       <GroupedInsetListSectionHeader label="Content" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("appearance.code_highlight_theme")}>
-          <Select
-            wrapperClassName="w-[120px]"
-            options={themeNames.map((theme) => ({
-              label: theme,
-              value: theme,
-            }))}
-            value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
-            onValueChange={(val) => {
-              setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
-            }}
-          />
+        <GroupedInsetListCell label={t("appearance.code_highlight_theme.label")}>
+          <View className="w-[120px]">
+            <Select
+              options={themeNames.map((theme) => ({
+                label: theme,
+                value: theme,
+              }))}
+              value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
+              onValueChange={(val) => {
+                setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
+              }}
+            />
+          </View>
         </GroupedInsetListCell>
 
         <GroupedInsetListCell

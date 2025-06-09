@@ -29,9 +29,8 @@ import {
   useAllFeedSubscriptionIds,
   useSubscriptionByFeedId,
 } from "@follow/store/subscription/hooks"
-import { jotaiStore } from "@follow/utils"
-import { sortByAlphabet } from "@follow/utils/utils"
-import clsx from "clsx"
+import { jotaiStore } from "@follow/utils/jotai"
+import { clsx, formatNumber, sortByAlphabet } from "@follow/utils/utils"
 import { useSingleton } from "foxact/use-singleton"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue } from "jotai"
@@ -145,7 +144,7 @@ const SubscriptionFeedsSection = () => {
         return nextSet
       })
     })
-    scrollContainerElement.querySelectorAll("button[data-id]").forEach((el) => {
+    scrollContainerElement.querySelectorAll("[data-id]").forEach((el) => {
       observer.observe(el)
     })
     return () => {
@@ -508,13 +507,13 @@ const FeedListItem = memo(
         <div className="text-center text-xs">
           {analytics ? (
             <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-center gap-3">
+              <div className="grid grid-cols-2 gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="text-text-secondary flex items-center gap-1">
                       <i className="i-mgc-user-3-cute-re" />
                       <span className="tabular-nums">
-                        {analytics.subscriptionCount?.toLocaleString() || "0"}
+                        {formatNumber(analytics.subscriptionCount || 0)}
                       </span>
                     </div>
                   </TooltipTrigger>
@@ -527,8 +526,8 @@ const FeedListItem = memo(
                     <div className="text-text-secondary flex items-center gap-1">
                       <i className="i-mgc-safety-certificate-cute-re" />
                       <span className="tabular-nums">
-                        {analytics.updatesPerWeek?.toFixed(1) || "0"}
-                        {"/week"}
+                        {Math.round(analytics.updatesPerWeek || 0) || "0"}
+                        {"/w"}
                       </span>
                     </div>
                   </TooltipTrigger>

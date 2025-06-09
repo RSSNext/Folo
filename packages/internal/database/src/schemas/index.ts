@@ -16,6 +16,9 @@ export const feedsTable = sqliteTable("feeds", {
   siteUrl: text("site_url"),
   ownerUserId: text("owner_user_id"),
   errorMessage: text("error_message"),
+  subscriptionCount: integer("subscription_count"),
+  updatesPerWeek: integer("updates_per_week"),
+  latestEntryPublishedAt: text("latest_entry_published_at"),
   tipUserIds: text("tip_users", { mode: "json" }).$type<string[]>(),
   updatedAt: integer("published_at", { mode: "timestamp" }),
 })

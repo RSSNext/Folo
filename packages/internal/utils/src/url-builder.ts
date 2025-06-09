@@ -1,6 +1,6 @@
 export class UrlBuilder {
   constructor(private readonly webUrl: string) {}
-  private join(path: string, query?: Record<string, string>) {
+  protected join(path: string, query?: Record<string, string>) {
     const nextUrl = new URL(this.webUrl)
     nextUrl.pathname = path
     if (query) {

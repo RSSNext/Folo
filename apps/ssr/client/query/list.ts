@@ -15,3 +15,18 @@ export const useList = ({ id }: { id?: string }) =>
       ReturnType<typeof fetchListById>
     >,
   })
+
+const fetchListsByUserId = async (userId: string) => {
+  const res = await apiClient.lists.list.$get({ query: { userId } })
+  return res.data
+}
+
+export const useListsByUserId = (userId: string) =>
+  useQuery({
+    queryKey: ["lists", userId],
+    queryFn: () => fetchListsByUserId(userId),
+    enabled: !!userId,
+    initialData: getHydrateData(`lists.list.$get,query:userId=${userId}`) as any as Awaited<
+      ReturnType<typeof fetchListsByUserId>
+    >,
+  })

@@ -23,16 +23,21 @@ export default defineMetadata(async ({ params, apiClient, origin }): Promise<Met
     .catch((e) => callNotFound(e.message))
 
   const realUserId = profileRes.data.id
-  const [subscriptionsRes] = await Promise.allSettled([
+  const [subscriptionsRes, listsRes] = await Promise.allSettled([
     profileRes.data.id
       ? apiClient.subscriptions.$get({
+          query: { userId: realUserId },
+        })
+      : Promise.reject(),
+    profileRes.data.id
+      ? apiClient.lists.list.$get({
           query: { userId: realUserId },
         })
       : Promise.reject(),
   ])
 
   const isSubscriptionsResolved = subscriptionsRes.status === "fulfilled"
-
+  const isListsResolved = listsRes.status === "fulfilled"
   const { name } = profileRes.data
   const subscriptions = isSubscriptionsResolved ? subscriptionsRes.value.data : []
 
@@ -66,6 +71,12 @@ export default defineMetadata(async ({ params, apiClient, origin }): Promise<Met
       data: subscriptionsRes.value.data,
       path: apiClient.subscriptions.$url({ query: { userId: realUserId } }).pathname,
       key: `subscriptions.$get,query:userId=${realUserId}`,
+    },
+    isListsResolved && {
+      type: "hydrate",
+      data: listsRes.value.data,
+      path: apiClient.lists.list.$url({ query: { userId: realUserId } }).pathname,
+      key: `lists.list.$get,query:userId=${realUserId}`,
     },
   ].filter((v) => !!v) as MetaTag[]
 })

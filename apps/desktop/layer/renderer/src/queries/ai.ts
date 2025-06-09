@@ -1,8 +1,11 @@
 import type { SupportedLanguages } from "@follow/models/types"
 
+import { getReadabilityContent } from "~/atoms/readability"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
+import { parseHtml } from "~/lib/parse-html"
 import { translate } from "~/lib/translate"
+import { getEntry } from "~/store/entry"
 
 export const ai = {
   translation: ({
@@ -31,6 +34,19 @@ export const ai = {
     target?: "content" | "readabilityContent"
   }) =>
     defineQuery(["summary", entryId, language, target], async () => {
+      const content =
+        target === "readabilityContent"
+          ? getReadabilityContent()[entryId]?.content
+          : getEntry(entryId)?.entries.content
+      if (!content) {
+        return null
+      }
+
+      const text = parseHtml(content).toText()
+      if (text.length < 100) {
+        return null
+      }
+
       const res = await apiClient.ai.summary.$get({
         query: {
           id: entryId,

@@ -8,6 +8,7 @@ import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
+import type { ImageErrorEventData } from "react-native"
 import { StyleSheet, Text, View } from "react-native"
 
 import { useActionLanguage } from "@/src/atoms/settings/general"
@@ -223,18 +224,25 @@ const ThumbnailImage = ({
     })
   }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
 
+  const [imageError, setImageError] = useState(audio && !image)
+  const handleImageError = useCallback(() => {
+    setImageError(true)
+  }, [])
+
   if (!image && !audio && !video) return null
+  const isSquare = thumbnailRatio === "square"
   return (
-    <View className="relative ml-4 min-h-24 min-w-24 overflow-hidden rounded-lg">
+    <View className={cn("relative ml-4 h-24 overflow-hidden rounded-lg", isSquare ? "h-24" : "")}>
       {image &&
         (thumbnailRatio === "square" ? (
-          <SquareImage image={image} blurhash={blurhash} />
+          <SquareImage image={image} blurhash={blurhash} onError={handleImageError} />
         ) : (
           <AspectRatioImage
             blurhash={blurhash}
             image={image}
             height={mediaModel?.height}
             width={mediaModel?.width}
+            onError={handleImageError}
           />
         ))}
 
@@ -259,7 +267,7 @@ const ThumbnailImage = ({
       )}
 
       {/* Show feed icon if no image but audio is present */}
-      {audio && !image && <FeedIcon feed={feed} size={96} />}
+      {imageError && <FeedIcon feed={feed} size={96} />}
 
       {(video || audio) && (
         <NativePressable
@@ -291,14 +299,16 @@ const AspectRatioImage = ({
   blurhash,
   height = 96,
   width = 96,
+  onError,
 }: {
   image: string
   blurhash?: string
   height?: number
   width?: number
+  onError?: (event: ImageErrorEventData) => void
 }) => {
   if (height === width || !height || !width) {
-    return <SquareImage image={image} blurhash={blurhash} />
+    return <SquareImage image={image} blurhash={blurhash} onError={onError} />
   }
   // Calculate aspect ratio and determine dimensions
   // Ensure the larger dimension is capped at 96px while maintaining aspect ratio
@@ -317,51 +327,55 @@ const AspectRatioImage = ({
   }
 
   return (
-    <View className="size-24 items-center justify-center">
-      <View
+    <View className="ml-auto flex h-full justify-center overflow-hidden rounded-lg">
+      <Image
+        proxy={{
+          width: 96,
+        }}
+        source={{
+          uri: image,
+        }}
         style={{
           width: scaledWidth,
           height: scaledHeight,
         }}
-        className="overflow-hidden rounded-md"
-      >
-        <Image
-          proxy={{
-            width: 96,
-          }}
-          source={{
-            uri: image,
-          }}
-          style={{
-            width: scaledWidth,
-            height: scaledHeight,
-          }}
-          transition={100}
-          blurhash={blurhash}
-          className="rounded-md"
-          contentFit="cover"
-          hideOnError
-        />
-      </View>
+        transition={100}
+        blurhash={blurhash}
+        contentFit="cover"
+        hideOnError
+        onError={onError}
+      />
     </View>
   )
 }
 
-const SquareImage = ({ image, blurhash }: { image: string; blurhash?: string }) => {
+const SquareImage = ({
+  image,
+  blurhash,
+  onError,
+}: {
+  image: string
+  blurhash?: string
+  onError?: (event: ImageErrorEventData) => void
+}) => {
   return (
-    <Image
-      proxy={{
-        width: 96,
-        height: 96,
-      }}
-      transition={100}
-      source={{
-        uri: image,
-      }}
-      blurhash={blurhash}
-      className="size-24 overflow-hidden rounded-lg"
-      contentFit="cover"
-      hideOnError
-    />
+    <View className="size-24 overflow-hidden rounded-lg">
+      <Image
+        proxy={{
+          width: 96,
+          height: 96,
+        }}
+        style={{
+          width: 96,
+          height: 96,
+        }}
+        transition={100}
+        source={{
+          uri: image,
+        }}
+        blurhash={blurhash}
+        onError={onError}
+      />
+    </View>
   )
 }

@@ -1,4 +1,5 @@
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { formatNumber } from "@follow/utils"
 import { Text, View } from "react-native"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
@@ -22,7 +23,7 @@ export const SearchFeedCard = ({ item }: { item: SearchResultItem }) => {
         <View className="flex-row items-center gap-1.5">
           <User3CuteReIcon width={14} height={14} color={iconColor} />
           <Text className="text-secondary-label text-sm">
-            {item.analytics?.subscriptionCount} followers
+            {formatNumber(item.analytics?.subscriptionCount || 0)} followers
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5">

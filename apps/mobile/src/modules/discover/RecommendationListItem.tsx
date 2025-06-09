@@ -71,7 +71,7 @@ export const RecommendationListItem: FC<{
               }}
             >
               <View className="flex-row items-center gap-1">
-                {data.routes[route]!.heat && (
+                {!!data.routes[route]!.heat && (
                   <>
                     <FireCuteReIcon width={12} height={12} />
                     <Text

@@ -19910,7 +19910,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 } & {
     "/list": {
         $get: {
-            input: {};
+            input: {
+                query: {
+                    userId?: string | undefined;
+                };
+            };
             output: {
                 code: 0;
                 data: {

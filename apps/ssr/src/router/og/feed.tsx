@@ -1,4 +1,5 @@
 import { getFeedIconSrc } from "@follow/components/utils/icon.js"
+import { formatNumber } from "@follow/utils"
 import * as React from "react"
 
 import type { ApiClient } from "~/lib/api-client"
@@ -24,7 +25,7 @@ export const renderFeedOG = async (apiClient: ApiClient, feedId: string) => {
     fallback: true,
     src: image!,
   })
-  const numberFormatter = new Intl.NumberFormat("en-US")
+
   const imageBase64 = await getImageBase64(image || src)
 
   try {
@@ -84,8 +85,8 @@ export const renderFeedOG = async (apiClient: ApiClient, feedId: string) => {
               fontWeight: 500,
             }}
           >
-            {numberFormatter.format(feed.data.subscriptionCount)} followers with{" "}
-            {numberFormatter.format(feed.data.readCount)} recent reads on Folo
+            {formatNumber(feed.data.subscriptionCount || 0)} followers with{" "}
+            {formatNumber(feed.data.readCount || 0)} recent reads on Folo
           </p>
         </div>
       </OGCanvas>,

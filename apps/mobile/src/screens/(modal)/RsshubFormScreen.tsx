@@ -27,6 +27,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
+import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 
 import { FollowScreen } from "./FollowScreen"
 
@@ -64,23 +65,8 @@ export const RsshubFormScreen: NavigationControllerView<RsshubFormParams> = ({
 }
 
 function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
-  const { name: routeName } = route
-  const keys = useMemo(
-    () =>
-      parseRegexpPathParams(route.path, {
-        excludeNames: [
-          "routeParams",
-          "functionalFlag",
-          "fulltext",
-          "disableEmbed",
-          "date",
-          "language",
-          "lang",
-          "sort",
-        ],
-      }),
-    [route.path],
-  )
+  const { name: routeName, topFeeds } = route
+  const keys = useMemo(() => parseRegexpPathParams(route.path), [route.path])
 
   const formPlaceholder = useMemo<Record<string, string>>(() => {
     if (!route.example) return {}
@@ -119,6 +105,16 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
   // eslint-disable-next-line unicorn/prefer-structured-clone
   const nextErrors = JSON.parse(JSON.stringify(form.formState.errors))
 
+  const data = form.watch() as Record<string, string | undefined>
+  const fullPath = useMemo(() => {
+    try {
+      return regexpPathToPath(route.path, data)
+    } catch (err: unknown) {
+      console.info((err as Error).message)
+      return route.path
+    }
+  }, [route.path, data])
+
   return (
     <FormProvider form={form}>
       <PortalProvider>
@@ -131,13 +127,16 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
               routePrefix={routePrefix}
               errors={nextErrors}
             />
+            <Text className="text-secondary-label mx-4 mt-2 text-center text-sm">
+              {`rsshub://${routePrefix}${fullPath}`}
+            </Text>
             {keys.length === 0 && (
-              <View className="bg-secondary-system-grouped-background mx-2 mt-2 gap-4 rounded-lg p-3">
+              <View className="bg-secondary-system-grouped-background mx-2 mt-4 gap-4 rounded-lg p-3">
                 <Text className="text-center text-base">This feed has no parameters.</Text>
               </View>
             )}
             {keys.length > 0 && (
-              <View className="bg-secondary-system-grouped-background mx-2 mt-2 gap-4 rounded-lg px-3 py-6">
+              <View className="bg-secondary-system-grouped-background mx-4 mt-4 gap-5 rounded-[10px] px-4 py-5">
                 {keys.map((keyItem) => {
                   const parameters = normalizeRSSHubParameters(route.parameters[keyItem.name]!)
 
@@ -198,10 +197,17 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
                 })}
               </View>
             )}
+            {!!topFeeds?.length && (
+              <View className="bg-secondary-system-grouped-background mx-4 mt-4 rounded-[10px] py-1">
+                {topFeeds.map((feed) => (
+                  <FeedSummary key={feed.id} item={{ feed }} simple className="px-4 py-2" />
+                ))}
+              </View>
+            )}
             <Maintainers maintainers={route.maintainers} />
 
             {!!route.description && (
-              <View className="mt-4 flex-1 p-4">
+              <View className="mt-6 flex-1 px-8">
                 <MarkdownNative value={route.description.replaceAll(":::", "")} />
               </View>
             )}
@@ -218,7 +224,7 @@ const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
   }
 
   return (
-    <View className="text-tertiary-label mx-4 mt-2 flex flex-row flex-wrap gap-x-1 text-sm">
+    <View className="text-tertiary-label mx-8 mt-4 flex flex-row flex-wrap gap-x-1 text-sm">
       <Text className="text-secondary-label text-xs">
         This feed is provided by RSSHub, with credit to{" "}
       </Text>

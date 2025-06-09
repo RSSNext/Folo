@@ -8,7 +8,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { usePreventOverscrollBounce } from "~/hooks/common"
 import { EntryColumn } from "~/modules/entry-column"
 
-import { MobileFloatBar } from "../feed-column/float-bar.mobile"
+import { MobileFloatBar } from "../subscription-column/float-bar.mobile"
 
 export const EntryColumnMobile = () => {
   const isStartupTimeline = useGeneralSettingKey("startupScreen") === "timeline"

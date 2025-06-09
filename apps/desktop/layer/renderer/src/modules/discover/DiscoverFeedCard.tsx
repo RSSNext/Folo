@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.
 import { RelativeTime } from "@follow/components/ui/datetime/index.js"
 import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { getBackgroundGradient } from "@follow/utils/color"
-import { cn } from "@follow/utils/utils"
+import { cn, formatNumber } from "@follow/utils/utils"
 import type { FC } from "react"
-import { memo, useMemo } from "react"
+import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
@@ -95,8 +95,7 @@ interface DiscoverFeedCardProps {
 
 export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   ({ item, onSuccess, className }) => {
-    const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
-    const { t } = useTranslation()
+    const { t } = useTranslation("common")
 
     const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")
 
@@ -140,7 +139,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                       <i className="i-mgc-user-3-cute-re" />
 
                       <span>
-                        {numberFormatter.format(item.analytics.subscriptionCount)}{" "}
+                        {formatNumber(item.analytics.subscriptionCount)}{" "}
                         {t("feed.follower", { count: item.analytics.subscriptionCount })}
                       </span>
                     </div>

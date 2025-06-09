@@ -126,13 +126,48 @@ export const useDialog = (): DialogInstance => {
   const { present } = useModalStack()
   const { t } = useTranslation()
   return {
+    /**
+     * Show a confirmation dialog with different visual variants
+     * @param options.variant - Visual style variant:
+     *   - "ask" (default): Standard confirmation dialog
+     *   - "warning": Warning dialog with yellow icon and yellow confirm button
+     *   - "danger": Danger dialog with red icon and red confirm button
+     */
     ask: useEventCallback((options) => {
+      const variant = options.variant || "ask"
+
+      // Variant-specific configuration
+      const variantConfig = {
+        ask: {
+          icon: null,
+          confirmVariant: "primary" as const,
+          confirmClassName: "",
+        },
+        warning: {
+          icon: <i className="i-mingcute-warning-fill size-5 text-yellow-500" />,
+          confirmVariant: "primary" as const,
+          confirmClassName: "bg-yellow-600 hover:bg-yellow-700",
+        },
+        danger: {
+          icon: <i className="i-mingcute-warning-fill size-5 text-red-500" />,
+          confirmVariant: "primary" as const,
+          confirmClassName: "bg-red-600 hover:bg-red-700",
+        },
+      }
+
+      const config = variantConfig[variant]
+
       return new Promise<boolean>((resolve) => {
         present({
-          title: options.title,
+          title: (
+            <div className="flex items-center gap-2">
+              {config.icon}
+              <span>{options.title}</span>
+            </div>
+          ),
           content: ({ dismiss }) => (
-            <div className="flex max-w-[75ch] flex-col gap-3">
-              {options.message}
+            <div className="flex max-w-prose flex-col gap-3">
+              <div className="whitespace-pre text-wrap">{options.message}</div>
 
               <div className="flex items-center justify-end gap-3">
                 <Button
@@ -146,6 +181,8 @@ export const useDialog = (): DialogInstance => {
                   {options.cancelText ?? t("words.cancel", { ns: "common" })}
                 </Button>
                 <Button
+                  variant={config.confirmVariant}
+                  buttonClassName={config.confirmClassName}
                   onClick={() => {
                     options.onConfirm?.()
                     resolve(true)

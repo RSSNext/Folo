@@ -20,6 +20,7 @@ import {
   useGeneralSettingSelector,
   useGeneralSettingValue,
 } from "~/atoms/settings/general"
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useProxyValue, useSetProxy } from "~/hooks/biz/useProxySetting"
 import { useMinimizeToTrayValue, useSetMinimizeToTray } from "~/hooks/biz/useTraySetting"
 import { fallbackLanguage } from "~/i18n"
@@ -65,6 +66,7 @@ export const SettingGeneral = () => {
 
   const isMobile = useMobile()
 
+  const { ask } = useDialog()
   const reRenderKey = useGeneralSettingKey("enhancedSettings")
 
   return (
@@ -93,10 +95,12 @@ export const SettingGeneral = () => {
             value: t("general.action.title"),
           },
           defineSettingItem("summary", {
-            label: t("general.action.summary"),
+            label: t("general.action.summary.label"),
+            description: t("general.action.summary.description"),
           }),
           defineSettingItem("translation", {
-            label: t("general.action.translation"),
+            label: t("general.action.translation.label"),
+            description: t("general.action.translation.description"),
           }),
           TranslationModeSelector,
           ActionLanguageSelector,
@@ -141,7 +145,7 @@ export const SettingGeneral = () => {
               description: t("general.show_quick_timeline.description"),
             }),
 
-          { type: "title", value: t("general.unread") },
+          { type: "title", value: t("general.mark_as_read.title") },
 
           defineSettingItem("scrollMarkUnread", {
             label: t("general.mark_as_read.scroll.label"),
@@ -165,9 +169,25 @@ export const SettingGeneral = () => {
           IN_ELECTRON && NettingSetting,
 
           { type: "title", value: t("general.advanced") },
+
           defineSettingItem("enhancedSettings", {
             label: t("general.enhanced.label"),
             description: t("general.enhanced.description"),
+            onChangeGuard(value) {
+              if (value) {
+                ask({
+                  variant: "danger",
+                  title: t("general.enhanced.enable.modal.title"),
+                  message: t("general.enhanced.enable.modal.description"),
+                  confirmText: t("general.enhanced.enable.modal.confirm"),
+                  cancelText: t("general.enhanced.enable.modal.cancel"),
+                  onConfirm: () => {
+                    setGeneralSetting("enhancedSettings", value)
+                  },
+                })
+                return "handled"
+              }
+            },
           }),
         ]}
       />
@@ -229,8 +249,11 @@ export const LanguageSelector = ({
   const isMobile = useMobile()
 
   return (
-    <div className={cn("mb-3 mt-4 flex items-center justify-between", containerClassName)}>
-      <span className="shrink-0 text-sm font-medium">{t("general.language")}</span>
+    <div className={cn("mb-3 mt-4 flex w-full items-center", containerClassName)}>
+      <div className="flex grow flex-col gap-1">
+        <span className="shrink-0 text-sm font-medium">{t("general.language.title")}</span>
+        <SettingDescription>{t("general.language.description")}</SettingDescription>
+      </div>
 
       <ResponsiveSelect
         size="sm"
@@ -274,8 +297,8 @@ const TranslationModeSelector = () => {
   const translationMode = useGeneralSettingKey("translationMode")
 
   return (
-    <SettingItemGroup>
-      <div className="flex items-center justify-between">
+    <>
+      <div className="mt-4 flex items-center justify-between">
         <span className="shrink-0 text-sm font-medium">{t("general.translation_mode.label")}</span>
         <ResponsiveSelect
           size="sm"
@@ -292,7 +315,7 @@ const TranslationModeSelector = () => {
         />
       </div>
       <SettingDescription>{t("general.translation_mode.description")}</SettingDescription>
-    </SettingItemGroup>
+    </>
   )
 }
 
@@ -301,8 +324,12 @@ const ActionLanguageSelector = () => {
   const actionLanguage = useGeneralSettingKey("actionLanguage")
 
   return (
-    <div className="mb-3 mt-4 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("general.action_language.label")}</span>
+    <div className="mb-3 mt-4 flex w-full gap-1">
+      <div className="flex grow flex-col gap-1">
+        <span className="shrink-0 text-sm font-medium">{t("general.action_language.label")}</span>
+        <SettingDescription>{t("general.action_language.description")}</SettingDescription>
+      </div>
+
       <ResponsiveSelect
         size="sm"
         triggerClassName="w-48"

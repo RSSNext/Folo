@@ -3,6 +3,7 @@ import { useFeedById, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/stor
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
+import { formatNumber } from "@follow/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -16,12 +17,16 @@ import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FormProvider } from "@/src/components/ui/form/FormProvider"
 import { FormLabel } from "@/src/components/ui/form/Label"
 import { FormSwitch } from "@/src/components/ui/form/Switch"
 import { TextField } from "@/src/components/ui/form/TextField"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
+import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
+import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
@@ -37,9 +42,11 @@ const formSchema = z.object({
 export function FollowFeed(props: { id: string }) {
   const { id } = props
   const feed = useFeedById(id as string)
-  const { isLoading } = usePrefetchFeed(id as string, { enabled: !feed })
+  usePrefetchFeed(id as string, {
+    enabled: !feed?.subscriptionCount,
+  })
 
-  if (isLoading) {
+  if (!feed) {
     return (
       <View className="mt-24 flex-1 flex-row items-start justify-center">
         <PlatformActivityIndicator />
@@ -172,7 +179,35 @@ function FollowImpl(props: { feedId: string }) {
               type: "feed",
             },
           }}
-        />
+        >
+          <View className="ml-11 mt-2 flex-row items-center gap-3 opacity-60">
+            {!!feed.subscriptionCount && (
+              <View className="flex-row items-center gap-1">
+                <User3CuteReIcon width={12} height={12} />
+                <Text className="text-text text-sm">
+                  {formatNumber(feed.subscriptionCount || 0)}{" "}
+                  {tCommon("feed.follower", { count: feed.subscriptionCount })}
+                </Text>
+              </View>
+            )}
+            {feed.updatesPerWeek ? (
+              <View className="flex-row items-center gap-1">
+                <SafetyCertificateCuteReIcon width={12} height={12} />
+                <Text className="text-text text-sm">
+                  {tCommon("feed.entry_week", { count: feed.updatesPerWeek })}
+                </Text>
+              </View>
+            ) : feed.latestEntryPublishedAt ? (
+              <View className="flex-row items-center gap-1">
+                <SafeAlertCuteReIcon width={12} height={12} />
+                <Text className="text-text text-sm">
+                  {tCommon("feed.updated_at")}
+                  <RelativeDateTime date={feed.latestEntryPublishedAt} />
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        </FeedSummary>
       </GroupedInsetListCard>
       {/* Group 2 */}
       <GroupedInsetListCard className="gap-y-4 p-4">

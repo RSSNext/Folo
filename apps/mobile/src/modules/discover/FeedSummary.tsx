@@ -73,7 +73,9 @@ export const FeedSummary = ({
           <Text className="text-text text-lg font-semibold" numberOfLines={1}>
             {item.feed?.title}
           </Text>
-          <Text className="text-text text-sm leading-tight opacity-60">{item.feed?.url}</Text>
+          <Text className="text-text text-sm leading-tight opacity-60" numberOfLines={1}>
+            {item.feed?.url}
+          </Text>
         </View>
       </View>
       {!simple && !!item.feed?.description && (

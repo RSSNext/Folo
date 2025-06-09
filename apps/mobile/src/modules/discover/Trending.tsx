@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils"
+import { cn, formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { Text, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
@@ -9,6 +9,7 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
+import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { DiscoverSettingsScreen } from "@/src/screens/(modal)/DiscoverSettingsScreen"
 
@@ -39,7 +40,7 @@ export const Trending = ({
       <View className={cn("flex-row items-center justify-between pb-1 pt-4", itemClassName)}>
         <View className="flex-row items-center gap-2">
           <TrendingUpCuteReIcon width={24} height={24} color={label} />
-          <Text className="text-label text-2xl font-bold leading-[1.1]">Trending</Text>
+          <Text className="text-label pb-2 text-2xl font-bold leading-[1.1]">Trending</Text>
         </View>
         <ItemPressable
           className="rounded-lg p-1"
@@ -83,7 +84,14 @@ export const Trending = ({
                   </Text>
                 </View>
               }
-            />
+            >
+              <View className="flex flex-row items-center gap-1 opacity-60">
+                <User3CuteReIcon width={13} height={13} />
+                <Text className="text-text text-sm">
+                  {formatNumber(item.analytics.subscriptionCount || 0)}
+                </Text>
+              </View>
+            </FeedSummary>
           ))
         )}
       </View>

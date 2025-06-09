@@ -8,4 +8,4 @@
 
 ## Thanks
 
-Special thanks to external contributors @ for their valuable contributions
+Special thanks to volunteer contributors @ for their valuable contributions

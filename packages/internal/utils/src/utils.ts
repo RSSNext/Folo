@@ -449,3 +449,30 @@ export function doesTextContainHTML(text?: string | null): boolean {
   if (!text) return false
   return /<([a-z][a-z0-9]*)\b[^>]*>\s*[^<>\s].*<\/\1>/i.test(text)
 }
+
+/**
+ * Format number to a more readable format
+ * @param num - The number to format
+ * @returns The formatted number
+ */
+export function formatNumber(num: number): string {
+  // Handle negative numbers
+  const isNegative = num < 0
+  const absNum = Math.abs(num)
+
+  // Define thresholds
+  const billion = 1_000_000_000
+  const million = 1_000_000
+  const thousand = 1_000
+
+  // Format based on number size
+  if (absNum >= billion) {
+    return `${isNegative ? "-" : ""}${(absNum / billion).toFixed(1)}B`
+  } else if (absNum >= million) {
+    return `${isNegative ? "-" : ""}${(absNum / million).toFixed(1)}M`
+  } else if (absNum >= thousand) {
+    return `${isNegative ? "-" : ""}${(absNum / thousand).toFixed(1)}K`
+  }
+
+  return `${isNegative ? "-" : ""}${absNum}`
+}

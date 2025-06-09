@@ -10,12 +10,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { Button } from "@follow/components/ui/button/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useTitle } from "@follow/hooks"
-import { cn } from "@follow/utils/utils"
+import { cn, formatNumber } from "@follow/utils/utils"
 import { Fragment, memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
-
-const numberFormatter = new Intl.NumberFormat()
 
 const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
   return (
@@ -154,7 +152,7 @@ export function Component() {
                   {!!list.data?.subscriptionCount && (
                     <div className="px-4 text-center">
                       <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                        {numberFormatter.format(list.data.subscriptionCount)}
+                        {formatNumber(list.data.subscriptionCount)}
                       </div>
                       <div className="text-sm text-zinc-500 dark:text-zinc-400">
                         {t("feed.follower", { count: list.data.subscriptionCount })}

@@ -129,13 +129,13 @@ export const RecommendationTab: TabComponent<{
   const discoverLanguage = useUISettingKey("discoverLanguage")
 
   const { data, isLoading } = useQuery({
-    queryKey: ["rsshub-popular", "cache", tab.value],
+    queryKey: ["rsshub-popular", "cache", tab.value, discoverLanguage],
     queryFn: () =>
       fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
     staleTime: 1000 * 60 * 60 * 24, // 1 day
   })
 
-  const { data: analysisData } = useQuery({
+  const { data: analysisData, isLoading: isAnalysisLoading } = useQuery({
     queryKey: ["rsshub-analysis", "cache", discoverLanguage],
     queryFn: () => fetchRsshubAnalysis(LanguageMap[discoverLanguage]).then((res) => res.data),
     staleTime: 1000 * 60 * 60 * 24, // 1 day
@@ -228,7 +228,7 @@ export const RecommendationTab: TabComponent<{
 
   const insets = useSafeAreaInsets()
 
-  if (isLoading) {
+  if (isLoading || isAnalysisLoading) {
     return <PlatformActivityIndicator className="flex-1 items-center justify-center" />
   }
 

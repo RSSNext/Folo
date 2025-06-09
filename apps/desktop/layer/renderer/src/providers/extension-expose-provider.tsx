@@ -50,7 +50,7 @@ export const ExtensionExposeProvider = () => {
         return env.VITE_API_URL
       },
       getWebUrl() {
-        return window.location.origin
+        return env.VITE_WEB_URL
       },
 
       clearIfLoginOtherAccount(newUserId: string) {

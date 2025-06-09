@@ -6,17 +6,17 @@ const noop = () =>
   })
 export const LeftSidebarLayout = withResponsiveComponent<object>(
   () =>
-    import("~/modules/app-layout/feed-column/desktop").then((m) => ({
+    import("~/modules/app-layout/subscription-column/desktop").then((m) => ({
       default: m.MainDestopLayout,
     })),
   () =>
-    import("~/modules/app-layout/feed-column/index.mobile").then((m) => ({
+    import("~/modules/app-layout/subscription-column/index.mobile").then((m) => ({
       default: m.MobileRootLayout,
     })),
 )
 
 export const MobileFeedScreen = withResponsiveComponent<object>(noop, () =>
-  import("~/modules/app-layout/feed-column/mobile").then((m) => ({
+  import("~/modules/app-layout/subscription-column/mobile").then((m) => ({
     default: m.FeedColumnMobile,
   })),
 )

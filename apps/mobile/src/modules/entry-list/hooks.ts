@@ -10,6 +10,7 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { getCookie } from "@/src/lib/auth"
+import { isAndroid } from "@/src/lib/platform"
 
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "../screen/PagerListContext"
 
@@ -144,7 +145,10 @@ export const usePagerListPerformanceHack = (provideRef?: RefObject<FlashList<any
   const usingRef = provideRef ?? ref
   const [style, setStyle] = useState<ViewStyle>({})
   useEffect(() => {
-    setStyle({ display: nextVisible ? "flex" : "none" })
+    if (!isAndroid) {
+      // Always show the pager list on Android to avoid blank screen when switching tabs
+      setStyle({ display: nextVisible ? "flex" : "none" })
+    }
     if (nextVisible && lastY.current > 0) {
       requestAnimationFrame(() => {
         usingRef.current?.scrollToOffset({ offset: lastY.current, animated: false })

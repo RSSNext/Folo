@@ -16,6 +16,7 @@ export const createDefineSettingItem =
   ): any => {
     const { label, description, onChange, hide, ...rest } = options
 
+    if (hide) return null
     return {
       key,
       label,

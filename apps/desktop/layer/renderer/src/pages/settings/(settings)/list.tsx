@@ -5,7 +5,7 @@ import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData, DisableWhy } from "~/modules/settings/utils"
 
 const iconName = "i-mgc-rada-cute-re"
-const priority = 1050
+const priority = (1000 << 2) + 10
 
 export const loader = defineSettingPageData({
   icon: iconName,

@@ -19,10 +19,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { exportDB } from "~/database"
 import { ipcServices } from "~/lib/client"
 import { queryClient } from "~/lib/query-client"
@@ -36,59 +37,32 @@ const { defineSettingItem, SettingBuilder } = createSetting(
   useGeneralSettingValue,
   setGeneralSetting,
 )
+
 export const SettingDataControl = () => {
   const { t } = useTranslation("settings")
   const { present } = useModalStack()
+  const { ask } = useDialog()
 
   return (
     <div className="mt-4">
+      {/* Top Level - Most Important */}
       <SettingBuilder
         settings={[
           {
             type: "title",
             value: t("general.data"),
           },
+
           defineSettingItem("dataPersist", {
             label: t("general.data_persist.label"),
             description: t("general.data_persist.description"),
           }),
 
           {
-            label: t("general.rebuild_database.label"),
-            action: () => {
-              present({
-                title: t("general.rebuild_database.title"),
-                clickOutsideToDismiss: true,
-                content: () => (
-                  <div className="text-sm">
-                    <p>{t("general.rebuild_database.warning.line1")}</p>
-                    <p>{t("general.rebuild_database.warning.line2")}</p>
-                    <div className="mt-4 flex justify-end">
-                      <Button
-                        buttonClassName="bg-red-500 px-3 text-white"
-                        onClick={async () => {
-                          await clearLocalPersistStoreData()
-                          window.location.reload()
-                        }}
-                      >
-                        {t("ok", { ns: "common" })}
-                      </Button>
-                    </div>
-                  </div>
-                ),
-              })
-            },
-            description: t("general.rebuild_database.description"),
-            buttonText: t("general.rebuild_database.button"),
+            type: "title",
+            value: t("general.export_data.title"),
           },
-          {
-            label: t("general.export_database.label"),
-            description: t("general.export_database.description"),
-            buttonText: t("general.export_database.button"),
-            action: () => {
-              exportDB()
-            },
-          },
+
           {
             label: t("general.export.label"),
             description: t("general.export.description"),
@@ -101,16 +75,37 @@ export const SettingDataControl = () => {
               })
             },
           },
-
-          ELECTRON_BUILD && {
-            type: "title",
-            value: t("general.cache"),
+          {
+            label: t("general.export_database.label"),
+            description: t("general.export_database.description"),
+            buttonText: t("general.export_database.button"),
+            action: () => {
+              exportDB()
+            },
           },
-          ELECTRON_BUILD && AppCacheLimit,
-          ELECTRON_BUILD ? CleanElectronCache : CleanCacheStorage,
-          ELECTRON_BUILD && {
+
+          {
             type: "title",
-            value: t("general.data_file.label"),
+            value: t("general.maintenance.title"),
+          },
+          ELECTRON_BUILD ? CleanElectronCache : CleanCacheStorage,
+          ELECTRON_BUILD && AppCacheLimit,
+          {
+            label: t("general.rebuild_database.label"),
+            action: () => {
+              ask({
+                title: t("general.rebuild_database.title"),
+                variant: "danger",
+                message: `${t("general.rebuild_database.warning.line1")}\n${t("general.rebuild_database.warning.line2")}`,
+                confirmText: t("ok", { ns: "common" }),
+                onConfirm: async () => {
+                  await clearLocalPersistStoreData()
+                  window.location.reload()
+                },
+              })
+            },
+            description: t("general.rebuild_database.description"),
+            buttonText: t("general.rebuild_database.button"),
           },
           ELECTRON_BUILD && {
             label: t("general.log_file.label"),
@@ -227,7 +222,9 @@ const CleanCacheStorage = () => {
               if (key.startsWith("workbox-precache-")) return null
               return caches.delete(key)
             }),
-          )
+          ).then(() => {
+            toast.success(t("data_control.clean_cache.success"))
+          })
         }}
         buttonText={t("data_control.clean_cache.button")}
       />

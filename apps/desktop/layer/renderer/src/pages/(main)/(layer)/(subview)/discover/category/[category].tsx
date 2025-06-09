@@ -4,7 +4,7 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
-import { cn } from "@follow/utils/utils"
+import { cn, formatNumber } from "@follow/utils/utils"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -281,7 +281,7 @@ const RecommendationListItem = ({
                     {!!analytics?.subscriptionCount && (
                       <div className="flex items-center gap-0.5 text-xs">
                         <i className="i-mgc-fire-cute-re" />
-                        {analytics?.subscriptionCount}
+                        {formatNumber(analytics?.subscriptionCount || 0)}
                       </div>
                     )}
                   </div>

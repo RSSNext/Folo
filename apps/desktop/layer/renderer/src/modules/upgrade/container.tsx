@@ -14,6 +14,8 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { Paper } from "~/components/ui/paper"
 import { DebugRegistry } from "~/modules/debug/registry"
 
+import { linkifyChangelog } from "./utils"
+
 const AppNotificationContainer: FC = () => {
   const { present } = useModalStack()
 
@@ -110,10 +112,12 @@ const AppNotificationContainer: FC = () => {
 export default AppNotificationContainer
 
 const changelogContext = (async () => {
+  const repoUrl = repository.url
   if (import.meta.env.DEV) {
-    return import("../../../../../changelog/next.md?raw").then((m) => m.default)
+    const content = await import("../../../../../changelog/next.md?raw").then((m) => m.default)
+    return linkifyChangelog(content, repoUrl)
   }
-  return CHANGELOG_CONTENT
+  return linkifyChangelog(CHANGELOG_CONTENT, repoUrl)
 })()
 const Changelog = () => (
   <Paper>
