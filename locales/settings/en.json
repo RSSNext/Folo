@@ -136,6 +136,8 @@
   "appearance.unread_count.badge.description": "Show the unread count as a badge in the dock icon.",
   "appearance.unread_count.badge.label": "Show as Badge",
   "appearance.unread_count.label": "Unread Count",
+  "appearance.unread_count.sidebra.description": "Display unread counts next to feeds and groups",
+  "appearance.unread_count.sidebra.title": "Show unread count",
   "appearance.unread_count.view_and_subscription.description": "Show the unread count in the view and subscription list.",
   "appearance.unread_count.view_and_subscription.label": "Show in View and Subscription",
   "appearance.use_pointer_cursor.description": "When the mouse hovers over any interactive element, the cursor appears as a hand.",

@@ -99,8 +99,8 @@ export const createSettingBuilder =
                     if (handled === "handled") {
                       return
                     }
-                    assertSetting.onChange(checked as T[keyof T])
                   }
+                  assertSetting.onChange(checked as T[keyof T])
                 }}
                 label={assertSetting.label}
               />

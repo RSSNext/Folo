@@ -134,6 +134,8 @@
   "appearance.ui_font": "界面字体",
   "appearance.unread_count.badge.label": "在应用图标上显示",
   "appearance.unread_count.label": "未读数",
+  "appearance.unread_count.sidebra.description": "在订阅源和分组旁显示未读数",
+  "appearance.unread_count.sidebra.title": "显示未读数",
   "appearance.unread_count.view_and_subscription.label": "在视图和订阅源上显示",
   "appearance.use_pointer_cursor.description": "当鼠标悬停在任何可交互元素上时，光标会显示为手型光标。",
   "appearance.use_pointer_cursor.label": "使用手型光标",

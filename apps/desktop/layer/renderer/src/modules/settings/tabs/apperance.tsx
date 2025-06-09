@@ -69,8 +69,8 @@ export const SettingAppearance = () => {
           },
 
           defineItem("sidebarShowUnreadCount", {
-            label: "Show unread count",
-            description: "Display unread counts next to feeds and groups",
+            label: t("appearance.unread_count.sidebra.title"),
+            description: t("appearance.unread_count.sidebra.description"),
           }),
 
           {
