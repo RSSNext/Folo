@@ -75,7 +75,8 @@ class ListActions implements Hydratable, Resetable {
 export const listActions = new ListActions()
 
 class ListSyncServices {
-  async fetchListById(params: { id: string }) {
+  async fetchListById(params: { id: string | undefined }) {
+    if (!params.id) return null
     const list = await apiClient().lists.$get({ query: { listId: params.id } })
 
     listActions.upsertMany([honoMorph.toList(list.data.list)])

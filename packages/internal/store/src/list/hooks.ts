@@ -70,3 +70,11 @@ export const usePrefetchLists = () => {
     queryFn: () => listSyncServices.fetchLists(),
   })
 }
+
+export const usePrefetchListById = (id: string | undefined) => {
+  return useQuery({
+    queryKey: ["list", id],
+    queryFn: () => listSyncServices.fetchListById({ id }),
+    enabled: !!id,
+  })
+}

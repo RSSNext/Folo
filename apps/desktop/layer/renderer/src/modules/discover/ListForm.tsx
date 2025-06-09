@@ -13,14 +13,13 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { ListAnalyticsModel } from "@follow/models/types"
-import { useListById } from "@follow/store/list/hooks"
-import { listSyncServices } from "@follow/store/list/store"
+import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { unreadActions } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -58,13 +57,7 @@ export const ListForm: Component<{
 
   onSuccess?: () => void
 }> = ({ id: _id, defaultValues = defaultValue, onSuccess }) => {
-  const feedQuery = useQuery({
-    queryKey: ["list", "byId", _id],
-    queryFn: async () => {
-      return listSyncServices.fetchListById({ id: _id! })
-    },
-    enabled: !!_id,
-  })
+  const feedQuery = usePrefetchListById(_id)
 
   const id = feedQuery.data?.list.id || _id
   const list = useListById(id)
