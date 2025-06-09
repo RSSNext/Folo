@@ -169,6 +169,13 @@
       "when": 1749121539199,
       "tag": "0023_pink_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1749483541691,
+      "tag": "0024_smiling_dazzler",
+      "breakpoints": true
     }
   ]
 }

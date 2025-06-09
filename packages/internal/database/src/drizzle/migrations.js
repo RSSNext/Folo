@@ -24,6 +24,7 @@ import m0020 from "./0020_little_marauders.sql"
 import m0021 from "./0021_wakeful_onslaught.sql"
 import m0022 from "./0022_tiny_northstar.sql"
 import m0023 from "./0023_pink_namor.sql"
+import m0024 from "./0024_smiling_dazzler.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -53,5 +54,6 @@ export default {
     m0021,
     m0022,
     m0023,
+    m0024,
   },
 }
