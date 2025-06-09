@@ -19,6 +19,13 @@ export function initializeDb() {
 }
 export { db }
 
-export function migrateDb() {
-  return migrate(db, migrations)
+export async function migrateDb() {
+  try {
+    await migrate(db, migrations)
+  } catch (error) {
+    console.error("Failed to migrate database:", error)
+
+    await sqlite.deleteDatabaseFile()
+    await migrate(db, migrations)
+  }
 }

@@ -1,6 +1,7 @@
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite"
 import { drizzle } from "drizzle-orm/expo-sqlite"
 import { migrate } from "drizzle-orm/expo-sqlite/migrator"
+import * as FileSystem from "expo-file-system"
 import * as SQLite from "expo-sqlite"
 
 import { SQLITE_DB_NAME } from "./constant"
@@ -21,6 +22,13 @@ export function initializeDb() {
 }
 export { db }
 
-export function migrateDb(): Promise<void> {
-  return migrate(db, migrations)
+export async function migrateDb(): Promise<void> {
+  try {
+    await migrate(db, migrations)
+  } catch (error) {
+    console.error("Failed to migrate database:", error)
+    const dbPath = `${FileSystem.documentDirectory}SQLite/${SQLITE_DB_NAME}`
+    await FileSystem.deleteAsync(dbPath)
+    await migrate(db, migrations)
+  }
 }
