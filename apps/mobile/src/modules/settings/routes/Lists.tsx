@@ -1,4 +1,4 @@
-import { useOwnedLists, usePrefetchOwnedLists } from "@follow/store/list/hooks"
+import { useOwnedLists, usePrefetchLists } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { createContext, createElement, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -36,7 +36,7 @@ import { ManageListScreen } from "./ManageList"
 const ListContext = createContext({} as Record<string, ListModel>)
 export const ListsScreen = () => {
   const { t } = useTranslation("settings")
-  const { isLoading, data } = usePrefetchOwnedLists()
+  const { isLoading, data } = usePrefetchLists()
   const lists = useOwnedLists()
 
   return (

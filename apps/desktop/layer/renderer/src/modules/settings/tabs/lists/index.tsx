@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { views } from "@follow/constants"
-import { useOwnedLists, usePrefetchOwnedLists } from "@follow/store/list/hooks"
+import { useOwnedLists, usePrefetchLists } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { cn } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
@@ -68,7 +68,7 @@ const ConfirmDestroyModalContent = ({ listId }: { listId: string }) => {
 
 export const SettingLists = () => {
   const t = useI18n()
-  const { isLoading } = usePrefetchOwnedLists()
+  const { isLoading } = usePrefetchLists()
   const ownedLists = useOwnedLists()
   const listDataMap = useMemo(() => {
     if (!ownedLists) return {}
