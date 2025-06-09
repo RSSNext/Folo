@@ -1,6 +1,6 @@
 import { ScrollElementContext } from "@follow/components/ui/scroll-area/ctx.js"
 import { views } from "@follow/constants"
-import { clsx } from "clsx"
+import { clsx } from "@follow/utils/utils"
 import { useState } from "react"
 
 import { PullToRefresh } from "~/components/ux/pull-to-refresh"
