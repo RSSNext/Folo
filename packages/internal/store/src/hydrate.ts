@@ -23,8 +23,14 @@ const hydrates: Hydratable[] = [
   translationActions,
 ]
 
-export const hydrateDatabaseToStore = async (options?: HydrationOptions) => {
-  initializeDb()
-  await migrateDb()
+export const hydrateDatabaseToStore = async (
+  options?: HydrationOptions & {
+    migrateDatabase?: boolean
+  },
+) => {
+  if (options?.migrateDatabase) {
+    initializeDb()
+    await migrateDb()
+  }
   await Promise.all(hydrates.map((h) => h.hydrate(options)))
 }
