@@ -1,4 +1,4 @@
-import type {Position} from './@types'
+import type { Position } from "./@types"
 
 export type TransformMatrix = [
   number,
@@ -16,12 +16,12 @@ export type TransformMatrix = [
 // https://en.wikipedia.org/wiki/Transformation_matrix#/media/File:2D_affine_transformation_matrix.svg
 
 export function createTransform(): TransformMatrix {
-  'worklet'
+  "worklet"
   return [1, 0, 0, 0, 1, 0, 0, 0, 1]
 }
 
 export function applyRounding(t: TransformMatrix) {
-  'worklet'
+  "worklet"
   t[2] = Math.round(t[2])
   t[5] = Math.round(t[5])
   // For example: 0.985, 0.99, 0.995, then 1:
@@ -35,7 +35,7 @@ export function applyRounding(t: TransformMatrix) {
 // All write operations are applied in-place to avoid unnecessary allocations.
 
 export function readTransform(t: TransformMatrix): [number, number, number] {
-  'worklet'
+  "worklet"
   const scale = t[0]
   const translateX = t[2]
   const translateY = t[5]
@@ -43,13 +43,13 @@ export function readTransform(t: TransformMatrix): [number, number, number] {
 }
 
 export function prependTranslate(t: TransformMatrix, x: number, y: number) {
-  'worklet'
+  "worklet"
   t[2] += t[0] * x + t[1] * y
   t[5] += t[3] * x + t[4] * y
 }
 
 export function prependScale(t: TransformMatrix, value: number) {
-  'worklet'
+  "worklet"
   t[0] *= value
   t[1] *= value
   t[3] *= value
@@ -57,7 +57,7 @@ export function prependScale(t: TransformMatrix, value: number) {
 }
 
 export function prependTransform(ta: TransformMatrix, tb: TransformMatrix) {
-  'worklet'
+  "worklet"
   // In-place matrix multiplication.
   const a00 = ta[0],
     a01 = ta[1],
@@ -80,7 +80,7 @@ export function prependTransform(ta: TransformMatrix, tb: TransformMatrix) {
 }
 
 export function prependPan(t: TransformMatrix, translation: Position) {
-  'worklet'
+  "worklet"
   prependTranslate(t, translation.x, translation.y)
 }
 
@@ -90,7 +90,7 @@ export function prependPinch(
   origin: Position,
   translation: Position,
 ) {
-  'worklet'
+  "worklet"
   prependTranslate(t, translation.x, translation.y)
   prependTranslate(t, origin.x, origin.y)
   prependScale(t, scale)
