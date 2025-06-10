@@ -4,7 +4,7 @@ import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useMemo } from "react"
 
-import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "~/constants"
+import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "../constants/app"
 
 const feedUnreadDirtySetAtom = atom(new Set<string>())
 

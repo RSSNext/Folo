@@ -1,10 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 
+import { FEED_COLLECTION_LIST, ROUTE_FEED_IN_FOLDER } from "../constants/app"
 import type { SubscriptionState } from "./store"
 import { getDefaultCategory } from "./utils"
-
-const FEED_COLLECTION_LIST = "collections"
-const ROUTE_FEED_IN_FOLDER = "folder-"
 
 export const folderFeedsByFeedIdSelector =
   ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>

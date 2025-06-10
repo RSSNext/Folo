@@ -1,12 +1,12 @@
 import { FeedViewType } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
+import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
 import {
   useEntryIdsByCategory,
   useEntryIdsByFeedId,
   useEntryIdsByInboxId,
   useEntryIdsByListId,
 } from "@follow/store/entry/hooks"
-import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useMemo } from "react"
 import { RootSiblingParent } from "react-native-root-siblings"

@@ -1,6 +1,6 @@
+import { useFeedUnreadIsDirty } from "@follow/store/atoms/feed"
 import { entrySyncServices } from "@follow/store/entry/store"
 
-import { useFeedUnreadIsDirty } from "~/atoms/feed"
 import { useAuthInfiniteQuery, useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"

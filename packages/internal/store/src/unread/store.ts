@@ -3,6 +3,7 @@ import type { UnreadSchema } from "@follow/database/schemas/types"
 import { EntryService } from "@follow/database/services/entry"
 import { UnreadService } from "@follow/database/services/unread"
 
+import { setFeedUnreadDirty } from "../atoms/feed"
 import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
@@ -91,6 +92,12 @@ class UnreadSyncService {
         entry: { read: true },
         time,
       })
+    })
+
+    ids.forEach((id) => {
+      if (id) {
+        setFeedUnreadDirty(id)
+      }
     })
 
     await tx.run()
@@ -209,6 +216,10 @@ class UnreadSyncService {
         entryIds: [entryId],
       })
     })
+
+    if (entry.feedId) {
+      setFeedUnreadDirty(entry.feedId)
+    }
     await tx.run()
   }
 

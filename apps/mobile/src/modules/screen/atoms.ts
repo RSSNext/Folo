@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
+import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
 import { usePrefetchEntries } from "@follow/store/entry/hooks"
 import type { FetchEntriesProps } from "@follow/store/entry/types"
-import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"

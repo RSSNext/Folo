@@ -3,6 +3,7 @@ import { EntryService } from "@follow/database/services/entry"
 import { cloneDeep } from "es-toolkit"
 import { debounce } from "es-toolkit/compat"
 
+import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../atoms/feed"
 import { collectionActions } from "../collection/store"
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
@@ -464,6 +465,21 @@ class EntrySyncServices {
             ...params,
           },
         })
+
+    // Mark feed unread dirty, so re-fetch the unread data when view feed unread entires in the next time
+    if (read === false) {
+      if (typeof params.view === "number" && !params.feedId) {
+        clearAllFeedUnreadDirty()
+      }
+      if (params.feedId) {
+        clearFeedUnreadDirty(params.feedId as string)
+      }
+      if (params.feedIdList) {
+        params.feedIdList.forEach((feedId) => {
+          clearFeedUnreadDirty(feedId)
+        })
+      }
+    }
 
     const entries = honoMorph.toEntryList(res.data)
     const entriesInDB = await EntryService.getEntryMany(entries.map((e) => e.id))

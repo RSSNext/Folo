@@ -1,5 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
-import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
+import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useGroupedSubscription,
