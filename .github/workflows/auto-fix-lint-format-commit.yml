@@ -42,7 +42,7 @@ jobs:
 
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true' || env.has_changes == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "chore: auto-fix linting and formatting issues"
           commit_options: "--no-verify"
