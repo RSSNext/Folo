@@ -18,9 +18,10 @@ export function PagerList({
   renderItem,
   style,
 }: {
-  renderItem: (view: FeedViewType, active: boolean) => React.ReactNode
+  renderItem: (props: { view: FeedViewType; active: boolean }) => React.ReactNode
   style?: StyleProp<ViewStyle> | undefined
 }) {
+  const RenderItem = renderItem
   const selectedFeed = useSelectedFeed()
   const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
@@ -51,6 +52,8 @@ export function PagerList({
         offset: number
       }
     }) => {
+      "worklet"
+
       const { position, offset } = e.nativeEvent
 
       if (!userInitiatedDragRef.value) {
@@ -84,7 +87,7 @@ export function PagerList({
       style={[styles.PagerView, style]}
       initialPage={activeViewIndex}
       layoutDirection="ltr"
-      offscreenPageLimit={3}
+      offscreenPageLimit={1}
       overdrag
       onPageScroll={pageScrollHandler}
       onPageScrollStateChanged={(e) => {
@@ -103,19 +106,15 @@ export function PagerList({
       pageMargin={100}
       orientation="horizontal"
     >
-      {useMemo(
-        () =>
-          activeViews.map((view, index) => (
-            <PagerListVisibleContext value={index === activeViewIndex} key={view}>
-              <PagerListWillVisibleContext
-                value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
-              >
-                {renderItem(view, index === activeViewIndex)}
-              </PagerListWillVisibleContext>
-            </PagerListVisibleContext>
-          )),
-        [activeViews, activeViewIndex, dragging, renderItem],
-      )}
+      {activeViews.map((view, index) => (
+        <PagerListVisibleContext value={index === activeViewIndex} key={view}>
+          <PagerListWillVisibleContext
+            value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
+          >
+            <RenderItem view={view} active={index === activeViewIndex} />
+          </PagerListWillVisibleContext>
+        </PagerListVisibleContext>
+      ))}
     </AnimatedPagerView>
   )
 }
