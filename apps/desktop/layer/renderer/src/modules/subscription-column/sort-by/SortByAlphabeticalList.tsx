@@ -97,7 +97,7 @@ export const SortByAlphabeticalFeedList = ({
 export const SortByAlphabeticalListList = ({ view, data }: ListListProps) => {
   return (
     <div>
-      {Object.keys(data).map((listId) => (
+      {data.map((listId) => (
         <ListItemAutoHideUnread key={listId} listId={listId} view={view} />
       ))}
     </div>
@@ -107,7 +107,7 @@ export const SortByAlphabeticalListList = ({ view, data }: ListListProps) => {
 export const SortByAlphabeticalInboxList = ({ view, data }: ListListProps) => {
   return (
     <div>
-      {Object.keys(data).map((feedId) => (
+      {data.map((feedId) => (
         <InboxItem key={feedId} inboxId={getInboxHandleOrFeedIdFromFeedId(feedId)} view={view} />
       ))}
     </div>

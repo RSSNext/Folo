@@ -11,7 +11,7 @@ import { useListById } from "@follow/store/list/hooks"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useListsGroupedData,
+  useSubscriptionListIds,
 } from "@follow/store/subscription/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
@@ -46,14 +46,11 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.share
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
-  const listsData = useListsGroupedData(view)
+  const listSubIds = useSubscriptionListIds(view)
 
-  const inboxesData = useInboxList(
+  const inboxSubIds = useInboxList(
     useCallback(
-      (inboxes) =>
-        view === FeedViewType.Articles
-          ? Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]]))
-          : {},
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
       [view],
     ),
   )
@@ -61,17 +58,15 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
   const hasData =
-    Object.keys(feedsData).length > 0 ||
-    Object.keys(listsData).length > 0 ||
-    Object.keys(inboxesData).length > 0
+    Object.keys(feedsData).length > 0 || listSubIds.length > 0 || inboxSubIds.length > 0
 
   const { t } = useTranslation()
 
   // Data prefetch
   // useAuthQuery(Queries.lists.list())
 
-  const hasListData = Object.keys(listsData).length > 0
-  const hasInboxData = Object.keys(inboxesData).length > 0
+  const hasListData = Object.keys(listSubIds).length > 0
+  const hasInboxData = Object.keys(inboxSubIds).length > 0
 
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const selectoRef = useRef<Selecto>(null)
@@ -264,7 +259,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
                 isPreview
               />
             )}
-            <SortByAlphabeticalList view={view} data={listsData} />
+            <SortByAlphabeticalList view={view} data={listSubIds} />
           </>
         )}
         {hasInboxData && (
@@ -272,7 +267,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
             <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
               {t("words.inbox")}
             </div>
-            <SortByAlphabeticalInbox view={view} data={inboxesData} />
+            <SortByAlphabeticalInbox view={view} data={inboxSubIds} />
           </>
         )}
 

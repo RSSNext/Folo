@@ -518,21 +518,20 @@ export const useFeedsGroupedData = (view: FeedViewType, autoGroup: boolean) => {
   }, [autoGroup, data])
 }
 
-export const useListsGroupedData = (view: FeedViewType) => {
-  const lists = useListSubscriptionByView(view)
+export const useSubscriptionListIds = (view: FeedViewType) => {
+  const data = useListSubscriptionByView(view)
 
   return useMemo(() => {
-    if (!lists || lists.length === 0) return {}
-
-    const groupFolder = {} as Record<string, string[]>
-
-    for (const subscription of lists.filter((s) => !!s)) {
-      if (!subscription.listId) continue
-      groupFolder[subscription.listId] = [subscription.listId]
+    if (!data || data.length === 0) return []
+    const ids: string[] = []
+    for (const subscription of data) {
+      if (!subscription) continue
+      if ("listId" in subscription) {
+        ids.push(subscription.listId!)
+      }
     }
-
-    return groupFolder
-  }, [lists])
+    return ids
+  }, [data])
 }
 
 export const useCategoryOpenStateByView = (view: FeedViewType) => {

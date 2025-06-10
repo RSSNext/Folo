@@ -3,7 +3,7 @@ import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useListsGroupedData,
+  useSubscriptionListIds,
 } from "@follow/store/subscription/hooks"
 import { cn } from "@follow/utils/utils"
 import { memo, useCallback } from "react"
@@ -21,30 +21,25 @@ import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.share
 const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
-  const listsData = useListsGroupedData(view)
-  const inboxesData = useInboxList(
+  const listSubIds = useSubscriptionListIds(view)
+  const inboxSubIds = useInboxList(
     useCallback(
-      (inboxes) =>
-        view === FeedViewType.Articles
-          ? Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]]))
-          : {},
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
       [view],
     ),
   )
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
   const hasData =
-    Object.keys(feedsData).length > 0 ||
-    Object.keys(listsData).length > 0 ||
-    Object.keys(inboxesData).length > 0
+    Object.keys(feedsData).length > 0 || listSubIds.length > 0 || inboxSubIds.length > 0
 
   const { t } = useTranslation()
 
   // Data prefetch
   // useAuthQuery(Queries.lists.list())
 
-  const hasListData = Object.keys(listsData).length > 0
-  const hasInboxData = Object.keys(inboxesData).length > 0
+  const hasListData = Object.keys(listSubIds).length > 0
+  const hasInboxData = Object.keys(inboxSubIds).length > 0
 
   const currentActiveView = useRouteParamsSelector((s) => s.view)
   // Render only adjacent views
@@ -66,7 +61,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
             <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
               {t("words.lists")}
             </div>
-            <SortByAlphabeticalList view={view} data={listsData} />
+            <SortByAlphabeticalList view={view} data={listSubIds} />
           </>
         )}
         {hasInboxData && (
@@ -74,7 +69,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
             <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
               {t("words.inbox")}
             </div>
-            <SortByAlphabeticalInbox view={view} data={inboxesData} />
+            <SortByAlphabeticalInbox view={view} data={inboxSubIds} />
           </>
         )}
 
