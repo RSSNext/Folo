@@ -139,7 +139,7 @@ class ListSyncServices {
       })
     })
 
-    tx.persist(async () => {
+    tx.request(async () => {
       await apiClient().lists.$delete({ json: { listId: params.listId } })
     })
 
