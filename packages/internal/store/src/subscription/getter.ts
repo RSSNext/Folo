@@ -12,14 +12,17 @@ export const getSubscriptionById = (id: string | undefined) => {
 }
 export const getSubscriptionByFeedId = (feedId: string | undefined) => getSubscriptionById(feedId)
 
-export const getSubscriptionByView = (view: FeedViewType): string[] => {
+export const getSubscribedFeedIdAndInboxHandlesByView = (
+  view: FeedViewType | undefined,
+): string[] => {
+  if (typeof view !== "number") return []
   const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
     .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
     .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
 }
 
-export const getFeedSubscriptionByView = (view: FeedViewType): string[] => {
+export const getSubscribedFeedIdsByView = (view: FeedViewType): string[] => {
   const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
 }

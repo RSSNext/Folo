@@ -21,13 +21,13 @@ export const markAllByRoute = async (time?: MarkAllFilter) => {
 
   const { hidePrivateSubscriptionsInTimeline: excludePrivate } = getGeneralSettings()
   if (typeof routerParams.feedId === "number" || routerParams.isAllFeeds) {
-    unreadSyncService.markViewAsRead({
+    unreadSyncService.markBatchAsRead({
       view,
       time,
       excludePrivate,
     })
   } else if (inboxId) {
-    unreadSyncService.markViewAsRead({
+    unreadSyncService.markBatchAsRead({
       filter: {
         inboxId,
       },
@@ -36,7 +36,7 @@ export const markAllByRoute = async (time?: MarkAllFilter) => {
       excludePrivate,
     })
   } else if (listId) {
-    unreadSyncService.markViewAsRead({
+    unreadSyncService.markBatchAsRead({
       filter: {
         listId,
       },
@@ -45,7 +45,7 @@ export const markAllByRoute = async (time?: MarkAllFilter) => {
       excludePrivate,
     })
   } else if (folderIds?.length) {
-    unreadSyncService.markViewAsRead({
+    unreadSyncService.markBatchAsRead({
       filter: {
         feedIdList: folderIds,
       },
@@ -54,7 +54,7 @@ export const markAllByRoute = async (time?: MarkAllFilter) => {
       excludePrivate,
     })
   } else if (routerParams.feedId) {
-    unreadSyncService.markViewAsRead({
+    unreadSyncService.markBatchAsRead({
       filter: {
         feedIdList: routerParams.feedId?.split(","),
       },

@@ -18,6 +18,7 @@ import { debounce } from "es-toolkit/compat"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { ROUTE_FEED_PENDING } from "~/constants/app"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient, apiFetch } from "~/lib/api-fetch"
@@ -160,26 +161,32 @@ function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | 
 
 const useLocalEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId, isCollection } = useRouteParams()
-
   const folderIds = useFolderFeedsByFeedId({
     feedId,
     view,
   })
-
-  const entryIdsByCollections = useCollectionEntryList(view)
   const entryIdsByView = useEntryIdsByView(view)
+  const entryIdsByCollections = useCollectionEntryList(view)
   const entryIdsByFeedId = useEntryIdsByFeedId(feedId)
   const entryIdsByCategory = useEntryIdsByFeedIds(folderIds)
   const entryIdsByListId = useEntryIdsByListId(listId)
   const entryIdsByInboxId = useEntryIdsByInboxId(inboxId)
-  const allEntries = isCollection
-    ? entryIdsByCollections
+
+  const showEntriesByView =
+    (!feedId || feedId === ROUTE_FEED_PENDING) &&
+    folderIds.length === 0 &&
+    !isCollection &&
+    !inboxId &&
+    !listId
+
+  const allEntries = showEntriesByView
+    ? entryIdsByView
     : getEntryIdsFromMultiplePlace(
+        entryIdsByCollections,
         entryIdsByFeedId,
         entryIdsByCategory,
         entryIdsByListId,
         entryIdsByInboxId,
-        entryIdsByView,
       )
 
   const [page, setPage] = useState(0)

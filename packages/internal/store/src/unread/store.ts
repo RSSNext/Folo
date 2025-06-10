@@ -8,8 +8,8 @@ import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import type { Hydratable, Resetable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
-import { getListById, getListFeedIds } from "../list/getters"
-import { getSubscriptionByView } from "../subscription/getter"
+import { getListFeedIds } from "../list/getters"
+import { getSubscribedFeedIdAndInboxHandlesByView } from "../subscription/getter"
 import type {
   FeedIdOrInboxHandle,
   PublishAtTimeRangeFilter,
@@ -36,27 +36,73 @@ class UnreadSyncService {
     return res.data
   }
 
-  private async updateUnreadStatus(feedIds: string[], time?: PublishAtTimeRangeFilter) {
-    if (time) {
-      await this.resetFromRemote()
-    } else {
-      await unreadActions.upsertMany(feedIds.map((id) => ({ id, count: 0 })))
-    }
-    entryActions.markEntryReadStatusInSession({ feedIds, read: true, time })
-    await EntryService.patchMany({
-      feedIds,
-      entry: { read: true },
-      time,
+  private async updateUnreadStatus({
+    ids,
+    time,
+    request,
+  }: {
+    ids: FeedIdOrInboxHandle[]
+    time?: PublishAtTimeRangeFilter
+    request: () => Promise<UnreadStoreModel>
+  }) {
+    if (!ids || ids.length === 0) return
+
+    const currentUnreadList = ids.map((id) => ({ id, count: get().data[id] || 0 }))
+    const newUnreadListWhenNoTimeFilter = ids.map((id) => ({ id, count: 0 }))
+
+    let affectedEntryIds: string[] = []
+
+    const tx = createTransaction<unknown, unknown, UnreadStoreModel>()
+
+    tx.store(() => {
+      affectedEntryIds = entryActions.markEntryReadStatusInSession({
+        ids,
+        read: true,
+        time,
+      })
+
+      if (!time) {
+        unreadActions.upsertManyInSession(newUnreadListWhenNoTimeFilter)
+      }
     })
+
+    tx.request(request)
+
+    tx.rollback(async () => {
+      entryActions.markEntryReadStatusInSession({
+        entryIds: affectedEntryIds,
+        read: false,
+      })
+
+      unreadActions.upsertManyInSession(currentUnreadList)
+    })
+
+    tx.persist(async (_s, _c, res) => {
+      if (!time) {
+        await UnreadService.upsertMany(newUnreadListWhenNoTimeFilter)
+      } else {
+        if (res) {
+          await unreadActions.changeBatch(res, "decrement")
+        }
+      }
+
+      await EntryService.patchMany({
+        feedIds: ids,
+        entry: { read: true },
+        time,
+      })
+    })
+
+    await tx.run()
   }
 
-  async markViewAsRead({
+  async markBatchAsRead({
     view,
     filter,
     time,
     excludePrivate,
   }: {
-    view: FeedViewType
+    view: FeedViewType | undefined
     filter?: {
       feedId?: string
       listId?: string
@@ -66,136 +112,112 @@ class UnreadSyncService {
     time?: PublishAtTimeRangeFilter
     excludePrivate: boolean
   }) {
-    await apiClient().reads.all.$post({
-      json: {
-        view,
-        excludePrivate,
-        ...filter,
-        ...time,
-      },
-    })
+    const request = async () => {
+      const res = await apiClient().reads.all.$post({
+        json: {
+          view,
+          excludePrivate,
+          ...filter,
+          ...time,
+        },
+      })
+      return res.data.read
+    }
+
     if (filter?.feedIdList) {
-      this.updateUnreadStatus(filter.feedIdList, time)
+      await this.updateUnreadStatus({ ids: filter.feedIdList, time, request })
     } else if (filter?.feedId) {
-      this.updateUnreadStatus([filter.feedId], time)
+      await this.updateUnreadStatus({ ids: [filter.feedId], time, request })
     } else if (filter?.listId) {
       const feedIds = getListFeedIds(filter.listId)
-      if (feedIds) {
-        this.updateUnreadStatus(feedIds, time)
+      if (feedIds && feedIds.length > 0) {
+        await this.updateUnreadStatus({ ids: feedIds, time, request })
       }
     } else if (filter?.inboxId) {
-      this.updateUnreadStatus([filter.inboxId], time)
+      await this.updateUnreadStatus({ ids: [filter.inboxId], time, request })
     } else {
-      const subscriptionIds = getSubscriptionByView(view)
-      this.updateUnreadStatus(subscriptionIds, time)
+      const feedIdAndInboxHandles = getSubscribedFeedIdAndInboxHandlesByView(view)
+      await this.updateUnreadStatus({ ids: feedIdAndInboxHandles, time, request })
     }
+  }
+
+  async markViewAsRead(view: FeedViewType, excludePrivate: boolean) {
+    await this.markBatchAsRead({
+      view,
+      excludePrivate,
+    })
   }
 
   async markFeedAsRead(feedId: string | string[], time?: PublishAtTimeRangeFilter) {
     const feedIds = Array.isArray(feedId) ? feedId : [feedId]
 
-    await apiClient().reads.all.$post({
-      json: {
+    await this.markBatchAsRead({
+      view: undefined,
+      excludePrivate: false,
+      filter: {
         feedIdList: feedIds,
-        ...time,
       },
+      time,
     })
-
-    this.updateUnreadStatus(feedIds, time)
   }
 
   async markListAsRead(listId: string, time?: PublishAtTimeRangeFilter) {
-    const list = getListById(listId)
-    if (!list) return
-
-    await apiClient().reads.all.$post({
-      json: {
+    await this.markBatchAsRead({
+      view: undefined,
+      excludePrivate: false,
+      filter: {
         listId,
-
-        ...time,
       },
+      time,
     })
-
-    const feedIds = getListFeedIds(listId)
-    if (feedIds) {
-      this.updateUnreadStatus(feedIds, time)
-    }
   }
 
-  async markEntryAsRead(entryId: string) {
+  private async markEntryReadStatus({ entryId, read }: { entryId: string; read: boolean }) {
     const entry = getEntry(entryId)
-    if (!entry || entry?.read) return
+    if (!entry || entry.read === read || (!entry.feedId && !entry.inboxHandle)) return
 
-    const feedId = entry?.feedId
+    const id: FeedIdOrInboxHandle = entry.inboxHandle || entry.feedId || ""
 
     const tx = createTransaction()
     tx.store(() => {
-      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read: true })
-
-      if (feedId) {
-        unreadActions.removeUnread(feedId)
-      }
-    })
-    tx.rollback(() => {
-      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read: false })
-
-      if (feedId) {
-        unreadActions.addUnread(feedId)
+      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read })
+      if (read) {
+        unreadActions.removeUnread(id)
+      } else {
+        unreadActions.addUnread(id)
       }
     })
 
     tx.request(() => {
-      apiClient().reads.$post({
+      return apiClient().reads.$post({
         json: { entryIds: [entryId] },
       })
     })
 
+    tx.rollback(() => {
+      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read: !read })
+      if (read) {
+        unreadActions.addUnread(id)
+      } else {
+        unreadActions.removeUnread(id)
+      }
+    })
+
     tx.persist(() => {
       return EntryService.patchMany({
-        entry: { read: true },
+        entry: { read },
         entryIds: [entryId],
       })
     })
-
     await tx.run()
   }
 
+  async markEntryAsRead(entryId: string) {
+    return this.markEntryReadStatus({ entryId, read: true })
+  }
+
   async markEntryAsUnread(entryId: string) {
-    const entry = getEntry(entryId)
-    if (!entry || !entry?.read) return
-
-    const feedId = entry?.feedId
-
-    const tx = createTransaction()
-    tx.store(() => {
-      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read: false })
-
-      if (feedId) {
-        unreadActions.addUnread(feedId)
-      }
-    })
-    tx.rollback(() => {
-      entryActions.markEntryReadStatusInSession({ entryIds: [entryId], read: true })
-
-      if (feedId) {
-        unreadActions.removeUnread(feedId)
-      }
-    })
-
-    tx.request(() => {
-      apiClient().reads.$delete({
-        json: { entryId },
-      })
-    })
-
-    tx.persist(() => {
-      return EntryService.patchMany({
-        entry: { read: false },
-        entryIds: [entryId],
-      })
-    })
-
-    await tx.run()
+    return this.markEntryReadStatus({ entryId, read: false })
   }
 }
 

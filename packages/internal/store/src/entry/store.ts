@@ -13,7 +13,7 @@ import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
 import { getSubscriptionById } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
-import type { PublishAtTimeRangeFilter } from "../unread/types"
+import type { FeedIdOrInboxHandle, PublishAtTimeRangeFilter } from "../unread/types"
 import { whoami } from "../user/getters"
 import { userActions } from "../user/store"
 import { getEntry } from "./getter"
@@ -297,15 +297,17 @@ class EntryActions implements Hydratable, Resetable {
 
   markEntryReadStatusInSession({
     entryIds,
-    feedIds,
+    ids,
     read,
     time,
   }: {
     entryIds?: EntryId[]
-    feedIds?: FeedId[]
+    ids?: FeedIdOrInboxHandle[]
     read: boolean
     time?: PublishAtTimeRangeFilter
   }) {
+    const affectedEntryIds = new Set<EntryId>()
+
     immerSet((draft) => {
       if (entryIds) {
         for (const entryId of entryIds) {
@@ -322,17 +324,22 @@ class EntryActions implements Hydratable, Resetable {
             continue
           }
 
-          entry.read = read
+          if (entry.read !== read) {
+            entry.read = read
+            affectedEntryIds.add(entryId)
+          }
         }
       }
 
-      if (feedIds) {
+      if (ids) {
         const entries = Array.from(draft.entryIdSet)
           .map((id) => draft.data[id])
-          .filter(
-            (entry): entry is EntryModel =>
-              !!entry && !!entry.feedId && feedIds.includes(entry.feedId),
-          )
+          .filter((entry): entry is EntryModel => {
+            if (!entry) return false
+            const id = entry.inboxHandle || entry.feedId || ""
+            if (!id) return false
+            return ids.includes(id)
+          })
 
         for (const entry of entries) {
           if (
@@ -343,10 +350,15 @@ class EntryActions implements Hydratable, Resetable {
             continue
           }
 
-          entry.read = read
+          if (entry.read !== read) {
+            entry.read = read
+            affectedEntryIds.add(entry.id)
+          }
         }
       }
     })
+
+    return Array.from(affectedEntryIds)
   }
 
   resetByView({ view, entries }: { view?: FeedViewType; entries: EntryModel[] }) {
@@ -467,28 +479,20 @@ class EntrySyncServices {
 
     // After initial fetch, we can reset the state to prefer the entries data from the server
     if (!pageParam) {
-      if (params.view !== undefined) {
-        entryActions.resetByView({ view: params.view, entries })
-      }
-
       if (params.feedIdList && params.feedIdList.length > 0) {
         const firstSubscription = getSubscriptionById(params.feedIdList[0])
         const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
         if (category) {
           entryActions.resetByCategory({ category, entries })
         }
-      }
-
-      if (params.feedId) {
+      } else if (params.feedId) {
         entryActions.resetByFeed({ feedId: params.feedId, entries })
-      }
-
-      if (params.inboxId) {
+      } else if (params.inboxId) {
         entryActions.resetByInbox({ inboxId: params.inboxId, entries })
-      }
-
-      if (params.listId) {
+      } else if (params.listId) {
         entryActions.resetByList({ listId: params.listId, entries })
+      } else if (params.view !== undefined) {
+        entryActions.resetByView({ view: params.view, entries })
       }
     }
 
