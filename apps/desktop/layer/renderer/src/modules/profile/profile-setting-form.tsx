@@ -257,7 +257,7 @@ export const ProfileSettingForm = ({
                         <input
                           {...field}
                           placeholder={socialCopyMap[social]}
-                          className="placeholder:text-text-tertiary border-0 !bg-transparent p-0 text-sm focus-visible:ring-0"
+                          className="placeholder:text-text-tertiary flex-1 border-0 !bg-transparent p-0 text-sm focus-visible:ring-0"
                         />
                       </label>
                     </FormControl>
