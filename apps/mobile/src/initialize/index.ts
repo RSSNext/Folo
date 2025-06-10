@@ -3,7 +3,6 @@ import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
-import { getGeneralSettings } from "../atoms/settings/general"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -30,11 +29,7 @@ export const initializeApp = async () => {
   await apm("hydrateSettings", hydrateSettings)
   let dataHydratedTime = Date.now()
   await apm("hydrateDatabaseToStore", () => {
-    const { hidePrivateSubscriptionsInTimeline, unreadOnly } = getGeneralSettings()
-    return hydrateDatabaseToStore({
-      hidePrivateSubscriptionsInTimeline,
-      unreadOnly,
-    })
+    return hydrateDatabaseToStore()
   })
 
   dataHydratedTime = Date.now() - dataHydratedTime

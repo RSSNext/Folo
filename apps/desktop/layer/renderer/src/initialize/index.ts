@@ -96,11 +96,7 @@ export const initializeApp = async () => {
   })
 
   // should after hydrateSettings
-  const {
-    dataPersist: enabledDataPersist,
-    hidePrivateSubscriptionsInTimeline,
-    unreadOnly,
-  } = getGeneralSettings()
+  const { dataPersist: enabledDataPersist } = getGeneralSettings()
 
   initSentry()
   await apm("i18n", initI18n)
@@ -110,8 +106,6 @@ export const initializeApp = async () => {
   if (enabledDataPersist) {
     dataHydratedTime = await apm("hydrateDatabaseToStore", () => {
       return hydrateDatabaseToStore({
-        hidePrivateSubscriptionsInTimeline,
-        unreadOnly,
         migrateDatabase: true,
       })
     })

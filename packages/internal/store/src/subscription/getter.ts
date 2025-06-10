@@ -1,5 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 
+import { getEntry } from "../entry/getter"
 import { getInboxList } from "../inbox/getters"
 import { getListFeedIds } from "../list/getters"
 import { folderFeedsByFeedIdSelector } from "./selectors"
@@ -11,6 +12,16 @@ export const getSubscriptionById = (id: string | undefined) => {
   return useSubscriptionStore.getState().data[id]
 }
 export const getSubscriptionByFeedId = (feedId: string | undefined) => getSubscriptionById(feedId)
+
+export const getSubscriptionByEntryId = (entryId: string | undefined) => {
+  if (!entryId) return
+  const entry = getEntry(entryId)
+  if (!entry) return
+  const { feedId, sources } = entry
+  const possibleSource = (sources?.concat(feedId || "") ?? []).filter((s) => !!s && s !== "feed")
+  if (!possibleSource || possibleSource.length === 0) return
+  return possibleSource.map((id) => getSubscriptionByFeedId(id)).find((s) => !!s)
+}
 
 export const getSubscribedFeedIdAndInboxHandlesByView = (
   view: FeedViewType | undefined,

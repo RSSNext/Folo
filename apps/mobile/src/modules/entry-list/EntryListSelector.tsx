@@ -13,7 +13,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
-import { useFetchEntriesControls } from "../screen/atoms"
+import { useEntries } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"
@@ -24,12 +24,11 @@ const NoLoginGuard = ({ children }: { children: React.ReactNode }) => {
 }
 
 type EntryListSelectorProps = {
-  entryIds: string[] | null
   viewId: FeedViewType
   active?: boolean
 }
 
-function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSelectorProps) {
+function EntryListSelectorImpl({ viewId, active = true }: EntryListSelectorProps) {
   const ref = useRegisterNavigationScrollView<FlashList<any>>(active)
 
   let ContentComponent:
@@ -63,7 +62,7 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     })
   }, [unreadOnly, ref])
 
-  const { isRefetching } = useFetchEntriesControls()
+  const { isRefetching, entriesIds } = useEntries()
   useEffect(() => {
     if (isRefetching) {
       ref?.current?.scrollToOffset({
@@ -72,21 +71,18 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     }
   }, [isRefetching, ref])
 
-  useAutoScrollToEntryAfterPullUpToNext(ref, entryIds || [])
+  useAutoScrollToEntryAfterPullUpToNext(ref, entriesIds || [])
 
-  return <ContentComponent ref={ref} entryIds={entryIds} active={active} view={viewId} />
+  return <ContentComponent ref={ref} entryIds={entriesIds} active={active} view={viewId} />
 }
 
-export const EntryListSelector = withErrorBoundary(
-  ({ entryIds, viewId, active }: EntryListSelectorProps) => {
-    return (
-      <NoLoginGuard>
-        <EntryListSelectorImpl entryIds={entryIds} viewId={viewId} active={active} />
-      </NoLoginGuard>
-    )
-  },
-  ListErrorView,
-)
+export const EntryListSelector = withErrorBoundary(({ viewId, active }: EntryListSelectorProps) => {
+  return (
+    <NoLoginGuard>
+      <EntryListSelectorImpl viewId={viewId} active={active} />
+    </NoLoginGuard>
+  )
+}, ListErrorView)
 
 const useAutoScrollToEntryAfterPullUpToNext = (
   ref: RefObject<FlashList<any> | null>,

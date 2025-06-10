@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntryIdsByFeedId, usePrefetchEntries } from "@follow/store/entry/hooks"
+import { useEntriesQuery, useEntryIdsByFeedId } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
@@ -341,7 +341,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   const { id: feedId } = props
   const entryIds = useEntryIdsByFeedId(feedId)
   const options = useFetchEntriesSettings()
-  const { isLoading } = usePrefetchEntries({ feedId, limit: 5, ...options })
+  const { isLoading } = useEntriesQuery({ feedId, limit: 5, ...options })
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (

@@ -7,7 +7,7 @@ import { View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { checkLanguage } from "@/src/lib/translation"
 
-import { useFetchEntriesControls } from "../screen/atoms"
+import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
@@ -22,8 +22,7 @@ export const EntryListContentSocial = ({
 }: { entryIds: string[] | null; active?: boolean } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
-    useFetchEntriesControls()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
   const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()

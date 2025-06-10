@@ -9,7 +9,10 @@ import {
   useEntryIdsByListId,
   useEntryIdsByView,
 } from "@follow/store/entry/hooks"
-import { entryActions } from "@follow/store/entry/store"
+import { entryActions, useEntryStore } from "@follow/store/entry/store"
+import type { UseEntriesReturn } from "@follow/store/entry/types"
+import { fallbackReturn } from "@follow/store/entry/utils"
+import { getSubscriptionByEntryId } from "@follow/store/subscription/getter"
 import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
@@ -25,38 +28,6 @@ import { apiClient, apiFetch } from "~/lib/api-fetch"
 import { entries, useEntries } from "~/queries/entries"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
-
-interface UseEntriesReturn {
-  entriesIds: string[]
-  hasNext: boolean
-  hasUpdate: boolean
-  refetch: () => Promise<void>
-
-  fetchNextPage: () => Promise<void>
-  isLoading: boolean
-  isReady: boolean
-  isFetching: boolean
-  isFetchingNextPage: boolean
-
-  hasNextPage: boolean
-  error: Error | null
-}
-
-const fallbackReturn: UseEntriesReturn = {
-  entriesIds: [],
-  hasNext: false,
-  hasUpdate: false,
-  refetch: async () => {},
-
-  fetchNextPage: async () => {},
-
-  isLoading: true,
-  isReady: false,
-  isFetching: false,
-  isFetchingNextPage: false,
-  hasNextPage: false,
-  error: null,
-}
 
 const useRemoteEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId } = useRouteParams()
@@ -147,6 +118,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
 
     fetchNextPage,
     isLoading: query.isFetching,
+    isRefetching: query.isRefetching,
     isReady: query.isSuccess,
     isFetchingNextPage: query.isFetchingNextPage,
     isFetching: query.isFetching,
@@ -179,15 +151,52 @@ const useLocalEntries = (): UseEntriesReturn => {
     !inboxId &&
     !listId
 
-  const allEntries = showEntriesByView
-    ? entryIdsByView
-    : getEntryIdsFromMultiplePlace(
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
+
+  const allEntries = useEntryStore(
+    useCallback(
+      (state) => {
+        const ids = showEntriesByView
+          ? (entryIdsByView ?? [])
+          : (getEntryIdsFromMultiplePlace(
+              entryIdsByCollections,
+              entryIdsByFeedId,
+              entryIdsByCategory,
+              entryIdsByListId,
+              entryIdsByInboxId,
+            ) ?? [])
+
+        return ids
+          .map((id) => {
+            const entry = state.data[id]
+            if (!entry) return null
+            if (unreadOnly && entry.read) {
+              return null
+            }
+            const subscription = getSubscriptionByEntryId(id)
+            if (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) {
+              return null
+            }
+            return entry.id
+          })
+          .filter((id) => typeof id === "string")
+      },
+      [
+        entryIdsByCategory,
         entryIdsByCollections,
         entryIdsByFeedId,
-        entryIdsByCategory,
-        entryIdsByListId,
         entryIdsByInboxId,
-      )
+        entryIdsByListId,
+        entryIdsByView,
+        hidePrivateSubscriptionsInTimeline,
+        showEntriesByView,
+        unreadOnly,
+      ],
+    ),
+  )
 
   const [page, setPage] = useState(0)
   const pageSize = 30
@@ -226,6 +235,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     refetch,
     fetchNextPage: fetchNextPage as () => Promise<void>,
     isLoading: false,
+    isRefetching: false,
     isReady: true,
     isFetchingNextPage: false,
     isFetching: false,

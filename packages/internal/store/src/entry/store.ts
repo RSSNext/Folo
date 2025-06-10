@@ -493,25 +493,6 @@ class EntrySyncServices {
 
     await entryActions.upsertMany(entries)
 
-    // After initial fetch, we can reset the state to prefer the entries data from the server
-    if (!pageParam) {
-      if (params.feedIdList && params.feedIdList.length > 0) {
-        const firstSubscription = getSubscriptionById(params.feedIdList[0])
-        const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
-        if (category) {
-          entryActions.resetByCategory({ category, entries })
-        }
-      } else if (params.feedId) {
-        entryActions.resetByFeed({ feedId: params.feedId, entries })
-      } else if (params.inboxId) {
-        entryActions.resetByInbox({ inboxId: params.inboxId, entries })
-      } else if (params.listId) {
-        entryActions.resetByList({ listId: params.listId, entries })
-      } else if (params.view !== undefined) {
-        entryActions.resetByView({ view: params.view, entries })
-      }
-    }
-
     if (isCollection && res.data) {
       if (view === undefined) {
         console.error("view is required for collection")

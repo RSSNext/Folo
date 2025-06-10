@@ -6,7 +6,7 @@ import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 
-export const usePrefetchEntries = (
+export const useEntriesQuery = (
   props: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,
 ) => {
   const {
@@ -47,6 +47,7 @@ export const usePrefetchEntries = (
     enabled: !!props,
   })
 }
+
 export const usePrefetchEntryDetail = (entryId: string) => {
   return useQuery({
     queryKey: ["entry", entryId],
@@ -117,15 +118,15 @@ export const useEntryIdsByFeedId = (feedId: string | undefined) => {
   )
 }
 
-export const useEntryIdsByFeedIds = (feedIds: string[]) => {
+export const useEntryIdsByFeedIds = (feedIds: string[] | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
-        const ids = feedIds.flatMap((feedId) => Array.from(state.entryIdByFeed[feedId] || []))
+        const ids = feedIds?.flatMap((feedId) => Array.from(state.entryIdByFeed[feedId] || []))
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
-      [feedIds.toString()],
+      [feedIds?.toString()],
     ),
   )
 }

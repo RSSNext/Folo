@@ -13,7 +13,7 @@ import {
 } from "@/src/modules/screen/action"
 import { TimelineViewSelector } from "@/src/modules/screen/TimelineViewSelector"
 
-import { useEntryListContext, useFetchEntriesControls, useSelectedFeedTitle } from "./atoms"
+import { useEntries, useEntryListContext, useSelectedFeedTitle } from "./atoms"
 
 export function TimelineHeader({ feedId }: { feedId?: string }) {
   const viewTitle = useSelectedFeedTitle()
@@ -23,7 +23,7 @@ export function TimelineHeader({ feedId }: { feedId?: string }) {
   const isTimeline = screenType === "timeline"
   const isSubscriptions = screenType === "subscriptions"
 
-  const { isFetching } = useFetchEntriesControls()
+  const { isFetching } = useEntries()
 
   return (
     <NavigationBlurEffectHeader
