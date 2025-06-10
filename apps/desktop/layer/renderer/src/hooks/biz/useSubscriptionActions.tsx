@@ -31,46 +31,48 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
 
       if (!subscription) return
 
-      subscriptionSyncService.unsubscribe([subscription.feedId]).then(([feed]) => {
-        subscriptionSyncService.fetch()
-        unreadActions.updateById(subscription.feedId, 0)
+      subscriptionSyncService
+        .unsubscribe([subscription.feedId, subscription.listId])
+        .then(([feed]) => {
+          subscriptionSyncService.fetch()
+          unreadActions.updateById(subscription.feedId, 0)
 
-        if (!subscription) return
-        if (!feed) return
-        const undo = async () => {
-          // TODO store action
-          const { unread } = await apiClient.subscriptions.$post({
-            json: {
-              url: feed.type === "feed" ? feed.url : undefined,
-              listId: feed.type === "list" ? feed.id : undefined,
-              view: subscription.view,
-              category: subscription.category,
-              isPrivate: subscription.isPrivate,
+          if (!subscription) return
+          if (!feed) return
+          const undo = async () => {
+            // TODO store action
+            const { unread } = await apiClient.subscriptions.$post({
+              json: {
+                url: feed.type === "feed" ? feed.url : undefined,
+                listId: feed.type === "list" ? feed.id : undefined,
+                view: subscription.view,
+                category: subscription.category,
+                isPrivate: subscription.isPrivate,
+              },
+            })
+            unreadActions.upsertMany(unread)
+
+            subscriptionSyncService.fetch()
+
+            toast.dismiss(toastId)
+          }
+
+          const toastId = toast("", {
+            duration: 3000,
+            description: <UnfollowInfo title={feed.title!} undo={undo} />,
+            action: {
+              label: (
+                <span className="flex items-center gap-1">
+                  {t("words.undo")}
+                  <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
+                    $mod+Z
+                  </Kbd>
+                </span>
+              ),
+              onClick: undo,
             },
           })
-          unreadActions.upsertMany(unread)
-
-          subscriptionSyncService.fetch()
-
-          toast.dismiss(toastId)
-        }
-
-        const toastId = toast("", {
-          duration: 3000,
-          description: <UnfollowInfo title={feed.title!} undo={undo} />,
-          action: {
-            label: (
-              <span className="flex items-center gap-1">
-                {t("words.undo")}
-                <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
-                  $mod+Z
-                </Kbd>
-              </span>
-            ),
-            onClick: undo,
-          },
         })
-      })
     },
 
     onSuccess: (_) => {

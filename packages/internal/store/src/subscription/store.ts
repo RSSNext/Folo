@@ -339,24 +339,19 @@ class SubscriptionSyncService {
           const subscription = draft.data[id]
           if (!subscription) continue
           draft.subscriptionIdSet.delete(getSubscriptionStoreId(subscription))
-          if (subscription.feedId)
-            draft.feedIdByView[subscription.view as FeedViewType].delete(subscription.feedId)
-          if (subscription.listId)
-            draft.listIdByView[subscription.view as FeedViewType].delete(subscription.listId)
+          if (subscription.feedId) draft.feedIdByView[subscription.view].delete(subscription.feedId)
+          if (subscription.listId) draft.listIdByView[subscription.view].delete(subscription.listId)
           if (subscription.category)
-            draft.categories[subscription.view as FeedViewType].delete(subscription.category)
+            draft.categories[subscription.view].delete(subscription.category)
         }
       })
     })
 
-    tx.persist(() => {
-      return SubscriptionService.delete(subscriptionList.map((i) => buildSubscriptionDbId(i)))
-    })
-
     tx.request(async () => {
+      const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
       await apiClient().subscriptions.$delete({
         json: {
-          feedIdList: feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string"),
+          feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
           listId: listSubscriptions.at(0)?.listId || undefined,
         },
       })
@@ -371,14 +366,15 @@ class SubscriptionSyncService {
           draft.data[id] = subscription
 
           draft.subscriptionIdSet.add(`${subscription.type}/${subscription.feedId}`)
-          if (subscription.feedId)
-            draft.feedIdByView[subscription.view as FeedViewType].add(subscription.feedId)
-          if (subscription.listId)
-            draft.listIdByView[subscription.view as FeedViewType].add(subscription.listId)
-          if (subscription.category)
-            draft.categories[subscription.view as FeedViewType].add(subscription.category)
+          if (subscription.feedId) draft.feedIdByView[subscription.view].add(subscription.feedId)
+          if (subscription.listId) draft.listIdByView[subscription.view].add(subscription.listId)
+          if (subscription.category) draft.categories[subscription.view].add(subscription.category)
         }
       })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.delete(subscriptionList.map((i) => buildSubscriptionDbId(i)))
     })
 
     await tx.run()
