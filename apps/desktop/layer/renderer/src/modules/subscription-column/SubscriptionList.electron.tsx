@@ -5,6 +5,7 @@ import {
   useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { FeedViewType } from "@follow/constants"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
 import {
@@ -15,7 +16,7 @@ import {
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions, isKeyForMultiSelectPressed } from "@follow/utils/utils"
-import { memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventCallback, useEventListener } from "usehooks-ts"
@@ -47,8 +48,14 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const feedsData = useFeedsGroupedData(view, autoGroup)
   const listsData = useListsGroupedData(view)
 
-  const inboxesData = useInboxList((inboxes) =>
-    Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]])),
+  const inboxesData = useInboxList(
+    useCallback(
+      (inboxes) =>
+        view === FeedViewType.Articles
+          ? Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]]))
+          : {},
+      [view],
+    ),
   )
 
   const categoryOpenStateData = useCategoryOpenStateByView(view)

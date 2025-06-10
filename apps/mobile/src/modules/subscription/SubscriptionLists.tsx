@@ -1,4 +1,4 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import {
@@ -11,7 +11,7 @@ import {
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { FlashList } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
-import { memo, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
@@ -64,7 +64,12 @@ const SubscriptionListImpl = ({
     hideAllReadSubscriptions,
   })
 
-  const inboxes = useInboxList((inboxes) => inboxes.map((inbox) => inbox.id))
+  const inboxes = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
 
   const { grouped, unGrouped } = useGroupedSubscription({
     view,

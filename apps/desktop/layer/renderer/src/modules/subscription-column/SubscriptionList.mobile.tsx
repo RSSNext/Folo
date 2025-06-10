@@ -1,4 +1,4 @@
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useCategoryOpenStateByView,
@@ -6,7 +6,7 @@ import {
   useListsGroupedData,
 } from "@follow/store/subscription/hooks"
 import { cn } from "@follow/utils/utils"
-import { memo } from "react"
+import { memo, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
@@ -22,8 +22,14 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
   const listsData = useListsGroupedData(view)
-  const inboxesData = useInboxList((inboxes) =>
-    Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]])),
+  const inboxesData = useInboxList(
+    useCallback(
+      (inboxes) =>
+        view === FeedViewType.Articles
+          ? Object.fromEntries(inboxes.map((inbox) => [inbox.id, [inbox.id]]))
+          : {},
+      [view],
+    ),
   )
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
