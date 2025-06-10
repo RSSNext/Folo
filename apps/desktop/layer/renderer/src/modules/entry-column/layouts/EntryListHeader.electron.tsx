@@ -167,7 +167,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
             e.stopPropagation()
             navigate(previewBackPath() || "/")
           }}
-          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 duration-200"
+          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200"
         >
           <i className="i-mingcute-left-line" />
           <span className="text-sm font-medium">{tCommon("words.back")}</span>
