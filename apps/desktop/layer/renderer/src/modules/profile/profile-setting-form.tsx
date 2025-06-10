@@ -64,15 +64,6 @@ type ExtendedUser = ReturnType<typeof useWhoami> & {
   }
 }
 
-const socialCopyMap = {
-  twitter: "Twitter",
-  github: "GitHub",
-  instagram: "Instagram",
-  facebook: "Facebook",
-  youtube: "YouTube",
-  discord: "Discord",
-}
-
 export const ProfileSettingForm = ({
   className,
   buttonClassName,
@@ -138,6 +129,15 @@ export const ProfileSettingForm = ({
     "youtube",
     "discord",
   ]
+
+  const socialCopyMap = {
+    twitter: t("profile.profile.social_links_twitter"),
+    github: t("profile.profile.social_links_github"),
+    instagram: t("profile.profile.social_links_instagram"),
+    facebook: t("profile.profile.social_links_facebook"),
+    youtube: t("profile.profile.social_links_youtube"),
+    discord: t("profile.profile.social_links_discord"),
+  }
 
   return (
     <Form {...form}>
@@ -207,7 +207,7 @@ export const ProfileSettingForm = ({
                 <TextArea
                   rounded="lg"
                   {...field}
-                  placeholder="Tell us about yourself..."
+                  placeholder={t("profile.profile.bio_placeholder")}
                   className="placeholder:text-text-tertiary min-h-[80px] resize-none p-3 text-sm"
                 />
               </FormControl>
@@ -257,7 +257,7 @@ export const ProfileSettingForm = ({
                         <input
                           {...field}
                           placeholder={socialCopyMap[social]}
-                          className="placeholder:text-text-tertiary border-0 !bg-transparent p-0 text-sm focus-visible:ring-0"
+                          className="placeholder:text-text-tertiary flex-1 border-0 !bg-transparent p-0 text-sm focus-visible:ring-0"
                         />
                       </label>
                     </FormControl>
