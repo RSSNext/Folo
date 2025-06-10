@@ -11,6 +11,7 @@ import { enableFreeze } from "react-native-screens"
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
+import { Lightbox } from "./components/lightbox/Lightbox"
 import { initializeApp } from "./initialize"
 import { apiClient } from "./lib/api-fetch"
 import { authClient } from "./lib/auth"
@@ -76,6 +77,7 @@ function RootComponent() {
             </TabRoot>
           </App>
         </RootStackNavigation>
+        <Lightbox />
       </BottomTabProvider>
     </RootProviders>
   )

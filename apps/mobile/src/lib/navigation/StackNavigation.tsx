@@ -8,7 +8,6 @@ import { StyleSheet } from "react-native"
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
-  SafeAreaProvider,
   useSafeAreaFrame,
   useSafeAreaInsets,
 } from "react-native-safe-area-context"
@@ -39,24 +38,22 @@ interface RootStackNavigationProps {
 }
 export const RootStackNavigation = ({ children, headerConfig }: RootStackNavigationProps) => {
   return (
-    <SafeAreaProvider>
-      <AttachNavigationScrollViewProvider>
-        <ScreenNameContext value={useMemo(() => atom(""), [])}>
-          <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
-            <NavigationInstanceContext value={Navigation.rootNavigation}>
-              <ScreenStack style={StyleSheet.absoluteFill}>
-                <WrappedScreenItem headerConfig={headerConfig} screenId="root">
-                  {children}
-                </WrappedScreenItem>
+    <AttachNavigationScrollViewProvider>
+      <ScreenNameContext value={useMemo(() => atom(""), [])}>
+        <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
+          <NavigationInstanceContext value={Navigation.rootNavigation}>
+            <ScreenStack style={StyleSheet.absoluteFill}>
+              <WrappedScreenItem headerConfig={headerConfig} screenId="root">
+                {children}
+              </WrappedScreenItem>
 
-                <ScreenItemsMapper />
-                <StateHandler />
-              </ScreenStack>
-            </NavigationInstanceContext>
-          </ChainNavigationContext>
-        </ScreenNameContext>
-      </AttachNavigationScrollViewProvider>
-    </SafeAreaProvider>
+              <ScreenItemsMapper />
+              <StateHandler />
+            </ScreenStack>
+          </NavigationInstanceContext>
+        </ChainNavigationContext>
+      </ScreenNameContext>
+    </AttachNavigationScrollViewProvider>
   )
 }
 
