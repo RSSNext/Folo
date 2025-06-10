@@ -1,4 +1,5 @@
 import { ListService } from "@follow/database/services/list"
+import { clone } from "es-toolkit"
 
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
@@ -130,21 +131,32 @@ class ListSyncServices {
     ])
   }
 
-  async deleteList(params: { listId: string }) {
+  async deleteList(listId: string) {
+    const list = get().lists[listId]
+    if (!list) return
+    const listToDelete = clone(list)
+
     const tx = createTransaction()
     tx.store(() => {
       immerSet((draft) => {
-        delete draft.lists[params.listId]
-        draft.listIds = draft.listIds.filter((id) => id !== params.listId)
+        delete draft.lists[listId]
+        draft.listIds = draft.listIds.filter((id) => id !== listId)
       })
     })
 
     tx.request(async () => {
-      await apiClient().lists.$delete({ json: { listId: params.listId } })
+      await apiClient().lists.$delete({ json: { listId } })
+    })
+
+    tx.rollback(() => {
+      immerSet((draft) => {
+        draft.lists[listId] = listToDelete
+        draft.listIds.push(listId)
+      })
     })
 
     tx.persist(() => {
-      return ListService.deleteList(params)
+      return ListService.deleteList(listId)
     })
 
     await tx.run()

@@ -183,7 +183,7 @@ export const ListScreen: NavigationControllerView<{
                   },
                   async (index) => {
                     if (index === 0) {
-                      await listSyncServices.deleteList({ listId: listId! })
+                      await listSyncServices.deleteList(listId)
                       navigation.dismiss()
                     }
                   },
