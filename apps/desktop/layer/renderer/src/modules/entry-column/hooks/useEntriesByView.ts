@@ -12,7 +12,6 @@ import {
 import { entryActions, useEntryStore } from "@follow/store/entry/store"
 import type { UseEntriesReturn } from "@follow/store/entry/types"
 import { fallbackReturn } from "@follow/store/entry/utils"
-import { getSubscriptionByEntryId } from "@follow/store/subscription/getter"
 import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
@@ -133,11 +132,16 @@ function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | 
 
 const useLocalEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId, isCollection } = useRouteParams()
+  const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
+    "hidePrivateSubscriptionsInTimeline",
+  )
+
   const folderIds = useFolderFeedsByFeedId({
     feedId,
     view,
   })
-  const entryIdsByView = useEntryIdsByView(view)
+  const entryIdsByView = useEntryIdsByView(view, hidePrivateSubscriptionsInTimeline)
   const entryIdsByCollections = useCollectionEntryList(view)
   const entryIdsByFeedId = useEntryIdsByFeedId(feedId)
   const entryIdsByCategory = useEntryIdsByFeedIds(folderIds)
@@ -150,11 +154,6 @@ const useLocalEntries = (): UseEntriesReturn => {
     !isCollection &&
     !inboxId &&
     !listId
-
-  const unreadOnly = useGeneralSettingKey("unreadOnly")
-  const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
-    "hidePrivateSubscriptionsInTimeline",
-  )
 
   const allEntries = useEntryStore(
     useCallback(
@@ -176,10 +175,6 @@ const useLocalEntries = (): UseEntriesReturn => {
             if (unreadOnly && entry.read) {
               return null
             }
-            const subscription = getSubscriptionByEntryId(id)
-            if (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) {
-              return null
-            }
             return entry.id
           })
           .filter((id) => typeof id === "string")
@@ -191,7 +186,6 @@ const useLocalEntries = (): UseEntriesReturn => {
         entryIdsByInboxId,
         entryIdsByListId,
         entryIdsByView,
-        hidePrivateSubscriptionsInTimeline,
         showEntriesByView,
         unreadOnly,
       ],

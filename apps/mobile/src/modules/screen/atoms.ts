@@ -15,10 +15,7 @@ import { fallbackReturn } from "@follow/store/entry/utils"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
-import {
-  getSubscriptionByCategory,
-  getSubscriptionByEntryId,
-} from "@follow/store/subscription/getter"
+import { getSubscriptionByCategory } from "@follow/store/subscription/getter"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import { debounce } from "es-toolkit"
@@ -198,7 +195,7 @@ function useLocalEntries(): UseEntriesReturn {
   const { feedId, feedIdList, listId, inboxId, isCollection } = payload || {}
   const { hidePrivateSubscriptionsInTimeline, unreadOnly } = options
 
-  const entryIdsByView = useEntryIdsByView(view)
+  const entryIdsByView = useEntryIdsByView(view, hidePrivateSubscriptionsInTimeline)
   const entryIdsByCollections = useCollectionEntryList(view)
   const entryIdsByFeedId = useEntryIdsByFeedId(feedId)
   const entryIdsByCategory = useEntryIdsByFeedIds(feedIdList)
@@ -226,10 +223,6 @@ function useLocalEntries(): UseEntriesReturn {
             const entry = state.data[id]
             if (!entry) return null
             if (unreadOnly && entry.read) {
-              return null
-            }
-            const subscription = getSubscriptionByEntryId(id)
-            if (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) {
               return null
             }
             return entry.id

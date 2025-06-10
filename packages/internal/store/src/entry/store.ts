@@ -7,7 +7,7 @@ import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../atoms/feed"
 import { collectionActions } from "../collection/store"
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
-import type { Hydratable, HydrationOptions, Resetable } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
@@ -60,13 +60,9 @@ const get = useEntryStore.getState
 const immerSet = createImmerSetter(useEntryStore)
 
 class EntryActions implements Hydratable, Resetable {
-  async hydrate(options?: HydrationOptions) {
+  async hydrate() {
     const entries = await EntryService.getEntriesToHydrate()
-
-    entryActions.upsertManyInSession(
-      entries.map((e) => dbStoreMorph.toEntryModel(e)),
-      options,
-    )
+    entryActions.upsertManyInSession(entries.map((e) => dbStoreMorph.toEntryModel(e)))
   }
 
   getFlattenMapEntries() {
@@ -223,7 +219,7 @@ class EntryActions implements Hydratable, Resetable {
         })
 
         entry.sources
-          ?.filter((s) => s !== "feed")
+          ?.filter((s) => !!s && s !== "feed")
           .forEach((s) => {
             this.addEntryIdToList({
               draft,

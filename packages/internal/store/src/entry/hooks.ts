@@ -2,6 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
+import { getSubscriptionByEntryId } from "../subscription/getter"
 import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
@@ -91,15 +92,23 @@ function sortEntryIdsByPublishDate(a: string, b: string) {
   return entryB.publishedAt.getTime() - entryA.publishedAt.getTime()
 }
 
-export const useEntryIdsByView = (view: FeedViewType) => {
+export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean) => {
   return useEntryStore(
     useCallback(
       (state) => {
         const ids = state.entryIdByView[view]
         if (!ids) return null
-        return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
+        return Array.from(ids)
+          .filter((id) => {
+            const subscription = getSubscriptionByEntryId(id)
+            if (excludePrivate && subscription?.isPrivate) {
+              return false
+            }
+            return true
+          })
+          .sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
-      [view],
+      [excludePrivate, view],
     ),
   )
 }
