@@ -6323,6 +6323,71 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        bio: drizzle_orm_pg_core.PgColumn<{
+            name: "bio";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        website: drizzle_orm_pg_core.PgColumn<{
+            name: "website";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        socialLinks: drizzle_orm_pg_core.PgColumn<{
+            name: "social_links";
+            tableName: "user";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+            driverParam: unknown;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+        }>;
     };
     dialect: "pg";
 }>;
@@ -6517,6 +6582,71 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        bio: drizzle_orm_pg_core.PgColumn<{
+            name: "bio";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        website: drizzle_orm_pg_core.PgColumn<{
+            name: "website";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        socialLinks: drizzle_orm_pg_core.PgColumn<{
+            name: "social_links";
+            tableName: "user";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+            driverParam: unknown;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+        }>;
     };
     dialect: "pg";
 }>;
@@ -6533,6 +6663,21 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: zod.ZodNullable<zod.ZodBoolean>;
     isAnonymous: zod.ZodNullable<zod.ZodBoolean>;
     suspended: zod.ZodNullable<zod.ZodBoolean>;
+    bio: zod.ZodNullable<zod.ZodString>;
+    website: zod.ZodNullable<zod.ZodString>;
+    socialLinks: zod.ZodNullable<zod.ZodType<{
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    }, zod.ZodTypeDef, {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    }>>;
 }, "email">, "strip", zod.ZodTypeAny, {
     id: string;
     name: string | null;
@@ -6544,6 +6689,15 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
+    bio: string | null;
+    website: string | null;
+    socialLinks: {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    } | null;
 }, {
     id: string;
     name: string | null;
@@ -6555,6 +6709,15 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
+    bio: string | null;
+    website: string | null;
+    socialLinks: {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    } | null;
 }>;
 declare const account: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "account";
@@ -8292,6 +8455,9 @@ declare const auth: {
                         updatedAt: Date;
                         image?: string | null | undefined | undefined;
                         handle: string;
+                        bio: string;
+                        website: string;
+                        socialLinks: string;
                     } & {
                         id: string;
                         name: string;
@@ -8302,6 +8468,9 @@ declare const auth: {
                         image?: string | null | undefined | undefined;
                         twoFactorEnabled: boolean | null | undefined;
                         handle: string;
+                        bio: string;
+                        website: string;
+                        socialLinks: string;
                     };
                 } | null;
             } : {
@@ -8324,6 +8493,9 @@ declare const auth: {
                     updatedAt: Date;
                     image?: string | null | undefined | undefined;
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 } & {
                     id: string;
                     name: string;
@@ -8334,6 +8506,9 @@ declare const auth: {
                     image?: string | null | undefined | undefined;
                     twoFactorEnabled: boolean | null | undefined;
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 };
             } | null>;
             options: {
@@ -8453,8 +8628,14 @@ declare const auth: {
                     callbackURL?: string;
                 } & {} & {})) & {
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 } & {
                     handle?: string | null | undefined;
+                    bio?: string | null | undefined;
+                    website?: string | null | undefined;
+                    socialLinks?: string | null | undefined;
                 };
             } & {
                 method?: "POST" | undefined;
@@ -8539,8 +8720,14 @@ declare const auth: {
                             callbackURL?: string;
                         } & {} & {})) & {
                             handle: string;
+                            bio: string;
+                            website: string;
+                            socialLinks: string;
                         } & {
                             handle?: string | null | undefined;
+                            bio?: string | null | undefined;
+                            website?: string | null | undefined;
+                            socialLinks?: string | null | undefined;
                         };
                     };
                     openapi: {
@@ -9546,6 +9733,19 @@ declare const auth: {
                     user: {
                         additionalFields: {
                             handle: {
+                                type: "string";
+                            };
+                            socialLinks: {
+                                type: "string";
+                                transform: {
+                                    input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                                    output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                                };
+                            };
+                            bio: {
+                                type: "string";
+                            };
+                            website: {
                                 type: "string";
                             };
                         };
@@ -11273,6 +11473,19 @@ declare const auth: {
                             user: {
                                 additionalFields: {
                                     handle: {
+                                        type: "string";
+                                    };
+                                    socialLinks: {
+                                        type: "string";
+                                        transform: {
+                                            input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                                            output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                                        };
+                                    };
+                                    bio: {
+                                        type: "string";
+                                    };
+                                    website: {
                                         type: "string";
                                     };
                                 };
@@ -15629,6 +15842,19 @@ declare const auth: {
                 handle: {
                     type: "string";
                 };
+                socialLinks: {
+                    type: "string";
+                    transform: {
+                        input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                        output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                    };
+                };
+                bio: {
+                    type: "string";
+                };
+                website: {
+                    type: "string";
+                };
             };
             changeEmail: {
                 enabled: true;
@@ -17300,6 +17526,9 @@ declare const auth: {
                 updatedAt: Date;
                 image?: string | null | undefined | undefined;
                 handle: string;
+                bio: string;
+                website: string;
+                socialLinks: string;
                 twoFactorEnabled: boolean | null | undefined;
             };
         };
@@ -17765,6 +17994,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -17775,6 +18013,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     } | undefined;
                     list?: {
@@ -17808,6 +18055,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -17818,6 +18074,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -17830,6 +18095,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     } | undefined;
                     docs?: string | undefined;
@@ -17939,6 +18213,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -17949,6 +18232,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             }[] | null | undefined;
                         }[];
                     };
@@ -18029,6 +18321,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     };
                     read: boolean | null;
@@ -18125,6 +18426,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     };
                 } | undefined;
@@ -18286,6 +18596,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -18296,6 +18615,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                     read: boolean | null;
@@ -18394,6 +18722,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -18404,6 +18741,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                 } | undefined;
@@ -18560,6 +18906,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -18570,6 +18925,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                     tipAmount: number;
@@ -18647,6 +19011,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -18657,6 +19030,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                     readCount: number;
@@ -18825,6 +19207,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
+                    bio: string | null;
+                    website: string | null;
+                    socialLinks: {
+                        twitter: string;
+                        github: string;
+                        instagram: string;
+                        facebook: string;
+                        youtube: string;
+                    } | null;
                 };
             };
             outputFormat: "json";
@@ -18853,6 +19244,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     };
                 };
             };
@@ -19027,6 +19427,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -19037,6 +19446,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                     feedId: string;
@@ -19053,6 +19471,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             twoFactorEnabled: boolean | null;
                             isAnonymous: boolean | null;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[];
                     };
                 } | {
@@ -19093,6 +19520,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -19103,6 +19539,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -19115,6 +19560,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     };
                     listId: string;
@@ -19144,6 +19598,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     };
                     inboxId: string;
@@ -19449,6 +19912,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     toUser?: {
                         id: string;
@@ -19461,6 +19933,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     toFeed?: {
                         id: string;
@@ -19482,6 +19963,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -19492,6 +19982,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     } | null | undefined;
                 }[];
@@ -19612,6 +20111,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     };
                     userId: string;
                     rank: number | null;
@@ -19679,6 +20187,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -19689,6 +20206,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             }[] | null | undefined;
                         };
                         language: string | null;
@@ -19754,6 +20280,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -19764,6 +20299,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                bio: string | null;
+                                website: string | null;
+                                socialLinks: {
+                                    twitter: string;
+                                    github: string;
+                                    instagram: string;
+                                    facebook: string;
+                                    youtube: string;
+                                } | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -19776,6 +20320,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                     };
                     readCount: number;
@@ -19843,6 +20396,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -19853,6 +20415,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -19865,6 +20436,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                 };
             };
@@ -19948,6 +20528,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -19958,6 +20547,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -19971,6 +20569,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     purchaseAmount?: number | undefined;
                 }[];
@@ -20013,6 +20620,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     tipUsers?: {
                         id: string;
@@ -20023,6 +20639,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     }[] | null | undefined;
                 }[];
             };
@@ -20147,6 +20772,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                 };
             };
@@ -20282,6 +20916,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                 }[];
             };
@@ -20433,6 +21076,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
+                    bio: string | null;
+                    website: string | null;
+                    socialLinks: {
+                        twitter: string;
+                        github: string;
+                        instagram: string;
+                        facebook: string;
+                        youtube: string;
+                    } | null;
                 }[];
             };
             outputFormat: "json";
@@ -20716,6 +21368,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -20726,6 +21387,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[] | null | undefined;
                     };
                     analytics: {

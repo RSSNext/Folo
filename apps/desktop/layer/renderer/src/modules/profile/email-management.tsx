@@ -59,43 +59,45 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <p className="text-text-secondary group flex gap-2 text-sm">
-        {user?.email}
+      <div className="flex items-center justify-between">
+        <div className="text-text-secondary group flex items-center gap-2">
+          {user?.email}
 
-        <AnimatedCommandButton
-          icon={<m.i className="i-mgc-edit-cute-re size-4" />}
-          className="size-5 p-1"
-          variant="ghost"
-          onClick={() => {
-            present({
-              title: t("profile.email.change"),
-              content: EmailManagementForm,
-            })
-          }}
-        />
-        {user?.email && (
-          <CopyButton
-            value={user.email}
-            className={cn(
-              "size-5 p-1 duration-300",
-              !isMobile && "opacity-0 group-hover:opacity-100",
-            )}
+          <AnimatedCommandButton
+            icon={<m.i className="i-mgc-edit-cute-re size-4" />}
+            className="size-5 p-1"
+            variant="ghost"
+            onClick={() => {
+              present({
+                title: t("profile.email.change"),
+                content: EmailManagementForm,
+              })
+            }}
           />
+          {user?.email && (
+            <CopyButton
+              value={user.email}
+              className={cn(
+                "size-5 p-1 duration-300",
+                !isMobile && "opacity-0 group-hover:opacity-100",
+              )}
+            />
+          )}
+        </div>
+        {!user?.emailVerified && (
+          <Button
+            variant="outline"
+            type="button"
+            isLoading={verifyEmailMutation.isPending}
+            onClick={() => {
+              verifyEmailMutation.mutate()
+            }}
+            buttonClassName="mt-2"
+          >
+            {t("profile.email.send_verification")}
+          </Button>
         )}
-      </p>
-      {!user?.emailVerified && (
-        <Button
-          variant="outline"
-          type="button"
-          isLoading={verifyEmailMutation.isPending}
-          onClick={() => {
-            verifyEmailMutation.mutate()
-          }}
-          buttonClassName="mt-2"
-        >
-          {t("profile.email.send_verification")}
-        </Button>
-      )}
+      </div>
     </>
   )
 }

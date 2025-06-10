@@ -3,11 +3,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
-import { clsx, cn } from "@follow/utils/utils"
-import { throttle } from "es-toolkit/compat"
+import { cn } from "@follow/utils/utils"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { useAnimationControls } from "motion/react"
@@ -15,6 +15,7 @@ import type { FC } from "react"
 import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useWhoami } from "~/atoms/user"
 import { m } from "~/components/common/Motion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
@@ -22,6 +23,7 @@ import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
 
+import { getSocialLink, socialCopyMap, socialIconClassNames } from "./user-profile-modal.constants"
 import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
 import { SubscriptionItems } from "./user-profile-modal.shared"
 
@@ -34,27 +36,37 @@ const itemVariantAtom = atomWithStorage(
     getOnInit: true,
   },
 )
+
+const pickUserData = <
+  T extends {
+    avatar?: string
+    name?: string | null
+    handle?: string | null
+    id: string
+    bio?: string | null
+    website?: string | null
+    socialLinks?: Record<string, string> | null
+  },
+>(
+  user: T,
+) => {
+  return {
+    avatar: user.avatar,
+    name: user.name,
+    handle: user.handle,
+    id: user.id,
+    bio: user.bio,
+    website: user.website,
+    socialLinks: user.socialLinks,
+  }
+}
 export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ userId, variant }) => {
   const { t } = useTranslation()
   const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
-  const userInfo = user.data
-    ? {
-        avatar: user.data.image,
-        name: user.data.name,
-        handle: user.data.handle,
-        id: user.data.id,
-      }
-    : storeUser
-      ? {
-          avatar: storeUser.image,
-          name: storeUser.name,
-          handle: storeUser.handle,
-          id: storeUser.id,
-        }
-      : null
-
+  const userInfo = user.data ? pickUserData(user.data) : storeUser ? pickUserData(storeUser) : null
+  const whoami = useWhoami()
   const follow = useFollow()
   const subscriptions = useUserSubscriptionsQuery(user.data?.id)
   const modal = useCurrentModal()
@@ -63,32 +75,15 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
     nextFrame(() => controller.start("enter"))
   }, [controller])
 
-  const winHeight = useState(() => window.innerHeight)[0]
+  const winHeight = useMemo(() => window.innerHeight, [])
 
   const [scrollerRef, setScrollerRef] = useState<HTMLDivElement | null>(null)
-  const [isHeaderSimple, setHeaderSimple] = useState(false)
 
   const currentVisibleRef = useRef<Set<string>>(undefined)
   useEffect(() => {
     const $ref = scrollerRef
 
     if (!$ref) return
-
-    const initialHeaderHeight = 136
-
-    const scrollHandler = throttle(() => {
-      const currentH = $ref.scrollTop
-
-      setHeaderSimple((current) => {
-        if (!current) {
-          return currentH > initialHeaderHeight
-        } else {
-          if (currentH === 0) return false
-        }
-        return current
-      })
-    }, 16)
-    $ref.addEventListener("scroll", scrollHandler)
 
     const currentVisible = new Set<string>()
     const ob = new IntersectionObserver((en) => {
@@ -110,8 +105,6 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
       ob.observe(el)
     })
     return () => {
-      $ref.removeEventListener("scroll", scrollHandler)
-
       ob.disconnect()
     }
   }, [scrollerRef, subscriptions])
@@ -176,33 +169,13 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
         exit="exit"
         layout="size"
         className={cn(
-          "bg-theme-background relative flex flex-col items-center overflow-hidden rounded-xl border p-8 pb-0",
+          "bg-theme-background relative flex flex-col overflow-hidden rounded-xl border",
           variant === "drawer"
             ? "shadow-drawer-to-left h-full w-[60ch] max-w-full"
             : "h-[80vh] w-[800px] max-w-full shadow lg:max-h-[calc(100vh-10rem)]",
         )}
       >
         <div className="absolute right-2 top-2 z-10 flex items-center gap-2 text-[20px] opacity-80">
-          <ActionButton
-            tooltip={t("user_profile.toggle_item_style")}
-            onClick={() => {
-              const currentVisible = currentVisibleRef.current
-              const topOfCurrent = currentVisible?.values().next().value
-
-              setItemStyle((current) => (current === "loose" ? "compact" : "loose"))
-              if (!topOfCurrent) return
-
-              nextFrame(() => {
-                scrollerRef?.querySelector(`[data-feed-id="${topOfCurrent}"]`)?.scrollIntoView()
-              })
-            }}
-          >
-            <i
-              className={cn(
-                itemStyle === "loose" ? "i-mgc-list-check-3-cute-re" : "i-mgc-list-check-cute-re",
-              )}
-            />
-          </ActionButton>
           <ActionButton
             tooltip={t("user_profile.share")}
             onClick={() => {
@@ -219,75 +192,147 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
 
         {userInfo && (
           <Fragment>
-            <div
-              className={cn(
-                "center f-motion-reduce:duration-700 m-12 mb-4 flex shrink-0 flex-col",
-                isHeaderSimple ? "mt-3 flex-row" : "flex-col",
-              )}
-            >
-              <Avatar
-                asChild
-                className={cn("aspect-square", isHeaderSimple ? "size-12" : "size-16")}
-              >
-                <m.span layout transition={{ duration: 0.35 }}>
+            <div className="flex flex-col p-6">
+              <div className="flex items-center gap-4">
+                <Avatar className="size-20">
                   <AvatarImage
                     className="animate-in fade-in-0 duration-200"
-                    asChild
                     src={replaceImgUrlIfNeed(userInfo.avatar || undefined)}
+                  />
+                  <AvatarFallback className="text-3xl uppercase">
+                    {userInfo.name?.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold">{userInfo.name}</h1>
+                  <p
+                    className={cn(
+                      "text-text-secondary text-sm",
+                      userInfo.handle ? "visible" : "hidden select-none",
+                    )}
                   >
-                    <m.img layout transition={{ duration: 0.35 }} />
-                  </AvatarImage>
-                  <AvatarFallback>{userInfo.name?.slice(0, 2)}</AvatarFallback>
-                </m.span>
-              </Avatar>
-
-              <m.div
-                layout
-                transition={{ duration: 0.35 }}
-                className={cn(
-                  "relative flex cursor-text select-text flex-col items-center",
-                  isHeaderSimple ? "ml-8 items-start" : "",
+                    @{userInfo.handle}
+                  </p>
+                </div>
+                {whoami?.id !== userInfo.id && (
+                  <Button
+                    onClick={() => {
+                      follow({
+                        url: `rsshub://follow/profile/${userInfo.id}`,
+                        isList: false,
+                      })
+                    }}
+                    buttonClassName="mt-4"
+                  >
+                    <FollowIcon className="mr-1 size-3" />
+                    {t("feed_form.follow")}
+                  </Button>
                 )}
-              >
-                <m.div
-                  className={cn(
-                    "mb-1 flex items-center text-2xl font-bold",
-                    isHeaderSimple ? "" : "mt-4",
-                  )}
-                >
-                  <m.h1 layout>{userInfo.name}</m.h1>
-                </m.div>
-                <m.div
-                  className={cn(
-                    "text-sm text-zinc-500",
-                    userInfo.handle ? "visible" : "hidden select-none",
-                  )}
-                  layout
-                >
-                  @{userInfo.handle}
-                </m.div>
-                <Button
-                  buttonClassName={cn(
-                    isHeaderSimple ? "absolute -right-full top-4 rounded-full p-2" : "mt-4",
-                  )}
-                  onClick={() => {
-                    follow({
-                      url: `rsshub://follow/profile/${userInfo.id}`,
-                      isList: false,
-                    })
-                  }}
-                >
-                  <FollowIcon className={clsx("size-3", !isHeaderSimple ? "mr-1" : "")} />
-                  {isHeaderSimple ? "" : t("feed_form.follow")}
-                </Button>
-              </m.div>
+              </div>
             </div>
             <ScrollArea.ScrollArea
               ref={setScrollerRef}
-              rootClassName="grow max-w-full px-5 w-full"
-              viewportClassName="[&>div]:space-y-4 pb-4"
+              rootClassName="grow max-w-full w-full"
+              viewportClassName="[&>div]:!flex [&>div]:flex-col"
             >
-              <SubscriptionItems userId={userId} itemStyle={itemStyle} />
+              <div className="flex flex-col gap-4 px-6 pb-6">
+                {/* Bio, Website, Social Links Section */}
+                {(user.data?.bio || user.data?.website || user.data?.socialLinks) && (
+                  <div className="bg-material-medium -mx-6 px-6 py-3">
+                    <h2 className="text-text-secondary text-sm font-medium">
+                      {t("user_profile.about", "About")}
+                    </h2>
+                    {user.data.bio && (
+                      <p className="text-text-secondary/80 mt-2 text-sm">{user.data.bio}</p>
+                    )}
+                    <div className="mt-3">
+                      {user.data.website && (
+                        <a
+                          href={user.data.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent hover:text-accent/80 inline-flex items-center gap-2 text-sm transition-colors"
+                        >
+                          <i className="i-mgc-link-cute-re text-base" />
+                          <span className="truncate">
+                            {user.data.website.replace(/^https?:\/\//, "")}
+                          </span>
+                        </a>
+                      )}
+                      {user.data.socialLinks && (
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
+                          {Object.entries(user.data.socialLinks).map(([platform, id]) => {
+                            if (!id || !(platform in socialIconClassNames)) return null
+
+                            return (
+                              <Tooltip key={platform}>
+                                <TooltipTrigger asChild>
+                                  <a
+                                    href={getSocialLink(
+                                      platform as keyof typeof socialIconClassNames,
+                                      id,
+                                    )}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-text-secondary hover:text-accent group flex items-center justify-center rounded-full transition-colors"
+                                  >
+                                    <i
+                                      className={cn(
+                                        socialIconClassNames[
+                                          platform as keyof typeof socialIconClassNames
+                                        ],
+                                        "text-lg",
+                                      )}
+                                    />
+                                  </a>
+                                </TooltipTrigger>
+                                <TooltipContent className="text-sm">
+                                  {socialCopyMap[platform as keyof typeof socialCopyMap]}
+                                </TooltipContent>
+                              </Tooltip>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {/* Subscriptions Section */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <h2 className="text-text-secondary -mb-2 text-lg font-medium">
+                      {t("user_profile.subscriptions", "Subscriptions")}
+                    </h2>
+                    <ActionButton
+                      tooltip={t("user_profile.toggle_item_style")}
+                      onClick={() => {
+                        const currentVisible = currentVisibleRef.current
+                        const topOfCurrent = currentVisible?.values().next().value
+
+                        setItemStyle((current) => (current === "loose" ? "compact" : "loose"))
+                        if (!topOfCurrent) return
+
+                        nextFrame(() => {
+                          scrollerRef
+                            ?.querySelector(`[data-feed-id="${topOfCurrent}"]`)
+                            ?.scrollIntoView()
+                        })
+                      }}
+                    >
+                      <i
+                        className={cn(
+                          itemStyle === "loose"
+                            ? "i-mgc-list-check-3-cute-re"
+                            : "i-mgc-list-check-cute-re",
+                        )}
+                      />
+                    </ActionButton>
+                  </div>
+                  <div className="space-y-4">
+                    <SubscriptionItems userId={userId} itemStyle={itemStyle} />
+                  </div>
+                </div>
+              </div>
             </ScrollArea.ScrollArea>
           </Fragment>
         )}
