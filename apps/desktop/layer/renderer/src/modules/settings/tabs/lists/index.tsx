@@ -40,7 +40,6 @@ const ConfirmDestroyModalContent = ({ listId }: { listId: string }) => {
     mutationFn: (payload: { listId: string }) => listSyncServices.deleteList(payload.listId),
     onSuccess: () => {
       toast.success(t.settings("lists.delete.success"))
-      // Queries.lists.list().invalidate()
     },
     onError() {
       toast.error(t.settings("lists.delete.error"))

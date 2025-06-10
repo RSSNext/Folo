@@ -22,6 +22,7 @@ export type ExtractBizResponse<T extends (...args: any[]) => any> = Exclude<
   Awaited<ReturnType<T>>,
   undefined
 >
+export type ExtractHonoParams<T extends (...args: any[]) => any> = Parameters<T>[0]["json"]
 
 export type ActiveList = {
   id: string | number

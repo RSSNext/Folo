@@ -33,6 +33,12 @@ class ServiceStatic extends BaseService<{ id: string }> implements Hydratable {
     return this.table.bulkDelete(ids)
   }
 
+  async findAndUpdate(id: string, data: Partial<ListModel>) {
+    const list = await this.table.get(id)
+    if (!list) return
+    return this.table.put({ ...list, ...data })
+  }
+
   async hydrate() {}
 }
 

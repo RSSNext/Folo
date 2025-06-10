@@ -38,8 +38,8 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   // Data prefetch
   // useAuthQuery(Queries.lists.list())
 
-  const hasListData = Object.keys(listSubIds).length > 0
-  const hasInboxData = Object.keys(inboxSubIds).length > 0
+  const hasListData = listSubIds.length > 0
+  const hasInboxData = inboxSubIds.length > 0
 
   const currentActiveView = useRouteParamsSelector((s) => s.view)
   // Render only adjacent views
