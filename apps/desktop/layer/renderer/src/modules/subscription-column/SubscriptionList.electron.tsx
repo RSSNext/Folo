@@ -40,7 +40,7 @@ import { DraggableContext } from "./context"
 import { FeedItem, ListItemAutoHideUnread } from "./FeedItem"
 import { useShouldFreeUpSpace } from "./hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
-import type { SubscriptionProps } from "./SubscriptionList"
+import type { SubscriptionProps } from "./SubscriptionList.entry"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {

@@ -15,7 +15,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
 import { feedColumnStyles } from "./styles"
-import type { SubscriptionProps } from "./SubscriptionList"
+import type { SubscriptionProps } from "./SubscriptionList.entry"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const FeedListImpl = ({ className, view }: SubscriptionProps) => {

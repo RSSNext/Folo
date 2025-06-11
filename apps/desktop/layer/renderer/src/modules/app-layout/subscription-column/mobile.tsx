@@ -12,7 +12,7 @@ import { Link } from "react-router"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
-import { SubscriptionList } from "../../subscription-column/SubscriptionList"
+import { SubscriptionList } from "../../subscription-column/SubscriptionList.entry"
 import { MobileFloatBar } from "./float-bar.mobile"
 
 export function FeedColumnMobile({ asWidget }: { asWidget?: boolean }) {
