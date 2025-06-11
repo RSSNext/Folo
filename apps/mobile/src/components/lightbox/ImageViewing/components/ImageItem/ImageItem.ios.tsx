@@ -221,6 +221,7 @@ const ImageItem = ({
               accessibilityHint=""
               enableLiveTextInteraction={showControls && !scaled}
               accessibilityIgnoresInvertColors
+              priority="high"
               onLoad={
                 hasLoaded
                   ? undefined

@@ -363,6 +363,7 @@ const ImageItem = ({
                 accessibilityHint=""
                 accessibilityIgnoresInvertColors
                 cachePolicy="memory"
+                priority="high"
               />
             </Animated.View>
           </Animated.View>
