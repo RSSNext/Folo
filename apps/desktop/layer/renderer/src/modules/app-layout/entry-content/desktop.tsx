@@ -16,7 +16,7 @@ import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
+import { AIPanel } from "./AIPanel"
 
 export const RightContentDesktop = () => {
   const { entryId } = useParams()
@@ -56,7 +56,7 @@ export const RightContentDesktop = () => {
             }}
           />
         ) : !settingWideMode ? (
-          <EntryContentPlaceholder />
+          <AIPanel />
         ) : null}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
