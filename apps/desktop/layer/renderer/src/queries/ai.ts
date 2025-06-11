@@ -1,29 +1,11 @@
 import type { SupportedLanguages } from "@follow/models/types"
 import { getEntry } from "@follow/store/entry/getter"
 
-import { getReadabilityContent } from "~/atoms/readability"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { parseHtml } from "~/lib/parse-html"
-import { translate } from "~/lib/translate"
 
 export const ai = {
-  translation: ({
-    entryId,
-    view,
-    language,
-    extraFields,
-    part,
-  }: {
-    entryId?: string | null
-    view?: number | null
-    language?: SupportedLanguages
-    extraFields?: string[]
-    part?: string
-  }) =>
-    defineQuery(["translation", entryId, view, language, extraFields, part], () =>
-      translate({ entryId, view, language, extraFields, part }),
-    ),
   summary: ({
     entryId,
     language,
@@ -34,10 +16,8 @@ export const ai = {
     target?: "content" | "readabilityContent"
   }) =>
     defineQuery(["summary", entryId, language, target], async () => {
-      const content =
-        target === "readabilityContent"
-          ? getReadabilityContent()[entryId]?.content
-          : getEntry(entryId)?.content
+      const entry = getEntry(entryId)
+      const content = target === "readabilityContent" ? entry?.readabilityContent : entry?.content
       if (!content) {
         return null
       }

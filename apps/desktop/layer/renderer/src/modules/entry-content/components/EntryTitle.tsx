@@ -1,9 +1,11 @@
 import { useEntry, useEntryReadHistory } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
 
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
@@ -11,7 +13,6 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useEntryTranslation } from "~/store/ai/hook"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { EntryTranslation } from "../../entry-column/translation"
@@ -56,7 +57,9 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   const data = useEntryReadHistory(entryId)
   const entryHistory = data?.entryReadHistories
   const populatedFullHref = useFeedSafeUrl(entryId)
-  const translation = useEntryTranslation({ entryId, extraFields: ["title"], view: undefined })
+  const actionLanguage = useActionLanguage()
+
+  const translation = useEntryTranslation(entryId, actionLanguage)
 
   const dateFormat = useUISettingKey("dateFormat")
 
@@ -88,7 +91,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
           >
             <EntryTranslation
               source={titleCase(entry.title ?? "")}
-              target={titleCase(translation.data?.title ?? "")}
+              target={titleCase(translation?.title ?? "")}
               className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
               bilingual

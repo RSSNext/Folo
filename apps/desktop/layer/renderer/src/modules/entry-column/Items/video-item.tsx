@@ -1,8 +1,8 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useEntry } from "@follow/store/entry/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { formatDuration } from "@follow/utils/duration"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
@@ -11,6 +11,7 @@ import { useHover } from "@use-gesture/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
@@ -22,9 +23,9 @@ import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { checkLanguage } from "~/lib/translate"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { useEntryTranslation } from "~/store/ai/hook"
 
 import { GridItem } from "../templates/grid-item-template"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
@@ -169,12 +170,18 @@ const PreviewVideoModalContent: ModalContentComponent<{
   entryId: string
 }> = ({ dismiss, src, entryId }) => {
   const entry = useEntry(entryId, (state) => ({ content: state.content }))
-  const translation = useEntryTranslation({
-    entryId,
-    extraFields: ["content"],
-    view: FeedViewType.Videos,
+
+  const actionLanguage = useActionLanguage()
+  const enableTranslation = useGeneralSettingKey("translation")
+  const translation = useEntryTranslation(entryId, actionLanguage)
+  usePrefetchEntryTranslation({
+    entryIds: [entryId],
+    checkLanguage,
+    translation: enableTranslation,
+    language: actionLanguage,
+    withContent: true,
   })
-  const content = translation.data?.content || entry?.content
+  const content = translation?.content || entry?.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
 
   const renderStyle = useRenderStyle()

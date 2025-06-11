@@ -21,7 +21,6 @@ import {
   setReadabilityStatus,
   useEntryInReadabilityStatus,
   useEntryIsInReadability,
-  useEntryReadabilityContent,
 } from "~/atoms/readability"
 import { enableShowSourceContent } from "~/atoms/source-content"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -81,7 +80,7 @@ export const TitleMetaHandler: Component<{
 export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
   const { t: T } = useTranslation("common")
-  const result = useEntryReadabilityContent(entryId)
+  const result = useEntry(entryId, (state) => state.readabilityContent)
   const isInReadability = useEntryIsInReadability(entryId)
   const status = useEntryInReadabilityStatus(entryId)
 

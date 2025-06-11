@@ -9,9 +9,9 @@ import { useMasonryColumn } from "@follow/components/ui/masonry/hooks.js"
 import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { FeedViewType } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
 import { getEntry } from "@follow/store/entry/getter"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils/utils"
 import type { RenderComponentProps } from "masonic"
 import { useInfiniteLoader } from "masonic"
@@ -30,9 +30,8 @@ import {
 } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { MediaContainerWidthProvider } from "~/components/ui/media"
-import { useEntryTranslation } from "~/store/ai/hook"
 import { imageActions } from "~/store/image"
 
 import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
@@ -259,7 +258,8 @@ const MasonryRender: React.ComponentType<
   }>
 > = ({ data, index }) => {
   const firstScreenReady = use(FirstScreenReadyContext)
-  const translation = useEntryTranslation({ entryId: data.entryId, view: FeedViewType.Pictures })
+  const actionLanguage = useActionLanguage()
+  const translation = useEntryTranslation(data.entryId, actionLanguage)
 
   if (data.entryId.startsWith("placeholder")) {
     return <LoadingSkeletonItem />
@@ -273,7 +273,7 @@ const MasonryRender: React.ComponentType<
       )}
       entryId={data.entryId}
       index={index}
-      translation={translation.data}
+      translation={translation}
     />
   )
 }

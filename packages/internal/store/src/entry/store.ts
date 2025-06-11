@@ -536,19 +536,33 @@ class EntrySyncServices {
     return entry
   }
 
-  async fetchEntryReadabilityContent(entryId: EntryId) {
+  async fetchEntryReadabilityContent(
+    entryId: EntryId,
+    fallBack?: () => Promise<string | null | undefined>,
+  ) {
     const entry = getEntry(entryId)
 
     if (entry?.url && entry?.readabilityContent === null) {
-      const { data: contentByFetch } = await apiClient().entries.readability.$get({
-        query: {
-          id: entryId,
-        },
-      })
-      if (contentByFetch?.content && entry?.readabilityContent !== contentByFetch.content) {
+      let readabilityContent: string | null | undefined
+
+      try {
+        const { data: contentByFetch } = await apiClient().entries.readability.$get({
+          query: {
+            id: entryId,
+          },
+        })
+        readabilityContent = contentByFetch?.content || null
+      } catch (error) {
+        if (fallBack) {
+          readabilityContent = await fallBack()
+        } else {
+          throw error
+        }
+      }
+      if (readabilityContent && entry?.readabilityContent !== readabilityContent) {
         await entryActions.updateEntryContent({
           entryId,
-          readabilityContent: contentByFetch.content,
+          readabilityContent,
         })
       }
     }

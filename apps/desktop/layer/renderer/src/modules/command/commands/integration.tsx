@@ -18,7 +18,7 @@ import { ofetch } from "ofetch"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { getReadabilityContent, getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
+import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
 import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
@@ -252,8 +252,7 @@ const useRegisterInstapaperCommands = () => {
 
 const getEntryContentAsMarkdown = async (entry: EntryModel) => {
   const isReadabilityReady = getReadabilityStatus()[entry.id] === ReadabilityStatus.SUCCESS
-  const content =
-    (isReadabilityReady ? getReadabilityContent()[entry.id]!.content : entry.content) || ""
+  const content = (isReadabilityReady ? entry.readabilityContent || "" : entry.content) || ""
   const [toMarkdown, toMdast, gfmTableToMarkdown] = await Promise.all([
     import("mdast-util-to-markdown").then((m) => m.toMarkdown),
     import("hast-util-to-mdast").then((m) => m.toMdast),

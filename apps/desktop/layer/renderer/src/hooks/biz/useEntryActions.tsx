@@ -2,7 +2,9 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
+import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
@@ -13,16 +15,13 @@ import { useShowAISummaryAuto, useShowAISummaryOnce } from "~/atoms/ai-summary"
 import { useShowAITranslationAuto, useShowAITranslationOnce } from "~/atoms/ai-translation"
 import { MENU_ITEM_SEPARATOR, MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import {
-  getReadabilityContent,
   getReadabilityStatus,
   ReadabilityStatus,
-  setReadabilityContent,
   setReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { useUserRole, whoami } from "~/atoms/user"
-import { apiClient } from "~/lib/api-fetch"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
@@ -46,39 +45,22 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
       [id]: ReadabilityStatus.WAITING,
     })
     try {
-      let data = getReadabilityContent()[id]
+      const data = getEntry(id)?.readabilityContent
 
       if (!data) {
-        const result = await apiClient.entries.readability.$get({ query: { id } })
-        if (result.data) {
-          data = result.data
-        }
+        await entrySyncServices.fetchEntryReadabilityContent(id, async () => {
+          const res = await ipcServices?.reader.readability({ url })
+          return res?.content
+        })
       }
 
-      if (data) {
-        const status = getReadabilityStatus()[id]
-        if (status !== ReadabilityStatus.WAITING) return
-        setReadabilityStatus({
-          [id]: ReadabilityStatus.SUCCESS,
-        })
-        setReadabilityContent({
-          [id]: data,
-        })
-      }
+      setReadabilityStatus({
+        [id]: ReadabilityStatus.SUCCESS,
+      })
     } catch {
-      const result = await ipcServices?.reader.readability({ url })
-      if (result) {
-        setReadabilityContent({
-          [id]: result,
-        })
-        setReadabilityStatus({
-          [id]: ReadabilityStatus.SUCCESS,
-        })
-      } else {
-        setReadabilityStatus({
-          [id]: ReadabilityStatus.FAILURE,
-        })
-      }
+      setReadabilityStatus({
+        [id]: ReadabilityStatus.FAILURE,
+      })
     }
   } else {
     setReadabilityStatus({
