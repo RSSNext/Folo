@@ -302,14 +302,14 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
               </MotionButtonBase>
             )}
           </div>
-          <div className="text-sm">
+          <div className="space-y-4 text-sm">
             {discoverSearchData?.map((item) => (
               <DiscoverFeedCard
                 key={item.feed?.id || item.list?.id}
                 item={item}
                 onSuccess={handleSuccess}
                 onUnSubscribed={handleUnSubscribed}
-                className="py-5 last:border-b-0"
+                className="last:border-b-0"
               />
             ))}
           </div>
