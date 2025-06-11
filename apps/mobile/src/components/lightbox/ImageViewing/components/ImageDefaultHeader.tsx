@@ -6,7 +6,8 @@
  *
  */
 import type { ViewStyle } from "react-native"
-import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 
@@ -15,8 +16,9 @@ type Props = {
 }
 
 const ImageDefaultHeader = ({ onRequestClose }: Props) => {
+  const insets = useSafeAreaInsets()
   return (
-    <SafeAreaView style={styles.root}>
+    <View style={[styles.root, { marginTop: insets.top, marginRight: insets.right }]}>
       <TouchableOpacity
         style={[styles.closeButton, styles.blurredBackground]}
         onPress={onRequestClose}
@@ -26,9 +28,9 @@ const ImageDefaultHeader = ({ onRequestClose }: Props) => {
         accessibilityHint={`Closes viewer for header image`}
         onAccessibilityEscape={onRequestClose}
       >
-        <CloseCuteReIcon />
+        <CloseCuteReIcon color="#fff" />
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   )
 }
 

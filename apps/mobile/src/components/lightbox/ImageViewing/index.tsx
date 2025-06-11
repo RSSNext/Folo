@@ -15,7 +15,6 @@ import {
   LayoutAnimation,
   PixelRatio,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -408,14 +407,6 @@ function LightboxImage({
   const safeInsetsDelayedForJSThreadOnly = useSafeAreaInsets()
   const measureSafeArea = React.useCallback(() => {
     "worklet"
-    return {
-      height: 914,
-      pageX: 0,
-      pageY: 0,
-      width: 411.4285583496094,
-      x: 0,
-      y: 0,
-    }
     let safeArea: Rect | null = measure(safeAreaRef)
     if (!safeArea) {
       if (_WORKLET) {
@@ -435,7 +426,7 @@ function LightboxImage({
 
   const { thumbRect } = imageSrc
   const transforms = useDerivedValue(() => {
-    // "worklet"
+    "worklet"
     const safeArea = measureSafeArea()
     const openProgressValue = openProgress.get()
     const dismissTranslateY = isActive && openProgressValue === 1 ? dismissSwipeTranslateY.get() : 0
@@ -538,6 +529,7 @@ function LightboxFooter({
   onPressSave: (uri: string) => void
   onPressShare: (uri: string) => void
 }) {
+  const insets = useSafeAreaInsets()
   const image = images.at(index)
   const altText = image?.alt
   const uri = image?.uri
@@ -561,7 +553,7 @@ function LightboxFooter({
         paddingHorizontal: 24,
       }}
     >
-      <SafeAreaView>
+      <View style={{ marginBottom: insets.bottom }}>
         {altText ? (
           <View accessibilityRole="button" style={styles.footerText}>
             <Text
@@ -586,23 +578,23 @@ function LightboxFooter({
         ) : null}
         <View style={styles.footerBtns}>
           <Pressable
-            className="border-white"
+            className="rounded-3xl border border-white px-4 py-2"
             style={styles.footerBtn}
             onPress={() => onPressSave(uri)}
           >
-            <Download2CuteReIcon />
+            <Download2CuteReIcon color="#fff" />
             <Text className="text-xl text-white">Save</Text>
           </Pressable>
           <Pressable
-            className="border-white"
+            className="rounded-3xl border border-white px-4 py-2"
             style={styles.footerBtn}
             onPress={() => onPressShare(uri)}
           >
-            <ShareForwardCuteReIcon />
+            <ShareForwardCuteReIcon color="#fff" />
             <Text className="text-xl text-white">Share</Text>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   )
 }
