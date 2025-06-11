@@ -341,6 +341,7 @@ const AspectRatioImage = ({
         source={{
           uri: image,
         }}
+        className="rounded-lg"
         style={{
           width: scaledWidth,
           height: scaledHeight,
