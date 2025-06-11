@@ -8,13 +8,18 @@ import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
+import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { showEntryGaleriaAccessory } from "@/src/components/native/GaleriaAccessory/EntryGaleriaAccessory"
 import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
 import { getFeedIconSource } from "@/src/lib/image"
+import { isIOS } from "@/src/lib/platform"
 
 export function EntryPictureItem({ id }: { id: string }) {
+  const { openLightbox } = useLightboxControls()
+
   const item = useEntry(id, (state) => ({
     media: state.media,
     feedId: state.feedId,
@@ -51,11 +56,29 @@ export function EntryPictureItem({ id }: { id: string }) {
             entryId: id,
           })
 
-          showEntryGaleriaAccessory({
-            author: item.author || "",
-            avatarUrl: getFeedIconSource(feed, "") ?? "",
-            publishedAt: item.publishedAt.toISOString(),
-          })
+          if (isIOS) {
+            showEntryGaleriaAccessory({
+              author: item.author || "",
+              avatarUrl: getFeedIconSource(feed, "") ?? "",
+              publishedAt: item.publishedAt.toISOString(),
+            })
+          } else {
+            runOnUI(() => {
+              "worklet"
+              // const rect = measureHandle(aviHandle)
+              runOnJS(openLightbox)({
+                images: (item.media ?? []).map((media) => ({
+                  uri: media.url,
+                  dimensions: null,
+                  thumbUri: media.url,
+                  thumbDimensions: null,
+                  thumbRect: null,
+                  type: "image",
+                })),
+                index: 0,
+              })
+            })()
+          }
           const fullEntry = getEntry(id)
           preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)

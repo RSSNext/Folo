@@ -4,11 +4,13 @@ import type * as React from "react"
 import type { RefObject } from "react"
 import { useCallback, useRef } from "react"
 import type { ViewProps } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 import type { WebViewNavigation } from "react-native-webview"
 import WebView from "react-native-webview"
 
 import { openLink } from "@/src/lib/native"
 
+import { useLightboxControls } from "../../lightbox/lightboxState"
 import { htmlUrl } from "./constants"
 import { atEnd, atStart } from "./injected-js"
 
@@ -27,6 +29,10 @@ export const injectJavaScript = (js: string) => {
   return webview.injectJavaScript(js)
 }
 
+const onLoadEnd = () => {
+  injectJavaScript(atEnd)
+}
+
 export const NativeWebView: React.ComponentType<
   ViewProps & {
     onContentHeightChange?: (e: { nativeEvent: { height: number } }) => void
@@ -35,6 +41,7 @@ export const NativeWebView: React.ComponentType<
 > = ({ onContentHeightChange }) => {
   const webViewRef = useRef<WebView | null>(null)
   const { onNavigationStateChange } = useWebViewNavigation({ webViewRef })
+  const { openLightbox } = useLightboxControls()
 
   return (
     <WebView
@@ -55,9 +62,7 @@ export const NativeWebView: React.ComponentType<
       allowsFullscreenVideo
       injectedJavaScriptBeforeContentLoaded={atStart}
       onNavigationStateChange={onNavigationStateChange}
-      onLoadEnd={useCallback(() => {
-        injectJavaScript(atEnd)
-      }, [])}
+      onLoadEnd={onLoadEnd}
       onMessage={(e) => {
         const message = e.nativeEvent.data
         const parsed = JSON.parse(message)
@@ -65,6 +70,24 @@ export const NativeWebView: React.ComponentType<
           onContentHeightChange?.({
             nativeEvent: { height: parsed.payload },
           })
+          return
+        } else if (parsed.type === "previewImage") {
+          const { imageUrls, index } = parsed.payload
+          runOnUI(() => {
+            "worklet"
+            // const rect = measureHandle(aviHandle)
+            runOnJS(openLightbox)({
+              images: (imageUrls as string[]).map((url: string) => ({
+                uri: url,
+                dimensions: null,
+                thumbUri: url,
+                thumbDimensions: null,
+                thumbRect: null,
+                type: "image",
+              })),
+              index,
+            })
+          })()
           return
         }
       }}
