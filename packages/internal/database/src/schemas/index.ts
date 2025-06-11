@@ -40,7 +40,7 @@ export const subscriptionsTable = sqliteTable("subscriptions", {
 export const inboxesTable = sqliteTable("inboxes", {
   id: text("id").primaryKey(),
   title: text("title"),
-  secret: text("secret").notNull(),
+  secret: text("secret").notNull().default(""),
 })
 
 export const listsTable = sqliteTable("lists", {

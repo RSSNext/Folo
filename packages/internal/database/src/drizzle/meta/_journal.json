@@ -169,6 +169,13 @@
       "when": 1749121539199,
       "tag": "0023_pink_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1749628868500,
+      "tag": "0024_spooky_alex_power",
+      "breakpoints": true
     }
   ]
 }
