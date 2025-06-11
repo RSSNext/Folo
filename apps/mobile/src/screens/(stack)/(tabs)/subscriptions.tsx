@@ -42,7 +42,7 @@ SubscriptionsTabScreen.tabBarIcon = ({ focused, color }) => {
   return <Icon color={color} width={24} height={24} />
 }
 
-const renderItem = ({ view, active }: { view: FeedViewType; active: boolean }) => (
+const renderItem = (view: FeedViewType, active: boolean) => (
   <ErrorBoundary fallbackRender={ListErrorView} key={view}>
     <SubscriptionList view={view} active={active} />
   </ErrorBoundary>

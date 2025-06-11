@@ -16,7 +16,7 @@ export function PagerList({
   renderItem,
   style,
 }: {
-  renderItem: (props: { view: FeedViewType; active: boolean }) => React.ReactNode
+  renderItem: (view: FeedViewType, active: boolean) => React.ReactNode
   style?: StyleProp<ViewStyle> | undefined
 }) {
   const selectedFeed = useSelectedFeed()
@@ -61,7 +61,7 @@ export function PagerList({
             <PagerListWillVisibleContext
               value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
             >
-              {renderItem({ view: activeViews[index]!, active: index === activeViewIndex })}
+              {renderItem(activeViews[index]!, index === activeViewIndex)}
             </PagerListWillVisibleContext>
           </PagerListVisibleContext>
         ),

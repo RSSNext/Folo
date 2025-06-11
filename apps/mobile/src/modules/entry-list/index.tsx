@@ -7,7 +7,7 @@ import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
 
 import { EntryListSelector } from "./EntryListSelector"
 
-const renderViewItem = ({ view, active }: { view: FeedViewType; active: boolean }) => (
+const renderViewItem = (view: FeedViewType, active: boolean) => (
   <ViewEntryList key={view} viewId={view} active={active} />
 )
 export function EntryList() {

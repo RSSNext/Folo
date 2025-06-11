@@ -2,9 +2,9 @@ import type { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { Animated, StyleSheet } from "react-native"
+import { Animated, StyleSheet, View } from "react-native"
 import PagerView from "react-native-pager-view"
 import { useSharedValue } from "react-native-reanimated"
 
@@ -18,10 +18,9 @@ export function PagerList({
   renderItem,
   style,
 }: {
-  renderItem: (props: { view: FeedViewType; active: boolean }) => React.ReactNode
+  renderItem: (view: FeedViewType, active: boolean) => React.ReactNode
   style?: StyleProp<ViewStyle> | undefined
 }) {
-  const RenderItem = renderItem
   const selectedFeed = useSelectedFeed()
   const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
 
@@ -44,7 +43,7 @@ export function PagerList({
   }, [activeViews, pagerRef, rid])
   const userInitiatedDragRef = useSharedValue(false)
 
-  const [dragging, setDragging] = useState(false)
+  // const [dragging, setDragging] = useState(false)
   const pageScrollHandler = useCallback(
     (e: {
       nativeEvent: {
@@ -93,10 +92,10 @@ export function PagerList({
       onPageScrollStateChanged={(e) => {
         const { pageScrollState } = e.nativeEvent
         if (pageScrollState === "dragging") {
-          setDragging(true)
+          // setDragging(true)
           userInitiatedDragRef.value = true
         } else if (pageScrollState === "idle") {
-          setDragging(false)
+          // setDragging(false)
         }
 
         if (pageScrollState === "settling") {
@@ -106,15 +105,24 @@ export function PagerList({
       pageMargin={100}
       orientation="horizontal"
     >
-      {activeViews.map((view, index) => (
-        <PagerListVisibleContext value={index === activeViewIndex} key={view}>
-          <PagerListWillVisibleContext
-            value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
-          >
-            <RenderItem view={view} active={index === activeViewIndex} />
-          </PagerListWillVisibleContext>
-        </PagerListVisibleContext>
-      ))}
+      {useMemo(
+        () =>
+          activeViews.map((view, index) => {
+            const isActive = index === activeViewIndex
+            const willVisible = index === activeViewIndex + 1 || index === activeViewIndex - 1
+            if (!isActive && !willVisible) {
+              return <View key={view} />
+            }
+            return (
+              <PagerListVisibleContext value={isActive} key={view}>
+                <PagerListWillVisibleContext value={willVisible}>
+                  {renderItem(view, isActive)}
+                </PagerListWillVisibleContext>
+              </PagerListVisibleContext>
+            )
+          }),
+        [activeViews, activeViewIndex, renderItem],
+      )}
     </AnimatedPagerView>
   )
 }
