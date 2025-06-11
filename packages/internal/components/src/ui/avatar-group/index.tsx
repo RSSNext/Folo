@@ -49,7 +49,7 @@ function AvatarGroup({
   children,
   className,
   transition = Spring.presets.smooth,
-  translate = "-30%",
+  translate = "-10%",
 
   ...props
 }: AvatarGroupProps) {

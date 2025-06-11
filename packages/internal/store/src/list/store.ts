@@ -85,7 +85,7 @@ class ListSyncServices {
     return list.data
   }
 
-  async fetchLists() {
+  async fetchOwnedLists() {
     const res = await apiClient().lists.list.$get({ query: {} })
     listActions.upsertMany(res.data.map((list) => honoMorph.toList(list)))
 

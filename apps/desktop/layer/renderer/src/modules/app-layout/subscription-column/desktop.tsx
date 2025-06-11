@@ -45,7 +45,7 @@ import { CmdF } from "~/modules/panel/cmdf"
 import { SearchCmdK } from "~/modules/panel/cmdk"
 import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { CornerPlayer } from "~/modules/player/corner-player"
-import { FeedColumn } from "~/modules/subscription-column"
+import { SubscriptionColumn } from "~/modules/subscription-column"
 import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/subscription-column/atom"
 import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
@@ -106,13 +106,13 @@ export function MainDestopLayout() {
             collisionDetection={pointerWithin}
             onDragEnd={handleDragEnd}
           >
-            <FeedColumn>
+            <SubscriptionColumn>
               <CornerPlayer />
 
               <UpdateNotice />
 
               <NetworkStatusIndicator />
-            </FeedColumn>
+            </SubscriptionColumn>
           </DndContext>
         </FeedResponsiveResizerContainer>
       </AppLayoutGridContainerProvider>

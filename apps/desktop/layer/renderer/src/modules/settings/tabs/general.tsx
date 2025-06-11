@@ -233,9 +233,12 @@ const VoiceSelector = () => {
 export const LanguageSelector = ({
   containerClassName,
   contentClassName,
+
+  showDescription = true,
 }: {
   containerClassName?: string
   contentClassName?: string
+  showDescription?: boolean
 }) => {
   const { t } = useTranslation("settings")
   const language = useGeneralSettingSelector((state) => state.language)
@@ -252,7 +255,9 @@ export const LanguageSelector = ({
     <div className={cn("mb-3 mt-4 flex w-full items-center", containerClassName)}>
       <div className="flex grow flex-col gap-1">
         <span className="shrink-0 text-sm font-medium">{t("general.language.title")}</span>
-        <SettingDescription>{t("general.language.description")}</SettingDescription>
+        {showDescription && (
+          <SettingDescription>{t("general.language.description")}</SettingDescription>
+        )}
       </div>
 
       <ResponsiveSelect

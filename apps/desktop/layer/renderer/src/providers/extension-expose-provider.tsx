@@ -1,7 +1,9 @@
+import { Routes } from "@follow/constants"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { env } from "@follow/shared/env.desktop"
-import { useEffect, useLayoutEffect } from "react"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
+import { useLocation } from "react-router"
 import { toast } from "sonner"
 
 import { setWindowState } from "~/atoms/app"
@@ -29,7 +31,7 @@ export const ExtensionExposeProvider = () => {
   const { present } = useModalStack()
   const showSettings = useSettingModal()
   const updaterStatus = useUpdaterStatus()
-  useLayoutEffect(() => {
+  useEffect(() => {
     registerGlobalContext({
       updateDownloaded() {
         setUpdaterStatus({
@@ -39,7 +41,24 @@ export const ExtensionExposeProvider = () => {
       },
     })
   }, [updaterStatus])
-  useLayoutEffect(() => {
+
+  const location = useLocation()
+
+  useEffect(() => {
+    registerGlobalContext({
+      goToDiscover: () => {
+        window.router.navigate(Routes.Discover)
+      },
+      goToFeed: ({ id, view }: { id: string; view?: number }) => {
+        navigateEntry({ feedId: id, view: view ?? 0, backPath: location.pathname })
+      },
+      goToList: ({ id, view }: { id: string; view?: number }) => {
+        navigateEntry({ listId: id, view: view ?? 0, backPath: location.pathname })
+      },
+    })
+  }, [location.pathname])
+
+  useEffect(() => {
     registerGlobalContext({
       showSetting: (path) => window.router.showSettings(path),
       getGeneralSettings,

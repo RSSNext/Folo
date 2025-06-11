@@ -28,7 +28,7 @@ import { useI18n } from "~/hooks/common"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { ProfileButton } from "~/modules/user/ProfileButton"
 
-export const TimelineColumnHeader = memo(() => {
+export const SubscriptionColumnHeader = memo(() => {
   const timelineId = useRouteParamsSelector((s) => s.timelineId)
   const navigateBackHome = useBackHome(timelineId)
   const normalStyle = !window.electron || window.electron.process.platform !== "darwin"
