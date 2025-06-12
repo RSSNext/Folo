@@ -220,7 +220,7 @@ export default ({ mode }) => {
         ["react", "react-dom"],
         ["react-error-boundary", "react-dom/server", "react-router"],
         // Data Statement
-        ["zustand", "jotai", "use-context-selector", "immer", "dexie"],
+        ["zustand", "jotai", "use-context-selector", "immer"],
         // Remark
         [
           "remark-directive",

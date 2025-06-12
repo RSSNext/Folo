@@ -195,8 +195,8 @@ class UnreadSyncService {
       }
     })
 
-    tx.request(() => {
-      return apiClient().reads.$post({
+    tx.request(async () => {
+      await apiClient().reads.$post({
         json: { entryIds: [entryId] },
       })
     })

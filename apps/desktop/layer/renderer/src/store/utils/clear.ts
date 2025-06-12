@@ -7,7 +7,6 @@ import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
 
 import { clearUISettings } from "~/atoms/settings/ui"
-import { browserDB } from "~/database"
 
 import { clearImageDimensionsDb } from "../image/db"
 
@@ -27,7 +26,6 @@ export const clearLocalPersistStoreData = async () => {
   clearUISettings()
 
   await clearImageDimensionsDb()
-  await Promise.all(browserDB.tables.map((table) => table.clear()))
 }
 
 const storedUserId = getStorageNS("user_id")

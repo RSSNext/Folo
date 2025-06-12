@@ -8,6 +8,7 @@ export const UserProvider = () => {
 
   useEffect(() => {
     if (!session?.user) return
+    // @ts-expect-error
     setWhoami(session.user)
 
     setIntegrationIdentify(session.user)
