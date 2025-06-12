@@ -1,4 +1,4 @@
-import type { GeneralSettings, IntegrationSettings, UISettings } from "./interface"
+import type { AISettings, GeneralSettings, IntegrationSettings, UISettings } from "./interface"
 
 export const defaultGeneralSettings: GeneralSettings = {
   // App
@@ -136,8 +136,13 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   saveSummaryAsDescription: false,
 }
 
+export const defaultAISettings: AISettings = {
+  personalizePrompt: "",
+}
+
 export const defaultSettings = {
   general: defaultGeneralSettings,
   ui: defaultUISettings,
   integration: defaultIntegrationSettings,
+  ai: defaultAISettings,
 }

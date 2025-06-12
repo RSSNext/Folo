@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { TextArea } from "@follow/components/ui/input/TextArea.js"
 import {
@@ -9,13 +10,23 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 
 import { whoami } from "~/atoms/user"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 
 export const AIPanel = () => {
   const user = whoami()
+  const settingModalPresent = useSettingModal()
 
   return (
     <div className="center relative mx-auto size-full max-w-3xl flex-col gap-8 px-8">
-      <div className="text-text-secondary absolute right-0 top-8 text-sm">Personalize</div>
+      <Button
+        variant="ghost"
+        buttonClassName="text-text-secondary absolute right-0 top-8 text-sm font-normal"
+        onClick={() => {
+          settingModalPresent("ai")
+        }}
+      >
+        Personalize
+      </Button>
       <div className="text-text flex flex-row items-center gap-3 text-2xl font-medium">
         <div>
           <div className="bg-accent size-6 animate-pulse rounded-full" />
@@ -46,11 +57,13 @@ export const AIPanel = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <div className="text-text-tertiary">@ Mention a date or source</div>
+            <Button variant="ghost" buttonClassName="text-text-secondary font-normal">
+              @ Mention a date or source
+            </Button>
           </div>
           <div className="flex flex-row items-center gap-3">
             <i className="i-mgc-mic-cute-re text-xl" />
-            <i className="i-mgc-arrow-up-circle-cute-fi text-3xl" />
+            <i className="i-mgc-arrow-up-circle-cute-fi text-3xl transition-transform hover:scale-110" />
           </div>
         </div>
       </TextArea>

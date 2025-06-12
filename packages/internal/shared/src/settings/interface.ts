@@ -122,3 +122,7 @@ export interface IntegrationSettings {
 
   saveSummaryAsDescription: boolean
 }
+
+export interface AISettings {
+  personalizePrompt: string
+}
