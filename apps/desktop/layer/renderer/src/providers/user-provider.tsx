@@ -14,7 +14,7 @@ export const UserProvider = () => {
     if (session.role) {
       setUserRole(session.role as UserRole)
     }
-    // @ts-expect-error
+    // @ts-expect-error FIXME
     setIntegrationIdentify(session.user)
   }, [session?.role, session?.user])
 
