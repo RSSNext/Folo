@@ -24,6 +24,7 @@ import { enableShowSourceContent } from "~/atoms/source-content"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
@@ -34,6 +35,7 @@ import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
+import { AIPanelInput, AIPanelShortcuts } from "../app-layout/entry-content/AIPanel"
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
 export interface EntryContentProps {
@@ -243,6 +245,9 @@ const useReadPercent = () => {
 export const ContainerToc = memo(
   ({ ref, ..._ }: ComponentType & { ref?: React.Ref<TocRef | null> }) => {
     const wrappedElement = useWrappedElement()
+    const { entryId } = useRouteParamsSelector((s) => ({
+      entryId: s.entryId,
+    }))
 
     return (
       <RootPortal to={wrappedElement!}>
@@ -265,6 +270,12 @@ export const ContainerToc = memo(
                 "@[700px]:-translate-x-4 @[800px]:-translate-x-8 @[900px]:translate-x-0 @[900px]:items-start"
               }
             />
+          </div>
+        </div>
+        <div className="sticky bottom-0 -mx-10">
+          <div className="flex flex-col gap-1">
+            <AIPanelInput entryId={entryId} />
+            <AIPanelShortcuts />
           </div>
         </div>
       </RootPortal>

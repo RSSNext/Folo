@@ -16,6 +16,7 @@ import { entryActions, useEntry } from "~/store/entry"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
 
+import { AIPanelInput, AIPanelShortcuts } from "../app-layout/entry-content/AIPanel"
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { EntryColumnGrid } from "./grid"
 import { useEntriesByView } from "./hooks/useEntriesByView"
@@ -167,6 +168,14 @@ function EntryColumnImpl() {
           />
         )}
       </EntryColumnWrapper>
+      {views[view]!.wideMode && (
+        <div className="sticky bottom-4 px-10">
+          <div className="flex flex-col gap-1">
+            <AIPanelInput />
+            <AIPanelShortcuts />
+          </div>
+        </div>
+      )}
     </Focusable>
   )
 }

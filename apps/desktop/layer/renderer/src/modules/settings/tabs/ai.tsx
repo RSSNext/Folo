@@ -23,6 +23,11 @@ export const SettingAI = () => {
             description: t("ai.personalize.prompt.description"),
             vertical: true,
           }),
+
+          {
+            type: "title",
+            value: t("ai.shortcuts.title"),
+          },
         ]}
       />
     </div>
