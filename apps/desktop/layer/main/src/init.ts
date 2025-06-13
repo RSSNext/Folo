@@ -67,6 +67,9 @@ export const initializeAppStage1 = () => {
         standard: true,
         bypassCSP: true,
         supportFetchAPI: true,
+        secure: true,
+        stream: true,
+        allowServiceWorkers: true,
       },
     },
   ])
