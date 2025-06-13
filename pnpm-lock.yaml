@@ -30,6 +30,9 @@ patchedDependencies:
   '@pengx17/electron-forge-maker-appimage':
     hash: 5b5ab1ba36e8c0d7ffee912ebf29c1a18bc101c9c661ceb1bb0bda3deaf4c667
     path: patches/@pengx17__electron-forge-maker-appimage.patch
+  '@sentry/electron':
+    hash: b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb
+    path: patches/@sentry__electron.patch
   daisyui@4.12.24:
     hash: d393ab1cbfbfcff21dce0796a59c2d8a37e2c6dd634a8ab476cbc67e47b93d9c
     path: patches/daisyui@4.12.24.patch
@@ -356,7 +359,7 @@ importers:
         version: 1.0.1
       '@sentry/electron':
         specifier: 6.6.0
-        version: 6.6.0
+        version: 6.6.0(patch_hash=b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb)
       builder-util-runtime:
         specifier: 9.3.1
         version: 9.3.1
@@ -21446,7 +21449,7 @@ snapshots:
 
   '@sentry/core@9.22.0': {}
 
-  '@sentry/electron@6.6.0':
+  '@sentry/electron@6.6.0(patch_hash=b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb)':
     dependencies:
       '@sentry/browser': 9.18.0
       '@sentry/core': 9.18.0
