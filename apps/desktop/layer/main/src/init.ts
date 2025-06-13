@@ -39,8 +39,6 @@ export function initializeAppStage0() {
         bypassCSP: true,
         supportFetchAPI: true,
         secure: true,
-        stream: true,
-        allowServiceWorkers: true,
       },
     },
   ])
