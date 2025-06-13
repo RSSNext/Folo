@@ -112,12 +112,19 @@ function bootstrap() {
       callback({ cancel: false, requestHeaders: details.requestHeaders })
     })
 
-    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      details.responseHeaders = details.responseHeaders || {}
-      details.responseHeaders["Cross-Origin-Opener-Policy"] = ["same-origin"]
-      details.responseHeaders["Cross-Origin-Embedder-Policy"] = ["require-corp"]
-      callback({ responseHeaders: details.responseHeaders })
-    })
+    // It's wired, I can not make this work. For request to worker.js, it will apply an incomplete header.
+    // not-set cross-origin-embedder-policy:
+    // So I have to use `app.commandLine.appendSwitch("enable-features", "SharedArrayBuffer")`
+    //
+    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    //   callback({
+    //     responseHeaders: {
+    //       ...details.responseHeaders,
+    //       "Cross-Origin-Opener-Policy": "same-origin",
+    //       "Cross-Origin-Embedder-Policy": "require-corp",
+    //     },
+    //   })
+    // })
 
     mainWindow = createMainWindow()
 
