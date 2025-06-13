@@ -28,6 +28,10 @@ import {
   windowStateStoreKey,
 } from "./window"
 
+protocol.registerSchemesAsPrivileged([
+  { scheme: "app", privileges: { standard: true, supportFetchAPI: true, secure: true } },
+])
+
 if (DEV) console.info("[main] env loaded:", env)
 
 const apiURL = process.env["VITE_API_URL"] || import.meta.env.VITE_API_URL
