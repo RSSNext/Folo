@@ -16,6 +16,7 @@ import { store } from "./lib/store"
 import { updateNotificationsToken } from "./lib/user"
 import { logger } from "./logger"
 import { registerAppMenu } from "./menu"
+import { initializeSentry } from "./sentry"
 import { getMainWindowOrCreate } from "./window"
 
 if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
@@ -26,7 +27,7 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
-  // initializeSentry()
+  initializeSentry()
   initializeIpcServices()
 }
 export const initializeAppStage1 = () => {
@@ -60,6 +61,10 @@ export const initializeAppStage1 = () => {
   checkAndCleanCodeCache()
 
   protocol.registerSchemesAsPrivileged([
+    {
+      scheme: "sentry-ipc",
+      privileges: { bypassCSP: true, corsEnabled: true, supportFetchAPI: true, secure: true },
+    },
     {
       scheme: "app",
       privileges: {
