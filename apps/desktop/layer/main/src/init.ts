@@ -31,6 +31,10 @@ export function initializeAppStage0() {
   initializeIpcServices()
 }
 export const initializeAppStage1 = () => {
+  protocol.registerSchemesAsPrivileged([
+    { scheme: "app", privileges: { standard: true, supportFetchAPI: true, secure: true } },
+  ])
+
   const protocols = [LEGACY_APP_PROTOCOL, APP_PROTOCOL]
 
   for (const protocol of protocols) {
