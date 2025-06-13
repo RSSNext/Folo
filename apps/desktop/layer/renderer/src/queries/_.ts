@@ -1,4 +1,3 @@
-export { ai } from "./ai"
 export { auth } from "./auth"
 export { discover } from "./discover"
 export { entries } from "./entries"

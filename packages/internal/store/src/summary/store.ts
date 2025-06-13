@@ -1,6 +1,7 @@
 import type { SummarySchema } from "@follow/database/schemas/types"
 import { summaryService } from "@follow/database/services/summary"
 import type { SupportedActionLanguage } from "@follow/shared"
+import { parseHtml } from "@follow/utils/html"
 
 import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
@@ -106,13 +107,19 @@ class SummarySyncService {
     entryId: string
     target: "content" | "readabilityContent"
     actionLanguage: SupportedActionLanguage
-  }) {
+  }): Promise<string | null> {
     const entry = getEntry(entryId)
-    if (!entry) return
+    if (!entry) return null
 
     const state = get()
     if (state.generatingStatus[entryId] === SummaryGeneratingStatus.Pending)
-      return this.pendingPromises[entryId]
+      return this.pendingPromises[entryId] || null
+
+    const content = target === "content" ? entry.content : entry.readabilityContent
+    const textLength = content ? parseHtml(content).toText().length : 0
+    if (textLength < 100) {
+      return null
+    }
 
     immerSet((state) => {
       state.generatingStatus[entryId] = SummaryGeneratingStatus.Pending

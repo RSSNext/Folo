@@ -1,5 +1,6 @@
 import type { Element, Parent, Text } from "hast"
 import type { Schema } from "hast-util-sanitize"
+import type { Components } from "hast-util-to-jsx-runtime"
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import { toText } from "hast-util-to-text"
 import { Fragment, jsx, jsxs } from "react/jsx-runtime"
@@ -12,7 +13,12 @@ import type { Node } from "unist"
 import { visit } from "unist-util-visit"
 import { visitParents } from "unist-util-visit-parents"
 
-import type { ParseHtmlOptions } from "./html"
+type ParseHtmlOptions = {
+  renderInlineStyle?: boolean
+  noMedia?: boolean
+  components?: Components
+  scrollEnabled?: boolean
+}
 
 /**
  * Remove the last <br> element in the tree

@@ -1,4 +1,3 @@
-import { parseHtml } from "@follow/components/ui/markdown/parse-html.ts"
 import { useEntry } from "@follow/store/entry/hooks"
 import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
 import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
@@ -26,14 +25,11 @@ export const EntryAISummary: FC<{
     entryId,
     useCallback(
       (state) => {
-        const content = showReadability ? state.readabilityContent : state.content
         const target =
           showReadability && state.readabilityContent ? "readabilityContent" : "content"
-        const textLength = content ? parseHtml(content).toText().length : 0
 
         return {
           target,
-          isShortContent: textLength < 100,
         } as const
       },
       [showReadability],
@@ -45,7 +41,7 @@ export const EntryAISummary: FC<{
     entryId,
     target: entry?.target || "content",
     actionLanguage,
-    enabled: showAISummary && !entry?.isShortContent,
+    enabled: showAISummary,
   })
   const maybeMarkdown = showReadability
     ? summary?.readabilitySummary || summary?.summary

@@ -1,7 +1,7 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { LazyKateX } from "@follow/components/ui/katex/lazy.js"
-import { parseHtml as parseHtmlGeneral } from "@follow/components/ui/markdown/parse-html.js"
+import { parseHtml as parseHtmlGeneral } from "@follow/utils/html"
 import type { Element } from "hast"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
