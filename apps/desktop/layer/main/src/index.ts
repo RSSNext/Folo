@@ -114,6 +114,7 @@ function bootstrap() {
 
     // It's wired, I can not make this work. For request to worker.js, it will apply an incomplete header.
     // not-set cross-origin-embedder-policy:
+    // Maybe this is related to https://github.com/electron/electron/issues/45168
     // So I have to use `app.commandLine.appendSwitch("enable-features", "SharedArrayBuffer")`
     //
     // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
