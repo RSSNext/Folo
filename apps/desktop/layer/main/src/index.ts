@@ -113,7 +113,10 @@ function bootstrap() {
     })
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      if (details.url.startsWith("app://follow.is")) {
+      if (
+        details.url.startsWith("app://follow.is") &&
+        !(details.url.includes(".js") && details.url.includes("worker"))
+      ) {
         const SQLiteWASMHeader = {
           "Cross-Origin-Embedder-Policy": ["require-corp"],
           "Cross-Origin-Opener-Policy": ["same-origin"],
