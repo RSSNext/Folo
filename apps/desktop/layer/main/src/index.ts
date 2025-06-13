@@ -113,27 +113,13 @@ function bootstrap() {
     })
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      console.info("[main] onHeadersReceived", details)
-      if (
-        details.url.startsWith("app://follow.is") &&
-        !(details.url.includes(".js") && details.url.includes("worker"))
-      ) {
-        const SQLiteWASMHeader = {
-          "Cross-Origin-Embedder-Policy": ["require-corp"],
-          "Cross-Origin-Opener-Policy": ["same-origin"],
-        }
-
-        details.responseHeaders = details.responseHeaders
-          ? {
-              ...details.responseHeaders,
-              ...SQLiteWASMHeader,
-            }
-          : SQLiteWASMHeader
-      }
-
-      console.info("[main] onHeadersReceived", details.url, details.responseHeaders)
-
-      callback({ cancel: false, responseHeaders: details.responseHeaders })
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          "Cross-Origin-Opener-Policy": "same-origin",
+          "Cross-Origin-Embedder-Policy": "require-corp",
+        },
+      })
     })
 
     mainWindow = createMainWindow()
