@@ -11,6 +11,7 @@ import {
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import type { EntryModel } from "@follow/store/entry/types"
+import { getSummary } from "@follow/store/summary/getters"
 import { tracker } from "@follow/tracker"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
@@ -19,13 +20,10 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
-import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
 import { parseHtml } from "~/lib/parse-html"
-import { queryClient } from "~/lib/query-client"
-import { Queries } from "~/queries"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
@@ -668,19 +666,13 @@ const useRegisterZoteroCommands = () => {
 }
 
 const getDescription = (entry: EntryModel) => {
-  const actionLanguage = getActionLanguage()
   const { saveSummaryAsDescription } = getIntegrationSettings()
 
   if (!saveSummaryAsDescription) {
     return entry.description || ""
   }
-  const summary = queryClient
-    .getQueriesData({
-      queryKey: Queries.ai.summary({ entryId: entry.id, language: actionLanguage }).key,
-    })
-    .at(0)
-    ?.at(1) as string | undefined
-  return summary || entry.description || ""
+  const summary = getSummary(entry.id)
+  return summary?.readabilitySummary || summary?.summary || entry.description || ""
 }
 
 const buildUrlRequestBody = (entry: EntryModel) => {
