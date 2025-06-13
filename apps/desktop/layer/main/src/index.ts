@@ -112,6 +112,24 @@ function bootstrap() {
       callback({ cancel: false, requestHeaders: details.requestHeaders })
     })
 
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      if (details.url.startsWith("app://follow.is")) {
+        const SQLiteWASMHeader = {
+          "Cross-Origin-Embedder-Policy": ["require-corp"],
+          "Cross-Origin-Opener-Policy": ["same-origin"],
+        }
+
+        details.responseHeaders = details.responseHeaders
+          ? {
+              ...details.responseHeaders,
+              ...SQLiteWASMHeader,
+            }
+          : SQLiteWASMHeader
+      }
+
+      callback({ cancel: false, responseHeaders: details.responseHeaders })
+    })
+
     mainWindow = createMainWindow()
 
     updateProxy()
