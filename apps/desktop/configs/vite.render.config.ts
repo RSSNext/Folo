@@ -30,7 +30,6 @@ const getChangelogFileContent = () => {
     return ""
   }
 }
-const isWebBuild = process.env.WEB_BUILD === "1"
 
 const changelogFile = getChangelogFileContent()
 export const viteRenderBaseConfig = {
@@ -65,7 +64,7 @@ export const viteRenderBaseConfig = {
         }
       },
     },
-    isWebBuild && {
+    {
       name: "configure-response-headers",
       configureServer: (server) => {
         server.middlewares.use((_req, res, next) => {
