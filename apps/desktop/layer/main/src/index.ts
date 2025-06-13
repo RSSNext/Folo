@@ -113,13 +113,10 @@ function bootstrap() {
     })
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          "Cross-Origin-Opener-Policy": "same-origin",
-          "Cross-Origin-Embedder-Policy": "require-corp",
-        },
-      })
+      details.responseHeaders = details.responseHeaders || {}
+      details.responseHeaders["Cross-Origin-Opener-Policy"] = ["same-origin"]
+      details.responseHeaders["Cross-Origin-Embedder-Policy"] = ["require-corp"]
+      callback({ responseHeaders: details.responseHeaders })
     })
 
     mainWindow = createMainWindow()
