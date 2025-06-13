@@ -79,7 +79,6 @@
       "react-native-screens": "patches/react-native-screens.patch",
       "expo-image": "patches/expo-image.patch",
       "react-native-ios-utilities": "patches/react-native-ios-utilities.patch",
-      "sqlocal": "patches/sqlocal.patch",
       "@sentry/electron": "patches/@sentry__electron.patch"
     },
     "overrides": {
