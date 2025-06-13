@@ -113,6 +113,7 @@ function bootstrap() {
     })
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      console.info("[main] onHeadersReceived", details)
       if (
         details.url.startsWith("app://follow.is") &&
         !(details.url.includes(".js") && details.url.includes("worker"))
@@ -129,6 +130,8 @@ function bootstrap() {
             }
           : SQLiteWASMHeader
       }
+
+      console.info("[main] onHeadersReceived", details.url, details.responseHeaders)
 
       callback({ cancel: false, responseHeaders: details.responseHeaders })
     })
