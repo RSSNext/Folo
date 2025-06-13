@@ -1,7 +1,7 @@
-import { parseHtml } from "@follow/components/ui/markdown/parse-html.ts"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { duplicateIfLengthLessThan } from "@follow/utils"
+import { parseHtml } from "@follow/utils/html"
 import { franc } from "franc-min"
 
 export const checkLanguage = ({
