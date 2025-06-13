@@ -1,0 +1,16 @@
+diff --git a/dist/lib/get-query-key.js b/dist/lib/get-query-key.js
+index 9f82cf50876a7d1cc68930b242aeb9be3185f8f3..b66e8000dc5f7e1b7ccc3ce86678fa7c912b0100 100644
+--- a/dist/lib/get-query-key.js
++++ b/dist/lib/get-query-key.js
+@@ -1,4 +1,10 @@
++import { nanoid } from "nanoid"
++
+ export function getQueryKey() {
+-    return crypto.randomUUID();
++    // return crypto.randomUUID();
++    if (self?.crypto?.randomUUID) {
++        return self.crypto.randomUUID();
++    }
++    return nanoid();
+ }
+ //# sourceMappingURL=get-query-key.js.map
