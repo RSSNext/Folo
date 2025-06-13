@@ -171,7 +171,6 @@ function RegisterForm() {
               }}
               className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
             >
-              {" "}
               <img
                 className={`absolute left-9 h-5 ${!provider.iconDark64 ? "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert" : ""}`}
                 src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
