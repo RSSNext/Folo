@@ -1,18 +1,21 @@
 import { Header } from "@client/components/layout/header"
 import { openInFollowApp } from "@client/lib/helper"
+import { jotaiStore } from "@client/lib/store"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { PoweredByFooter } from "@follow/components/common/PoweredByFooter.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
-import { useTitle } from "@follow/hooks"
+import { useSyncThemeWebApp, useTitle } from "@follow/hooks"
+import { Provider } from "jotai"
 import { m as motion } from "motion/react"
 import { Fragment, useEffect, useState } from "react"
 
-export const NotFound = () => {
+const NotFoundContent = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [glitchText, setGlitchText] = useState("404")
   const [isGlitching, setIsGlitching] = useState(false)
 
   useTitle("404 - Page Not Found")
+  useSyncThemeWebApp()
 
   useEffect(() => {
     setIsVisible(true)
@@ -49,23 +52,23 @@ export const NotFound = () => {
         {`:root {
           --container-max-width: 1024px;
           }
-          
+
           @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
           }
-          
+
           @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 20px rgba(168, 162, 158, 0.3); }
             50% { box-shadow: 0 0 40px rgba(168, 162, 158, 0.6); }
           }
-          
+
           @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-2px); }
             75% { transform: translateX(2px); }
           }
-          
+
           @keyframes glitch {
             0% { transform: translate(0); }
             20% { transform: translate(-2px, 2px); }
@@ -74,19 +77,19 @@ export const NotFound = () => {
             80% { transform: translate(2px, -2px); }
             100% { transform: translate(0); }
           }
-          
+
           .float-animation {
             animation: float 3s ease-in-out infinite;
           }
-          
+
           .pulse-glow-animation {
             animation: pulse-glow 2s ease-in-out infinite;
           }
-          
+
           .shake-animation {
             animation: shake 0.5s ease-in-out;
           }
-          
+
           .glitch-animation {
             animation: glitch 0.1s linear infinite;
           }`}
@@ -139,7 +142,6 @@ export const NotFound = () => {
               </motion.span>
             </motion.div>
           </motion.div>
-
           {/* Error Message with stagger animation */}
           <motion.div
             className="mb-8 flex flex-col items-center text-center"
@@ -165,7 +167,6 @@ export const NotFound = () => {
               URL or return to the homepage to continue browsing.
             </motion.p>
           </motion.div>
-
           {/* Action Buttons with hover effects */}
           <motion.div
             className="flex flex-col items-center gap-4 sm:flex-row"
@@ -192,7 +193,6 @@ export const NotFound = () => {
               </Button>
             </motion.div>
           </motion.div>
-
           {/* Additional Help with fade in */}
           <motion.div
             className="mt-12 text-center"
@@ -214,7 +214,6 @@ export const NotFound = () => {
               </motion.a>
             </p>
           </motion.div>
-
           {/* Floating particles effect */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -236,10 +235,18 @@ export const NotFound = () => {
                 }}
               />
             ))}
-          </div>
+          </div>{" "}
         </Fragment>
       </main>
       <PoweredByFooter />
     </div>
+  )
+}
+
+export const NotFound = () => {
+  return (
+    <Provider store={jotaiStore}>
+      <NotFoundContent />
+    </Provider>
   )
 }
