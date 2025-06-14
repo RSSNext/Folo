@@ -7,6 +7,7 @@ import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { useIsDark } from "@follow/hooks"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { stopPropagation } from "@follow/utils/dom"
+import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -104,7 +105,11 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200"
                 >
                   <img
-                    className="absolute left-9 h-5 dark:brightness-[0.85] dark:hue-rotate-180 dark:invert"
+                    className={cn(
+                      "absolute left-9 h-5",
+                      !provider.iconDark64 &&
+                        "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                    )}
                     src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                   />
                   <span>{t("login.continueWith", { provider: provider.name })}</span>

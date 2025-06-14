@@ -12,8 +12,10 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
+import { useIsDark } from "@follow/hooks"
 import { env } from "@follow/shared/env.ssr"
 import { tracker } from "@follow/tracker"
+import { cn } from "@follow/utils/utils"
 import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef, useState } from "react"
@@ -57,8 +59,8 @@ function RegisterForm() {
       confirmPassword: "",
     },
   })
-
   const [isEmail, setIsEmail] = useState(false)
+  const isDark = useIsDark()
 
   const { data: authProviders } = useAuthProviders()
 
@@ -171,11 +173,11 @@ function RegisterForm() {
               className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
             >
               <img
-                className="absolute left-9 h-5"
-                style={{
-                  color: provider.color,
-                }}
-                src={provider.icon64}
+                className={cn(
+                  "absolute left-9 h-5",
+                  !provider.iconDark64 && "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                )}
+                src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
               />
               <span>{t("login.continueWith", { provider: provider.name })}</span>
             </MotionButtonBase>
