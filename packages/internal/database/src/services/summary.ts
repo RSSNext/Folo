@@ -3,8 +3,13 @@ import { eq } from "drizzle-orm"
 import { db } from "../db"
 import { summariesTable } from "../schemas"
 import type { SummarySchema } from "../schemas/types"
+import type { Resetable } from "./internal/base"
 
-class SummaryServiceStatic {
+class SummaryServiceStatic implements Resetable {
+  async reset() {
+    await db.delete(summariesTable)
+  }
+
   async insertSummary(data: Omit<SummarySchema, "createdAt">) {
     const updateExceptEmpty = Object.fromEntries(
       Object.entries({
@@ -31,6 +36,11 @@ class SummaryServiceStatic {
     })
 
     return summary
+  }
+
+  async getAllSummaries() {
+    const summaries = await db.query.summariesTable.findMany()
+    return summaries
   }
 
   async deleteSummary(entryId: string) {

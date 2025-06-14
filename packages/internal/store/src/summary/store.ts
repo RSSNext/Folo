@@ -5,7 +5,8 @@ import { parseHtml } from "@follow/utils/html"
 
 import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
-import { createImmerSetter, createZustandStore } from "../internal/helper"
+import type { Hydratable, Resetable } from "../internal/base"
+import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { SummaryGeneratingStatus } from "./enum"
 
 type SummaryModel = Omit<SummarySchema, "createdAt">
@@ -34,9 +35,15 @@ export const useSummaryStore = createZustandStore<SummaryState>("summary")(() =>
 }))
 
 const get = useSummaryStore.getState
+const set = useSummaryStore.setState
 const immerSet = createImmerSetter(useSummaryStore)
-class SummaryActions {
-  async upsertManyInSession(summaries: SummaryModel[]) {
+class SummaryActions implements Resetable, Hydratable {
+  async hydrate() {
+    const summaries = await summaryService.getAllSummaries()
+    this.upsertManyInSession(summaries)
+  }
+
+  upsertManyInSession(summaries: SummaryModel[]) {
     const now = Date.now()
     summaries.forEach((summary) => {
       immerSet((state) => {
@@ -92,6 +99,21 @@ class SummaryActions {
       })
     })
   }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set({
+        data: emptyDataSet,
+        generatingStatus: {},
+      })
+    })
+    tx.persist(() => {
+      summaryService.reset()
+    })
+
+    await tx.run()
+  }
 }
 
 export const summaryActions = new SummaryActions()
@@ -112,6 +134,11 @@ class SummarySyncService {
     if (!entry) return null
 
     const state = get()
+    if (state.data[entryId]?.lang === actionLanguage) {
+      return target === "content"
+        ? state.data[entryId]?.summary || null
+        : state.data[entryId]?.readabilitySummary || null
+    }
     if (state.generatingStatus[entryId] === SummaryGeneratingStatus.Pending)
       return this.pendingPromises[entryId] || null
 
