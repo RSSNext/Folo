@@ -27,6 +27,8 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
+  app.commandLine.appendSwitch("enable-features", "SharedArrayBuffer")
+
   // https://github.com/getsentry/sentry-electron/issues/661
   protocol.registerSchemesAsPrivileged([
     {
