@@ -38,7 +38,7 @@ export function Component() {
   return (
     <div className="relative flex w-full flex-col items-center gap-8 px-4 pb-8 lg:px-20 lg:pb-4">
       <div className="center">
-        <img crossOrigin="anonymous" src={RSSHubIcon} className="mt-12 size-20" />
+        <img src={RSSHubIcon} className="mt-12 size-20" />
       </div>
       <div className="text-2xl font-bold">{t("words.rsshub", { ns: "common" })}</div>
       <div className="max-w-4xl text-sm">{t("rsshub.description")}</div>

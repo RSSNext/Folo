@@ -353,7 +353,9 @@ const ThumbnailRatio = () => {
           onValueChange={(value) => {
             setUISetting("thumbnailRatio", value as "square" | "original")
           }}
-          renderValue={(value) => t(`appearance.thumbnail_ratio.${value as "square" | "original"}`)}
+          renderValue={(item) =>
+            t(`appearance.thumbnail_ratio.${item.value as "square" | "original"}`)
+          }
           triggerClassName="w-48 lg:translate-y-2 -inset-8translate-y-1"
           size="sm"
         />

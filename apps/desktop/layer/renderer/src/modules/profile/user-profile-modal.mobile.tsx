@@ -62,7 +62,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
                   asChild
                   src={replaceImgUrlIfNeed(userInfo.avatar || undefined)}
                 >
-                  <img crossOrigin="anonymous" />
+                  <img />
                 </AvatarImage>
                 <AvatarFallback>{userInfo.name?.slice(0, 2)}</AvatarFallback>
               </span>

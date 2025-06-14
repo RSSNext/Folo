@@ -7,7 +7,7 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useSmoothScroll, useTitle } from "@follow/hooks"
 import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
@@ -116,6 +116,11 @@ export const EntryContent: Component<EntryContentProps> = ({
     }
   }, [animationController, entryId])
 
+  const isInHasTimelineView = ![
+    FeedViewType.Pictures,
+    FeedViewType.SocialMedia,
+    FeedViewType.Videos,
+  ].includes(view)
   if (!entry) return null
 
   return (
@@ -146,7 +151,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             transition={Spring.presets.bouncy}
             className="select-text"
           >
-            {!isZenMode && (
+            {!isZenMode && isInHasTimelineView && (
               <>
                 <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
                   <MotionButtonBase

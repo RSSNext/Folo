@@ -27,7 +27,6 @@ export const AvatarImage = ({
 }) => (
   <AvatarPrimitive.Image
     ref={ref}
-    crossOrigin="anonymous"
     className={cn("aspect-square size-full", className)}
     src={replaceImgUrlIfNeed({ url: props.src })}
     {...props}
@@ -45,7 +44,7 @@ export const AvatarFallback = ({
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "bg-material-opaque flex size-full items-center justify-center rounded-full text-xs",
+      "bg-material-opaque flex size-full items-center justify-center rounded-full",
       className,
     )}
     {...props}

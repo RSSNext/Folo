@@ -49,7 +49,8 @@ export function Recommendations() {
               triggerClassName="h-8 rounded border-0"
               size="sm"
               items={LanguageOptions}
-              renderItem={(item) => <>{tCommon(item.label as any)}</>}
+              renderItem={(item) => tCommon(item.label as any)}
+              renderValue={(item) => tCommon(item.label as any)}
             />
           </div>
         </div>

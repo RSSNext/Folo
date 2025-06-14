@@ -2,6 +2,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { useCollectionEntry, useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
+import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { clsx, cn, formatEstimatedMins, formatTimeToSeconds, isSafari } from "@follow/utils/utils"
@@ -25,6 +26,33 @@ import { getPreferredTitle } from "~/store/feed/hooks"
 import { StarIcon } from "../star-icon"
 import type { UniversalItemProps } from "../types"
 
+const entrySelector = (state: EntryModel) => {
+  const { feedId, inboxHandle, read } = state
+  const { authorAvatar, authorUrl, description, publishedAt, title } = state
+
+  const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
+  const firstAudio = audios?.[0]
+  const media = state.media || []
+  const firstMedia = media?.[0]
+  const photo = media.find((a) => a.type === "photo")
+  const firstPhotoUrl = photo?.url
+  const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+
+  const titleEntry = { authorUrl }
+
+  return {
+    description,
+    feedId,
+    firstAudio,
+    firstMedia,
+    iconEntry,
+    inboxId: inboxHandle,
+    publishedAt,
+    read,
+    title,
+    titleEntry,
+  }
+}
 export function ListItem({
   entryId,
   entryPreview,
@@ -34,33 +62,7 @@ export function ListItem({
   simple?: boolean
 }) {
   const isMobile = useMobile()
-  const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxHandle, read } = state
-    const { authorAvatar, authorUrl, description, publishedAt, title } = state
-
-    const audios = state.attachments?.filter((a) => a.mime_type?.startsWith("audio") && a.url)
-    const firstAudio = audios?.[0]
-    const media = state.media || []
-    const firstMedia = media?.[0]
-    const photo = media.find((a) => a.type === "photo")
-    const firstPhotoUrl = photo?.url
-    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
-
-    const titleEntry = { authorUrl }
-
-    return {
-      description,
-      feedId,
-      firstAudio,
-      firstMedia,
-      iconEntry,
-      inboxId: inboxHandle,
-      publishedAt,
-      read,
-      title,
-      titleEntry,
-    }
-  })
+  const entry = useEntry(entryId, entrySelector)
 
   const isInCollection = useIsEntryStarred(entryId)
   const collectionCreatedAt = useCollectionEntry(entryId)?.createdAt

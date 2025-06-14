@@ -21,20 +21,19 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
       }
       present({
         content: () => (
-          <div className="relative size-full">
-            <PreviewMediaContent initialIndex={initialIndex} media={media}>
-              {children}
-            </PreviewMediaContent>
-          </div>
+          <PreviewMediaContent initialIndex={initialIndex} media={media}>
+            {children}
+          </PreviewMediaContent>
         ),
+        autoFocus: false,
         title: "Media Preview",
-        overlay: true,
+        overlay: false,
         overlayOptions: {
-          blur: true,
-          className: "bg-black/80",
+          blur: false,
+          className: "bg-transparent",
         },
         CustomModalComponent: PlainModal,
-        clickOutsideToDismiss: true,
+        clickOutsideToDismiss: false,
       })
     },
     [children, present],

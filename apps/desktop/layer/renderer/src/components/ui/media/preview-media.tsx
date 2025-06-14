@@ -1,8 +1,11 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { ActionButton, MotionButtonBase } from "@follow/components/ui/button/index.js"
-import { RootPortal } from "@follow/components/ui/portal/index.js"
-import { useMeasure } from "@follow/hooks"
-import { IN_ELECTRON } from "@follow/shared/constants"
+import { MotionButtonBase } from "@follow/components/ui/button/index.js"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from "@follow/components/ui/tooltip/index.js"
 import type { MediaModel } from "@follow/shared/hono"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -10,143 +13,125 @@ import useEmblaCarousel from "embla-carousel-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import type { FC } from "react"
 import { Fragment, useCallback, useEffect, useRef, useState } from "react"
-import { Blurhash } from "react-blurhash"
 import { useTranslation } from "react-i18next"
+import type { ReactZoomPanPinchRef, ReactZoomPanPinchState } from "react-zoom-pan-pinch"
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
-import { useWindowSize } from "usehooks-ts"
 
 import { m } from "~/components/common/Motion"
 import { COPY_MAP } from "~/constants"
-import { ipcServices } from "~/lib/client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 
-import { FixedModalCloseButton } from "../modal/components/close"
 import { useCurrentModal } from "../modal/stacked/hooks"
 import { VideoPlayer } from "./VideoPlayer"
 
-const Wrapper: Component<{
+const Wrapper: FC<{
   src: string
-  showActions?: boolean
-  sideContent?: React.ReactNode
-}> = ({ children, src, showActions, sideContent }) => {
-  const { dismiss } = useCurrentModal()
-  const { t } = useTranslation(["shortcuts", "common"])
 
+  children: [React.ReactNode, React.ReactNode | undefined] | React.ReactNode
+  className?: string
+}> = ({ children, src }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const [showActionOverlay, setShowActionOverlay] = useState(false)
-  useEffect(() => {
-    if (!containerRef.current || !showActions) {
-      return
-    }
-    const $container = containerRef.current
-    const handleMouseMove = (e: MouseEvent) => {
-      const atBottom = e.clientY / $container.clientHeight > 0.6
-      if (atBottom) {
-        setShowActionOverlay(true)
-      } else {
-        setShowActionOverlay(false)
-      }
-    }
-    const outOfContainer = () => {
-      setShowActionOverlay(false)
-    }
-    $container.addEventListener("mousemove", handleMouseMove)
-    $container.addEventListener("mouseleave", outOfContainer)
-    return () => {
-      $container.removeEventListener("mousemove", handleMouseMove)
-      $container.removeEventListener("mouseleave", outOfContainer)
-    }
-  }, [sideContent, showActions])
+  const isArray = Array.isArray(children)
+  const hasSideContent = isArray && !!children[1]
 
   return (
-    <div
-      className="center relative size-full py-12 lg:px-20 lg:pb-8 lg:pt-10"
-      onClick={dismiss}
-      ref={containerRef}
-    >
+    <div ref={containerRef} className="fixed inset-0">
       <m.div
-        onFocusCapture={stopPropagation}
-        initial={true}
-        exit={{
-          opacity: 0,
-        }}
-        className="safe-inset-top-4 fixed right-4 flex items-center"
-      >
-        <FixedModalCloseButton onClick={dismiss} />
-      </m.div>
-
-      <m.div
-        className="center flex size-full"
         initial={{ scale: 0.94, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.94, opacity: 0 }}
-        transition={Spring.presets.microRebound}
+        transition={Spring.presets.snappy}
+        className="bg-material-medium-dark flex size-full backdrop-blur"
       >
         <div
           className={cn(
-            "relative flex h-full w-auto overflow-hidden",
-            sideContent
-              ? "bg-sidebar min-w-96 items-center justify-center rounded-l-xl"
-              : "rounded-xl",
+            "group/left relative flex h-full w-0 grow overflow-hidden",
+            hasSideContent ? "min-w-96 items-center justify-center" : "px-6",
           )}
         >
-          {children}
-          <RootPortal to={sideContent ? null : undefined}>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[99] overflow-hidden">
-              <div
-                style={{
-                  opacity: showActionOverlay ? 1 : 0,
-                  transform: showActionOverlay ? "translateY(0)" : "translateY(50px)",
-                }}
-                className={cn(
-                  "flex justify-end gap-3 p-2 text-white/70 duration-200 [&_button]:hover:text-white",
-                  "hover:!transform-none hover:!opacity-100",
-
-                  // sideContent ? "rounded-bl-xl" : "rounded-xl",
-                  "bg-black/50",
-                )}
-                onClick={stopPropagation}
-              >
-                {showActions && (
-                  <Fragment>
-                    {IN_ELECTRON && (
-                      <ActionButton
-                        tooltip={t("common:words.download")}
-                        onClick={() => {
-                          ipcServices?.app.download(src)
-                        }}
-                      >
-                        <i className="i-mgc-download-2-cute-re" />
-                      </ActionButton>
-                    )}
-                    <ActionButton
-                      tooltip={t(COPY_MAP.OpenInBrowser())}
-                      onClick={() => {
-                        window.open(src)
-                      }}
-                    >
-                      <i className="i-mgc-external-link-cute-re" />
-                    </ActionButton>
-                  </Fragment>
-                )}
-              </div>
-            </div>
-          </RootPortal>
+          <HeaderActions src={src} />
+          {isArray ? children[0] : children}
         </div>
-        {!!sideContent && (
+        {hasSideContent ? (
           <div
-            className="bg-theme-background box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col rounded-r-xl px-2 pt-1"
+            className="bg-background box-border flex h-full w-[400px] min-w-0 shrink-0 flex-col px-2 pt-1"
             onClick={stopPropagation}
           >
-            {sideContent}
+            {children[1]}
           </div>
-        )}
+        ) : undefined}
       </m.div>
     </div>
   )
 }
 
+const HeaderActions: FC<{
+  src: string
+}> = ({ src }) => {
+  const { t } = useTranslation(["shortcuts", "common"])
+
+  const { dismiss } = useCurrentModal()
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3">
+      <HeaderButton description={t(COPY_MAP.OpenInBrowser())} onClick={() => window.open(src)}>
+        <i className="i-mgc-external-link-cute-re" />
+      </HeaderButton>
+      <HeaderButton
+        description={t("common:words.download")}
+        onClick={() => {
+          const a = document.createElement("a")
+          a.href = src
+          a.download = src.split("/").pop()!
+          a.target = "_blank"
+          a.rel = "noreferrer"
+          a.click()
+        }}
+      >
+        <i className="i-mgc-download-2-cute-re" />
+      </HeaderButton>
+
+      <HeaderButton
+        description={t("common:words.close")}
+        className="ml-3 !bg-[#121212] !opacity-100"
+        onClick={dismiss}
+      >
+        <i className="i-mgc-close-cute-re" />
+      </HeaderButton>
+    </div>
+  )
+}
+
+const HeaderButton: FC<{
+  description: string
+  onClick: () => void
+  className?: string
+  children: React.ReactNode
+}> = ({ description, onClick, className, children }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick()
+          }}
+          className={cn(
+            "hover:bg-material-ultra-thick-dark cursor-button backdrop-blur-background pointer-events-auto flex size-10 items-center justify-center rounded-full bg-transparent text-white duration-200 hover:text-white",
+            "text-lg opacity-0 transition-opacity group-hover/left:opacity-100",
+            className,
+          )}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipContent>{description}</TooltipContent>
+      </TooltipPortal>
+    </Tooltip>
+  )
+}
 export interface PreviewMediaProps extends MediaModel {
   fallbackUrl?: string
 }
@@ -162,14 +147,6 @@ export const PreviewMediaContent: FC<{
 
   // This only to delay show
   const [currentSlideIndex, setCurrentSlideIndex] = useState(initialIndex)
-  const [showActions, setShowActions] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowActions(true)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     if (emblaApi) {
@@ -202,136 +179,101 @@ export const PreviewMediaContent: FC<{
     const { type } = media[0]!
     const isVideo = type === "video"
     return (
-      <Wrapper src={src} showActions={!isVideo} sideContent={children}>
-        {isVideo ? (
-          <VideoPlayer
-            src={src}
-            controls
-            autoPlay
-            muted
-            className={cn("h-full w-auto object-contain", !!children && "rounded-l-xl")}
-            onClick={stopPropagation}
-          />
-        ) : (
-          <FallbackableImage
-            fallbackUrl={media[0]!.fallbackUrl}
-            containerClassName="w-auto"
-            className="h-full w-auto object-contain"
-            alt="cover"
-            src={src}
-            height={media[0]!.height}
-            width={media[0]!.width}
-            blurhash={media[0]!.blurhash}
-            haveSideContent={!!children}
-          />
-        )}
+      <Wrapper src={src}>
+        {[
+          <Fragment key={src}>
+            {isVideo ? (
+              <VideoPlayer
+                src={src}
+                controls
+                autoPlay
+                muted
+                className={cn("h-full w-auto object-contain", !!children && "rounded-l-xl")}
+                onClick={stopPropagation}
+              />
+            ) : (
+              <FallbackableImage
+                fallbackUrl={media[0]!.fallbackUrl}
+                className="h-full w-auto object-contain"
+                alt="cover"
+                src={src}
+                height={media[0]!.height}
+                width={media[0]!.width}
+                blurhash={media[0]!.blurhash}
+              />
+            )}
+          </Fragment>,
+          children,
+        ]}
       </Wrapper>
     )
   }
-  const isVideo = currentMedia!.type === "video"
   return (
-    <Wrapper src={currentMedia!.url} showActions={!isVideo} sideContent={children}>
-      <div className="size-full overflow-hidden" ref={emblaRef}>
-        <div className="flex size-full">
-          {media.map((med) => (
-            <div className="mr-2 flex w-full flex-none items-center justify-center" key={med.url}>
-              {med.type === "video" ? (
-                <VideoPlayer
-                  src={med.url}
-                  autoPlay
-                  muted
-                  controls
-                  className="size-full object-contain"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <FallbackableImage
-                  fallbackUrl={med.fallbackUrl}
-                  className="size-full object-contain"
-                  alt="cover"
-                  src={med.url}
-                  loading="lazy"
-                  height={med.height}
-                  width={med.width}
-                  blurhash={med.blurhash}
-                  haveSideContent={!!children}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {showActions && (
-          <div tabIndex={-1} onClick={stopPropagation}>
-            <m.button
-              initial={{ opacity: 0, transform: "translate3d(-20px, 0, 0) scale(0.94)" }}
-              animate={{ opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }}
-              transition={{ ease: "easeInOut", duration: 0.2 }}
-              whileTap={{ transform: "translate3d(0, 0, 0) scale(0.9)" }}
-              onClick={() => emblaApi?.scrollPrev()}
-              type="button"
-              className="center absolute left-2 top-1/2 z-[99] size-8 -translate-y-1/2 rounded-full border border-white/20 bg-neutral-900/80 text-white backdrop-blur duration-200 hover:bg-neutral-900"
-            >
-              <i className="i-mingcute-arrow-left-line" />
-            </m.button>
-
-            <m.button
-              initial={{ opacity: 0, transform: "translate3d(20px, 0, 0) scale(0.94)" }}
-              animate={{ opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }}
-              transition={{ ease: "easeInOut", duration: 0.2 }}
-              whileTap={{ transform: "translate3d(0, 0, 0) scale(0.9)" }}
-              onClick={() => emblaApi?.scrollNext()}
-              type="button"
-              className="center absolute right-2 top-1/2 z-[99] size-8 -translate-y-1/2 rounded-full border border-white/20 bg-neutral-900/80 text-white backdrop-blur duration-200 hover:bg-neutral-900"
-            >
-              <i className="i-mingcute-arrow-right-line" />
-            </m.button>
-          </div>
-        )}
-
-        {showActions && (
-          <div>
-            <div
-              className={cn(
-                "animate-in fade-in-0 slide-in-from-bottom-6 absolute left-4 text-sm tabular-nums text-white/60",
-                isVideo ? "bottom-12" : "bottom-4",
-              )}
-            >
-              {currentSlideIndex + 1} / {media.length}
-            </div>
-            <div
-              tabIndex={-1}
-              onClick={stopPropagation}
-              className={cn(
-                "center animate-in fade-in-0 slide-in-from-bottom-6 absolute left-1/2 z-[99] h-6 -translate-x-1/2 gap-2 rounded-full bg-neutral-700/90 px-4 duration-200",
-                isVideo ? "bottom-12" : "bottom-4",
-              )}
-            >
-              {Array.from({ length: media.length })
-                .fill(0)
-                .map((_, index) => (
-                  <button
-                    onClick={() => {
-                      emblaApi?.scrollTo(index)
-                    }}
-                    type="button"
-                    key={index}
-                    className={cn(
-                      "inline-block size-[6px] rounded-full",
-                      currentSlideIndex === index ? "bg-white" : "bg-white/20",
-                    )}
+    <Wrapper src={currentMedia!.url}>
+      {[
+        <div key={"left"} className="group size-full overflow-hidden" ref={emblaRef}>
+          <div className="flex size-full">
+            {media.map((med) => (
+              <div className="mr-2 flex w-full flex-none items-center justify-center" key={med.url}>
+                {med.type === "video" ? (
+                  <VideoPlayer
+                    src={med.url}
+                    autoPlay
+                    muted
+                    controls
+                    className="size-full object-contain"
+                    onClick={(e) => e.stopPropagation()}
                   />
-                ))}
-            </div>
+                ) : (
+                  <FallbackableImage
+                    fallbackUrl={med.fallbackUrl}
+                    className="size-full object-contain"
+                    alt="cover"
+                    src={med.url}
+                    loading="lazy"
+                    height={med.height}
+                    width={med.width}
+                    blurhash={med.blurhash}
+                  />
+                )}
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+
+          {currentSlideIndex > 0 && (
+            <button
+              type="button"
+              className={`bg-material-medium absolute left-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:left-4 lg:size-10`}
+              onClick={(e) => {
+                e.stopPropagation()
+                emblaApi?.scrollPrev()
+              }}
+            >
+              <i className={`i-mingcute-left-line text-lg lg:text-xl`} />
+            </button>
+          )}
+
+          {currentSlideIndex < media.length - 1 && (
+            <button
+              type="button"
+              className={`bg-material-medium absolute right-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:right-4 lg:size-10`}
+              onClick={(e) => {
+                e.stopPropagation()
+                emblaApi?.scrollNext()
+              }}
+            >
+              <i className={`i-mingcute-right-line text-lg lg:text-xl`} />
+            </button>
+          )}
+
+          <div className="absolute bottom-4 right-4 z-30 tabular-nums">
+            {currentSlideIndex + 1} / {media.length}
+          </div>
+        </div>,
+        children,
+      ]}
     </Wrapper>
   )
-}
-
-function parseNumber(value: string | number | undefined) {
-  return typeof value === "string" ? Number.parseInt(value) : value
 }
 
 const FallbackableImage: FC<
@@ -340,9 +282,8 @@ const FallbackableImage: FC<
     containerClassName?: string
     fallbackUrl?: string
     blurhash?: string
-    haveSideContent?: boolean
   }
-> = ({ src, onError, fallbackUrl, containerClassName, blurhash, haveSideContent, ...props }) => {
+> = ({ src, fallbackUrl, containerClassName }) => {
   const [currentSrc, setCurrentSrc] = useState(() => replaceImgUrlIfNeed(src))
   const [isAllError, setIsAllError] = useState(false)
 
@@ -382,111 +323,29 @@ const FallbackableImage: FC<
     }
   }, [currentSrc, currentState, fallbackUrl, src])
 
-  const height = parseNumber(props.height)
-  const width = parseNumber(props.width)
-
-  const { height: windowHeight, width: windowWidth } = useWindowSize()
-  // px-20 pb-8 pt-10
-  // wrapper side content w-[400px]
-  const maxContainerHeight = windowHeight - 32 - 40
-  const maxContainerWidth = windowWidth - 80 - 80 - (haveSideContent ? 400 : 0)
-
-  const [zoomingState, setZoomingState] = useState<"zoom-in" | "zoom-out" | null>(null)
-  const [zoomContainerWidth, setZoomContainerWidth] = useState(0)
-
-  const wrapperClass = cn("relative !max-h-full", width && height && width <= height && "!h-full")
-  const wrapperStyle: React.CSSProperties = {
-    width:
-      width && height && width > height
-        ? `${Math.min(maxContainerHeight * (width / height), width)}px`
-        : undefined,
-    maxWidth: width && height && width > height ? `${maxContainerWidth}px` : undefined,
-  }
-
-  const [ref, { width: imgWidth }] = useMeasure()
-
   return (
-    <div className={cn("center flex size-full flex-col", containerClassName)}>
-      {!isAllError && (
-        <TransformWrapper
-          wheel={{ smoothStep: 0.008 }}
-          onZoom={(e) => {
-            if (e.state.scale !== 1) {
-              setZoomingState(e.state.scale > 1 ? "zoom-in" : "zoom-out")
-            } else {
-              setZoomingState(null)
-            }
-            setZoomContainerWidth(Math.min(maxContainerWidth, e.state.scale * imgWidth))
-          }}
-        >
-          <TransformComponent
-            wrapperClass={wrapperClass}
-            wrapperStyle={{
-              ...wrapperStyle,
-              minWidth:
-                zoomingState === "zoom-in" && !haveSideContent
-                  ? `${zoomContainerWidth}px`
-                  : undefined,
-              height: zoomingState === "zoom-in" ? "100%" : undefined,
-            }}
-            contentClass={wrapperClass}
-            contentStyle={wrapperStyle}
-            wrapperProps={{
-              onClick: stopPropagation,
-            }}
-          >
-            <img
-              crossOrigin="anonymous"
-              ref={ref}
-              data-blurhash={blurhash}
-              src={currentSrc}
-              onLoad={() => setIsLoading(false)}
-              onError={handleError}
-              height={props.height}
-              width={props.width}
-              {...props}
-              className={cn(
-                // See https://github.com/BetterTyped/react-zoom-pan-pinch/issues/135#issuecomment-683463453
-                // See also https://github.com/RSSNext/Folo/issues/3183
-                "!pointer-events-auto mx-auto transition-opacity duration-700",
-                isLoading ? "opacity-0" : "opacity-100",
-                props.className,
-              )}
-              style={{
-                maxHeight: `${maxContainerHeight}px`,
-                ...props.style,
-              }}
-            />
-            <div
-              className={cn(
-                "center pointer-events-none absolute inset-0 size-full transition-opacity duration-700",
-                isLoading ? "opacity-100" : "opacity-0",
-              )}
-            >
-              {blurhash ? (
-                <Blurhash
-                  hash={blurhash}
-                  resolutionX={32}
-                  resolutionY={32}
-                  className="!size-full"
-                />
-              ) : isLoading ? (
-                <i className="i-mgc-loading-3-cute-re size-8 animate-spin text-white/80" />
-              ) : null}
-            </div>
-          </TransformComponent>
-        </TransformWrapper>
+    <div className={cn("relative size-full", containerClassName)}>
+      {!isAllError && currentSrc && (
+        <DOMImageViewer
+          minZoom={1}
+          maxZoom={2}
+          src={currentSrc}
+          alt="preview"
+          highResLoaded={!isLoading}
+          onLoad={() => setIsLoading(false)}
+          onError={handleError}
+        />
       )}
       {isAllError && (
         <div
-          className="center pointer-events-none absolute inset-0 flex-col gap-6"
+          className="center pointer-events-none absolute inset-0 flex-col gap-3"
           onClick={stopPropagation}
           tabIndex={-1}
         >
           <i className="i-mgc-close-cute-re text-[60px] text-red-400" />
 
           <span>Failed to load image</span>
-          <div className="center gap-4">
+          <div className="center gap-2">
             <MotionButtonBase
               className="pointer-events-auto underline underline-offset-4"
               onClick={() => {
@@ -510,7 +369,7 @@ const FallbackableImage: FC<
       )}
 
       {currentState === "fallback" && (
-        <div className="mt-4 text-center text-xs text-white/60">
+        <div className="bg-material-thick backdrop-blur-background text-text absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg px-3 py-2 text-center text-xs">
           <span>
             This image is preview in low quality, because the original image is not available.
           </span>
@@ -530,5 +389,124 @@ const FallbackableImage: FC<
         </div>
       )}
     </div>
+  )
+}
+
+const DOMImageViewer: FC<{
+  height?: number
+  width?: number
+  onZoomChange?: (isZoomed: boolean) => any
+  minZoom: number
+  maxZoom: number
+  src: string
+  alt: string
+  highResLoaded: boolean
+  onLoad?: () => void
+  onError?: () => void
+}> = ({
+  height,
+  width,
+  onZoomChange,
+  minZoom,
+  maxZoom,
+  src,
+  alt,
+  highResLoaded,
+  onLoad,
+  onError,
+}) => {
+  const onTransformed = useCallback(
+    (ref: ReactZoomPanPinchRef, state: Omit<ReactZoomPanPinchState, "previousScale">) => {
+      // 当缩放比例不等于 1 时，认为图片被缩放了
+      const isZoomed = state.scale !== 1
+      onZoomChange?.(isZoomed)
+    },
+    [onZoomChange],
+  )
+  const transformRef = useRef<ReactZoomPanPinchRef>(null)
+
+  useEffect(() => {
+    if (transformRef.current) {
+      transformRef.current.resetTransform()
+    }
+  }, [src])
+
+  const { dismiss } = useCurrentModal()
+
+  return (
+    <TransformWrapper
+      ref={transformRef}
+      initialScale={1}
+      minScale={minZoom}
+      maxScale={maxZoom}
+      wheel={{
+        step: 0.1,
+      }}
+      pinch={{
+        step: 0.5,
+      }}
+      doubleClick={{
+        step: 2,
+        mode: "toggle",
+        animationTime: 200,
+        animationType: "easeInOutCubic",
+      }}
+      limitToBounds={true}
+      centerOnInit={true}
+      smooth={true}
+      onInit={(e) => {
+        if (e.instance.wrapperComponent) {
+          e.instance.wrapperComponent.onclick = (e) => {
+            if (e.target instanceof HTMLDivElement && e.target.dataset.imageContainer) {
+              e.stopPropagation()
+            } else {
+              dismiss()
+            }
+          }
+        }
+      }}
+      alignmentAnimation={{
+        sizeX: 0,
+        sizeY: 0,
+        velocityAlignmentTime: 0.2,
+      }}
+      velocityAnimation={{
+        sensitivity: 1,
+        animationTime: 0.2,
+      }}
+      onTransformed={onTransformed}
+    >
+      <TransformComponent
+        wrapperProps={{
+          onClick: stopPropagation,
+        }}
+        wrapperClass="!w-full !h-full !absolute !inset-0"
+        contentClass="!w-full !h-full flex items-center justify-center"
+      >
+        <div
+          className="relative inline-block h-full overflow-hidden"
+          onClick={stopPropagation}
+          tabIndex={-1}
+          data-image-container
+        >
+          <img
+            height={height}
+            width={width}
+            src={src || undefined}
+            alt={alt}
+            className={cn(
+              "mx-auto h-full object-contain",
+              highResLoaded ? "opacity-100" : "opacity-0",
+            )}
+            draggable={false}
+            loading="eager"
+            decoding="async"
+            onLoad={onLoad}
+            onClick={stopPropagation}
+            onError={onError}
+          />
+        </div>
+      </TransformComponent>
+    </TransformWrapper>
   )
 }
