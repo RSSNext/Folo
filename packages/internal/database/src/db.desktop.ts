@@ -7,12 +7,8 @@ import migrations from "./drizzle/migrations"
 import { migrate } from "./migrator"
 import * as schema from "./schemas"
 
-declare const globalThis: {
-  electron?: any
-}
-
-const isElectron = !!globalThis["electron"]
-const dbName = isElectron ? SQLITE_DB_NAME : ":localStorage:"
+const isDev = process.env.NODE_ENV === "development"
+const dbName = isDev ? ":localStorage:" : `/${SQLITE_DB_NAME}`
 // eslint-disable-next-line no-console
 console.log("Using database:", dbName)
 
