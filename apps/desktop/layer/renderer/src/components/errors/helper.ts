@@ -30,7 +30,7 @@ export const useResetErrorWhenRouteChange = (resetError: () => void) => {
       resetError()
       onceRef.current = true
     }
-  }, [location.pathname])
+  }, [location.pathname, resetError])
 }
 
 export const withErrorGrand = <T extends Error, S extends new (...args: any[]) => T>(
