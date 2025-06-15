@@ -40,7 +40,7 @@ export const CollapseGroup: FC<
 
       onOpenChange?.(state)
     })
-  }, [defaultOpenId])
+  }, [ctxValue.collapseGroupItemStateAtom, defaultOpenId, onOpenChange, store])
   return <CollaspeContext value={ctxValue}>{children}</CollaspeContext>
 }
 
