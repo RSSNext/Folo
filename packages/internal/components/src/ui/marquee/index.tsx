@@ -58,16 +58,15 @@ export const TitleMarquee = ({
         play={hovered && !pause}
         ref={ref}
         speed={speed}
+        gradient={false}
         {...rest}
         onCycleComplete={useCallback(() => {
           setPause(true)
-          setTimeout(() => setPause(false), 500)
+          setTimeout(() => setPause(false), 1000)
         }, [])}
       >
         {children}
-        {"\u00A0"}
-        {"\u00A0"}
-        {"\u00A0"}
+        {"\u00A0\u00A0\u00A0\u00A0"}
       </Marquee>
     </div>
   )
