@@ -169,14 +169,16 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   resolveAppAsarPath(context: IpcContext, input: string): string {
-    if (input.startsWith("file://")) {
-      input = fileURLToPath(input)
+    let resolvedInput = input
+
+    if (resolvedInput.startsWith("file://")) {
+      resolvedInput = fileURLToPath(input)
     }
 
-    if (path.isAbsolute(input)) {
-      return input
+    if (path.isAbsolute(resolvedInput)) {
+      return resolvedInput
     }
 
-    return path.join(app.getAppPath(), input)
+    return path.join(app.getAppPath(), resolvedInput)
   }
 }
