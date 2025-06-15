@@ -68,7 +68,7 @@ export const Collapse: Component<CollapseProps> = ({ onOpenChange, ...props }) =
     const isOpened = currentId === id
     setIsOpened(isOpened)
     onOpenChange?.(isOpened)
-  }, [currentId, id])
+  }, [currentId, id, onOpenChange])
   return <CollapseControlled isOpened={isOpened} onOpenChange={setIsOpened} {...props} />
 }
 
