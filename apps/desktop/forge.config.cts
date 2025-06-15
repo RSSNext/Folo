@@ -260,7 +260,7 @@ const config: ForgeConfig = {
         files: [],
       }
       let basePath = ""
-      makeResults = makeResults.map((result) => {
+      const updatedMakeResults = makeResults.map((result) => {
         result.artifacts = result.artifacts.map((artifact) => {
           if (artifactRegex.test(artifact)) {
             if (!basePath) {
@@ -311,7 +311,7 @@ const config: ForgeConfig = {
         })
       }
 
-      return makeResults
+      return updatedMakeResults
     },
   },
 }
