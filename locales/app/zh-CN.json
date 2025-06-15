@@ -69,6 +69,7 @@
   "discover.import.quota_status": "导入额度：",
   "discover.import.quota_warning": "你的额度还剩 {{remaining}} 个订阅源。",
   "discover.import.remaining_quota": "你还可以导入 {{remaining}} 个订阅源",
+  "discover.import.result": "<SuccessfulNum /> 个订阅源导入成功。<br /><ConflictNum /> 个订阅源已订阅过。<br /><ErrorNum /> 个订阅源导入失败。",
   "discover.import.search_feeds_placeholder": "搜索订阅源...",
   "discover.import.select_all_feeds": "全选订阅源",
   "discover.import.select_all_filtered": "全选筛选结果",

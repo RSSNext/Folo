@@ -109,7 +109,7 @@ export const ContentFontSelector = () => {
           ].filter((i) => typeof i === "object")}
         />
       </div>
-      <SettingDescription>Adjust the font used for the reading content.</SettingDescription>
+      <SettingDescription>{t("appearance.content_font.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }
@@ -130,7 +130,7 @@ export const UIFontSelector = () => {
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
-        <span className="shrink-0 text-sm font-medium">{t("appearance.ui_font")}</span>
+        <span className="shrink-0 text-sm font-medium">{t("appearance.ui_font.label")}</span>
         <ResponsiveSelect
           defaultValue={FALLBACK_FONT}
           value={uiFont}
@@ -151,7 +151,7 @@ export const UIFontSelector = () => {
           ].filter((i) => typeof i === "object")}
         />
       </div>
-      <SettingDescription>Adjust the font used for the UI elements.</SettingDescription>
+      <SettingDescription>{t("appearance.ui_font.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }
