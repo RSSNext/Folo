@@ -511,7 +511,7 @@ const DateFormat = () => {
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
-        <span className="shrink-0 text-sm font-medium">{t("appearance.date_format")}</span>
+        <span className="shrink-0 text-sm font-medium">{t("appearance.date_format.label")}</span>
 
         <ResponsiveSelect
           items={[
@@ -534,7 +534,7 @@ const DateFormat = () => {
           size="sm"
         />
       </div>
-      <SettingDescription>Adjust the display date format.</SettingDescription>
+      <SettingDescription>{t("appearance.date_format.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }
