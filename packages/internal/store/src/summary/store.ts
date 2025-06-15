@@ -8,11 +8,11 @@ import { getEntry } from "../entry/getter"
 import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { SummaryGeneratingStatus } from "./enum"
+import { getGenerateSummaryStatusId } from "./utils"
 
 type SummaryModel = Omit<SummarySchema, "createdAt">
 
 interface SummaryData {
-  lang?: string
   summary: string
   readabilitySummary: string | null
   lastAccessed: number
@@ -23,11 +23,11 @@ interface SummaryState {
    * Key: entryId
    * Value: SummaryData
    */
-  data: Record<string, SummaryData>
+  data: Record<string, Partial<Record<SupportedActionLanguage, SummaryData>>>
 
   generatingStatus: Record<string, SummaryGeneratingStatus>
 }
-const emptyDataSet: Record<string, SummaryData> = {}
+const emptyDataSet: Record<string, Partial<Record<SupportedActionLanguage, SummaryData>>> = {}
 
 export const useSummaryStore = createZustandStore<SummaryState>("summary")(() => ({
   data: emptyDataSet,
@@ -45,13 +45,27 @@ class SummaryActions implements Resetable, Hydratable {
 
   upsertManyInSession(summaries: SummaryModel[]) {
     const now = Date.now()
-    summaries.forEach((summary) => {
-      immerSet((state) => {
-        state.data[summary.entryId] = {
-          lang: summary.language ?? undefined,
-          summary: summary.summary || state.data[summary.entryId]?.summary || "",
+    immerSet((state) => {
+      summaries.forEach((summary) => {
+        if (!summary.language) return
+
+        if (!state.data[summary.entryId]) {
+          state.data[summary.entryId] = {}
+        }
+        if (!state.data[summary.entryId]![summary.language]) {
+          state.data[summary.entryId]![summary.language] = {
+            summary: "",
+            readabilitySummary: null,
+            lastAccessed: now,
+          }
+        }
+
+        state.data[summary.entryId]![summary.language] = {
+          summary: summary.summary || state.data[summary.entryId]![summary.language]!.summary || "",
           readabilitySummary:
-            summary.readabilitySummary || state.data[summary.entryId]?.readabilitySummary || null,
+            summary.readabilitySummary ||
+            state.data[summary.entryId]![summary.language]!.readabilitySummary ||
+            null,
           lastAccessed: now,
         }
       })
@@ -68,14 +82,14 @@ class SummaryActions implements Resetable, Hydratable {
     }
   }
 
-  getSummary(entryId: string) {
+  getSummary(entryId: string, language: SupportedActionLanguage) {
     const state = get()
-    const summary = state.data[entryId]
+    const summary = state.data[entryId]?.[language]
 
     if (summary) {
       immerSet((state) => {
         if (state.data[entryId]) {
-          state.data[entryId].lastAccessed = Date.now()
+          state.data[entryId]![language]!.lastAccessed = Date.now()
         }
       })
     }
@@ -86,6 +100,8 @@ class SummaryActions implements Resetable, Hydratable {
   private batchClean() {
     const state = get()
     const entries = Object.entries(state.data)
+      .map(([, data]) => data)
+      .flatMap((data) => Object.entries(data))
 
     if (entries.length <= 10) return
 
@@ -134,13 +150,17 @@ class SummarySyncService {
     if (!entry) return null
 
     const state = get()
-    if (state.data[entryId]?.lang === actionLanguage) {
-      return target === "content"
-        ? state.data[entryId]?.summary || null
-        : state.data[entryId]?.readabilitySummary || null
+    const existing =
+      state.data[entryId]?.[actionLanguage]?.[
+        target === "content" ? "summary" : "readabilitySummary"
+      ]
+    if (existing) {
+      return existing
     }
-    if (state.generatingStatus[entryId] === SummaryGeneratingStatus.Pending)
-      return this.pendingPromises[entryId] || null
+
+    const statusID = getGenerateSummaryStatusId(entryId, actionLanguage, target)
+    if (state.generatingStatus[statusID] === SummaryGeneratingStatus.Pending)
+      return this.pendingPromises[statusID] || null
 
     const content = target === "content" ? entry.content : entry.readabilityContent
     const textLength = content ? parseHtml(content).toText().length : 0
@@ -149,7 +169,7 @@ class SummarySyncService {
     }
 
     immerSet((state) => {
-      state.generatingStatus[entryId] = SummaryGeneratingStatus.Pending
+      state.generatingStatus[statusID] = SummaryGeneratingStatus.Pending
     })
 
     // Use Our AI to generate summary
@@ -163,23 +183,29 @@ class SummarySyncService {
       })
       .then((summary) => {
         immerSet((state) => {
-          state.data[entryId] = {
-            lang: actionLanguage,
-            summary: target === "content" ? summary.data || "" : state.data[entryId]?.summary || "",
+          if (!state.data[entryId]) {
+            state.data[entryId] = {}
+          }
+
+          state.data[entryId][actionLanguage] = {
+            summary:
+              target === "content"
+                ? summary.data || ""
+                : state.data[entryId]?.[actionLanguage]?.summary || "",
             readabilitySummary:
               target === "readabilityContent"
                 ? summary.data || ""
-                : state.data[entryId]?.readabilitySummary || null,
+                : state.data[entryId]?.[actionLanguage]?.readabilitySummary || null,
             lastAccessed: Date.now(),
           }
-          state.generatingStatus[entryId] = SummaryGeneratingStatus.Success
+          state.generatingStatus[statusID] = SummaryGeneratingStatus.Success
         })
 
         return summary.data || ""
       })
       .catch((error) => {
         immerSet((state) => {
-          state.generatingStatus[entryId] = SummaryGeneratingStatus.Error
+          state.generatingStatus[statusID] = SummaryGeneratingStatus.Error
         })
 
         throw error

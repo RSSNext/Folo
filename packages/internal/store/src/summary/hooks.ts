@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query"
 import type { GeneralQueryOptions } from "../types"
 import { summarySyncService, useSummaryStore } from "./store"
 
-export const useSummary = (entryId: string) => {
-  const summary = useSummaryStore((state) => state.data[entryId])
+export const useSummary = (entryId: string, language: SupportedActionLanguage) => {
+  const summary = useSummaryStore((state) => state.data[entryId]?.[language])
   return summary
 }
 
@@ -25,7 +25,7 @@ export function usePrefetchSummary({
   actionLanguage: SupportedActionLanguage
 } & GeneralQueryOptions) {
   return useQuery({
-    queryKey: ["summary", entryId, target],
+    queryKey: ["summary", entryId, target, actionLanguage],
     queryFn: () => {
       return summarySyncService.generateSummary({ entryId, target, actionLanguage })
     },

@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
+import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
@@ -667,11 +668,12 @@ const useRegisterZoteroCommands = () => {
 
 const getDescription = (entry: EntryModel) => {
   const { saveSummaryAsDescription } = getIntegrationSettings()
+  const actionLanguage = getActionLanguage()
 
   if (!saveSummaryAsDescription) {
     return entry.description || ""
   }
-  const summary = getSummary(entry.id)
+  const summary = getSummary(entry.id, actionLanguage)
   return summary?.readabilitySummary || summary?.summary || entry.description || ""
 }
 

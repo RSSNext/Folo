@@ -123,7 +123,7 @@ export const summariesTable = sqliteTable(
     summary: text("summary").notNull(),
     readabilitySummary: text("readability_summary"),
     createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
-    language: text("language"),
+    language: text("language").$type<SupportedActionLanguage>(),
   },
   (t) => [uniqueIndex("unq").on(t.entryId, t.language)],
 )

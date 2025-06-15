@@ -35,8 +35,8 @@ export const EntryAISummary: FC<{
       [showReadability],
     ),
   )
-  const summary = useSummary(entryId)
   const actionLanguage = useActionLanguage()
+  const summary = useSummary(entryId, actionLanguage)
   usePrefetchSummary({
     entryId,
     target: entry?.target || "content",
