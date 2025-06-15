@@ -126,6 +126,13 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
     },
   )
 
+  const handleCollapseButtonClick = useEventCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    if (view !== undefined && folderName) {
+      subscriptionActions.toggleCategoryOpenState(view, folderName)
+    }
+  })
+
   const setCategoryActive = () => {
     if (view !== undefined) {
       navigate({
@@ -279,7 +286,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
             <button
               data-type="collapse"
               type="button"
-              onClick={toggleCategoryOpenState}
+              onClick={handleCollapseButtonClick}
               data-state={open ? "open" : "close"}
               className={cn(
                 "flex h-8 items-center [&_.i-mgc-right-cute-fi]:data-[state=open]:rotate-90",
