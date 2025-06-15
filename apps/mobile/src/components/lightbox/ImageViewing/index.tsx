@@ -306,7 +306,7 @@ function ImageView({
   // }, [t])
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <Animated.View style={[styles.container, containerStyle]}>
       <SystemBars
         style={{ statusBar: "light", navigationBar: "light" }}
         hidden={{
@@ -314,7 +314,7 @@ function ImageView({
           navigationBar: false,
         }}
       />
-      <View style={[styles.backdrop, backdropStyle]} renderToHardwareTextureAndroid />
+      <Animated.View style={[styles.backdrop, backdropStyle]} renderToHardwareTextureAndroid />
       <PagerView
         scrollEnabled={!isScaled}
         initialPage={initialImageIndex}
@@ -362,7 +362,7 @@ function ImageView({
           />
         </Animated.View>
       </View>
-    </View>
+    </Animated.View>
   )
 }
 

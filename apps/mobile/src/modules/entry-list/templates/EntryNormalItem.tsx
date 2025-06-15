@@ -232,9 +232,11 @@ const ThumbnailImage = ({
   if (!image && !audio && !video) return null
   const isSquare = thumbnailRatio === "square"
   return (
-    <View className={cn("relative ml-4 h-24 overflow-hidden rounded-lg", isSquare ? "h-24" : "")}>
+    <View
+      className={cn("relative ml-4 flex h-full w-24 justify-center overflow-hidden rounded-lg")}
+    >
       {image &&
-        (thumbnailRatio === "square" ? (
+        (isSquare ? (
           <SquareImage image={image} blurhash={blurhash} onError={handleImageError} />
         ) : (
           <AspectRatioImage
@@ -247,11 +249,13 @@ const ThumbnailImage = ({
         ))}
 
       {video && (
-        <View className="absolute left-0 top-0 flex size-full justify-center overflow-hidden rounded-lg">
+        <View className="flex size-full items-center justify-center">
           <VideoView
-            style={{ aspectRatio: 1 }}
-            contentFit="cover"
             ref={videoViewRef}
+            className={cn("overflow-hidden rounded-lg", isSquare ? "size-24" : "")}
+            // eslint-disable-next-line react-native/no-inline-styles -- VideoView requires explicit width and height
+            style={{ width: "100%", height: "100%", aspectRatio: isSquare ? 1 : undefined }}
+            contentFit={isSquare ? "cover" : "contain"}
             player={videoPlayer}
             // The Android native controls will be shown when the video is paused
             nativeControls={isIOS || showVideoNativeControlsForAndroid}
@@ -327,13 +331,7 @@ const AspectRatioImage = ({
   }
 
   return (
-    <View
-      className="bg-tertiary-system-background my-auto ml-auto flex overflow-hidden rounded-lg"
-      style={{
-        width: scaledWidth,
-        height: scaledHeight,
-      }}
-    >
+    <View className="bg-tertiary-system-background flex max-w-full items-center justify-center overflow-hidden rounded-lg">
       <Image
         proxy={{
           width: 96,
@@ -371,10 +369,7 @@ const SquareImage = ({
           width: 96,
           height: 96,
         }}
-        style={{
-          width: 96,
-          height: 96,
-        }}
+        className="size-24"
         transition={100}
         source={{
           uri: image,
