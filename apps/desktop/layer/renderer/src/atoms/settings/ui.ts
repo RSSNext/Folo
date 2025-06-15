@@ -68,7 +68,7 @@ export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
 export const useIsZenMode = () => useAtomValue(zenModeAtom)
 export const getIsZenMode = () => jotaiStore.get(zenModeAtom)
 
-export const useSetZenMode = () => {
+export const getSetZenMode = () => {
   return setZenMode
 }
 export const setZenMode = (checked: boolean) => {
@@ -76,7 +76,7 @@ export const setZenMode = (checked: boolean) => {
 }
 
 export const useToggleZenMode = () => {
-  const setZenMode = useSetZenMode()
+  const setZenMode = getSetZenMode()
   const isZenMode = useIsZenMode()
   return useEventCallback(() => {
     const newIsZenMode = !isZenMode

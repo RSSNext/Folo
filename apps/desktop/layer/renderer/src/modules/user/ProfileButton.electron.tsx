@@ -13,7 +13,7 @@ import { useNavigate } from "react-router"
 
 import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
 import { useIsInMASReview } from "~/atoms/server-configs"
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
+import { getSetZenMode, useIsZenMode } from "~/atoms/settings/ui"
 import { useUserRole } from "~/atoms/user"
 import {
   DropdownMenu,
@@ -57,7 +57,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const role = useUserRole()
   const presentActivationModal = useActivationModal()
   const zenModeSetting = useIsZenMode()
-  const setZenMode = useSetZenMode()
+  const setZenMode = getSetZenMode()
   const isInMASReview = useIsInMASReview()
 
   const shortcuts = useCommandShortcuts()

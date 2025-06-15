@@ -19,10 +19,10 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 import {
+  getSetZenMode,
   setUISetting,
   useIsZenMode,
   useRealInWideMode,
-  useSetZenMode,
   useUISettingKey,
 } from "~/atoms/settings/ui"
 import { useAIDailyReportModal } from "~/modules/ai/ai-daily/useAIDailyReportModal"
@@ -146,7 +146,7 @@ export const WideModeButton = () => {
   const isZenMode = useIsZenMode()
   const { t } = useTranslation()
 
-  const setIsZenMode = useSetZenMode()
+  const setIsZenMode = getSetZenMode()
   const shortcuts = useCommandShortcuts()
   return (
     <ActionButton

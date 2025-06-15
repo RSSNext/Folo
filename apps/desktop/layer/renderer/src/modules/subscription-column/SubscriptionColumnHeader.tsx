@@ -14,7 +14,7 @@ import { toast } from "sonner"
 
 import { setAppSearchOpen } from "~/atoms/app"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
+import { getSetZenMode, useIsZenMode } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import {
   DropdownMenu,
@@ -75,7 +75,7 @@ const LayoutActionButton = () => {
 
   const [animation, setAnimation] = useState({ width: !feedColumnShow ? "auto" : 0 })
   const isZenMode = useIsZenMode()
-  const setIsZenMode = useSetZenMode()
+  const setIsZenMode = getSetZenMode()
   useEffect(() => {
     setAnimation({ width: !feedColumnShow ? "auto" : 0 })
   }, [feedColumnShow])
