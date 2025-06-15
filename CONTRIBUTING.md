@@ -87,14 +87,20 @@ To develop in the mobile app, follow these steps:
    cd apps/mobile
    ```
 
-2. Build and install Folo(dev) app from source: (This step will take a while and only need to be done once)
+2. Copy the example environment variables file:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+3. Build and install Folo(dev) app from source: (This step will take a while and only need to be done once)
 
    ```sh
    pnpm expo prebuild --clean # Optional
    pnpm run ios
    ```
 
-3. Run the development server:
+4. Run the development server:
 
    ```sh
    pnpm run dev
