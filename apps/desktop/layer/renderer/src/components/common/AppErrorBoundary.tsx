@@ -44,9 +44,9 @@ const AppErrorBoundaryItem: FC<AppErrorBoundaryProps> = ({ errorType, children }
     [errorType],
   )
 
-  const onError = useCallback((error: unknown, componentStack?: string) => {
+  const onError = (error: unknown, componentStack?: string) => {
     console.error("Uncaught error:", error, componentStack)
-  }, [])
+  }
 
   return (
     <ErrorBoundary fallback={fallbackRender} onError={onError}>
