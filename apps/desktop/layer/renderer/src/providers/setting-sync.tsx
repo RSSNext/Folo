@@ -1,4 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { useUnreadAll } from "@follow/store/unread/hooks"
+import { useMutation } from "@tanstack/react-query"
 import i18next from "i18next"
 import { useEffect, useInsertionEffect, useLayoutEffect } from "react"
 
@@ -10,6 +12,18 @@ import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
 import { ipcServices } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
+
+const useUpdateDockBadge = () => {
+  const unreadCount = useUnreadAll()
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (unread: number) => ipcServices?.dock.setDockBadge(unread),
+  })
+  useEffect(() => {
+    if (!isPending) {
+      mutate(unreadCount)
+    }
+  }, [unreadCount, mutate, isPending])
+}
 
 const useUISettingSync = () => {
   const setting = useUISettingValue()
@@ -45,6 +59,8 @@ const useUISettingSync = () => {
     }
     return
   }, [setting.showDockBadge])
+
+  useUpdateDockBadge()
 }
 
 const useUXSettingSync = () => {
