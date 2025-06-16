@@ -5,6 +5,7 @@ import { ACTION_LANGUAGE_MAP } from "@follow/shared"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
+import dayjs from "dayjs"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -269,6 +270,7 @@ export const LanguageSelector = ({
         disabled={loadingLanguageLockMap[finalRenderLanguage]}
         onValueChange={(value) => {
           setGeneralSetting("language", value as string)
+          dayjs.locale(value)
         }}
         renderItem={useTypeScriptHappyCallback((item) => {
           const lang = item.value

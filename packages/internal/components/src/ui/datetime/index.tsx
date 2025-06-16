@@ -35,7 +35,6 @@ export const RelativeTime: FC<{
   const timerRef = useRef<any>(null)
 
   const { i18n } = useTranslation("common")
-  dayjs.locale(i18n.language)
 
   useEffect(() => {
     const updateRelativeTime = () => {
