@@ -29,7 +29,7 @@ import { useColor } from "react-native-uikit-colors"
 import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
-import { isAndroid } from "@/src/lib/platform"
+import { isAndroid, isIOS } from "@/src/lib/platform"
 
 export const AISummary: FC<{
   className?: string
@@ -233,12 +233,18 @@ const SelectableTextSheet: FC<{
   }
 
   return (
-    <Modal transparent visible={isRendered} onRequestClose={handleClose} animationType="fade">
+    <Modal
+      transparent
+      visible={isRendered}
+      onRequestClose={handleClose}
+      animationType="fade"
+      statusBarTranslucent
+    >
       <Pressable onPress={handleClose} style={StyleSheet.absoluteFill}>
         <View className="bg-black/40" style={StyleSheet.absoluteFill} />
       </Pressable>
       <Animated.View
-        className="bg-system-background absolute inset-x-0 bottom-0 max-h-[70%] overflow-hidden rounded-t-2xl border-t border-t-zinc-200 p-4 dark:border-zinc-800"
+        className="bg-system-background absolute inset-x-0 bottom-0 max-h-[70%] overflow-hidden rounded-t-2xl border-t-zinc-200 p-4 dark:border-t-zinc-800"
         style={[{ paddingBottom: insets.bottom + 10 }, sheetAnimatedStyle]}
       >
         <View className="mb-4 flex-row items-center justify-between">
@@ -257,18 +263,32 @@ const SelectableTextSheet: FC<{
           </Pressable>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <TextInput
-            value={text}
-            readOnly
-            multiline
-            // @ts-ignore
-            selectable
-            className="text-label text-base leading-6"
-          />
+          <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
         </ScrollView>
       </Animated.View>
     </Modal>
   )
+}
+
+/**
+ * A component that allows text selection on both iOS and Android.
+ *
+ * https://stackoverflow.com/a/78267868
+ */
+function SelectableText({ className, children }: { className?: string; children: ReactNode }) {
+  if (isIOS) {
+    return (
+      <TextInput multiline editable={false} className={className}>
+        {children}
+      </TextInput>
+    )
+  } else {
+    return (
+      <Text selectable className={className}>
+        {children}
+      </Text>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
