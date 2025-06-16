@@ -273,7 +273,7 @@ export const ContainerToc = memo(
           </div>
         </div>
         <div className="sticky bottom-0 -mx-10">
-          <AIDialogueInput entryId={entryId} />
+          <AIDialogueInput entryId={entryId} autoShrink />
         </div>
       </RootPortal>
     )

@@ -60,7 +60,7 @@ export const TextArea = ({
   return (
     <div
       className={cn(
-        "ring-accent/20 group relative h-full border ring-0 duration-200",
+        "ring-accent/20 group relative flex h-full border ring-0 duration-200",
         roundedMap[rounded],
 
         "hover:border-accent/60 border-transparent",

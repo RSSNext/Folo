@@ -170,7 +170,7 @@ function EntryColumnImpl() {
       </EntryColumnWrapper>
       {views[view]!.wideMode && (
         <div className="sticky bottom-4 px-10">
-          <AIDialogueInput />
+          <AIDialogueInput autoShrink />
         </div>
       )}
     </Focusable>

@@ -11,7 +11,7 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 import { cn } from "@follow/utils"
 import { PopoverPortal } from "@radix-ui/react-popover"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 import { whoami } from "~/atoms/user"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
@@ -80,62 +80,84 @@ export const AIDialoguePanel = () => {
   )
 }
 
-export const AIDialogueInput = ({ entryId }: { entryId?: string }) => {
+export const AIDialogueInput = ({
+  entryId,
+  autoShrink,
+}: {
+  entryId?: string
+  autoShrink?: boolean
+}) => {
   const entry = useEntry(entryId, (state) => {
     return {
       title: state.entries.title,
     }
   })
 
+  const [isShrink, setIsShrink] = useState(autoShrink)
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   return (
-    <div className="flex w-full flex-col gap-2">
-      <TextArea
-        ref={textareaRef}
-        autoHeight
-        wrapperClassName="w-full bg-background/80 backdrop-blur-lg shadow-context-menu pb-12"
-        placeholder="Describe a task or ask a question"
-        rounded="3xl"
-        className="px-5 pb-0 focus:!bg-transparent"
-      >
-        <div className="absolute inset-x-4 bottom-3 flex items-center justify-between leading-none">
-          <div className="flex flex-1 flex-row items-center gap-3 text-sm">
-            <Select defaultValue={entry ? "entry" : "unread"}>
-              <SelectTrigger className="h-7 w-auto max-w-60 rounded-3xl py-0 [&>span]:truncate">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="mt-2 max-w-60 rounded-xl">
-                {!!entry && (
-                  <SelectItem
-                    className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
-                    value="entry"
-                  >
-                    Current entry: {entry?.title}
-                  </SelectItem>
-                )}
-                <SelectItem className="rounded-lg" value="unread">
-                  My unread items
-                </SelectItem>
-                <SelectItem className="rounded-lg" value="subscriptions">
-                  My subscriptions
-                </SelectItem>
-                <SelectItem className="rounded-lg" value="folo">
-                  Everything on Folo
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="ghost" buttonClassName="text-text-secondary font-normal shrink-0">
-              @ Mention a date or source
-            </Button>
-          </div>
-          <div className="flex flex-row items-center gap-3">
-            <i className="i-mgc-mic-cute-re text-xl" />
-            <i className="i-mgc-arrow-up-circle-cute-fi text-3xl transition-transform hover:scale-110" />
-          </div>
-        </div>
-      </TextArea>
-      <AIDialogueShortcuts className="pl-4" />
+    <div className="relative flex w-full flex-row gap-2">
+      <div className="center h-14">
+        <AIIcon />
+      </div>
+      <div className="flex grow flex-col gap-2">
+        <TextArea
+          rows={isShrink ? 1 : undefined}
+          ref={textareaRef}
+          autoHeight
+          wrapperClassName={cn(
+            "w-full bg-background/80 backdrop-blur-lg shadow-context-menu",
+            !isShrink && "pb-12",
+          )}
+          placeholder="Describe a task or ask a question"
+          rounded="3xl"
+          className={cn("px-5 focus:!bg-transparent", !isShrink && "pb-0")}
+          onFocus={() => {
+            setIsShrink(false)
+          }}
+        >
+          {!isShrink && (
+            <div className="absolute inset-x-4 bottom-3 flex items-center justify-between leading-none">
+              <div className="flex flex-1 flex-row items-center gap-3 text-sm">
+                <Select defaultValue={entry ? "entry" : "unread"}>
+                  <SelectTrigger className="h-7 w-auto max-w-60 rounded-3xl py-0 [&>span]:truncate">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="mt-2 max-w-60 rounded-xl">
+                    {!!entry && (
+                      <SelectItem
+                        className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
+                        value="entry"
+                      >
+                        Current entry: {entry?.title}
+                      </SelectItem>
+                    )}
+                    <SelectItem className="rounded-lg" value="unread">
+                      My unread items
+                    </SelectItem>
+                    <SelectItem className="rounded-lg" value="subscriptions">
+                      My subscriptions
+                    </SelectItem>
+                    <SelectItem className="rounded-lg" value="folo">
+                      Everything on Folo
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="ghost" buttonClassName="text-text-secondary font-normal shrink-0">
+                  @ Mention a date or source
+                </Button>
+              </div>
+              <div className="flex flex-row items-center gap-3">
+                <i className="i-mgc-mic-cute-re text-xl" />
+                <i className="i-mgc-arrow-up-circle-cute-fi text-3xl transition-transform hover:scale-110" />
+              </div>
+            </div>
+          )}
+        </TextArea>
+        {!isShrink && <AIDialogueShortcuts className="pl-4" />}
+      </div>
     </div>
   )
 }
