@@ -14,7 +14,7 @@ import { whoami } from "~/atoms/user"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { useEntry } from "~/store/entry"
 
-export const AIPanel = () => {
+export const AIDialoguePanel = () => {
   const user = whoami()
   const settingModalPresent = useSettingModal()
 
@@ -35,10 +35,10 @@ export const AIPanel = () => {
         </div>
         <div>Hi {user?.name}, how may I assist you today?</div>
       </div>
-      <AIPanelInput />
+      <AIDialogueInput />
       <div className="w-full space-y-4 pl-5">
         <div>Shortcuts</div>
-        <AIPanelShortcuts />
+        <AIDialogueShortcuts />
         <Divider className="my-3" />
         <div>What can I do for you?</div>
         <ul className="flex flex-col gap-3 text-sm text-gray-500">
@@ -63,7 +63,7 @@ export const AIPanel = () => {
   )
 }
 
-export const AIPanelInput = ({ entryId }: { entryId?: string }) => {
+export const AIDialogueInput = ({ entryId }: { entryId?: string }) => {
   const entry = useEntry(entryId, (state) => {
     return {
       title: state.entries.title,
@@ -116,7 +116,7 @@ export const AIPanelInput = ({ entryId }: { entryId?: string }) => {
   )
 }
 
-export const AIPanelShortcuts = ({ className }: { className?: string }) => {
+export const AIDialogueShortcuts = ({ className }: { className?: string }) => {
   return (
     <div className={cn("text-text-secondary flex grow gap-1", className)}>
       <Button variant="outline" buttonClassName="rounded-full h-7" size="sm">

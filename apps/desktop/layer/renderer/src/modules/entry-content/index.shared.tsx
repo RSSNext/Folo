@@ -26,6 +26,7 @@ import { Toc } from "~/components/ui/markdown/components/Toc"
 import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
+import { AIDialogueInput, AIDialogueShortcuts } from "~/modules/ai/dialogue/panel"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
@@ -35,7 +36,6 @@ import { useEntry } from "~/store/entry"
 import { useFeedById } from "~/store/feed"
 import { useInboxById } from "~/store/inbox"
 
-import { AIPanelInput, AIPanelShortcuts } from "../app-layout/entry-content/AIPanel"
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
 export interface EntryContentProps {
@@ -274,8 +274,8 @@ export const ContainerToc = memo(
         </div>
         <div className="sticky bottom-0 -mx-10">
           <div className="flex flex-col gap-2">
-            <AIPanelInput entryId={entryId} />
-            <AIPanelShortcuts className="pl-4" />
+            <AIDialogueInput entryId={entryId} />
+            <AIDialogueShortcuts className="pl-4" />
           </div>
         </div>
       </RootPortal>

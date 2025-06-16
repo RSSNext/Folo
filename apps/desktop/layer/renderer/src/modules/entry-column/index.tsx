@@ -11,12 +11,12 @@ import { FeedNotFound } from "~/components/errors/FeedNotFound"
 import { FEED_COLLECTION_LIST, HotkeyScope, ROUTE_FEED_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { AIDialogueInput, AIDialogueShortcuts } from "~/modules/ai/dialogue/panel"
 import { useFeedQuery } from "~/queries/feed"
 import { entryActions, useEntry } from "~/store/entry"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
 import { useSubscriptionByFeedId } from "~/store/subscription"
 
-import { AIPanelInput, AIPanelShortcuts } from "../app-layout/entry-content/AIPanel"
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { EntryColumnGrid } from "./grid"
 import { useEntriesByView } from "./hooks/useEntriesByView"
@@ -171,8 +171,8 @@ function EntryColumnImpl() {
       {views[view]!.wideMode && (
         <div className="sticky bottom-4 px-10">
           <div className="flex flex-col gap-2">
-            <AIPanelInput />
-            <AIPanelShortcuts className="pl-4" />
+            <AIDialogueInput />
+            <AIDialogueShortcuts className="pl-4" />
           </div>
         </div>
       )}
