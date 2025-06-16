@@ -24,6 +24,7 @@ export const TextArea = ({
     onCmdEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
     rounded?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "default"
     bordered?: boolean
+    autoHeight?: boolean
   }> & { ref?: React.Ref<HTMLTextAreaElement | null> }) => {
   const {
     className,
@@ -32,6 +33,7 @@ export const TextArea = ({
     rounded = "xl",
     bordered = true,
     onCmdEnter,
+    autoHeight,
     ...rest
   } = props
   const mouseX = useMotionValue(0)
@@ -44,6 +46,14 @@ export const TextArea = ({
     },
     [mouseX, mouseY],
   )
+
+  const syncHeight = useCallback(() => {
+    if (ref && "current" in ref && ref.current) {
+      const el = ref.current
+      el.style.height = "auto"
+      el.style.height = `${el.scrollHeight}px`
+    }
+  }, [ref])
 
   const inputProps = useInputComposition<HTMLTextAreaElement>(props)
   const [isFocus, setIsFocus] = useState(false)
@@ -99,6 +109,12 @@ export const TextArea = ({
           }
           rest.onKeyDown?.(e)
           inputProps.onKeyDown?.(e)
+        }}
+        onInput={(e) => {
+          if (autoHeight) {
+            syncHeight()
+          }
+          rest.onInput?.(e)
         }}
       />
 

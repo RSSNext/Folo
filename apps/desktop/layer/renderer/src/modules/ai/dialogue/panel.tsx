@@ -11,6 +11,7 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 import { cn } from "@follow/utils"
 import { PopoverPortal } from "@radix-ui/react-popover"
+import { useRef } from "react"
 
 import { whoami } from "~/atoms/user"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
@@ -86,13 +87,17 @@ export const AIDialogueInput = ({ entryId }: { entryId?: string }) => {
     }
   })
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
   return (
     <div className="flex w-full flex-col gap-2">
       <TextArea
-        wrapperClassName="h-28 w-full bg-background/80 backdrop-blur-lg shadow-context-menu"
+        ref={textareaRef}
+        autoHeight
+        wrapperClassName="w-full bg-background/80 backdrop-blur-lg shadow-context-menu pb-12"
         placeholder="Describe a task or ask a question"
         rounded="3xl"
-        className="px-5"
+        className="px-5 pb-0 focus:!bg-transparent"
       >
         <div className="absolute inset-x-4 bottom-3 flex items-center justify-between leading-none">
           <div className="flex flex-1 flex-row items-center gap-3 text-sm">
