@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@follow/components/ui/select/index.jsx"
+import { cn } from "@follow/utils"
 
 import { whoami } from "~/atoms/user"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
@@ -30,7 +31,7 @@ export const AIPanel = () => {
       </Button>
       <div className="text-text flex flex-row items-center gap-3 text-2xl font-medium">
         <div>
-          <div className="bg-accent/60 size-12 rounded-full" />
+          <div className="bg-accent/60 size-10 rounded-full" />
         </div>
         <div>Hi {user?.name}, how may I assist you today?</div>
       </div>
@@ -53,6 +54,7 @@ export const AIPanel = () => {
           <li>📑 Create a timeline of AI-related content.</li>
           <Divider className="my-1 w-20" />
           <li className="text-text font-medium">Everything on Folo</li>
+          <li>💡 Generate a list of technology podcasts.</li>
           <li>📊 Compare the crypto market sentiment this week with last week.</li>
           <li>🔍 Which podcasts have recently mentioned OpenAI's o3 model?</li>
         </ul>
@@ -70,7 +72,7 @@ export const AIPanelInput = ({ entryId }: { entryId?: string }) => {
 
   return (
     <TextArea
-      wrapperClassName="h-28 w-full"
+      wrapperClassName="h-28 w-full bg-background/80 backdrop-blur-lg shadow-context-menu"
       placeholder="Describe a task or ask a question"
       rounded="3xl"
       className="px-5"
@@ -114,9 +116,9 @@ export const AIPanelInput = ({ entryId }: { entryId?: string }) => {
   )
 }
 
-export const AIPanelShortcuts = () => {
+export const AIPanelShortcuts = ({ className }: { className?: string }) => {
   return (
-    <div className="text-text-secondary flex grow gap-1">
+    <div className={cn("text-text-secondary flex grow gap-1", className)}>
       <Button variant="outline" buttonClassName="rounded-full h-7" size="sm">
         Summarize
       </Button>

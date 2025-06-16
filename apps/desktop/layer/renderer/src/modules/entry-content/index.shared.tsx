@@ -273,9 +273,9 @@ export const ContainerToc = memo(
           </div>
         </div>
         <div className="sticky bottom-0 -mx-10">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <AIPanelInput entryId={entryId} />
-            <AIPanelShortcuts />
+            <AIPanelShortcuts className="pl-4" />
           </div>
         </div>
       </RootPortal>

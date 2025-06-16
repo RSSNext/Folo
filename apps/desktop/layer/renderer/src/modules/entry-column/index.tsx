@@ -170,9 +170,9 @@ function EntryColumnImpl() {
       </EntryColumnWrapper>
       {views[view]!.wideMode && (
         <div className="sticky bottom-4 px-10">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <AIPanelInput />
-            <AIPanelShortcuts />
+            <AIPanelShortcuts className="pl-4" />
           </div>
         </div>
       )}
