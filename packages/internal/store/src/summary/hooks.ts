@@ -3,14 +3,25 @@ import { useQuery } from "@tanstack/react-query"
 
 import type { GeneralQueryOptions } from "../types"
 import { summarySyncService, useSummaryStore } from "./store"
+import { getGenerateSummaryStatusId } from "./utils"
 
 export const useSummary = (entryId: string, language: SupportedActionLanguage) => {
   const summary = useSummaryStore((state) => state.data[entryId]?.[language])
   return summary
 }
 
-export const useSummaryStatus = (entryId: string) => {
-  const status = useSummaryStore((state) => state.generatingStatus[entryId])
+export const useSummaryStatus = ({
+  entryId,
+  actionLanguage,
+  target,
+}: {
+  entryId: string
+  actionLanguage: SupportedActionLanguage
+  target: "content" | "readabilityContent"
+}) => {
+  const status = useSummaryStore(
+    (state) => state.generatingStatus[getGenerateSummaryStatusId(entryId, actionLanguage, target)],
+  )
   return status
 }
 

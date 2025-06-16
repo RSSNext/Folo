@@ -1,7 +1,6 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
-import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
-import { useSummaryStore } from "@follow/store/summary/store"
+import { usePrefetchSummary, useSummary, useSummaryStatus } from "@follow/store/summary/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useCallback, useMemo } from "react"
@@ -52,7 +51,11 @@ export const EntryAISummary: FC<{
     return renderMarkdown(maybeMarkdown)
   }, [maybeMarkdown])
 
-  const status = useSummaryStore((state) => state.generatingStatus[entryId])
+  const status = useSummaryStatus({
+    entryId,
+    actionLanguage,
+    target: entry?.target || "content",
+  })
   if (!showAISummary) return null
 
   return (
