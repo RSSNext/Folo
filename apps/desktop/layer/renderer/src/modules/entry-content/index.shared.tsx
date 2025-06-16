@@ -26,7 +26,7 @@ import { Toc } from "~/components/ui/markdown/components/Toc"
 import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
-import { AIDialogueInput, AIDialogueShortcuts } from "~/modules/ai/dialogue/panel"
+import { AIDialogueInput } from "~/modules/ai/dialogue/panel"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
@@ -273,10 +273,7 @@ export const ContainerToc = memo(
           </div>
         </div>
         <div className="sticky bottom-0 -mx-10">
-          <div className="flex flex-col gap-2">
-            <AIDialogueInput entryId={entryId} />
-            <AIDialogueShortcuts className="pl-4" />
-          </div>
+          <AIDialogueInput entryId={entryId} />
         </div>
       </RootPortal>
     )

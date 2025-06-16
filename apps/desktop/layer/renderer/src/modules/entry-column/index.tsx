@@ -11,7 +11,7 @@ import { FeedNotFound } from "~/components/errors/FeedNotFound"
 import { FEED_COLLECTION_LIST, HotkeyScope, ROUTE_FEED_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { AIDialogueInput, AIDialogueShortcuts } from "~/modules/ai/dialogue/panel"
+import { AIDialogueInput } from "~/modules/ai/dialogue/panel"
 import { useFeedQuery } from "~/queries/feed"
 import { entryActions, useEntry } from "~/store/entry"
 import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
@@ -170,10 +170,7 @@ function EntryColumnImpl() {
       </EntryColumnWrapper>
       {views[view]!.wideMode && (
         <div className="sticky bottom-4 px-10">
-          <div className="flex flex-col gap-2">
-            <AIDialogueInput />
-            <AIDialogueShortcuts className="pl-4" />
-          </div>
+          <AIDialogueInput />
         </div>
       )}
     </Focusable>
