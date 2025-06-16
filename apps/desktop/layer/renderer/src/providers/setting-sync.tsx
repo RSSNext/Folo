@@ -1,8 +1,8 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import type { UISettings } from "@follow/shared/settings/interface"
 import { useUnreadAll } from "@follow/store/unread/hooks"
-import { useMutation } from "@tanstack/react-query"
 import i18next from "i18next"
-import { useEffect, useInsertionEffect, useLayoutEffect } from "react"
+import { useEffect, useInsertionEffect, useLayoutEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useUISettingValue } from "~/atoms/settings/ui"
@@ -13,16 +13,33 @@ import { langChain } from "~/i18n"
 import { ipcServices } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
 
-const useUpdateDockBadge = () => {
+const useUpdateDockBadge = (setting: UISettings) => {
   const unreadCount = useUnreadAll()
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (unread: number) => ipcServices?.dock.setDockBadge(unread),
-  })
+
   useEffect(() => {
-    if (!isPending) {
-      mutate(unreadCount)
+    if (setting.showDockBadge) {
+      ipcServices?.dock.pollingUpdateUnreadCount()
+    } else {
+      ipcServices?.dock.cancelPollingUpdateUnreadCount().then(() => {
+        ipcServices?.dock.setDockBadge(0)
+      })
     }
-  }, [unreadCount, mutate, isPending])
+    return
+  }, [setting.showDockBadge])
+
+  const prevCount = useRef<null | number>(null)
+  useEffect(() => {
+    if (!setting.showDockBadge) {
+      return
+    }
+    if (prevCount.current === unreadCount) {
+      return
+    }
+
+    ipcServices?.dock.setDockBadge(unreadCount).then(() => {
+      prevCount.current = unreadCount
+    })
+  }, [unreadCount, setting.showDockBadge])
 }
 
 const useUISettingSync = () => {
@@ -49,18 +66,7 @@ const useUISettingSync = () => {
     })
   }, [setting.uiFontFamily, setting.usePointerCursor])
 
-  useEffect(() => {
-    if (setting.showDockBadge) {
-      ipcServices?.dock.pollingUpdateUnreadCount()
-    } else {
-      ipcServices?.dock.cancelPollingUpdateUnreadCount().then(() => {
-        ipcServices?.dock.setDockBadge(0)
-      })
-    }
-    return
-  }, [setting.showDockBadge])
-
-  useUpdateDockBadge()
+  useUpdateDockBadge(setting)
 }
 
 const useUXSettingSync = () => {
