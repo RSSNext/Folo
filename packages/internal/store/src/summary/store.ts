@@ -8,6 +8,7 @@ import { getEntry } from "../entry/getter"
 import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { SummaryGeneratingStatus } from "./enum"
+import type { StatusID } from "./utils"
 import { getGenerateSummaryStatusId } from "./utils"
 
 type SummaryModel = Omit<SummarySchema, "createdAt">
@@ -21,11 +22,11 @@ interface SummaryData {
 interface SummaryState {
   /**
    * Key: entryId
-   * Value: SummaryData
+   * Value: language -> SummaryData
    */
   data: Record<string, Partial<Record<SupportedActionLanguage, SummaryData>>>
 
-  generatingStatus: Record<string, SummaryGeneratingStatus>
+  generatingStatus: Record<StatusID, SummaryGeneratingStatus>
 }
 const emptyDataSet: Record<string, Partial<Record<SupportedActionLanguage, SummaryData>>> = {}
 
@@ -135,7 +136,7 @@ class SummaryActions implements Resetable, Hydratable {
 export const summaryActions = new SummaryActions()
 
 class SummarySyncService {
-  private pendingPromises: Record<string, Promise<string>> = {}
+  private pendingPromises: Record<StatusID, Promise<string>> = {}
 
   async generateSummary({
     entryId,
@@ -211,10 +212,10 @@ class SummarySyncService {
         throw error
       })
       .finally(() => {
-        delete this.pendingPromises[entryId]
+        delete this.pendingPromises[statusID]
       })
 
-    this.pendingPromises[entryId] = pendingPromise
+    this.pendingPromises[statusID] = pendingPromise
     const summary = await pendingPromise
 
     if (summary) {

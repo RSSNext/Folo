@@ -4,6 +4,8 @@ export function getGenerateSummaryStatusId(
   entryId: string,
   actionLanguage: SupportedActionLanguage,
   target: "content" | "readabilityContent",
-) {
-  return `${entryId}-${actionLanguage}-${target}`
+): StatusID {
+  return `${entryId}-${actionLanguage}-${target}` as StatusID
 }
+
+export type StatusID = `${string}-${string}-${string}`
