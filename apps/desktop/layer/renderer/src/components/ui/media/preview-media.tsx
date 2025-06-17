@@ -51,7 +51,7 @@ const Wrapper: FC<{
           )}
         >
           <HeaderActions src={src} />
-          {isArray ? <span>{children[0]}</span> : <span>{children}</span>}
+          {isArray ? children[0] : children}
         </div>
         {hasSideContent ? (
           <div
