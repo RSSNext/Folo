@@ -238,7 +238,7 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
   const whoami = useWhoami()
   const follow = useFollow()
   return (
-    <div className="border-fill border-b p-6">
+    <div className="border-fill bg-material-medium border-b p-6">
       <div className="flex items-start gap-4">
         <Avatar className="size-20 shrink-0">
           <AvatarImage

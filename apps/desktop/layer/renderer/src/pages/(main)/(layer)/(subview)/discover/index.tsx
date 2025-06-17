@@ -73,55 +73,81 @@ export function Component() {
   })
 
   return (
-    <div className="relative flex w-full flex-col items-center gap-8 px-4 pb-8 lg:pb-4">
-      <div className="pt-12 text-2xl font-bold">{t("words.discover")}</div>
-      <Tabs
-        value={search.get("type") || "search"}
-        onValueChange={(val) => {
-          setSearch(
-            (search) => {
-              search.set("type", val)
-              return new URLSearchParams(search)
-            },
-            { replace: true },
-          )
-        }}
-        className="w-full"
-      >
-        <ScrollArea.ScrollArea flex orientation="horizontal" rootClassName="w-full">
-          <TabsList className="relative flex w-full">
+    <div className="flex size-full flex-col px-6 py-8">
+      {/* Simple Header */}
+      <div className="mx-auto mb-8 max-w-6xl text-center">
+        <h1 className="text-text mb-4 text-3xl font-bold">{t("words.discover")}</h1>
+      </div>
+
+      <div className="mx-auto w-full max-w-6xl">
+        <Tabs
+          value={search.get("type") || "search"}
+          onValueChange={(val) => {
+            setSearch(
+              (search) => {
+                search.set("type", val)
+                return new URLSearchParams(search)
+              },
+              { replace: true },
+            )
+          }}
+          className="w-full"
+        >
+          {/* Tab Navigation */}
+          <div className="mb-8">
+            <ScrollArea.ScrollArea flex orientation="horizontal" rootClassName="w-full">
+              <TabsList className="relative flex w-full">
+                {currentTabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.name}
+                    value={tab.value}
+                    className={cn(tab.disabled && "cursor-not-allowed opacity-50")}
+                    onClick={() => {
+                      if (tab.disabled) {
+                        presentActivationModal()
+                      }
+                    }}
+                  >
+                    {t(tab.name)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </ScrollArea.ScrollArea>
+          </div>
+
+          {/* Tab Content */}
+          <div className="space-y-8">
             {currentTabs.map((tab) => (
-              <TabsTrigger
-                key={tab.name}
-                value={tab.value}
-                className={cn(tab.disabled && "cursor-not-allowed opacity-50")}
-                onClick={() => {
-                  if (tab.disabled) {
-                    presentActivationModal()
-                  }
-                }}
-              >
-                {t(tab.name)}
-              </TabsTrigger>
+              <TabsContent key={tab.name} value={tab.value} className="mt-0">
+                <div className={tab.value === "inbox" ? "" : "flex flex-col items-center"}>
+                  {createElement(TabComponent[tab.value]! || TabComponent.default, {
+                    type: tab.value,
+                  })}
+                </div>
+              </TabsContent>
             ))}
-          </TabsList>
-        </ScrollArea.ScrollArea>
-        {currentTabs.map((tab) => (
-          <TabsContent key={tab.name} value={tab.value} className="mt-8">
-            <div className={tab.value === "inbox" ? "" : "center flex flex-col"}>
-              {createElement(TabComponent[tab.value]! || TabComponent.default, {
-                type: tab.value,
-              })}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
-      <Divider className="w-full max-w-[800px]" />
-      <Trending center />
-      <Divider className="w-full max-w-[800px]" />
-      <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
-        <Recommendations />
-      </AppErrorBoundary>
+          </div>
+        </Tabs>
+
+        {/* Additional Content Sections */}
+        <div className="mt-12 space-y-8">
+          <Divider />
+
+          <div>
+            <h2 className="text-text mb-6 text-center text-xl font-semibold">Trending</h2>
+            <Trending center />
+          </div>
+
+          <Divider />
+
+          <div>
+            <h2 className="text-text mb-6 text-center text-xl font-semibold">Recommendations</h2>
+            <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
+              <Recommendations />
+            </AppErrorBoundary>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

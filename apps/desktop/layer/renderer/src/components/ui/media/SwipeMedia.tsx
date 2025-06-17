@@ -6,7 +6,7 @@ import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import { uniqBy } from "es-toolkit/compat"
 import { useCallback, useRef } from "react"
 
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 
 const defaultProxySize = {
   width: 600,

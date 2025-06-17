@@ -74,7 +74,7 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {!hideName && <div>{renderUserData?.name}</div>}
+      {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}
     </div>
   )
 }

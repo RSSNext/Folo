@@ -3,15 +3,16 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
-import { createContext, memo, use, useMemo, useState } from "react"
+import { memo, use, useMemo, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { useEventCallback } from "usehooks-ts"
 
 import { saveImageDimensionsToDb } from "~/store/image/db"
 
-import { usePreviewMedia } from "./media/hooks"
-import type { VideoPlayerRef } from "./media/VideoPlayer"
-import { VideoPlayer } from "./media/VideoPlayer"
+import { useMediaContainerWidth, usePreviewMedia } from "./hooks"
+import { MediaInfoRecordContext } from "./MediaInfoRecordContext"
+import type { VideoPlayerRef } from "./VideoPlayer"
+import { VideoPlayer } from "./VideoPlayer"
 
 type BaseProps = {
   mediaContainerClassName?: string
@@ -450,33 +451,4 @@ const VideoPreview: FC<{
       </div>
     </div>
   )
-}
-
-const MediaContainerWidthContext = createContext<number>(0)
-export const MediaContainerWidthProvider = ({
-  children,
-  width,
-}: {
-  children: React.ReactNode
-  width: number
-}) => {
-  return <MediaContainerWidthContext value={width}>{children}</MediaContainerWidthContext>
-}
-
-const useMediaContainerWidth = () => {
-  return use(MediaContainerWidthContext)
-}
-
-export type MediaInfoRecord = Record<string, { width?: number; height?: number }>
-const MediaInfoRecordContext = createContext<MediaInfoRecord>({})
-
-const noop = {} as const
-export const MediaInfoRecordProvider = ({
-  children,
-  mediaInfo,
-}: {
-  children: React.ReactNode
-  mediaInfo?: Nullable<MediaInfoRecord>
-}) => {
-  return <MediaInfoRecordContext value={mediaInfo || noop}>{children}</MediaInfoRecordContext>
 }

@@ -16,6 +16,7 @@ If you previously entered information that’s longer than these limits, it will
 ## Shiny new things
 
 - 🎉 Say hello to a snazzy new look for your personal profile! We've sprinkled in some cool social attribute settings to spice things up. But hold onto your hats—this is just the appetizer for our grand social vision! 🚀 Stay tuned for more! 😎
+- We have redesigned the pages for Discover, RSSHub, and Actions. These pages are now simpler and easier to use, with a more modern UI.
 
 ## Improvements
 

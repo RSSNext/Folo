@@ -22,18 +22,13 @@ import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
+import { ReadabilityAutoToggleEffect } from "./ApplyEntryActions"
 import { EntryReadHistory } from "./components/EntryReadHistory"
 import { EntryTitle } from "./components/EntryTitle"
 import { SupportCreator } from "./components/SupportCreator"
 import { EntryHeader } from "./header"
 import { useEntryContent, useEntryMediaInfo } from "./hooks"
-import {
-  NoContent,
-  ReadabilityAutoToggleEffect,
-  ReadabilityNotice,
-  RenderError,
-  TitleMetaHandler,
-} from "./index.shared"
+import { NoContent, ReadabilityNotice, RenderError, TitleMetaHandler } from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
 export interface EntryContentClassNames {

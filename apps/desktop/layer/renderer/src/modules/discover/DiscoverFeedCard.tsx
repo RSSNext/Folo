@@ -9,7 +9,7 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"

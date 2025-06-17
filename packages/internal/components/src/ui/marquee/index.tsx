@@ -14,6 +14,7 @@ export const TitleMarquee = ({
     className?: string
   }) => {
   const [hovered, setHovered] = useState(false)
+  const [pause, setPause] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   const $wrapper = useRef<HTMLDivElement>(null)
@@ -52,8 +53,20 @@ export const TitleMarquee = ({
         })
       }, [])}
     >
-      <Marquee className="overflow-hidden" play={hovered} ref={ref} speed={speed} {...rest}>
+      <Marquee
+        className="overflow-hidden"
+        play={hovered && !pause}
+        ref={ref}
+        speed={speed}
+        gradient={false}
+        {...rest}
+        onCycleComplete={useCallback(() => {
+          setPause(true)
+          setTimeout(() => setPause(false), 1000)
+        }, [])}
+      >
         {children}
+        {"\u00A0\u00A0\u00A0\u00A0"}
       </Marquee>
     </div>
   )

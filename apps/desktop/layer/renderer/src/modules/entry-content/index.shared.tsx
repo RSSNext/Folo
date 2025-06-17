@@ -13,7 +13,7 @@ import { cn } from "@follow/utils/utils"
 import type { FallbackRender } from "@sentry/react"
 import { useStore } from "jotai"
 import type { FC } from "react"
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -22,10 +22,9 @@ import {
   useEntryInReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
-import { enableShowSourceContent } from "~/atoms/source-content"
+import { useShowSourceContent } from "~/atoms/source-content"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
@@ -33,6 +32,7 @@ import {
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
 
+import { ReadabilityAutoToggleEffect } from "./ApplyEntryActions"
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
 export interface EntryContentProps {
@@ -129,9 +129,9 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
 export const NoContent: FC<{
   id: string
   url: string
-  sourceContent?: boolean
-}> = ({ id, url, sourceContent }) => {
+}> = ({ id, url }) => {
   const status = useEntryInReadabilityStatus(id)
+  const showSourceContent = useShowSourceContent()
   const { t } = useTranslation("app")
 
   if (status !== ReadabilityStatus.INITIAL && status !== ReadabilityStatus.FAILURE) {
@@ -143,31 +143,10 @@ export const NoContent: FC<{
         {(WEB_BUILD || status === ReadabilityStatus.FAILURE) && (
           <span>{t("entry_content.no_content")}</span>
         )}
-        {!sourceContent && url && <ReadabilityAutoToggleEffect url={url} id={id} />}
+        {!showSourceContent && url && <ReadabilityAutoToggleEffect url={url} id={id} />}
       </div>
     </div>
   )
-}
-
-export const ViewSourceContentAutoToggleEffect = () => {
-  const onceRef = useRef(false)
-
-  useEffect(() => {
-    if (!onceRef.current) {
-      onceRef.current = true
-      enableShowSourceContent()
-    }
-  }, [])
-
-  return null
-}
-
-export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {
-  useEffect(() => {
-    enableEntryReadability({ id, url })
-  }, [id, url])
-
-  return null
 }
 
 export const RenderError: FallbackRender = ({ error }) => {

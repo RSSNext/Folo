@@ -1,8 +1,9 @@
-import { Divider } from "@follow/components/ui/divider/Divider.js"
-import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { cn } from "@follow/utils/utils"
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu"
 import * as React from "react"
+
+import { Divider } from "../divider/Divider.js"
+import { RootPortal } from "../portal/index.jsx"
 
 const ContextMenu = ContextMenuPrimitive.Root
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger

@@ -205,6 +205,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     }
     return options
   }, [entry, feed, isInbox, list, subscription?.view])
+  const [pause, setPause] = useState(true)
   if (!entry || !feed) return null
 
   return (
@@ -216,7 +217,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         )}
       >
         {/* play cover */}
-        <div className="relative h-[3.625rem] shrink-0">
+        <div className="relative size-[3.625rem] shrink-0">
           <FeedIcon
             feed={feed}
             entry={entry.iconEntry}
@@ -249,11 +250,18 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
         <div className="relative grow truncate px-2 py-1 text-center text-sm">
           <Marquee
-            play={playerValue.status === "playing"}
+            play={playerValue.status === "playing" && pause}
             className="mask-horizontal font-medium"
             speed={30}
+            gradient={false}
+            onCycleComplete={() => {
+              setPause(false)
+              setTimeout(() => {
+                setPause(true)
+              }, 1000)
+            }}
           >
-            {entry.title}
+            {`\u00A0\u00A0\u00A0\u00A0${entry.title}`}
           </Marquee>
           <div
             className={cn(

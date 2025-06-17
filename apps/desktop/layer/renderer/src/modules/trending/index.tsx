@@ -70,7 +70,7 @@ export function Trending({
   })
 
   return (
-    <div className={cn("mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
+    <div className={cn("mx-auto mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
       <div
         className={cn(
           "justify-between md:flex",

@@ -60,7 +60,7 @@ export const DropZone = ({
   return (
     <label
       className={`center cursor-button flex h-[100px] w-full rounded-md border border-dashed ${
-        isDragging ? "border-blue-500 bg-blue-100" : ""
+        isDragging ? "border-accent bg-accent/10" : ""
       }`}
       htmlFor="upload-file"
       {...dragHandlers}

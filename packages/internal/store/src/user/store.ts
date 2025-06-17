@@ -2,6 +2,7 @@ import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthSession } from "@follow/shared/hono"
+import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
 import { apiClient, authClient } from "../context"
 import type { Hydratable } from "../internal/base"
@@ -31,6 +32,34 @@ const get = useUserStore.getState
 const immerSet = createImmerSetter(useUserStore)
 
 class UserSyncService {
+  private userBatcher = create({
+    fetcher: async (userIds: string[]) => {
+      const res = await apiClient().profiles.batch.$post({
+        json: { ids: userIds },
+      })
+
+      if (res.code === 0) {
+        const { whoami } = get()
+        const usersObject = res.data
+        const usersArray = Object.values(usersObject)
+
+        immerSet((state) => {
+          for (const user of usersArray) {
+            state.users[user.id] = {
+              email: null,
+              isMe: whoami?.id === user.id,
+              ...user,
+            }
+          }
+        })
+        return usersObject
+      }
+      return {}
+    },
+    resolver: indexedResolver(),
+    scheduler: windowScheduler(100),
+  })
+
   async whoami() {
     const res = (await (apiClient()["better-auth"] as any)[
       "get-session"
@@ -153,19 +182,18 @@ class UserSyncService {
 
   async fetchUser(userId: string | undefined) {
     if (!userId) return null
-    const res = await apiClient().profiles.$get({ query: { id: userId } })
-    if (res.code === 0) {
-      const { whoami } = get()
-      immerSet((state) => {
-        state.users[userId] = {
-          email: null,
-          isMe: whoami?.id === userId,
-          ...res.data,
-        }
-      })
-    }
 
-    return res.data
+    // 使用批处理器获取用户
+    const user = await this.userBatcher.fetch(userId)
+    return user || null
+  }
+
+  async fetchUsers(userIds: string[]) {
+    const validUserIds = userIds.filter(Boolean)
+    if (validUserIds.length === 0) return []
+
+    const users = await Promise.all(validUserIds.map((id) => this.userBatcher.fetch(id)))
+    return users.filter(Boolean)
   }
 }
 

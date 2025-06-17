@@ -4,6 +4,7 @@ import { useSheetContext } from "@follow/components/ui/sheet/context.js"
 import type { FeedViewType } from "@follow/constants"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
+import { nextFrame } from "@follow/utils"
 import { useCallback } from "react"
 
 import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
@@ -88,9 +89,12 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
     finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
-  resetShowSourceContent()
   disableShowAISummaryOnce()
   disableShowAITranslationOnce()
+
+  nextFrame(() => {
+    resetShowSourceContent()
+  })
 
   tracker.navigateEntry({ feedId: finalFeedId, entryId: finalEntryId, timelineId: finalTimelineId })
 

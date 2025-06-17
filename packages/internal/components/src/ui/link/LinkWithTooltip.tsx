@@ -1,9 +1,4 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
-} from "@follow/components/ui/tooltip/index.jsx"
+import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from "../tooltip/index.jsx"
 
 export interface LinkProps {
   href: string

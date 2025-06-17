@@ -1,12 +1,13 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { useCallback } from "react"
+import { use, useCallback } from "react"
 
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 
 import { PlainModal } from "../modal/stacked/custom-modal"
 import { useModalStack } from "../modal/stacked/hooks"
-import type { PreviewMediaProps } from "./preview-media"
-import { PreviewMediaContent } from "./preview-media"
+import { MediaContainerWidthContext } from "./MediaContainerWidthContext"
+import type { PreviewMediaProps } from "./PreviewMediaContent"
+import { PreviewMediaContent } from "./PreviewMediaContent"
 
 export const usePreviewMedia = (children?: React.ReactNode) => {
   const { present } = useModalStack()
@@ -38,4 +39,8 @@ export const usePreviewMedia = (children?: React.ReactNode) => {
     },
     [children, present],
   )
+}
+
+export const useMediaContainerWidth = () => {
+  return use(MediaContainerWidthContext)
 }

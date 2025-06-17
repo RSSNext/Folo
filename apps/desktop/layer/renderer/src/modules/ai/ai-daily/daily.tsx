@@ -1,5 +1,7 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { EmptyIcon } from "@follow/components/icons/empty.jsx"
+import { CollapseControlled } from "@follow/components/ui/collapse/Collapse.js"
+import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
@@ -24,18 +26,16 @@ import { Trans, useTranslation } from "react-i18next"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
-import { CollapseControlled } from "~/components/ui/collapse"
 import { RelativeTime } from "~/components/ui/datetime"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import type { LinkProps } from "~/components/ui/link"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
-import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
+import { Media } from "~/components/ui/media/Media"
 import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"

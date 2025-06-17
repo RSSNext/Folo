@@ -1,7 +1,10 @@
 import { Input } from "@follow/components/ui/input/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import { useActionRule } from "@follow/store/action/hooks"
+import { useActionRule, useActionRules, useUpdateActionsMutation } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
+import { nextFrame } from "@follow/utils"
+
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 
 import { ThenSection } from "./then-section"
 import { WhenSection } from "./when-section"
@@ -22,6 +25,10 @@ const RuleCardToolbar = ({ index }: { index: number }) => {
   const name = useActionRule(index, (a) => a.name)
   const disabled = useActionRule(index, (a) => a.result.disabled)
 
+  const ruleCount = useActionRules((s) => s.length)
+  const mutation = useUpdateActionsMutation()
+
+  const { ask } = useDialog()
   return (
     <div className="flex w-full items-center gap-3">
       <Input
@@ -46,7 +53,21 @@ const RuleCardToolbar = ({ index }: { index: number }) => {
           className="bg-background center flex size-8 -translate-y-1/2 translate-x-1/2 rounded-full border"
           type="button"
           onClick={() => {
-            actionActions.deleteRule(index)
+            if (ruleCount === 1) {
+              ask({
+                title: "Delete Rule",
+                variant: "danger",
+                message: "Are you sure you want to delete this rule? This action cannot be undone.",
+                onConfirm: () => {
+                  actionActions.deleteRule(index)
+                  nextFrame(() => {
+                    mutation.mutate()
+                  })
+                },
+              })
+            } else {
+              actionActions.deleteRule(index)
+            }
           }}
         >
           <i className="i-mgc-close-cute-re" />

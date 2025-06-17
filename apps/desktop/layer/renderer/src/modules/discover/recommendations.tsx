@@ -34,7 +34,7 @@ export function Recommendations() {
   }
 
   return (
-    <div className="mt-4 w-full max-w-[800px] space-y-6">
+    <div className="mx-auto mt-4 w-full max-w-[800px] space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-center gap-2 text-center text-xl font-bold">
           <i className="i-mgc-grid-2-cute-re text-xl" />

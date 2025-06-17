@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@follow/components/ui/accordion/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
+import { DropZone } from "@follow/components/ui/drop-zone/index.js"
 import {
   Form,
   FormControl,
@@ -21,8 +22,7 @@ import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { DropZone } from "~/components/ui/drop-zone"
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { apiFetch } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"

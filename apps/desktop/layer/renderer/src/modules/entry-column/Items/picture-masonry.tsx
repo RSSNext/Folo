@@ -31,7 +31,7 @@ import {
 import { useEventCallback } from "usehooks-ts"
 
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
-import { MediaContainerWidthProvider } from "~/components/ui/media"
+import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 import { imageActions } from "~/store/image"
 
 import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"

@@ -13,7 +13,7 @@ import { MarkdownBlockImage, MarkdownLink, MarkdownP } from "~/components/ui/mar
 import { useIsInParagraphContext } from "~/components/ui/markdown/renderers/ctx"
 import { createHeadingRenderer } from "~/components/ui/markdown/renderers/Heading"
 import { MarkdownInlineImage } from "~/components/ui/markdown/renderers/InlineImage"
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 
 function markInlineImage(node?: Element) {
   for (const item of node?.children ?? []) {

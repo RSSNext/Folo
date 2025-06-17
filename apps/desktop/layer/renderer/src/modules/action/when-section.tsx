@@ -35,10 +35,16 @@ export const WhenSection = ({ index }: { index: number }) => {
               condition: value === "all" ? [] : [[{}]],
             })
           }}
-          className="flex gap-4"
+          className="flex gap-8"
         >
-          <RadioGroupItem disabled={disabled} label={t("actions.action_card.all")} value="all" />
           <RadioGroupItem
+            labelClassName="text-sm"
+            disabled={disabled}
+            label={t("actions.action_card.all")}
+            value="all"
+          />
+          <RadioGroupItem
+            labelClassName="text-sm"
             disabled={disabled}
             label={t("actions.action_card.custom_filters")}
             value="filter"

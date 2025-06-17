@@ -66,12 +66,14 @@ type RadioGroupItemProps = React.ComponentProps<typeof RadioGroupPrimitive.Item>
   HTMLMotionProps<"button"> & {
     transition?: Transition
     label?: string
+    labelClassName?: string
   }
 
 function RadioGroupItem({
   className,
   transition = Spring.presets.smooth,
   label,
+  labelClassName,
   ...props
 }: RadioGroupItemProps) {
   const id = React.useId()
@@ -91,7 +93,11 @@ function RadioGroupItem({
         >
           <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
         </m.button>
-        {label && <label htmlFor={id}>{label}</label>}
+        {label && (
+          <label htmlFor={id} className={labelClassName}>
+            {label}
+          </label>
+        )}
       </div>
     </RadioGroupPrimitive.Item>
   )

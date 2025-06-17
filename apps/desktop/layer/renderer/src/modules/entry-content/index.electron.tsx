@@ -39,6 +39,7 @@ import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
+import { ApplyEntryActions } from "./ApplyEntryActions"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
 import { EntryTitle } from "./components/EntryTitle"
 import { SourceContentPanel } from "./components/SourceContentView"
@@ -49,11 +50,9 @@ import type { EntryContentProps } from "./index.shared"
 import {
   ContainerToc,
   NoContent,
-  ReadabilityAutoToggleEffect,
   ReadabilityNotice,
   RenderError,
   TitleMetaHandler,
-  ViewSourceContentAutoToggleEffect,
 } from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
@@ -72,10 +71,9 @@ export const EntryContent: Component<EntryContentProps> = ({
 }) => {
   const entry = useEntry(entryId, (state) => {
     const { feedId, inboxHandle } = state
-    const { readability, sourceContent } = state.settings || {}
     const { title, url } = state
 
-    return { feedId, inboxId: inboxHandle, readability, sourceContent, title, url }
+    return { feedId, inboxId: inboxHandle, title, url }
   })
   useTitle(entry?.title)
 
@@ -208,10 +206,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                 </div>
               </WrappedElementProvider>
 
-              {entry.readability && (
-                <ReadabilityAutoToggleEffect id={entryId} url={entry.url ?? ""} />
-              )}
-              {entry.sourceContent && <ViewSourceContentAutoToggleEffect />}
+              <ApplyEntryActions entryId={entryId} key={entryId} />
 
               {!content && !isInReadabilityMode && (
                 <div className="center mt-16 min-w-0">
@@ -228,11 +223,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                       </pre>
                     </div>
                   ) : (
-                    <NoContent
-                      id={entryId}
-                      url={entry.url ?? ""}
-                      sourceContent={entry.sourceContent}
-                    />
+                    <NoContent id={entryId} url={entry.url ?? ""} />
                   )}
                 </div>
               )}
