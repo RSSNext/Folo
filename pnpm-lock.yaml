@@ -1581,8 +1581,8 @@ importers:
         specifier: 15.2.9
         version: 15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       sqlocal:
-        specifier: npm:@hyoban/sqlocal@0.14.1-fork.2
-        version: '@hyoban/sqlocal@0.14.1-fork.2(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)'
+        specifier: npm:@hyoban/sqlocal@0.14.1-fork.3
+        version: '@hyoban/sqlocal@0.14.1-fork.3(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)'
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
@@ -4102,8 +4102,8 @@ packages:
     peerDependencies:
       tailwindcss: ^3.4.0
 
-  '@hyoban/sqlocal@0.14.1-fork.2':
-    resolution: {integrity: sha512-D9SGMO86y/6Sm8MdWnkV+otfVtJi/NIeGQkz2j9Z+xhUYFNfMBonUEtxeLmnybDEU9RB8jX5XfIEAy+z04wu2A==}
+  '@hyoban/sqlocal@0.14.1-fork.3':
+    resolution: {integrity: sha512-xNhZ4FzaeaeqPWKwjmLg4UVuUuHrATIrJrUjqgO/zY7V26WHMRdEDg1ORkntcrUhX+Wj3INStTQMxJ16Z04G4A==}
     peerDependencies:
       drizzle-orm: '*'
       kysely: '*'
@@ -19232,7 +19232,7 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.23)(typescript@5.8.3))
 
-  '@hyoban/sqlocal@0.14.1-fork.2(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)':
+  '@hyoban/sqlocal@0.14.1-fork.3(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)':
     dependencies:
       '@sqlite.org/sqlite-wasm': 3.50.0-build1
       coincident: 1.2.3(bufferutil@4.0.9)

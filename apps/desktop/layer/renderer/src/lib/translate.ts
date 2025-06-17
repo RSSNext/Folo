@@ -1,6 +1,6 @@
-import { parseHtml } from "@follow/components/ui/markdown/parse-html.js"
 import type { SupportedActionLanguage } from "@follow/shared"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
+import { parseHtml } from "@follow/utils/html"
 import { duplicateIfLengthLessThan } from "@follow/utils/utils"
 import { franc } from "franc-min"
 

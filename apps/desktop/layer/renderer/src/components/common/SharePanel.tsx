@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
+import { copyToClipboard } from "~/lib/clipboard"
 
 interface SharePanelProps {
   entryId: string
@@ -136,13 +137,13 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
         })
       } else {
         // Fallback to copying link
-        await navigator.clipboard.writeText(shareContent.url)
+        await copyToClipboard(shareContent.url)
         toast.success(t("share.link_copied"))
       }
     } catch {
       // If sharing fails, copy link as fallback
       try {
-        await navigator.clipboard.writeText(shareContent.url)
+        await copyToClipboard(shareContent.url)
         toast.success(t("share.link_copied"))
       } catch {
         toast.error(t("share.copy_failed"))
@@ -153,7 +154,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
   const handleCopyLink = useCallback(async () => {
     const shareUrl = getShareUrl(entryId)
     try {
-      await navigator.clipboard.writeText(shareUrl)
+      await copyToClipboard(shareUrl)
       toast.success(t("share.link_copied"))
     } catch {
       toast.error(t("share.copy_failed"))

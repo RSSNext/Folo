@@ -23,6 +23,7 @@ import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { copyToClipboard } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useBoostModal } from "~/modules/boost/hooks"
 import { useFeedClaimModal } from "~/modules/claim"
@@ -293,7 +294,7 @@ export const useFeedActions = ({
           const { url, siteUrl } = feed || {}
           const copied = url || siteUrl
           if (!copied) return
-          navigator.clipboard.writeText(copied)
+          copyToClipboard(copied)
         },
       }),
       new MenuItemText({
@@ -301,14 +302,14 @@ export const useFeedActions = ({
         shortcut: "$mod+Shift+C",
         disabled: isEntryList,
         click: () => {
-          navigator.clipboard.writeText(feedId)
+          copyToClipboard(feedId)
         },
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_badge"),
         disabled: isEntryList,
         click: () => {
-          navigator.clipboard.writeText(
+          copyToClipboard(
             `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
           )
         },
@@ -424,14 +425,14 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.copy_list_url"),
         shortcut: "$mod+C",
         click: () => {
-          navigator.clipboard.writeText(UrlBuilder.shareList(listId, view))
+          copyToClipboard(UrlBuilder.shareList(listId, view))
         },
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_id"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          navigator.clipboard.writeText(listId)
+          copyToClipboard(listId)
         },
       }),
     ]
@@ -466,7 +467,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         label: t("sidebar.feed_actions.copy_email_address"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          navigator.clipboard.writeText(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
+          copyToClipboard(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
         },
       }),
     ]

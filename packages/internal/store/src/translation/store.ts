@@ -1,6 +1,5 @@
 import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
-import type { SupportedLanguages } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared"
 
 import { apiClient } from "../context"
@@ -13,7 +12,7 @@ import { translationFields } from "./types"
 type TranslationModel = Omit<TranslationSchema, "createdAt">
 
 interface TranslationState {
-  data: Record<string, Partial<Record<SupportedLanguages, EntryTranslation>>>
+  data: Record<string, Partial<Record<SupportedActionLanguage, EntryTranslation>>>
 }
 const emptyDataSet: Record<string, EntryTranslation> = {}
 
@@ -63,7 +62,7 @@ class TranslationActions implements Hydratable {
     )
   }
 
-  getTranslation(entryId: string, language: SupportedLanguages) {
+  getTranslation(entryId: string, language: SupportedActionLanguage) {
     return get().data[entryId]?.[language]
   }
 }
@@ -79,7 +78,7 @@ class TranslationSyncService {
     checkLanguage,
   }: {
     entryId: string
-    language: SupportedLanguages
+    language: SupportedActionLanguage
     withContent?: boolean
     target: "content" | "readabilityContent"
     checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean

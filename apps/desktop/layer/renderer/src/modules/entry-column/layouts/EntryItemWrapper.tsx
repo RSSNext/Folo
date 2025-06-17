@@ -26,6 +26,7 @@ import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
+import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 
 export const EntryItemWrapper: FC<
@@ -157,7 +158,7 @@ export const EntryItemWrapper: FC<
           new MenuItemText({
             label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
             click: () => {
-              navigator.clipboard.writeText(entry?.id || "")
+              copyToClipboard(entry?.id || "")
             },
           }),
         ],

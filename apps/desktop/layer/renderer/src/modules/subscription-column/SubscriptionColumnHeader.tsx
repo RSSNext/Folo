@@ -26,6 +26,7 @@ import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
+import { copyToClipboard } from "~/lib/clipboard"
 import { ProfileButton } from "~/modules/user/ProfileButton"
 
 export const SubscriptionColumnHeader = memo(() => {
@@ -133,7 +134,7 @@ const LogoContextMenu: FC<PropsWithChildren> = ({ children }) => {
       <DropdownMenuContent>
         <DropdownMenuItem
           onClick={() => {
-            navigator.clipboard.writeText(logoRef.current?.outerHTML || "")
+            copyToClipboard(logoRef.current?.outerHTML || "")
             setOpen(false)
             toast.success(t.common("app.copied_to_clipboard"))
           }}
@@ -143,7 +144,7 @@ const LogoContextMenu: FC<PropsWithChildren> = ({ children }) => {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            navigator.clipboard.writeText(logoTextRef.current?.outerHTML || "")
+            copyToClipboard(logoTextRef.current?.outerHTML || "")
             setOpen(false)
             toast.success(t.common("app.copied_to_clipboard"))
           }}

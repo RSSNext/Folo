@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react"
 
 import { m } from "~/components/common/Motion"
+import { copyToClipboard } from "~/lib/clipboard"
 
 import { AnimatedCommandButton } from "./base"
 
@@ -11,7 +12,7 @@ export const CopyButton: Component<{
 }> = ({ value, className, style, variant = "solid" }) => {
   const copiedTimerRef = useRef<any>(undefined)
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(value)
+    copyToClipboard(value)
 
     clearTimeout(copiedTimerRef.current)
   }, [value])

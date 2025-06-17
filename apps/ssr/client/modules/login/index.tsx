@@ -20,6 +20,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useIsDark } from "@follow/hooks"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.ssr"
+import { cn } from "@follow/utils/utils"
 import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -168,10 +169,11 @@ export function Login() {
                     className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
                   >
                     <img
-                      className="absolute left-9 h-5"
-                      style={{
-                        color: provider.color,
-                      }}
+                      className={cn(
+                        "absolute left-9 h-5",
+                        !provider.iconDark64 &&
+                          "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                      )}
                       src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                     />
                     <span>{t("login.continueWith", { provider: provider.name })}</span>
@@ -214,6 +216,7 @@ export function Login() {
     navigate,
     openFailed,
     callbackUrl,
+    isDark,
   ])
   const Content = useMemo(() => {
     switch (true) {

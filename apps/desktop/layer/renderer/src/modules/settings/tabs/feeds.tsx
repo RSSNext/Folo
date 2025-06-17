@@ -247,7 +247,7 @@ const SubscriptionFeedsSection = () => {
               onClick={() => handleSort("date")}
               type="button"
             >
-              Date
+              Subscribed Date
               {sortField === "date" && (
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
@@ -295,21 +295,6 @@ const SubscriptionFeedsSection = () => {
                   className="sticky bottom-4 flex justify-center"
                 >
                   <div className="bg-material-opaque flex items-center gap-2 rounded px-4 py-2">
-                    {/* <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          className="text-accent text-xs"
-                          type="button"
-                          onClick={handleBatchMoveToView}
-                        >
-                          Add to Category
-                        </button>
-                      </DropdownMenuTrigger>
-
-                      <DropdownMenuContent side="top">
-                        <CategorySelector />
-                      </DropdownMenuContent>
-                    </DropdownMenu> */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <MotionButtonBase className="text-accent text-xs" type="button">
@@ -495,12 +480,12 @@ const FeedListItem = memo(
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="text-text flex items-center gap-1 text-sm opacity-80">
           {views[subscription.view]!.icon}
           <span>{tCommon(views[subscription.view]!.name)}</span>
         </div>
         {!!subscription.createdAt && (
-          <div className="whitespace-nowrap pr-1 text-center">
+          <div className="whitespace-nowrap pr-1 text-center text-sm">
             <RelativeDay date={new Date(subscription.createdAt)} />
           </div>
         )}

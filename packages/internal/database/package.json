@@ -37,7 +37,7 @@
     "@follow/shared": "workspace:*",
     "drizzle-orm": "0.43.1",
     "expo-sqlite": "15.2.9",
-    "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.2"
+    "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.3"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",

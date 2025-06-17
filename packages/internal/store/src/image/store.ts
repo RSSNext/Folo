@@ -1,10 +1,8 @@
 import type { ImageSchema } from "@follow/database/schemas/types"
 import { ImagesService } from "@follow/database/services/image"
-import ImageColors from "react-native-image-colors"
 
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
-import { getImageInfo } from "./getters"
 
 export type ImageModel = ImageSchema
 type ImageStore = {
@@ -16,22 +14,6 @@ export const useImagesStore = createZustandStore<ImageStore>("images")(() => ({
 }))
 
 const immerSet = createImmerSetter(useImagesStore)
-
-class ImageSyncService {
-  async getColors(url?: string | null) {
-    if (!url) {
-      return
-    }
-    const existing = getImageInfo(url)?.colors
-    if (existing) {
-      return existing
-    }
-
-    const result = await ImageColors.getColors(url, { cache: true })
-    await imageActions.upsertMany([{ url, colors: result }])
-    return result
-  }
-}
 
 class ImageActions implements Hydratable {
   async hydrate() {
@@ -55,5 +37,4 @@ class ImageActions implements Hydratable {
   }
 }
 
-export const imageSyncService = new ImageSyncService()
 export const imageActions = new ImageActions()

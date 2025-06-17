@@ -1,4 +1,4 @@
-import { useImageColors, usePrefetchImageColors } from "@follow/store/image/hooks"
+import { useImageColors } from "@follow/store/image/hooks"
 import { useUserById } from "@follow/store/user/hooks"
 import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
@@ -21,6 +21,7 @@ import { WebCuteReIcon } from "@/src/icons/web_cute_re"
 import { YoutubeCuteFiIcon } from "@/src/icons/youtube_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
+import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 const defaultGradientColors = ["#000", "#100", "#200"]
 

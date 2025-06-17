@@ -28,6 +28,7 @@ import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
+import { copyToClipboard } from "~/lib/clipboard"
 import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
@@ -186,7 +187,7 @@ export const useRegisterEntryCommands = () => {
             return
           }
           if (!entry.url) return
-          navigator.clipboard.writeText(entry.url)
+          copyToClipboard(entry.url)
           toast(t("entry_actions.copied_notify", { which: t("words.link") }), {
             duration: 1000,
           })
@@ -220,7 +221,7 @@ export const useRegisterEntryCommands = () => {
             return
           }
           if (!entry.title) return
-          navigator.clipboard.writeText(entry.title)
+          copyToClipboard(entry.title)
           toast(t("entry_actions.copied_notify", { which: t("words.title") }), {
             duration: 1000,
           })

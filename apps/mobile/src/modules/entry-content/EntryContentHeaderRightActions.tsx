@@ -111,7 +111,7 @@ const HeaderRightActionsImpl = ({
     if (!entry) return
 
     const getCachedOrGenerateSummary = async () => {
-      const hasSummary = summaryActions.getSummary(entryId)
+      const hasSummary = summaryActions.getSummary(entryId, getActionLanguage())
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()

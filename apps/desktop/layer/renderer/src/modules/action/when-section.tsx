@@ -13,22 +13,21 @@ import type { ActionFeedField, ActionOperation } from "@follow/models/types"
 import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
-import { cn } from "@follow/utils/utils"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ViewSelectContent } from "~/modules/feed/view-select-content"
 
-export const FeedFilter = ({ index }: { index: number }) => {
+export const WhenSection = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
 
   const disabled = useActionRule(index, (a) => a.result.disabled)
   const condition = useActionRule(index, (a) => a.condition)
 
   return (
-    <div className="w-full shrink space-y-3 overflow-auto">
-      <p className="font-medium text-zinc-500">{t("actions.action_card.when_feeds_match")}</p>
-      <div className="flex flex-col gap-2 pl-4">
+    <div className="flex flex-col gap-3">
+      <h2 className="text-lg font-semibold">{t("actions.action_card.when_feeds_match")}</h2>
+      <div className="pl-2">
         <RadioGroup
           value={condition.length > 0 ? "filter" : "all"}
           onValueChange={(value) => {
@@ -36,6 +35,7 @@ export const FeedFilter = ({ index }: { index: number }) => {
               condition: value === "all" ? [] : [[{}]],
             })
           }}
+          className="flex gap-4"
         >
           <RadioGroupItem disabled={disabled} label={t("actions.action_card.all")} value="all" />
           <RadioGroupItem
@@ -47,38 +47,32 @@ export const FeedFilter = ({ index }: { index: number }) => {
       </div>
 
       {condition.length > 0 && (
-        <div className="pl-6">
-          <div className="w-full">
-            <GridHeader />
-            <div className="mt-2">
-              {condition.flatMap((orConditions, orConditionIdx) => {
-                return orConditions.map((condition, conditionIdx) => {
-                  const actionConditionIndex = {
-                    ruleIndex: index,
-                    groupIndex: orConditionIdx,
-                    conditionIndex: conditionIdx,
-                  }
+        <div className="flex flex-col gap-4 pl-2 pt-4">
+          {condition.map((orConditions, orConditionIdx) => {
+            return (
+              <Fragment key={orConditionIdx}>
+                <div className="@[500px]:p-4 group/or relative flex flex-col gap-2 rounded-lg border p-2 pl-6">
+                  <div className="bg-border absolute left-3 top-9 h-[calc(100%-4.5rem)] w-px" />
+                  {orConditions.map((condition, conditionIdx) => {
+                    const actionConditionIndex = {
+                      ruleIndex: index,
+                      groupIndex: orConditionIdx,
+                      conditionIndex: conditionIdx,
+                    }
 
-                  const change = (key: string, value: string | number) => {
-                    actionActions.pathCondition(actionConditionIndex, {
-                      [key]: value,
-                    })
-                  }
-                  const type =
-                    filterFieldOptions.find((option) => option.value === condition.field)?.type ||
-                    "text"
-                  return (
-                    <Fragment key={`${orConditionIdx}${conditionIdx}`}>
-                      {conditionIdx === 0 && orConditionIdx !== 0 && (
-                        <div className="flex h-16 items-center justify-center">
-                          <span className="text-text-secondary text-sm uppercase">
-                            {t("actions.action_card.or")}
-                          </span>
-                        </div>
-                      )}
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:gap-4">
-                        <div className="flex items-center justify-between max-sm:flex-row sm:justify-start">
-                          <span className="sm:hidden">{t("actions.action_card.field")}</span>
+                    const change = (key: string, value: string | number) => {
+                      actionActions.pathCondition(actionConditionIndex, {
+                        [key]: value,
+                      })
+                    }
+                    const type =
+                      filterFieldOptions.find((option) => option.value === condition.field)?.type ||
+                      "text"
+                    return (
+                      <div className="flex flex-col gap-2" key={conditionIdx}>
+                        <div className="group/condition-item relative flex items-center gap-2">
+                          <div className="bg-border absolute -left-3.5 top-1/2 h-px w-3 -translate-y-1/2" />
+                          <div className="bg-background absolute -left-3.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border" />
                           <ResponsiveSelect
                             placeholder="Select Field"
                             disabled={disabled}
@@ -88,85 +82,75 @@ export const FeedFilter = ({ index }: { index: number }) => {
                               ...option,
                               label: t(option.label),
                             }))}
-                            triggerClassName="max-sm:w-fit h-8"
+                            triggerClassName="h-8"
                           />
-                        </div>
-                        <div className="flex items-center justify-between max-sm:flex-row sm:justify-start">
-                          <span className="sm:hidden">{t("actions.action_card.operator")}</span>
                           <OperationSelect
                             type={type}
                             disabled={disabled}
                             value={condition.operator}
                             onValueChange={(value) => change("operator", value)}
                           />
-                        </div>
-                        <div className="flex items-center justify-between gap-4 max-sm:flex-row sm:justify-start">
-                          <span className="sm:hidden">{t("actions.action_card.value")}</span>
                           <ValueInput
                             type={type}
                             value={condition.value}
                             onChange={(value) => change("value", value)}
                             disabled={disabled}
                           />
-                        </div>
-
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            buttonClassName="w-full sm:hidden"
-                            variant="outline"
-                            disabled={disabled}
-                            onClick={() => {
-                              actionActions.addConditionItem(actionConditionIndex)
-                            }}
-                          >
-                            {t("actions.action_card.and")}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            buttonClassName="w-full max-sm:hidden"
-                            disabled={disabled}
-                            onClick={() => {
-                              actionActions.addConditionItem(actionConditionIndex)
-                            }}
-                          >
-                            {t("actions.action_card.and")}
-                          </Button>
                           <Button
                             variant="ghost"
+                            buttonClassName="opacity-0 group-hover/condition-item:opacity-100"
                             disabled={disabled}
                             onClick={() => {
                               actionActions.deleteConditionItem(actionConditionIndex)
                             }}
                           >
-                            <i className="i-mgc-delete-2-cute-re size-5 text-zinc-600" />
+                            <i className="i-mgc-delete-2-cute-re" />
                           </Button>
                         </div>
-                      </div>
-                      {conditionIdx !== orConditions.length - 1 && (
-                        <div className="relative my-4 flex w-full items-center justify-center">
-                          <div className="relative">
-                            <span className="text-text-secondary text-sm uppercase">
+                        {conditionIdx !== orConditions.length - 1 && (
+                          <div className="flex items-center pl-2">
+                            <span className="text-muted-foreground text-sm">
                               {t("actions.action_card.and")}
                             </span>
-                            <div className="bg-border absolute left-1/2 h-[10px] w-px" />
-                            <div className="bg-border absolute left-1/2 top-0 h-[10px] w-px -translate-y-full" />
                           </div>
-                        </div>
-                      )}
-                    </Fragment>
-                  )
-                })
-              })}
-            </div>
-          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                  <Button
+                    variant="outline"
+                    buttonClassName="mt-2"
+                    disabled={disabled}
+                    onClick={() => {
+                      actionActions.addConditionItem({
+                        ruleIndex: index,
+                        groupIndex: orConditionIdx,
+                      })
+                    }}
+                  >
+                    <i className="i-mgc-add-cute-re mr-2" />
+                    {t("actions.action_card.and")}
+                  </Button>
+                </div>
+                {orConditionIdx !== condition.length - 1 && (
+                  <div className="relative flex h-8 w-full items-center justify-center">
+                    <div className="bg-border absolute left-0 top-1/2 h-px w-full" />
+                    <span className="text-muted-foreground bg-background z-[1] px-2 text-sm">
+                      {t("actions.action_card.or")}
+                    </span>
+                  </div>
+                )}
+              </Fragment>
+            )
+          })}
           <Button
             variant="outline"
-            buttonClassName="mt-4 w-full gap-1 py-1"
             onClick={() => {
               actionActions.addConditionGroup({ ruleIndex: index })
             }}
             disabled={disabled}
           >
+            <i className="i-mgc-add-cute-re mr-2" />
             {t("actions.action_card.or")}
           </Button>
         </div>
@@ -204,7 +188,7 @@ const OperationSelect = ({
       value={value}
       onValueChange={(value) => onValueChange?.(value as ActionOperation)}
       items={options}
-      triggerClassName="h-8 max-sm:w-fit"
+      triggerClassName="h-8"
     />
   )
 }
@@ -220,8 +204,6 @@ const ValueInput = ({
   onChange: (value: string | number) => void
   disabled?: boolean
 }) => {
-  const { t } = useTranslation()
-
   switch (type) {
     case "view": {
       return (
@@ -230,7 +212,7 @@ const ValueInput = ({
           onValueChange={(value) => onChange(value)}
           value={value as string | undefined}
         >
-          <CommonSelectTrigger className="max-sm:w-fit" />
+          <CommonSelectTrigger />
           <ViewSelectContent />
         </Select>
       )
@@ -245,23 +227,30 @@ const ValueInput = ({
           onValueChange={(value) => onChange(value)}
           value={value as string | undefined}
         >
-          <CommonSelectTrigger className="max-sm:w-fit" />
+          <CommonSelectTrigger />
           <SelectContent>
-            <SelectItem value="collected">
-              <div className="flex items-center gap-2">
-                <span>{t("words.starred")}</span>
-              </div>
-            </SelectItem>
+            <SelectItem value="collected">Collected</SelectItem>
+            <SelectItem value="read">Read</SelectItem>
           </SelectContent>
         </Select>
+      )
+    }
+    case "number": {
+      return (
+        <Input
+          disabled={disabled}
+          type="number"
+          value={value}
+          className="h-8"
+          onChange={(e) => onChange(e.target.value)}
+        />
       )
     }
     default: {
       return (
         <Input
           disabled={disabled}
-          type={type}
-          value={value}
+          value={value as string | undefined}
           className="h-8"
           onChange={(e) => onChange(e.target.value)}
         />
@@ -270,20 +259,8 @@ const ValueInput = ({
   }
 }
 
-const CommonSelectTrigger = ({ className }: { className?: string }) => (
-  <SelectTrigger className={cn("h-8", className)}>
+const CommonSelectTrigger = () => (
+  <SelectTrigger className="h-8">
     <SelectValue />
   </SelectTrigger>
 )
-
-const GridHeader = () => {
-  const { t } = useTranslation("settings")
-  return (
-    <div className="text-text-secondary grid grid-cols-4 gap-4 pb-2 text-sm font-medium max-sm:hidden">
-      <div className="pl-1">{t("actions.action_card.field")}</div>
-      <div className="pl-1">{t("actions.action_card.operator")}</div>
-      <div className="pl-1">{t("actions.action_card.value")}</div>
-      <div />
-    </div>
-  )
-}

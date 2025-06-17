@@ -256,6 +256,68 @@ class ActionActions {
       state.isDirty = true
     })
   }
+
+  exportRules(): string {
+    const { rules } = useActionStore.getState()
+    const exportData = {
+      version: "1.0",
+      exportDate: new Date().toISOString(),
+      rules: rules.map((rule) => ({
+        name: rule.name,
+        condition: rule.condition,
+        result: rule.result,
+      })),
+    }
+    return JSON.stringify(exportData)
+  }
+
+  importRules(jsonData: string): { success: boolean; message: string; importedCount?: number } {
+    try {
+      const parsedData = JSON.parse(jsonData)
+
+      // Validate the structure
+      if (!parsedData.rules || !Array.isArray(parsedData.rules)) {
+        return { success: false, message: "Invalid JSON structure: missing or invalid rules array" }
+      }
+
+      // Validate each rule structure
+      for (const rule of parsedData.rules) {
+        if (!rule.name || typeof rule.name !== "string") {
+          return { success: false, message: "Invalid rule: missing or invalid name field" }
+        }
+        if (!rule.condition || !Array.isArray(rule.condition)) {
+          return { success: false, message: "Invalid rule: missing or invalid condition field" }
+        }
+        if (!rule.result || typeof rule.result !== "object") {
+          return { success: false, message: "Invalid rule: missing or invalid result field" }
+        }
+      }
+
+      // Import the rules
+      const importedRules: ActionRules = parsedData.rules.map((rule: any, index: number) => ({
+        name: rule.name,
+        condition: rule.condition,
+        result: rule.result,
+        index,
+      }))
+
+      immerSet((state) => {
+        state.rules = importedRules
+        state.isDirty = true
+      })
+
+      return {
+        success: true,
+        message: `Successfully imported ${importedRules.length} action rule(s)`,
+        importedCount: importedRules.length,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to parse JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
+      }
+    }
+  }
 }
 
 export const actionSyncService = new ActionSyncService()
