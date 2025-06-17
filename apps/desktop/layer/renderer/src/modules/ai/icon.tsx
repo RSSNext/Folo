@@ -1,15 +1,31 @@
 import { cn } from "@follow/utils/utils"
+import Spline from "@splinetool/react-spline"
 
-import { m } from "~/components/common/Motion"
+// import aiIconUrl from "~/assets/ai.splinecode?url"
 
 export const AIIcon = ({ className }: { className?: string }) => {
+  function handleLoad(app) {
+    const obj = app.findObjectByName("Mesh")
+    if (!obj) return
+
+    const onMove = (e) => {
+      const iconPosition = app.canvas.getBoundingClientRect()
+      const { innerWidth: w, innerHeight: h } = window
+      const nx = Math.max(-0.25, Math.min(0.25, (e.clientX - iconPosition.left) / w))
+      const ny = Math.max(-0.2, Math.min(0.2, (e.clientY - iconPosition.top) / h))
+      obj.rotation.y = nx * Math.PI * 2
+      obj.rotation.x = ny * Math.PI
+    }
+    window.addEventListener("pointermove", onMove)
+
+    return () => window.removeEventListener("pointermove", onMove)
+  }
+
   return (
-    <m.div
-      layoutId="ai-icon"
-      className={cn("bg-accent/80 size-8 rounded-full", className)}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0, opacity: 0 }}
+    <Spline
+      scene={`http://localhost:2233/src/assets/ai.splinecode`}
+      onLoad={handleLoad}
+      className={cn("!size-16", className)}
     />
   )
 }

@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "1.12.0",
+    "@splinetool/react-spline": "4.0.0",
     "cookie-es": "2.0.0"
   },
   "devDependencies": {
