@@ -2,6 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { TextArea } from "@follow/components/ui/input/TextArea.js"
 import { Popover, PopoverContent, PopoverTrigger } from "@follow/components/ui/popover/index.jsx"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import {
   Select,
   SelectContent,
@@ -193,13 +194,13 @@ export const AIDialogueInput = ({
           <AIIcon />
         </div>
       )}
-      <div className="flex grow flex-col gap-2">
+      <div className="flex min-w-0 grow flex-col gap-2">
         <TextArea
           rows={isShrink ? 1 : undefined}
           ref={textareaRef}
           autoHeight
           wrapperClassName={cn(
-            "w-full bg-background/80 backdrop-blur-lg shadow-context-menu",
+            "w-full bg-background/80 backdrop-blur-lg shadow-context-menu h-auto",
             !isShrink && "pb-12",
           )}
           placeholder="Describe a task or ask a question"
@@ -268,12 +269,15 @@ export const AIDialogueShortcuts = ({
   const settingModalPresent = useSettingModal()
 
   return (
-    <div className={cn("text-text-secondary flex grow gap-1", className)}>
+    <ScrollArea
+      orientation="horizontal"
+      viewportClassName={cn("text-text whitespace-nowrap pb-2", className)}
+    >
       {mockShortcuts.map((shortcut) => (
         <Button
           key={shortcut.name}
           variant="outline"
-          buttonClassName="rounded-full h-7"
+          buttonClassName="rounded-full h-7 mr-1"
           size="sm"
           onClick={() => {
             onSubmit?.(shortcut.prompt)
@@ -292,6 +296,6 @@ export const AIDialogueShortcuts = ({
       >
         +
       </Button>
-    </div>
+    </ScrollArea>
   )
 }
