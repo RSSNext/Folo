@@ -63,7 +63,7 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
 
   // Events
   var onPageIndexChange: ((Int) -> Void)?
-  var onScroll: ((CGFloat, PagerDirection) -> Void)?
+  var onScroll: ((CGFloat, PagerDirection, Int) -> Void)?
   var onScrollEnd: ((Int) -> Void)?
   var onScrollStart: ((Int) -> Void)?
   var onPageWillAppear: ((Int) -> Void)?
@@ -130,9 +130,10 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
 
     let positionFromStartOfCurrentPage = abs(startOffset - scrollView.contentOffset.x)
     let percent = positionFromStartOfCurrentPage / view.frame.width
+    let position = currentPageIndex
 
-    debugPrint(percent, direction)
-    onScroll?(percent, direction)
+    debugPrint(percent, direction, position)
+    onScroll?(percent, direction, position)
   }
 
   public func scrollViewDidEndDragging(
