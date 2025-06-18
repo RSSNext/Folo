@@ -19,7 +19,7 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { useEntry } from "~/store/entry"
 
 import { AIIcon } from "../icon"
-import { mockShortcuts } from "../mock-data"
+import { mockDialogues, mockShortcuts } from "../mock-data"
 
 export const AIDialoguePanel = () => {
   const user = whoami()
@@ -107,10 +107,11 @@ export const AIDialoguePanel = () => {
         <AIDialogueInput
           hideIcon
           onSubmit={(value) => {
+            const answer = mockDialogues.find((d) => d.ask === value)?.answer
             setDialog((prev) => [
               ...prev,
               { id: `${prev.length + 1}`, content: value, role: "user" },
-              { id: `${prev.length + 2}`, content: "Thinking...", role: "assistant" },
+              { id: `${prev.length + 2}`, content: answer ?? "Thinking...", role: "assistant" },
             ])
           }}
         />
