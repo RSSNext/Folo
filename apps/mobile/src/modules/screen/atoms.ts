@@ -20,13 +20,17 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
 import { getSubscriptionByCategory } from "@follow/store/subscription/getter"
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { jotaiStore } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import { debounce } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { createContext, use, useCallback, useEffect, useMemo, useState } from "react"
+import type { ReactNode } from "react"
+import { createContext, createElement, use, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import type { SharedValue } from "react-native-reanimated"
+import { makeMutable, useSharedValue } from "react-native-reanimated"
 
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
@@ -382,4 +386,39 @@ export const selectFeed = (state: SelectedFeed) => {
 export const useViewDefinition = (view?: FeedViewType) => {
   const viewDef = useMemo(() => views.find((v) => v.view === view), [view])
   return viewDef
+}
+
+const TimelineSelectorDragProgressContext = createContext<SharedValue<number> | null>(null)
+
+export const TimelineSelectorDragProgressProvider = ({ children }: { children: ReactNode }) => {
+  const selectedFeed = useSelectedFeed()
+  const viewId = selectedFeed?.type === "view" ? selectedFeed.viewId : undefined
+
+  const activeViews = useViewWithSubscription()
+
+  const activeViewIndex = useMemo(
+    () => activeViews.indexOf(viewId as FeedViewType),
+    [activeViews, viewId],
+  )
+  const initialPage = activeViewIndex
+  const dragProgress = useSharedValue(initialPage)
+
+  return createElement(
+    TimelineSelectorDragProgressContext,
+    {
+      value: dragProgress,
+    },
+    children,
+  )
+}
+
+export const useTimelineSelectorDragProgress = () => {
+  const dragProgress = use(TimelineSelectorDragProgressContext)
+  if (!dragProgress) {
+    console.error(
+      "useTimelineSelectorDragProgress must be used within TimelineSelectorDragProgressProvider",
+    )
+    return makeMutable(0)
+  }
+  return dragProgress
 }
