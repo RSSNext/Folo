@@ -14,6 +14,7 @@ import { PopoverPortal } from "@radix-ui/react-popover"
 import { useRef, useState } from "react"
 
 import { whoami } from "~/atoms/user"
+import { SplitText } from "~/components/ui/split-text"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { useEntry } from "~/store/entry"
 
@@ -73,7 +74,16 @@ export const AIDialoguePanel = () => {
             <div>
               <AIIcon />
             </div>
-            <div>Hi {user?.name}, how may I assist you today?</div>
+            <SplitText
+              delay={10}
+              duration={2}
+              ease="elastic.out(1, 0.3)"
+              from={{ opacity: 0, y: 40 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              splitType="words"
+              text={`Hi ${user?.name}, how may I assist you today?`}
+            />
           </div>
         )}
         {inDialog && (

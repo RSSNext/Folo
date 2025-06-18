@@ -167,6 +167,9 @@ importers:
       cookie-es:
         specifier: 2.0.0
         version: 2.0.0
+      gsap:
+        specifier: 3.13.0
+        version: 3.13.0
     devDependencies:
       '@clack/prompts':
         specifier: 0.10.1
@@ -9857,6 +9860,9 @@ packages:
   graphql@16.8.1:
     resolution: {integrity: sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+
+  gsap@3.13.0:
+    resolution: {integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==}
 
   handlebars@4.7.8:
     resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
@@ -26628,6 +26634,8 @@ snapshots:
       tslib: 2.6.2
 
   graphql@16.8.1: {}
+
+  gsap@3.13.0: {}
 
   handlebars@4.7.8:
     dependencies:
