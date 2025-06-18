@@ -9,7 +9,7 @@ import type { StyleProp, ViewStyle } from "react-native"
 import { PagerView } from "@/src/components/native/PagerView"
 import type { PagerRef } from "@/src/components/native/PagerView/specs"
 
-import { selectTimeline, useSelectedFeed } from "./atoms"
+import { selectTimeline, useSelectedFeed, useTimelineSelectorDragProgress } from "./atoms"
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"
 
 export function PagerList({
@@ -30,6 +30,8 @@ export function PagerList({
   const [initialPageIndex] = useState(activeViewIndex)
   const pagerRef = useRef<PagerRef>(null)
   const rid = useId()
+  const dragProgress = useTimelineSelectorDragProgress()
+
   useEffect(() => {
     return EventBus.subscribe("SELECT_TIMELINE", (data) => {
       if (data.target !== rid) {
@@ -43,6 +45,11 @@ export function PagerList({
     <PagerView
       ref={pagerRef}
       initialPageIndex={initialPageIndex}
+      onScroll={(percent, direction, position) => {
+        const progress =
+          percent * (direction === "left" ? -1 : direction === "right" ? 1 : 0) + position
+        dragProgress.set(progress)
+      }}
       onScrollBegin={useCallback(() => setDragging(true), [])}
       onScrollEnd={useCallback(() => setDragging(false), [])}
       pageContainerClassName="flex-1"
