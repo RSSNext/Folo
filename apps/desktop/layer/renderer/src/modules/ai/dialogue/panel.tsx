@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@follow/components/ui/select/index.jsx"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
 import { PopoverPortal } from "@radix-ui/react-popover"
 import { useRef, useState } from "react"
@@ -17,7 +18,6 @@ import { useRef, useState } from "react"
 import { whoami } from "~/atoms/user"
 import { SplitText } from "~/components/ui/split-text"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
-import { useEntry } from "~/store/entry"
 
 import { AIIcon } from "../icon"
 import { mockDialogues, mockShortcuts } from "../mock-data"
@@ -170,11 +170,7 @@ export const AIDialogueInput = ({
   hideIcon?: boolean
   onSubmit?: (value: string) => void
 }) => {
-  const entry = useEntry(entryId, (state) => {
-    return {
-      title: state.entries.title,
-    }
-  })
+  const entryTitle = useEntry(entryId, (state) => state.title)
 
   const [isShrink, setIsShrink] = useState(autoShrink)
 
@@ -213,17 +209,17 @@ export const AIDialogueInput = ({
           {!isShrink && (
             <div className="absolute inset-x-4 bottom-3 flex items-center justify-between leading-none">
               <div className="flex flex-1 flex-row items-center gap-3 text-sm">
-                <Select defaultValue={entry ? "entry" : "unread"}>
+                <Select defaultValue={entryTitle ? "entry" : "unread"}>
                   <SelectTrigger className="h-7 w-auto max-w-60 rounded-3xl py-0 [&>span]:truncate">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="mt-2 max-w-60 rounded-xl">
-                    {!!entry && (
+                    {!!entryTitle && (
                       <SelectItem
                         className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
                         value="entry"
                       >
-                        Current entry: {entry?.title}
+                        Current entry: {entryTitle}
                       </SelectItem>
                     )}
                     <SelectItem className="rounded-lg" value="unread">
