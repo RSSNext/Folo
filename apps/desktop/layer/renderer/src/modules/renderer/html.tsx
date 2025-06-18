@@ -1,4 +1,6 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { getFeedById } from "@follow/store/feed/getter"
 import { useMemo } from "react"
 import type { JSX } from "react/jsx-runtime"
 
@@ -9,8 +11,6 @@ import {
 import type { HTMLProps } from "~/components/ui/markdown/HTML"
 import { HTML } from "~/components/ui/markdown/HTML"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
-import { useEntry } from "~/store/entry/hooks"
-import { getFeedById } from "~/store/feed"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
@@ -29,7 +29,7 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
 } & HTMLProps<AS>) {
   const entry = useEntry(entryId, (state) => {
     const images =
-      state.entries.media?.reduce(
+      state.media?.reduce(
         (acc, media) => {
           if (media.height && media.width) {
             acc[media.url] = media

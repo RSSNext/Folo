@@ -19,7 +19,7 @@ import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
 import { RecommendationContent } from "~/modules/discover/RecommendationContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { Queries } from "~/queries"
-import { getPreferredTitle } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 const LanguageMap = {
   all: "all",
@@ -278,7 +278,7 @@ const RecommendationListItem = ({
                         </div>
                       </div>
                     </div>
-                    {analytics?.subscriptionCount && (
+                    {!!analytics?.subscriptionCount && (
                       <div className="flex items-center gap-0.5 text-xs">
                         <i className="i-mgc-fire-cute-re" />
                         {formatNumber(analytics?.subscriptionCount || 0)}

@@ -169,6 +169,34 @@
       "when": 1749121539199,
       "tag": "0023_pink_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1749628868500,
+      "tag": "0024_spooky_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1749633611180,
+      "tag": "0025_colorful_valkyrie",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1749640123453,
+      "tag": "0026_numerous_slyde",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "6",
+      "when": 1749790511829,
+      "tag": "0027_nostalgic_human_torch",
+      "breakpoints": true
     }
   ]
 }

@@ -108,6 +108,11 @@ class EntryServiceStatic implements Resetable {
 
     return result
   }
+
+  async deleteMany(entryIds: string[]) {
+    if (entryIds.length === 0) return
+    await db.delete(entriesTable).where(inArray(entriesTable.id, entryIds))
+  }
 }
 
 export const EntryService = new EntryServiceStatic()

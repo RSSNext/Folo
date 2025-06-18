@@ -1,10 +1,11 @@
 import { useListStore } from "./store"
 
-const get = () => useListStore.getState()
-export const getList = (id: string) => {
+export const getListById = (id: string) => {
+  const get = () => useListStore.getState()
   return get().lists[id]
 }
 
 export const getListFeedIds = (id: string) => {
+  const get = () => useListStore.getState()
   return get().lists[id]?.feedIds
 }

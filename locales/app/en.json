@@ -347,6 +347,7 @@
   "share.title": "Share Entry",
   "shortcuts.guide.title": "Shortcuts Guideline",
   "sidebar.add_more_feeds": "Add more feeds",
+  "sidebar.already_on_discover_page": "You're already on the Discover page! Add the content you want to follow to the panel on the right.",
   "sidebar.category_remove_dialog.cancel": "Cancel",
   "sidebar.category_remove_dialog.continue": "Continue",
   "sidebar.category_remove_dialog.description": "This operation will delete your category, but the feeds it contains will be retained and grouped by website.",

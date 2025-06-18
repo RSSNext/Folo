@@ -70,8 +70,14 @@ export function Trending({
   })
 
   return (
-    <div className={cn("mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
-      <div className={cn("flex justify-between", narrow && "flex-col gap-4")}>
+    <div className={cn("mx-auto mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
+      <div
+        className={cn(
+          "justify-between md:flex",
+          "grid grid-cols-1 grid-rows-2",
+          narrow && "flex-col gap-4",
+        )}
+      >
         <div
           className={cn(
             "flex w-full items-center gap-2 text-xl font-bold",
@@ -81,9 +87,10 @@ export function Trending({
           <i className="i-mgc-trending-up-cute-re text-xl" />
           <span>{t("words.trending")}</span>
         </div>
-        <div className={cn("flex gap-4", center && "center")}>
+        <div className={cn("flex gap-4", center && "md:center justify-end")}>
           <div className="flex items-center">
             <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}:</span>
+
             <ResponsiveSelect
               value={lang}
               onValueChange={(value) => {
@@ -92,7 +99,8 @@ export function Trending({
               triggerClassName="h-8 rounded border-0"
               size="sm"
               items={LanguageOptions}
-              renderItem={(item) => <>{tCommon(item.label as any)}</>}
+              renderItem={(item) => tCommon(item.label as any)}
+              renderValue={(item) => tCommon(item.label as any)}
             />
           </div>
           <div className="flex items-center">

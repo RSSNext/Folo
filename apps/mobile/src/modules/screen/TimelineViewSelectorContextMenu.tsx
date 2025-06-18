@@ -19,10 +19,7 @@ export const TimelineViewSelectorContextMenu: FC<
         <ContextMenu.Item
           key="MarkAsRead"
           onSelect={() => {
-            unreadSyncService.markViewAsRead({
-              view: viewId,
-              excludePrivate: getHideAllReadSubscriptions(),
-            })
+            unreadSyncService.markViewAsRead(viewId, getHideAllReadSubscriptions())
           }}
         >
           <ContextMenu.ItemTitle>{t("operation.mark_as_read")}</ContextMenu.ItemTitle>

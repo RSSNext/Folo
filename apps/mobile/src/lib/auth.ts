@@ -7,7 +7,7 @@ import { createAuthClient } from "better-auth/react"
 import * as SecureStore from "expo-secure-store"
 import { Platform } from "react-native"
 
-import { proxyEnv } from "./proxy-env"
+import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
 
 const storagePrefix = "follow_auth"
@@ -22,7 +22,12 @@ const plugins = [
     storage: {
       setItem(key, value) {
         SecureStore.setItem(key, value)
+
         if (key === cookieKey) {
+          if (__DEV__) {
+            const env = getEnvProfile()
+            SecureStore.setItem(`${cookieKey}_${env}`, value)
+          }
           queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
           queryClient.invalidateQueries({ queryKey: isNewUserQueryKey })
         }

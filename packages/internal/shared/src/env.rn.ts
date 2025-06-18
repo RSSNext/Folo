@@ -29,10 +29,16 @@ const envProfileMap = {
     POSTHOG_KEY: DEFAULT_VALUES.STAGING.POSTHOG_KEY,
     POSTHOG_HOST: DEFAULT_VALUES.STAGING.POSTHOG_HOST,
   },
+  local: {
+    API_URL: DEFAULT_VALUES.LOCAL.API_URL,
+    WEB_URL: DEFAULT_VALUES.LOCAL.WEB_URL,
+    INBOXES_EMAIL: DEFAULT_VALUES.LOCAL.INBOXES_EMAIL,
+  },
 }
 export const getEnvProfiles__dangerously = () => envProfileMap
 export type { envProfileMap }
 /**
+ * @deprecated
  * @description this env always use prod env, please use `proxyEnv` to access dynamic env
  */
 export const env = {

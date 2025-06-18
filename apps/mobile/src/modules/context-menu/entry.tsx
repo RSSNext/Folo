@@ -79,7 +79,7 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
@@ -125,7 +125,7 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
@@ -157,7 +157,6 @@ export const EntryItemContextMenu = ({
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId: id,
                   view,
                 })

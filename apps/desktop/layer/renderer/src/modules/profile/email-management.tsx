@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { setWhoami, useWhoami } from "~/atoms/user"
-import { AnimatedCommandButton } from "~/components/ui/button/base"
+import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandButton"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
@@ -48,7 +48,7 @@ export function EmailManagement() {
   const { present } = useModalStack()
   return (
     <>
-      <div className="mb-2 flex items-center space-x-1">
+      <div className="mb-2 flex items-center space-x-1 pl-3">
         <Label className="text-sm">{t("profile.email.label")}</Label>
         <span
           className={cn(
@@ -59,7 +59,7 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pl-3">
         <div className="text-text-secondary group flex items-center gap-2">
           {user?.email}
 

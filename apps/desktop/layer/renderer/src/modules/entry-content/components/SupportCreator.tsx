@@ -1,5 +1,8 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/index.js"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { getUserList } from "@follow/store/user/getters"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -10,8 +13,6 @@ import { useFeedBoostersQuery } from "~/modules/boost/query"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { deduplicateUsers } from "~/modules/user/utils"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { UserGallery } from "../../user/UserGallery"
 import { useTipModal } from "../../wallet/hooks"
@@ -26,14 +27,12 @@ export const SupportCreator = ({ entryId }: { entryId: string }) => {
   const openBoostModal = useBoostModal()
 
   const isMyOwnedFeed = feed?.ownerUserId === useWhoami()?.id
-  const allSupporters = useMemo(
-    () =>
-      deduplicateUsers([
-        ...(feed && "tipUsers" in feed && feed.tipUsers ? feed.tipUsers : []),
-        ...(feedBoosters ?? []),
-      ]),
-    [feed, feedBoosters],
-  )
+
+  const allSupporters = useMemo(() => {
+    const tipUserIds = feed?.tipUserIds ?? []
+    const tipUsers = getUserList(tipUserIds)
+    return deduplicateUsers([...tipUsers, ...(feedBoosters ?? [])])
+  }, [feed?.tipUserIds, feedBoosters])
   const supportAmount = allSupporters.length
 
   const isInMASReview = useIsInMASReview()

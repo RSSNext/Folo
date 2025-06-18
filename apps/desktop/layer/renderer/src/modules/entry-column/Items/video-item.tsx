@@ -1,6 +1,8 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { formatDuration } from "@follow/utils/duration"
 import { transformVideoUrl } from "@follow/utils/url-for-video"
@@ -9,21 +11,21 @@ import { useHover } from "@use-gesture/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
-import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
+import { Media } from "~/components/ui/media/Media"
 import type { ModalContentComponent } from "~/components/ui/modal"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { checkLanguage } from "~/lib/translate"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry } from "~/store/entry/hooks"
 
 import { GridItem } from "../templates/grid-item-template"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
@@ -32,9 +34,9 @@ const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
 export function VideoItem({ entryId, entryPreview, translation }: UniversalItemProps) {
   const entry = useEntry(entryId, (state) => {
-    const { id, url } = state.entries
+    const { id, url } = state
 
-    const attachments = state.entries.attachments || []
+    const attachments = state.attachments || []
     const { duration_in_seconds } =
       attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
     const seconds = duration_in_seconds
@@ -42,7 +44,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
       : undefined
     const duration = formatDuration(seconds)
 
-    const media = state.entries.media || []
+    const media = state.media || []
     const videos = media.filter((a) => a.type === "video")
     const firstMedia = media[0]
 
@@ -167,9 +169,19 @@ const PreviewVideoModalContent: ModalContentComponent<{
   src: string
   entryId: string
 }> = ({ dismiss, src, entryId }) => {
-  const entry = useEntry(entryId, (state) => ({ content: state.entries.content }))
-  const translation = useEntryTranslation({ entryId, extraFields: ["content"] })
-  const content = translation.data?.content || entry?.content
+  const entry = useEntry(entryId, (state) => ({ content: state.content }))
+
+  const actionLanguage = useActionLanguage()
+  const enableTranslation = useGeneralSettingKey("translation")
+  const translation = useEntryTranslation(entryId, actionLanguage)
+  usePrefetchEntryTranslation({
+    entryIds: [entryId],
+    checkLanguage,
+    translation: enableTranslation,
+    language: actionLanguage,
+    withContent: true,
+  })
+  const content = translation?.content || entry?.content
   const currentAudioPlayerIsPlay = useRef(AudioPlayer.get().status === "playing")
 
   const renderStyle = useRenderStyle()

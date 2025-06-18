@@ -2,19 +2,24 @@ import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
-import { getFeed } from "@follow/store/feed/getter"
+import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
+import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { showEntryGaleriaAccessory } from "@/src/components/native/GaleriaAccessory/EntryGaleriaAccessory"
 import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
 import { getFeedIconSource } from "@/src/lib/image"
+import { isIOS } from "@/src/lib/platform"
 
 export function EntryPictureItem({ id }: { id: string }) {
+  const { openLightbox } = useLightboxControls()
+
   const item = useEntry(id, (state) => ({
     media: state.media,
     feedId: state.feedId,
@@ -42,7 +47,7 @@ export function EntryPictureItem({ id }: { id: string }) {
         media={item.media}
         entryId={id}
         onPreview={() => {
-          const feed = getFeed(item.feedId!)
+          const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
           }
@@ -51,11 +56,29 @@ export function EntryPictureItem({ id }: { id: string }) {
             entryId: id,
           })
 
-          showEntryGaleriaAccessory({
-            author: item.author || "",
-            avatarUrl: getFeedIconSource(feed, "") ?? "",
-            publishedAt: item.publishedAt.toISOString(),
-          })
+          if (isIOS) {
+            showEntryGaleriaAccessory({
+              author: item.author || "",
+              avatarUrl: getFeedIconSource(feed, "") ?? "",
+              publishedAt: item.publishedAt.toISOString(),
+            })
+          } else {
+            runOnUI(() => {
+              "worklet"
+              // const rect = measureHandle(aviHandle)
+              runOnJS(openLightbox)({
+                images: (item.media ?? []).map((media) => ({
+                  uri: media.url,
+                  dimensions: null,
+                  thumbUri: media.url,
+                  thumbDimensions: null,
+                  thumbRect: null,
+                  type: "image",
+                })),
+                index: 0,
+              })
+            })()
+          }
           const fullEntry = getEntry(id)
           preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)

@@ -2,7 +2,7 @@ import { cn } from "@follow/utils/utils"
 import { use } from "react"
 import { useContextSelector } from "use-context-selector"
 
-import { Media } from "../../media"
+import { Media } from "../../media/Media"
 import { MarkdownImageRecordContext, MarkdownRenderActionContext } from "../context"
 
 export const MarkdownInlineImage = (

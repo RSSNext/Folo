@@ -1,4 +1,3 @@
-import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import {
   Table,
   TableBody,
@@ -7,11 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
+import { useInboxById, useInboxList } from "@follow/store/inbox/hooks"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
-
-import { useInboxList } from "~/queries/inboxes"
-import { useInboxById } from "~/store/inbox"
 
 import { InboxActions, InboxEmail, InboxSecret } from "./InboxTable.shared"
 
@@ -29,19 +26,7 @@ export const InboxTable = () => {
           <TableHead className="center px-0">{t("discover.inbox.actions")}</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        {inboxes.isLoading ? (
-          <TableRow>
-            <TableCell size="sm" colSpan={5}>
-              <div className="center w-full">
-                <LoadingCircle size="large" />
-              </div>
-            </TableCell>
-          </TableRow>
-        ) : (
-          inboxes.data?.map((inbox) => <Row id={inbox.id} key={inbox.id} />)
-        )}
-      </TableBody>
+      <TableBody>{inboxes?.map((inbox) => <Row id={inbox.id} key={inbox.id} />)}</TableBody>
     </Table>
   )
 }

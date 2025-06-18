@@ -7,8 +7,9 @@ import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
 import { parseHtml } from "~/lib/parse-html"
 import { useWrappedElementSize } from "~/providers/wrapped-element-provider"
 
-import type { MediaInfoRecord } from "../media"
-import { MediaContainerWidthProvider, MediaInfoRecordProvider } from "../media"
+import { MediaContainerWidthProvider } from "../media/MediaContainerWidthProvider"
+import type { MediaInfoRecord } from "../media/MediaInfoRecord"
+import { MediaInfoRecordProvider } from "../media/MediaInfoRecordProvider"
 import { MarkdownRenderContainerRefContext } from "./context"
 
 export type HTMLProps<A extends keyof JSX.IntrinsicElements = "div"> = {

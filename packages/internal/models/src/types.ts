@@ -3,8 +3,8 @@ import type { hc } from "hono/client"
 import type { z } from "zod"
 
 declare const _apiClient: ReturnType<typeof hc<AppType>>
-
-export type UserModel = Omit<
+type OptionalKey<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+export type UserModel = OptionalKey<
   typeof users.$inferSelect,
   | "createdAt"
   | "updatedAt"
@@ -13,9 +13,10 @@ export type UserModel = Omit<
   | "twoFactorEnabled"
   | "isAnonymous"
   | "suspended"
-> & {
-  email?: string
-}
+  | "bio"
+  | "website"
+  | "socialLinks"
+>
 
 export type ExtractBizResponse<T extends (...args: any[]) => any> = Exclude<
   Awaited<ReturnType<T>>,

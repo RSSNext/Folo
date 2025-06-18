@@ -26,4 +26,9 @@ export const DEFAULT_VALUES = {
     POSTHOG_KEY: "phc_YACSR3QpnlRHkbJx7t86aVp3LDAwzkgN82l7okHZEmR",
     POSTHOG_HOST: "https://posthog.follow.is",
   },
+  LOCAL: {
+    API_URL: "http://localhost:3000",
+    WEB_URL: "http://localhost:2233",
+    INBOXES_EMAIL: "@follow.re",
+  },
 }

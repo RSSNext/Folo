@@ -22,8 +22,8 @@ class ListServiceStatic implements Resetable {
       })
   }
 
-  async deleteList(params: { listId: string }) {
-    await db.delete(listsTable).where(eq(listsTable.id, params.listId))
+  async deleteList(listId: string) {
+    await db.delete(listsTable).where(eq(listsTable.id, listId))
   }
 
   getListAll() {

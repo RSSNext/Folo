@@ -48,6 +48,8 @@ const FeedRow = memo<{ feed: Feed["feed"] }>(({ feed }) => {
   )
 })
 
+// Backend limit
+const SIZE = 5
 FeedRow.displayName = "FeedRow"
 
 export function Component() {
@@ -142,7 +144,7 @@ export function Component() {
                 <div className="divide-material-ultra-thick flex items-center divide-x">
                   <div className="px-4 text-center">
                     <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                      {list.data.list.feedIds?.length || 0}
+                      {list.data.feedCount || 0}
                     </div>
                     <div className="text-sm text-zinc-500 dark:text-zinc-400">
                       {(list.data.list.feedIds?.length || 0) > 1 ? "Feeds" : "Feed"}
@@ -189,13 +191,14 @@ export function Component() {
 
           <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
             {listData.feedIds
-              ?.slice(0, 7)
+              ?.slice(0, SIZE)
               .map((feedId) => <FeedRow feed={feedMap[feedId]!} key={feedId} />)}
           </div>
 
-          {"feedCount" in list.data && list.data.feedCount > 7 && (
+          {"feedCount" in list.data && list.data.feedCount > SIZE && (
             <div className="mt-6 text-center">
               <button
+                type="button"
                 onClick={handleOpenInFollowApp}
                 className="hover:text-accent text-sm text-zinc-500 transition-colors dark:text-zinc-400"
               >

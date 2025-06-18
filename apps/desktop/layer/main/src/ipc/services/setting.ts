@@ -2,7 +2,6 @@ import { createRequire } from "node:module"
 
 import { app, nativeTheme } from "electron"
 
-import { setDockCount } from "../../lib/dock"
 import { setProxyConfig, updateProxy } from "../../lib/proxy"
 import { store } from "../../lib/store"
 import { getTrayConfig, setTrayConfig } from "../../lib/tray"
@@ -63,11 +62,6 @@ export class SettingService extends IpcService {
   @IpcMethod()
   setMinimizeToTray(_context: IpcContext, minimize: boolean): void {
     setTrayConfig(minimize)
-  }
-
-  @IpcMethod()
-  setDockBadge(_context: IpcContext, count: number): void {
-    setDockCount(count)
   }
 
   @IpcMethod()

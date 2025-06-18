@@ -9,7 +9,7 @@ import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/ge
 import { usePlayingUrl } from "@/src/lib/player"
 import { checkLanguage } from "@/src/lib/translation"
 
-import { useFetchEntriesControls } from "../screen/atoms"
+import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
@@ -31,8 +31,7 @@ export const EntryListContentArticle = ({
     [playingAudioUrl, entryIds],
   )
 
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
-    useFetchEntriesControls()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (

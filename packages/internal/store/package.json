@@ -21,10 +21,20 @@
       "require": "./src/action/*.ts",
       "import": "./src/action/*.ts"
     },
+    "./atoms/*": {
+      "types": "./src/atoms/*.ts",
+      "require": "./src/atoms/*.ts",
+      "import": "./src/atoms/*.ts"
+    },
     "./collection/*": {
       "types": "./src/collection/*.ts",
       "require": "./src/collection/*.ts",
       "import": "./src/collection/*.ts"
+    },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "require": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts"
     },
     "./context": {
       "types": "./src/context.ts",

@@ -107,6 +107,8 @@ export type ActionAction = {
   icon: SFSymbol
   iconClassname: string
   settingsPath?: string
+
+  prefixElement?: React.ReactNode
 }
 
 export const availableActionMap: Record<ActionId, ActionAction> = {
@@ -115,14 +117,12 @@ export const availableActionMap: Record<ActionId, ActionAction> = {
     label: "actions.action_card.generate_summary",
     icon: "sparkles",
     iconClassname: "i-mgc-ai-cute-re",
-    settingsPath: "general",
   },
   translation: {
     value: "translation",
     label: "actions.action_card.translate_into",
     icon: "translate",
     iconClassname: "i-mgc-translate-2-ai-cute-re",
-    settingsPath: "general",
   },
   readability: {
     value: "readability",

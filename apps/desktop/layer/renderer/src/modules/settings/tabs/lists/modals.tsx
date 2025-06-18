@@ -21,7 +21,10 @@ import {
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
 import { views } from "@follow/constants"
-import type { FeedModel } from "@follow/models/types"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import { useAllFeedSubscription } from "@follow/store/subscription/hooks"
 import { isBizId } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -40,9 +43,6 @@ import { UrlBuilder } from "~/lib/url-builder"
 import { FeedCertification } from "~/modules/feed/feed-certification"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { ViewSelectorRadioGroup } from "~/modules/shared/ViewSelectorRadioGroup"
-import { useFeedById } from "~/store/feed"
-import { listActions, useListById } from "~/store/list"
-import { useAllFeeds } from "~/store/subscription"
 
 const formSchema = z.object({
   view: z.string(),
@@ -72,15 +72,19 @@ export const ListCreationModalContent = ({ id }: { id?: string }) => {
   const createMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       if (id) {
-        listActions.updateList({
+        await listSyncServices.updateList({
           listId: id,
-          ...values,
-          view: Number.parseInt(values.view),
+          list: {
+            ...values,
+            view: Number.parseInt(values.view),
+          },
         })
       } else {
-        listActions.createList({
-          ...values,
-          view: Number.parseInt(values.view),
+        await listSyncServices.createList({
+          list: {
+            ...values,
+            view: Number.parseInt(values.view),
+          },
         })
       }
     },
@@ -216,13 +220,13 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
     },
   })
 
-  const allFeeds = useAllFeeds()
+  const allFeeds = useAllFeedSubscription()
   const autocompleteSuggestions: Suggestion[] = useMemo(() => {
     return allFeeds
-      .filter((feed) => !list?.feedIds?.includes(feed.id))
+      .filter((feed) => !feed.feedId || !list?.feedIds?.includes(feed.feedId))
       .map((feed) => ({
-        name: feed.title,
-        value: feed.id,
+        name: feed.title || "",
+        value: feed.feedId || "",
       }))
   }, [allFeeds, list?.feedIds])
 
@@ -285,7 +289,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
 }
 
 const RowRender = ({ feedId, listId }: { feedId: string; listId: string }) => {
-  const feed = useFeedById(feedId) as FeedModel
+  const feed = useFeedById(feedId)
 
   const removeMutation = useRemoveFeedFromFeedList()
   if (!feed) return null

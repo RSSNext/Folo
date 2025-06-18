@@ -8,7 +8,8 @@ import { Masonry } from "@follow/components/ui/masonry/index.js"
 import { useMeasure } from "@follow/hooks"
 import { useState } from "react"
 
-import { Media, MediaContainerWidthProvider } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
+import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 
 import type { EntryItemStatelessProps } from "../types"
 

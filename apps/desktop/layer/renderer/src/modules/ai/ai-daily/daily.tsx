@@ -1,5 +1,7 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { EmptyIcon } from "@follow/components/icons/empty.jsx"
+import { CollapseControlled } from "@follow/components/ui/collapse/Collapse.js"
+import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
@@ -9,6 +11,9 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
 import { noop } from "foxact/noop"
@@ -21,18 +26,16 @@ import { Trans, useTranslation } from "react-i18next"
 
 import { MenuItemText } from "~/atoms/context-menu"
 import { useGeneralSettingSelector } from "~/atoms/settings/general"
-import { CollapseControlled } from "~/components/ui/collapse"
 import { RelativeTime } from "~/components/ui/datetime"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import type { LinkProps } from "~/components/ui/link"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { MarkdownLink } from "~/components/ui/markdown/renderers"
-import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
+import { Media } from "~/components/ui/media/Media"
 import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -49,9 +52,6 @@ import { EntryContent } from "~/modules/entry-content"
 import { CommandDropdownMenuItem } from "~/modules/entry-content/actions/more-actions"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { Queries } from "~/queries"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
 
 import { remarkSnowflakeId } from "./plugins/parse-snowflake"
 import type { DailyItemProps, DailyView } from "./types"
@@ -350,7 +350,7 @@ const usePeekModal = () => {
   )
 }
 const EntryToastPreview = ({ entryId }: { entryId: string }) => {
-  useAuthQuery(Queries.entries.byId(entryId))
+  usePrefetchEntryDetail(entryId)
 
   const variants: Record<string, Variant> = {
     enter: {
@@ -368,11 +368,10 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
   }
 
   const entry = useEntry(entryId, (state) => {
-    const { collections, feedId } = state
-    const { author, authorAvatar, description, publishedAt } = state.entries
-    const isInCollection = !!collections
+    const { feedId } = state
+    const { author, authorAvatar, description, publishedAt } = state
 
-    const media = state.entries.media || []
+    const media = state.media || []
     const firstPhotoUrl = media.find((a) => a.type === "photo")?.url
     const iconEntry: FeedIconEntry = {
       firstPhotoUrl,
@@ -384,11 +383,11 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
       description,
       feedId,
       iconEntry,
-      isInCollection,
       media,
       publishedAt,
     }
   })
+  const isInCollection = useIsEntryStarred(entryId)
 
   const feed = useFeedById(entry?.feedId)
   const controller = useAnimationControls()
@@ -445,7 +444,7 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
           <div
             className={cn(
               "relative mt-0.5 whitespace-pre-line text-base",
-              entry.isInCollection && "pr-5",
+              isInCollection && "pr-5",
             )}
           >
             <div
@@ -481,7 +480,7 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
                 </div>
               )}
             </div>
-            {entry.isInCollection && <StarIcon />}
+            {isInCollection && <StarIcon />}
           </div>
 
           {/* End right column */}

@@ -20,7 +20,7 @@ export default defineMetadata(async ({ params, apiClient, origin }): Promise<Met
         id: isBizId(handle || "") ? handle : undefined,
       },
     })
-    .catch((e) => callNotFound(e.message))
+    .catch(callNotFound)
 
   const realUserId = profileRes.data.id
   const [subscriptionsRes, listsRes] = await Promise.allSettled([

@@ -2,7 +2,9 @@ import { getReadonlyRoute, getStableRouterNavigate } from "@follow/components/at
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { useSheetContext } from "@follow/components/ui/sheet/context.js"
 import type { FeedViewType } from "@follow/constants"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { tracker } from "@follow/tracker"
+import { nextFrame } from "@follow/utils"
 import { useCallback } from "react"
 
 import { disableShowAISummaryOnce } from "~/atoms/ai-summary"
@@ -17,14 +19,13 @@ import {
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
-import { getSubscriptionByFeedId } from "~/store/subscription"
 
 export type NavigateEntryOptions = Partial<{
   timelineId: string
   feedId: string | null
   entryId: string | null
   view: FeedViewType
-  folderName: string
+  folderName: string | null
   inboxId: string
   listId: string
   backPath: string
@@ -88,9 +89,12 @@ export const navigateEntry = (options: NavigateEntryOptions) => {
     finalTimelineId = `${ROUTE_TIMELINE_OF_VIEW}${finalView}`
   }
 
-  resetShowSourceContent()
   disableShowAISummaryOnce()
   disableShowAITranslationOnce()
+
+  nextFrame(() => {
+    resetShowSourceContent()
+  })
 
   tracker.navigateEntry({ feedId: finalFeedId, entryId: finalEntryId, timelineId: finalTimelineId })
 

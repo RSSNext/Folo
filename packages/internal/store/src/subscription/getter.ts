@@ -1,25 +1,40 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 
+import { getEntry } from "../entry/getter"
+import { getInboxList } from "../inbox/getters"
 import { getListFeedIds } from "../list/getters"
-import type { SubscriptionModel } from "./store"
+import { folderFeedsByFeedIdSelector } from "./selectors"
 import { useSubscriptionStore } from "./store"
 import { getDefaultCategory } from "./utils"
 
-const get = useSubscriptionStore.getState
-export const getSubscription = (id?: string): SubscriptionModel | undefined => {
+export const getSubscriptionById = (id: string | undefined) => {
   if (!id) return
-  return get().data[id]
+  return useSubscriptionStore.getState().data[id]
+}
+export const getSubscriptionByFeedId = (feedId: string | undefined) => getSubscriptionById(feedId)
+
+export const getSubscriptionByEntryId = (entryId: string | undefined) => {
+  if (!entryId) return
+  const entry = getEntry(entryId)
+  if (!entry) return
+  const { feedId, sources } = entry
+  const possibleSource = (sources?.concat(feedId || "") ?? []).filter((s) => !!s && s !== "feed")
+  if (!possibleSource || possibleSource.length === 0) return
+  return possibleSource.map((id) => getSubscriptionByFeedId(id)).find((s) => !!s)
 }
 
-export const getSubscriptionByView = (view: FeedViewType): string[] => {
-  const state = get()
+export const getSubscribedFeedIdAndInboxHandlesByView = (
+  view: FeedViewType | undefined,
+): string[] => {
+  if (typeof view !== "number") return []
+  const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
-    .concat(Array.from(state.inboxIdByView[view]))
+    .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
     .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
 }
 
-export const getFeedSubscriptionByView = (view: FeedViewType): string[] => {
-  const state = get()
+export const getSubscribedFeedIdsByView = (view: FeedViewType): string[] => {
+  const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
 }
 
@@ -30,7 +45,7 @@ export const getSubscriptionByCategory = ({
   category: string
   view: FeedViewType
 }): string[] => {
-  const state = get()
+  const state = useSubscriptionStore.getState()
 
   const ids = [] as string[]
   for (const id of Object.keys(state.data)) {
@@ -43,3 +58,6 @@ export const getSubscriptionByCategory = ({
   }
   return ids
 }
+
+export const getFolderFeedsByFeedId = ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
+  folderFeedsByFeedIdSelector({ feedId, view })(useSubscriptionStore.getState())

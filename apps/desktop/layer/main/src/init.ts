@@ -27,6 +27,23 @@ if (process.argv.length === 3 && process.argv[2]!.startsWith("follow-dev:")) {
  * Mandatory and fast initializers for the app
  */
 export function initializeAppStage0() {
+  // https://github.com/getsentry/sentry-electron/issues/661
+  protocol.registerSchemesAsPrivileged([
+    {
+      scheme: "sentry-ipc",
+      privileges: { bypassCSP: true, corsEnabled: true, supportFetchAPI: true, secure: true },
+    },
+    {
+      scheme: "app",
+      privileges: {
+        standard: true,
+        bypassCSP: true,
+        supportFetchAPI: true,
+        secure: true,
+      },
+    },
+  ])
+
   initializeSentry()
   initializeIpcServices()
 }
@@ -59,17 +76,6 @@ export const initializeAppStage1 = () => {
   registerPushNotifications()
   clearCacheCronJob()
   checkAndCleanCodeCache()
-
-  protocol.registerSchemesAsPrivileged([
-    {
-      scheme: "app",
-      privileges: {
-        standard: true,
-        bypassCSP: true,
-        supportFetchAPI: true,
-      },
-    },
-  ])
 }
 
 let contextMenuDisposer: () => void

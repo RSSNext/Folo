@@ -3,19 +3,23 @@ import { getProviders } from "@client/lib/auth"
 import { getHydrateData } from "@client/lib/helper"
 import type { LoginHydrateData } from "@client/pages/(login)/login/metadata"
 import type { ExtractBizResponse } from "@follow/models"
-import { capitalizeFirstLetter, isBizId, parseUrl } from "@follow/utils/utils"
+import { isBizId, sortByAlphabet } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
 
+const UN_CATEGORIZED = "Uncategorized"
 const groupSubscriptions = (
   subscriptions: SubscriptionResult,
 ): Record<string, SubscriptionResult> => {
   const groupFolder = {} as Record<string, SubscriptionResult>
   for (const subscription of subscriptions.filter((s) => !s.isPrivate) || []) {
+    // if (!subscription.category && "feeds" in subscription) {
+    //   const { siteUrl } = subscription.feeds
+    //   if (!siteUrl) continue
+    //   const parsed = parseUrl(siteUrl)
+    //   parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
+    // }
     if (!subscription.category && "feeds" in subscription) {
-      const { siteUrl } = subscription.feeds
-      if (!siteUrl) continue
-      const parsed = parseUrl(siteUrl)
-      parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
+      subscription.category = UN_CATEGORIZED
     }
     if (subscription.category) {
       if (!groupFolder[subscription.category]) {
@@ -23,6 +27,19 @@ const groupSubscriptions = (
       }
       groupFolder[subscription.category]!.push(subscription)
     }
+  }
+
+  // Move the un-categorized to the last
+  if (Object.keys(groupFolder)[0] === UN_CATEGORIZED) {
+    const temp = groupFolder[UN_CATEGORIZED]
+    delete groupFolder[UN_CATEGORIZED]
+
+    Reflect.defineProperty(groupFolder, UN_CATEGORIZED, {
+      value: temp?.sort((a, b) => sortByAlphabet(a.title!, b.title!)) || [],
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    })
   }
   return groupFolder
 }
@@ -80,6 +97,7 @@ export interface AuthProvider {
   color: string
   icon: string
   icon64: string
+  iconDark64?: string
 }
 const getTypedProviders = async () => {
   const providers = await getProviders()

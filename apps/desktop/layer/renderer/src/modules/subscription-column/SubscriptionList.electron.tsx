@@ -5,26 +5,26 @@ import {
   useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { FeedViewType } from "@follow/constants"
+import { useInboxList } from "@follow/store/inbox/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import {
+  useCategoryOpenStateByView,
+  useFeedsGroupedData,
+  useSubscriptionListIds,
+} from "@follow/store/subscription/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions, isKeyForMultiSelectPressed } from "@follow/utils/utils"
-import { memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import Selecto from "react-selecto"
 import { useEventCallback, useEventListener } from "usehooks-ts"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
 import { useFeedQuery } from "~/queries/feed"
-import { useList } from "~/queries/lists"
-import {
-  useCategoryOpenStateByView,
-  useFeedsGroupedData,
-  useSubscriptionInboxIds,
-  useSubscriptionListIds,
-} from "~/store/subscription"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -40,13 +40,19 @@ import { DraggableContext } from "./context"
 import { FeedItem, ListItemAutoHideUnread } from "./FeedItem"
 import { useShouldFreeUpSpace } from "./hook"
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
-import type { SubscriptionProps } from "./SubscriptionList"
+import type { SubscriptionProps } from "./SubscriptionList.entry"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
-  const feedsData = useFeedsGroupedData(view)
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const feedsData = useFeedsGroupedData(view, autoGroup)
   const listSubIds = useSubscriptionListIds(view)
-  const inboxSubIds = useSubscriptionInboxIds(view)
+  const inboxSubIds = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
 
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
@@ -56,7 +62,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const { t } = useTranslation()
 
   // Data prefetch
-  useAuthQuery(Queries.lists.list())
+  // useAuthQuery(Queries.lists.list())
 
   const hasListData = listSubIds.length > 0
   const hasInboxData = inboxSubIds.length > 0
@@ -134,7 +140,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const isListPreview = isPreview && listId
 
   useFeedQuery({ id: isFeedPreview ? feedId : undefined })
-  useList({ id: isListPreview ? listId : undefined })
+  useListById(isListPreview ? listId : undefined)
 
   useRegisterCommand()
 

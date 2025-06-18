@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntryIdsByFeedId, usePrefetchEntries } from "@follow/store/entry/hooks"
-import { getFeed } from "@follow/store/feed/getter"
-import { getSubscription } from "@follow/store/subscription/getter"
+import { useEntriesQuery, useEntryIdsByFeedId } from "@follow/store/entry/hooks"
+import { getFeedById } from "@follow/store/feed/getter"
+import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { unreadSyncService } from "@follow/store/unread/store"
@@ -57,7 +57,7 @@ export const SubscriptionFeedItemContextMenu: FC<
 const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => {
   const view = getSelectedView()
 
-  const feed = getFeed(id)
+  const feed = getFeedById(id)
   const allCategories = getSubscriptionCategory(view)
 
   return (
@@ -136,7 +136,7 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
           <>
             {allCategories.map((category) => {
               const onSelect = () => {
-                const subscription = getSubscription(id)
+                const subscription = getSubscriptionById(id)
                 if (!subscription) return
 
                 // add to category
@@ -156,7 +156,7 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
             key={`SubContent/CreateNewCategory`}
             onSelect={() => {
               // create new category
-              const subscription = getSubscription(id)
+              const subscription = getSubscriptionById(id)
               if (!subscription) return
               Alert.prompt("Create New Category", "Enter the name of the new category", (text) => {
                 subscriptionSyncService.edit({
@@ -175,7 +175,7 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
       <ContextMenu.Item
         key="Edit"
         onSelect={() => {
-          const subscription = getSubscription(id)
+          const subscription = getSubscriptionById(id)
           if (!subscription || !subscription.feedId) return
 
           navigation.presentControllerView(FollowScreen, {
@@ -195,13 +195,13 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
       <ContextMenu.Item
         key="CopyLink"
         onSelect={() => {
-          const subscription = getSubscription(id)
+          const subscription = getSubscriptionById(id)
           if (!subscription) return
 
           switch (subscription.type) {
             case "feed": {
               if (!subscription.feedId) return
-              const feed = getFeed(subscription.feedId)
+              const feed = getFeedById(subscription.feedId)
               if (!feed) return
               setStringAsync(feed.url)
               toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
@@ -341,7 +341,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
   const { id: feedId } = props
   const entryIds = useEntryIdsByFeedId(feedId)
   const options = useFetchEntriesSettings()
-  const { isLoading } = usePrefetchEntries({ feedId, limit: 5, ...options })
+  const { isLoading } = useEntriesQuery({ feedId, limit: 5, ...options })
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (

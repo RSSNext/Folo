@@ -1,12 +1,85 @@
+// import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { PlatformIcon } from "@follow/components/ui/platform-icon/index.jsx"
-import type { FeedModel, FeedOrListRespModel } from "@follow/models/types"
+import type { FeedOrListRespModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/store/feed/types"
+import type { ListModel } from "@follow/store/list/types"
 import { getBackgroundGradient } from "@follow/utils/color"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn, getUrlIcon } from "@follow/utils/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import * as AvatarPrimitive from "@radix-ui/react-avatar"
 import { m } from "motion/react"
 import type { ReactNode } from "react"
 import { useMemo } from "react"
+
+const { Avatar, AvatarFallback, AvatarImage } = AvatarPrimitive
+
+function getIconProps(
+  props: Pick<
+    Parameters<typeof FeedIcon>[0],
+    "feed" | "entry" | "useMedia" | "siteUrl" | "fallbackUrl" | "fallback" | "size"
+  >,
+) {
+  const { feed, entry, useMedia, siteUrl: propSiteUrl, fallbackUrl, fallback, size = 20 } = props
+  const image =
+    (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || feed?.image
+  const siteUrl = (feed as FeedModel)?.siteUrl || fallbackUrl
+
+  if (propSiteUrl && !feed) {
+    const [src] = getFeedIconSrc({
+      siteUrl: propSiteUrl,
+    })
+    return {
+      type: "image" as const,
+      src,
+      platformUrl: propSiteUrl,
+      fallbackSrc: "",
+    }
+  }
+  if (image) {
+    return {
+      type: "image" as const,
+      src: getImageProxyUrl({
+        url: image,
+        width: size * 2,
+        height: size * 2,
+      }),
+      platformUrl: image,
+      fallbackSrc: "",
+    }
+  }
+
+  if (siteUrl) {
+    const [src, fallbackSrc] = getFeedIconSrc({
+      siteUrl,
+      fallback,
+      proxy: {
+        width: size * 2,
+        height: size * 2,
+      },
+    })
+    return {
+      type: "image" as const,
+      src,
+      platformUrl: siteUrl,
+      fallbackSrc,
+    }
+  }
+  if (feed?.type === "inbox") {
+    return {
+      type: "inbox" as const,
+    }
+  }
+
+  if (feed?.title) {
+    return {
+      type: "text" as const,
+    }
+  }
+
+  return {
+    type: "default" as const,
+  }
+}
 
 const getFeedIconSrc = ({
   src,
@@ -67,10 +140,8 @@ const FallbackableImage = function FallbackableImage({
 }
 
 type FeedIconFeed =
-  | (Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image"> & {
-      type: FeedOrListRespModel["type"]
-      siteUrl?: string
-    })
+  | Pick<FeedModel, "ownerUserId" | "id" | "title" | "url" | "image" | "siteUrl" | "type">
+  | ListModel
   | FeedOrListRespModel
 
 export type FeedIconEntry = { authorAvatar?: string | null; firstPhotoUrl?: string | null }
@@ -110,15 +181,12 @@ export function FeedIcon({
   noMargin?: boolean
 }) {
   const marginClassName = noMargin ? "" : "mr-2"
-  const image =
-    (useMedia ? entry?.firstPhotoUrl || entry?.authorAvatar : entry?.authorAvatar) || feed?.image
+  const iconProps = getIconProps({ feed, entry, useMedia, siteUrl, fallbackUrl, fallback, size })
 
   const colors = useMemo(
     () => getBackgroundGradient(feed?.title || (feed as FeedModel)?.url || siteUrl || ""),
     [feed?.title, (feed as FeedModel)?.url, siteUrl],
   )
-  let ImageElement: ReactNode
-  let finalSrc = ""
 
   const sizeStyle: React.CSSProperties = useMemo(
     () => ({
@@ -136,7 +204,7 @@ export function FeedIcon({
     }
   }, [colors, sizeStyle])
 
-  const fallbackIcon = (
+  const textFallbackIcon = (
     <span
       style={colorfulStyle}
       className={cn(
@@ -156,116 +224,71 @@ export function FeedIcon({
     </span>
   )
 
-  switch (true) {
-    case !feed && !!siteUrl: {
-      const [src] = getFeedIconSrc({
-        siteUrl,
-      })
-      finalSrc = src!
+  let imageElement: ReactNode
+  let finalSrc = ""
 
-      const isIconLoaded = isIconLoadedSet.has(src!)
-      isIconLoadedSet.add(src!)
-
-      ImageElement = (
-        <PlatformIcon url={siteUrl} style={sizeStyle} className={className}>
-          <m.img style={sizeStyle} {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)} />
-        </PlatformIcon>
-      )
-      break
-    }
-    case !!image: {
-      finalSrc = getImageProxyUrl({
-        url: image,
-        width: size * 2,
-        height: size * 2,
-      })
+  switch (iconProps.type) {
+    case "image": {
+      finalSrc = iconProps.src!
       const isIconLoaded = isIconLoadedSet.has(finalSrc)
       isIconLoadedSet.add(finalSrc)
+      const { fallbackSrc } = iconProps
 
-      ImageElement = (
-        <PlatformIcon url={image} style={sizeStyle} className={className}>
-          <m.img
-            className={cn(marginClassName, className)}
-            style={sizeStyle}
-            {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)}
-          />
+      imageElement = (
+        <PlatformIcon url={iconProps.platformUrl!} style={sizeStyle} className={className}>
+          {fallbackSrc ? (
+            <FallbackableImage
+              className={cn(marginClassName, className)}
+              style={sizeStyle}
+              fallbackUrl={fallbackSrc}
+            />
+          ) : (
+            <m.img
+              className={cn(marginClassName, className)}
+              style={sizeStyle}
+              {...(disableFadeIn || isIconLoaded ? {} : fadeInVariant)}
+            />
+          )}
         </PlatformIcon>
       )
       break
     }
-    case !!fallbackUrl:
-    case !!(feed as FeedModel)?.siteUrl: {
-      const [src, fallbackSrc] = getFeedIconSrc({
-        siteUrl: (feed as FeedModel)?.siteUrl || fallbackUrl,
-        fallback,
-        proxy: {
-          width: size * 2,
-          height: size * 2,
-        },
-      })
-      finalSrc = src!
-
-      ImageElement = (
-        <PlatformIcon
-          url={(feed as FeedModel)?.siteUrl || fallbackUrl}
-          style={sizeStyle}
-          className={className}
-        >
-          <FallbackableImage
-            className={cn(marginClassName, className)}
-            style={sizeStyle}
-            fallbackUrl={fallbackSrc!}
-          />
-        </PlatformIcon>
-      )
-      break
-    }
-    case feed?.type === "inbox": {
-      ImageElement = (
+    case "inbox": {
+      imageElement = (
         <i className={cn("i-mgc-inbox-cute-fi shrink-0", marginClassName)} style={sizeStyle} />
       )
       break
     }
-    case !!feed?.title && !!feed.title[0]: {
-      ImageElement = fallbackIcon
+    case "text": {
+      imageElement = textFallbackIcon
       break
     }
-    default: {
-      ImageElement = (
+    case "default": {
+      imageElement = (
         <i className={cn("i-mgc-link-cute-re shrink-0", marginClassName)} style={sizeStyle} />
       )
       break
     }
   }
 
-  if (!ImageElement) {
+  if (!imageElement) {
     return null
   }
 
-  if (fallback && !!finalSrc) {
+  const fallbackIcon = fallbackElement || textFallbackIcon
+
+  if (finalSrc) {
     return (
       <Avatar className={cn("shrink-0 [&_*]:select-none", marginClassName)} style={sizeStyle}>
         <AvatarImage className="rounded-sm object-cover" asChild src={finalSrc}>
-          {ImageElement}
+          {imageElement}
         </AvatarImage>
         <AvatarFallback delayMs={200} asChild>
-          {fallbackElement || fallbackIcon}
+          {fallback ? fallbackIcon : <div />}
         </AvatarFallback>
       </Avatar>
     )
   }
 
-  // Is Icon
-  if (!finalSrc) return ImageElement
-  // Else
-  return (
-    <Avatar className={cn("shrink-0 [&_*]:select-none", marginClassName)} style={sizeStyle}>
-      <AvatarImage asChild src={finalSrc}>
-        {ImageElement}
-      </AvatarImage>
-      <AvatarFallback delayMs={200}>
-        <div className={className} style={sizeStyle} data-placeholder={finalSrc} />
-      </AvatarFallback>
-    </Avatar>
-  )
+  return imageElement
 }

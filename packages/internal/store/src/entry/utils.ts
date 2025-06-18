@@ -1,16 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 
-/// Feed
-export const FEED_COLLECTION_LIST = "collections"
-
-/// Route Keys
-export const ROUTE_FEED_PENDING = "all"
-export const ROUTE_ENTRY_PENDING = "pending"
-export const ROUTE_FEED_IN_FOLDER = "folder-"
-export const ROUTE_FEED_IN_LIST = "list-"
-export const ROUTE_FEED_IN_INBOX = "inbox-"
-
-export const INBOX_PREFIX_ID = "inbox-"
+import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "../constants/app"
+import type { UseEntriesReturn } from "./types"
 
 export function getEntriesParams({
   feedId,
@@ -67,4 +58,21 @@ export function getInboxFrom(entry?: { inboxHandle?: string | null; authorUrl?: 
 
 export function isInboxEntry(entry?: { inboxHandle?: string | null }) {
   return !!entry?.inboxHandle
+}
+
+export const fallbackReturn: UseEntriesReturn = {
+  entriesIds: [],
+  hasNext: false,
+  hasUpdate: false,
+  refetch: async () => {},
+
+  fetchNextPage: async () => {},
+
+  isLoading: true,
+  isReady: false,
+  isFetching: false,
+  isRefetching: false,
+  isFetchingNextPage: false,
+  hasNextPage: false,
+  error: null,
 }

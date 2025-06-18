@@ -1,4 +1,3 @@
-import { usePrefetchImageColors } from "@follow/store/image/hooks"
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import { use, useEffect } from "react"
@@ -15,6 +14,7 @@ import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabConte
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActiveTrack } from "@/src/lib/player"
 import { PlayerScreen } from "@/src/screens/PlayerScreen"
+import { usePrefetchImageColors } from "@/src/store/image/hooks"
 
 import { PlayPauseButton, SeekButton } from "./control"
 

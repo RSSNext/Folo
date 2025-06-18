@@ -1,5 +1,6 @@
 import { PresentSheet } from "@follow/components/ui/sheet/Sheet.js"
-import type { FeedModel } from "@follow/models"
+import { useEntry } from "@follow/store/entry/hooks"
+import type { FeedModel } from "@follow/store/feed/types"
 import { cn } from "@follow/utils/utils"
 import { useState } from "react"
 import Marquee from "react-fast-marquee"
@@ -9,7 +10,6 @@ import { RelativeTime } from "~/components/ui/datetime"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { PlayerProgress } from "~/modules/player/corner-player"
-import { useEntry } from "~/store/entry"
 
 const handleClickPlay = () => {
   AudioPlayer.togglePlayAndPause()
@@ -22,9 +22,9 @@ export const PodcastButton = ({ feed }: { feed: FeedModel }) => {
   const playerValue = { entryId, status, isMute }
 
   const entry = useEntry(playerValue.entryId, (state) => {
-    const { authorAvatar, publishedAt, title } = state.entries
+    const { authorAvatar, publishedAt, title } = state
 
-    const media = state.entries.media || []
+    const media = state.media || []
     const firstPhotoUrl = media.find((a) => a.type === "photo")?.url
     const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
 

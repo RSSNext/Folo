@@ -1,4 +1,4 @@
-import { getAllUnreadCount } from "@follow/store/unread/getter"
+import { getUnreadAll } from "@follow/store/unread/getters"
 import { themeNames } from "@shikijs/themes"
 import { useTranslation } from "react-i18next"
 import { useColorScheme, View } from "react-native"
@@ -52,7 +52,7 @@ export const AppearanceScreen = () => {
             value={showUnreadCountBadgeMobile}
             onValueChange={(val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
-              setBadgeCountAsyncWithPermission(val ? getAllUnreadCount() : 0, true)
+              setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, true)
             }}
           />
         </GroupedInsetListCell>

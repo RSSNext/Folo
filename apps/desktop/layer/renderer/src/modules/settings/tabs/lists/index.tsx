@@ -18,17 +18,17 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { views } from "@follow/constants"
+import { useOwnedLists, usePrefetchLists } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
 import { cn, formatNumber } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { toast } from "sonner"
 
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useAuthQuery, useI18n } from "~/hooks/common"
+import { useI18n } from "~/hooks/common"
 import { UrlBuilder } from "~/lib/url-builder"
 import { Balance } from "~/modules/wallet/balance"
-import { Queries } from "~/queries"
-import { listActions, useOwnedLists } from "~/store/list"
 
 import { ListCreationModalContent, ListFeedsModalContent } from "./modals"
 
@@ -37,7 +37,7 @@ const ConfirmDestroyModalContent = ({ listId }: { listId: string }) => {
   const currentModal = useCurrentModal()
 
   const deleteFeedList = useMutation({
-    mutationFn: (payload: { listId: string }) => listActions.deleteList(payload.listId),
+    mutationFn: (payload: { listId: string }) => listSyncServices.deleteList(payload.listId),
     onSuccess: () => {
       toast.success(t.settings("lists.delete.success"))
     },
@@ -66,26 +66,29 @@ const ConfirmDestroyModalContent = ({ listId }: { listId: string }) => {
 
 export const SettingLists = () => {
   const t = useI18n()
-  const { isLoading, data } = useAuthQuery(Queries.lists.list())
+  const { isLoading } = usePrefetchLists()
+  const ownedLists = useOwnedLists()
   const listDataMap = useMemo(() => {
-    if (!data) return {}
-    return data?.reduce(
+    if (!ownedLists) return {}
+    return ownedLists?.reduce(
       (acc, curr) => {
         acc[curr.id] = {
           id: curr.id,
           subscriptionCount: curr.subscriptionCount,
-          purchaseAmount: curr.purchaseAmount,
+          purchaseAmount: Number(curr.purchaseAmount || 0),
         }
         return acc
       },
       {} as Record<
         string,
-        { id: string; subscriptionCount: number | undefined; purchaseAmount: number | undefined }
+        {
+          id: string
+          subscriptionCount: number | null | undefined
+          purchaseAmount: number | null | undefined
+        }
       >,
     )
-  }, [data])
-
-  const ownedLists = useOwnedLists()
+  }, [ownedLists])
 
   const { present } = useModalStack()
 

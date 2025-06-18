@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import type { SubscriptionSchema } from "@follow/database/schemas/types"
 
 export interface SubscriptionForm {
   url?: string
@@ -9,3 +10,5 @@ export interface SubscriptionForm {
   feedId?: string
   listId?: string
 }
+
+export type SubscriptionModel = Omit<SubscriptionSchema, "id">

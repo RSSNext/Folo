@@ -3,6 +3,9 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
@@ -13,8 +16,8 @@ import { useTranslation } from "react-i18next"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
-import { Media } from "~/components/ui/media"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
+import { Media } from "~/components/ui/media/Media"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
@@ -25,8 +28,6 @@ import { MoreActions } from "~/modules/entry-content/actions/more-actions"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { useEntry } from "~/store/entry/hooks"
-import { useFeedById } from "~/store/feed"
 
 import { StarIcon } from "../star-icon"
 import type { EntryItemStatelessProps, EntryListItemFC } from "../types"
@@ -34,13 +35,10 @@ import type { EntryItemStatelessProps, EntryListItemFC } from "../types"
 const socialMediaContentWidthAtom = atom(0)
 export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const entry = useEntry(entryId, (state) => {
-    const { collections, feedId, read } = state
-    const { author, authorAvatar, authorUrl, content, description, guid, publishedAt, url } =
-      state.entries
+    const { feedId, read } = state
+    const { author, authorAvatar, authorUrl, content, description, guid, publishedAt, url } = state
 
-    const isInCollection = !!collections
-
-    const media = state.entries.media || []
+    const media = state.media || []
     const photo = media.find((a) => a.type === "photo")
     const firstPhotoUrl = photo?.url
     const iconEntry: FeedIconEntry = {
@@ -56,12 +54,12 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
       feedId,
       guid,
       iconEntry,
-      isInCollection,
       publishedAt,
       read,
       url,
     }
   })
+  const isInCollection = useIsEntryStarred(entryId)
 
   const asRead = useEntryIsRead(entry)
   const feed = useFeedById(entry?.feedId)
@@ -131,7 +129,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
               <RelativeTime date={entry.publishedAt} />
             </span>
           </div>
-          <div className={cn("relative mt-1 text-base", entry.isInCollection && "pr-5")}>
+          <div className={cn("relative mt-1 text-base", isInCollection && "pr-5")}>
             <EntryContentWrapper entryId={entryId}>
               <HTML
                 as="div"
@@ -145,7 +143,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
                 {translation?.content || content}
               </HTML>
             </EntryContentWrapper>
-            {entry.isInCollection && <StarIcon className="absolute right-0 top-0" />}
+            {isInCollection && <StarIcon className="absolute right-0 top-0" />}
           </div>
         </div>
         <SocialMediaGallery entryId={entryId} />
@@ -159,7 +157,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
 SocialMediaItem.wrapperClassName = tw`w-[645px] max-w-full m-auto`
 
 const ActionBar = ({ entryId }: { entryId: string }) => {
-  const { mainAction: entryActions } = useSortedEntryActions({ entryId })
+  const { mainAction: entryActions } = useSortedEntryActions({
+    entryId,
+    view: FeedViewType.SocialMedia,
+  })
 
   if (entryActions.length === 0) return null
 
@@ -167,7 +168,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
     <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
       <div className="flex items-center gap-1">
         <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
-        <MoreActions entryId={entryId} />
+        <MoreActions entryId={entryId} view={FeedViewType.SocialMedia} />
       </div>
     </div>
   )
@@ -244,7 +245,7 @@ export const SocialMediaItemSkeleton = (
 )
 
 const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
-  const entry = useEntry(entryId, (state) => ({ media: state.entries.media }))
+  const entry = useEntry(entryId, (state) => ({ media: state.media }))
   const media = useMemo(() => entry?.media || [], [entry?.media])
 
   const previewMedia = usePreviewMedia()

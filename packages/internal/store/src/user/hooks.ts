@@ -24,6 +24,16 @@ export const usePrefetchSessionUser = () => {
   return query
 }
 
+export const usePrefetchUser = (userId: string | undefined) => {
+  const query = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => userSyncService.fetchUser(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
+  })
+  return query
+}
+
 export const useWhoami = () => {
   return useUserStore((state) => state.whoami)
 }
@@ -32,8 +42,14 @@ export const useRole = () => {
   return useUserStore((state) => state.role)
 }
 
-export const useUser = (userId?: string) => {
+export const useUserById = (userId: string | undefined) => {
   return useUserStore((state) => (userId ? state.users[userId] : undefined))
+}
+
+export const useUserList = (userIds: string[]) => {
+  return useUserStore((state) => {
+    return userIds.map((id) => state.users[id]).filter((i) => !!i)
+  })
 }
 
 export function useIsNewUser(options?: GeneralQueryOptions) {

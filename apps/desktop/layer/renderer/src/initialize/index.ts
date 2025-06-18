@@ -1,35 +1,23 @@
 import { initializeDayjs } from "@follow/components/dayjs"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { DEV, ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
+import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { repository } from "@pkg"
 import { enableMapSet } from "immer"
 
-import { browserDB } from "~/database"
 import { initI18n } from "~/i18n"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
 import { ElectronCloseEvent, ElectronShowEvent } from "~/providers/invalidate-query-provider"
-import { CleanerService } from "~/services/cleaner"
 
 import { subscribeNetworkStatus } from "../atoms/network"
-import { getGeneralSettings, subscribeShouldUseIndexedDB } from "../atoms/settings/general"
+import { getGeneralSettings } from "../atoms/settings/general"
 import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
-import { hydrateDatabaseToStore, hydrateSettings, setHydrated } from "./hydrate"
+import { hydrateSettings } from "./hydrate"
 import { doMigration } from "./migrates"
 import { initSentry } from "./sentry"
-
-const cleanup = subscribeShouldUseIndexedDB((value) => {
-  if (!value) {
-    browserDB.tables.forEach((table) => {
-      table.clear()
-    })
-    setHydrated(false)
-    return
-  }
-  setHydrated(true)
-})
 
 declare global {
   interface Window {
@@ -103,8 +91,11 @@ export const initializeApp = async () => {
   let dataHydratedTime: undefined | number
   // Initialize the database
   if (enabledDataPersist) {
-    dataHydratedTime = await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
-    CleanerService.cleanOutdatedData()
+    dataHydratedTime = await apm("hydrateDatabaseToStore", () => {
+      return hydrateDatabaseToStore({
+        migrateDatabase: true,
+      })
+    })
   }
 
   await apm("initAnalytics", initAnalytics)
@@ -121,8 +112,6 @@ export const initializeApp = async () => {
     rn: false,
   })
 }
-
-import.meta.hot?.dispose(cleanup)
 
 const apm = async (label: string, fn: () => Promise<any> | any) => {
   const start = Date.now()

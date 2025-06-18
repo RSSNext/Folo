@@ -13,7 +13,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
-import { useFetchEntriesControls } from "../screen/atoms"
+import { useEntries } from "../screen/atoms"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
 import { EntryListContentVideo } from "./EntryListContentVideo"
@@ -63,7 +63,7 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     })
   }, [unreadOnly, ref])
 
-  const { isRefetching } = useFetchEntriesControls()
+  const { isRefetching } = useEntries()
   useEffect(() => {
     if (isRefetching) {
       ref?.current?.scrollToOffset({

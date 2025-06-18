@@ -17,7 +17,7 @@ export const SubviewLayout = () => {
   })
 
   return (
-    <>
+    <div className="flex h-svh flex-col">
       <HeaderTopReturnBackButton className="fixed z-[11] m-3" />
 
       <m.div
@@ -38,8 +38,9 @@ export const SubviewLayout = () => {
         </div>
         <div />
       </m.div>
-
-      <Outlet />
-    </>
+      <div className="h-0 flex-1 overflow-y-auto">
+        <Outlet />
+      </div>
+    </div>
   )
 }

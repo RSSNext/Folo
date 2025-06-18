@@ -1,9 +1,8 @@
-import { initializeDb } from "@follow/database/db"
+import { initializeDB } from "@follow/database/db"
 import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
-import { getGeneralSettings } from "../atoms/settings/general"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -22,7 +21,7 @@ export const initializeApp = async () => {
   const now = Date.now()
 
   await initDeviceType()
-  initializeDb()
+  initializeDB()
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()
@@ -30,11 +29,7 @@ export const initializeApp = async () => {
   await apm("hydrateSettings", hydrateSettings)
   let dataHydratedTime = Date.now()
   await apm("hydrateDatabaseToStore", () => {
-    const { hidePrivateSubscriptionsInTimeline, unreadOnly } = getGeneralSettings()
-    return hydrateDatabaseToStore({
-      hidePrivateSubscriptionsInTimeline,
-      unreadOnly,
-    })
+    return hydrateDatabaseToStore()
   })
 
   dataHydratedTime = Date.now() - dataHydratedTime

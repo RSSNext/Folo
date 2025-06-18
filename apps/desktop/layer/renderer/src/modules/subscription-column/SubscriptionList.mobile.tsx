@@ -1,28 +1,33 @@
-import { views } from "@follow/constants"
-import { cn } from "@follow/utils/utils"
-import { memo } from "react"
-import { useTranslation } from "react-i18next"
-
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
+import { FeedViewType, views } from "@follow/constants"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useSubscriptionInboxIds,
   useSubscriptionListIds,
-} from "~/store/subscription"
+} from "@follow/store/subscription/hooks"
+import { cn } from "@follow/utils/utils"
+import { memo, useCallback } from "react"
+import { useTranslation } from "react-i18next"
+
+import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
 import { feedColumnStyles } from "./styles"
-import type { SubscriptionProps } from "./SubscriptionList"
+import type { SubscriptionProps } from "./SubscriptionList.entry"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const FeedListImpl = ({ className, view }: SubscriptionProps) => {
-  const feedsData = useFeedsGroupedData(view)
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const feedsData = useFeedsGroupedData(view, autoGroup)
   const listSubIds = useSubscriptionListIds(view)
-  const inboxSubIds = useSubscriptionInboxIds(view)
+  const inboxSubIds = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
   const hasData =
@@ -31,7 +36,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
   const { t } = useTranslation()
 
   // Data prefetch
-  useAuthQuery(Queries.lists.list())
+  // useAuthQuery(Queries.lists.list())
 
   const hasListData = listSubIds.length > 0
   const hasInboxData = inboxSubIds.length > 0

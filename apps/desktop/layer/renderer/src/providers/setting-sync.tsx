@@ -1,6 +1,8 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import type { UISettings } from "@follow/shared/settings/interface"
+import { useUnreadAll } from "@follow/store/unread/hooks"
 import i18next from "i18next"
-import { useEffect, useInsertionEffect, useLayoutEffect } from "react"
+import { useEffect, useInsertionEffect, useLayoutEffect, useRef } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useUISettingValue } from "~/atoms/settings/ui"
@@ -10,7 +12,35 @@ import { useSyncTheme } from "~/hooks/common"
 import { langChain } from "~/i18n"
 import { ipcServices } from "~/lib/client"
 import { loadLanguageAndApply } from "~/lib/load-language"
-import { unreadActions } from "~/store/unread"
+
+const useUpdateDockBadge = (setting: UISettings) => {
+  const unreadCount = useUnreadAll()
+
+  useEffect(() => {
+    if (setting.showDockBadge) {
+      ipcServices?.dock.pollingUpdateUnreadCount()
+    } else {
+      ipcServices?.dock.cancelPollingUpdateUnreadCount().then(() => {
+        ipcServices?.dock.setDockBadge(0)
+      })
+    }
+    return
+  }, [setting.showDockBadge])
+
+  const prevCount = useRef<null | number>(null)
+  useEffect(() => {
+    if (!setting.showDockBadge) {
+      return
+    }
+    if (prevCount.current === unreadCount) {
+      return
+    }
+
+    ipcServices?.dock.setDockBadge(unreadCount).then(() => {
+      prevCount.current = unreadCount
+    })
+  }, [unreadCount, setting.showDockBadge])
+}
 
 const useUISettingSync = () => {
   const setting = useUISettingValue()
@@ -36,17 +66,7 @@ const useUISettingSync = () => {
     })
   }, [setting.uiFontFamily, setting.usePointerCursor])
 
-  useEffect(() => {
-    if (setting.showDockBadge) {
-      return unreadActions.subscribeUnreadCount(
-        (count) => ipcServices?.setting.setDockBadge(count),
-        true,
-      )
-    } else {
-      ipcServices?.setting.setDockBadge(0)
-    }
-    return
-  }, [setting.showDockBadge])
+  useUpdateDockBadge(setting)
 }
 
 const useUXSettingSync = () => {

@@ -1,4 +1,4 @@
-import { getAllUnreadCount } from "@follow/store/unread/getter"
+import { getUnreadAll } from "@follow/store/unread/getters"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { whoami } from "@follow/store/user/getters"
 import * as BackgroundTask from "expo-background-task"
@@ -21,7 +21,7 @@ export async function initBackgroundTask() {
 
     try {
       await unreadSyncService.resetFromRemote()
-      const allUnreadCount = getAllUnreadCount()
+      const allUnreadCount = getUnreadAll()
       await setBadgeCountAsyncWithPermission(allUnreadCount)
       return BackgroundTask.BackgroundTaskResult.Success
     } catch (err) {

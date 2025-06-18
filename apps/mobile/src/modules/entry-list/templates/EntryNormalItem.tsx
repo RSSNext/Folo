@@ -2,7 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getInboxFrom } from "@follow/store/entry/utils"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { tracker } from "@follow/tracker"
 import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
@@ -59,7 +59,7 @@ export const EntryNormalItem = memo(
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
     const from = getInboxFrom(entry)
-    const feed = useFeed(entry?.feedId as string)
+    const feed = useFeedById(entry?.feedId as string)
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
       if (entry) {
@@ -177,7 +177,7 @@ const ThumbnailImage = ({
     title: state.title,
   }))
 
-  const feed = useFeed(entry?.feedId as string)
+  const feed = useFeedById(entry?.feedId as string)
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
 
   const mediaModel = entry?.media?.find(
@@ -232,9 +232,12 @@ const ThumbnailImage = ({
   if (!image && !audio && !video) return null
   const isSquare = thumbnailRatio === "square"
   return (
-    <View className={cn("relative ml-4 h-24 overflow-hidden rounded-lg", isSquare ? "h-24" : "")}>
+    <View
+      className={cn("relative ml-4 flex h-full w-24 justify-center overflow-hidden rounded-lg")}
+    >
       {image &&
-        (thumbnailRatio === "square" ? (
+        !imageError &&
+        (isSquare ? (
           <SquareImage image={image} blurhash={blurhash} onError={handleImageError} />
         ) : (
           <AspectRatioImage
@@ -247,11 +250,13 @@ const ThumbnailImage = ({
         ))}
 
       {video && (
-        <View className="absolute left-0 top-0 size-full overflow-hidden rounded-lg">
+        <View className="flex size-full items-center justify-center">
           <VideoView
-            style={{ aspectRatio: 1 }}
-            contentFit="cover"
             ref={videoViewRef}
+            className={cn("overflow-hidden rounded-lg", isSquare ? "size-24" : "")}
+            // eslint-disable-next-line react-native/no-inline-styles -- VideoView requires explicit width and height
+            style={{ width: "100%", height: "100%", aspectRatio: isSquare ? 1 : undefined }}
+            contentFit={isSquare ? "cover" : "contain"}
             player={videoPlayer}
             // The Android native controls will be shown when the video is paused
             nativeControls={isIOS || showVideoNativeControlsForAndroid}
@@ -327,7 +332,7 @@ const AspectRatioImage = ({
   }
 
   return (
-    <View className="ml-auto flex h-full justify-center overflow-hidden rounded-lg">
+    <View className="bg-tertiary-system-background flex max-w-full items-center justify-center overflow-hidden rounded-lg">
       <Image
         proxy={{
           width: 96,
@@ -365,10 +370,7 @@ const SquareImage = ({
           width: 96,
           height: 96,
         }}
-        style={{
-          width: 96,
-          height: 96,
-        }}
+        className="size-24"
         transition={100}
         source={{
           uri: image,

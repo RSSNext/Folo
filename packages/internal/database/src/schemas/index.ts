@@ -19,6 +19,8 @@ export const feedsTable = sqliteTable("feeds", {
   subscriptionCount: integer("subscription_count"),
   updatesPerWeek: integer("updates_per_week"),
   latestEntryPublishedAt: text("latest_entry_published_at"),
+  tipUserIds: text("tip_users", { mode: "json" }).$type<string[]>(),
+  updatedAt: integer("published_at", { mode: "timestamp_ms" }),
 })
 
 export const subscriptionsTable = sqliteTable("subscriptions", {
@@ -38,11 +40,12 @@ export const subscriptionsTable = sqliteTable("subscriptions", {
 export const inboxesTable = sqliteTable("inboxes", {
   id: text("id").primaryKey(),
   title: text("title"),
+  secret: text("secret").notNull(),
 })
 
 export const listsTable = sqliteTable("lists", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull(),
+  userId: text("user_id"),
   title: text("title").notNull(),
   feedIds: text("feed_ids", { mode: "json" }).$type<string>(),
   description: text("description"),
@@ -55,7 +58,7 @@ export const listsTable = sqliteTable("lists", {
 })
 
 export const unreadTable = sqliteTable("unread", {
-  subscriptionId: text("subscription_id").notNull().primaryKey(),
+  id: text("subscription_id").notNull().primaryKey(),
   count: integer("count").notNull(),
 })
 
@@ -65,8 +68,18 @@ export const usersTable = sqliteTable("users", {
   handle: text("handle"),
   name: text("name"),
   image: text("image"),
-  isMe: integer("is_me", { mode: "boolean" }).notNull(),
+  isMe: integer("is_me", { mode: "boolean" }),
   emailVerified: integer("email_verified", { mode: "boolean" }),
+  bio: text("bio"),
+  website: text("website"),
+  socialLinks: text("social_links", { mode: "json" }).$type<{
+    twitter?: string
+    github?: string
+    instagram?: string
+    facebook?: string
+    youtube?: string
+    discord?: string
+  }>(),
 })
 
 export const entriesTable = sqliteTable("entries", {
@@ -80,8 +93,8 @@ export const entriesTable = sqliteTable("entries", {
   author: text("author"),
   authorUrl: text("author_url"),
   authorAvatar: text("author_avatar"),
-  insertedAt: integer("inserted_at", { mode: "timestamp" }).notNull(),
-  publishedAt: integer("published_at", { mode: "timestamp" }).notNull(),
+  insertedAt: integer("inserted_at", { mode: "timestamp_ms" }).notNull(),
+  publishedAt: integer("published_at", { mode: "timestamp_ms" }).notNull(),
   media: text("media", { mode: "json" }).$type<MediaModel[]>(),
   categories: text("categories", { mode: "json" }).$type<string[]>(),
   attachments: text("attachments", { mode: "json" }).$type<AttachmentsModel[]>(),
@@ -110,7 +123,7 @@ export const summariesTable = sqliteTable(
     summary: text("summary").notNull(),
     readabilitySummary: text("readability_summary"),
     createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
-    language: text("language"),
+    language: text("language").$type<SupportedActionLanguage>(),
   },
   (t) => [uniqueIndex("unq").on(t.entryId, t.language)],
 )
@@ -135,5 +148,8 @@ export const translationsTable = sqliteTable(
 export const imagesTable = sqliteTable("images", (t) => ({
   url: t.text("url").notNull().primaryKey(),
   colors: t.text("colors", { mode: "json" }).$type<ImageColorsResult>().notNull(),
-  createdAt: t.integer("created_at", { mode: "timestamp" }).default(sql`(CURRENT_TIMESTAMP)`),
+  createdAt: t
+    .integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
 }))

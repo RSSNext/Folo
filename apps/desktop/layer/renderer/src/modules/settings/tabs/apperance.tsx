@@ -72,7 +72,11 @@ export const SettingAppearance = () => {
             label: t("appearance.unread_count.sidebra.title"),
             description: t("appearance.unread_count.sidebra.description"),
           }),
-
+          defineItem("hideExtraBadge", {
+            label: t("appearance.hide_extra_badge.label"),
+            description: t("appearance.hide_extra_badge.description"),
+            hide: isMobile,
+          }),
           {
             type: "title",
             value: t("appearance.reading_view.title"),
@@ -117,12 +121,6 @@ export const SettingAppearance = () => {
             label: t("appearance.unread_count.badge.label"),
             description: t("appearance.unread_count.badge.description"),
             hide: !IN_ELECTRON || !["macOS", "Linux"].includes(getOS()) || isMobile,
-          }),
-
-          defineItem("hideExtraBadge", {
-            label: t("appearance.hide_extra_badge.label"),
-            description: t("appearance.hide_extra_badge.description"),
-            hide: isMobile,
           }),
 
           {
@@ -355,7 +353,9 @@ const ThumbnailRatio = () => {
           onValueChange={(value) => {
             setUISetting("thumbnailRatio", value as "square" | "original")
           }}
-          renderValue={(value) => t(`appearance.thumbnail_ratio.${value as "square" | "original"}`)}
+          renderValue={(item) =>
+            t(`appearance.thumbnail_ratio.${item.value as "square" | "original"}`)
+          }
           triggerClassName="w-48 lg:translate-y-2 -inset-8translate-y-1"
           size="sm"
         />
@@ -511,7 +511,7 @@ const DateFormat = () => {
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
-        <span className="shrink-0 text-sm font-medium">{t("appearance.date_format")}</span>
+        <span className="shrink-0 text-sm font-medium">{t("appearance.date_format.label")}</span>
 
         <ResponsiveSelect
           items={[
@@ -534,7 +534,7 @@ const DateFormat = () => {
           size="sm"
         />
       </div>
-      <SettingDescription>Adjust the display date format.</SettingDescription>
+      <SettingDescription>{t("appearance.date_format.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }

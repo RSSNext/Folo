@@ -1,9 +1,11 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { FC } from "react"
 import { memo } from "react"
 
-import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry } from "~/store/entry/hooks"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
+import { checkLanguage } from "~/lib/translate"
 
 import { getItemComponentByView } from "./Items/getItemComponentByView"
 import { EntryItemWrapper } from "./layouts/EntryItemWrapper"
@@ -11,22 +13,31 @@ import type { EntryListItemFC } from "./types"
 
 interface EntryItemProps {
   entryId: string
-  view?: number
+  view: FeedViewType
 }
 const EntryItemImpl = memo(function EntryItemImpl({
   entryId,
   view,
 }: {
   entryId: string
-  view?: number
+  view: FeedViewType
 }) {
-  const translation = useEntryTranslation({ entryId })
+  const actionLanguage = useActionLanguage()
+  const enableTranslation = useGeneralSettingKey("translation")
+  const translation = useEntryTranslation(entryId, actionLanguage)
+  usePrefetchEntryTranslation({
+    entryIds: [entryId],
+    checkLanguage,
+    translation: enableTranslation,
+    language: actionLanguage,
+    withContent: view === FeedViewType.SocialMedia,
+  })
 
-  const Item: EntryListItemFC = getItemComponentByView(view as FeedViewType)
+  const Item: EntryListItemFC = getItemComponentByView(view)
 
   return (
     <EntryItemWrapper itemClassName={Item.wrapperClassName} entryId={entryId} view={view}>
-      <Item entryId={entryId} translation={translation.data} />
+      <Item entryId={entryId} translation={translation} />
     </EntryItemWrapper>
   )
 })

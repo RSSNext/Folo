@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: apps/desktop/**/*,packages/internal/components/**/*
 alwaysApply: false
 ---
 # UIKit Colors for Tailwind CSS

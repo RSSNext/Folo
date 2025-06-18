@@ -6,6 +6,7 @@ const fetchListById = async (id: string) => {
   const res = await apiClient.lists.$get({ query: { listId: id } })
   return res.data
 }
+
 export const useList = ({ id }: { id?: string }) =>
   useQuery({
     queryKey: ["lists", id],

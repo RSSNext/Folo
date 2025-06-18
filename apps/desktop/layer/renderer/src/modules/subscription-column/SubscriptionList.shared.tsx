@@ -2,36 +2,37 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import {
+  useCategoryOpenStateByView,
+  usePrefetchSubscription,
+} from "@follow/store/subscription/hooks"
+import { subscriptionActions } from "@follow/store/subscription/store"
+import { usePrefetchUnread, useUnreadByView } from "@follow/store/unread/hooks"
+import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { AnimatePresence, m } from "motion/react"
 import { memo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router"
+import { useLocation } from "react-router"
 import { useOnClickOutside } from "usehooks-ts"
 
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { IconOpacityTransition } from "~/components/ux/transition/icon"
 import { FEED_COLLECTION_LIST } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteFeedId } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
-import { subscriptionActions, useCategoryOpenStateByView } from "~/store/subscription"
-import { useUnreadByView } from "~/store/unread/hooks"
 
 import { getFeedListSort, setFeedListSortBy, setFeedListSortOrder, useFeedListSort } from "./atom"
+import { SimpleDiscoverModal } from "./SimpleDiscoverModal"
 import { feedColumnStyles } from "./styles"
 import { UnreadNumber } from "./UnreadNumber"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
-  useAuthQuery(Queries.subscription.all())
-  useAuthQuery(Queries.subscription.unreadAll(), {
-    // 10 minute
-    refetchInterval: 1000 * 60 * 10,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-  })
+  usePrefetchSubscription()
+  usePrefetchSessionUser()
+  usePrefetchUnread()
 
   const { t } = useTranslation()
   const categoryOpenStateData = useCategoryOpenStateByView(view)
@@ -181,20 +182,43 @@ const SortButton = () => {
 
 export const EmptyFeedList = memo(({ onClick }: { onClick?: (e: React.MouseEvent) => void }) => {
   const { t } = useTranslation()
+  const location = useLocation()
+  const isOnDiscoverPage = location.pathname === "/discover"
+  const { present } = useModalStack()
+
+  const handleClick = (e: React.MouseEvent) => {
+    stopPropagation(e)
+    onClick?.(e)
+
+    if (!isOnDiscoverPage) {
+      // Show simplified discover modal when already on discover page
+      present({
+        title: t("words.discover"),
+        content: ({ dismiss }) => <SimpleDiscoverModal dismiss={dismiss} />,
+        clickOutsideToDismiss: true,
+      })
+    }
+  }
 
   return (
-    <div className="flex h-full flex-1 items-center font-normal text-zinc-500">
-      <Link
-        to="/discover"
-        className="cursor-menu absolute inset-0 mt-[-3.75rem] flex h-full flex-1 flex-col items-center justify-center gap-2"
-        onClick={(e) => {
-          stopPropagation(e)
-          onClick?.(e)
-        }}
-      >
-        <i className="i-mgc-add-cute-re text-3xl" />
-        <span className="text-base">{t("sidebar.add_more_feeds")}</span>
-      </Link>
+    <div className="mt-12 flex flex-1 items-center font-normal text-zinc-500">
+      {isOnDiscoverPage ? (
+        <div
+          className="cursor-menu flex flex-1 flex-col items-center justify-center gap-2"
+          onClick={handleClick}
+        >
+          <i className="i-mgc-arrow-right-up-cute-re text-3xl" />
+          <span className="text-balance text-sm">{t("sidebar.already_on_discover_page")}</span>
+        </div>
+      ) : (
+        <div
+          className="cursor-menu flex flex-1 flex-col items-center justify-center gap-2"
+          onClick={handleClick}
+        >
+          <i className="i-mgc-add-cute-re text-3xl" />
+          <span className="text-base">{t("sidebar.add_more_feeds")}</span>
+        </div>
+      )}
     </div>
   )
 })

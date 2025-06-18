@@ -6,6 +6,8 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { SubscriptionModel } from "@follow/models/types"
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence } from "motion/react"
 import type { FC } from "react"
@@ -14,13 +16,10 @@ import { useEventCallback } from "usehooks-ts"
 
 import { m } from "~/components/common/Motion"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useAuthQuery, useI18n } from "~/hooks/common"
-import { defineQuery } from "~/lib/defineQuery"
+import { useI18n } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { useSubscriptionStore } from "~/store/subscription"
-import { userActions, useUserById } from "~/store/user"
 
 type ItemVariant = "loose" | "compact"
 
@@ -36,14 +35,7 @@ export const SubscriptionItems = ({
   userId: string
   itemStyle: ItemVariant
 }) => {
-  const profile = useAuthQuery(
-    defineQuery(["profiles", userId], async () => {
-      return userActions.getOrFetchProfile(userId!)
-    }),
-    {
-      enabled: !!userId,
-    },
-  )
+  const profile = usePrefetchUser(userId)
   const userInfo = useUserById(userId)
   const subscriptions = useUserSubscriptionsQuery(userId)
   const renderUserData = profile.data || userInfo
@@ -127,7 +119,7 @@ const SubscriptionItem: FC<{
   variant: ItemVariant
 }> = ({ subscription, variant }) => {
   const t = useI18n()
-  const isFollowed = !!useSubscriptionStore((state) => state.data[subscription.feedId])
+  const isFollowed = useIsSubscribed(subscription.feedId)
   const follow = useFollow()
   const isLoose = variant === "loose"
   const handleFollow = useEventCallback((e: React.MouseEvent) => {

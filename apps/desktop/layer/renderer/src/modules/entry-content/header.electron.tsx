@@ -1,10 +1,10 @@
 import { FeedViewType, views } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { useEntry } from "~/store/entry/hooks"
 
 import { EntryHeaderActions } from "./actions/header-actions"
 import { MoreActions } from "./actions/more-actions"
@@ -72,7 +72,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
         {view !== FeedViewType.SocialMedia && (
           <div className="relative flex shrink-0 items-center justify-end gap-2">
             <EntryHeaderActions entryId={entryId} view={view} compact={compact} />
-            <MoreActions entryId={entryId} />
+            <MoreActions entryId={entryId} view={view} />
           </div>
         )}
       </div>

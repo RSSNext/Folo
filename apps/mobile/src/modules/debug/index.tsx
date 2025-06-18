@@ -98,7 +98,7 @@ export const EnvProfileIndicator = () => {
           </View>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
-          {["prod", "dev", "staging"].map((env) => {
+          {["prod", "dev", "staging", "local"].map((env) => {
             return (
               <DropdownMenu.Item
                 key={env}

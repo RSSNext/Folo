@@ -1,15 +1,14 @@
+import { entryActions } from "@follow/store/entry/store"
+import { feedActions } from "@follow/store/feed/store"
+import { inboxActions } from "@follow/store/inbox/store"
+import { listActions } from "@follow/store/list/store"
+import { subscriptionActions } from "@follow/store/subscription/store"
+import { unreadActions } from "@follow/store/unread/store"
 import { getStorageNS } from "@follow/utils/ns"
 
 import { clearUISettings } from "~/atoms/settings/ui"
-import { browserDB } from "~/database"
 
-import { entryActions } from "../entry"
-import { feedActions } from "../feed"
 import { clearImageDimensionsDb } from "../image/db"
-import { inboxActions } from "../inbox"
-import { listActions } from "../list"
-import { subscriptionActions } from "../subscription"
-import { unreadActions } from "../unread"
 
 export const clearLocalPersistStoreData = async () => {
   // All clear and reset method will aggregate here
@@ -21,13 +20,12 @@ export const clearLocalPersistStoreData = async () => {
     listActions,
     inboxActions,
   ].forEach((actions) => {
-    actions.clear()
+    actions.reset()
   })
 
   clearUISettings()
 
   await clearImageDimensionsDb()
-  await Promise.all(browserDB.tables.map((table) => table.clear()))
 }
 
 const storedUserId = getStorageNS("user_id")

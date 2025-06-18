@@ -15,6 +15,10 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { EntryModelSimple, FeedAnalyticsModel, FeedModel } from "@follow/models/types"
+import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
+import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
+import { unreadActions } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -29,15 +33,11 @@ import { getGeneralSettings } from "~/atoms/settings/general"
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery, useI18n } from "~/hooks/common"
+import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
 import { entries as entriesQuery } from "~/queries/entries"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
-import { subscription as subscriptionQuery } from "~/queries/subscriptions"
-import { useFeedByIdOrUrl } from "~/store/feed"
-import { useSubscriptionByFeedId } from "~/store/subscription"
-import { unreadActions } from "~/store/unread"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
 import { FeedSummary } from "./FeedSummary"
@@ -262,7 +262,7 @@ const FeedInnerForm = ({
       if ("unread" in data) {
         unreadActions.upsertMany(data.unread)
       }
-      subscriptionQuery.all().invalidate()
+      subscriptionSyncService.fetch()
 
       const feedId = feed.id
       if (feedId) {
@@ -289,17 +289,17 @@ const FeedInnerForm = ({
 
   const t = useI18n()
 
-  const categories = useAuthQuery(subscriptionQuery.categories())
+  const categories = useCategories()
 
   const suggestions = useMemo(
     () =>
       (
-        categories.data?.map((i) => ({
+        categories?.map((i) => ({
           name: i,
           value: i,
         })) || []
       ).sort((a, b) => a.name.localeCompare(b.name)),
-    [categories.data],
+    [categories],
   )
 
   const fillDefaultTitle = useCallback(() => {

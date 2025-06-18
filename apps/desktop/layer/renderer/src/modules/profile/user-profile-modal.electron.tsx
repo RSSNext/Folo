@@ -5,6 +5,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import type { ExtractBizResponse } from "@follow/models"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { cn } from "@follow/utils/utils"
@@ -20,13 +21,10 @@ import { useWhoami } from "~/atoms/user"
 import { m } from "~/components/common/Motion"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
-import { defineQuery } from "~/lib/defineQuery"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useUserById } from "~/store/user"
 
 import { getSocialLink, socialCopyMap, socialIconClassNames } from "./user-profile-modal.constants"
 import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
@@ -133,14 +131,7 @@ ListCard.displayName = "ListCard"
 
 export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ userId, variant }) => {
   const { t } = useTranslation()
-  const user = useAuthQuery(
-    defineQuery(["profiles", userId], async () => {
-      const res = await apiClient.profiles.$get({
-        query: { id: userId! },
-      })
-      return res.data
-    }),
-  )
+  const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
   const userInfo = user.data ? pickUserData(user.data) : storeUser ? pickUserData(storeUser) : null
@@ -247,7 +238,7 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
   const whoami = useWhoami()
   const follow = useFollow()
   return (
-    <div className="border-fill border-b p-6">
+    <div className="border-fill bg-material-medium border-b p-6">
       <div className="flex items-start gap-4">
         <Avatar className="size-20 shrink-0">
           <AvatarImage

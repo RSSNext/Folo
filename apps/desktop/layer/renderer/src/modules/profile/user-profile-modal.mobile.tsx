@@ -2,17 +2,15 @@ import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle, LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useAuthQuery } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { users } from "~/queries/users"
-import { useUserById } from "~/store/user"
 
 import { getSocialLink, socialCopyMap, socialIconClassNames } from "./user-profile-modal.constants"
 import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
@@ -43,7 +41,7 @@ const pickUserData = <
 }
 export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ userId }) => {
   const { t } = useTranslation()
-  const user = useAuthQuery(users.profile({ userId }))
+  const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
   const userInfo = user.data ? pickUserData(user.data) : storeUser ? pickUserData(storeUser) : null

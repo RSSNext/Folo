@@ -2,6 +2,8 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
@@ -24,23 +26,23 @@ import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
+import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
-import { entryActions, useEntry } from "~/store/entry"
 
 export const EntryItemWrapper: FC<
   {
     entryId: string
-    view?: number
+    view: FeedViewType
     itemClassName?: string
     style?: React.CSSProperties
   } & PropsWithChildren
 > = ({ entryId, view, children, itemClassName, style }) => {
   const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxId, read } = state
-    const { id, url } = state.entries
-    return { feedId, id, inboxId, read, url }
+    const { feedId, inboxHandle, read } = state
+    const { id, url } = state
+    return { feedId, id, inboxId: inboxHandle, read, url }
   })
-  const actionConfigs = useEntryActions({ entryId })
+  const actionConfigs = useEntryActions({ entryId, view })
 
   const feedItems = useFeedActions({
     feedId: entry?.feedId || entry?.inboxId || "",
@@ -65,7 +67,7 @@ export const EntryItemWrapper: FC<
       if (asRead) return
       if (!entry?.feedId) return
 
-      entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
+      unreadSyncService.markEntryAsRead(entry.id)
     },
     233,
     {
@@ -82,7 +84,7 @@ export const EntryItemWrapper: FC<
       if (!shouldNavigate) return
       if (!entry?.feedId) return
       if (!asRead) {
-        entryActions.markRead({ feedId: entry.feedId, entryId: entry.id, read: true })
+        unreadSyncService.markEntryAsRead(entry.id)
       }
 
       setTimeout(
@@ -156,7 +158,7 @@ export const EntryItemWrapper: FC<
           new MenuItemText({
             label: `${t("words.copy")}${t("space")}${t("words.entry")} ${t("words.id")}`,
             click: () => {
-              navigator.clipboard.writeText(entry?.id || "")
+              copyToClipboard(entry?.id || "")
             },
           }),
         ],

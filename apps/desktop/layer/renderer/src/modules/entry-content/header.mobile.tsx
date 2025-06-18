@@ -1,5 +1,6 @@
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
+import { useEntry } from "@follow/store/entry/hooks"
 import { findElementInShadowDOM } from "@follow/utils/dom"
 import { clsx, cn } from "@follow/utils/utils"
 import { DismissableLayer } from "@radix-ui/react-dismissable-layer"
@@ -16,7 +17,6 @@ import { useScrollTracking, useTocItems } from "~/components/ui/markdown/compone
 import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
 import type { EntryActionItem } from "~/hooks/biz/useEntryActions"
 import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
-import { useEntry } from "~/store/entry/hooks"
 
 import { useCommand } from "../command/hooks/use-command"
 import type { FollowCommandId } from "../command/types"
@@ -97,7 +97,7 @@ function EntryHeaderImpl({ view, entryId, className }: EntryHeaderProps) {
                 shortcut={item.shortcut!}
               />
             ))}
-          <MoreActions entryId={entryId} />
+          <MoreActions entryId={entryId} view={view} />
         </div>
       </div>
     </div>

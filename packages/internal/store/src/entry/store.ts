@@ -1,18 +1,22 @@
 import { FeedViewType } from "@follow/constants"
 import { EntryService } from "@follow/database/services/entry"
+import { cloneDeep } from "es-toolkit"
 import { debounce } from "es-toolkit/compat"
 
+import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../atoms/feed"
 import { collectionActions } from "../collection/store"
 import { apiClient } from "../context"
 import { feedActions } from "../feed/store"
-import type { Hydratable, HydrationOptions } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
-import { getSubscription } from "../subscription/getter"
+import { getSubscriptionById } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
-import type { PublishAtTimeRangeFilter } from "../unread/types"
+import type { FeedIdOrInboxHandle, PublishAtTimeRangeFilter } from "../unread/types"
+import { whoami } from "../user/getters"
+import { userActions } from "../user/store"
 import { getEntry } from "./getter"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 import { getEntriesParams } from "./utils"
@@ -52,16 +56,18 @@ const defaultState: EntryState = {
 
 export const useEntryStore = createZustandStore<EntryState>("entry")(() => defaultState)
 
+const get = useEntryStore.getState
 const immerSet = createImmerSetter(useEntryStore)
 
-class EntryActions implements Hydratable {
-  async hydrate(options?: HydrationOptions) {
+class EntryActions implements Hydratable, Resetable {
+  async hydrate() {
     const entries = await EntryService.getEntriesToHydrate()
+    entryActions.upsertManyInSession(entries.map((e) => dbStoreMorph.toEntryModel(e)))
+  }
 
-    entryActions.upsertManyInSession(
-      entries.map((e) => dbStoreMorph.toEntryModel(e)),
-      options,
-    )
+  getFlattenMapEntries() {
+    const state = get()
+    return state.data
   }
 
   private addEntryIdToView({
@@ -79,7 +85,7 @@ class EntryActions implements Hydratable {
   }) {
     if (!feedId) return
 
-    const subscription = getSubscription(feedId)
+    const subscription = getSubscriptionById(feedId)
     const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
     if (typeof subscription?.view === "number" && !ignore) {
@@ -88,7 +94,7 @@ class EntryActions implements Hydratable {
 
     // lists
     for (const s of sources ?? []) {
-      const subscription = getSubscription(s)
+      const subscription = getSubscriptionById(s)
       const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
 
       if (typeof subscription?.view === "number" && !ignore) {
@@ -107,7 +113,7 @@ class EntryActions implements Hydratable {
     entryId: EntryId
   }) {
     if (!feedId) return
-    const subscription = getSubscription(feedId)
+    const subscription = getSubscriptionById(feedId)
     const category = subscription?.category || getDefaultCategory(subscription)
     if (!category) return
     const entryIdSetByCategory = draft.entryIdByCategory[category]
@@ -213,7 +219,7 @@ class EntryActions implements Hydratable {
         })
 
         entry.sources
-          ?.filter((s) => s !== "feed")
+          ?.filter((s) => !!s && s !== "feed")
           .forEach((s) => {
             this.addEntryIdToList({
               draft,
@@ -288,15 +294,17 @@ class EntryActions implements Hydratable {
 
   markEntryReadStatusInSession({
     entryIds,
-    feedIds,
+    ids,
     read,
     time,
   }: {
     entryIds?: EntryId[]
-    feedIds?: FeedId[]
+    ids?: FeedIdOrInboxHandle[]
     read: boolean
     time?: PublishAtTimeRangeFilter
   }) {
+    const affectedEntryIds = new Set<EntryId>()
+
     immerSet((draft) => {
       if (entryIds) {
         for (const entryId of entryIds) {
@@ -313,17 +321,22 @@ class EntryActions implements Hydratable {
             continue
           }
 
-          entry.read = read
+          if (entry.read !== read) {
+            entry.read = read
+            affectedEntryIds.add(entryId)
+          }
         }
       }
 
-      if (feedIds) {
+      if (ids) {
         const entries = Array.from(draft.entryIdSet)
           .map((id) => draft.data[id])
-          .filter(
-            (entry): entry is EntryModel =>
-              !!entry && !!entry.feedId && feedIds.includes(entry.feedId),
-          )
+          .filter((entry): entry is EntryModel => {
+            if (!entry) return false
+            const id = entry.inboxHandle || entry.feedId || ""
+            if (!id) return false
+            return ids.includes(id)
+          })
 
         for (const entry of entries) {
           if (
@@ -334,10 +347,15 @@ class EntryActions implements Hydratable {
             continue
           }
 
-          entry.read = read
+          if (entry.read !== read) {
+            entry.read = read
+            affectedEntryIds.add(entry.id)
+          }
         }
       }
     })
+
+    return Array.from(affectedEntryIds)
   }
 
   resetByView({ view, entries }: { view?: FeedViewType; entries: EntryModel[] }) {
@@ -374,6 +392,30 @@ class EntryActions implements Hydratable {
       draft.entryIdByList[listId] = new Set(entries.map((e) => e.id))
     })
   }
+
+  deleteInboxEntryById(entryId: EntryId) {
+    const entry = get().data[entryId]
+    if (!entry || !entry.inboxHandle) return
+
+    immerSet((draft) => {
+      delete draft.data[entryId]
+      draft.entryIdSet.delete(entryId)
+      draft.entryIdByInbox[entry.inboxHandle!]?.delete(entryId)
+    })
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet(() => defaultState)
+    })
+
+    tx.persist(() => {
+      return EntryService.reset()
+    })
+
+    await tx.run()
+  }
 }
 
 class EntrySyncServices {
@@ -397,6 +439,7 @@ class EntrySyncServices {
       view,
       feedIdList,
     })
+
     const res = params.inboxId
       ? await apiClient().entries.inbox.$post({
           json: {
@@ -419,6 +462,21 @@ class EntrySyncServices {
           },
         })
 
+    // Mark feed unread dirty, so re-fetch the unread data when view feed unread entires in the next time
+    if (read === false) {
+      if (typeof params.view === "number" && !params.feedId) {
+        clearAllFeedUnreadDirty()
+      }
+      if (params.feedId) {
+        clearFeedUnreadDirty(params.feedId as string)
+      }
+      if (params.feedIdList) {
+        params.feedIdList.forEach((feedId) => {
+          clearFeedUnreadDirty(feedId)
+        })
+      }
+    }
+
     const entries = honoMorph.toEntryList(res.data)
     const entriesInDB = await EntryService.getEntryMany(entries.map((e) => e.id))
     for (const entry of entries) {
@@ -431,33 +489,6 @@ class EntrySyncServices {
 
     await entryActions.upsertMany(entries)
 
-    // After initial fetch, we can reset the state to prefer the entries data from the server
-    if (!pageParam) {
-      if (params.view !== undefined) {
-        entryActions.resetByView({ view: params.view, entries })
-      }
-
-      if (params.feedIdList && params.feedIdList.length > 0) {
-        const firstSubscription = getSubscription(params.feedIdList[0])
-        const category = firstSubscription?.category || getDefaultCategory(firstSubscription)
-        if (category) {
-          entryActions.resetByCategory({ category, entries })
-        }
-      }
-
-      if (params.feedId) {
-        entryActions.resetByFeed({ feedId: params.feedId, entries })
-      }
-
-      if (params.inboxId) {
-        entryActions.resetByInbox({ inboxId: params.inboxId, entries })
-      }
-
-      if (params.listId) {
-        entryActions.resetByList({ listId: params.listId, entries })
-      }
-    }
-
     if (isCollection && res.data) {
       if (view === undefined) {
         console.error("view is required for collection")
@@ -466,12 +497,16 @@ class EntrySyncServices {
       await collectionActions.upsertMany(collections)
     }
 
-    const feeds =
-      res.data
-        ?.map((e) => e.feeds)
-        .filter((f) => f.type === "feed")
-        .map((f) => honoMorph.toFeed(f)) ?? []
+    const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
+    const feeds = dataFeeds?.map((f) => honoMorph.toFeed(f)) ?? []
+    const users = dataFeeds?.flatMap((f) => f.tipUsers).filter((u) => !!u) ?? []
     feedActions.upsertMany(feeds)
+    userActions.upsertMany(
+      users.map((u) => ({
+        ...u,
+        isMe: u.id === whoami()?.id,
+      })),
+    )
 
     return res
   }
@@ -501,19 +536,33 @@ class EntrySyncServices {
     return entry
   }
 
-  async fetchEntryReadabilityContent(entryId: EntryId) {
+  async fetchEntryReadabilityContent(
+    entryId: EntryId,
+    fallBack?: () => Promise<string | null | undefined>,
+  ) {
     const entry = getEntry(entryId)
 
     if (entry?.url && entry?.readabilityContent === null) {
-      const { data: contentByFetch } = await apiClient().entries.readability.$get({
-        query: {
-          id: entryId,
-        },
-      })
-      if (contentByFetch?.content && entry?.readabilityContent !== contentByFetch.content) {
+      let readabilityContent: string | null | undefined
+
+      try {
+        const { data: contentByFetch } = await apiClient().entries.readability.$get({
+          query: {
+            id: entryId,
+          },
+        })
+        readabilityContent = contentByFetch?.content || null
+      } catch (error) {
+        if (fallBack) {
+          readabilityContent = await fallBack()
+        } else {
+          throw error
+        }
+      }
+      if (readabilityContent && entry?.readabilityContent !== readabilityContent) {
         await entryActions.updateEntryContent({
           entryId,
-          readabilityContent: contentByFetch.content,
+          readabilityContent,
         })
       }
     }
@@ -608,6 +657,42 @@ class EntrySyncServices {
     }
 
     readStream()
+  }
+
+  async fetchEntryReadHistory(entryId: EntryId, size: number) {
+    const res = await apiClient().entries["read-histories"][":id"].$get({
+      param: {
+        id: entryId,
+      },
+      query: {
+        size,
+      },
+    })
+
+    await userActions.upsertMany(Object.values(res.data.users))
+
+    return res.data
+  }
+
+  async deleteInboxEntry(entryId: string) {
+    const entry = get().data[entryId]
+    if (!entry || !entry.inboxHandle) return
+    const tx = createTransaction()
+    const currentEntry = cloneDeep(entry)
+
+    tx.store(() => {
+      entryActions.deleteInboxEntryById(entryId)
+    })
+    tx.request(async () => {
+      await apiClient().entries.inbox.$delete({ json: { entryId } })
+    })
+    tx.rollback(() => {
+      entryActions.upsertManyInSession([currentEntry])
+    })
+    tx.persist(() => {
+      return EntryService.deleteMany([entryId])
+    })
+    await tx.run()
   }
 }
 

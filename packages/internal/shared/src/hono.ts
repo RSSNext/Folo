@@ -134,42 +134,6 @@ declare const authPlugins: ({
         };
     };
 } | {
-    id: "customUpdateUser";
-    endpoints: {
-        customUpdateUser: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "POST" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: string | null;
-            } : string | null>;
-            options: {
-                method: "POST";
-            } & {
-                use: any[];
-            };
-            path: "/update-user-ccc";
-        };
-    };
-} | {
     id: "oneTimeToken";
     endpoints: {
         generateOneTimeToken: {
@@ -6157,7 +6121,7 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "name";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6169,12 +6133,14 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         email: drizzle_orm_pg_core.PgColumn<{
             name: "email";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: true;
@@ -6186,7 +6152,9 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         emailVerified: drizzle_orm_pg_core.PgColumn<{
             name: "emailVerified";
             tableName: "user";
@@ -6208,7 +6176,7 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "image";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6220,12 +6188,14 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         handle: drizzle_orm_pg_core.PgColumn<{
             name: "handle";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6237,7 +6207,9 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 36;
+        }>;
         createdAt: drizzle_orm_pg_core.PgColumn<{
             name: "created_at";
             tableName: "user";
@@ -6327,7 +6299,7 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "bio";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6339,12 +6311,14 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         website: drizzle_orm_pg_core.PgColumn<{
             name: "website";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6356,7 +6330,9 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         socialLinks: drizzle_orm_pg_core.PgColumn<{
             name: "social_links";
             tableName: "user";
@@ -6416,7 +6392,7 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "name";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6428,12 +6404,14 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         email: drizzle_orm_pg_core.PgColumn<{
             name: "email";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: true;
@@ -6445,7 +6423,9 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         emailVerified: drizzle_orm_pg_core.PgColumn<{
             name: "emailVerified";
             tableName: "user";
@@ -6467,7 +6447,7 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "image";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6479,12 +6459,14 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         handle: drizzle_orm_pg_core.PgColumn<{
             name: "handle";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6496,7 +6478,9 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 36;
+        }>;
         createdAt: drizzle_orm_pg_core.PgColumn<{
             name: "created_at";
             tableName: "user";
@@ -6586,7 +6570,7 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "bio";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6598,12 +6582,14 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         website: drizzle_orm_pg_core.PgColumn<{
             name: "website";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6615,7 +6601,9 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         socialLinks: drizzle_orm_pg_core.PgColumn<{
             name: "social_links";
             tableName: "user";
@@ -9718,7 +9706,9 @@ declare const auth: {
                     appName: string;
                     database: (options: BetterAuthOptions) => better_auth.Adapter;
                     advanced: {
-                        generateId: false;
+                        database: {
+                            generateId: false;
+                        };
                         defaultCookieAttributes: {
                             sameSite: "none";
                             secure: true;
@@ -11025,6 +11015,9 @@ declare const auth: {
                                             image: string | null;
                                             handle: string | null;
                                             twoFactorEnabled: boolean | null;
+                                            socialLinks: Record<string, string> | null;
+                                            bio: string | null;
+                                            website: string | null;
                                         };
                                         session: {
                                             id: string;
@@ -11058,6 +11051,9 @@ declare const auth: {
                                         image: string | null;
                                         handle: string | null;
                                         twoFactorEnabled: boolean | null;
+                                        socialLinks: Record<string, string> | null;
+                                        bio: string | null;
+                                        website: string | null;
                                     };
                                     session: {
                                         id: string;
@@ -11233,42 +11229,6 @@ declare const auth: {
                                     use: any[];
                                 };
                                 path: "/get-account-info";
-                            };
-                        };
-                    } | {
-                        id: "customUpdateUser";
-                        endpoints: {
-                            customUpdateUser: {
-                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
-                                    body?: undefined;
-                                } & {
-                                    method?: "POST" | undefined;
-                                } & {
-                                    query?: Record<string, any> | undefined;
-                                } & {
-                                    params?: Record<string, any>;
-                                } & {
-                                    request?: Request;
-                                } & {
-                                    headers?: HeadersInit;
-                                } & {
-                                    asResponse?: boolean;
-                                    returnHeaders?: boolean;
-                                    use?: better_call.Middleware[];
-                                    path?: string;
-                                } & {
-                                    asResponse?: AsResponse_1 | undefined;
-                                    returnHeaders?: ReturnHeaders_14 | undefined;
-                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
-                                    headers: Headers;
-                                    response: string | null;
-                                } : string | null>;
-                                options: {
-                                    method: "POST";
-                                } & {
-                                    use: any[];
-                                };
-                                path: "/update-user-ccc";
                             };
                         };
                     } | {
@@ -11458,7 +11418,9 @@ declare const auth: {
                             appName: string;
                             database: (options: BetterAuthOptions) => better_auth.Adapter;
                             advanced: {
-                                generateId: false;
+                                database: {
+                                    generateId: false;
+                                };
                                 defaultCookieAttributes: {
                                     sameSite: "none";
                                     secure: true;
@@ -12765,6 +12727,9 @@ declare const auth: {
                                                     image: string | null;
                                                     handle: string | null;
                                                     twoFactorEnabled: boolean | null;
+                                                    socialLinks: Record<string, string> | null;
+                                                    bio: string | null;
+                                                    website: string | null;
                                                 };
                                                 session: {
                                                     id: string;
@@ -12798,6 +12763,9 @@ declare const auth: {
                                                 image: string | null;
                                                 handle: string | null;
                                                 twoFactorEnabled: boolean | null;
+                                                socialLinks: Record<string, string> | null;
+                                                bio: string | null;
+                                                website: string | null;
                                             };
                                             session: {
                                                 id: string;
@@ -12973,42 +12941,6 @@ declare const auth: {
                                             use: any[];
                                         };
                                         path: "/get-account-info";
-                                    };
-                                };
-                            } | {
-                                id: "customUpdateUser";
-                                endpoints: {
-                                    customUpdateUser: {
-                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                                            body?: undefined;
-                                        } & {
-                                            method?: "POST" | undefined;
-                                        } & {
-                                            query?: Record<string, any> | undefined;
-                                        } & {
-                                            params?: Record<string, any>;
-                                        } & {
-                                            request?: Request;
-                                        } & {
-                                            headers?: HeadersInit;
-                                        } & {
-                                            asResponse?: boolean;
-                                            returnHeaders?: boolean;
-                                            use?: better_call.Middleware[];
-                                            path?: string;
-                                        } & {
-                                            asResponse?: AsResponse | undefined;
-                                            returnHeaders?: ReturnHeaders | undefined;
-                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                                            headers: Headers;
-                                            response: string | null;
-                                        } : string | null>;
-                                        options: {
-                                            method: "POST";
-                                        } & {
-                                            use: any[];
-                                        };
-                                        path: "/update-user-ccc";
                                     };
                                 };
                             } | {
@@ -14569,39 +14501,6 @@ declare const auth: {
             path: "/get-account-info";
         };
     } & {
-        customUpdateUser: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "POST" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: string | null;
-            } : string | null>;
-            options: {
-                method: "POST";
-            } & {
-                use: any[];
-            };
-            path: "/update-user-ccc";
-        };
-    } & {
         generateOneTimeToken: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
                 body?: undefined;
@@ -15727,6 +15626,9 @@ declare const auth: {
                         image: string | null;
                         handle: string | null;
                         twoFactorEnabled: boolean | null;
+                        socialLinks: Record<string, string> | null;
+                        bio: string | null;
+                        website: string | null;
                     };
                     session: {
                         id: string;
@@ -15760,6 +15662,9 @@ declare const auth: {
                     image: string | null;
                     handle: string | null;
                     twoFactorEnabled: boolean | null;
+                    socialLinks: Record<string, string> | null;
+                    bio: string | null;
+                    website: string | null;
                 };
                 session: {
                     id: string;
@@ -15825,7 +15730,9 @@ declare const auth: {
         appName: string;
         database: (options: BetterAuthOptions) => better_auth.Adapter;
         advanced: {
-            generateId: false;
+            database: {
+                generateId: false;
+            };
             defaultCookieAttributes: {
                 sameSite: "none";
                 secure: true;
@@ -17132,6 +17039,9 @@ declare const auth: {
                                 image: string | null;
                                 handle: string | null;
                                 twoFactorEnabled: boolean | null;
+                                socialLinks: Record<string, string> | null;
+                                bio: string | null;
+                                website: string | null;
                             };
                             session: {
                                 id: string;
@@ -17165,6 +17075,9 @@ declare const auth: {
                             image: string | null;
                             handle: string | null;
                             twoFactorEnabled: boolean | null;
+                            socialLinks: Record<string, string> | null;
+                            bio: string | null;
+                            website: string | null;
                         };
                         session: {
                             id: string;
@@ -17340,42 +17253,6 @@ declare const auth: {
                         use: any[];
                     };
                     path: "/get-account-info";
-                };
-            };
-        } | {
-            id: "customUpdateUser";
-            endpoints: {
-                customUpdateUser: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                        body?: undefined;
-                    } & {
-                        method?: "POST" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: string | null;
-                    } : string | null>;
-                    options: {
-                        method: "POST";
-                    } & {
-                        use: any[];
-                    };
-                    path: "/update-user-ccc";
                 };
             };
         } | {

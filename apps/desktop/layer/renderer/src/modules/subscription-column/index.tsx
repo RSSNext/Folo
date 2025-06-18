@@ -1,6 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
+import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { EventBus } from "@follow/utils/event-bus"
@@ -15,7 +16,7 @@ import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope } from "~/constants"
+import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
 import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -27,7 +28,7 @@ import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
 import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
-import { SubscriptionList } from "./SubscriptionList"
+import { SubscriptionList } from "./SubscriptionList.entry"
 import { SubscriptionTabButton } from "./SubscriptionTabButton"
 
 const lethargy = new Lethargy()
@@ -155,7 +156,15 @@ export function SubscriptionColumn({
         <SwipeWrapper active={timelineId!}>
           {timelineList.map((timelineId) => (
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
-              <SubscriptionList key={timelineId} timelineId={timelineId} />
+              <SubscriptionList
+                key={timelineId}
+                view={
+                  Number.parseInt(
+                    timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
+                    10,
+                  ) as FeedViewType
+                }
+              />
             </section>
           ))}
         </SwipeWrapper>

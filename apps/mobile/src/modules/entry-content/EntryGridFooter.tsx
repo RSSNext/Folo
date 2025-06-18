@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn } from "@follow/utils"
 import { Text, View } from "react-native"
@@ -29,7 +29,7 @@ export const EntryGridFooter = ({
   }))
   const actionLanguage = useActionLanguage()
   const translation = useEntryTranslation(entryId, actionLanguage)
-  const feed = useFeed(entry?.feedId || "")
+  const feed = useFeedById(entry?.feedId || "")
 
   if (!entry) return null
 

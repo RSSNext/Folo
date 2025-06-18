@@ -4,7 +4,7 @@ import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../types"
-import { actionSyncService, useActionStore } from "./store"
+import { actionActions, actionSyncService, useActionStore } from "./store"
 
 export const usePrefetchActions = () => {
   return useQuery({
@@ -71,4 +71,11 @@ export const useHasNotificationActions = () => {
   return useActionStore((state) => {
     return state.rules.some((rule) => !!rule.result.newEntryNotification && !rule.result.disabled)
   })
+}
+
+export const useActionImportExport = () => {
+  return {
+    exportRules: () => actionActions.exportRules(),
+    importRules: (jsonData: string) => actionActions.importRules(jsonData),
+  }
 }

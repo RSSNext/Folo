@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useFeed, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
+import { useFeedById, usePrefetchFeed, usePrefetchFeedByUrl } from "@follow/store/feed/hooks"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
@@ -31,6 +31,7 @@ import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
+import { useColor } from "@/src/theme/colors"
 
 const formSchema = z.object({
   view: z.coerce.number(),
@@ -41,7 +42,7 @@ const formSchema = z.object({
 
 export function FollowFeed(props: { id: string }) {
   const { id } = props
-  const feed = useFeed(id as string)
+  const feed = useFeedById(id as string)
   usePrefetchFeed(id as string, {
     enabled: !feed?.subscriptionCount,
   })
@@ -80,9 +81,10 @@ export function FollowUrl(props: { url: string }) {
 function FollowImpl(props: { feedId: string }) {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
+  const textLabelColor = useColor("label")
   const { feedId: id } = props
 
-  const feed = useFeed(id)
+  const feed = useFeedById(id)
   const subscription = useSubscriptionByFeedId(feed?.id)
   const isSubscribed = !!subscription
 
@@ -181,25 +183,29 @@ function FollowImpl(props: { feedId: string }) {
           }}
         >
           <View className="ml-11 mt-2 flex-row items-center gap-3 opacity-60">
-            {!!feed.subscriptionCount && (
-              <View className="flex-row items-center gap-1">
-                <User3CuteReIcon width={12} height={12} />
-                <Text className="text-text text-sm">
-                  {formatNumber(feed.subscriptionCount || 0)}{" "}
-                  {tCommon("feed.follower", { count: feed.subscriptionCount })}
-                </Text>
-              </View>
-            )}
+            <View className="flex-row items-center gap-1">
+              <User3CuteReIcon color={textLabelColor} width={12} height={12} />
+              <Text className="text-text text-sm">
+                {typeof feed.subscriptionCount === "number" ? (
+                  formatNumber(feed.subscriptionCount || 0)
+                ) : (
+                  <>?</>
+                )}{" "}
+                {tCommon("feed.follower", {
+                  count: feed.subscriptionCount ?? 0,
+                })}
+              </Text>
+            </View>
             {feed.updatesPerWeek ? (
               <View className="flex-row items-center gap-1">
-                <SafetyCertificateCuteReIcon width={12} height={12} />
+                <SafetyCertificateCuteReIcon color={textLabelColor} width={12} height={12} />
                 <Text className="text-text text-sm">
                   {tCommon("feed.entry_week", { count: feed.updatesPerWeek })}
                 </Text>
               </View>
             ) : feed.latestEntryPublishedAt ? (
               <View className="flex-row items-center gap-1">
-                <SafeAlertCuteReIcon width={12} height={12} />
+                <SafeAlertCuteReIcon color={textLabelColor} width={12} height={12} />
                 <Text className="text-text text-sm">
                   {tCommon("feed.updated_at")}
                   <RelativeDateTime date={feed.latestEntryPublishedAt} />
@@ -212,7 +218,7 @@ function FollowImpl(props: { feedId: string }) {
       {/* Group 2 */}
       <GroupedInsetListCard className="gap-y-4 p-4">
         <FormProvider form={form}>
-          <View className="-mx-2.5">
+          <View>
             <Controller
               name="title"
               control={form.control}
@@ -223,13 +229,12 @@ function FollowImpl(props: { feedId: string }) {
                   onChangeText={onChange}
                   value={value}
                   ref={ref}
-                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View className="-mx-2.5">
+          <View>
             <Controller
               name="category"
               control={form.control}
@@ -240,13 +245,12 @@ function FollowImpl(props: { feedId: string }) {
                   onChangeText={onChange}
                   value={value || ""}
                   ref={ref}
-                  wrapperClassName="ml-2.5"
                 />
               )}
             />
           </View>
 
-          <View className="-mx-1">
+          <View>
             <Controller
               name="isPrivate"
               control={form.control}
@@ -262,7 +266,7 @@ function FollowImpl(props: { feedId: string }) {
             />
           </View>
 
-          <View className="-mx-4">
+          <View className="-mx-3">
             <FormLabel className="mb-4 pl-4" label={t("subscription_form.view")} optional />
 
             <Controller

@@ -1,11 +1,12 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { getEntry } from "@follow/store/entry/getter"
 import { cn } from "@follow/utils/utils"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ipcServices } from "~/lib/client"
-import { getEntry } from "~/store/entry"
+import { copyToClipboard } from "~/lib/clipboard"
 
 interface SharePanelProps {
   entryId: string
@@ -69,7 +70,7 @@ const getShareUrl = (entryId: string) => {
   if (!entry) return ""
 
   // Temporarily use the original link
-  return entry.entries.url!
+  return entry.url!
   // const params = getRouteParams()
 
   // let subscriptionId = "all"
@@ -95,7 +96,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
     (entry: ReturnType<typeof getEntry>) => {
       if (!entry) return null
 
-      const { title, description } = entry.entries
+      const { title, description } = entry
       const shareUrl = getShareUrl(entryId)
 
       // Limit text to 50 characters with ellipsis
@@ -136,13 +137,13 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
         })
       } else {
         // Fallback to copying link
-        await navigator.clipboard.writeText(shareContent.url)
+        await copyToClipboard(shareContent.url)
         toast.success(t("share.link_copied"))
       }
     } catch {
       // If sharing fails, copy link as fallback
       try {
-        await navigator.clipboard.writeText(shareContent.url)
+        await copyToClipboard(shareContent.url)
         toast.success(t("share.link_copied"))
       } catch {
         toast.error(t("share.copy_failed"))
@@ -153,7 +154,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
   const handleCopyLink = useCallback(async () => {
     const shareUrl = getShareUrl(entryId)
     try {
-      await navigator.clipboard.writeText(shareUrl)
+      await copyToClipboard(shareUrl)
       toast.success(t("share.link_copied"))
     } catch {
       toast.error(t("share.copy_failed"))
@@ -207,7 +208,7 @@ export const SharePanel = ({ entryId }: SharePanelProps) => {
         <h3 className="text-text mb-2 mt-1 font-semibold">{t("share.title")}</h3>
         {(() => {
           const entry = getEntry(entryId)
-          const title = entry?.entries?.title
+          const title = entry?.title
           return title ? (
             <p className="text-text-secondary mt-1 min-w-0 text-wrap text-left text-sm font-medium">
               {title}

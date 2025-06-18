@@ -118,7 +118,7 @@ export const isASCII = (str: string) => /^[\u0000-\u007F]*$/.test(str)
 const EPOCH = 1712546615000n // follow repo created
 const MAX_TIMESTAMP_BITS = 41n // Maximum number of bits typically used for timestamp
 
-export const isBizId = (id: string): boolean => {
+export const isBizId = (id: string | undefined): boolean => {
   if (!id || !/^\d{13,19}$/.test(id)) return false
 
   const snowflake = BigInt(id)

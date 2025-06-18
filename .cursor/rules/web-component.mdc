@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: apps/desktop/layer/renderer/src/**/*
 alwaysApply: false
 ---
 You need to find the available UI components in the project.

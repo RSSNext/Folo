@@ -19,20 +19,23 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { setWhoami, useWhoami } from "~/atoms/user"
+import { AvatarUploadModal } from "~/components/ui/avatar-upload-modal"
+import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { updateUser } from "~/lib/auth"
+import { uploadAvatarBlob } from "~/lib/avatar-upload"
 import { toastFetchError } from "~/lib/error-parser"
 
 const socialLinksSchema = z.object({
-  twitter: z.string().max(64).optional(),
-  github: z.string().max(64).optional(),
-  instagram: z.string().max(64).optional(),
-  facebook: z.string().max(64).optional(),
-  youtube: z.string().max(64).optional(),
-  discord: z.string().max(64).optional(),
+  twitter: z.string().max(32).optional(),
+  github: z.string().max(32).optional(),
+  instagram: z.string().max(32).optional(),
+  facebook: z.string().max(32).optional(),
+  youtube: z.string().max(32).optional(),
+  discord: z.string().max(32).optional(),
 })
 
 const formSchema = z.object({
-  handle: z.string().max(50).optional(),
+  handle: z.string().max(32).regex(/^\w+$/).optional(),
   name: z.string().min(3).max(50),
   image: z.string().url().or(z.literal("")).optional(),
   bio: z.string().max(256).optional(),
@@ -73,6 +76,7 @@ export const ProfileSettingForm = ({
 }) => {
   const { t } = useTranslation("settings")
   const user = useWhoami() as ExtendedUser
+  const { present } = useModalStack()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -94,7 +98,7 @@ export const ProfileSettingForm = ({
   })
 
   const updateMutation = useMutation({
-    mutationFn: (values: z.infer<typeof formSchema>) =>
+    mutationFn: (values: Partial<z.infer<typeof formSchema>>) =>
       updateUser({
         handle: values.handle,
         image: values.image,
@@ -121,6 +125,34 @@ export const ProfileSettingForm = ({
     updateMutation.mutate(values)
   }
 
+  const handleAvatarUpload = async (blob: Blob) => {
+    try {
+      const imageUrl = await uploadAvatarBlob(blob)
+      form.setValue("image", imageUrl)
+      toast.success(t("profile.avatar.uploadSuccess"))
+      updateMutation.mutate({ image: imageUrl })
+    } catch (error) {
+      console.error("Upload error:", error)
+      toast.error(t("profile.avatar.uploadError"))
+    }
+  }
+
+  const openAvatarUpload = () => {
+    present({
+      title: t("profile.avatar.uploadTitle"),
+      content: ({ dismiss }) => (
+        <AvatarUploadModal
+          maxSizeKB={1024}
+          onConfirm={async (blob) => {
+            await handleAvatarUpload(blob)
+            dismiss()
+          }}
+          onCancel={dismiss}
+        />
+      ),
+    })
+  }
+
   const socialLinkFields: (keyof z.infer<typeof socialLinksSchema>)[] = [
     "twitter",
     "github",
@@ -144,6 +176,35 @@ export const ProfileSettingForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn("mt-4 space-y-4", className)}>
         <FormField
           control={form.control}
+          name="image"
+          render={({ field }) => (
+            <div className="absolute right-0 flex -translate-y-full gap-4">
+              <FormItem className="w-full">
+                <FormControl>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      onClick={openAvatarUpload}
+                      className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
+                    >
+                      <Avatar className="size-16">
+                        <AvatarImage src={field.value} />
+                        <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                      </Avatar>
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        <i className="i-mgc-pic-cute-fi text-xl text-white" />
+                      </div>
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </div>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="handle"
           render={({ field }) => (
             <FormItem>
@@ -151,7 +212,9 @@ export const ProfileSettingForm = ({
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>{t("profile.handle.description")}</FormDescription>
+              <FormDescription className={formItemLabelClassName}>
+                {t("profile.handle.description")}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -165,35 +228,11 @@ export const ProfileSettingForm = ({
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>{t("profile.name.description")}</FormDescription>
+              <FormDescription className={formItemLabelClassName}>
+                {t("profile.name.description")}
+              </FormDescription>
               <FormMessage />
             </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <div className="flex gap-4">
-              <FormItem className="w-full">
-                <FormLabel className={formItemLabelClassName}>
-                  {t("profile.avatar.label")}
-                </FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-4">
-                    <Input {...field} />
-                    {field.value && (
-                      <Avatar className="size-9">
-                        <AvatarImage src={field.value} />
-                        <AvatarFallback>{user?.name[0] || ""}</AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </div>
           )}
         />
 
@@ -247,8 +286,8 @@ export const ProfileSettingForm = ({
                     <FormControl>
                       <label
                         className={cn(
-                          "ring-accent/20 focus-within:border-accent/80 duration-200 focus-within:outline-none focus-within:ring-2",
-                          "border-border bg-theme-background hover:bg-accent/5 flex cursor-text items-center gap-2 rounded-md border px-3 py-2 transition-colors dark:bg-zinc-700/[0.15]",
+                          "ring-accent/20 focus-within:border-accent/80 h-9 duration-200 focus-within:outline-none focus-within:ring-2",
+                          "border-border bg-theme-background hover:bg-accent/5 flex cursor-text items-center gap-2 rounded-lg border px-3 py-2 transition-colors dark:bg-zinc-700/[0.15]",
                         )}
                       >
                         <i

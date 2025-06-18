@@ -1,19 +1,14 @@
+import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { useEntryTranslation, usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import { tracker } from "@follow/tracker"
 import { createElement, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import {
-  useEntryIsInReadability,
-  useEntryIsInReadabilitySuccess,
-  useEntryReadabilityContent,
-} from "~/atoms/readability"
+import { useEntryIsInReadability, useEntryIsInReadabilitySuccess } from "~/atoms/readability"
+import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { useAuthQuery } from "~/hooks/common/useBizQuery"
-import { Queries } from "~/queries"
-import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry } from "~/store/entry/hooks"
-import { useInboxById } from "~/store/inbox/hooks"
+import { checkLanguage } from "~/lib/translate"
 
 import { ImageGalleryContent } from "./components/ImageGalleryContent"
 
@@ -43,33 +38,33 @@ export const useGalleryModal = () => {
 
 export const useEntryContent = (entryId: string) => {
   const entry = useEntry(entryId, (state) => {
-    const { inboxId } = state
-    const { content } = state.entries
-    return { inboxId, content }
+    const { inboxHandle, content, readabilityContent } = state
+    return { inboxId: inboxHandle, content, readabilityContent }
   })
-  const isInbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
-  const { error, data, isPending } = useAuthQuery(
-    isInbox ? Queries.entries.byInboxId(entryId) : Queries.entries.byId(entryId),
-    {
-      staleTime: 300_000,
-    },
-  )
+  const { error, data, isPending } = usePrefetchEntryDetail(entryId)
 
   const isInReadabilityMode = useEntryIsInReadability(entryId)
   const isReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
-  const readabilityContent = useEntryReadabilityContent(entryId)
-  const contentTranslated = useEntryTranslation({
-    entryId,
-    extraFields: isReadabilitySuccess ? ["readabilityContent"] : ["content"],
+
+  const actionLanguage = useActionLanguage()
+  const enableTranslation = useGeneralSettingKey("translation")
+  const contentTranslated = useEntryTranslation(entryId, actionLanguage)
+  usePrefetchEntryTranslation({
+    entryIds: [entryId],
+    checkLanguage,
+    translation: enableTranslation,
+    language: actionLanguage,
+    withContent: true,
+    target: isReadabilitySuccess ? "readabilityContent" : "content",
   })
 
   return useMemo(() => {
     const entryContent = isInReadabilityMode
-      ? readabilityContent?.content
-      : (entry?.content ?? data?.entries.content)
+      ? entry?.readabilityContent
+      : (entry?.content ?? data?.content)
     const translatedContent = isInReadabilityMode
-      ? contentTranslated.data?.readabilityContent
-      : contentTranslated.data?.content
+      ? contentTranslated?.readabilityContent
+      : contentTranslated?.content
     const content = translatedContent || entryContent
     return {
       content,
@@ -77,21 +72,21 @@ export const useEntryContent = (entryId: string) => {
       isPending,
     }
   }, [
-    contentTranslated.data?.content,
-    contentTranslated.data?.readabilityContent,
-    data?.entries.content,
+    contentTranslated?.content,
+    contentTranslated?.readabilityContent,
+    data?.content,
     entry?.content,
     error,
     isInReadabilityMode,
     isPending,
-    readabilityContent?.content,
+    entry?.readabilityContent,
   ])
 }
 
 export const useEntryMediaInfo = (entryId: string) => {
   return useEntry(entryId, (entry) =>
     Object.fromEntries(
-      entry?.entries.media
+      entry?.media
         ?.filter((m) => m.type === "photo")
         .map((cur) => [
           cur.url,

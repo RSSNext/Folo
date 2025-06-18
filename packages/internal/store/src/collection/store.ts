@@ -3,6 +3,7 @@ import type { CollectionSchema } from "@follow/database/schemas/types"
 import { CollectionService } from "@follow/database/services/collection"
 
 import { apiClient } from "../context"
+import { getEntry } from "../entry/getter"
 import type { Hydratable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 
@@ -18,26 +19,22 @@ export const useCollectionStore = createZustandStore<CollectionState>("collectio
   () => defaultState,
 )
 
-// const get = useCollectionStore.getState
+const get = useCollectionStore.getState
 const set = useCollectionStore.setState
 
 class CollectionSyncService {
-  async starEntry({
-    entryId,
-    feedId,
-    view,
-  }: {
-    entryId: string
-    feedId: string
-    view: FeedViewType
-  }) {
+  async starEntry({ entryId, view }: { entryId: string; view: FeedViewType }) {
+    const entry = getEntry(entryId)
+    if (!entry) {
+      return
+    }
     const tx = createTransaction()
     tx.store(async () => {
       await collectionActions.upsertMany([
         {
           createdAt: new Date().toISOString(),
           entryId,
-          feedId,
+          feedId: entry.feedId,
           view,
         },
       ])
@@ -87,8 +84,8 @@ class CollectionActions implements Hydratable {
     collectionActions.upsertManyInSession(collections)
   }
 
-  async upsertManyInSession(collections: CollectionSchema[]) {
-    const state = useCollectionStore.getState()
+  upsertManyInSession(collections: CollectionSchema[]) {
+    const state = get()
     const nextCollections: CollectionState["collections"] = {
       ...state.collections,
     }
@@ -110,7 +107,7 @@ class CollectionActions implements Hydratable {
     tx.persist(() => {
       return CollectionService.upsertMany(collections)
     })
-    tx.run()
+    await tx.run()
   }
 
   async deleteInSession(entryId: string) {

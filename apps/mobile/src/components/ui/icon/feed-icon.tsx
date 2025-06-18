@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { FeedSchema } from "@follow/database/schemas/types"
+import { cn } from "@follow/utils"
 import type { ReactNode } from "react"
 import { useCallback, useMemo, useState } from "react"
 
@@ -48,7 +49,9 @@ export function FeedIcon({
   const handleError = useCallback(() => setIsError(true), [])
 
   if (!src || isError) {
-    return <FallbackIcon title={feed?.title ?? ""} size={size} />
+    return (
+      <FallbackIcon title={feed?.title ?? ""} size={size} className={cn("rounded", className)} />
+    )
   }
   return (
     <Image
@@ -56,7 +59,7 @@ export function FeedIcon({
         width: size,
         height: size,
       }}
-      className="rounded"
+      className={cn("rounded", className)}
       style={{ height: size, width: size }}
       source={{ uri: src }}
       onError={handleError}
