@@ -1,3 +1,4 @@
+import { useChat } from "@ai-sdk/react"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { TextArea } from "@follow/components/ui/input/TextArea.js"
@@ -10,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@follow/components/ui/select/index.jsx"
+import { env } from "@follow/shared/env.desktop"
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
 import { PopoverPortal } from "@radix-ui/react-popover"
@@ -20,19 +22,19 @@ import { SplitText } from "~/components/ui/split-text"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 
 import { AIIcon } from "../icon"
-import { mockDialogues, mockShortcuts } from "../mock-data"
+import { mockShortcuts } from "../mock-data"
 
 export const AIDialoguePanel = () => {
   const user = whoami()
   const settingModalPresent = useSettingModal()
-  const [dialog, setDialog] = useState<
-    {
-      id: string
-      content: string
-      role: "user" | "assistant"
-    }[]
-  >([])
-  const inDialog = dialog.length > 0
+  const { messages, input, setInput, append, reload, error } = useChat({
+    api: `${env.VITE_API_URL}/ai/chat`,
+    onError: (error) => {
+      console.warn(error)
+    },
+    credentials: "include",
+  })
+  const inDialog = messages.length > 0
 
   return (
     <div className="flex size-full flex-col p-8">
@@ -43,9 +45,7 @@ export const AIDialoguePanel = () => {
             <Button
               variant="ghost"
               buttonClassName="text-text-secondary text-sm font-normal"
-              onClick={() => {
-                setDialog([])
-              }}
+              onClick={() => {}}
             >
               New Chat
             </Button>
@@ -89,32 +89,40 @@ export const AIDialoguePanel = () => {
         )}
         {inDialog && (
           <div className="mt-8 flex flex-1 flex-col gap-6">
-            {dialog.map((item) =>
-              item.role === "user" ? (
+            {messages.map((message) =>
+              message.role === "user" ? (
                 <div
-                  key={item.id}
+                  key={message.id}
                   className="text-text bg-theme-item-active w-fit self-end rounded-2xl px-4 py-2"
                 >
-                  {item.content}
+                  {message.content}
                 </div>
               ) : (
-                <div key={item.id} className="text-text">
-                  {item.content}
+                <div key={message.id} className="text-text">
+                  {message.content}
                 </div>
               ),
+            )}
+            {error && (
+              <div className="space-y-2 text-red-500">
+                <div>An error occurred.</div>
+                <Button variant="primary" onClick={() => reload()}>
+                  Retry
+                </Button>
+              </div>
             )}
           </div>
         )}
         <AIDialogueInput
           hideIcon
           onSubmit={(value) => {
-            const answer = mockDialogues.find((d) => d.ask === value)?.answer
-            setDialog((prev) => [
-              ...prev,
-              { id: `${prev.length + 1}`, content: value, role: "user" },
-              { id: `${prev.length + 2}`, content: answer ?? "Thinking...", role: "assistant" },
-            ])
+            append({
+              role: "user",
+              content: value,
+            })
           }}
+          input={input}
+          setInput={setInput}
         />
         {!inDialog && (
           <div className="mb-16 w-full pl-5">
@@ -164,11 +172,15 @@ export const AIDialogueInput = ({
   autoShrink,
   hideIcon,
   onSubmit,
+  input,
+  setInput,
 }: {
   entryId?: string
   autoShrink?: boolean
   hideIcon?: boolean
   onSubmit?: (value: string) => void
+  input?: string
+  setInput?: (value: string) => void
 }) => {
   const entryTitle = useEntry(entryId, (state) => state.title)
 
@@ -192,6 +204,10 @@ export const AIDialogueInput = ({
       )}
       <div className="flex min-w-0 grow flex-col gap-2">
         <TextArea
+          value={input}
+          onChange={(e) => {
+            setInput?.(e.target.value)
+          }}
           rows={isShrink ? 1 : undefined}
           ref={textareaRef}
           autoHeight

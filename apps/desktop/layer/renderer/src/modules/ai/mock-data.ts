@@ -20,10 +20,3 @@ export const mockShortcuts = [
     prompt: "Summarize my starred items from the past week and make it into a poster.",
   },
 ]
-
-export const mockDialogues = [
-  {
-    ask: mockShortcuts[0]!.prompt,
-    answer: "I found some technology podcasts for you.",
-  },
-]
