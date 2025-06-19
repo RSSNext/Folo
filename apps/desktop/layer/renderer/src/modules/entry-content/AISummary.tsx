@@ -1,4 +1,6 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
+import { useEntry } from "@follow/store/entry/hooks"
+import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -7,34 +9,21 @@ import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
-import { useEntry } from "~/store/entry"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const entryContentLength = useEntry(entryId, (state) => state.entries.content?.length) || 0
   const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
   const showAISummary = useShowAISummary(summarySetting)
   const actionLanguage = useActionLanguage()
-  const summary = useAuthQuery(
-    Queries.ai.summary({
-      entryId,
-      language: actionLanguage,
-      target: isInReadabilitySuccess ? "readabilityContent" : "content",
-    }),
-    {
-      enabled: showAISummary,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
+  const summary = usePrefetchSummary({
+    actionLanguage,
+    entryId,
+    target: isInReadabilitySuccess ? "readabilityContent" : "content",
+    enabled: showAISummary,
+  })
 
-  if (!showAISummary || entryContentLength < 100 || (!summary.isLoading && !summary.data)) {
+  if (!showAISummary || (!summary.isLoading && !summary.data)) {
     return null
   }
 

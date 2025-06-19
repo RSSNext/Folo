@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm"
+
 import { db } from "../db"
 import { inboxesTable } from "../schemas"
 import type { InboxSchema } from "../schemas/types"
@@ -8,8 +10,13 @@ class InboxServiceStatic implements Resetable {
   async reset() {
     await db.delete(inboxesTable).execute()
   }
-  async getInbox(): Promise<InboxSchema[]> {
-    return await db.select().from(inboxesTable)
+
+  async deleteById(id: string) {
+    await db.delete(inboxesTable).where(eq(inboxesTable.id, id)).execute()
+  }
+
+  getInboxAll() {
+    return db.query.inboxesTable.findMany()
   }
 
   async upsertMany(inboxes: InboxSchema[]) {

@@ -4,6 +4,8 @@ import { RotatingRefreshIcon } from "@follow/components/ui/loading/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useIsOnline } from "@follow/hooks"
+import { getFeedById } from "@follow/store/feed/getter"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, isBizId } from "@follow/utils/utils"
 import type { FC } from "react"
@@ -22,7 +24,7 @@ import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import { EntryHeader } from "~/modules/entry-content/header"
 import { useRefreshFeedMutation } from "~/queries/feed"
-import { getFeedById, useFeedById, useFeedHeaderTitle } from "~/store/feed"
+import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { MarkAllReadButton } from "../components/mark-all-button"
 import { useIsPreviewFeed } from "../hooks/useIsPreviewFeed"
@@ -167,7 +169,7 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
             e.stopPropagation()
             navigate(previewBackPath() || "/")
           }}
-          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 duration-200"
+          className="no-drag-region hover:text-accent mr-1 inline-flex items-center gap-1 whitespace-nowrap duration-200"
         >
           <i className="i-mingcute-left-line" />
           <span className="text-sm font-medium">{tCommon("words.back")}</span>

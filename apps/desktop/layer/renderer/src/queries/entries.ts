@@ -1,10 +1,25 @@
-import { useFeedUnreadIsDirty } from "~/atoms/feed"
+import type { FeedViewType } from "@follow/constants"
+import { useFeedUnreadIsDirty } from "@follow/store/atoms/feed"
+import { entrySyncServices } from "@follow/store/entry/store"
+
 import { useAuthInfiniteQuery, useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
+import { queryClient } from "~/lib/query-client"
 import { getEntriesParams } from "~/lib/utils"
-import { entryActions } from "~/store/entry"
-import { entryHistoryActions } from "~/store/entry-history/action"
+
+export function invalidateEntriesQuery({ views }: { views: FeedViewType[] }) {
+  return queryClient.invalidateQueries({
+    predicate: (query) => {
+      const { queryKey } = query
+      if (Array.isArray(queryKey) && queryKey[0] === "entries") {
+        const view = queryKey[2]
+        return views.includes(view as FeedViewType)
+      }
+      return false
+    },
+  })
+}
 
 export const entries = {
   entries: ({
@@ -16,9 +31,9 @@ export const entries = {
     excludePrivate,
     limit,
   }: {
-    feedId?: number | string
-    inboxId?: number | string
-    listId?: number | string
+    feedId?: string
+    inboxId?: string
+    listId?: string
     view?: number
     read?: boolean
     excludePrivate?: boolean
@@ -27,7 +42,7 @@ export const entries = {
     defineQuery(
       ["entries", inboxId || listId || feedId, view, read, excludePrivate, limit],
       async ({ pageParam }) =>
-        entryActions.fetchEntries({
+        entrySyncServices.fetchEntries({
           feedId,
           inboxId,
           listId,
@@ -41,14 +56,6 @@ export const entries = {
         rootKey: ["entries", inboxId || listId || feedId],
       },
     ),
-  byId: (id: string) =>
-    defineQuery(["entry", id], async () => entryActions.fetchEntryById(id), {
-      rootKey: ["entries"],
-    }),
-  byInboxId: (id: string) =>
-    defineQuery(["entry", "inbox", id], async () => entryActions.fetchInboxEntryById(id), {
-      rootKey: ["entries"],
-    }),
   preview: (id: string) =>
     defineQuery(
       ["entries-preview", id],
@@ -114,15 +121,6 @@ export const entries = {
         rootKey: ["entry-checkNew", inboxId || listId || feedId],
       },
     ),
-
-  entryReadingHistory: (entryId: string) =>
-    defineQuery(
-      ["entry-reading-history", entryId],
-      async () => entryHistoryActions.fetchEntryHistory(entryId),
-      {
-        rootKey: ["entry-reading-history", entryId],
-      },
-    ),
 }
 
 const defaultStaleTime = 10 * (60 * 1000) // 10 minutes
@@ -135,9 +133,9 @@ export const useEntries = ({
   read,
   excludePrivate,
 }: {
-  feedId?: number | string
-  inboxId?: number | string
-  listId?: number | string
+  feedId?: string
+  inboxId?: string
+  listId?: string
   view?: number
   read?: boolean
   excludePrivate?: boolean

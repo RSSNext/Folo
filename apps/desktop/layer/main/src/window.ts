@@ -17,7 +17,6 @@ import { store } from "./lib/store"
 import { getTrayConfig } from "./lib/tray"
 import { refreshBound } from "./lib/utils"
 import { logger } from "./logger"
-import { cancelPollingUpdateUnreadCount, pollingUpdateUnreadCount } from "./tipc/dock"
 import { loadDynamicRenderEntry } from "./updater/hot-updater"
 
 const windows = {
@@ -48,7 +47,7 @@ export function createWindow(
       webviewTag: true,
       webSecurity: !DEV,
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
     },
   }
 
@@ -309,23 +308,6 @@ export const createMainWindow = () => {
       caller.onWindowClose()
     } else {
       windows.mainWindow = null
-    }
-  })
-
-  window.on("show", () => {
-    cancelPollingUpdateUnreadCount()
-
-    const caller = callWindowExpose(window)
-
-    caller.onWindowShow()
-  })
-
-  window.on("hide", async () => {
-    const caller = callWindowExpose(window)
-    const settings = await caller.getUISettings()
-
-    if (settings?.showDockBadge) {
-      pollingUpdateUnreadCount()
     }
   })
 

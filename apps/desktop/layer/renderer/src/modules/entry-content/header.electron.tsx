@@ -1,10 +1,10 @@
 import { FeedViewType, views } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
 import { memo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { useEntry } from "~/store/entry/hooks"
 
 import { EntryHeaderActions } from "./actions/header-actions"
 import { MoreActions } from "./actions/more-actions"
@@ -13,7 +13,7 @@ import { EntryReadHistory } from "./components/EntryReadHistory"
 import type { EntryHeaderProps } from "./header.shared"
 
 function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps) {
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, () => ({}))
   const entryTitleMeta = useEntryTitleMeta()
   const isAtTop = useEntryContentScrollToTop()
 
@@ -21,7 +21,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
 
   const shouldShowMeta = !isAtTop && !!entryTitleMeta?.title
 
-  if (!entry?.entries) return null
+  if (!entry) return null
 
   return (
     <div
@@ -71,8 +71,8 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
 
         {view !== FeedViewType.SocialMedia && (
           <div className="relative flex shrink-0 items-center justify-end gap-2">
-            <EntryHeaderActions entryId={entry.entries.id} view={view} compact={compact} />
-            <MoreActions entryId={entry.entries.id} />
+            <EntryHeaderActions entryId={entryId} view={view} compact={compact} />
+            <MoreActions entryId={entryId} view={view} />
           </div>
         )}
       </div>

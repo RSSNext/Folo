@@ -1,9 +1,8 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
-import { Routes } from "@follow/constants"
+import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
-import { useRegisterGlobalContext } from "@follow/shared/bridge"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
@@ -12,14 +11,13 @@ import { Lethargy } from "lethargy"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { useLocation } from "react-router"
 
 import { useRootContainerElement } from "~/atoms/dom"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { setTimelineColumnShow, useTimelineColumnShow } from "~/atoms/sidebar"
 import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope } from "~/constants"
-import { navigateEntry, useBackHome } from "~/hooks/biz/useNavigateEntry"
+import { HotkeyScope, ROUTE_TIMELINE_OF_VIEW } from "~/constants"
+import { useBackHome } from "~/hooks/biz/useNavigateEntry"
 import { useReduceMotion } from "~/hooks/biz/useReduceMotion"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useTimelineList } from "~/hooks/biz/useTimelineList"
@@ -29,13 +27,16 @@ import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
-import { TimelineColumnHeader } from "./TimelineColumnHeader"
-import TimelineList from "./TimelineList"
-import { TimelineSwitchButton } from "./TimelineSwitchButton"
+import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
+import { SubscriptionList } from "./SubscriptionList.entry"
+import { SubscriptionTabButton } from "./SubscriptionTabButton"
 
 const lethargy = new Lethargy()
 
-export function FeedColumn({ children, className }: PropsWithChildren<{ className?: string }>) {
+export function SubscriptionColumn({
+  children,
+  className,
+}: PropsWithChildren<{ className?: string }>) {
   const carouselRef = useRef<HTMLDivElement>(null)
   const timelineList = useTimelineList()
 
@@ -89,18 +90,6 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
     { target: carouselRef },
   )
 
-  useRegisterGlobalContext("goToDiscover", () => {
-    window.router.navigate(Routes.Discover)
-  })
-
-  const location = useLocation()
-  useRegisterGlobalContext("goToFeed", ({ id, view }: { id: string; view?: number }) => {
-    navigateEntry({ feedId: id, view: view ?? 0, backPath: location.pathname })
-  })
-  useRegisterGlobalContext("goToList", ({ id, view }: { id: string; view?: number }) => {
-    navigateEntry({ listId: id, view: view ?? 0, backPath: location.pathname })
-  })
-
   const shouldFreeUpSpace = useShouldFreeUpSpace()
   const feedColumnShow = useTimelineColumnShow()
   const rootContainerElement = useRootContainerElement()
@@ -130,7 +119,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
       }, [navigateBackHome])}
     >
       <CommandsHandler setActive={setActive} timelineList={timelineList} />
-      <TimelineColumnHeader />
+      <SubscriptionColumnHeader />
       {!feedColumnShow && (
         <RootPortal to={rootContainerElement}>
           <ActionButton
@@ -146,7 +135,7 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
       <div className="relative mb-4 mt-3">
         <div className="text-text-secondary flex h-11 justify-between gap-0 px-3 text-xl">
           {timelineList.map((timelineId) => (
-            <TimelineSwitchButton key={timelineId} timelineId={timelineId} />
+            <SubscriptionTabButton key={timelineId} timelineId={timelineId} />
           ))}
         </div>
       </div>
@@ -167,7 +156,15 @@ export function FeedColumn({ children, className }: PropsWithChildren<{ classNam
         <SwipeWrapper active={timelineId!}>
           {timelineList.map((timelineId) => (
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
-              <TimelineList key={timelineId} timelineId={timelineId} />
+              <SubscriptionList
+                key={timelineId}
+                view={
+                  Number.parseInt(
+                    timelineId.slice(ROUTE_TIMELINE_OF_VIEW.length),
+                    10,
+                  ) as FeedViewType
+                }
+              />
             </section>
           ))}
         </SwipeWrapper>

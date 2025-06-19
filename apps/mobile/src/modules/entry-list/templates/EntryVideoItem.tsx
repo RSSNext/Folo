@@ -17,7 +17,12 @@ import { VideoContextMenu } from "../../context-menu/video"
 import { EntryGridFooter } from "../../entry-content/EntryGridFooter"
 
 export const EntryVideoItem = memo(({ id }: { id: string }) => {
-  const item = useEntry(id)
+  const item = useEntry(id, (state) => ({
+    attachments: state.attachments,
+    media: state.media,
+    feedId: state.feedId,
+    url: state.url,
+  }))
 
   const duration = useMemo(() => {
     const seconds = item?.attachments?.find(

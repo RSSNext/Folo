@@ -34,7 +34,7 @@ export function Recommendations() {
   }
 
   return (
-    <div className="mt-4 w-full max-w-[800px] space-y-6">
+    <div className="mx-auto mt-4 w-full max-w-[800px] space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-center gap-2 text-center text-xl font-bold">
           <i className="i-mgc-grid-2-cute-re text-xl" />
@@ -49,7 +49,8 @@ export function Recommendations() {
               triggerClassName="h-8 rounded border-0"
               size="sm"
               items={LanguageOptions}
-              renderItem={(item) => <>{tCommon(item.label as any)}</>}
+              renderItem={(item) => tCommon(item.label as any)}
+              renderValue={(item) => tCommon(item.label as any)}
             />
           </div>
         </div>

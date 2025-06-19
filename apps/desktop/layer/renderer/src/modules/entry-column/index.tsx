@@ -1,6 +1,10 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useTitle } from "@follow/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import type { Range, Virtualizer } from "@tanstack/react-virtual"
 import { memo, useCallback, useEffect, useRef } from "react"
@@ -12,9 +16,7 @@ import { FEED_COLLECTION_LIST, HotkeyScope, ROUTE_FEED_PENDING } from "~/constan
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedQuery } from "~/queries/feed"
-import { entryActions, useEntry } from "~/store/entry"
-import { useFeedById, useFeedHeaderTitle } from "~/store/feed"
-import { useSubscriptionByFeedId } from "~/store/subscription"
+import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { EntryColumnGrid } from "./grid"
@@ -44,7 +46,10 @@ function EntryColumnImpl() {
     isCollection,
   } = useRouteParams()
 
-  const activeEntry = useEntry(activeEntryId)
+  const entry = useEntry(activeEntryId, (state) => {
+    const { feedId } = state
+    return { feedId }
+  })
   const feed = useFeedById(routeFeedId)
   const title = useFeedHeaderTitle()
   useTitle(title)
@@ -53,12 +58,10 @@ function EntryColumnImpl() {
     if (!activeEntryId) return
 
     if (isCollection || isPendingEntry) return
+    if (!entry?.feedId) return
 
-    const feedId = activeEntry?.feedId
-    if (!feedId) return
-
-    entryActions.markRead({ feedId, entryId: activeEntryId, read: true })
-  }, [activeEntry?.feedId, activeEntryId, isCollection, isPendingEntry])
+    unreadSyncService.markEntryAsRead(activeEntryId)
+  }, [activeEntryId, entry?.feedId, isCollection, isPendingEntry])
 
   const isInteracted = useRef(false)
 

@@ -7,6 +7,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
@@ -15,7 +16,6 @@ import { z } from "zod"
 
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { apiClient } from "~/lib/api-fetch"
-import { Queries } from "~/queries"
 
 const formSchema = z.object({
   category: z.string(),
@@ -46,7 +46,7 @@ export function CategoryRenameContent({
         },
       }),
     onSuccess: () => {
-      Queries.subscription.all().invalidate()
+      subscriptionSyncService.fetch()
 
       onSuccess?.()
     },

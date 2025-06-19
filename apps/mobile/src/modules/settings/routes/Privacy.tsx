@@ -9,8 +9,8 @@ import {
   GroupedInsetListNavigationLink,
 } from "@/src/components/ui/grouped/GroupedList"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { PrivacyPolicyScreen } from "@/src/screens/(headless)/privacy"
-import { TermsScreen } from "@/src/screens/(headless)/terms"
+import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScreen"
+import { TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
 export const PrivacyScreen = () => {
   const { t } = useTranslation("settings")

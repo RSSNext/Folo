@@ -7,11 +7,12 @@ import type {
 } from "@follow/models/types"
 import { merge } from "es-toolkit/compat"
 
+import { apiClient } from "../context"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
 
 type ActionStore = {
   rules: ActionRules
-  isDirty?: boolean
+  isDirty: boolean
 }
 
 export const useActionStore = createZustandStore<ActionStore>("action")(() => ({
@@ -23,7 +24,7 @@ const immerSet = createImmerSetter(useActionStore)
 
 class ActionSyncService {
   async fetchRules() {
-    const res = await apiClient.actions.$get()
+    const res = await apiClient().actions.$get()
     if (res.data) {
       actionActions.updateRules(
         (res.data.rules ?? []).map((rule, index) => ({ ...rule, index })) as any,
@@ -40,7 +41,7 @@ class ActionSyncService {
       return null
     }
 
-    const res = await apiClient.actions.$put({ json: { rules: rules as any } })
+    const res = await apiClient().actions.$put({ json: { rules: rules as any } })
     actionActions.setDirty(false)
     return res
   }
@@ -63,10 +64,10 @@ class ActionActions {
     })
   }
 
-  addRule() {
+  addRule(getName: (index: number) => string) {
     immerSet((state) => {
       state.rules.push({
-        name: `Action ${state.rules.length + 1}`,
+        name: getName(state.rules.length + 1),
         condition: [],
         index: state.rules.length,
         result: {},
@@ -156,8 +157,26 @@ class ActionActions {
       const rule = state.rules[index]
       if (!rule) return
       const { webhooks } = rule.result
+      if (!webhooks) {
+        rule.result.webhooks = [""]
+      } else {
+        webhooks.push("")
+      }
+      state.isDirty = true
+    })
+  }
+
+  deleteWebhook(index: number, webhookIndex: number) {
+    immerSet((state) => {
+      const rule = state.rules[index]
+      if (!rule) return
+      const { webhooks } = rule.result
       if (!webhooks) return
-      webhooks.push("")
+      if (webhooks.length === 1) {
+        delete rule.result.webhooks
+      } else {
+        webhooks.splice(webhookIndex, 1)
+      }
       state.isDirty = true
     })
   }
@@ -186,8 +205,31 @@ class ActionActions {
       const rule = state.rules[index]
       if (!rule) return
       const { rewriteRules } = rule.result
+      if (!rewriteRules) {
+        rule.result.rewriteRules = [
+          {
+            from: "",
+            to: "",
+          },
+        ]
+      } else {
+        rewriteRules.push({ from: "", to: "" })
+      }
+      state.isDirty = true
+    })
+  }
+
+  deleteRewriteRule(index: number, rewriteIdx: number) {
+    immerSet((state) => {
+      const rule = state.rules[index]
+      if (!rule) return
+      const { rewriteRules } = rule.result
       if (!rewriteRules) return
-      rewriteRules.push({ from: "", to: "" })
+      if (rewriteRules.length === 1) {
+        delete rule.result.rewriteRules
+      } else {
+        rewriteRules.splice(rewriteIdx, 1)
+      }
       state.isDirty = true
     })
   }
@@ -213,6 +255,68 @@ class ActionActions {
       rewriteRule[key] = value
       state.isDirty = true
     })
+  }
+
+  exportRules(): string {
+    const { rules } = useActionStore.getState()
+    const exportData = {
+      version: "1.0",
+      exportDate: new Date().toISOString(),
+      rules: rules.map((rule) => ({
+        name: rule.name,
+        condition: rule.condition,
+        result: rule.result,
+      })),
+    }
+    return JSON.stringify(exportData)
+  }
+
+  importRules(jsonData: string): { success: boolean; message: string; importedCount?: number } {
+    try {
+      const parsedData = JSON.parse(jsonData)
+
+      // Validate the structure
+      if (!parsedData.rules || !Array.isArray(parsedData.rules)) {
+        return { success: false, message: "Invalid JSON structure: missing or invalid rules array" }
+      }
+
+      // Validate each rule structure
+      for (const rule of parsedData.rules) {
+        if (!rule.name || typeof rule.name !== "string") {
+          return { success: false, message: "Invalid rule: missing or invalid name field" }
+        }
+        if (!rule.condition || !Array.isArray(rule.condition)) {
+          return { success: false, message: "Invalid rule: missing or invalid condition field" }
+        }
+        if (!rule.result || typeof rule.result !== "object") {
+          return { success: false, message: "Invalid rule: missing or invalid result field" }
+        }
+      }
+
+      // Import the rules
+      const importedRules: ActionRules = parsedData.rules.map((rule: any, index: number) => ({
+        name: rule.name,
+        condition: rule.condition,
+        result: rule.result,
+        index,
+      }))
+
+      immerSet((state) => {
+        state.rules = importedRules
+        state.isDirty = true
+      })
+
+      return {
+        success: true,
+        message: `Successfully imported ${importedRules.length} action rule(s)`,
+        importedCount: importedRules.length,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to parse JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
+      }
+    }
   }
 }
 

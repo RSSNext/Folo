@@ -1,4 +1,5 @@
 import type { ActionConditionIndex } from "@follow/models/types"
+import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
 import { useActionRuleCondition } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useMemo } from "react"
@@ -19,8 +20,6 @@ import {
 import { views } from "@/src/constants/views"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { accentColor } from "@/src/theme/colors"
-
-import { filterFieldOptions, filterOperatorOptions } from "../actions/constant"
 
 export const EditConditionScreen: NavigationControllerView<{
   ruleIndex: number

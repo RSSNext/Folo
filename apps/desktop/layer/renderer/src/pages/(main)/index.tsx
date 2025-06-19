@@ -4,7 +4,7 @@ import { redirect } from "react-router"
 
 import { getGeneralSettings } from "~/atoms/settings/general"
 import { ROUTE_ENTRY_PENDING, ROUTE_FEED_PENDING } from "~/constants"
-import { MobileFeedScreen } from "~/modules/app-layout/feed-column/index"
+import { MobileFeedScreen } from "~/modules/app-layout/subscription-column/index"
 
 export function Component() {
   return <MobileFeedScreen />

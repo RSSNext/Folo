@@ -127,8 +127,8 @@ private class EnhancePagerView: ExpoView, UIGestureRecognizerDelegate {
     pageController.onScrollStart = { [weak self] index in
       self?.onScrollBegin(["index": index])
     }
-    pageController.onScroll = { [weak self] percent, direction in
-      self?.onScroll(["percent": percent, "direction": direction.rawValue])
+    pageController.onScroll = { [weak self] percent, direction, position in
+      self?.onScroll(["percent": percent, "direction": direction.rawValue, "position": position])
     }
     pageController.onScrollEnd = { [weak self] index in
       self?.onScrollEnd(["index": index])

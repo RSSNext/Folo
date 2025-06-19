@@ -30,6 +30,9 @@ patchedDependencies:
   '@pengx17/electron-forge-maker-appimage':
     hash: 5b5ab1ba36e8c0d7ffee912ebf29c1a18bc101c9c661ceb1bb0bda3deaf4c667
     path: patches/@pengx17__electron-forge-maker-appimage.patch
+  '@sentry/electron':
+    hash: b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb
+    path: patches/@sentry__electron.patch
   daisyui@4.12.24:
     hash: d393ab1cbfbfcff21dce0796a59c2d8a37e2c6dd634a8ab476cbc67e47b93d9c
     path: patches/daisyui@4.12.24.patch
@@ -333,9 +336,6 @@ importers:
 
   apps/desktop/layer/main:
     dependencies:
-      '@egoist/tipc':
-        specifier: 0.3.2
-        version: 0.3.2(electron@35.1.5)(react@19.0.0)
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@35.1.5)
@@ -359,7 +359,7 @@ importers:
         version: 1.0.1
       '@sentry/electron':
         specifier: 6.6.0
-        version: 6.6.0
+        version: 6.6.0(patch_hash=b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb)
       builder-util-runtime:
         specifier: 9.3.1
         version: 9.3.1
@@ -454,18 +454,21 @@ importers:
       '@dnd-kit/sortable':
         specifier: 10.0.0
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
-      '@egoist/tipc':
-        specifier: 0.3.2
-        version: 0.3.2(electron@35.1.5)(react@19.0.0)
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@35.1.5)
+      '@follow/database':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/database
       '@follow/electron-main':
         specifier: workspace:*
         version: link:../main
       '@follow/shared':
         specifier: workspace:*
         version: link:../../../../packages/internal/shared
+      '@follow/store':
+        specifier: workspace:*
+        version: link:../../../../packages/internal/store
       '@follow/tracker':
         specifier: workspace:*
         version: link:../../../../packages/internal/tracker
@@ -553,12 +556,6 @@ importers:
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
-      dexie:
-        specifier: 4.0.11
-        version: 4.0.11
-      dexie-export-import:
-        specifier: 4.1.4
-        version: 4.1.4(dexie@4.0.11)
       dnum:
         specifier: 2.15.0
         version: 2.15.0
@@ -1281,6 +1278,9 @@ importers:
       path-to-regexp:
         specifier: 8.2.0
         version: 8.2.0
+      tailwindcss-uikit-colors:
+        specifier: 0.6.2
+        version: 0.6.2
       tsup:
         specifier: 8.5.0
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)
@@ -1587,8 +1587,8 @@ importers:
         specifier: 15.2.9
         version: 15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       sqlocal:
-        specifier: 0.14.1
-        version: 0.14.1(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)
+        specifier: npm:@hyoban/sqlocal@0.14.1-fork.4
+        version: '@hyoban/sqlocal@0.14.1-fork.4(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)'
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
@@ -1733,6 +1733,10 @@ importers:
         version: 5.0.5(@types/react@19.1.6)(immer@10.1.1(patch_hash=594c60b929bc0a3b56576f1a1787da1aec2a1fba51e3c21ec09c0ed38280af6c))(react@19.0.0)(use-sync-external-store@1.5.0(react@19.0.0))
 
   packages/internal/tracker:
+    dependencies:
+      posthog-js:
+        specifier: 1.249.2
+        version: 1.249.2
     devDependencies:
       '@follow/configs':
         specifier: workspace:*
@@ -2710,11 +2714,6 @@ packages:
     resolution: {integrity: sha512-xWA9cUy6hzlK7Y6TaoRIcwmilSXiTJ8rbXcEdf9uht7yzDgw/yIgF4rThIQMrpD2Y2v4od51+r2y6Z7GStanDQ==}
     peerDependencies:
       tailwindcss: '*'
-
-  '@egoist/tipc@0.3.2':
-    resolution: {integrity: sha512-p8g35BhErVkYIgDqkw/HQJSli1TOsZRIUU9U7PYnYfwru6J/Ep1lwFGH2N6+sQMFi1HkqGTTUlJEISJ1DClfQw==}
-    peerDependencies:
-      electron: '>=26.0.0'
 
   '@electron-forge/cli@7.8.0':
     resolution: {integrity: sha512-XZ+Hg7pxeE9pgrahqcpMlND+VH0l0UTZLyO5wkI+YfanNyBQksB2mw24XeEtCA6x8F2IaEYdIGgijmPF6qpjzA==}
@@ -4114,6 +4113,17 @@ packages:
     engines: {node: '>=18.12.0'}
     peerDependencies:
       tailwindcss: ^3.4.0
+
+  '@hyoban/sqlocal@0.14.1-fork.4':
+    resolution: {integrity: sha512-cpOUsFdmTKj/BvZyX+m2Njxrjpx9bWbinVEV93tMPNcGTUNZFjEnEz5QR+/igGONzxTlonuPK5EOAh1QDFwpNw==}
+    peerDependencies:
+      drizzle-orm: '*'
+      kysely: '*'
+    peerDependenciesMeta:
+      drizzle-orm:
+        optional: true
+      kysely:
+        optional: true
 
   '@iconify-json/logos@1.2.4':
     resolution: {integrity: sha512-XC4If5D/hbaZvUkTV8iaZuGlQCyG6CNOlaAaJaGa13V5QMYwYjgtKk3vPP8wz3wtTVNVEVk3LRx1fOJz+YnSMw==}
@@ -6010,8 +6020,8 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@sqlite.org/sqlite-wasm@3.49.1-build4':
-    resolution: {integrity: sha512-TBbTTWhiI6v2CT7J1hij5shx+RGL4iICprVGYhO+LKv5Nbn3NeJPWCY8kMKL5vA6b33NeWkBk4dy6RFbNh3jBw==}
+  '@sqlite.org/sqlite-wasm@3.50.0-build1':
+    resolution: {integrity: sha512-h1ilVgUR3h1rGxglOyolwMYRf6Pj71iXadNGvSHhsYcmbRjIH5JXcFk729UyJ6Z3x82lFOYmy0wqW+iGefNVtQ==}
     hasBin: true
 
   '@standard-schema/utils@0.3.0':
@@ -6060,9 +6070,6 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
 
-  '@tanstack/query-core@5.74.7':
-    resolution: {integrity: sha512-X3StkN/Y6KGHndTjJf8H8th7AX4bKfbRpiVhVqevf0QWlxl6DhyJ0TYG3R0LARa/+xqDwzU9mA4pbJxzPCI29A==}
-
   '@tanstack/query-core@5.77.2':
     resolution: {integrity: sha512-1lqJwPsR6GX6nZFw06erRt518O19tWU6Q+x0fJUygl4lxHCYF2nhzBPwLKk2NPjYOrpR0K567hxPc5K++xDe9Q==}
 
@@ -6085,11 +6092,6 @@ packages:
     resolution: {integrity: sha512-rE+mYxxwovtMWKcpSj9AU1eLtKRv+bsYVzlXZ/3WNZN8DohUc7BWr5WFWzR0QfFhMtDQN3yLUd7Z0Y8x5pgohg==}
     peerDependencies:
       '@tanstack/react-query': ^5.77.2
-      react: 19.0.0
-
-  '@tanstack/react-query@5.74.7':
-    resolution: {integrity: sha512-u4o/RIWnnrq26orGZu2NDPwmVof1vtAiiV6KYUXd49GuK+8HX+gyxoAYqIaZogvCE1cqOuZAhQKcrKGYGkrLxg==}
-    peerDependencies:
       react: 19.0.0
 
   '@tanstack/react-query@5.77.2':
@@ -8106,14 +8108,6 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  dexie-export-import@4.1.4:
-    resolution: {integrity: sha512-3bw171qUuOTWSYLXI7C/0M6p1X65Rho3tu1IvD9By8jn0+3t3dLSkDlZ1BC6MbABl3kRlhtGigzC+SF+qcS5Og==}
-    peerDependencies:
-      dexie: ^2.0.4 || ^3.0.0 || ^4.0.1
-
-  dexie@4.0.11:
-    resolution: {integrity: sha512-SOKO002EqlvBYYKQSew3iymBoN2EQ4BDw/3yprjh7kAfFzjBYkaMNa/pZvcA7HSWlcKSQb9XhPe3wKyQ0x4A8A==}
-
   didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
 
@@ -9429,6 +9423,9 @@ packages:
 
   fetch-retry@4.1.1:
     resolution: {integrity: sha512-e6eB7zN6UBSwGVwrbWVH+gdLnkW9WwHhmq2YDK1Sh30pzx1onRVGBvogTlUeWxwTa+L86NYdo4hFkh7O8ZjSnA==}
+
+  fflate@0.4.8:
+    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
 
   fflate@0.7.4:
     resolution: {integrity: sha512-5u2V/CDW15QM1XbbgS+0DfPxVB+jUKhWEKuuFuHncbk3tEEqzmoXL+2KyOFuKGqOnmdIy0/davWF1CkuwtibCw==}
@@ -12508,6 +12505,17 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
+  posthog-js@1.249.2:
+    resolution: {integrity: sha512-OMXCO/IfcJBjYTuebVynMbp8Kq329yKEQSCAnkqLmi8W2Bt5bi7S5xxMwDM3Pm7818Uh0C40XMG3rAtYozId6Q==}
+    peerDependencies:
+      '@rrweb/types': 2.0.0-alpha.17
+      rrweb-snapshot: 2.0.0-alpha.17
+    peerDependenciesMeta:
+      '@rrweb/types':
+        optional: true
+      rrweb-snapshot:
+        optional: true
+
   postject@1.0.0-alpha.6:
     resolution: {integrity: sha512-b9Eb8h2eVqNE8edvKdwqkrY6O7kAwmI8kcnBv1NScolYJbo59XUF0noFq+lxbC1yN20bmC0WBEbDC5H/7ASb0A==}
     engines: {node: '>=14.0.0'}
@@ -13799,17 +13807,6 @@ packages:
 
   sprintf-js@1.1.3:
     resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
-
-  sqlocal@0.14.1:
-    resolution: {integrity: sha512-UhmNKWT7WBgJIrvp5JVuKAOOLXww4ZDVBfouPb/CIg/ONSCVPqaXFzwvTZ3vZY6SkfJLw9JCX+dZU+T1/orHmg==}
-    peerDependencies:
-      drizzle-orm: '*'
-      kysely: '*'
-    peerDependenciesMeta:
-      drizzle-orm:
-        optional: true
-      kysely:
-        optional: true
 
   ssri@9.0.1:
     resolution: {integrity: sha512-o57Wcn66jMQvfHG1FlYbWeZWW/dHZhJXjpIcTfXldXEk5nz5lStPo3mK0OJQfGR3RbZUlbISexbljkJzuEj/8Q==}
@@ -17180,14 +17177,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@egoist/tipc@0.3.2(electron@35.1.5)(react@19.0.0)':
-    dependencies:
-      electron: 35.1.5
-    optionalDependencies:
-      '@tanstack/react-query': 5.74.7(react@19.0.0)
-    transitivePeerDependencies:
-      - react
-
   '@electron-forge/cli@7.8.0(encoding@0.1.13)':
     dependencies:
       '@electron-forge/core': 7.8.0(encoding@0.1.13)
@@ -19282,6 +19271,17 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.23)(typescript@5.8.3))
 
+  '@hyoban/sqlocal@0.14.1-fork.4(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)':
+    dependencies:
+      '@sqlite.org/sqlite-wasm': 3.50.0-build1
+      coincident: 1.2.3(bufferutil@4.0.9)
+    optionalDependencies:
+      drizzle-orm: 0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2)
+      kysely: 0.28.2
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@iconify-json/logos@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
@@ -21113,7 +21113,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       semver: 7.7.2
     transitivePeerDependencies:
@@ -21506,7 +21506,7 @@ snapshots:
 
   '@sentry/core@9.22.0': {}
 
-  '@sentry/electron@6.6.0':
+  '@sentry/electron@6.6.0(patch_hash=b5efa039abfa14f7833b762e8a7c1c3ae147fda22954d860ffa3387db9acf8eb)':
     dependencies:
       '@sentry/browser': 9.18.0
       '@sentry/core': 9.18.0
@@ -21662,7 +21662,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@sqlite.org/sqlite-wasm@3.49.1-build4': {}
+  '@sqlite.org/sqlite-wasm@3.50.0-build1': {}
 
   '@standard-schema/utils@0.3.0': {}
 
@@ -21711,9 +21711,6 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.15.23)(typescript@5.8.3))
 
-  '@tanstack/query-core@5.74.7':
-    optional: true
-
   '@tanstack/query-core@5.77.2': {}
 
   '@tanstack/query-devtools@5.76.0': {}
@@ -21738,12 +21735,6 @@ snapshots:
       '@tanstack/query-persist-client-core': 5.77.2
       '@tanstack/react-query': 5.77.2(react@19.0.0)
       react: 19.0.0
-
-  '@tanstack/react-query@5.74.7(react@19.0.0)':
-    dependencies:
-      '@tanstack/query-core': 5.74.7
-      react: 19.0.0
-    optional: true
 
   '@tanstack/react-query@5.77.2(react@19.0.0)':
     dependencies:
@@ -24274,12 +24265,6 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  dexie-export-import@4.1.4(dexie@4.0.11):
-    dependencies:
-      dexie: 4.0.11
-
-  dexie@4.0.11: {}
-
   didyoumean@1.2.2: {}
 
   diff@4.0.2: {}
@@ -26073,6 +26058,8 @@ snapshots:
       picomatch: 4.0.2
 
   fetch-retry@4.1.1: {}
+
+  fflate@0.4.8: {}
 
   fflate@0.7.4: {}
 
@@ -28283,21 +28270,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  metro-config@0.82.4(bufferutil@4.0.9):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     dependencies:
       connect: 3.7.0
@@ -28312,7 +28284,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro-core@0.82.4:
     dependencies:
@@ -28424,7 +28395,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro@0.82.4(bufferutil@4.0.9):
     dependencies:
@@ -28452,7 +28422,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
@@ -28519,7 +28489,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   micromark-core-commonmark@2.0.3:
     dependencies:
@@ -29792,6 +29761,13 @@ snapshots:
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
+
+  posthog-js@1.249.2:
+    dependencies:
+      core-js: 3.42.0
+      fflate: 0.4.8
+      preact: 10.26.7
+      web-vitals: 4.2.4
 
   postject@1.0.0-alpha.6:
     dependencies:
@@ -31305,17 +31281,6 @@ snapshots:
   sprintf-js@1.0.3: {}
 
   sprintf-js@1.1.3: {}
-
-  sqlocal@0.14.1(bufferutil@4.0.9)(drizzle-orm@0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2):
-    dependencies:
-      '@sqlite.org/sqlite-wasm': 3.49.1-build4
-      coincident: 1.2.3(bufferutil@4.0.9)
-    optionalDependencies:
-      drizzle-orm: 0.43.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.9(expo@53.0.4(@babel/core@7.27.3)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.3)(@types/react@19.1.6)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2)
-      kysely: 0.28.2
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
 
   ssri@9.0.1:
     dependencies:

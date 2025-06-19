@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { setWhoami, useWhoami } from "~/atoms/user"
-import { AnimatedCommandButton } from "~/components/ui/button/base"
+import { AnimatedCommandButton } from "~/components/ui/button/AnimatedCommandButton"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { changeEmail, sendVerificationEmail } from "~/lib/auth"
@@ -48,7 +48,7 @@ export function EmailManagement() {
   const { present } = useModalStack()
   return (
     <>
-      <div className="mb-2 flex items-center space-x-1">
+      <div className="mb-2 flex items-center space-x-1 pl-3">
         <Label className="text-sm">{t("profile.email.label")}</Label>
         <span
           className={cn(
@@ -59,43 +59,45 @@ export function EmailManagement() {
           {user?.emailVerified ? t("profile.email.verified") : t("profile.email.unverified")}
         </span>
       </div>
-      <p className="text-text-secondary group flex gap-2 text-sm">
-        {user?.email}
+      <div className="flex items-center justify-between pl-3">
+        <div className="text-text-secondary group flex items-center gap-2">
+          {user?.email}
 
-        <AnimatedCommandButton
-          icon={<m.i className="i-mgc-edit-cute-re size-4" />}
-          className="size-5 p-1"
-          variant="ghost"
-          onClick={() => {
-            present({
-              title: t("profile.email.change"),
-              content: EmailManagementForm,
-            })
-          }}
-        />
-        {user?.email && (
-          <CopyButton
-            value={user.email}
-            className={cn(
-              "size-5 p-1 duration-300",
-              !isMobile && "opacity-0 group-hover:opacity-100",
-            )}
+          <AnimatedCommandButton
+            icon={<m.i className="i-mgc-edit-cute-re size-4" />}
+            className="size-5 p-1"
+            variant="ghost"
+            onClick={() => {
+              present({
+                title: t("profile.email.change"),
+                content: EmailManagementForm,
+              })
+            }}
           />
+          {user?.email && (
+            <CopyButton
+              value={user.email}
+              className={cn(
+                "size-5 p-1 duration-300",
+                !isMobile && "opacity-0 group-hover:opacity-100",
+              )}
+            />
+          )}
+        </div>
+        {!user?.emailVerified && (
+          <Button
+            variant="outline"
+            type="button"
+            isLoading={verifyEmailMutation.isPending}
+            onClick={() => {
+              verifyEmailMutation.mutate()
+            }}
+            buttonClassName="mt-2"
+          >
+            {t("profile.email.send_verification")}
+          </Button>
         )}
-      </p>
-      {!user?.emailVerified && (
-        <Button
-          variant="outline"
-          type="button"
-          isLoading={verifyEmailMutation.isPending}
-          onClick={() => {
-            verifyEmailMutation.mutate()
-          }}
-          buttonClassName="mt-2"
-        >
-          {t("profile.email.send_verification")}
-        </Button>
-      )}
+      </div>
     </>
   )
 }

@@ -1,10 +1,10 @@
+import { CollapseGroup } from "@follow/components/ui/collapse/Collapse.js"
 import { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { AnimatePresence, LayoutGroup, m } from "motion/react"
 import * as React from "react"
 
-import { CollapseGroup } from "~/components/ui/collapse"
 import { PeekModalBaseButton } from "~/components/ui/modal/components/base"
 import { ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"

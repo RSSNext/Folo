@@ -25,7 +25,7 @@ export const MarkAllAsReadDialog: DialogComponent = () => {
 
           if (typeof selectedView === "number") {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               excludePrivate: getHideAllReadSubscriptions(),

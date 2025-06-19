@@ -4,8 +4,10 @@ import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
+import { useIsDark } from "@follow/hooks"
 import type { LoginRuntime } from "@follow/shared/auth"
 import { stopPropagation } from "@follow/utils/dom"
+import { cn } from "@follow/utils/utils"
 import { m } from "motion/react"
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -16,6 +18,7 @@ import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
 import { LegalModalContent } from "./LegalModal"
+import { TokenModalContent } from "./TokenModal"
 
 interface LoginModalContentProps {
   runtime: LoginRuntime
@@ -49,6 +52,16 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
     })
   }
 
+  const handleOpenToken = () => {
+    present({
+      id: "token",
+      title: t("login.enter_token"),
+      content: () => <TokenModalContent />,
+    })
+  }
+
+  const isDark = useIsDark()
+
   const Inner = (
     <>
       <div className="-mt-9 mb-4 flex items-center justify-center">
@@ -61,16 +74,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <Folo className="ml-2 size-14" />
       </div>
 
-      {/* {isRegister ? <RegisterForm /> : <LoginWithPassword runtime={runtime} />} */}
-      {/* {providers.length > 0 && (
-        <div className="my-3 w-full space-y-2">
-          <div className="flex items-center justify-center">
-            <Divider className="flex-1" />
-            <p className="text-text-tertiary px-4 text-center text-sm">{t("login.or")}</p>
-            <Divider className="flex-1" />
-          </div>
-        </div>
-      )} */}
       {isEmail ? (
         isRegister ? (
           <RegisterForm />
@@ -102,15 +105,36 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                   className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border py-3 pl-5 font-semibold duration-200"
                 >
                   <img
-                    className="absolute left-9 h-5 dark:brightness-[0.85] dark:hue-rotate-180 dark:invert"
-                    src={provider.icon64}
+                    className={cn(
+                      "absolute left-9 h-5",
+                      !provider.iconDark64 &&
+                        "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                    )}
+                    src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                   />
                   <span>{t("login.continueWith", { provider: provider.name })}</span>
                 </MotionButtonBase>
               ))}
+
+          <div className="text-text-secondary -mb-1.5 mt-1 text-center text-xs leading-4">
+            <a onClick={() => handleOpenToken()} className="hover:underline">
+              {t("login.enter_token")}
+            </a>
+          </div>
+          <div className="text-text-secondary text-center text-xs leading-4">
+            <span>{t("login.agree_to")}</span>{" "}
+            <a onClick={() => handleOpenLegal("tos")} className="text-accent hover:underline">
+              {t("login.terms")}
+            </a>{" "}
+            &{" "}
+            <a onClick={() => handleOpenLegal("privacy")} className="text-accent hover:underline">
+              {t("login.privacy")}
+            </a>
+          </div>
         </div>
       )}
-      <Divider className="mb-5 mt-6" />
+
+      <Divider className="mb-5 mt-4" />
       {isEmail ? (
         <div className="flex items-center justify-center pb-2">
           <MotionButtonBase
@@ -132,23 +156,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           />
         </div>
       )}
-
-      <div className="text-text-secondary mt-3 text-center text-xs leading-5">
-        <span>{t("login.agree_to")}</span> <br />
-        <a
-          onClick={() => handleOpenLegal("tos")}
-          className="text-accent cursor-pointer hover:underline"
-        >
-          {t("login.terms")}
-        </a>{" "}
-        &{" "}
-        <a
-          onClick={() => handleOpenLegal("privacy")}
-          className="text-accent cursor-pointer hover:underline"
-        >
-          {t("login.privacy")}
-        </a>
-      </div>
     </>
   )
   if (isMobile) {
@@ -166,7 +173,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         <div
           onClick={stopPropagation}
           tabIndex={-1}
-          className="bg-background w-[25rem] rounded-xl border p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
+          className="bg-background w-[26rem] rounded-xl border p-3 px-8 shadow-2xl shadow-stone-300 dark:border-neutral-700 dark:shadow-stone-800"
         >
           {Inner}
         </div>

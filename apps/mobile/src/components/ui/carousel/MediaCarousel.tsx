@@ -91,7 +91,7 @@ export const MediaCarousel = ({
               if (m.type === "photo") {
                 return (
                   <View
-                    key={index}
+                    key={imageUrl}
                     className="relative"
                     style={{ width: containerWidth, height: containerHeight }}
                   >
@@ -102,7 +102,12 @@ export const MediaCarousel = ({
                 )
               } else if (m.type === "video") {
                 return (
-                  <ImageContextMenu key={index} entryId={entryId} imageUrl={imageUrl} view={view}>
+                  <ImageContextMenu
+                    key={imageUrl}
+                    entryId={entryId}
+                    imageUrl={imageUrl}
+                    view={view}
+                  >
                     <VideoPlayer
                       source={m.url}
                       height={containerHeight}

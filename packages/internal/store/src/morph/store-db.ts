@@ -1,8 +1,8 @@
 import type { EntrySchema, ListSchema, SubscriptionSchema } from "@follow/database/schemas/types"
 
 import type { EntryModel } from "../entry/types"
-import type { ListModel } from "../list/store"
-import type { SubscriptionModel } from "../subscription/store"
+import type { ListModel } from "../list/types"
+import type { SubscriptionModel } from "../subscription/types"
 
 class StoreDbMorph {
   toListSchema(list: ListModel): ListSchema {

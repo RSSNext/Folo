@@ -39,7 +39,7 @@ jobs:
         run: |
           git tag ${{ env.tag_version }}
           git push origin ${{ env.tag_version }}
-      - name: Trigger Build Workflow
+      - name: Trigger Build Desktop Workflow
         if: ${{ env.tag_version }}
         run: |
           curl -X POST \
@@ -47,3 +47,12 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-desktop.yml/dispatches \
             -d '{"ref":"main", "inputs": {"tag_version": "true"}}'
+
+      - name: Trigger Build Android Workflow
+        if: ${{ env.tag_version }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-android.yml/dispatches \
+            -d '{"ref":"main", "inputs": {"release": "true"}}'

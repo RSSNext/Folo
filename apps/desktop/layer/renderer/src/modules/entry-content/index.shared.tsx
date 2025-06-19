@@ -5,12 +5,15 @@ import { LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import { WEB_BUILD } from "@follow/shared/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useInboxById } from "@follow/store/inbox/hooks"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import type { FallbackRender } from "@sentry/react"
 import { useStore } from "jotai"
 import type { FC } from "react"
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -18,22 +21,18 @@ import {
   setReadabilityStatus,
   useEntryInReadabilityStatus,
   useEntryIsInReadability,
-  useEntryReadabilityContent,
 } from "~/atoms/readability"
-import { enableShowSourceContent } from "~/atoms/source-content"
+import { useShowSourceContent } from "~/atoms/source-content"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
-import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { getNewIssueUrl } from "~/lib/issues"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
+import { ReadabilityAutoToggleEffect } from "./ApplyEntryActions"
 import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
 
 export interface EntryContentProps {
@@ -49,14 +48,15 @@ export interface EntryContentClassNames {
 export const TitleMetaHandler: Component<{
   entryId: string
 }> = ({ entryId }) => {
-  const {
-    entries: { title: entryTitle },
-    feedId,
-    inboxId,
-  } = useEntry(entryId)!
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxHandle } = state
+    const { title } = state
 
-  const feed = useFeedById(feedId)
-  const inbox = useInboxById(inboxId)
+    return { feedId, inboxId: inboxHandle, title }
+  })
+
+  const feed = useFeedById(entry?.feedId)
+  const inbox = useInboxById(entry?.inboxId)
   const feedTitle = feed?.title || inbox?.title
   const atTop = useIsSoFWrappedElement()
   useEffect(() => {
@@ -67,20 +67,20 @@ export const TitleMetaHandler: Component<{
   }, [atTop])
 
   useEffect(() => {
-    if (entryTitle && feedTitle) {
-      setEntryTitleMeta({ title: entryTitle, description: feedTitle })
+    if (entry?.title && feedTitle) {
+      setEntryTitleMeta({ title: entry.title, description: feedTitle })
     }
     return () => {
       setEntryTitleMeta(null)
     }
-  }, [entryId, entryTitle, feedTitle])
+  }, [entryId, entry?.title, feedTitle])
   return null
 }
 
 export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
   const { t } = useTranslation()
   const { t: T } = useTranslation("common")
-  const result = useEntryReadabilityContent(entryId)
+  const result = useEntry(entryId, (state) => state.readabilityContent)
   const isInReadability = useEntryIsInReadability(entryId)
   const status = useEntryInReadabilityStatus(entryId)
 
@@ -129,9 +129,9 @@ export const ReadabilityNotice = ({ entryId }: { entryId: string }) => {
 export const NoContent: FC<{
   id: string
   url: string
-  sourceContent?: boolean
-}> = ({ id, url, sourceContent }) => {
+}> = ({ id, url }) => {
   const status = useEntryInReadabilityStatus(id)
+  const showSourceContent = useShowSourceContent()
   const { t } = useTranslation("app")
 
   if (status !== ReadabilityStatus.INITIAL && status !== ReadabilityStatus.FAILURE) {
@@ -143,39 +143,10 @@ export const NoContent: FC<{
         {(WEB_BUILD || status === ReadabilityStatus.FAILURE) && (
           <span>{t("entry_content.no_content")}</span>
         )}
-        {!sourceContent && url && <ReadabilityAutoToggleEffect url={url} id={id} />}
+        {!showSourceContent && url && <ReadabilityAutoToggleEffect url={url} id={id} />}
       </div>
     </div>
   )
-}
-
-export const ViewSourceContentAutoToggleEffect = () => {
-  const onceRef = useRef(false)
-
-  useEffect(() => {
-    if (!onceRef.current) {
-      onceRef.current = true
-      enableShowSourceContent()
-    }
-  }, [])
-
-  return null
-}
-
-export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {
-  const onceRef = useRef(false)
-
-  useEffect(() => {
-    if (!onceRef.current) {
-      onceRef.current = true
-      setReadabilityStatus({
-        [id]: ReadabilityStatus.INITIAL,
-      })
-      toggleEntryReadability({ id, url })
-    }
-  }, [id, url])
-
-  return null
 }
 
 export const RenderError: FallbackRender = ({ error }) => {
@@ -263,7 +234,7 @@ export const ContainerToc = memo(
               className={cn(
                 "animate-in fade-in-0 slide-in-from-bottom-12 easing-spring spring-soft flex flex-col items-end",
                 "scrollbar-none max-h-[calc(100vh-100px)] overflow-auto",
-                "@[700px]:-translate-x-12 @[800px]:-translate-x-16 @[900px]:translate-x-0 @[900px]:items-start",
+                "@[700px]:-translate-x-12 @[800px]:-translate-x-4 @[900px]:translate-x-0 @[900px]:items-start",
               )}
             />
 

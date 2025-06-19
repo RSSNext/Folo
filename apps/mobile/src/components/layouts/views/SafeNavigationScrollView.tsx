@@ -114,6 +114,7 @@ export const SafeNavigationScrollView = ({
           onContentSizeChange={useTypeScriptHappyCallback(
             (w, h) => {
               screenCtxValue.scrollViewContentHeight.value = h
+              checkScrollToBottom()
             },
             [screenCtxValue.scrollViewContentHeight],
           )}

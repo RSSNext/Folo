@@ -1,4 +1,4 @@
-import { useUnreadCounts } from "@follow/store/unread/hooks"
+import { useUnreadByIds } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, useState } from "react"
 import { Text, View } from "react-native"
@@ -32,7 +32,7 @@ export const CategoryGrouped = memo(
     isFirst: boolean
     isLast: boolean
   }) => {
-    const unreadCounts = useUnreadCounts(subscriptionIds)
+    const unreadCounts = useUnreadByIds(subscriptionIds)
     const [expanded, setExpanded] = useState(false)
     const rotateSharedValue = useSharedValue(0)
     const rotateStyle = useAnimatedStyle(() => {
@@ -47,7 +47,11 @@ export const CategoryGrouped = memo(
     return (
       <>
         <View style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
-          <SubscriptionFeedCategoryContextMenu feedIds={subscriptionIds} asChild>
+          <SubscriptionFeedCategoryContextMenu
+            feedIds={subscriptionIds}
+            category={category}
+            asChild
+          >
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {

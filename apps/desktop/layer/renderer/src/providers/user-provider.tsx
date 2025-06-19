@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import { setUserRole, setUserRoleEndDate, setWhoami } from "~/atoms/user"
 import { setIntegrationIdentify } from "~/initialize/helper"
 import { useSession } from "~/queries/auth"
-import { CleanerService } from "~/services/cleaner"
 
 export const UserProvider = () => {
   const { session } = useSession()
@@ -15,13 +14,13 @@ export const UserProvider = () => {
     if (session.role) {
       setUserRole(session.role as UserRole)
     }
+
     if (session.roleEndDate) {
       setUserRoleEndDate(session.roleEndDate)
     }
 
+    // @ts-expect-error FIXME
     setIntegrationIdentify(session.user)
-
-    CleanerService.cleanRemainingData(session.user.id)
   }, [session?.role, session?.roleEndDate, session?.user])
 
   return null

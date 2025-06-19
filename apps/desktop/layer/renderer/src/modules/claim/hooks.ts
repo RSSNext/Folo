@@ -1,8 +1,8 @@
+import { getFeedById } from "@follow/store/feed/getter"
 import { createElement, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { getFeedById } from "~/store/feed"
 
 import { FeedClaimModalContent } from "./feed-claim-modal"
 

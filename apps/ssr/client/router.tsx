@@ -2,7 +2,7 @@ import { buildGlobRoutes } from "@follow/utils/route-builder"
 import { wrapCreateBrowserRouterV7 } from "@sentry/react"
 import { createBrowserRouter, createHashRouter } from "react-router"
 
-import { NotFound } from "./components/common/NotFound"
+import { NotFound } from "./components/common/404"
 
 const globTree = import.meta.glob("./pages/**/*.tsx")
 const tree = buildGlobRoutes(globTree)

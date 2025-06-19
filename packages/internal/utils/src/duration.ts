@@ -3,7 +3,11 @@
  * @param {number} totalSeconds - 3661
  * @returns {string}            - "01:01:01"
  */
-export function formatDuration(totalSeconds: number) {
+export function formatDuration(totalSeconds?: number) {
+  if (!totalSeconds || totalSeconds <= 0) {
+    return
+  }
+
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = Math.floor(totalSeconds % 60)

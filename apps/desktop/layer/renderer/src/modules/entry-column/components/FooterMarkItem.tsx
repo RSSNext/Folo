@@ -13,7 +13,7 @@ export const FooterMarkItem = ({ view }: { view: FeedViewType }) => {
 
 const SocialMediaFooterMarkItem = () => {
   return (
-    <div className="relative w-full">
+    <div className="relative flex w-full">
       <FlatMarkAllReadButton
         className="justify-center"
         buttonClassName="w-[645px] mx-auto mb-4 pl-7 py-4"
@@ -26,7 +26,7 @@ const SocialMediaFooterMarkItem = () => {
 
 const GridFooterMarkItem = () => {
   return (
-    <div className="relative w-full">
+    <div className="relative flex w-full">
       <FlatMarkAllReadButton
         buttonClassName="w-full py-4"
         iconClassName="mr-1 text-base"

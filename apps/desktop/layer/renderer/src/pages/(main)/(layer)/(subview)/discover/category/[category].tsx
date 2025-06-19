@@ -4,7 +4,7 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
-import { cn } from "@follow/utils/utils"
+import { cn, formatNumber } from "@follow/utils/utils"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -19,7 +19,7 @@ import { useSubViewTitle } from "~/modules/app-layout/subview/hooks"
 import { RecommendationContent } from "~/modules/discover/RecommendationContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { Queries } from "~/queries"
-import { getPreferredTitle } from "~/store/feed"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 const LanguageMap = {
   all: "all",
@@ -49,7 +49,7 @@ export const Component = () => {
 
   const data: RouteData = rsshubPopular.data as any
 
-  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics(), {
+  const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics({ lang }), {
     staleTime: 1000 * 60 * 60 * 24, // 1 day
     placeholderData: keepPreviousData,
   })
@@ -278,10 +278,10 @@ const RecommendationListItem = ({
                         </div>
                       </div>
                     </div>
-                    {analytics?.subscriptionCount && (
+                    {!!analytics?.subscriptionCount && (
                       <div className="flex items-center gap-0.5 text-xs">
                         <i className="i-mgc-fire-cute-re" />
-                        {analytics?.subscriptionCount}
+                        {formatNumber(analytics?.subscriptionCount || 0)}
                       </div>
                     )}
                   </div>

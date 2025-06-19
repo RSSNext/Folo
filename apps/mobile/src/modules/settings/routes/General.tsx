@@ -70,9 +70,16 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
 
   return (
     <GroupedInsetListCell
-      label={settingKey === "language" ? t("general.language") : t("general.action_language.label")}
+      label={
+        settingKey === "language" ? t("general.language.title") : t("general.action_language.label")
+      }
+      description={
+        settingKey === "language"
+          ? t("general.language.description")
+          : t("general.action_language.description")
+      }
     >
-      <View className="w-[150px]">
+      <View className="w-[100px]">
         <LanguageSelect settingKey={settingKey} />
       </View>
     </GroupedInsetListCell>
@@ -88,7 +95,7 @@ function TranslationModeSetting() {
       label={t("general.translation_mode.label")}
       description={t("general.translation_mode.description")}
     >
-      <View className="w-[130px]">
+      <View className="w-[120px]">
         <Select
           value={translationMode}
           onValueChange={(value) => {
@@ -128,7 +135,7 @@ export const GeneralScreen: NavigationControllerView = () => {
     >
       {/* Language */}
 
-      <GroupedInsetListSectionHeader label={t("general.language")} marginSize="small" />
+      <GroupedInsetListSectionHeader label={t("general.language.title")} marginSize="small" />
       <GroupedInsetListCard>
         <LanguageSetting settingKey="language" />
       </GroupedInsetListCard>
@@ -136,7 +143,10 @@ export const GeneralScreen: NavigationControllerView = () => {
       {/* Content Behavior */}
       <GroupedInsetListSectionHeader label={t("general.action.title")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("general.action.summary")}>
+        <GroupedInsetListCell
+          label={t("general.action.summary.label")}
+          description={t("general.action.summary.description")}
+        >
           <Switch
             size="sm"
             value={summary}
@@ -145,7 +155,10 @@ export const GeneralScreen: NavigationControllerView = () => {
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell label={t("general.action.translation")}>
+        <GroupedInsetListCell
+          label={t("general.action.translation.label")}
+          description={t("general.action.translation.description")}
+        >
           <Switch
             size="sm"
             value={translation}
@@ -206,7 +219,10 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label={t("general.timeline")} />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("general.show_unread_on_launch.label")}>
+        <GroupedInsetListCell
+          label={t("general.show_unread_on_launch.label")}
+          description={t("general.show_unread_on_launch.description")}
+        >
           <Switch
             size="sm"
             value={showUnreadOnLaunch}
@@ -242,7 +258,7 @@ export const GeneralScreen: NavigationControllerView = () => {
 
       {/* Unread */}
 
-      <GroupedInsetListSectionHeader label={t("general.unread")} />
+      <GroupedInsetListSectionHeader label={t("general.mark_as_read.title")} />
       <GroupedInsetListCard>
         <GroupedInsetListCell
           label={t("general.mark_as_read.scroll.label")}

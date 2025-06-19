@@ -1,14 +1,11 @@
-import { siteConfig } from "@client/configs"
-import { openInFollowApp } from "@client/lib/helper"
 import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { SocialMediaLinks } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { MotionValue } from "motion/react"
-import { useMotionValueEvent, useScroll } from "motion/react"
+import { m, useMotionValueEvent, useScroll } from "motion/react"
 import * as React from "react"
 import { useState } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 
 const useMotionValueToState = (value: MotionValue<number>) => {
   const [state, setState] = useState(value.get())
@@ -19,10 +16,7 @@ const useMotionValueToState = (value: MotionValue<number>) => {
 function Container({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn(
-        "mx-auto w-full max-w-[var(--container-max-width)] px-4 sm:px-6 lg:px-8",
-        className,
-      )}
+      className={cn("mx-auto w-full max-w-[var(--container-max-width)]", className)}
       {...props}
     />
   )
@@ -31,64 +25,107 @@ function Container({ className, ...props }: React.ComponentPropsWithoutRef<"div"
 const HeaderWrapper: Component = (props) => {
   const { scrollY } = useScroll()
   const scrollYState = useMotionValueToState(scrollY)
-  const showOverlay = scrollYState > 100
+
+  // Enhanced scroll state management
+  const isHeaderElevated = scrollYState > 20
+  const isCompact = scrollYState > 60
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 flex h-[80px] w-full items-center px-4 duration-200 lg:px-10",
-        showOverlay && "h-[60px]",
-      )}
-    >
+    <header className={"fixed inset-x-0 top-0 z-50 transition-all duration-300 ease-out"}>
       <div
         className={cn(
-          "absolute inset-0 transform-gpu [-webkit-backdrop-filter:saturate(180%)_blur(20px)] [backdrop-filter:saturate(180%)_blur(20px)] [backface-visibility:hidden]",
-          "bg-[var(--bg-opacity)] duration-200 [border-bottom:1px_solid_rgb(187_187_187_/_20%)]",
+          "mx-4 mt-4 transition-all duration-300 ease-out",
+          isCompact ? "mt-2" : "mt-4",
+          isHeaderElevated ? "mx-0 md:mx-4" : "px-4 sm:px-6 lg:px-8",
         )}
-        style={{
-          opacity: showOverlay ? 1 : 0,
-        }}
-      />
-
-      {props.children}
+      >
+        <m.div
+          className={cn(
+            "rounded-xl border border-transparent px-4 transition-all duration-300 ease-out",
+            "relative flex items-center",
+            isCompact ? "py-2" : "py-3",
+            isHeaderElevated && [
+              "border-border/50 bg-background/80 px-4 shadow-sm backdrop-blur-xl md:px-0",
+              "supports-[backdrop-filter]:bg-background/60",
+            ],
+          )}
+        >
+          {props.children}
+        </m.div>
+      </div>
     </header>
   )
 }
+
 export const Header = () => {
-  const handleToApp = () => {
-    openInFollowApp({
-      deeplink: "",
-      fallback: () => {
-        return siteConfig.appUrl
-      },
-      fallbackUrl: siteConfig.appUrl,
-    })
-  }
-  useHotkeys("l", handleToApp)
+  const { scrollY } = useScroll()
+  const scrollYState = useMotionValueToState(scrollY)
+  const isCompact = scrollYState > 60
 
   return (
     <HeaderWrapper>
-      <Container>
-        <nav className="relative flex justify-between">
-          <div className="flex items-center md:gap-x-12">
-            <a className="flex items-center gap-4" href="/">
-              <Logo className="h-8 w-auto" />
-              {/* <p className="font-default text-xl font-semibold">{APP_NAME}</p> */}
-              <Folo className="size-10" />
+      <Container className="w-full">
+        <nav className="relative flex w-full items-center justify-between">
+          {/* Enhanced Logo Section */}
+          <m.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex shrink-0 items-center"
+          >
+            <a
+              className={cn(
+                "group flex items-center gap-3 rounded-lg px-2 py-1.5 transition-all duration-200",
+                "hover:bg-fill/30",
+              )}
+              href="/"
+            >
+              <Logo
+                className={cn(
+                  "transition-all duration-300",
+                  isCompact ? "h-6 w-auto" : "h-8 w-auto",
+                )}
+              />
+              <Folo
+                className={cn("transition-all duration-300", isCompact ? "size-7" : "size-10")}
+              />
             </a>
-          </div>
-          <div className="flex flex-wrap items-center gap-6 text-2xl">
-            {SocialMediaLinks.map((link) => (
-              <a
-                href={link.url}
-                key={link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center"
-              >
-                <i className={link.iconClassName} />
-              </a>
-            ))}
+          </m.div>
+
+          {/* Enhanced Social Links Section */}
+          <div className="flex shrink-0 items-center">
+            <div
+              className={cn(
+                "flex items-center gap-2 transition-all duration-300",
+                isCompact ? "gap-1 text-xl" : "gap-2 text-2xl",
+              )}
+            >
+              {SocialMediaLinks.map((link) => (
+                <m.a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  whileHover={{ scale: 1.1, y: -1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={cn(
+                    "group relative flex items-center justify-center rounded-lg",
+                    "text-text-secondary hover:text-text",
+                    "hover:bg-fill/40 active:bg-fill/60",
+                    isCompact ? "size-8" : "size-10",
+                  )}
+                >
+                  <i
+                    className={cn(
+                      link.iconClassName,
+                      "transition-transform duration-200 group-hover:scale-110",
+                    )}
+                  />
+
+                  {/* Subtle hover effect */}
+                  <div className="from-blue/10 to-purple/10 absolute inset-0 rounded-lg bg-gradient-to-r opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                </m.a>
+              ))}
+            </div>
           </div>
         </nav>
       </Container>

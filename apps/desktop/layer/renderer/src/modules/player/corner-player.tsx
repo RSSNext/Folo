@@ -3,6 +3,10 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.jsx"
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { tracker } from "@follow/tracker"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
@@ -23,10 +27,8 @@ import { FocusablePresets } from "~/components/common/Focusable"
 import { VolumeSlider } from "~/components/ui/media/VolumeSlider"
 import type { NavigateEntryOptions } from "~/hooks/biz/useNavigateEntry"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
-import { useListById } from "~/store/list"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
@@ -50,7 +52,7 @@ interface ControlButtonProps {
 export const CornerPlayer = ({ className, ...rest }: ControlButtonProps) => {
   const show = useAudioPlayerAtomSelector((v) => v.show)
   const entryId = useAudioPlayerAtomSelector((v) => v.entryId)
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({ feedId: state.feedId }))
   const feed = useFeedById(entry?.feedId)
 
   return (
@@ -89,7 +91,7 @@ const usePlayerTracker = () => {
 
     window.addEventListener("beforeunload", handler)
     return () => window.removeEventListener("beforeunload", handler)
-  }, [])
+  }, [playerOpenAt])
 
   useEffect(() => {
     if (!show) {
@@ -100,7 +102,7 @@ const usePlayerTracker = () => {
         trigger: "manual",
       })
     }
-  }, [show])
+  }, [playerOpenAt, show])
 }
 const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const isMobile = useMobile()
@@ -113,9 +115,30 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
   const playerValue = { entryId, status, isMute }
 
-  const entry = useEntry(playerValue.entryId)
+  const entry = useEntry(playerValue.entryId, (state) => {
+    const { feedId, inboxHandle } = state
+    const { authorAvatar, id, title } = state
+
+    const media = state.media || []
+    const firstMedia = media[0]
+    const firstPhoto = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = firstPhoto?.url
+    const entryCoverImage = firstMedia?.preview_image_url || firstMedia?.url || firstPhotoUrl
+    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+
+    return {
+      authorAvatar,
+      feedId,
+      iconEntry,
+      id,
+      inboxId: inboxHandle,
+      title,
+      entryCoverImage,
+    }
+  })
   const isInbox = !!entry?.inboxId
   const feed = useFeedById(entry?.feedId)
+  const subscription = useSubscriptionByFeedId(entry?.feedId)
   const list = useListById(listId)
 
   useCommandBinding({
@@ -130,11 +153,17 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   }, [])
 
   useEffect(() => {
+    const coverImage = entry?.entryCoverImage || feed?.image
+
     setNowPlaying({
-      title: entry?.entries.title || undefined,
+      title: entry?.title || undefined,
       artist: feed?.title || undefined,
-      album: feed?.image || undefined,
-      artwork: [{ src: entry?.entries.authorAvatar || feed?.image || "" }],
+      album: coverImage || undefined,
+      artwork: [
+        {
+          src: coverImage || "",
+        },
+      ],
     })
   }, [entry, feed])
 
@@ -154,7 +183,7 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
   const navigateOptions = useMemo<NavigateEntryOptions | null>(() => {
     if (!entry) return null
     const options: NavigateEntryOptions = {
-      entryId: entry.entries.id,
+      entryId: entry.id,
     }
     if (isInbox) {
       Object.assign(options, {
@@ -169,13 +198,14 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
     } else if (feed) {
       Object.assign(options, {
         feedId: feed.id,
-        view: entry.view ?? FeedViewType.Audios,
+        view: subscription?.view ?? FeedViewType.Audios,
       })
     } else {
       return null
     }
     return options
-  }, [entry, feed, isInbox, list])
+  }, [entry, feed, isInbox, list, subscription?.view])
+  const [pause, setPause] = useState(true)
   if (!entry || !feed) return null
 
   return (
@@ -187,13 +217,14 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
         )}
       >
         {/* play cover */}
-        <div className="relative h-[3.625rem] shrink-0">
+        <div className="relative size-[3.625rem] shrink-0">
           <FeedIcon
             feed={feed}
-            entry={entry.entries}
+            entry={entry.iconEntry}
             size={isMobile ? 65.25 : 58}
             fallback={false}
             noMargin
+            useMedia
           />
           <div
             className={cn(
@@ -219,11 +250,18 @@ const CornerPlayerImpl = ({ hideControls, rounded }: ControlButtonProps) => {
 
         <div className="relative grow truncate px-2 py-1 text-center text-sm">
           <Marquee
-            play={playerValue.status === "playing"}
+            play={playerValue.status === "playing" && pause}
             className="mask-horizontal font-medium"
             speed={30}
+            gradient={false}
+            onCycleComplete={() => {
+              setPause(false)
+              setTimeout(() => {
+                setPause(true)
+              }, 1000)
+            }}
           >
-            {entry.entries.title}
+            {`\u00A0\u00A0\u00A0\u00A0${entry.title}`}
           </Marquee>
           <div
             className={cn(

@@ -1,6 +1,9 @@
 import { views } from "@follow/constants"
-import type { FeedModel, FeedOrListRespModel, InboxModel, ListModel } from "@follow/models/types"
-import { useCallback } from "react"
+import type { FeedOrListRespModel } from "@follow/models/types"
+import type { EntryModel } from "@follow/store/entry/types"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -11,75 +14,30 @@ import {
 } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
-import { useInboxStore } from "../inbox"
-import { useListStore } from "../list"
-import {
-  feedByIdOrUrlSelector,
-  feedByIdSelector,
-  feedByIdSelectorWithTransform,
-  feedByIdWithTransformSelector,
-  inboxByIdSelectorWithTransform,
-  listByIdSelectorWithTransform,
-} from "./selector"
-import { getPreferredTitle, useFeedStore } from "./store"
-import type { FeedQueryParams } from "./types"
+export const getPreferredTitle = (
+  feed?: Pick<FeedOrListRespModel, "type" | "id" | "title"> | null,
+  entry?: Pick<EntryModel, "authorUrl"> | null,
+) => {
+  if (!feed?.id) {
+    return feed?.title
+  }
 
-export function useFeedById(feedId: Nullable<string>): FeedModel | null
-export function useFeedById<T>(feedId: Nullable<string>, selector: (feed: FeedModel) => T): T | null
-export function useFeedById<T>(feedId: Nullable<string>, transform?: (feed: FeedModel) => T) {
-  return useFeedStore(
-    useCallback(
-      (state) =>
-        transform
-          ? feedByIdWithTransformSelector(feedId, transform)(state)
-          : feedByIdSelector(feedId)(state),
-      [feedId, transform],
-    ),
-  )
+  if (feed.type === "inbox") {
+    if (entry?.authorUrl) return entry.authorUrl.replace(/^mailto:/, "")
+    return feed.title || `${feed.id.slice(0, 1).toUpperCase()}${feed.id.slice(1)}'s Inbox`
+  }
+
+  const subscription = getSubscriptionByFeedId(feed.id)
+  return subscription?.title || feed.title
 }
-
-export const useFeedByIdOrUrl = (feed: FeedQueryParams) =>
-  useFeedStore(useCallback((state) => feedByIdOrUrlSelector(feed)(state), [feed]))
-
-export const useFeedByIdSelector = <T>(
-  feedId: Nullable<string>,
-  selector: (feed: FeedOrListRespModel) => T,
-) =>
-  useFeedStore(
-    useCallback(
-      (state) => feedByIdSelectorWithTransform(feedId, selector)(state),
-      [feedId, selector],
-    ),
-  )
-
-export const useListByIdSelector = <T>(
-  listId: Nullable<string>,
-  selector: (list: ListModel) => T,
-) =>
-  useListStore(
-    useCallback(
-      (state) => listByIdSelectorWithTransform(listId, selector)(state),
-      [listId, selector],
-    ),
-  )
-
-export const useInboxByIdSelector = <T>(
-  inboxId: Nullable<string>,
-  selector: (inbox: InboxModel) => T,
-) =>
-  useInboxStore(
-    useCallback(
-      (state) => inboxByIdSelectorWithTransform(inboxId, selector)(state),
-      [inboxId, selector],
-    ),
-  )
 
 export const useFeedHeaderTitle = () => {
   const { t } = useTranslation()
   const { feedId: currentFeedId, view, listId: currentListId } = useRouteParams()
 
-  const feedTitle = useFeedByIdSelector(currentFeedId, getPreferredTitle)
-  const listTitle = useListByIdSelector(currentListId, getPreferredTitle)
+  const feedTitle = useFeedById(currentFeedId, getPreferredTitle)
+
+  const listTitle = useListById(currentListId, getPreferredTitle)
 
   switch (currentFeedId) {
     case ROUTE_FEED_PENDING: {

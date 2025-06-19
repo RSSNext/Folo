@@ -7,6 +7,7 @@ import { useInView } from "react-intersection-observer"
 type ImpressionProps<T extends AllTrackers> = {
   event: T
   onTrack?: () => any
+  // @ts-expect-error FIXME
   properties?: Parameters<TrackerPoints[T]>
   children: React.ReactNode
 }

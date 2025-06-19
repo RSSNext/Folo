@@ -3,8 +3,8 @@ import type { hc } from "hono/client"
 import type { z } from "zod"
 
 declare const _apiClient: ReturnType<typeof hc<AppType>>
-
-export type UserModel = Omit<
+type OptionalKey<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+export type UserModel = OptionalKey<
   typeof users.$inferSelect,
   | "createdAt"
   | "updatedAt"
@@ -13,15 +13,17 @@ export type UserModel = Omit<
   | "twoFactorEnabled"
   | "isAnonymous"
   | "suspended"
+  | "bio"
+  | "website"
+  | "socialLinks"
   | "stripeCustomerId"
-> & {
-  email?: string
-}
+>
 
 export type ExtractBizResponse<T extends (...args: any[]) => any> = Exclude<
   Awaited<ReturnType<T>>,
   undefined
 >
+export type ExtractHonoParams<T extends (...args: any[]) => any> = Parameters<T>[0]["json"]
 
 export type ActiveList = {
   id: string | number
@@ -143,7 +145,7 @@ export type ActionModel = Omit<ActionRulesRes, "condition"> & {
   condition: ActionFilter
   index: number
 }
-export type ActionId = Exclude<keyof ActionModel["result"], "disabled">
+export type ActionId = Exclude<keyof ActionModel["result"], "disabled" | "blockRules">
 export type ActionRules = ActionModel[]
 
 export type ActionConditionIndex = {

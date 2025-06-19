@@ -50,6 +50,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
 
   return (
     <SafeNavigationScrollView
+      keyboardShouldPersistTaps="handled"
       Header={
         <NavigationBlurEffectHeaderView
           title={t("profile.edit_email")}

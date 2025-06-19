@@ -1,4 +1,6 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { getFeedById } from "@follow/store/feed/getter"
 import { useMemo } from "react"
 import type { JSX } from "react/jsx-runtime"
 
@@ -9,8 +11,6 @@ import {
 import type { HTMLProps } from "~/components/ui/markdown/HTML"
 import { HTML } from "~/components/ui/markdown/HTML"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
-import { useEntry } from "~/store/entry/hooks"
-import { getFeedById } from "~/store/feed"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
@@ -27,11 +27,9 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
   entryId: string
   children: Nullable<string>
 } & HTMLProps<AS>) {
-  const entry = useEntry(entryId)
-
-  const images: Record<string, MarkdownImage> = useMemo(() => {
-    return (
-      entry?.entries.media?.reduce(
+  const entry = useEntry(entryId, (state) => {
+    const images =
+      state.media?.reduce(
         (acc, media) => {
           if (media.height && media.width) {
             acc[media.url] = media
@@ -40,8 +38,13 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
         },
         {} as Record<string, MarkdownImage>,
       ) ?? {}
-    )
-  }, [entry])
+
+    return {
+      images,
+    }
+  })
+
+  const images: Record<string, MarkdownImage> = useMemo(() => entry?.images ?? {}, [entry])
   const actions: MarkdownRenderActions = useMemo(() => {
     return {
       isAudio() {

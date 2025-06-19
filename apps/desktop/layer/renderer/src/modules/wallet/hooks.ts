@@ -17,7 +17,7 @@ export const useTipModal = () => {
       entryId,
     }: {
       userId?: string | null
-      feedId?: string
+      feedId?: string | null
       entryId?: string
     }) => {
       if (!feedId || !entryId) {

@@ -6,6 +6,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useDeleteSubscription } from "~/hooks/biz/useSubscriptionActions"
+import { copyToClipboard } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
 import { ListForm } from "~/modules/discover/ListForm"
 
@@ -68,7 +69,7 @@ export const useRegisterListCommands = () => {
       run: async ({ listId }) => {
         if (!listId) return
         const { view } = getRouteParams()
-        await navigator.clipboard.writeText(UrlBuilder.shareList(listId, view))
+        await copyToClipboard(UrlBuilder.shareList(listId, view))
         toast.success("copy success!", {
           duration: 1000,
         })
@@ -80,7 +81,7 @@ export const useRegisterListCommands = () => {
       category,
       run: async ({ listId }) => {
         if (!listId) return
-        await navigator.clipboard.writeText(listId)
+        await copyToClipboard(listId)
         toast.success("copy success!", {
           duration: 1000,
         })

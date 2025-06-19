@@ -1,17 +1,18 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
-import { useFeed } from "@follow/store/feed/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
-import { memo, useCallback, useMemo } from "react"
+import { memo, useCallback } from "react"
 import { Pressable, Text, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
-import { Galeria } from "@/src/components/ui/image/galeria"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
@@ -28,11 +29,21 @@ import { EntryTranslation } from "./EntryTranslation"
 
 export const EntrySocialItem = memo(
   ({ entryId, extraData }: { entryId: string; extraData: EntryExtraData }) => {
-    const entry = useEntry(entryId)
+    const entry = useEntry(entryId, (state) => ({
+      feedId: state.feedId,
+      media: state.media,
+      description: state.description,
+      publishedAt: state.publishedAt,
+      read: state.read,
+      authorAvatar: state.authorAvatar,
+      author: state.author,
+      translation: state.settings?.translation,
+    }))
     const actionLanguage = useActionLanguage()
     const translation = useEntryTranslation(entryId, actionLanguage)
+    const { openLightbox } = useLightboxControls()
 
-    const feed = useFeed(entry?.feedId || "")
+    const feed = useFeedById(entry?.feedId || "")
 
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
@@ -50,21 +61,47 @@ export const EntrySocialItem = memo(
 
     const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
 
-    const memoedMediaUrlList = useMemo(() => {
-      return (entry?.media
-        ?.map((i) =>
-          i.type === "video" ? i.preview_image_url : i.type === "photo" ? i.url : undefined,
-        )
-        .filter(Boolean) || []) as string[]
-    }, [entry])
-
     const navigationToFeedEntryList = useCallback(() => {
       if (!entry) return
       if (!entry.feedId) return
       navigation.pushControllerView(FeedScreen, {
         feedId: entry.feedId,
       })
-    }, [entry?.feedId, navigation])
+    }, [entry, navigation])
+
+    const onPreviewImage = useCallback(
+      (index: number) => {
+        runOnUI(() => {
+          "worklet"
+          // const rect = measureHandle(aviHandle)
+          runOnJS(openLightbox)({
+            images: (entry?.media ?? [])
+              .map((mediaItem) => {
+                const imageUrl =
+                  mediaItem.type === "video"
+                    ? mediaItem.preview_image_url
+                    : mediaItem.type === "photo"
+                      ? mediaItem.url
+                      : undefined
+                return {
+                  uri: imageUrl ?? "",
+                  dimensions: {
+                    width: mediaItem.width ?? 0,
+                    height: mediaItem.height ?? 0,
+                  },
+                  thumbUri: imageUrl ?? "",
+                  thumbDimensions: null,
+                  thumbRect: null,
+                  type: "image" as const,
+                }
+              })
+              .filter((i) => !!i.uri),
+            index,
+          })
+        })()
+      },
+      [entry?.media, openLightbox],
+    )
 
     if (!entry) return <EntryItemSkeleton />
 
@@ -112,13 +149,13 @@ export const EntrySocialItem = memo(
               className="text-label ml-12 text-base"
               source={description}
               target={translation?.description}
-              showTranslation={!!entry.settings?.translation}
+              showTranslation={!!entry?.translation}
             />
           </View>
 
           {media && media.length > 0 && (
             <View className="ml-10 flex flex-row flex-wrap justify-between">
-              <Galeria urls={memoedMediaUrlList}>
+              <>
                 {media.map((mediaItem, index) => {
                   const imageUrl =
                     mediaItem.type === "video"
@@ -130,7 +167,11 @@ export const EntrySocialItem = memo(
                   if (!imageUrl) return null
 
                   const ImageItem = (
-                    <Galeria.Image index={index}>
+                    <NativePressable
+                      onPress={() => {
+                        onPreviewImage(index)
+                      }}
+                    >
                       <Image
                         proxy={{
                           width: fullWidth ? 400 : 200,
@@ -144,7 +185,7 @@ export const EntrySocialItem = memo(
                             : 1
                         }
                       />
-                    </Galeria.Image>
+                    </NativePressable>
                   )
 
                   if (mediaItem.type === "video") {
@@ -171,7 +212,7 @@ export const EntrySocialItem = memo(
                     </Pressable>
                   )
                 })}
-              </Galeria>
+              </>
             </View>
           )}
         </ItemPressable>

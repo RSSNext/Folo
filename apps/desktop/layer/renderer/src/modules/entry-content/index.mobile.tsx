@@ -1,7 +1,10 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { ScrollElementContext } from "@follow/components/ui/scroll-area/ctx.js"
 import { useTitle } from "@follow/hooks"
-import type { FeedModel, InboxModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/models/types"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
@@ -15,25 +18,17 @@ import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { usePreventOverscrollBounce } from "~/hooks/common"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 import { CornerPlayer } from "../player/corner-player"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
+import { ReadabilityAutoToggleEffect } from "./ApplyEntryActions"
 import { EntryReadHistory } from "./components/EntryReadHistory"
 import { EntryTitle } from "./components/EntryTitle"
 import { SupportCreator } from "./components/SupportCreator"
 import { EntryHeader } from "./header"
 import { useEntryContent, useEntryMediaInfo } from "./hooks"
-import {
-  NoContent,
-  ReadabilityAutoToggleEffect,
-  ReadabilityNotice,
-  RenderError,
-  TitleMetaHandler,
-} from "./index.shared"
+import { NoContent, ReadabilityNotice, RenderError, TitleMetaHandler } from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
 export interface EntryContentClassNames {
@@ -67,15 +62,20 @@ export const EntryContent: Component<{
     }
   }, [navigateEntry, params])
 
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxHandle } = state
+    const { readability, sourceContent } = state.settings || {}
+    const { title, url } = state
+
+    return { feedId, inboxId: inboxHandle, readability, sourceContent, title, url }
+  })
   const mediaInfo = useEntryMediaInfo(entryId)
 
-  useTitle(entry?.entries.title)
+  useTitle(entry?.title)
 
-  const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
+  const feed = useFeedById(entry?.feedId)
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
-  const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
-  const isInbox = !!inbox
+  const isInbox = useIsInbox(entry?.inboxId)
 
   const { error, content, isPending } = useEntryContent(entryId)
 
@@ -98,7 +98,7 @@ export const EntryContent: Component<{
       <ScrollElementContext value={scrollElement}>
         <div className="flex h-screen flex-col">
           <EntryHeader
-            entryId={entry.entries.id}
+            entryId={entryId}
             view={view}
             className={cn(
               "bg-background @container sticky top-0 z-[12] h-[55px] shrink-0 px-3",
@@ -123,7 +123,7 @@ export const EntryContent: Component<{
 
             <div
               className="animate-in fade-in slide-in-from-bottom-24 f-motion-reduce:fade-in-0 f-motion-reduce:slide-in-from-bottom-0 duration-200 ease-in-out"
-              key={entry.entries.id}
+              key={entryId}
             >
               <article
                 onContextMenu={stopPropagation}
@@ -137,8 +137,8 @@ export const EntryContent: Component<{
 
                 <WrappedElementProvider boundingDetection>
                   <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto select-text text-[0.94rem]">
-                    <TitleMetaHandler entryId={entry.entries.id} />
-                    <AISummary entryId={entry.entries.id} />
+                    <TitleMetaHandler entryId={entryId} />
+                    <AISummary entryId={entryId} />
                     <ErrorBoundary fallback={RenderError}>
                       <ReadabilityNotice entryId={entryId} />
                       <ShadowDOM injectHostStyles={!isInbox}>
@@ -147,7 +147,7 @@ export const EntryContent: Component<{
                         )}
                         <EntryContentHTMLRenderer
                           view={view}
-                          feedId={feed?.id}
+                          feedId={feed?.id || ""}
                           entryId={entryId}
                           mediaInfo={mediaInfo}
                           noMedia={noMedia}
@@ -163,11 +163,8 @@ export const EntryContent: Component<{
                   </div>
                 </WrappedElementProvider>
 
-                {entry.settings?.readability && (
-                  <ReadabilityAutoToggleEffect
-                    id={entry.entries.id}
-                    url={entry.entries.url ?? ""}
-                  />
+                {entry.readability && (
+                  <ReadabilityAutoToggleEffect id={entryId} url={entry.url ?? ""} />
                 )}
 
                 {!content && (
@@ -186,11 +183,7 @@ export const EntryContent: Component<{
                         </pre>
                       </div>
                     ) : (
-                      <NoContent
-                        id={entry.entries.id}
-                        url={entry.entries.url ?? ""}
-                        sourceContent={entry.settings?.sourceContent}
-                      />
+                      <NoContent id={entryId} url={entry.url ?? ""} />
                     )}
                   </div>
                 )}

@@ -53,58 +53,102 @@ export const SettingAppearance = () => {
         settings={[
           {
             type: "title",
-            value: t("appearance.general"),
+            value: t("appearance.common.title"),
           },
-          AppThemeSegment,
 
-          defineItem("opaqueSidebar", {
-            label: t("appearance.opaque_sidebars.label"),
-            hide: !window.api?.canWindowBlur || isMobile,
-          }),
+          // Top Level - Most Common
+          AppThemeSegment,
+          GlobalFontSize,
+          UIFontSelector,
+          ContentLineHeight,
+          CustomizeToolbar,
 
           {
             type: "title",
-            value: t("appearance.unread_count.label"),
+            value: t("appearance.subscription_list.title"),
           },
-
-          defineItem("showDockBadge", {
-            label: t("appearance.unread_count.badge.label"),
-            hide: !IN_ELECTRON || !["macOS", "Linux"].includes(getOS()) || isMobile,
-          }),
 
           defineItem("sidebarShowUnreadCount", {
-            label: t("appearance.unread_count.view_and_subscription.label"),
+            label: t("appearance.unread_count.sidebra.title"),
+            description: t("appearance.unread_count.sidebra.description"),
           }),
-
-          {
-            type: "title",
-            value: t("appearance.sidebar"),
-          },
           defineItem("hideExtraBadge", {
             label: t("appearance.hide_extra_badge.label"),
             description: t("appearance.hide_extra_badge.description"),
             hide: isMobile,
           }),
+          {
+            type: "title",
+            value: t("appearance.reading_view.title"),
+          },
+
           !isMobile && ZenMode,
-          ThumbnailRatio,
-          CustomCSS,
 
           {
             type: "title",
-            value: t("appearance.fonts"),
+            value: t("appearance.interface_window.title"),
           },
-          UIFontSelector,
-          TextSize,
+
+          defineItem("opaqueSidebar", {
+            label: t("appearance.opaque_sidebars.label"),
+            description: t("appearance.opaque_sidebars.description"),
+            hide: !window.api?.canWindowBlur || isMobile,
+          }),
+
+          defineItem("modalOverlay", {
+            label: t("appearance.modal_overlay.label"),
+            description: t("appearance.modal_overlay.description"),
+            hide: isMobile,
+          }),
+
+          defineItem("reduceMotion", {
+            label: t("appearance.reduce_motion.label"),
+            description: t("appearance.reduce_motion.description"),
+          }),
+
+          defineItem("usePointerCursor", {
+            label: t("appearance.use_pointer_cursor.label"),
+            description: t("appearance.use_pointer_cursor.description"),
+            hide: isMobile,
+          }),
+
+          {
+            type: "title",
+            value: t("appearance.system_integration.title"),
+          },
+
+          defineItem("showDockBadge", {
+            label: t("appearance.unread_count.badge.label"),
+            description: t("appearance.unread_count.badge.description"),
+            hide: !IN_ELECTRON || !["macOS", "Linux"].includes(getOS()) || isMobile,
+          }),
+
+          {
+            type: "title",
+            value: t("appearance.typography.title"),
+          },
+
           ContentFontSelector,
-          ContentFontSize,
-          ContentLineHeight,
 
           {
             type: "title",
-            value: t("appearance.content"),
+            value: t("appearance.content_display.title"),
           },
-          ShikiTheme,
+
+          ThumbnailRatio,
           DateFormat,
+
+          defineItem("hideRecentReader", {
+            label: t("appearance.hide_recent_reader.label"),
+            description: t("appearance.hide_recent_reader.description"),
+          }),
+
+          {
+            type: "title",
+            value: t("appearance.code_highlighting.title"),
+          },
+
+          ShikiTheme,
 
           defineItem("guessCodeLanguage", {
             label: t("appearance.guess_code_language.label"),
@@ -117,31 +161,12 @@ export const SettingAppearance = () => {
             description: t("appearance.reader_render_inline_style.description"),
           }),
 
-          defineItem("hideRecentReader", {
-            label: t("appearance.hide_recent_reader.label"),
-            description: t("appearance.hide_recent_reader.description"),
-          }),
-
           {
             type: "title",
-            value: t("appearance.misc"),
+            value: t("appearance.customization.title"),
           },
 
-          defineItem("modalOverlay", {
-            label: t("appearance.modal_overlay.label"),
-            description: t("appearance.modal_overlay.description"),
-            hide: isMobile,
-          }),
-          defineItem("reduceMotion", {
-            label: t("appearance.reduce_motion.label"),
-            description: t("appearance.reduce_motion.description"),
-          }),
-          defineItem("usePointerCursor", {
-            label: t("appearance.use_pointer_cursor.label"),
-            description: t("appearance.use_pointer_cursor.description"),
-            hide: isMobile,
-          }),
-          CustomizeToolbar,
+          CustomCSS,
         ]}
       />
     </div>
@@ -156,32 +181,37 @@ const ShikiTheme = () => {
   const codeHighlightThemeDark = useUISettingKey("codeHighlightThemeDark")
 
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("appearance.code_highlight_theme")}</span>
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">
+          {t("appearance.code_highlight_theme.label")}
+        </span>
 
-      <ResponsiveSelect
-        items={bundledThemesInfo
-          .filter((theme) => theme.type === (isDark ? "dark" : "light"))
-          .map((theme) => ({ value: theme.id, label: theme.displayName }))}
-        value={isDark ? codeHighlightThemeDark : codeHighlightThemeLight}
-        onValueChange={(value) => {
-          if (isDark) {
-            setUISetting("codeHighlightThemeDark", value)
-          } else {
-            setUISetting("codeHighlightThemeLight", value)
+        <ResponsiveSelect
+          items={bundledThemesInfo
+            .filter((theme) => theme.type === (isDark ? "dark" : "light"))
+            .map((theme) => ({ value: theme.id, label: theme.displayName }))}
+          value={isDark ? codeHighlightThemeDark : codeHighlightThemeLight}
+          onValueChange={(value) => {
+            if (isDark) {
+              setUISetting("codeHighlightThemeDark", value)
+            } else {
+              setUISetting("codeHighlightThemeLight", value)
+            }
+          }}
+          triggerClassName="w-48"
+          renderItem={(item) =>
+            isMobile ? (
+              capitalizeFirstLetter(item.label)
+            ) : (
+              <span className="capitalize">{item.label}</span>
+            )
           }
-        }}
-        triggerClassName="w-48"
-        renderItem={(item) =>
-          isMobile ? (
-            capitalizeFirstLetter(item.label)
-          ) : (
-            <span className="capitalize">{item.label}</span>
-          )
-        }
-        size="sm"
-      />
-    </div>
+          size="sm"
+        />
+      </div>
+      <SettingDescription>{t("appearance.code_highlight_theme.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 
@@ -216,6 +246,40 @@ export const TextSize = () => {
   )
 }
 
+// Global Font Size component that combines UI and content font size
+const GlobalFontSize = () => {
+  const { t } = useTranslation("settings")
+  const uiTextSize = useUISettingSelector((state) => state.uiTextSize)
+
+  return (
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">
+          {t("appearance.global_font_size.label")}
+        </span>
+
+        <ResponsiveSelect
+          defaultValue={textSizeMap.default.toString()}
+          value={uiTextSize.toString() || textSizeMap.default.toString()}
+          onValueChange={(value) => {
+            const size = Number.parseInt(value) || textSizeMap.default
+            setUISetting("uiTextSize", size)
+            // Also update content font size to keep them in sync
+            setUISetting("contentFontSize", size)
+          }}
+          size="sm"
+          triggerClassName="w-48 capitalize"
+          items={Object.entries(textSizeMap).map(([size, value]) => ({
+            label: t(`appearance.text_size.${size as keyof typeof textSizeMap}`),
+            value: value.toString(),
+          }))}
+        />
+      </div>
+      <SettingDescription>{t("appearance.global_font_size.description")}</SettingDescription>
+    </SettingItemGroup>
+  )
+}
+
 export const AppThemeSegment = () => {
   const { t } = useTranslation("settings")
   const theme = useThemeAtomValue()
@@ -225,6 +289,7 @@ export const AppThemeSegment = () => {
     <SettingTabbedSegment
       key="theme"
       label={t("appearance.theme.label")}
+      description={t("appearance.theme.description")}
       value={theme}
       values={[
         {
@@ -262,7 +327,7 @@ const ZenMode = () => {
         onCheckedChange={toggleZenMode}
         label={t("appearance.zen_mode.label")}
       />
-      <SettingDescription>{t("appearance.zen_mode.description")}</SettingDescription>
+      <SettingDescription>{t("appearance.zen_mode.description_simple")}</SettingDescription>
     </SettingItemGroup>
   )
 }
@@ -288,7 +353,9 @@ const ThumbnailRatio = () => {
           onValueChange={(value) => {
             setUISetting("thumbnailRatio", value as "square" | "original")
           }}
-          renderValue={(value) => t(`appearance.thumbnail_ratio.${value as "square" | "original"}`)}
+          renderValue={(item) =>
+            t(`appearance.thumbnail_ratio.${item.value as "square" | "original"}`)
+          }
           triggerClassName="w-48 lg:translate-y-2 -inset-8translate-y-1"
           size="sm"
         />
@@ -302,7 +369,7 @@ const CustomCSS = () => {
   const { t } = useTranslation("settings")
   const { present } = useModalStack()
   return (
-    <SettingItemGroup>
+    <>
       <SettingActionItem
         label={t("appearance.custom_css.label")}
         action={() => {
@@ -320,8 +387,10 @@ const CustomCSS = () => {
         }}
         buttonText={t("appearance.custom_css.button")}
       />
-      <SettingDescription>{t("appearance.custom_css.description")}</SettingDescription>
-    </SettingItemGroup>
+      <SettingDescription className="-mt-3">
+        {t("appearance.custom_css.description")}
+      </SettingDescription>
+    </>
   )
 }
 const LazyCSSEditor = lazy(() =>
@@ -398,57 +467,34 @@ const CustomCSSModal = () => {
   )
 }
 
-const ContentFontSize = () => {
-  const { t } = useTranslation("settings")
-  const contentFontSize = useUISettingKey("contentFontSize")
-  return (
-    <div className="mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("appearance.content_font_size")}</span>
-
-      <ResponsiveSelect
-        items={[
-          { value: "12", label: "12" },
-          { value: "14", label: "14" },
-          { value: "16", label: "16" },
-          { value: "18", label: "18" },
-          { value: "20", label: "20" },
-        ]}
-        value={contentFontSize.toString()}
-        onValueChange={(value) => {
-          setUISetting("contentFontSize", Number.parseInt(value))
-        }}
-        triggerClassName="w-48"
-        size="sm"
-      />
-    </div>
-  )
-}
-
 const ContentLineHeight = () => {
   const { t } = useTranslation("settings")
   const contentLineHeight = useUISettingKey("contentLineHeight")
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">
-        {t("appearance.content_line_height.label")}
-      </span>
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">
+          {t("appearance.content_line_height.label")}
+        </span>
 
-      <ResponsiveSelect
-        items={[
-          { value: "1.25", label: t("appearance.content_line_height.tight") },
-          { value: "1.375", label: t("appearance.content_line_height.snug") },
-          { value: "1.5", label: t("appearance.content_line_height.normal") },
-          { value: "1.75", label: t("appearance.content_line_height.relaxed") },
-          { value: "2", label: t("appearance.content_line_height.loose") },
-        ]}
-        value={contentLineHeight.toString()}
-        onValueChange={(value) => {
-          setUISetting("contentLineHeight", Number.parseFloat(value))
-        }}
-        triggerClassName="w-48"
-        size="sm"
-      />
-    </div>
+        <ResponsiveSelect
+          items={[
+            { value: "1.25", label: t("appearance.content_line_height.tight") },
+            { value: "1.375", label: t("appearance.content_line_height.snug") },
+            { value: "1.5", label: t("appearance.content_line_height.normal") },
+            { value: "1.75", label: t("appearance.content_line_height.relaxed") },
+            { value: "2", label: t("appearance.content_line_height.loose") },
+          ]}
+          value={contentLineHeight.toString()}
+          onValueChange={(value) => {
+            setUISetting("contentLineHeight", Number.parseFloat(value))
+          }}
+          triggerClassName="w-48"
+          size="sm"
+        />
+      </div>
+      <SettingDescription>{t("appearance.content_line_height.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 
@@ -463,30 +509,33 @@ const DateFormat = () => {
     label: dayjs(date).format(format),
   })
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("appearance.date_format")}</span>
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("appearance.date_format.label")}</span>
 
-      <ResponsiveSelect
-        items={[
-          { value: "default", label: commonT("words.default") },
-          generateItem("MM/DD/YY HH:mm"),
-          generateItem("DD/MM/YYYY HH:mm"),
+        <ResponsiveSelect
+          items={[
+            { value: "default", label: commonT("words.default") },
+            generateItem("MM/DD/YY HH:mm"),
+            generateItem("DD/MM/YYYY HH:mm"),
 
-          generateItem("L"),
-          generateItem("LTS"),
-          generateItem("LT"),
-          generateItem("LLLL"),
-          generateItem("LL"),
-          generateItem("LLL"),
-        ]}
-        value={dateFormat}
-        onValueChange={(value) => {
-          setUISetting("dateFormat", value)
-        }}
-        triggerClassName="w-48"
-        size="sm"
-      />
-    </div>
+            generateItem("L"),
+            generateItem("LTS"),
+            generateItem("LT"),
+            generateItem("LLLL"),
+            generateItem("LL"),
+            generateItem("LLL"),
+          ]}
+          value={dateFormat}
+          onValueChange={(value) => {
+            setUISetting("dateFormat", value)
+          }}
+          triggerClassName="w-48"
+          size="sm"
+        />
+      </div>
+      <SettingDescription>{t("appearance.date_format.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 
@@ -500,13 +549,12 @@ const CustomizeToolbar = () => {
   return (
     <SettingItemGroup>
       <SettingActionItem
-        label={<span className="flex items-center gap-1">{t("customizeToolbar.title")}</span>}
+        label={t("appearance.customize_toolbar.label")}
         action={async () => {
           showModal()
         }}
-        buttonText={t("customizeToolbar.title")}
+        buttonText={t("appearance.customize_toolbar.label")}
       />
-      <SettingDescription>{t("customizeToolbar.quick_actions.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }

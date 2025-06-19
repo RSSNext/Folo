@@ -1,4 +1,5 @@
 import type { AuthSession } from "@follow/shared/hono"
+import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
 
@@ -6,7 +7,7 @@ import { setWhoami } from "~/atoms/user"
 import { QUERY_PERSIST_KEY } from "~/constants"
 import { useAuthQuery } from "~/hooks/common"
 import { getAccountInfo, getSession, signOut as signOutFn } from "~/lib/auth"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { defineQuery } from "~/lib/defineQuery"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
@@ -72,7 +73,7 @@ export const useSession = (options?: { enabled?: boolean }) => {
 }
 
 export const handleSessionChanges = () => {
-  tipcClient?.sessionChanged()
+  ipcServices?.auth.sessionChanged()
   window.location.reload()
 }
 
@@ -87,7 +88,8 @@ export const signOut = async () => {
   // Clear local storage
   clearStorage()
   // Sign out
-  await tipcClient?.signOut()
+  await tracker.manager.clear()
+  await ipcServices?.auth.signOut()
   await signOutFn()
   window.location.reload()
 }

@@ -23,6 +23,7 @@ const SpecialKeys = {
   Windows: {
     meta: "⊞",
     ctrl: "Ctrl",
+    control: "Ctrl",
     alt: "Alt",
     shift: "Shift",
     escape: "Esc",
@@ -30,6 +31,7 @@ const SpecialKeys = {
   macOS: {
     meta: "⌘",
     ctrl: "⌃",
+    control: "⌃",
     alt: "⌥",
     shift: "⇧",
     escape: "⎋",
@@ -37,6 +39,7 @@ const SpecialKeys = {
   Linux: {
     meta: "Super",
     ctrl: "Ctrl",
+    control: "Ctrl",
     alt: "Alt",
     shift: "Shift",
     escape: "Escape",

@@ -1,12 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { TooltipContent, TooltipPortal } from "@follow/components/ui/tooltip/index.jsx"
+import { useUserById } from "@follow/store/user/hooks"
 import { getNameInitials } from "@follow/utils/cjk"
 import { m } from "motion/react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
-import { useUserById } from "~/store/user"
 
 import { usePresentUserProfileModal } from "../../profile/hooks"
 

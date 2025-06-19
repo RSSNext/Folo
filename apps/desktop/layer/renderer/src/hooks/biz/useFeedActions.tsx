@@ -1,6 +1,17 @@
 import type { FeedViewType } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { getFeedById } from "@follow/store/feed/getter"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useInboxById, useIsInbox } from "@follow/store/inbox/hooks"
+import { useListById, useOwnedListByView } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import {
+  useCategoriesByView,
+  useSubscriptionByFeedId,
+  useSubscriptionsByFeedIds,
+} from "@follow/store/subscription/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -12,7 +23,7 @@ import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { apiClient } from "~/lib/api-fetch"
+import { copyToClipboard } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
 import { useBoostModal } from "~/modules/boost/hooks"
 import { useFeedClaimModal } from "~/modules/claim"
@@ -25,15 +36,6 @@ import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/us
 import { useCategoryCreationModal } from "~/modules/settings/tabs/lists/hooks"
 import { ListCreationModalContent } from "~/modules/settings/tabs/lists/modals"
 import { useResetFeed } from "~/queries/feed"
-import { getFeedById, useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
-import { listActions, useListById, useOwnedListByView } from "~/store/list"
-import {
-  subscriptionActions,
-  useCategoriesByView,
-  useSubscriptionByFeedId,
-  useSubscriptionsByFeedIds,
-} from "~/store/subscription"
 
 import { useNavigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -63,7 +65,7 @@ export const useFeedActions = ({
 
   const inbox = useInboxById(feedId)
   const isInbox = !!inbox
-  const subscription = useSubscriptionByFeedId(feedId)!
+  const subscription = useSubscriptionByFeedId(feedId)
 
   const subscriptions = useSubscriptionsByFeedIds(
     useMemo(() => feedIds || [feedId], [feedId, feedIds]),
@@ -103,10 +105,7 @@ export const useFeedActions = ({
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         disabled: isEntryList,
-        click: () =>
-          subscriptionActions.markReadByIds({
-            feedIds: isMultipleSelection ? feedIds : [feedId],
-          }),
+        click: () => unreadSyncService.markFeedAsRead(isMultipleSelection ? feedIds : [feedId]),
         supportMultipleSelection: true,
       }),
       !related.ownerUserId &&
@@ -295,7 +294,7 @@ export const useFeedActions = ({
           const { url, siteUrl } = feed || {}
           const copied = url || siteUrl
           if (!copied) return
-          navigator.clipboard.writeText(copied)
+          copyToClipboard(copied)
         },
       }),
       new MenuItemText({
@@ -303,14 +302,14 @@ export const useFeedActions = ({
         shortcut: "$mod+Shift+C",
         disabled: isEntryList,
         click: () => {
-          navigator.clipboard.writeText(feedId)
+          copyToClipboard(feedId)
         },
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_feed_badge"),
         disabled: isEntryList,
         click: () => {
-          navigator.clipboard.writeText(
+          copyToClipboard(
             `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
           )
         },
@@ -386,9 +385,7 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.mark_all_as_read"),
         shortcut: shortcuts[COMMAND_ID.subscription.markAllAsRead],
         click: () => {
-          subscriptionActions.markReadByIds({
-            feedIds: list.feedIds,
-          })
+          unreadSyncService.markFeedAsRead(list.feedIds)
         },
       }),
       MenuItemSeparator.default,
@@ -428,14 +425,14 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
         label: t("sidebar.feed_actions.copy_list_url"),
         shortcut: "$mod+C",
         click: () => {
-          navigator.clipboard.writeText(UrlBuilder.shareList(listId, view))
+          copyToClipboard(UrlBuilder.shareList(listId, view))
         },
       }),
       new MenuItemText({
         label: t("sidebar.feed_actions.copy_list_id"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          navigator.clipboard.writeText(listId)
+          copyToClipboard(listId)
         },
       }),
     ]
@@ -448,11 +445,11 @@ export const useListActions = ({ listId, view }: { listId: string; view?: FeedVi
 
 export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation()
-  const inbox = useInboxById(inboxId)
+  const isInbox = useIsInbox(inboxId)
   const { present } = useModalStack()
 
   const items = useMemo(() => {
-    if (!inbox) return []
+    if (!isInbox) return []
 
     const items: FollowMenuItem[] = [
       new MenuItemText({
@@ -461,7 +458,7 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         click: () => {
           present({
             title: t("sidebar.feed_actions.edit_inbox"),
-            content: ({ dismiss }) => <InboxForm asWidget id={inboxId} onSuccess={dismiss} />,
+            content: () => <InboxForm asWidget id={inboxId} />,
           })
         },
       }),
@@ -470,13 +467,13 @@ export const useInboxActions = ({ inboxId }: { inboxId: string }) => {
         label: t("sidebar.feed_actions.copy_email_address"),
         shortcut: "$mod+Shift+C",
         click: () => {
-          navigator.clipboard.writeText(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
+          copyToClipboard(`${inboxId}${env.VITE_INBOXES_EMAIL}`)
         },
       }),
     ]
 
     return items
-  }, [inbox, t, inboxId, present])
+  }, [isInbox, t, inboxId, present])
 
   return { items }
 }
@@ -490,11 +487,7 @@ export const useAddFeedToFeedList = (options?: {
     mutationFn: async (
       payload: { feedId: string; listId: string } | { feedIds: string[]; listId: string },
     ) => {
-      const feeds = await apiClient.lists.feeds.$post({
-        json: payload,
-      })
-
-      feeds.data.forEach((feed) => listActions.addFeedToFeedList(payload.listId, feed))
+      await listSyncServices.addFeedsToFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.add.success"))
@@ -515,13 +508,7 @@ export const useRemoveFeedFromFeedList = (options?: {
   const { t } = useTranslation("settings")
   return useMutation({
     mutationFn: async (payload: { feedId: string; listId: string }) => {
-      listActions.removeFeedFromFeedList(payload.listId, payload.feedId)
-      await apiClient.lists.feeds.$delete({
-        json: {
-          listId: payload.listId,
-          feedId: payload.feedId,
-        },
-      })
+      await listSyncServices.removeFeedFromFeedList(payload)
     },
     onSuccess: () => {
       toast.success(t("lists.feeds.delete.success"))

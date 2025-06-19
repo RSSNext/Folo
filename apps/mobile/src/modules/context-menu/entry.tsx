@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { PortalProvider } from "@gorhom/portal"
@@ -29,14 +30,23 @@ export const EntryItemContextMenu = ({
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
-  const entry = useEntry(id)
+  const entry = useEntry(id, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+    title: state.title,
+    publishedAt: state.publishedAt,
+    url: state.url,
+  }))
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
 
   const navigation = useNavigation()
   const handlePressPreview = useCallback(() => {
     if (entry) {
-      preloadWebViewEntry(entry)
+      const fullEntry = getEntry(id)
+      if (fullEntry) {
+        preloadWebViewEntry(fullEntry)
+      }
       navigation.pushControllerView(EntryDetailScreen, {
         entryId: id,
         view: view!,
@@ -58,7 +68,7 @@ export const EntryItemContextMenu = ({
                 <Text className="text-label mt-5 p-4 text-2xl font-semibold" numberOfLines={2}>
                   {entry.title?.trim()}
                 </Text>
-                <EntryContentWebView entry={entry} />
+                <EntryContentWebView entryId={id} />
               </View>
             </PortalProvider>
           )}
@@ -69,7 +79,7 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
@@ -115,7 +125,7 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
@@ -147,7 +157,6 @@ export const EntryItemContextMenu = ({
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId: id,
                   view,
                 })

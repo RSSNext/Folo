@@ -96,7 +96,7 @@ const CustomizeToolbar = () => {
         <div className="space-y-4">
           {/* Main toolbar */}
 
-          <DroppableContainer id="container-main">
+          <DroppableContainer>
             <SortableContext
               items={actionOrder.main.map((item) => item)}
               strategy={verticalListSortingStrategy}
@@ -117,7 +117,7 @@ const CustomizeToolbar = () => {
             </p>
           </div>
 
-          <DroppableContainer id="container-more">
+          <DroppableContainer>
             <SortableContext
               items={actionOrder.more.map((item) => item)}
               strategy={verticalListSortingStrategy}

@@ -5,6 +5,7 @@ import {
   useSetStableMasonryItemRatio,
 } from "@follow/components/ui/masonry/contexts.jsx"
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
 import type { PropsWithChildren } from "react"
 import { memo, use, useEffect, useMemo, useState } from "react"
@@ -13,7 +14,6 @@ import { useTranslation } from "react-i18next"
 import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { EntryContent } from "~/modules/entry-content"
-import { useEntry } from "~/store/entry/hooks"
 import { useImageDimensions } from "~/store/image"
 
 import { usePreviewMedia } from "../../../components/ui/media/hooks"
@@ -22,9 +22,10 @@ import { GridItem, GridItemFooter } from "../templates/grid-item-template"
 import type { UniversalItemProps } from "../types"
 
 export function PictureItem({ entryId, entryPreview, translation }: UniversalItemProps) {
-  const entry = useEntry(entryId) || entryPreview
+  const entry = useEntry(entryId, (state) => ({ media: state.media, id: state.id }))
+  const entryMedia = entry?.media || entryPreview?.entries?.media || []
 
-  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.entries.id)
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
 
   const { t } = useTranslation()
   const entryContent = useMemo(() => <EntryContent entryId={entryId} noMedia compact />, [entryId])
@@ -33,9 +34,9 @@ export function PictureItem({ entryId, entryPreview, translation }: UniversalIte
   return (
     <GridItem entryId={entryId} entryPreview={entryPreview} translation={translation}>
       <div className="relative flex gap-2 overflow-x-auto">
-        {entry.entries.media ? (
+        {entryMedia ? (
           <SwipeMedia
-            media={entry.entries.media}
+            media={entryMedia}
             className={cn(
               "aspect-square",
               "w-full shrink-0 rounded-md [&_img]:rounded-md",
@@ -69,9 +70,12 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
   index,
   className,
 }: UniversalItemProps & { index: number; className?: string }) {
-  const entry = useEntry(entryId) || entryPreview
+  const entry = useEntry(entryId, (state) => ({
+    media: state.media,
+    id: state.id,
+  }))
 
-  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.entries.id)
+  const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
   const entryContent = useMemo(() => <EntryContent entryId={entryId} noMedia compact />, [entryId])
   const previewMedia = usePreviewMedia(entryContent)
   const itemWidth = useMasonryItemWidth()
@@ -89,7 +93,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
     }
   }, [ref, intersectionObserver])
 
-  const media = entry?.entries.media || []
+  const media = entry?.media || entryPreview?.entries?.media || []
 
   if (media?.length === 0) return null
   if (!entry) return null
@@ -98,7 +102,7 @@ export const PictureWaterFallItem = memo(function PictureWaterFallItem({
     <div ref={setRef} data-entry-id={entryId} data-index={index} className={className}>
       <EntryItemWrapper
         view={FeedViewType.Pictures}
-        entry={entry}
+        entryId={entryId}
         itemClassName="group rounded-md overflow-hidden hover:bg-transparent"
         style={{
           width: itemWidth,

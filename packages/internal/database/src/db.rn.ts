@@ -7,13 +7,13 @@ import { SQLITE_DB_NAME } from "./constant"
 import migrations from "./drizzle/migrations"
 import * as schema from "./schemas"
 
-export const sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
+export let sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
 
 let db: ExpoSQLiteDatabase<typeof schema> & {
   $client: SQLite.SQLiteDatabase
 }
 
-export function initializeDb() {
+export function initializeDB() {
   db = drizzle(sqlite, {
     schema,
     logger: false,
@@ -21,6 +21,21 @@ export function initializeDb() {
 }
 export { db }
 
-export function migrateDb(): Promise<void> {
-  return migrate(db, migrations)
+export async function migrateDB(): Promise<void> {
+  try {
+    await migrate(db, migrations)
+  } catch (error) {
+    console.error("Failed to migrate database:", error)
+    try {
+      await sqlite.closeAsync()
+    } catch {
+      /* empty */
+    }
+    await SQLite.deleteDatabaseAsync(SQLITE_DB_NAME)
+    sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
+    initializeDB()
+    await migrate(db, migrations)
+  }
 }
+
+export async function exportDB() {}

@@ -51,7 +51,7 @@ function Intro() {
       <Logo className="mx-auto size-20" />
       <p className="mt-5 text-2xl font-bold">{t("new_user_guide.intro.title")}</p>
       <p className="text-lg">{t("new_user_guide.intro.description")}</p>
-      <LanguageSelector contentClassName="z-10" />
+      <LanguageSelector contentClassName="z-10" showDescription={false} />
     </div>
   )
 }

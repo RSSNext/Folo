@@ -1,10 +1,11 @@
 import { useReplaceGlobalFocusableScope } from "@follow/components/common/Focusable/hooks.js"
+import { Button } from "@follow/components/ui/button/index.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
-import { cn } from "@follow/utils/utils"
+import { cn, sortShortcutKeys } from "@follow/utils/utils"
 import type { FC, RefObject, SVGProps } from "react"
-import { memo, useEffect, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useOnClickOutside } from "usehooks-ts"
 
@@ -47,10 +48,31 @@ export const ShortcutsGuideline = () => {
 export const ShortcutSetting = () => {
   const { t } = useTranslation("shortcuts")
   const commandShortcuts = useCommandShortcutItems()
+  const currentShortcuts = useCommandShortcuts()
+  const setCustomCommandShortcut = useSetCustomCommandShortcut()
+
+  // Check if any shortcuts have been customized
+  const hasCustomizedShortcuts = useMemo(() => {
+    return Object.entries(currentShortcuts).some(([commandId, shortcut]) => {
+      return (
+        allowCustomizeCommands.has(commandId as AllowCustomizeCommandId) &&
+        shortcut !== defaultCommandShortcuts[commandId as keyof typeof defaultCommandShortcuts]
+      )
+    })
+  }, [currentShortcuts])
+
+  const resetDefaults = () => {
+    Object.entries(defaultCommandShortcuts).forEach(([commandId, shortcut]) => {
+      if (allowCustomizeCommands.has(commandId as AllowCustomizeCommandId)) {
+        setCustomCommandShortcut(commandId as AllowCustomizeCommandId, shortcut)
+      }
+    })
+  }
 
   return (
     <div>
       <p className="mb-6 mt-4 space-y-2 text-sm">{t("settings.shortcuts.description")}</p>
+
       {Object.entries(commandShortcuts).map(([type, commands]) => (
         <section key={type} className="mb-8">
           <div className="text-text border-border mb-4 border-b pb-2 text-base font-medium">
@@ -63,6 +85,14 @@ export const ShortcutSetting = () => {
           </div>
         </section>
       ))}
+
+      <div className="mb-4 flex min-h-6 items-center justify-end">
+        {hasCustomizedShortcuts && (
+          <Button variant={"outline"} onClick={resetDefaults}>
+            Reset Defaults
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
@@ -253,7 +283,7 @@ const KeyRecorder: FC<{
   })
   return (
     <div
-      className="text-text-secondary flex h-full items-center justify-center px-1 text-xs"
+      className="text-text-secondary relative flex h-full items-center justify-center px-1 text-xs"
       tabIndex={-1}
       role="textbox"
       ref={ref}
@@ -271,7 +301,7 @@ const KeyRecorder: FC<{
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="hover:text-text absolute inset-y-0 right-0 z-[1] flex items-center justify-center px-1"
+            className="hover:text-text absolute inset-y-0 -right-1 z-[1] flex items-center justify-center px-1"
             onClick={(e) => {
               e.stopPropagation()
               if (currentKeys.length === 0) {
@@ -342,27 +372,6 @@ const MODIFIER_KEYS_SET = new Set<string>(Object.values(MODIFIER_KEYS_MAP))
 
 const F_KEY_REGEX = /^F(?:[1-9]|1[0-2])$/
 
-function getKeySortValue(key: string): number {
-  if (key === MODIFIER_KEYS_MAP.Meta) return 0
-  if (key === MODIFIER_KEYS_MAP.Control) return 1
-  if (key === MODIFIER_KEYS_MAP.Alt) return 2
-  if (key === MODIFIER_KEYS_MAP.Shift) return 3
-  if (F_KEY_REGEX.test(key)) return 4
-  return 5
-}
-
-function sortShortcutKeys(keys: string[]): string[] {
-  return [...keys].sort((a, b) => {
-    const sortValueA = getKeySortValue(a)
-    const sortValueB = getKeySortValue(b)
-    if (sortValueA !== sortValueB) {
-      return sortValueA - sortValueB
-    }
-
-    return a.localeCompare(b)
-  })
-}
-
 const useShortcutRecorder = () => {
   const [currentKeys, setCurrentKeys] = useState<string[]>([])
 
@@ -384,11 +393,10 @@ const useShortcutRecorder = () => {
 
       const pressedKeysSet = new Set<string>()
 
-      // 添加修饰键
+      if (shiftKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Shift)
       if (metaKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Meta)
       if (ctrlKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Control)
       if (altKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Alt)
-      if (shiftKey) pressedKeysSet.add(MODIFIER_KEYS_MAP.Shift)
 
       // If mainKeyPressed (from event.key) is not a modifier key, add it as the main key.
       // If mainKeyPressed is a modifier key (e.g., user only pressed Shift key, event.key is "Shift"),

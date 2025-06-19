@@ -1,9 +1,9 @@
-import type { FeedViewType } from "@follow/constants"
-import { FEED_COLLECTION_LIST } from "@follow/store/entry/utils"
+import { FeedViewType } from "@follow/constants"
+import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useGroupedSubscription,
-  useInboxSubscription,
-  useListSubscription,
+  useListSubscriptionIds,
   useSortedGroupedSubscription,
   useSortedListSubscription,
   useSortedUngroupedSubscription,
@@ -11,7 +11,7 @@ import {
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { FlashList } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
-import { memo, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
@@ -57,14 +57,19 @@ const SubscriptionListImpl = ({
 }) => {
   const hideAllReadSubscriptions = useHideAllReadSubscriptions()
   const autoGroup = useGeneralSettingKey("autoGroup")
-  const listIds = useListSubscription(view)
+  const listIds = useListSubscriptionIds(view)
   const sortedListIds = useSortedListSubscription({
     ids: listIds,
     sortBy: "alphabet",
     hideAllReadSubscriptions,
   })
 
-  const inboxes = useInboxSubscription(view)
+  const inboxes = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
 
   const { grouped, unGrouped } = useGroupedSubscription({
     view,

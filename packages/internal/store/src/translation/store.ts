@@ -1,8 +1,8 @@
 import type { TranslationSchema } from "@follow/database/schemas/types"
 import { TranslationService } from "@follow/database/services/translation"
-import type { SupportedLanguages } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared"
 
+import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createZustandStore } from "../internal/helper"
@@ -12,7 +12,7 @@ import { translationFields } from "./types"
 type TranslationModel = Omit<TranslationSchema, "createdAt">
 
 interface TranslationState {
-  data: Record<string, Partial<Record<SupportedLanguages, EntryTranslation>>>
+  data: Record<string, Partial<Record<SupportedActionLanguage, EntryTranslation>>>
 }
 const emptyDataSet: Record<string, EntryTranslation> = {}
 
@@ -25,13 +25,13 @@ const immerSet = createImmerSetter(useTranslationStore)
 
 class TranslationActions implements Hydratable {
   async hydrate() {
-    const translations = await TranslationService.getTranslationAll()
+    const translations = await TranslationService.getTranslationToHydrate()
     translationActions.upsertManyInSession(translations)
   }
 
   upsertManyInSession(translations: TranslationModel[]) {
-    translations.forEach((translation) => {
-      immerSet((state) => {
+    immerSet((state) => {
+      translations.forEach((translation) => {
         if (!state.data[translation.entryId]) {
           state.data[translation.entryId] = {}
         }
@@ -62,7 +62,7 @@ class TranslationActions implements Hydratable {
     )
   }
 
-  getTranslation(entryId: string, language: SupportedLanguages) {
+  getTranslation(entryId: string, language: SupportedActionLanguage) {
     return get().data[entryId]?.[language]
   }
 }
@@ -78,7 +78,7 @@ class TranslationSyncService {
     checkLanguage,
   }: {
     entryId: string
-    language: SupportedLanguages
+    language: SupportedActionLanguage
     withContent?: boolean
     target: "content" | "readabilityContent"
     checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean
@@ -103,7 +103,7 @@ class TranslationSyncService {
 
     if (fields.length === 0) return null
 
-    const res = await apiClient.ai.translation.$get({
+    const res = await apiClient().ai.translation.$get({
       query: { id: entryId, language, fields: fields.join(",") },
     })
 

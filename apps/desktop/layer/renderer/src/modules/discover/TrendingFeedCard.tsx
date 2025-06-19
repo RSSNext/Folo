@@ -1,8 +1,7 @@
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
+import { formatNumber } from "@follow/utils"
 import type { FC } from "react"
-import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-
-import { useIsSubscribed } from "~/store/subscription"
 
 import { FollowSummary } from "../feed/feed-summary"
 import type { DiscoverItem } from "./DiscoverFeedCard"
@@ -11,9 +10,8 @@ import { FeedCardActions } from "./DiscoverFeedCard"
 export const TrendingFeedCard: FC<{
   item: DiscoverItem
 }> = ({ item }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("common")
   const { analytics } = item
-  const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
   const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")
   return (
     <div>
@@ -25,7 +23,7 @@ export const TrendingFeedCard: FC<{
             <i className="i-mgc-user-3-cute-re" />
 
             <span>
-              {numberFormatter.format(analytics.subscriptionCount)}{" "}
+              {formatNumber(analytics.subscriptionCount)}{" "}
               {t("feed.follower", { count: analytics.subscriptionCount })}
             </span>
           </div>

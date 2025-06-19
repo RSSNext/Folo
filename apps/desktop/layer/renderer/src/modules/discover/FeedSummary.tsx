@@ -1,7 +1,7 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.js"
 import type { FeedAnalyticsModel, FeedOrListRespModel, ListAnalyticsModel } from "@follow/models"
+import { formatNumber } from "@follow/utils"
 import type { FC } from "react"
-import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { RelativeTime } from "~/components/ui/datetime"
@@ -16,8 +16,8 @@ export interface FeedSummaryProps {
   showAnalytics?: boolean
 }
 export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalytics = true }) => {
-  const { t } = useTranslation()
-  const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
+  const { t } = useTranslation("common")
+
   return (
     <div>
       <FollowSummary feed={feed} />
@@ -33,7 +33,7 @@ export const FeedSummary: FC<FeedSummaryProps> = ({ feed, analytics, showAnalyti
                   <i className="i-mgc-user-3-cute-re" />
 
                   <span>
-                    {numberFormatter.format(analytics.subscriptionCount)}{" "}
+                    {formatNumber(analytics.subscriptionCount)}{" "}
                     {t("feed.follower", { count: analytics.subscriptionCount })}
                   </span>
                 </div>

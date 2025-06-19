@@ -1,13 +1,26 @@
 import type { FeedViewType } from "@follow/constants"
+import type { Query } from "@tanstack/react-query"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
+import { getSubscriptionByEntryId } from "../subscription/getter"
 import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 
-export const usePrefetchEntries = (
-  props: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,
+export const getInvalidateEntriesQueryPredicate = (views: FeedViewType[]) => {
+  return (query: Query) => {
+    const { queryKey } = query
+    if (Array.isArray(queryKey) && queryKey[0] === "entries") {
+      const view = queryKey[4]
+      return views.includes(view as FeedViewType)
+    }
+    return false
+  }
+}
+
+export const useEntriesQuery = (
+  props?: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,
 ) => {
   const {
     feedId,
@@ -39,6 +52,7 @@ export const usePrefetchEntries = (
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
+    staleTime: 3 * 60 * 1000,
     getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,
@@ -46,6 +60,7 @@ export const usePrefetchEntries = (
     enabled: !!props,
   })
 }
+
 export const usePrefetchEntryDetail = (entryId: string) => {
   return useQuery({
     queryKey: ["entry", entryId],
@@ -54,13 +69,13 @@ export const usePrefetchEntryDetail = (entryId: string) => {
 }
 
 const defaultSelector = (state: EntryModel) => state
-export function useEntry(id: string): EntryModel | undefined
-export function useEntry<T>(id: string, selector: (state: EntryModel) => T): T | undefined
-export function useEntry(
-  id: string,
-  selector: (state: EntryModel) => EntryModel = defaultSelector,
-) {
+
+export function useEntry<T>(
+  id: string | undefined,
+  selector: (state: EntryModel) => T,
+): T | undefined {
   return useEntryStore((state) => {
+    if (!id) return
     const entry = state.data[id]
     if (!entry) return
     return selector(entry)
@@ -89,23 +104,32 @@ function sortEntryIdsByPublishDate(a: string, b: string) {
   return entryB.publishedAt.getTime() - entryA.publishedAt.getTime()
 }
 
-export const useEntryIdsByView = (view: FeedViewType) => {
+export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean) => {
   return useEntryStore(
     useCallback(
       (state) => {
         const ids = state.entryIdByView[view]
         if (!ids) return null
-        return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
+        return Array.from(ids)
+          .filter((id) => {
+            const subscription = getSubscriptionByEntryId(id)
+            if (excludePrivate && subscription?.isPrivate) {
+              return false
+            }
+            return true
+          })
+          .sort((a, b) => sortEntryIdsByPublishDate(a, b))
       },
-      [view],
+      [excludePrivate, view],
     ),
   )
 }
 
-export const useEntryIdsByFeedId = (feedId: string) => {
+export const useEntryIdsByFeedId = (feedId: string | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        if (!feedId) return null
         const ids = state.entryIdByFeed[feedId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -115,10 +139,24 @@ export const useEntryIdsByFeedId = (feedId: string) => {
   )
 }
 
-export const useEntryIdsByInboxId = (inboxId: string) => {
+export const useEntryIdsByFeedIds = (feedIds: string[] | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        const ids = feedIds?.flatMap((feedId) => Array.from(state.entryIdByFeed[feedId] || []))
+        if (!ids) return null
+        return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
+      },
+      [feedIds?.toString()],
+    ),
+  )
+}
+
+export const useEntryIdsByInboxId = (inboxId: string | undefined) => {
+  return useEntryStore(
+    useCallback(
+      (state) => {
+        if (!inboxId) return null
         const ids = state.entryIdByInbox[inboxId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -141,10 +179,11 @@ export const useEntryIdsByCategory = (category: string) => {
   )
 }
 
-export const useEntryIdsByListId = (listId: string) => {
+export const useEntryIdsByListId = (listId: string | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {
+        if (!listId) return null
         const ids = state.entryIdByList[listId]
         if (!ids) return null
         return Array.from(ids).sort((a, b) => sortEntryIdsByPublishDate(a, b))
@@ -152,4 +191,31 @@ export const useEntryIdsByListId = (listId: string) => {
       [listId],
     ),
   )
+}
+
+export const useEntryIsInbox = (entryId: string) => {
+  return useEntryStore(
+    useCallback(
+      (state) => {
+        const entry = state.data[entryId]
+        if (!entry) return false
+        return !!entry.inboxHandle
+      },
+      [entryId],
+    ),
+  )
+}
+
+export const useEntryReadHistory = (entryId: string, size = 20) => {
+  const isInboxEntry = useEntryIsInbox(entryId)
+  const { data } = useQuery({
+    queryKey: ["entry-read-history", entryId],
+    queryFn: () => {
+      return entrySyncServices.fetchEntryReadHistory(entryId, size)
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !isInboxEntry,
+  })
+
+  return data
 }

@@ -6,6 +6,16 @@ import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
+import { useFeedStore } from "@follow/store/feed/store"
+import { useOwnedListByView } from "@follow/store/list/hooks"
+import {
+  useSubscriptionByFeedId,
+  useSubscriptionCategoryExist,
+} from "@follow/store/subscription/hooks"
+import { subscriptionActions, subscriptionSyncService } from "@follow/store/subscription/store"
+import { getDefaultCategory } from "@follow/store/subscription/utils"
+import { useSortedIdsByUnread, useUnreadByIds } from "@follow/store/unread/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
@@ -25,14 +35,8 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { createErrorToaster } from "~/lib/error-parser"
-import { getPreferredTitle, useFeedStore } from "~/store/feed"
-import { useOwnedListByView } from "~/store/list"
-import {
-  subscriptionActions,
-  subscriptionCategoryExist,
-  useSubscriptionByFeedId,
-} from "~/store/subscription"
-import { useSortedIdsByUnread, useUnreadByIds } from "~/store/unread/hooks"
+import { invalidateEntriesQuery } from "~/queries/entries"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useModalStack } from "../../components/ui/modal/stacked/hooks"
 import { ListCreationModalContent } from "../settings/tabs/lists/modals"
@@ -45,7 +49,7 @@ import { UnreadNumber } from "./UnreadNumber"
 type FeedId = string
 interface FeedCategoryProps {
   data: FeedId[]
-  view?: number
+  view: FeedViewType
   categoryOpenStateData: Record<string, boolean>
 }
 
@@ -59,7 +63,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const subscription = useSubscriptionByFeedId(ids[0]!)!
   const autoGroup = useGeneralSettingSelector((state) => state.autoGroup)
   const folderName =
-    subscription?.category || (autoGroup ? subscription.defaultCategory : subscription.feedId)
+    subscription?.category || (autoGroup ? getDefaultCategory(subscription) : subscription.feedId)
 
   const isCategory = sortByUnreadFeedList.length > 1 || !!subscription?.category
 
@@ -123,6 +127,13 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
     },
   )
 
+  const handleCollapseButtonClick = useEventCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    if (view !== undefined && folderName) {
+      subscriptionActions.toggleCategoryOpenState(view, folderName)
+    }
+  })
+
   const setCategoryActive = () => {
     if (view !== undefined) {
       navigate({
@@ -145,7 +156,17 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
     mutationFn: async (nextView: FeedViewType) => {
       if (!folderName) return
       if (typeof view !== "number") return
-      return subscriptionActions.changeCategoryView(folderName, view, nextView)
+      return subscriptionSyncService.changeCategoryView({
+        category: folderName,
+        currentView: view,
+        newView: nextView,
+      })
+    },
+
+    onSuccess(_data, variables) {
+      invalidateEntriesQuery({
+        views: [view, variables],
+      })
     },
   })
 
@@ -158,7 +179,8 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
   const listList = useOwnedListByView(view!)
   const showContextMenu = useShowContextMenu()
 
-  const isAutoGroupedCategory = !!folderName && !subscriptionCategoryExist(folderName)
+  const subscriptionCategoryExist = useSubscriptionCategoryExist(folderName)
+  const isAutoGroupedCategory = !!folderName && !subscriptionCategoryExist
 
   const { isOver, setNodeRef } = useDroppable({
     id: `category-${folderName}`,
@@ -177,9 +199,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           new MenuItemText({
             label: t("sidebar.feed_column.context_menu.mark_as_read"),
             click: () => {
-              subscriptionActions.markReadByIds({
-                feedIds: ids,
-              })
+              unreadSyncService.markFeedAsRead(ids)
             },
           }),
           new MenuItemSeparator(),
@@ -242,7 +262,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
                 title: t("sidebar.feed_column.context_menu.delete_category_confirmation", {
                   folderName,
                 }),
-                content: () => <CategoryRemoveDialogContent feedIdList={ids} />,
+                content: () => <CategoryRemoveDialogContent category={folderName!} view={view} />,
               })
             },
           }),
@@ -277,7 +297,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
             <button
               data-type="collapse"
               type="button"
-              onClick={toggleCategoryOpenState}
+              onClick={handleCollapseButtonClick}
               data-state={open ? "open" : "close"}
               className={cn(
                 "flex h-8 items-center [&_.i-mgc-right-cute-fi]:data-[state=open]:rotate-90",
@@ -304,6 +324,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
             {isCategoryEditing ? (
               <RenameCategoryForm
                 currentCategory={folderName!}
+                view={view}
                 onFinished={() => setIsCategoryEditing(false)}
               />
             ) : (
@@ -366,8 +387,9 @@ export const FeedCategoryAutoHideUnread = memo(function FeedCategoryAutoHideUnre
 
 const RenameCategoryForm: FC<{
   currentCategory: string
+  view: FeedViewType
   onFinished: () => void
-}> = ({ currentCategory, onFinished }) => {
+}> = ({ currentCategory, view, onFinished }) => {
   const navigate = useNavigateEntry()
   const { t } = useTranslation()
   const renameMutation = useMutation({
@@ -377,7 +399,7 @@ const RenameCategoryForm: FC<{
     }: {
       lastCategory: string
       newCategory: string
-    }) => subscriptionActions.renameCategory(lastCategory, newCategory),
+    }) => subscriptionSyncService.renameCategory({ lastCategory, newCategory, view }),
     onMutate({ lastCategory, newCategory }) {
       const routeParams = getRouteParams()
 

@@ -9,12 +9,15 @@ import type { ReactNode } from "react"
 import { StyleSheet, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { KeyboardProvider } from "react-native-keyboard-controller"
+import { SafeAreaProvider } from "react-native-safe-area-context"
 import { SheetProvider } from "react-native-sheet-transitions"
 import { useCurrentColorsVariants } from "react-native-uikit-colors"
 
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
+import { LightboxStateProvider } from "../components/lightbox/lightboxState"
 import { queryClient } from "../lib/query-client"
+import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsProvider } from "./ServerConfigsProvider"
 
@@ -33,7 +36,13 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
                 <GestureHandlerRootView>
                   <SheetProvider>
                     <ActionSheetProvider>
-                      <PortalProvider>{children}</PortalProvider>
+                      <LightboxStateProvider>
+                        <TimelineSelectorDragProgressProvider>
+                          <PortalProvider>
+                            <SafeAreaProvider>{children}</SafeAreaProvider>
+                          </PortalProvider>
+                        </TimelineSelectorDragProgressProvider>
+                      </LightboxStateProvider>
                     </ActionSheetProvider>
                     <ServerConfigsProvider />
                   </SheetProvider>

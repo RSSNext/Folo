@@ -41,6 +41,7 @@
   "login.confirm_password.label": "Confirm Password",
   "login.continueWith": "Continue with {{provider}}",
   "login.email": "Email",
+  "login.enter_token": "If you aren't redirected automatically, copy the token below and paste it in the \"Enter authorization token to continue\" form on the Desktop App.",
   "login.errors.unknown": "Errors Unknown",
   "login.forget_password.description": "Enter the email address associated with your account and we'll send you an email about how to reset your password.",
   "login.forget_password.email_invalid": "Invalid email",

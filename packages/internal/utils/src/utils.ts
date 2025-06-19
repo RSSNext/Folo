@@ -118,7 +118,7 @@ export const isASCII = (str: string) => /^[\u0000-\u007F]*$/.test(str)
 const EPOCH = 1712546615000n // follow repo created
 const MAX_TIMESTAMP_BITS = 41n // Maximum number of bits typically used for timestamp
 
-export const isBizId = (id: string): boolean => {
+export const isBizId = (id: string | undefined): boolean => {
   if (!id || !/^\d{13,19}$/.test(id)) return false
 
   const snowflake = BigInt(id)
@@ -350,7 +350,32 @@ export function transformShortcut(shortcut: string, platform: OS = getOS()): str
   if (platform === "macOS") {
     return shortcut.replace("$mod", "Meta")
   }
-  return shortcut.replace("$mod", "Ctrl")
+  return shortcut.replace("$mod", "Control")
+}
+
+const F_KEY_REGEX = /^F(?:[1-9]|1[0-2])$/
+
+function getKeySortValue(key: string): number {
+  const order = ["Shift", "Control", "Meta", "Alt"]
+
+  if (order.includes(key)) {
+    return order.indexOf(key)
+  }
+
+  if (F_KEY_REGEX.test(key)) return 4
+  return 5
+}
+
+export function sortShortcutKeys(keys: string[]): string[] {
+  return [...keys].sort((a, b) => {
+    const sortValueA = getKeySortValue(a)
+    const sortValueB = getKeySortValue(b)
+    if (sortValueA !== sortValueB) {
+      return sortValueA - sortValueB
+    }
+
+    return a.localeCompare(b)
+  })
 }
 
 // time like 1:30:00
@@ -423,4 +448,31 @@ export function combineCleanupFunctions(...fns: Array<Nullable<(() => void) | vo
 export function doesTextContainHTML(text?: string | null): boolean {
   if (!text) return false
   return /<([a-z][a-z0-9]*)\b[^>]*>\s*[^<>\s].*<\/\1>/i.test(text)
+}
+
+/**
+ * Format number to a more readable format
+ * @param num - The number to format
+ * @returns The formatted number
+ */
+export function formatNumber(num: number): string {
+  // Handle negative numbers
+  const isNegative = num < 0
+  const absNum = Math.abs(num)
+
+  // Define thresholds
+  const billion = 1_000_000_000
+  const million = 1_000_000
+  const thousand = 1_000
+
+  // Format based on number size
+  if (absNum >= billion) {
+    return `${isNegative ? "-" : ""}${(absNum / billion).toFixed(1)}B`
+  } else if (absNum >= million) {
+    return `${isNegative ? "-" : ""}${(absNum / million).toFixed(1)}M`
+  } else if (absNum >= thousand) {
+    return `${isNegative ? "-" : ""}${(absNum / thousand).toFixed(1)}K`
+  }
+
+  return `${isNegative ? "-" : ""}${absNum}`
 }

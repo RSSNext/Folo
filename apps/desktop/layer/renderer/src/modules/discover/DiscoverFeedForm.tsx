@@ -100,23 +100,7 @@ export const DiscoverFeedForm = ({
   rootClassName?: string
 }) => {
   const { t } = useTranslation()
-  const keys = useMemo(
-    () =>
-      parseRegexpPathParams(route.path, {
-        excludeNames: [
-          "routeParams",
-          "functionalFlag",
-          "fulltext",
-          "disableEmbed",
-          "date",
-          "language",
-          "lang",
-          "sort",
-        ],
-        forceExcludeNames: routeParams ? ["routeParams"] : [],
-      }),
-    [route.path, routeParams],
-  )
+  const keys = useMemo(() => parseRegexpPathParams(route.path), [route.path])
 
   const formPlaceholder = useMemo<Record<string, string>>(() => {
     if (!route.example) return {}

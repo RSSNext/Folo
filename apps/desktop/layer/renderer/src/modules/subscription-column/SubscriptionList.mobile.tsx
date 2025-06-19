@@ -1,42 +1,45 @@
-import { views } from "@follow/constants"
-import { cn } from "@follow/utils/utils"
-import { memo } from "react"
-import { useTranslation } from "react-i18next"
-
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
+import { FeedViewType, views } from "@follow/constants"
+import { useInboxList } from "@follow/store/inbox/hooks"
 import {
   useCategoryOpenStateByView,
   useFeedsGroupedData,
-  useInboxesGroupedData,
-  useListsGroupedData,
-} from "~/store/subscription"
+  useSubscriptionListIds,
+} from "@follow/store/subscription/hooks"
+import { cn } from "@follow/utils/utils"
+import { memo, useCallback } from "react"
+import { useTranslation } from "react-i18next"
+
+import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 
 import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
 import { feedColumnStyles } from "./styles"
-import type { SubscriptionProps } from "./SubscriptionList"
+import type { SubscriptionProps } from "./SubscriptionList.entry"
 import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
 
 const FeedListImpl = ({ className, view }: SubscriptionProps) => {
-  const feedsData = useFeedsGroupedData(view)
-  const listsData = useListsGroupedData(view)
-  const inboxesData = useInboxesGroupedData(view)
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const feedsData = useFeedsGroupedData(view, autoGroup)
+  const listSubIds = useSubscriptionListIds(view)
+  const inboxSubIds = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
   const categoryOpenStateData = useCategoryOpenStateByView(view)
 
   const hasData =
-    Object.keys(feedsData).length > 0 ||
-    Object.keys(listsData).length > 0 ||
-    Object.keys(inboxesData).length > 0
+    Object.keys(feedsData).length > 0 || listSubIds.length > 0 || inboxSubIds.length > 0
 
   const { t } = useTranslation()
 
   // Data prefetch
-  useAuthQuery(Queries.lists.list())
+  // useAuthQuery(Queries.lists.list())
 
-  const hasListData = Object.keys(listsData).length > 0
-  const hasInboxData = Object.keys(inboxesData).length > 0
+  const hasListData = listSubIds.length > 0
+  const hasInboxData = inboxSubIds.length > 0
 
   const currentActiveView = useRouteParamsSelector((s) => s.view)
   // Render only adjacent views
@@ -58,7 +61,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
             <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
               {t("words.lists")}
             </div>
-            <SortByAlphabeticalList view={view} data={listsData} />
+            <SortByAlphabeticalList view={view} data={listSubIds} />
           </>
         )}
         {hasInboxData && (
@@ -66,7 +69,7 @@ const FeedListImpl = ({ className, view }: SubscriptionProps) => {
             <div className="text-text-secondary mt-1 flex h-6 w-full shrink-0 items-center rounded-md px-2.5 text-xs font-semibold transition-colors">
               {t("words.inbox")}
             </div>
-            <SortByAlphabeticalInbox view={view} data={inboxesData} />
+            <SortByAlphabeticalInbox view={view} data={inboxSubIds} />
           </>
         )}
 

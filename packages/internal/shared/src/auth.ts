@@ -6,7 +6,7 @@ import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugi
 import { createAuthClient } from "better-auth/react"
 
 type AuthPlugin = (typeof authPlugins)[number]
-const serverPlugins = [
+export const baseAuthPlugins = [
   {
     id: "customGetProviders",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "customGetProviders" }>,
@@ -27,18 +27,20 @@ const serverPlugins = [
       },
     },
   }),
+  twoFactorClient(),
+  stripeClient({ subscription: true }),
 ] satisfies BetterAuthClientPlugin[]
-const plugins = [...serverPlugins, twoFactorClient(), stripeClient({ subscription: true })]
+
+export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
+  typeof createAuthClient<{
+    plugins: [...typeof baseAuthPlugins, ...ExtraPlugins]
+  }>
+>
 
 export type LoginRuntime = "browser" | "app"
 
 export class Auth {
-  authClient: ReturnType<
-    typeof createAuthClient<{
-      baseURL: string
-      plugins: typeof plugins
-    }>
-  >
+  authClient: AuthClient
 
   constructor(
     private readonly options: {
@@ -48,7 +50,7 @@ export class Auth {
   ) {
     this.authClient = createAuthClient({
       baseURL: `${this.options.apiURL}/better-auth`,
-      plugins,
+      plugins: baseAuthPlugins,
       fetchOptions: {
         onRequest(context) {
           const referralCode = localStorage.getItem(getStorageNS("referral"))

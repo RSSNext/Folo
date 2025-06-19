@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar"
 import type { PrimitiveAtom } from "jotai"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { FC, PropsWithChildren } from "react"
@@ -7,14 +8,13 @@ import { StyleSheet } from "react-native"
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
-  SafeAreaProvider,
   useSafeAreaFrame,
   useSafeAreaInsets,
 } from "react-native-safe-area-context"
 import type { ScreenStackHeaderConfigProps } from "react-native-screens"
 import { ScreenStack } from "react-native-screens"
 
-import { isAndroid } from "../platform"
+import { isAndroid, isIOS } from "../platform"
 import {
   AttachNavigationScrollViewContext,
   SetAttachNavigationScrollViewContext,
@@ -38,24 +38,22 @@ interface RootStackNavigationProps {
 }
 export const RootStackNavigation = ({ children, headerConfig }: RootStackNavigationProps) => {
   return (
-    <SafeAreaProvider>
-      <AttachNavigationScrollViewProvider>
-        <ScreenNameContext value={useMemo(() => atom(""), [])}>
-          <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
-            <NavigationInstanceContext value={Navigation.rootNavigation}>
-              <ScreenStack style={StyleSheet.absoluteFill}>
-                <WrappedScreenItem headerConfig={headerConfig} screenId="root">
-                  {children}
-                </WrappedScreenItem>
+    <AttachNavigationScrollViewProvider>
+      <ScreenNameContext value={useMemo(() => atom(""), [])}>
+        <ChainNavigationContext value={Navigation.rootNavigation.__dangerous_getCtxValue()}>
+          <NavigationInstanceContext value={Navigation.rootNavigation}>
+            <ScreenStack style={StyleSheet.absoluteFill}>
+              <WrappedScreenItem headerConfig={headerConfig} screenId="root">
+                {children}
+              </WrappedScreenItem>
 
-                <ScreenItemsMapper />
-                <StateHandler />
-              </ScreenStack>
-            </NavigationInstanceContext>
-          </ChainNavigationContext>
-        </ScreenNameContext>
-      </AttachNavigationScrollViewProvider>
-    </SafeAreaProvider>
+              <ScreenItemsMapper />
+              <StateHandler />
+            </ScreenStack>
+          </NavigationInstanceContext>
+        </ChainNavigationContext>
+      </ScreenNameContext>
+    </AttachNavigationScrollViewProvider>
   )
 }
 
@@ -199,6 +197,7 @@ const ModalScreenStackItems: FC<{
           {...modalScreenOptions}
         >
           <ModalSafeAreaInsetsContext hasTopInset={isFullScreen}>
+            {isIOS && <StatusBar style="light" />}
             <ScreenStack style={StyleSheet.absoluteFill}>
               <WrappedScreenItem
                 screenId={rootModalRoute.id}

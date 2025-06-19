@@ -1,3 +1,6 @@
+// Export types for renderer to use
+export type { IpcServices } from "./src/ipc"
 export type { RendererHandlers } from "./src/renderer-handlers"
-export type { Router } from "./src/tipc"
-export { router } from "./src/tipc"
+
+// Export services for potential main process use
+export { services } from "./src/ipc"

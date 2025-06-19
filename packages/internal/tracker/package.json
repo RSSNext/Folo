@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
+  "dependencies": {
+    "posthog-js": "1.249.2"
+  },
   "devDependencies": {
     "@follow/configs": "workspace:*",
     "@react-native-firebase/analytics": "22.1.0"

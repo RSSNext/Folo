@@ -1,5 +1,6 @@
 import "./global.css"
 
+import { apiClientSimpleContext, authClientSimpleContext } from "@follow/store/context"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -10,6 +11,7 @@ import { enableFreeze } from "react-native-screens"
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
+import { Lightbox } from "./components/lightbox/Lightbox"
 import { initializeApp } from "./initialize"
 import { apiClient } from "./lib/api-fetch"
 import { authClient } from "./lib/auth"
@@ -29,10 +31,8 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
-// @ts-expect-error
-globalThis.apiClient = apiClient
-// @ts-expect-error
-globalThis.authClient = authClient
+apiClientSimpleContext.provide(apiClient)
+authClientSimpleContext.provide(authClient)
 
 enableFreeze(true)
 ;[Image, LinearGradient].forEach((Component) => {
@@ -77,6 +77,7 @@ function RootComponent() {
             </TabRoot>
           </App>
         </RootStackNavigation>
+        <Lightbox />
       </BottomTabProvider>
     </RootProviders>
   )

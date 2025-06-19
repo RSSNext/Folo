@@ -1,4 +1,4 @@
-import { getRendererHandlers } from "@egoist/tipc/main"
+import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 
@@ -7,7 +7,6 @@ import { canUpdateRender, CanUpdateRenderState, hotUpdateRender } from "~/update
 
 import { channel, isWindows } from "../env"
 import { logger } from "../logger"
-import type { RendererHandlers } from "../renderer-handlers"
 import { destroyMainWindow, getMainWindow } from "../window"
 import { appUpdaterConfig } from "./configs"
 import { CustomGitHubProvider } from "./custom-github-provider"
@@ -145,9 +144,9 @@ export const registerUpdater = async () => {
 
     const mainWindow = getMainWindow()
     if (!mainWindow) return
-    const handlers = getRendererHandlers<RendererHandlers>(mainWindow.webContents)
+    const handlers = callWindowExpose(mainWindow)
 
-    handlers.updateDownloaded.send()
+    handlers.updateDownloaded()
   })
   autoUpdater.on("error", (e) => {
     logger.error("Error while updating client", e)

@@ -7,9 +7,12 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useSmoothScroll, useTitle } from "@follow/hooks"
-import type { FeedModel, InboxModel } from "@follow/models/types"
+import type { FeedModel } from "@follow/models/types"
+import { useEntry } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn, combineCleanupFunctions } from "@follow/utils/utils"
@@ -30,15 +33,13 @@ import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
-import { useEntry } from "~/store/entry"
-import { useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
 
 import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
 import { EntryContentHTMLRenderer } from "../renderer/html"
 import { AISummary } from "./AISummary"
+import { ApplyEntryActions } from "./ApplyEntryActions"
 import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
 import { EntryTitle } from "./components/EntryTitle"
 import { SourceContentPanel } from "./components/SourceContentView"
@@ -49,11 +50,9 @@ import type { EntryContentProps } from "./index.shared"
 import {
   ContainerToc,
   NoContent,
-  ReadabilityAutoToggleEffect,
   ReadabilityNotice,
   RenderError,
   TitleMetaHandler,
-  ViewSourceContentAutoToggleEffect,
 } from "./index.shared"
 import { EntryContentLoading } from "./loading"
 
@@ -70,13 +69,17 @@ export const EntryContent: Component<EntryContentProps> = ({
   compact,
   classNames,
 }) => {
-  const entry = useEntry(entryId)
-  useTitle(entry?.entries.title)
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxHandle } = state
+    const { title, url } = state
 
-  const feed = useFeedById(entry?.feedId) as FeedModel | InboxModel
+    return { feedId, inboxId: inboxHandle, title, url }
+  })
+  useTitle(entry?.title)
 
-  const inbox = useInboxById(entry?.inboxId, (inbox) => inbox !== null)
-  const isInbox = !!inbox
+  const feed = useFeedById(entry?.feedId)
+
+  const isInbox = useIsInbox(entry?.inboxId)
   const isInReadabilityMode = useEntryIsInReadability(entryId)
 
   const { error, content, isPending } = useEntryContent(entryId)
@@ -111,13 +114,18 @@ export const EntryContent: Component<EntryContentProps> = ({
     }
   }, [animationController, entryId])
 
+  const isInHasTimelineView = ![
+    FeedViewType.Pictures,
+    FeedViewType.SocialMedia,
+    FeedViewType.Videos,
+  ].includes(view)
   if (!entry) return null
 
   return (
     <>
       {!isInPeekModal && (
         <EntryHeader
-          entryId={entry.entries.id}
+          entryId={entryId}
           view={view}
           className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
           compact={compact}
@@ -132,7 +140,7 @@ export const EntryContent: Component<EntryContentProps> = ({
         <RootPortal to={panelPortalElement}>
           <RegisterCommands scrollAnimationRef={scrollAnimationRef} scrollerRef={scrollerRef} />
         </RootPortal>
-        <EntryTimelineSidebar entryId={entry.entries.id} />
+        <EntryTimelineSidebar entryId={entryId} />
         <EntryScrollArea className={className} scrollerRef={scrollerRef}>
           {/* Indicator for the entry */}
           <m.div
@@ -141,7 +149,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             transition={Spring.presets.bouncy}
             className="select-text"
           >
-            {!isZenMode && (
+            {!isZenMode && isInHasTimelineView && (
               <>
                 <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
                   <MotionButtonBase
@@ -177,8 +185,8 @@ export const EntryContent: Component<EntryContentProps> = ({
 
               <WrappedElementProvider boundingDetection>
                 <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
-                  <TitleMetaHandler entryId={entry.entries.id} />
-                  <AISummary entryId={entry.entries.id} />
+                  <TitleMetaHandler entryId={entryId} />
+                  <AISummary entryId={entryId} />
                   <ErrorBoundary fallback={RenderError}>
                     <ReadabilityNotice entryId={entryId} />
                     <ShadowDOM injectHostStyles={!isInbox}>
@@ -189,7 +197,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                       <Renderer
                         entryId={entryId}
                         view={view}
-                        feedId={feed?.id}
+                        feedId={feed?.id || ""}
                         noMedia={noMedia}
                         content={content}
                       />
@@ -198,10 +206,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                 </div>
               </WrappedElementProvider>
 
-              {entry.settings?.readability && (
-                <ReadabilityAutoToggleEffect id={entry.entries.id} url={entry.entries.url ?? ""} />
-              )}
-              {entry.settings?.sourceContent && <ViewSourceContentAutoToggleEffect />}
+              <ApplyEntryActions entryId={entryId} key={entryId} />
 
               {!content && !isInReadabilityMode && (
                 <div className="center mt-16 min-w-0">
@@ -218,11 +223,7 @@ export const EntryContent: Component<EntryContentProps> = ({
                       </pre>
                     </div>
                   ) : (
-                    <NoContent
-                      id={entry.entries.id}
-                      url={entry.entries.url ?? ""}
-                      sourceContent={entry.settings?.sourceContent}
-                    />
+                    <NoContent id={entryId} url={entry.url ?? ""} />
                   )}
                 </div>
               )}

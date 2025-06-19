@@ -1,17 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.js"
 import { PresentSheet } from "@follow/components/ui/sheet/Sheet.js"
+import { useEntryReadHistory } from "@follow/store/entry/hooks"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { lazy } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useWhoami } from "~/atoms/user"
 import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
-import { useAuthQuery } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { Queries } from "~/queries"
-import { users } from "~/queries/users"
-import { useEntryReadHistory } from "~/store/entry"
-import { useUserById } from "~/store/user"
 
 const LazyUserProfileModalContent = lazy(() =>
   import("~/modules/profile/user-profile-modal").then((mod) => ({
@@ -22,11 +19,8 @@ const LazyUserProfileModalContent = lazy(() =>
 const LIMIT = 8
 export const EntryReadHistory: Component<{ entryId: string }> = ({ entryId }) => {
   const me = useWhoami()
-  const entryHistory = useEntryReadHistory(entryId)
-
-  const { data } = useAuthQuery(Queries.entries.entryReadingHistory(entryId), {
-    refetchInterval: 1000 * 60,
-  })
+  const data = useEntryReadHistory(entryId)
+  const entryHistory = data?.entryReadHistories
 
   const totalCount = data?.total || 0
 
@@ -72,17 +66,17 @@ const usePresentUserProfile = () => {
   const present = useAsyncModal()
   return useEventCallback((userId: string) => {
     const useDataFetcher = () => {
-      const user = useAuthQuery(users.profile({ userId }))
-      const subscriptions = useUserSubscriptionsQuery(user.data?.id)
+      const user = usePrefetchUser(userId)
+      const subscriptions = useUserSubscriptionsQuery(user?.data?.id)
       return {
         ...user,
         isLoading: user.isLoading || subscriptions.isLoading,
       }
     }
-    type ResponseType = Awaited<ReturnType<ReturnType<typeof useDataFetcher>["fn"]>>
+    type ResponseType = ReturnType<typeof useDataFetcher>["data"]
     return present<ResponseType>({
       id: `user-profile-${userId}`,
-      title: (data: ResponseType) => `${data.name}'s Profile`,
+      title: (data: ResponseType) => `${data?.name}'s Profile`,
       content: () => <LazyUserProfileModalContent userId={userId} />,
       useDataFetcher,
       overlay: true,
@@ -117,7 +111,10 @@ const EntryUser: Component<{ userId: string; i: number }> = ({ userId, i }) => {
   )
 }
 const Content: Component<{
-  entryHistory: ReturnType<typeof useEntryReadHistory>
+  entryHistory: {
+    userIds: string[]
+    readCount: number
+  }
 }> = ({ entryHistory }) => {
   const me = useWhoami()
 

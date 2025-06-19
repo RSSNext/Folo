@@ -2,41 +2,49 @@ import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle, LoadingWithIcon } from "@follow/components/ui/loading/index.jsx"
+import { usePrefetchUser, useUserById } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useFollow } from "~/hooks/biz/useFollow"
-import { useAuthQuery } from "~/hooks/common"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
-import { users } from "~/queries/users"
-import { useUserById } from "~/store/user"
 
+import { getSocialLink, socialCopyMap, socialIconClassNames } from "./user-profile-modal.constants"
 import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
 import { SubscriptionGroup } from "./user-profile-modal.shared"
 
+const pickUserData = <
+  T extends {
+    avatar?: string
+    name?: string | null
+    handle?: string | null
+    id: string
+    bio?: string | null
+    website?: string | null
+    socialLinks?: Record<string, string> | null
+  },
+>(
+  user: T,
+) => {
+  return {
+    avatar: user.avatar,
+    name: user.name,
+    handle: user.handle,
+    id: user.id,
+    bio: user.bio,
+    website: user.website,
+    socialLinks: user.socialLinks,
+  }
+}
 export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ userId }) => {
   const { t } = useTranslation()
-  const user = useAuthQuery(users.profile({ userId }))
+  const user = usePrefetchUser(userId)
   const storeUser = useUserById(userId)
 
-  const userInfo = user.data
-    ? {
-        avatar: user.data.image,
-        name: user.data.name,
-        handle: user.data.handle,
-        id: user.data.id,
-      }
-    : storeUser
-      ? {
-          avatar: storeUser.image,
-          name: storeUser.name,
-          handle: storeUser.handle,
-          id: storeUser.id,
-        }
-      : null
+  const userInfo = user.data ? pickUserData(user.data) : storeUser ? pickUserData(storeUser) : null
 
   const follow = useFollow()
   const subscriptions = useUserSubscriptionsQuery(user.data?.id)
@@ -72,6 +80,56 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
               >
                 @{userInfo.handle}
               </div>
+
+              {/* Bio */}
+              {user.data?.bio && (
+                <div className="mt-3 max-w-xs text-center text-sm text-zinc-600">
+                  {user.data.bio}
+                </div>
+              )}
+
+              {/* Website */}
+              {user.data?.website && (
+                <div className="mt-2">
+                  <a
+                    href={user.data.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent hover:text-accent/80 flex items-center gap-1 text-sm transition-colors"
+                  >
+                    <i className="i-mgc-link-cute-re text-base" />
+                    {user.data.website.replace(/^https?:\/\//, "")}
+                  </a>
+                </div>
+              )}
+
+              {/* Social Links */}
+              {user.data?.socialLinks && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {Object.entries(user.data.socialLinks).map(([platform, id]) => {
+                    if (!id || !(platform in socialIconClassNames)) return null
+
+                    return (
+                      <a
+                        key={platform}
+                        href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-accent flex items-center justify-center rounded-full bg-zinc-100 p-2 text-zinc-500 transition-colors dark:bg-zinc-800"
+                        title={socialCopyMap[platform as keyof typeof socialCopyMap]}
+                      >
+                        <i
+                          className={cn(
+                            socialIconClassNames[platform as keyof typeof socialIconClassNames],
+                            "text-base",
+                          )}
+                        />
+                      </a>
+                    )
+                  })}
+                </div>
+              )}
+
               <Button
                 buttonClassName={"mt-4"}
                 textClassName="gap-1"

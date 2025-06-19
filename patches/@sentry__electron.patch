@@ -1,0 +1,38 @@
+diff --git a/esm/main/ipc.js b/esm/main/ipc.js
+index 8edfaf4660734f9120a6d5f5f806688c25a3a026..a692b1c16470b0dbed7c53e1c9aeff8a456f1c5a 100644
+--- a/esm/main/ipc.js
++++ b/esm/main/ipc.js
+@@ -111,14 +111,6 @@ function configureProtocol(client, options) {
+     if (app.isReady()) {
+         throw new Error("Sentry SDK should be initialized before the Electron app 'ready' event is fired");
+     }
+-    protocol.registerSchemesAsPrivileged([SENTRY_CUSTOM_SCHEME]);
+-    // We Proxy this function so that later user calls to registerSchemesAsPrivileged don't overwrite our custom scheme
+-    // eslint-disable-next-line @typescript-eslint/unbound-method
+-    protocol.registerSchemesAsPrivileged = new Proxy(protocol.registerSchemesAsPrivileged, {
+-        apply: (target, __, args) => {
+-            target([...args[0], SENTRY_CUSTOM_SCHEME]);
+-        },
+-    });
+     const rendererStatusChanged = createRendererAnrStatusHandler(client);
+     app
+         .whenReady()
+diff --git a/main/ipc.js b/main/ipc.js
+index 01fc75bdf031b62195504cc0bf7055ebbf15b641..0519242ba5f391f9f618229044948feefeae1de8 100644
+--- a/main/ipc.js
++++ b/main/ipc.js
+@@ -111,14 +111,6 @@ function configureProtocol(client, options) {
+     if (electron.app.isReady()) {
+         throw new Error("Sentry SDK should be initialized before the Electron app 'ready' event is fired");
+     }
+-    electron.protocol.registerSchemesAsPrivileged([SENTRY_CUSTOM_SCHEME]);
+-    // We Proxy this function so that later user calls to registerSchemesAsPrivileged don't overwrite our custom scheme
+-    // eslint-disable-next-line @typescript-eslint/unbound-method
+-    electron.protocol.registerSchemesAsPrivileged = new Proxy(electron.protocol.registerSchemesAsPrivileged, {
+-        apply: (target, __, args) => {
+-            target([...args[0], SENTRY_CUSTOM_SCHEME]);
+-        },
+-    });
+     const rendererStatusChanged = rendererAnr.createRendererAnrStatusHandler(client);
+     electron.app
+         .whenReady()
