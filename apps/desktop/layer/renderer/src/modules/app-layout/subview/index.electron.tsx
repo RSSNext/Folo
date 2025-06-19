@@ -171,12 +171,17 @@ const SubViewHeaderRightView = () => {
   return <div className="inline-flex items-center">{rightView}</div>
 }
 
-const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef: any }) => {
+const ScrollProgressFAB = ({
+  scrollY,
+  scrollRef,
+}: {
+  scrollY: number
+  scrollRef: HTMLDivElement | null
+}) => {
   const [maxScroll, setMaxScroll] = useState(0)
-  const location = useLocation()
 
   useEffect(() => {
-    if (!scrollRef) return
+    if (!scrollRef || scrollY <= 100) return
 
     const updateMaxScroll = () => {
       const { scrollHeight, clientHeight } = scrollRef
@@ -188,7 +193,7 @@ const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef:
     resizeObserver.observe(scrollRef)
 
     return () => resizeObserver.disconnect()
-  }, [location.pathname, scrollRef])
+  }, [scrollRef, scrollY])
 
   const progress = maxScroll > 0 ? Math.min(100, (scrollY / maxScroll) * 100) : 0
   const showProgress = scrollY > 100 && maxScroll > 100
@@ -228,7 +233,7 @@ const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef:
         </div>
         <button
           onClick={() => {
-            springScrollTo(0, scrollRef)
+            springScrollTo(0, scrollRef ?? document.documentElement)
           }}
           type="button"
           className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/fab:opacity-100"

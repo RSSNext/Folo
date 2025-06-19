@@ -13,7 +13,7 @@ export const springScrollTo = (
   y: number,
   scrollerElement: HTMLElement = document.documentElement,
 ) => {
-  const scrollTop = scrollerElement?.scrollTop
+  const { scrollTop } = scrollerElement
 
   let isStop = false
   const stopSpringScrollHandler = () => {
