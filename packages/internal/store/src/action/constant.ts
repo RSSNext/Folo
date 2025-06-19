@@ -56,6 +56,11 @@ export const filterFieldOptions: Array<{
     value: "entry_media_length",
     type: "number",
   },
+  {
+    label: "actions.action_card.feed_options.entry_attachments_duration",
+    value: "entry_attachments_duration",
+    type: "number",
+  },
 ]
 
 export const filterOperatorOptions: Array<{

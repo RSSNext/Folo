@@ -123,6 +123,7 @@ export type ActionFeedField =
   | "entry_url"
   | "entry_author"
   | "entry_media_length"
+  | "entry_attachments_duration"
 
 export type MediaModel = Exclude<
   ExtractBizResponse<typeof _apiClient.entries.$get>["data"],
