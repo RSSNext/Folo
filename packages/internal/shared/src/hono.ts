@@ -8706,6 +8706,9 @@ declare const auth: {
                         image?: string | null | undefined | undefined;
                         stripeCustomerId?: string | null | undefined;
                         handle: string;
+                        bio: string;
+                        website: string;
+                        socialLinks: string;
                     } & {
                         id: string;
                         name: string;
@@ -8754,6 +8757,9 @@ declare const auth: {
                     image?: string | null | undefined | undefined;
                     stripeCustomerId?: string | null | undefined;
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 } & {
                     id: string;
                     name: string;
@@ -12188,45 +12194,6 @@ declare const auth: {
                             };
                         };
                     } | {
-<<<<<<< HEAD
-                        id: "customUpdateUser";
-                        endpoints: {
-                            customUpdateUser: {
-                                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0?: ({
-                                    body?: undefined;
-                                } & {
-                                    method?: "POST" | undefined;
-                                } & {
-                                    query?: Record<string, any> | undefined;
-                                } & {
-                                    params?: Record<string, any>;
-                                } & {
-                                    request?: Request;
-                                } & {
-                                    headers?: HeadersInit;
-                                } & {
-                                    asResponse?: boolean;
-                                    returnHeaders?: boolean;
-                                    use?: better_call.Middleware[];
-                                    path?: string;
-                                } & {
-                                    asResponse?: AsResponse_1 | undefined;
-                                    returnHeaders?: ReturnHeaders_21 | undefined;
-                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
-                                    headers: Headers;
-                                    response: string | null;
-                                } : string | null>;
-                                options: {
-                                    method: "POST";
-                                } & {
-                                    use: any[];
-                                };
-                                path: "/update-user-ccc";
-                            };
-                        };
-                    } | {
-=======
->>>>>>> dev
                         id: "oneTimeToken";
                         endpoints: {
                             generateOneTimeToken: {
@@ -20386,13 +20353,10 @@ declare const auth: {
                 updatedAt: Date;
                 image?: string | null | undefined | undefined;
                 handle: string;
-<<<<<<< HEAD
-                stripeCustomerId?: string | null | undefined;
-=======
                 bio: string;
                 website: string;
                 socialLinks: string;
->>>>>>> dev
+                stripeCustomerId?: string | null | undefined;
                 twoFactorEnabled: boolean | null | undefined;
             };
         };
