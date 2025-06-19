@@ -24,7 +24,7 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 import { AIIcon } from "../icon"
 import { mockShortcuts } from "../mock-data"
 
-export const AIDialoguePanel = () => {
+export const AIChatPanel = () => {
   const user = whoami()
   const settingModalPresent = useSettingModal()
   const { messages, input, setInput, append, reload, error } = useChat({
@@ -113,7 +113,7 @@ export const AIDialoguePanel = () => {
             )}
           </div>
         )}
-        <AIDialogueInput
+        <AIChatInput
           hideIcon
           onSubmit={(value) => {
             append({
@@ -167,7 +167,7 @@ export const AIDialoguePanel = () => {
   )
 }
 
-export const AIDialogueInput = ({
+export const AIChatInput = ({
   entryId,
   autoShrink,
   hideIcon,
@@ -265,13 +265,13 @@ export const AIDialogueInput = ({
             </div>
           )}
         </TextArea>
-        {!isShrink && <AIDialogueShortcuts className="pl-4" onSubmit={handleSubmit} />}
+        {!isShrink && <AIChatShortcuts className="pl-4" onSubmit={handleSubmit} />}
       </div>
     </div>
   )
 }
 
-export const AIDialogueShortcuts = ({
+export const AIChatShortcuts = ({
   className,
   onSubmit,
 }: {

@@ -31,12 +31,12 @@ export const SettingAI = () => {
         ]}
       />
       <SettingSectionTitle title={t("ai.shortcuts.title")} />
-      <AIDialogueShortcutCard />
+      <AIChatShortcutCard />
     </div>
   )
 }
 
-const AIDialogueShortcutCard = () => {
+const AIChatShortcutCard = () => {
   const { t: tCommon } = useTranslation("common")
 
   return (

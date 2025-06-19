@@ -27,7 +27,7 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
-import { AIDialogueInput } from "~/modules/ai/dialogue/panel"
+import { AIChatInput } from "~/modules/ai/chat/panel"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
@@ -251,7 +251,7 @@ export const ContainerToc = memo(
           </div>
         </div>
         <div className="sticky bottom-0 -mx-10">
-          <AIDialogueInput entryId={entryId} autoShrink />
+          <AIChatInput entryId={entryId} autoShrink />
         </div>
       </RootPortal>
     )

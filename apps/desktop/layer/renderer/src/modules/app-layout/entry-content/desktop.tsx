@@ -13,7 +13,7 @@ import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { AIDialoguePanel } from "~/modules/ai/dialogue/panel"
+import { AIChatPanel } from "~/modules/ai/chat/panel"
 import { EntryContent } from "~/modules/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
@@ -55,7 +55,7 @@ export const RightContentDesktop = () => {
             }}
           />
         ) : !settingWideMode ? (
-          <AIDialoguePanel />
+          <AIChatPanel />
         ) : null}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
