@@ -18,7 +18,9 @@ import { PopoverPortal } from "@radix-ui/react-popover"
 import { useRef, useState } from "react"
 
 import { whoami } from "~/atoms/user"
+import { Markdown } from "~/components/ui/markdown/Markdown"
 import { SplitText } from "~/components/ui/split-text"
+import { FeedSummary } from "~/modules/discover/FeedSummary"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 
 import { AIIcon } from "../icon"
@@ -66,8 +68,8 @@ export const AIChatPanel = () => {
       </div>
       <div
         className={cn(
-          "relative mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-8",
-          !inDialog && "items-center",
+          "relative mx-auto flex min-h-0 w-full flex-1 flex-col justify-center gap-8",
+          !inDialog && "max-w-3xl items-center",
         )}
       >
         {!inDialog && (
@@ -88,18 +90,49 @@ export const AIChatPanel = () => {
           </div>
         )}
         {inDialog && (
-          <div className="mt-8 flex flex-1 flex-col gap-6">
+          <div className="mt-8 flex flex-1 flex-col gap-6 overflow-y-auto">
             {messages.map((message) =>
               message.role === "user" ? (
                 <div
                   key={message.id}
                   className="text-text bg-theme-item-active w-fit self-end rounded-2xl px-4 py-2"
                 >
-                  {message.content}
+                  <div>{message.content}</div>
                 </div>
               ) : (
                 <div key={message.id} className="text-text">
-                  {message.content}
+                  <Markdown>{message.content}</Markdown>
+                  <div>
+                    {message.parts?.map((part) => {
+                      if (part.type === "tool-invocation") {
+                        const { toolName, toolCallId, state } = part.toolInvocation
+
+                        if (state === "result") {
+                          if (toolName === "displayFeeds") {
+                            const { result } = part.toolInvocation
+                            return (
+                              <div key={toolCallId} className="my-4 grid grid-cols-2 gap-2">
+                                {result.feedList.map((item) => (
+                                  <FeedSummary
+                                    key={item.feed.feedId}
+                                    feed={item.feed}
+                                    analytics={item.analytics}
+                                  />
+                                ))}
+                              </div>
+                            )
+                          }
+                        } else {
+                          return (
+                            <div key={toolCallId}>
+                              {toolName === "displayFeeds" ? <div>Loading feed...</div> : null}
+                            </div>
+                          )
+                        }
+                      }
+                      return null
+                    })}
+                  </div>
                 </div>
               ),
             )}
