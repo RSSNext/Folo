@@ -173,7 +173,23 @@ function ViewItem({
           activeColor={view.activeColor}
           onPress={() => selectTimeline({ type: "view", viewId: view.view })}
         >
-          <view.icon color="#fff" height={21} width={21} />
+          <View className="relative">
+            <Animated.View
+              style={useAnimatedStyle(() => ({
+                opacity: interpolate(dragProgress.get(), [index - 1, index, index + 1], [0, 1, 0]),
+              }))}
+            >
+              <view.icon color="#fff" height={21} width={21} />
+            </Animated.View>
+            <Animated.View
+              className="absolute"
+              style={useAnimatedStyle(() => ({
+                opacity: interpolate(dragProgress.get(), [index - 1, index, index + 1], [1, 0, 1]),
+              }))}
+            >
+              <view.icon color={textColor} height={21} width={21} />
+            </Animated.View>
+          </View>
 
           <Animated.View
             className="flex flex-row items-center gap-2 overflow-hidden"
