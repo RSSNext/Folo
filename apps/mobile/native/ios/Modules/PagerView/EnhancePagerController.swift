@@ -144,6 +144,11 @@ class EnhancePagerController: UIPageViewController, UIScrollViewDelegate {
       onScrollEnd?(currentPageIndex)
     }
   }
+
+  public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    isDragging = false
+    onScrollEnd?(currentPageIndex)
+  }
 }
 
 // Add this extension to implement UIPageViewControllerDataSource
