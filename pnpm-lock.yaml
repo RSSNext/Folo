@@ -445,9 +445,6 @@ importers:
 
   apps/desktop/layer/renderer:
     dependencies:
-      '@better-auth/stripe':
-        specifier: 1.2.8
-        version: 1.2.8
       '@dnd-kit/core':
         specifier: 6.3.1
         version: 6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1662,6 +1659,9 @@ importers:
 
   packages/internal/shared:
     dependencies:
+      '@better-auth/stripe':
+        specifier: 1.2.8
+        version: 1.2.8
       '@electron-toolkit/preload':
         specifier: 3.0.2
         version: 3.0.2(electron@35.1.5)
@@ -3628,8 +3628,8 @@ packages:
   '@fastify/middie@9.0.3':
     resolution: {integrity: sha512-7OYovKXp9UKYeVMcjcFLMcSpoMkmcZmfnG+eAvtdiatN35W7c+r9y1dRfpA+pfFVNuHGGqI3W+vDTmjvcfLcMA==}
 
-  '@fastify/otel@https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb':
-    resolution: {tarball: https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb}
+  '@fastify/otel@git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb':
+    resolution: {commit: ae3088d65e286bdc94ac5d722573537d6a6671bb, repo: git@github.com:getsentry/fastify-otel.git, type: git}
     version: 0.8.0
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
@@ -18538,7 +18538,7 @@ snapshots:
       path-to-regexp: 8.2.0
       reusify: 1.1.0
 
-  '@fastify/otel@https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)':
+  '@fastify/otel@git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
@@ -21113,7 +21113,7 @@ snapshots:
       debug: 2.6.9
       invariant: 2.2.4
       metro: 0.82.4(bufferutil@4.0.9)
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       semver: 7.7.2
     transitivePeerDependencies:
@@ -21517,7 +21517,7 @@ snapshots:
 
   '@sentry/node@9.18.0':
     dependencies:
-      '@fastify/otel': https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)
+      '@fastify/otel': git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/context-async-hooks': 1.30.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
@@ -28270,21 +28270,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  metro-config@0.82.4(bufferutil@4.0.9):
-    dependencies:
-      connect: 3.7.0
-      cosmiconfig: 5.2.1
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.82.4(bufferutil@4.0.9)
-      metro-cache: 0.82.4
-      metro-core: 0.82.4
-      metro-runtime: 0.82.4
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   metro-config@0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     dependencies:
       connect: 3.7.0
@@ -28299,7 +28284,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro-core@0.82.4:
     dependencies:
@@ -28411,7 +28395,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   metro@0.82.4(bufferutil@4.0.9):
     dependencies:
@@ -28439,7 +28422,7 @@ snapshots:
       metro-babel-transformer: 0.82.4
       metro-cache: 0.82.4
       metro-cache-key: 0.82.4
-      metro-config: 0.82.4(bufferutil@4.0.9)
+      metro-config: 0.82.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       metro-core: 0.82.4
       metro-file-map: 0.82.4
       metro-resolver: 0.82.4
@@ -28506,7 +28489,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   micromark-core-commonmark@2.0.3:
     dependencies:
