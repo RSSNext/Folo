@@ -58,7 +58,7 @@ export const GroupedInsetListCard: FC<
       {...props}
       style={[{ marginHorizontal: GROUPED_LIST_MARGIN }, props.style]}
       className={cn(
-        "bg-secondary-system-grouped-background flex overflow-hidden rounded-[10px]",
+        "bg-secondary-system-grouped-background flex flex-col overflow-hidden rounded-[10px]",
         className,
       )}
     >

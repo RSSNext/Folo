@@ -106,7 +106,7 @@ function SubviewLayoutInner() {
             "relative flex items-center",
             "transition-all duration-300 ease-out",
             isHeaderElevated && [
-              "border-border/50 bg-background/80 shadow-lg backdrop-blur-xl",
+              "border-border/50 bg-background/80 shadow-sm backdrop-blur-xl",
               "supports-[backdrop-filter]:bg-background/60",
             ],
           )}
