@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import type { Query } from "@tanstack/react-query"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
@@ -6,6 +7,17 @@ import { getSubscriptionByEntryId } from "../subscription/getter"
 import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
+
+export const getInvalidateEntriesQueryPredicate = (views: FeedViewType[]) => {
+  return (query: Query) => {
+    const { queryKey } = query
+    if (Array.isArray(queryKey) && queryKey[0] === "entries") {
+      const view = queryKey[4]
+      return views.includes(view as FeedViewType)
+    }
+    return false
+  }
+}
 
 export const useEntriesQuery = (
   props?: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,

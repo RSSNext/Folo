@@ -1,4 +1,5 @@
 import { Button } from "@follow/components/ui/button/index.js"
+import type { FeedViewType } from "@follow/constants"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { useMutation } from "@tanstack/react-query"
 import { Trans, useTranslation } from "react-i18next"
@@ -8,10 +9,16 @@ import { createErrorToaster } from "~/lib/error-parser"
 
 import { useCurrentModal } from "../../components/ui/modal/stacked/hooks"
 
-export function CategoryRemoveDialogContent({ feedIdList }: { feedIdList: string[] }) {
+export function CategoryRemoveDialogContent({
+  category,
+  view,
+}: {
+  category: string
+  view: FeedViewType
+}) {
   const { t } = useTranslation()
   const deleteMutation = useMutation({
-    mutationFn: () => subscriptionSyncService.deleteCategory(feedIdList),
+    mutationFn: () => subscriptionSyncService.deleteCategory({ category, view }),
     onError: createErrorToaster(t("sidebar.category_remove_dialog.error")),
     onSuccess: () => {
       toast.success(t("sidebar.category_remove_dialog.success"))

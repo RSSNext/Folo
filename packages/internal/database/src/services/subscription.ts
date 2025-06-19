@@ -40,6 +40,10 @@ class SubscriptionServiceStatic implements Resetable {
       .where(eq(subscriptionsTable.id, subscription.id))
   }
 
+  async patchMany({ feedIds, data }: { feedIds: string[]; data: Partial<SubscriptionSchema> }) {
+    await db.update(subscriptionsTable).set(data).where(inArray(subscriptionsTable.feedId, feedIds))
+  }
+
   async deleteNotExists(existsIds: string[], view?: FeedViewType) {
     const notExistsIds = await db.query.subscriptionsTable.findMany({
       where: and(

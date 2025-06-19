@@ -26,7 +26,7 @@ export const createHeadingRenderer =
         ref={ref}
         {...rest}
         data-rid={rid}
-        className={clsx(rest.className, "group relative", size[level])}
+        className={clsx(rest.className, "group relative", size[level as keyof typeof size])}
       >
         {rest.children}
       </As>

@@ -1,10 +1,25 @@
+import type { FeedViewType } from "@follow/constants"
 import { useFeedUnreadIsDirty } from "@follow/store/atoms/feed"
 import { entrySyncServices } from "@follow/store/entry/store"
 
 import { useAuthInfiniteQuery, useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
+import { queryClient } from "~/lib/query-client"
 import { getEntriesParams } from "~/lib/utils"
+
+export function invalidateEntriesQuery({ views }: { views: FeedViewType[] }) {
+  return queryClient.invalidateQueries({
+    predicate: (query) => {
+      const { queryKey } = query
+      if (Array.isArray(queryKey) && queryKey[0] === "entries") {
+        const view = queryKey[2]
+        return views.includes(view as FeedViewType)
+      }
+      return false
+    },
+  })
+}
 
 export const entries = {
   entries: ({

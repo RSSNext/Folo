@@ -25,12 +25,18 @@ export const getSubscriptionByEntryId = (entryId: string | undefined) => {
 
 export const getSubscribedFeedIdAndInboxHandlesByView = (
   view: FeedViewType | undefined,
+  excludePrivate: boolean,
 ): string[] => {
   if (typeof view !== "number") return []
   const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
+    .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
     .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
-    .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
+    .concat(
+      Array.from(state.listIdByView[view])
+        .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
+        .flatMap((id) => getListFeedIds(id) ?? []),
+    )
 }
 
 export const getSubscribedFeedIdsByView = (view: FeedViewType): string[] => {
@@ -61,3 +67,19 @@ export const getSubscriptionByCategory = ({
 
 export const getFolderFeedsByFeedId = ({ feedId, view }: { feedId?: string; view: FeedViewType }) =>
   folderFeedsByFeedIdSelector({ feedId, view })(useSubscriptionStore.getState())
+
+export const getCategoryFeedIds = (category: string, view: FeedViewType): string[] => {
+  const feedIds = [] as string[]
+  const state = useSubscriptionStore.getState()
+  for (const id of state.feedIdByView[view].keys()) {
+    const subscription = state.data[id]
+    if (!subscription) continue
+    if (
+      subscription.view === view &&
+      (subscription.category === category || getDefaultCategory(subscription) === category)
+    ) {
+      feedIds.push(id)
+    }
+  }
+  return feedIds
+}

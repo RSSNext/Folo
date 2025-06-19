@@ -1,4 +1,5 @@
 import { withResponsiveSyncComponent } from "@follow/components/utils/selector.js"
+import type { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils"
 
 import { SubscriptionList as FeedListDesktop } from "./SubscriptionList.electron"
@@ -21,7 +22,7 @@ export const SubscriptionList = function SubscriptionList(props: SubscriptionPro
 }
 
 export type SubscriptionProps = ComponentType<
-  { className?: string; view: number } & {
+  { className?: string; view: FeedViewType } & {
     ref?: React.Ref<HTMLDivElement | null> | ((node: HTMLDivElement | null) => void)
   }
 >

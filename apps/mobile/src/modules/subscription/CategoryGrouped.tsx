@@ -47,7 +47,11 @@ export const CategoryGrouped = memo(
     return (
       <>
         <View style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
-          <SubscriptionFeedCategoryContextMenu feedIds={subscriptionIds} asChild>
+          <SubscriptionFeedCategoryContextMenu
+            feedIds={subscriptionIds}
+            category={category}
+            asChild
+          >
             <ItemPressable
               itemStyle={ItemPressableStyle.Grouped}
               onPress={() => {

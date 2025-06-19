@@ -1,5 +1,9 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntriesQuery, useEntryIdsByFeedId } from "@follow/store/entry/hooks"
+import {
+  getInvalidateEntriesQueryPredicate,
+  useEntriesQuery,
+  useEntryIdsByFeedId,
+} from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
@@ -20,6 +24,7 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
+import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
@@ -255,12 +260,14 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
 
 export const SubscriptionFeedCategoryContextMenu = ({
   feedIds,
+  category,
 
   children,
   asChild,
   style,
 }: PropsWithChildren<{
   feedIds: string[]
+  category: string
 
   asChild?: boolean
   style?: CSSProperties
@@ -307,7 +314,19 @@ export const SubscriptionFeedCategoryContextMenu = ({
                 <ContextMenu.CheckboxItem
                   key={`SubContent/${view.name}`}
                   value={isSelected}
-                  // onSelect={onSelect}
+                  onSelect={() => {
+                    subscriptionSyncService
+                      .changeCategoryView({
+                        category,
+                        currentView,
+                        newView: view.view,
+                      })
+                      .then(() => {
+                        queryClient.invalidateQueries({
+                          predicate: getInvalidateEntriesQueryPredicate([view.view, currentView]),
+                        })
+                      })
+                  }}
                 >
                   <ContextMenu.ItemTitle>{t(view.name, { ns: "common" })}</ContextMenu.ItemTitle>
                 </ContextMenu.CheckboxItem>
@@ -316,7 +335,25 @@ export const SubscriptionFeedCategoryContextMenu = ({
           </ContextMenu.SubContent>
         </ContextMenu.Sub>
 
-        <ContextMenu.Item key="EditCategory">
+        <ContextMenu.Item
+          key="EditCategory"
+          onSelect={() => {
+            Alert.prompt(
+              t("operation.rename_category"),
+              t("operation.enter_new_name_for_category", {
+                category,
+              }),
+              (newCategory) => {
+                if (!newCategory) return
+                subscriptionSyncService.renameCategory({
+                  lastCategory: category,
+                  newCategory,
+                  view: currentView,
+                })
+              },
+            )
+          }}
+        >
           <ContextMenu.ItemTitle>{t("operation.rename_category")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
@@ -324,7 +361,29 @@ export const SubscriptionFeedCategoryContextMenu = ({
             }}
           />
         </ContextMenu.Item>
-        <ContextMenu.Item key="DeleteCategory" destructive>
+        <ContextMenu.Item
+          key="DeleteCategory"
+          destructive
+          onSelect={() => {
+            Alert.alert(
+              t("operation.delete_category_which", { category }),
+              t("operation.delete_category_confirm"),
+              [
+                {
+                  text: t("words.cancel", { ns: "common" }),
+                  style: "cancel",
+                },
+                {
+                  text: t("words.delete", { ns: "common" }),
+                  style: "destructive",
+                  onPress: () => {
+                    subscriptionSyncService.deleteCategory({ category, view: currentView })
+                  },
+                },
+              ],
+            )
+          }}
+        >
           <ContextMenu.ItemTitle>{t("operation.delete_category")}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{

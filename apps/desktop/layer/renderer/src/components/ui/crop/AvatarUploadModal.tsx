@@ -40,6 +40,36 @@ export const AvatarUploadModal = ({
     cropHeight: 0,
   })
 
+  // Helper function: ensure the crop data is within the image boundaries and maintain the 1:1 ratio
+  const constrainCropData = useCallback(
+    (newCropData: typeof cropData, imageWidth: number, imageHeight: number) => {
+      const { x, y, width, height } = newCropData
+
+      // Ensure it's a square, use the larger value to avoid shrinking
+      const size = Math.max(width, height)
+
+      // Ensure the minimum size
+      const minSize = 50
+      let finalSize = Math.max(size, minSize)
+
+      // Ensure it's not out of bounds, if it is, shrink it to the appropriate size
+      const maxSize = Math.min(imageWidth, imageHeight)
+      finalSize = Math.min(finalSize, maxSize)
+
+      // Adjust the position to ensure it's within the boundaries
+      const maxX = imageWidth - finalSize
+      const maxY = imageHeight - finalSize
+
+      return {
+        x: Math.max(0, Math.min(x, maxX)),
+        y: Math.max(0, Math.min(y, maxY)),
+        width: finalSize,
+        height: finalSize,
+      }
+    },
+    [],
+  )
+
   const handleFileSelect = useCallback(
     (files: FileList) => {
       const file = files[0]
@@ -68,15 +98,25 @@ export const AvatarUploadModal = ({
   const handleImageLoad = useCallback(() => {
     if (imageRef.current) {
       const img = imageRef.current
-      const size = Math.min(img.naturalWidth, img.naturalHeight) * 0.8
-      setCropData({
+      // Use the smaller side's 80% as the initial size
+      const maxSize = Math.min(img.naturalWidth, img.naturalHeight)
+      const size = maxSize * 0.8
+
+      const initialCropData = {
         x: (img.naturalWidth - size) / 2,
         y: (img.naturalHeight - size) / 2,
         width: size,
         height: size,
-      })
+      }
+      // Use the helper function to ensure the data is valid
+      const constrainedData = constrainCropData(
+        initialCropData,
+        img.naturalWidth,
+        img.naturalHeight,
+      )
+      setCropData(constrainedData)
     }
-  }, [])
+  }, [constrainCropData])
 
   const handleCropMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -119,9 +159,30 @@ export const AvatarUploadModal = ({
       if (!imageRef.current || !containerRef.current) return
 
       const img = imageRef.current
-      const rect = containerRef.current.getBoundingClientRect()
-      const scaleX = img.naturalWidth / rect.width
-      const scaleY = img.naturalHeight / rect.height
+      const container = containerRef.current
+      const containerRect = container.getBoundingClientRect()
+
+      // Calculate the actual display size and position of the image in the container
+      const containerWidth = containerRect.width
+      const containerHeight = containerRect.height
+      const imageAspectRatio = img.naturalWidth / img.naturalHeight
+      const containerAspectRatio = containerWidth / containerHeight
+
+      let displayWidth = 0,
+        displayHeight = 0
+
+      if (imageAspectRatio > containerAspectRatio) {
+        // The image is wider, use the container width
+        displayWidth = containerWidth
+        displayHeight = containerWidth / imageAspectRatio
+      } else {
+        // The image is taller, use the container height
+        displayHeight = containerHeight
+        displayWidth = containerHeight * imageAspectRatio
+      }
+
+      const scaleX = img.naturalWidth / displayWidth
+      const scaleY = img.naturalHeight / displayHeight
 
       const deltaX = e.clientX - dragStart.x
       const deltaY = e.clientY - dragStart.y
@@ -144,54 +205,38 @@ export const AvatarUploadModal = ({
           newY += deltaY * scaleY
         }
 
+        // Keep the aspect ratio, use the larger change value
         const size = Math.max(newWidth, newHeight)
 
+        // Update the coordinates based on the position of the resize handle
         if (resizeHandle.includes("t")) newY = cropY + cropHeight - size
         if (resizeHandle.includes("l")) newX = cropX + cropWidth - size
 
-        newWidth = size
-        newHeight = size
-
-        // Boundary checks
-        if (newWidth < 50) newWidth = 50
-        if (newHeight < 50) newHeight = 50
-
-        if (newX < 0) {
-          newWidth += newX
-          newX = 0
-        }
-        if (newY < 0) {
-          newHeight += newY
-          newY = 0
+        const newCropData = {
+          x: newX,
+          y: newY,
+          width: size,
+          height: size,
         }
 
-        if (newX + newWidth > img.naturalWidth) {
-          newWidth = img.naturalWidth - newX
-        }
-        if (newY + newHeight > img.naturalHeight) {
-          newHeight = img.naturalHeight - newY
-        }
-
-        const finalSize = Math.min(newWidth, newHeight)
-
-        setCropData({
-          width: finalSize,
-          height: finalSize,
-          x: resizeHandle.includes("l") ? newX + (newWidth - finalSize) : newX,
-          y: resizeHandle.includes("t") ? newY + (newHeight - finalSize) : newY,
-        })
+        // Use the helper function to ensure the data is valid
+        const constrainedData = constrainCropData(newCropData, img.naturalWidth, img.naturalHeight)
+        setCropData(constrainedData)
       } else if (isDragging) {
         const newX = dragStart.cropX + deltaX * scaleX
         const newY = dragStart.cropY + deltaY * scaleY
 
-        setCropData((prev) => ({
-          ...prev,
-          x: Math.max(0, Math.min(newX, img.naturalWidth - prev.width)),
-          y: Math.max(0, Math.min(newY, img.naturalHeight - prev.height)),
-        }))
+        setCropData((prev) => {
+          const newCropData = {
+            ...prev,
+            x: newX,
+            y: newY,
+          }
+          return constrainCropData(newCropData, img.naturalWidth, img.naturalHeight)
+        })
       }
     },
-    [isDragging, resizeHandle, dragStart],
+    [isDragging, resizeHandle, dragStart, constrainCropData],
   )
 
   const handleCropMouseUp = useCallback(() => {
@@ -233,6 +278,42 @@ export const AvatarUploadModal = ({
     })
   }, [cropData])
 
+  // Preset functions
+  const handleFullImageCrop = useCallback(() => {
+    if (!imageRef.current) return
+
+    const img = imageRef.current
+    const size = Math.min(img.naturalWidth, img.naturalHeight)
+
+    const newCropData = {
+      x: (img.naturalWidth - size) / 2,
+      y: (img.naturalHeight - size) / 2,
+      width: size,
+      height: size,
+    }
+
+    const constrainedData = constrainCropData(newCropData, img.naturalWidth, img.naturalHeight)
+    setCropData(constrainedData)
+  }, [constrainCropData])
+
+  const handleCenterCrop = useCallback(() => {
+    if (!imageRef.current) return
+
+    const img = imageRef.current
+    const maxSize = Math.min(img.naturalWidth, img.naturalHeight)
+    const size = maxSize * 0.8
+
+    const newCropData = {
+      x: (img.naturalWidth - size) / 2,
+      y: (img.naturalHeight - size) / 2,
+      width: size,
+      height: size,
+    }
+
+    const constrainedData = constrainCropData(newCropData, img.naturalWidth, img.naturalHeight)
+    setCropData(constrainedData)
+  }, [constrainCropData])
+
   const handleConfirm = useCallback(async () => {
     if (!selectedImage) return
 
@@ -249,13 +330,46 @@ export const AvatarUploadModal = ({
   }, [selectedImage, cropImage, onConfirm, t])
 
   const cropStyle = useMemo(() => {
-    if (!imageRef.current) return {}
+    if (!imageRef.current || !containerRef.current) return {}
+
     const img = imageRef.current
+    const container = containerRef.current
+    const containerRect = container.getBoundingClientRect()
+
+    // Calculate the actual display size and position of the image in the container
+    const containerWidth = containerRect.width
+    const containerHeight = containerRect.height
+    const imageAspectRatio = img.naturalWidth / img.naturalHeight
+    const containerAspectRatio = containerWidth / containerHeight
+
+    let displayWidth = 0,
+      displayHeight = 0,
+      offsetX = 0,
+      offsetY = 0
+
+    if (imageAspectRatio > containerAspectRatio) {
+      // The image is wider, use the container width
+      displayWidth = containerWidth
+      displayHeight = containerWidth / imageAspectRatio
+      offsetX = 0
+      offsetY = (containerHeight - displayHeight) / 2
+    } else {
+      // The image is taller, use the container height
+      displayHeight = containerHeight
+      displayWidth = containerHeight * imageAspectRatio
+      offsetX = (containerWidth - displayWidth) / 2
+      offsetY = 0
+    }
+
+    // Calculate the scale ratio
+    const scaleX = displayWidth / img.naturalWidth
+    const scaleY = displayHeight / img.naturalHeight
+
     return {
-      left: `${(cropData.x / img.naturalWidth) * 100}%`,
-      top: `${(cropData.y / img.naturalHeight) * 100}%`,
-      width: `${(cropData.width / img.naturalWidth) * 100}%`,
-      height: `${(cropData.height / img.naturalHeight) * 100}%`,
+      left: `${offsetX + cropData.x * scaleX}px`,
+      top: `${offsetY + cropData.y * scaleY}px`,
+      width: `${cropData.width * scaleX}px`,
+      height: `${cropData.height * scaleY}px`,
     }
   }, [cropData])
 
@@ -342,13 +456,29 @@ export const AvatarUploadModal = ({
 
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={onCancel}>
-          {t("words.cancel", { ns: "common" })}
-        </Button>
-        <Button onClick={handleConfirm} disabled={!selectedImage} isLoading={isProcessing}>
-          {t("words.confirm", { ns: "common" })}
-        </Button>
+      <div className="flex justify-between gap-2">
+        {selectedImage ? (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleFullImageCrop} size="sm">
+              <i className="i-mgc-fullscreen-cute-re mr-1 text-sm" />
+              Full Image
+            </Button>
+            <Button variant="outline" onClick={handleCenterCrop} size="sm">
+              <i className="i-mgc-round-cute-re mr-1 text-sm" />
+              Center Crop
+            </Button>
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            {t("words.cancel", { ns: "common" })}
+          </Button>
+          <Button onClick={handleConfirm} disabled={!selectedImage} isLoading={isProcessing}>
+            {t("words.confirm", { ns: "common" })}
+          </Button>
+        </div>
       </div>
     </div>
   )

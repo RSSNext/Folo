@@ -34,6 +34,8 @@ export const RelativeTime: FC<{
 
   const timerRef = useRef<any>(null)
 
+  const { i18n } = useTranslation("common")
+
   useEffect(() => {
     const updateRelativeTime = () => {
       setRelative(formatTime(props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate))
@@ -49,7 +51,7 @@ export const RelativeTime: FC<{
     return () => {
       clearTimeout(timerRef.current)
     }
-  }, [props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate])
+  }, [props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate, i18n.language])
   const formated = dayjs(props.date).format(nextDateFormatTemplate)
 
   const { t } = useTranslation("common")

@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 
 export type FeedListProps = {
-  view: number
+  view: FeedViewType
   data: Record<string, string[]>
   categoryOpenStateData: Record<string, boolean>
 }

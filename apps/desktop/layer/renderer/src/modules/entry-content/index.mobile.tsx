@@ -183,11 +183,7 @@ export const EntryContent: Component<{
                         </pre>
                       </div>
                     ) : (
-                      <NoContent
-                        id={entryId}
-                        url={entry.url ?? ""}
-                        sourceContent={entry.sourceContent}
-                      />
+                      <NoContent id={entryId} url={entry.url ?? ""} />
                     )}
                   </div>
                 )}

@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { setWhoami, useWhoami } from "~/atoms/user"
-import { AvatarUploadModal } from "~/components/ui/avatar-upload-modal"
+import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { updateUser } from "~/lib/auth"
 import { uploadAvatarBlob } from "~/lib/avatar-upload"

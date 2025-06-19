@@ -48,6 +48,15 @@ function SubviewLayoutInner() {
     ) {
       springScrollTo(0, scrollRef)
     }
+
+    // Scroll to top when navigating to Recommendation page from Discover page
+    if (
+      navigationType === NavigationType.Push &&
+      location.pathname.startsWith(Routes.Discover) &&
+      scrollRef
+    ) {
+      springScrollTo(0, scrollRef)
+    }
   }, [location, navigationType, scrollRef])
 
   useEffect(() => {
@@ -164,13 +173,13 @@ const SubViewHeaderRightView = () => {
 
 const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef: any }) => {
   const [maxScroll, setMaxScroll] = useState(0)
+  const location = useLocation()
 
   useEffect(() => {
     if (!scrollRef) return
 
     const updateMaxScroll = () => {
-      const { scrollHeight } = scrollRef
-      const { clientHeight } = scrollRef
+      const { scrollHeight, clientHeight } = scrollRef
       setMaxScroll(Math.max(0, scrollHeight - clientHeight))
     }
 
@@ -179,7 +188,7 @@ const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef:
     resizeObserver.observe(scrollRef)
 
     return () => resizeObserver.disconnect()
-  }, [scrollRef])
+  }, [location.pathname, scrollRef])
 
   const progress = maxScroll > 0 ? Math.min(100, (scrollY / maxScroll) * 100) : 0
   const showProgress = scrollY > 100 && maxScroll > 100

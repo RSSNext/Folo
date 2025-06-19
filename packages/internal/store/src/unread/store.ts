@@ -143,7 +143,7 @@ class UnreadSyncService {
     } else if (filter?.inboxId) {
       await this.updateUnreadStatus({ ids: [filter.inboxId], time, request })
     } else {
-      const feedIdAndInboxHandles = getSubscribedFeedIdAndInboxHandlesByView(view)
+      const feedIdAndInboxHandles = getSubscribedFeedIdAndInboxHandlesByView(view, excludePrivate)
       await this.updateUnreadStatus({ ids: feedIdAndInboxHandles, time, request })
     }
   }

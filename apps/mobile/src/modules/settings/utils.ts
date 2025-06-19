@@ -31,9 +31,16 @@ export const setAvatar = async () => {
 
   const { url } = res
 
-  userSyncService.updateProfile({
-    image: url,
-  })
+  userSyncService
+    .updateProfile({
+      image: url,
+    })
+    .then(() => {
+      toast.success("Avatar updated")
+    })
+    .catch((err) => {
+      toast.error(getBizFetchErrorMessage(err))
+    })
 }
 
 type FeedResponseList = {

@@ -3,6 +3,7 @@ import { usePrefetchUser } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
+import { useWhoami } from "~/atoms/user"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"
@@ -28,9 +29,10 @@ export const UserAvatar = ({
   enableModal?: boolean
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
-  const { session, status } = useSession({
+  const { status } = useSession({
     enabled: !userId,
   })
+  const whoami = useWhoami()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
   const profile = usePrefetchUser(userId)
@@ -39,7 +41,7 @@ export const UserAvatar = ({
     return <LoginButton {...props} />
   }
 
-  const renderUserData = userId ? profile.data : session?.user
+  const renderUserData = userId ? profile.data : whoami
   const randomColor = stringToHue(renderUserData?.name || "")
   return (
     <div

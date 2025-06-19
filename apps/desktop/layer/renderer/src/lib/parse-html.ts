@@ -108,6 +108,7 @@ export const parseHtml = (
         markInlineImage(node)
         return createElement("i", props, props.children)
       },
+      // @ts-ignore
       math: Math,
       hr: ({ node, ...props }) =>
         createElement("hr", {
