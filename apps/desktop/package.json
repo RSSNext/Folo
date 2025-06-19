@@ -34,7 +34,6 @@
     "update:main-hash": "tsx plugins/vite/generate-main-hash.ts"
   },
   "dependencies": {
-    "@better-auth/stripe": "1.2.8",
     "@hcaptcha/react-hcaptcha": "1.12.0",
     "cookie-es": "2.0.0"
   },
