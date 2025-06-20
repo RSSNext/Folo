@@ -5,7 +5,7 @@ import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
 import { BETTER_AUTH_COOKIE_NAME_SESSION_TOKEN } from "~/constants/app"
-import { getMainWindow } from "~/window"
+import { WindowManager } from "~/manager/window"
 
 import { logger } from "../logger"
 
@@ -28,7 +28,7 @@ export const apiFetch = ofetch.create({
 export const apiClient = hc<AppType>("", {
   fetch: async (input, options = {}) => apiFetch(input.toString(), options),
   async headers() {
-    const window = getMainWindow()
+    const window = WindowManager.getMainWindow()
     const cookies = await window?.webContents.session.cookies.get({
       domain: new URL(env.VITE_API_URL).hostname,
     })

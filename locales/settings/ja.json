@@ -14,6 +14,7 @@
   "actions.action_card.block_rules": "ブロックルール",
   "actions.action_card.custom_filters": "カスタムフィルター",
   "actions.action_card.enable_readability": "読みやすさを有効化",
+  "actions.action_card.feed_options.entry_attachments_duration": "エントリー動画の長さ",
   "actions.action_card.feed_options.entry_author": "エントリー作成者",
   "actions.action_card.feed_options.entry_content": "エントリーコンテンツ",
   "actions.action_card.feed_options.entry_media_length": "エントリーメディアの長さ",

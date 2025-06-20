@@ -28,6 +28,19 @@ export const parseHtml = (
     ...options,
     components: {
       a: ({ node, ...props }) => {
+        // Ignore link wrapper when child is an image to ensure image preview
+        // works instead of navigating to the link URL when clicked
+        //
+        // Check if the link contains only an image as a child
+        if (
+          node.children &&
+          node.children.length === 1 &&
+          node.children[0].type === "element" &&
+          node.children[0].tagName === "img"
+        ) {
+          // Return only the image element
+          return props.children
+        }
         return createElement(MarkdownLink, { ...props } as any)
       },
 

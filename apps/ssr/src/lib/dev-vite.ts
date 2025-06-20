@@ -2,12 +2,13 @@ import { resolve } from "node:path"
 
 import type { FastifyInstance } from "fastify"
 import type { ViteDevServer } from "vite"
-import { createServer as createViteServer } from "vite"
 
 const root = resolve(__dirname, "../..")
 
 let globalVite: ViteDevServer
 export const registerDevViteServer = async (app: FastifyInstance) => {
+  const createViteServer = await import("vite").then((m) => m.createServer)
+
   const vite = await createViteServer({
     server: { middlewareMode: true },
     appType: "custom",

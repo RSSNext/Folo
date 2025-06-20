@@ -8,7 +8,7 @@ const EnhancePageView = requireNativeView("EnhancePageView")
 
 interface PagerProps {
   onPageChange?: (e: NativeSyntheticEvent<{ index: number }>) => void
-  onScroll?: (e: NativeSyntheticEvent<{ percent: number; direction: "left" | "right" }>) => void
+  onScroll?: (e: NativeSyntheticEvent<{ percent: number; direction: "left" | "right" | "none"; position: number }>) => void
   onScrollBegin?: () => void
   onScrollEnd?: () => void
   onPageWillAppear?: (e: NativeSyntheticEvent<{ index: number }>) => void
@@ -30,7 +30,7 @@ type PagerViewProps = {
   transitionStyle?: "scroll" | "pageCurl"
   page?: number
   onPageChange?: (index: number) => void
-  onScroll?: (percent: number, direction: "left" | "right") => void
+  onScroll?: (percent: number, direction: "left" | "right" | "none") => void
   onScrollBegin?: () => void
   onScrollEnd?: () => void
   onPageWillAppear?: (index: number) => void

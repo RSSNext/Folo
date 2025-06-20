@@ -17,6 +17,7 @@ import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { LightboxStateProvider } from "../components/lightbox/lightboxState"
 import { queryClient } from "../lib/query-client"
+import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsProvider } from "./ServerConfigsProvider"
 
@@ -36,9 +37,11 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
                   <SheetProvider>
                     <ActionSheetProvider>
                       <LightboxStateProvider>
-                        <PortalProvider>
-                          <SafeAreaProvider>{children}</SafeAreaProvider>
-                        </PortalProvider>
+                        <TimelineSelectorDragProgressProvider>
+                          <PortalProvider>
+                            <SafeAreaProvider>{children}</SafeAreaProvider>
+                          </PortalProvider>
+                        </TimelineSelectorDragProgressProvider>
                       </LightboxStateProvider>
                     </ActionSheetProvider>
                     <ServerConfigsProvider />

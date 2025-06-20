@@ -14,6 +14,7 @@
   "actions.action_card.block_rules": "阻止规则",
   "actions.action_card.custom_filters": "指定条件",
   "actions.action_card.enable_readability": "启用阅读模式",
+  "actions.action_card.feed_options.entry_attachments_duration": "条目视频时长",
   "actions.action_card.feed_options.entry_author": "条目作者",
   "actions.action_card.feed_options.entry_content": "条目内容",
   "actions.action_card.feed_options.entry_media_length": "条目媒体个数",

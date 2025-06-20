@@ -17,6 +17,7 @@
   "actions.action_card.empty.start": "Start here!",
   "actions.action_card.empty.title": "No Actions Yet",
   "actions.action_card.enable_readability": "Enable Readability",
+  "actions.action_card.feed_options.entry_attachments_duration": "Entry Video Length",
   "actions.action_card.feed_options.entry_author": "Entry Author",
   "actions.action_card.feed_options.entry_content": "Entry Content",
   "actions.action_card.feed_options.entry_media_length": "Entry Media Length",

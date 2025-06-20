@@ -1,10 +1,10 @@
+import { captureConsoleIntegration, init, setTag } from "@sentry/electron/main"
 import { app } from "electron"
 import { FetchError } from "ofetch"
 
 import { DEVICE_ID } from "./constants/system"
 
-export const initializeSentry = async () => {
-  const { captureConsoleIntegration, init, setTag } = await import("@sentry/electron/main")
+export const initializeSentry = () => {
   init({
     dsn: process.env.VITE_SENTRY_DSN,
     integrations: [

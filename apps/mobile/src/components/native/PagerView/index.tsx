@@ -20,7 +20,7 @@ interface PagerViewProps {
   transitionStyle?: "scroll" | "pageCurl"
   page?: number
   onPageChange?: (index: number) => void
-  onScroll?: (percent: number, direction: "left" | "right") => void
+  onScroll?: (percent: number, direction: "left" | "right" | "none", position: number) => void
   onScrollBegin?: () => void
   onScrollEnd?: (index: number) => void
   onPageWillAppear?: (index: number) => void
@@ -76,7 +76,7 @@ export const PagerView: FC<PagerViewProps> = ({
         onPageChange?.(e.nativeEvent.index)
       }}
       onScroll={(e) => {
-        onScroll?.(e.nativeEvent.percent, e.nativeEvent.direction)
+        onScroll?.(e.nativeEvent.percent, e.nativeEvent.direction, e.nativeEvent.position)
       }}
       onScrollBegin={() => {
         onScrollBegin?.()

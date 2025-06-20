@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
+import type { GeneralQueryOptions } from "../types"
 import { feedSyncServices, useFeedStore } from "./store"
 import type { FeedModel } from "./types"
 
@@ -49,18 +50,18 @@ export function useFeedByIdOrUrl(params: { id?: string; url?: string }): FeedMod
   return feedById || feedByUrl
 }
 
-export const usePrefetchFeed = (id: string, options?: { enabled?: boolean }) => {
+export const usePrefetchFeed = (id: string | undefined, options?: GeneralQueryOptions) => {
   return useQuery({
+    ...options,
     queryKey: ["feed", id],
     queryFn: () => feedSyncServices.fetchFeedById({ id }),
-    ...options,
   })
 }
 
-export const usePrefetchFeedByUrl = (url: string, options?: { enabled?: boolean }) => {
+export const usePrefetchFeedByUrl = (url: string, options?: GeneralQueryOptions) => {
   return useQuery({
+    ...options,
     queryKey: ["feed", url],
     queryFn: () => feedSyncServices.fetchFeedByUrl({ url }),
-    ...options,
   })
 }

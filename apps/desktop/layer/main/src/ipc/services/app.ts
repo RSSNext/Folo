@@ -5,15 +5,15 @@ import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog } from "electron"
 
-import { registerMenuAndContextMenu } from "~/init"
 import { i18n } from "~/lib/i18n"
 import { registerAppTray } from "~/lib/tray"
 import { logger } from "~/logger"
+import { AppManager } from "~/manager/app"
+import { WindowManager } from "~/manager/window"
 import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
 import { downloadFile } from "../../lib/download"
 import { checkForAppUpdates, quitAndInstall } from "../../updater"
-import { getMainWindow } from "../../window"
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"
 
@@ -48,7 +48,7 @@ export class AppService extends IpcService {
   @IpcMethod()
   switchAppLocale(context: IpcContext, input: string): void {
     i18n.changeLanguage(input)
-    registerMenuAndContextMenu()
+    AppManager.registerMenuAndContextMenu()
     registerAppTray()
 
     app.commandLine.appendSwitch("lang", input)
@@ -62,7 +62,7 @@ export class AppService extends IpcService {
 
     const appLoadEntry = dynamicRenderEntry || path.resolve(__dirname, "../renderer/index.html")
     logger.info("appLoadEntry", appLoadEntry)
-    const mainWindow = getMainWindow()
+    const mainWindow = WindowManager.getMainWindow()
 
     for (const window of allWindows) {
       if (window === mainWindow) {
