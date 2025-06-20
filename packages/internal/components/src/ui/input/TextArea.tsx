@@ -87,7 +87,7 @@ export const TextArea = ({
           "size-full resize-none bg-transparent",
           "overflow-auto px-3 py-4",
           "!outline-none",
-          "text-neutral-900/80 dark:text-slate-100/80",
+          "text-text placeholder:text-text-tertiary",
           "focus:!bg-accent/5",
           roundedMap[rounded],
           className,
