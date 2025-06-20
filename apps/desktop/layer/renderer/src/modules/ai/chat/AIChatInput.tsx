@@ -1,4 +1,3 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import { TextArea } from "@follow/components/ui/input/TextArea.js"
 import {
   Select,
@@ -96,9 +95,9 @@ export const AIChatInput = ({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="ghost" buttonClassName="text-text-secondary font-normal shrink-0">
+                <span className="text-text-secondary shrink-0 font-normal">
                   @ Mention a date or source
-                </Button>
+                </span>
               </div>
               <div className="flex flex-row items-center gap-3">
                 <i className="i-mgc-mic-cute-re text-xl" />

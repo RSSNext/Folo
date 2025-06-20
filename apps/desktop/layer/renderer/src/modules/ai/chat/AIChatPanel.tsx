@@ -97,13 +97,11 @@ const WelcomeScreen = ({
         </div>
       </div>
 
-      {/* 中间帮助提示区域 - 固定高度避免 CLS */}
       <div className="flex flex-1 items-start justify-center px-8">
         <AIChatHelp onSuggestionClick={setInput} />
       </div>
 
-      {/* 底部输入框 */}
-      <div className="shrink-0 px-8 pb-8">
+      <div className="shrink-0 px-8">
         <div className="mx-auto max-w-3xl">
           <ChatInputWrapper input={input} setInput={setInput} append={append} />
         </div>
