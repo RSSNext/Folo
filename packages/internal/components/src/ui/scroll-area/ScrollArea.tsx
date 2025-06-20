@@ -144,7 +144,7 @@ export const ScrollArea = ({
   onScroll,
   orientation = "vertical",
   asChild = false,
-
+  onUpdateMaxScroll,
   focusable = true,
 }: React.PropsWithChildren & {
   rootClassName?: string
@@ -153,6 +153,7 @@ export const ScrollArea = ({
   flex?: boolean
   mask?: boolean
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
+  onUpdateMaxScroll?: () => void
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
   focusable?: boolean
@@ -161,7 +162,7 @@ export const ScrollArea = ({
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
   return (
-    <ScrollElementContext value={viewportRef}>
+    <ScrollElementContext value={{ element: viewportRef, onUpdateMaxScroll }}>
       <Root className={rootClassName}>
         <Viewport
           ref={setViewportRef}
