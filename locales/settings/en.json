@@ -101,6 +101,7 @@
   "appearance.font.system": "System UI",
   "appearance.fonts": "Fonts",
   "appearance.general": "General",
+  "appearance.global_font.default": "Follow System",
   "appearance.global_font_size.description": "Adjust the overall text size",
   "appearance.global_font_size.label": "Global Font Size",
   "appearance.guess_code_language.description": "Major Programming Languages That Use Models to Infer Unlabeled Code Blocks",

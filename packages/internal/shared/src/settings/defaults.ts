@@ -65,7 +65,7 @@ export const defaultUISettings: UISettings = {
   usePointerCursor: false,
 
   // Font
-  uiFontFamily: "SN Pro",
+  uiFontFamily: "system-ui",
   readerFontFamily: "inherit",
   contentFontSize: 16,
   dateFormat: "default",

@@ -127,7 +127,7 @@ export function SettingModalLayout(
             )}
             <div className="flex h-0 flex-1" ref={elementRef}>
               <div className="backdrop-blur-background bg-sidebar border-r-border flex min-h-0 min-w-44 max-w-[20ch] flex-col rounded-l-xl border-r px-2 py-6">
-                <div className="font-default mb-4 flex h-8 items-center gap-2 px-2 font-bold">
+                <div className="mb-4 flex h-8 items-center gap-2 px-2 font-bold">
                   <Logo className="mr-1 size-6" />
 
                   <Folo className="size-8" />
