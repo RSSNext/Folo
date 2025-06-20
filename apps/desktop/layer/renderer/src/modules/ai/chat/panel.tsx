@@ -19,7 +19,6 @@ import { useRef, useState } from "react"
 
 import { whoami } from "~/atoms/user"
 import { Markdown } from "~/components/ui/markdown/Markdown"
-import { SplitText } from "~/components/ui/split-text"
 import { FeedSummary } from "~/modules/discover/FeedSummary"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
 
@@ -36,14 +35,14 @@ export const AIChatPanel = () => {
     },
     credentials: "include",
   })
-  const inDialog = messages.length > 0
+  const inChat = messages.length > 0
 
   return (
     <div className="flex size-full flex-col p-8">
-      <div className="flex w-full flex-row justify-between">
-        {inDialog && <AIIcon />}
-        <div className="flex w-full flex-row justify-end gap-2">
-          {inDialog && (
+      <div className="flex w-full flex-row items-center justify-between">
+        {inChat && <AIIcon />}
+        <div className="flex h-8 w-full flex-row justify-end gap-2">
+          {inChat && (
             <Button
               variant="ghost"
               buttonClassName="text-text-secondary text-sm font-normal"
@@ -69,27 +68,21 @@ export const AIChatPanel = () => {
       <div
         className={cn(
           "relative mx-auto flex min-h-0 w-full flex-1 flex-col justify-center gap-8",
-          !inDialog && "max-w-3xl items-center",
+          !inChat && "max-w-3xl items-center",
         )}
       >
-        {!inDialog && (
+        {!inChat && (
           <div className="text-text flex flex-row items-center gap-3 text-2xl font-medium">
             <div>
               <AIIcon />
             </div>
-            <SplitText
-              delay={10}
-              duration={2}
-              ease="elastic.out(1, 0.3)"
-              from={{ opacity: 0, y: 40 }}
-              to={{ opacity: 1, y: 0 }}
-              threshold={0.1}
-              splitType="words"
-              text={`Hi ${user?.name}, how may I assist you today?`}
-            />
+
+            <p className="animate-mask-left-to-right !duration-700">
+              Hi {user?.name}, how may I assist you today?
+            </p>
           </div>
         )}
-        {inDialog && (
+        {inChat && (
           <div className="mt-8 flex flex-1 flex-col gap-6 overflow-y-auto">
             {messages.map((message) =>
               message.role === "user" ? (
@@ -157,7 +150,7 @@ export const AIChatPanel = () => {
           input={input}
           setInput={setInput}
         />
-        {!inDialog && (
+        {!inChat && (
           <div className="mb-16 w-full pl-5">
             <Popover modal>
               <PopoverTrigger>

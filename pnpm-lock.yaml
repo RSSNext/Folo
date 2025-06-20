@@ -161,27 +161,9 @@ importers:
 
   apps/desktop:
     dependencies:
-      '@ai-sdk/openai':
-        specifier: 1.3.22
-        version: 1.3.22(zod@3.25.32)
-      '@ai-sdk/react':
-        specifier: 1.2.12
-        version: 1.2.12(react@19.0.0)(zod@3.25.32)
-      '@hcaptcha/react-hcaptcha':
-        specifier: 1.12.0
-        version: 1.12.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@splinetool/react-spline':
-        specifier: 4.0.0
-        version: 4.0.0(@splinetool/runtime@1.10.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      ai:
-        specifier: 4.3.16
-        version: 4.3.16(react@19.0.0)(zod@3.25.32)
       cookie-es:
         specifier: 2.0.0
         version: 2.0.0
-      gsap:
-        specifier: 3.13.0
-        version: 3.13.0
     devDependencies:
       '@clack/prompts':
         specifier: 0.10.1
@@ -460,6 +442,12 @@ importers:
 
   apps/desktop/layer/renderer:
     dependencies:
+      '@ai-sdk/openai':
+        specifier: 1.3.22
+        version: 1.3.22(zod@3.25.32)
+      '@ai-sdk/react':
+        specifier: 1.2.12
+        version: 1.2.12(react@19.0.0)(zod@3.25.32)
       '@dnd-kit/core':
         specifier: 6.3.1
         version: 6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -487,6 +475,9 @@ importers:
       '@fontsource/sn-pro':
         specifier: 5.2.5
         version: 5.2.5
+      '@hcaptcha/react-hcaptcha':
+        specifier: 1.12.0
+        version: 1.12.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@headlessui/react':
         specifier: 2.2.4
         version: 2.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -532,6 +523,9 @@ importers:
       '@shikijs/transformers':
         specifier: 3.4.2
         version: 3.4.2
+      '@splinetool/react-spline':
+        specifier: 4.0.0
+        version: 4.0.0(@splinetool/runtime@1.10.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/query-sync-storage-persister':
         specifier: 5.77.2
         version: 5.77.2
@@ -556,6 +550,9 @@ importers:
       '@yornaath/batshit':
         specifier: 0.10.1
         version: 0.10.1
+      ai:
+        specifier: 4.3.16
+        version: 4.3.16(react@19.0.0)(zod@3.25.32)
       camelcase-keys:
         specifier: 9.1.3
         version: 9.1.3
@@ -10059,9 +10056,6 @@ packages:
     resolution: {integrity: sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
 
-  gsap@3.13.0:
-    resolution: {integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==}
-
   handlebars@4.7.8:
     resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
     engines: {node: '>=0.4.7'}
@@ -19482,7 +19476,7 @@ snapshots:
 
   '@hcaptcha/react-hcaptcha@1.12.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@babel/runtime': 7.27.1
+      '@babel/runtime': 7.27.3
       '@hcaptcha/loader': 2.0.0
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -26959,8 +26953,6 @@ snapshots:
       tslib: 2.6.2
 
   graphql@16.8.1: {}
-
-  gsap@3.13.0: {}
 
   handlebars@4.7.8:
     dependencies:

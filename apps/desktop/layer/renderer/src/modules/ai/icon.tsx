@@ -1,7 +1,9 @@
 import { cn } from "@follow/utils/utils"
 import Spline from "@splinetool/react-spline"
 
-// import aiIconUrl from "~/assets/ai.splinecode?url"
+import aiIconUrl from "~/assets/ai.splinecode?url"
+
+const resolvedAIIconUrl = new URL(aiIconUrl, import.meta.url).href
 
 export const AIIcon = ({ className }: { className?: string }) => {
   function handleLoad(app) {
@@ -22,10 +24,6 @@ export const AIIcon = ({ className }: { className?: string }) => {
   }
 
   return (
-    <Spline
-      scene={`http://localhost:2233/src/assets/ai.splinecode`}
-      onLoad={handleLoad}
-      className={cn("!size-16", className)}
-    />
+    <Spline scene={resolvedAIIconUrl} onLoad={handleLoad} className={cn("!size-16", className)} />
   )
 }
