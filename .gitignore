@@ -22,5 +22,3 @@ vite.config.*.mjs
 apps/desktop/src/renderer/dev-dist
 tsconfig.tsbuildinfo
 buildServer.json
-
-generated-routes.ts

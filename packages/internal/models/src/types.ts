@@ -110,21 +110,6 @@ export type RecommendationItem = ExtractBizResponse<
   typeof _apiClient.discover.rsshub.$get
 >["data"][string]
 
-export type ActionOperation = "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex"
-export type ActionEntryField = "all" | "title" | "content" | "author" | "url" | "order"
-export type ActionFeedField =
-  | "view"
-  | "title"
-  | "site_url"
-  | "feed_url"
-  | "category"
-  | "entry_title"
-  | "entry_content"
-  | "entry_url"
-  | "entry_author"
-  | "entry_media_length"
-  | "entry_attachments_duration"
-
 export type MediaModel = Exclude<
   ExtractBizResponse<typeof _apiClient.entries.$get>["data"],
   undefined
@@ -138,6 +123,8 @@ type ActionRulesRes = Exclude<
 export type ActionFilterItem = Partial<
   Exclude<ActionRulesRes["condition"][number], { length: number }>
 >
+export type ActionFeedField = Exclude<ActionFilterItem["field"], undefined>
+export type ActionOperation = Exclude<ActionFilterItem["operator"], undefined>
 export type ActionFilterGroup = ActionFilterItem[]
 export type ActionFilter = ActionFilterGroup[]
 
