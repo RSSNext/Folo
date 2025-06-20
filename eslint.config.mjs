@@ -108,6 +108,7 @@ export default defineConfig(
     rules: {
       "package-json-extend/ensure-package-version": "error",
       "package-json-extend/no-duplicate-package": "error",
+      "package-json/require-type": 0,
     },
   },
   {

@@ -1,7 +1,7 @@
 {
   "name": "@follow-app/vite-plugin-route-builder",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -16,20 +16,26 @@
     "test:run": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "22.15.23",
-    "es-toolkit": "1.38.0",
+    "@types/node": "24.0.3",
+    "es-toolkit": "1.39.3",
     "fast-glob": "3.3.3",
-    "happy-dom": "17.5.6",
-    "react-router": "7.6.1",
+    "happy-dom": "18.0.1",
+    "react-router": "7.6.2",
     "tsdown": "0.12.8",
     "typescript": "catalog:",
     "vite": "6.3.5",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.1.4"
+    "vitest": "3.2.4"
   },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
   }
 }

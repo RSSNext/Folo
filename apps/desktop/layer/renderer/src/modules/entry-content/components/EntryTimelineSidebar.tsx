@@ -1,7 +1,7 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
-import type { Target, TargetAndTransition } from "motion/react"
+import type { TargetAndTransition } from "motion/react"
 import { m } from "motion/react"
 
 import { useIsZenMode } from "~/atoms/settings/ui"
@@ -36,7 +36,7 @@ const Timeline = ({ entryId }: { entryId: string }) => {
   )
 }
 
-const initialButton: Target = {
+const initialButton: TargetAndTransition = {
   opacity: 0.0001,
 }
 const animateButton: TargetAndTransition = {

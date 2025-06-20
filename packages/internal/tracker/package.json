@@ -4,10 +4,10 @@
   "private": true,
   "main": "./src/index.ts",
   "dependencies": {
-    "posthog-js": "1.249.2"
+    "posthog-js": "1.255.0"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "@react-native-firebase/analytics": "22.1.0"
+    "@react-native-firebase/analytics": "22.2.1"
   }
 }
