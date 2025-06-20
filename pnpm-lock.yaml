@@ -2630,17 +2630,12 @@ packages:
     resolution: {integrity: sha512-Y1GkI4ktrtvmawoSq+4FCVHNryea6uR+qUQy0AGxLSsjCX0nVmkYQMBLHDkXZuo5hGx7eYdnIaslsdBFm7zbUw==}
     engines: {node: '>=6.9.0'}
 
-<<<<<<< HEAD
-  '@better-auth/expo@1.2.8':
-    resolution: {integrity: sha512-lbrSer954pv6PSDwzA7o6jVzbRO7Qv7npGgSifbC1oLwDTlsHFwU+Q0Rb8BvVleLi28tKtH7fN7sx/MMdeBOFw==}
-=======
   '@babel/types@7.27.6':
     resolution: {integrity: sha512-ETyHEk2VHHvl9b9jZP5IHPavHYk57EhanlRRuae9XCpb/j5bDCbPPMOBfCWhnl/7EDJz0jEMCi/RhccCE8r1+Q==}
     engines: {node: '>=6.9.0'}
 
-  '@better-auth/expo@1.2.7':
-    resolution: {integrity: sha512-g8qBx7lBFfOWvAzWwNUVZr6IWYwBcZ7D/HcTzBG1zoZmD7PbdseQugWlIeS711vZ/Qqez7ZV0mDwpk2h+uT4nQ==}
->>>>>>> dev
+  '@better-auth/expo@1.2.8':
+    resolution: {integrity: sha512-lbrSer954pv6PSDwzA7o6jVzbRO7Qv7npGgSifbC1oLwDTlsHFwU+Q0Rb8BvVleLi28tKtH7fN7sx/MMdeBOFw==}
     peerDependencies:
       better-auth: 1.2.8
 
@@ -3673,8 +3668,8 @@ packages:
   '@fastify/middie@9.0.3':
     resolution: {integrity: sha512-7OYovKXp9UKYeVMcjcFLMcSpoMkmcZmfnG+eAvtdiatN35W7c+r9y1dRfpA+pfFVNuHGGqI3W+vDTmjvcfLcMA==}
 
-  '@fastify/otel@git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb':
-    resolution: {commit: ae3088d65e286bdc94ac5d722573537d6a6671bb, repo: git@github.com:getsentry/fastify-otel.git, type: git}
+  '@fastify/otel@https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb':
+    resolution: {tarball: https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb}
     version: 0.8.0
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
@@ -17193,16 +17188,12 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-<<<<<<< HEAD
-  '@better-auth/expo@1.2.8(better-auth@1.2.8)':
-=======
   '@babel/types@7.27.6':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@better-auth/expo@1.2.7(better-auth@1.2.8)':
->>>>>>> dev
+  '@better-auth/expo@1.2.8(better-auth@1.2.8)':
     dependencies:
       '@better-fetch/fetch': 1.1.18
       better-auth: 1.2.8
@@ -18689,7 +18680,7 @@ snapshots:
       path-to-regexp: 8.2.0
       reusify: 1.1.0
 
-  '@fastify/otel@git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)':
+  '@fastify/otel@https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
@@ -21712,7 +21703,7 @@ snapshots:
 
   '@sentry/node@9.18.0':
     dependencies:
-      '@fastify/otel': git+https://git@github.com:getsentry/fastify-otel.git#ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)
+      '@fastify/otel': https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb(@opentelemetry/api@1.9.0)
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/context-async-hooks': 1.30.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
