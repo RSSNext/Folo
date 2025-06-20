@@ -27,7 +27,7 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { getNewIssueUrl } from "~/lib/issues"
-import { AIChatInput } from "~/modules/ai/chat/panel"
+import { AIChatInput } from "~/modules/ai/chat/AIChatInput"
 import {
   useIsSoFWrappedElement,
   useWrappedElement,
