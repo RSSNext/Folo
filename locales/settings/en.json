@@ -472,7 +472,7 @@
   "referral.link": "Your Invite Link:",
   "referral.pro_status.preview": "Your Pro Preview Status: Expires {{dateString}} ({{daysLeft}} days left)",
   "referral.pro_status.trial": "Your Current Tier: Free",
-  "referral.pro_status.user": "Your Pro Preview Status: Active Indefinitely",
+  "referral.pro_status.user": "Your Pro Preview Status: Active",
   "rsshub.addModal.access_key_label": "Access Key (Optional)",
   "rsshub.addModal.add": "Add",
   "rsshub.addModal.base_url_label": "Base URL",

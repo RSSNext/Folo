@@ -112,61 +112,67 @@ export function SettingReferral() {
           </>
         )}
       </div>
-      <Divider className="my-6" />
-      <p className="font-semibold">Your Invited Friends</p>
-      <Table className="mt-4">
-        <TableHeader>
-          <TableRow className="[&_*]:!font-semibold">
-            <TableHead size="sm">Friend (Email/ID)</TableHead>
-            <TableHead size="sm">Joined On</TableHead>
-            <TableHead size="sm">Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="border-t-[12px] border-transparent [&_td]:!px-3">
-          {referralInfo?.invitations?.map((row) => (
-            <TableRow key={row.code} className="h-8">
-              <TableCell size="sm">
-                <Tooltip>
-                  <TooltipTrigger>
-                    <button
-                      type="button"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        presentUserProfile(row.user?.id)
-                      }}
-                    >
-                      <UserAvatar
-                        userId={row.user?.id}
-                        className="h-auto p-0"
-                        avatarClassName="size-5"
-                        hideName
-                      />
-                    </button>
-                  </TooltipTrigger>
-                  {row.user?.name && (
-                    <TooltipPortal>
-                      <TooltipContent>{row.user?.name}</TooltipContent>
-                    </TooltipPortal>
-                  )}
-                </Tooltip>
-              </TableCell>
-              <TableCell size="sm">{dayjs(row.createdAt).format("MMMM D, YYYY")}</TableCell>
-              <TableCell size="sm">
-                {row.usedAt ? (
-                  t("referral.invited_friend_status.active")
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger>{t("referral.invited_friend_status.signed_up")}</TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent>Active status are refreshed daily</TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      {!!referralInfo?.invitations.length && (
+        <>
+          <Divider className="my-6" />
+          <p className="font-semibold">Your Invited Friends</p>
+          <Table className="mt-4">
+            <TableHeader>
+              <TableRow className="[&_*]:!font-semibold">
+                <TableHead size="sm">Friend (Email/ID)</TableHead>
+                <TableHead size="sm">Joined On</TableHead>
+                <TableHead size="sm">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="border-t-[12px] border-transparent [&_td]:!px-3">
+              {referralInfo?.invitations?.map((row) => (
+                <TableRow key={row.code} className="h-8">
+                  <TableCell size="sm">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <button
+                          type="button"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            presentUserProfile(row.user?.id)
+                          }}
+                        >
+                          <UserAvatar
+                            userId={row.user?.id}
+                            className="h-auto p-0"
+                            avatarClassName="size-5"
+                            hideName
+                          />
+                        </button>
+                      </TooltipTrigger>
+                      {row.user?.name && (
+                        <TooltipPortal>
+                          <TooltipContent>{row.user?.name}</TooltipContent>
+                        </TooltipPortal>
+                      )}
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell size="sm">{dayjs(row.createdAt).format("MMMM D, YYYY")}</TableCell>
+                  <TableCell size="sm">
+                    {row.usedAt ? (
+                      t("referral.invited_friend_status.active")
+                    ) : (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {t("referral.invited_friend_status.signed_up")}
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>Active status are refreshed daily</TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </section>
   )
 }
