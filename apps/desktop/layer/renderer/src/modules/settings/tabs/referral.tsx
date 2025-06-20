@@ -19,7 +19,7 @@ import {
 import { env } from "@follow/shared/env.desktop"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
-import { useTranslation } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
 import { useUserRole, useUserRoleEndDate, useWhoami } from "~/atoms/user"
@@ -33,6 +33,8 @@ export function SettingReferral() {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
+  const skipPrice = serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1
+  const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const { data: referralInfo } = useReferralInfo()
   const validInvitationsAmount = referralInfo?.invitations.length || 0
   const user = useWhoami()
@@ -47,14 +49,20 @@ export function SettingReferral() {
     <section className="mt-4">
       <div className="mb-4 space-y-2 text-sm">
         <p>
-          {t("referral.description", {
-            amount: requiredInvitationsAmount,
-            day: referralInfo?.referralCycleDays || 45,
-          })}
+          <Trans
+            ns="settings"
+            i18nKey="referral.description"
+            values={{
+              day: referralInfo?.referralCycleDays || 45,
+            }}
+            components={{
+              Link: <a href={ruleLink} className="text-accent" target="_blank" />,
+            }}
+          />
         </p>
       </div>
       <Divider className="my-6" />
-      <p className="my-2 font-semibold">{t("referral.link")}</p>
+      <p className="my-2">{t("referral.link")}</p>
       <Card className="flex items-center gap-2 px-4 py-2">
         <span>{referralLink}</span>
         <CopyButton variant="outline" value={referralLink} />
@@ -81,10 +89,12 @@ export function SettingReferral() {
       </Card>
       <div className="mt-4 space-y-2">
         <p>Referral Progress:</p>
-        <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
-        <p>
-          {`Invite ${requiredInvitationsAmount - validInvitationsAmount} more friends to extend your Pro Preview indefinitely!`}
-        </p>
+        <div className="flex items-center gap-4">
+          <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
+          <span className="shrink-0">
+            {validInvitationsAmount} / {requiredInvitationsAmount}
+          </span>
+        </div>
         {role === "preview" && (
           <>
             <p>Alternatively:</p>
@@ -97,7 +107,7 @@ export function SettingReferral() {
                 })
               }}
             >
-              Pay $1 to Extend Pro Preview Now
+              Pay ${skipPrice} to Extend Pro Preview Now
             </Button>
           </>
         )}

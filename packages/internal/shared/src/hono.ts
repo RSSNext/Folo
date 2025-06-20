@@ -23515,7 +23515,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     MAX_WEBHOOKS_PER_ACTION: number;
                     PRODUCT_HUNT_VOTE_URL: string;
                     REFERRAL_ENABLED: boolean;
+                    REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR: number;
                     REFERRAL_REQUIRED_INVITATIONS: number;
+                    REFERRAL_RULE_LINK: string;
                     TAX_POINT: string;
                     MAS_IN_REVIEW_VERSION?: string | undefined;
                 };
