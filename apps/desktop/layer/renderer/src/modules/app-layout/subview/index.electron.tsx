@@ -55,7 +55,7 @@ function SubviewLayoutInner() {
     resizeObserver.observe(scrollRef)
 
     return () => resizeObserver.disconnect()
-  }, [location.pathname, scrollRef])
+  }, [scrollRef])
 
   useEffect(() => {
     // Scroll to top search bar when re-navigating to Discover page while already on it
