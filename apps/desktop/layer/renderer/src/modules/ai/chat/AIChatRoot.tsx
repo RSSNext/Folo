@@ -2,6 +2,9 @@ import { useChat } from "@ai-sdk/react"
 import { env } from "@follow/shared/env.desktop"
 import type { FC, PropsWithChildren } from "react"
 
+import { Focusable } from "~/components/common/Focusable"
+import { HotkeyScope } from "~/constants"
+
 import { AIChatContext } from "./__internal__/AIChatContext"
 
 export const AIChatRoot: FC<PropsWithChildren> = (props) => {
@@ -12,5 +15,10 @@ export const AIChatRoot: FC<PropsWithChildren> = (props) => {
     },
     credentials: "include",
   })
-  return <AIChatContext value={ctx}>{props.children}</AIChatContext>
+
+  return (
+    <Focusable scope={HotkeyScope.AIChat} className="size-full">
+      <AIChatContext value={ctx}>{props.children}</AIChatContext>
+    </Focusable>
+  )
 }
