@@ -29,7 +29,8 @@ const lazy19 = () => import("./pages/settings/(settings)/invitations")
 const lazy20 = () => import("./pages/settings/(settings)/list")
 const lazy21 = () => import("./pages/settings/(settings)/notifications")
 const lazy22 = () => import("./pages/settings/(settings)/profile")
-const lazy23 = () => import("./pages/settings/(settings)/shortcuts")
+const lazy23 = () => import("./pages/settings/(settings)/referral")
+const lazy24 = () => import("./pages/settings/(settings)/shortcuts")
 
 // Generated route configuration
 export const routes: RouteObject[] = [
@@ -188,8 +189,12 @@ export const routes: RouteObject[] = [
                 "lazy": lazy22
               },
               {
-                "path": "shortcuts",
+                "path": "referral",
                 "lazy": lazy23
+              },
+              {
+                "path": "shortcuts",
+                "lazy": lazy24
               }
             ]
           }
