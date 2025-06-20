@@ -1,15 +1,12 @@
-import { Card, CardContent } from "@follow/components/ui/card/index.jsx"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
-import { clsx } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
-import { SettingInput } from "../control"
+import { SettingInput, SettingTextArea } from "../control"
 import { createSetting } from "../helper/builder"
 import { SettingSectionTitle } from "../section"
 
-const { defineSettingItem, SettingBuilder } = createSetting(useAISettingValue, setAISetting)
+const { SettingBuilder } = createSetting(useAISettingValue, setAISetting)
 
 export const SettingAI = () => {
   const { t } = useTranslation("settings")
@@ -23,11 +20,7 @@ export const SettingAI = () => {
             value: t("ai.personalize.title"),
           },
 
-          defineSettingItem("personalizePrompt", {
-            label: t("ai.personalize.prompt.label"),
-            description: t("ai.personalize.prompt.description"),
-            vertical: true,
-          }),
+          PersonalizePrompt,
         ]}
       />
       <SettingSectionTitle title={t("ai.shortcuts.title")} />
@@ -37,46 +30,36 @@ export const SettingAI = () => {
 }
 
 const AIChatShortcutCard = () => {
-  const { t: tCommon } = useTranslation("common")
+  return (
+    <div className="bg-material-ultra-thin group/card-root relative flex flex-col gap-4 rounded-2xl border p-4 shadow-sm md:p-6">
+      <div className="absolute right-0 top-0 opacity-0 transition-opacity duration-200 group-hover/card-root:opacity-100">
+        <button
+          className="bg-background center flex size-8 -translate-y-1/2 translate-x-1/2 rounded-full border"
+          type="button"
+          onClick={() => {
+            // TODO
+          }}
+        >
+          <i className="i-mgc-close-cute-re" />
+        </button>
+      </div>
+      <SettingInput type="text" value={""} label="Name" onChange={() => {}} vertical />
+      <SettingTextArea value={""} label="Prompt" onChange={() => {}} vertical />
+    </div>
+  )
+}
+
+const PersonalizePrompt = () => {
+  const { t } = useTranslation("settings")
 
   return (
-    <Card className="group relative mt-4">
-      <CardContent className="pb-2">
-        <Tooltip>
-          <TooltipTrigger
-            type="button"
-            className={clsx(
-              "center bg-background ring-border flex size-6 rounded-full p-1 shadow-sm ring-1",
-              "absolute -right-2 -top-2 z-[1] opacity-100 duration-200 hover:!opacity-100 group-hover:opacity-70 lg:opacity-0",
-            )}
-            onClick={() => {
-              // TODO
-            }}
-          >
-            <i className="i-mgc-close-cute-re text-lg" />
-            <span className="sr-only">{tCommon("words.delete")}</span>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("words.delete")}</TooltipContent>
-        </Tooltip>
-        <SettingInput
-          labelClassName="text-xs"
-          type="text"
-          className="mt-4"
-          value={""}
-          label="Name"
-          onChange={() => {}}
-          vertical
-        />
-        <SettingInput
-          labelClassName="text-xs"
-          type="text"
-          className="mt-4"
-          value={""}
-          label="Prompt"
-          onChange={() => {}}
-          vertical
-        />
-      </CardContent>
-    </Card>
+    <SettingInput
+      type="text"
+      className="mt-4"
+      value={""}
+      label={t("ai.personalize.prompt.label")}
+      onChange={() => {}}
+      vertical
+    />
   )
 }
