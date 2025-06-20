@@ -34,10 +34,28 @@ function SubviewLayoutInner() {
   const [scrollY, setScrollY] = useState(0)
   const navigationType = useNavigationType()
   const location = useLocation()
+  const [maxScroll, setMaxScroll] = useState(0)
 
   // Enhanced scroll state management
   const isTitleVisible = scrollY > 60
   const isHeaderElevated = scrollY > 20
+
+  const updateMaxScroll = () => {
+    if (!scrollRef) return
+
+    const { scrollHeight, clientHeight } = scrollRef
+    setMaxScroll(Math.max(0, scrollHeight - clientHeight))
+  }
+
+  useEffect(() => {
+    if (!scrollRef) return
+
+    updateMaxScroll()
+    const resizeObserver = new ResizeObserver(updateMaxScroll)
+    resizeObserver.observe(scrollRef)
+
+    return () => resizeObserver.disconnect()
+  }, [location.pathname, scrollRef])
 
   useEffect(() => {
     // Scroll to top search bar when re-navigating to Discover page while already on it
@@ -129,11 +147,11 @@ function SubviewLayoutInner() {
 
           {/* Enhanced Title - absolutely centered */}
           <div className="pointer-events-none absolute inset-x-0 flex justify-center">
-            {isTitleVisible && title && (
+            {isTitleVisible && title ? (
               <div className="text-center">
                 <div className="text-text truncate font-semibold">{title}</div>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Action Area - positioned on the right */}
@@ -155,12 +173,13 @@ function SubviewLayoutInner() {
         ref={setRef}
         rootClassName="w-full"
         viewportClassName="pb-12 pt-24 [&>div]:items-center"
+        onUpdateMaxScroll={updateMaxScroll}
       >
         <Outlet />
       </ScrollArea.ScrollArea>
 
       <RootPortal>
-        <ScrollProgressFAB scrollY={scrollY} scrollRef={scrollRef} />
+        <ScrollProgressFAB scrollY={scrollY} scrollRef={scrollRef} maxScroll={maxScroll} />
       </RootPortal>
     </div>
   )
@@ -171,25 +190,15 @@ const SubViewHeaderRightView = () => {
   return <div className="inline-flex items-center">{rightView}</div>
 }
 
-const ScrollProgressFAB = ({ scrollY, scrollRef }: { scrollY: number; scrollRef: any }) => {
-  const [maxScroll, setMaxScroll] = useState(0)
-  const location = useLocation()
-
-  useEffect(() => {
-    if (!scrollRef) return
-
-    const updateMaxScroll = () => {
-      const { scrollHeight, clientHeight } = scrollRef
-      setMaxScroll(Math.max(0, scrollHeight - clientHeight))
-    }
-
-    updateMaxScroll()
-    const resizeObserver = new ResizeObserver(updateMaxScroll)
-    resizeObserver.observe(scrollRef)
-
-    return () => resizeObserver.disconnect()
-  }, [location.pathname, scrollRef])
-
+const ScrollProgressFAB = ({
+  scrollY,
+  scrollRef,
+  maxScroll,
+}: {
+  scrollY: number
+  scrollRef: any
+  maxScroll: number
+}) => {
   const progress = maxScroll > 0 ? Math.min(100, (scrollY / maxScroll) * 100) : 0
   const showProgress = scrollY > 100 && maxScroll > 100
 

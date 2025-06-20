@@ -25,7 +25,7 @@ export const EntryColumnWrapper = ({
     <div className={clsx(styles, "relative flex flex-col")}>
       <div ref={ref} className={clsx("grow overflow-hidden", views[view]!.wideMode ? "mt-2" : "")}>
         <PullToRefresh className="h-full" onRefresh={onPullToRefresh || noop}>
-          <ScrollElementContext value={scrollElement}>
+          <ScrollElementContext value={{ element: scrollElement }}>
             <div
               className="h-full overflow-y-auto"
               ref={setScrollElement}
