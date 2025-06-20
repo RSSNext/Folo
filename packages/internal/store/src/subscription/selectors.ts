@@ -22,7 +22,9 @@ export const folderFeedsByFeedIdSelector =
       const subscription = state.data[feedId]!
       if (
         subscription.view === view &&
-        (subscription.category === folderName || getDefaultCategory(subscription) === folderName)
+        (subscription.category
+          ? subscription.category === folderName
+          : getDefaultCategory(subscription) === folderName)
       ) {
         feedIds.push(feedId)
       }

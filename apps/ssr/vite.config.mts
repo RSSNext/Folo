@@ -2,10 +2,16 @@ import { resolve } from "node:path"
 
 import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
+import { tsImport } from "tsx/esm/api"
 import { defineConfig } from "vite"
 
 import { viteRenderBaseConfig } from "../desktop/configs/vite.render.config"
 import { astPlugin } from "../desktop/plugins/vite/ast"
+
+const routeBuilderPluginV2 = await tsImport(
+  "@follow/vite-plugin-route-builder",
+  import.meta.url,
+).then((m) => m.default)
 
 export default defineConfig({
   resolve: {
@@ -29,6 +35,11 @@ export default defineConfig({
     },
   },
   plugins: [
+    routeBuilderPluginV2({
+      pagePattern: `${resolve(__dirname, "./client/pages")}/**/*.tsx`,
+      outputPath: `${resolve(__dirname, "./client/generated-routes.ts")}`,
+      enableInDev: true,
+    }),
     react(),
     astPlugin,
     codeInspectorPlugin({

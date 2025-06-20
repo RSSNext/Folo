@@ -1,0 +1,30 @@
+{
+  "name": "@follow/vite-plugin-route-builder",
+  "type": "module",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.23",
+    "es-toolkit": "1.38.0",
+    "fast-glob": "3.3.3",
+    "react-router": "7.6.1",
+    "tsdown": "0.12.8",
+    "typescript": "catalog:",
+    "vite": "6.3.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts"
+  }
+}

@@ -21,6 +21,7 @@ export default defineConfig(
       "apps/mobile/ios/**",
       "apps/mobile/.expo",
       "apps/mobile/native/build/**",
+      "**/generated-routes.ts",
     ],
     preferESM: false,
     tailwindCSS: {

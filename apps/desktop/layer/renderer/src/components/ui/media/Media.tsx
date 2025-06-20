@@ -3,7 +3,8 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
 import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
-import { memo, use, useMemo, useState } from "react"
+import * as React from "react"
+import { memo, use, useEffect, useMemo, useRef, useState } from "react"
 import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { useEventCallback } from "usehooks-ts"
 
@@ -79,67 +80,117 @@ const MediaImpl: FC<MediaProps> = ({
   const finalHeight = height || ctxHeight
   const finalWidth = width || ctxWidth
 
-  const [currentState, setCurrentState] = useState<"proxy" | "origin" | "error">(() =>
-    proxy && !preferOrigin ? "proxy" : "origin",
-  )
+  // Define the list of available image sources, sorted by priority
+  const imageSources = useMemo(() => {
+    if (!src) return []
 
-  const [imgSrc, setImgSrc] = useState(() =>
-    currentState === "proxy" && src
-      ? getImageProxyUrl({
-          url: src,
-          width: proxy?.width || 0,
-          height: proxy?.height || 0,
+    const sources: Array<{ url: string; type: "proxy" | "origin" }> = []
+
+    // Determine priority based on preferences
+    if (proxy && !preferOrigin) {
+      // Use proxy first
+      sources.push(
+        {
+          url: getImageProxyUrl({
+            url: src,
+            width: proxy.width || 0,
+            height: proxy.height || 0,
+          }),
+          type: "proxy",
+        },
+        { url: src, type: "origin" },
+      )
+    } else {
+      // Use original URL first
+      sources.push({ url: src, type: "origin" })
+      if (proxy) {
+        sources.push({
+          url: getImageProxyUrl({
+            url: src,
+            width: proxy.width || 0,
+            height: proxy.height || 0,
+          }),
+          type: "proxy",
         })
-      : src,
-  )
-
-  const previewImageSrc = useMemo(
-    () =>
-      currentState === "proxy" && previewImageUrl
-        ? getImageProxyUrl({
-            url: previewImageUrl,
-            width: proxy?.width || 0,
-            height: proxy?.height || 0,
-          })
-        : previewImageUrl,
-    [currentState, previewImageUrl, proxy?.width, proxy?.height],
-  )
-
-  const [mediaLoadState, setMediaLoadState] = useState<"loading" | "loaded">(() => {
-    if (imgSrc) {
-      return isImageLoadedSet.has(imgSrc) ? "loaded" : "loading"
-    }
-    return "loading"
-  })
-
-  const errorHandle: React.ReactEventHandler<HTMLImageElement> = useEventCallback(() => {
-    switch (currentState) {
-      case "proxy": {
-        if (imgSrc !== props.src && props.src) {
-          setImgSrc(props.src)
-        } else {
-          setCurrentState("error")
-        }
-        break
-      }
-      case "origin": {
-        if (imgSrc === props.src && props.src) {
-          setImgSrc(
-            getImageProxyUrl({
-              url: props.src,
-              width: proxy?.width || 0,
-              height: proxy?.height || 0,
-            }),
-          )
-        } else {
-          setCurrentState("error")
-        }
-        break
       }
     }
+
+    return sources
+  }, [src, proxy, preferOrigin])
+
+  const [currentSourceIndex, setCurrentSourceIndex] = useState(0)
+  const [isError, setIsError] = useState(false)
+  const [mediaLoadState, setMediaLoadState] = useState<"loading" | "loaded">("loading")
+
+  const currentSource = imageSources[currentSourceIndex]
+  const imgSrc = currentSource?.url || src
+
+  const previewImageSrc = useMemo(() => {
+    if (!previewImageUrl) return
+
+    // Use the same proxy strategy for preview images
+    if (proxy && currentSource?.type === "proxy") {
+      return getImageProxyUrl({
+        url: previewImageUrl,
+        width: proxy.width || 0,
+        height: proxy.height || 0,
+      })
+    }
+    return previewImageUrl
+  }, [previewImageUrl, proxy, currentSource?.type])
+
+  // When image source list changes, reset to the first source
+  const prevImageSources = useRef(imageSources)
+  useEffect(() => {
+    if (prevImageSources.current !== imageSources && imageSources.length > 0) {
+      prevImageSources.current = imageSources
+      setCurrentSourceIndex(0)
+      setIsError(false)
+    }
+  }, [imageSources])
+
+  // When image source changes, reset loading state
+  const prevImgSrc = useRef(imgSrc)
+  useEffect(() => {
+    if (prevImgSrc.current !== imgSrc) {
+      prevImgSrc.current = imgSrc
+      setMediaLoadState(imgSrc && isImageLoadedSet.has(imgSrc) ? "loaded" : "loading")
+    }
+  }, [imgSrc])
+
+  const errorHandle: React.ReactEventHandler<HTMLImageElement> = useEventCallback((e) => {
+    const nextIndex = currentSourceIndex + 1
+
+    if (import.meta.env.DEV) {
+      console.info(
+        `[Media Error] Failed to load image source ${currentSourceIndex + 1}/${imageSources.length}`,
+        {
+          failedSrc: imgSrc,
+          originalSrc: src,
+          error: e,
+          willRetry: nextIndex < imageSources.length,
+          nextSource: imageSources[nextIndex]?.url,
+        },
+      )
+    }
+
+    if (nextIndex < imageSources.length) {
+      //  Try next available image source
+      setCurrentSourceIndex(nextIndex)
+      setMediaLoadState("loading")
+    } else {
+      // All sources failed, mark as error state
+      setIsError(true)
+
+      if (import.meta.env.DEV) {
+        console.error(`[Media Error] All image sources failed for: ${src}`, {
+          allSources: imageSources,
+          originalSrc: src,
+        })
+      }
+    }
   })
 
-  const isError = currentState === "error"
   const previewMedia = usePreviewMedia()
   const handleClick = useEventCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -165,6 +216,22 @@ const MediaImpl: FC<MediaProps> = ({
   const handleOnLoad: React.ReactEventHandler<HTMLImageElement> = useEventCallback((e) => {
     setMediaLoadState("loaded")
     rest.onLoad?.(e as any)
+
+    if (import.meta.env.DEV) {
+      console.info(`[Media Success] Image loaded successfully`, {
+        src: imgSrc,
+        originalSrc: src,
+        sourceType: currentSource?.type,
+        sourceIndex: currentSourceIndex + 1,
+        totalSources: imageSources.length,
+        dimensions: {
+          width: e.currentTarget.naturalWidth,
+          height: e.currentTarget.naturalHeight,
+          ratio: e.currentTarget.naturalWidth / e.currentTarget.naturalHeight,
+        },
+        loadTime: performance.now(),
+      })
+    }
 
     if (imgSrc) {
       isImageLoadedSet.add(imgSrc)
@@ -294,6 +361,19 @@ const MediaImpl: FC<MediaProps> = ({
   return (
     <span
       data-state={type !== "video" ? mediaLoadState : undefined}
+      data-media-debug={
+        import.meta.env.DEV
+          ? JSON.stringify({
+              originalSrc: src,
+              currentSrc: imgSrc,
+              sourceType: currentSource?.type,
+              sourceIndex: currentSourceIndex,
+              totalSources: imageSources.length,
+              isError,
+              mediaLoadState,
+            })
+          : undefined
+      }
       className={cn("relative overflow-hidden rounded", inline ? "inline" : "block", className)}
       style={style}
     >

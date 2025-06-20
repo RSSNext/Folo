@@ -9,7 +9,7 @@ import { app, dialog } from "electron"
 
 import { getIconPath } from "~/helper"
 import { logger } from "~/logger"
-import { getMainWindow } from "~/window"
+import { WindowManager } from "~/manager/window"
 
 import { t } from "./i18n"
 import { store, StoreKey } from "./store"
@@ -23,7 +23,7 @@ const fastFolderSize = esModuleInterop(
 ) as typeof import("fast-folder-size").default
 
 export const clearAllDataAndConfirm = async () => {
-  const win = getMainWindow()
+  const win = WindowManager.getMainWindow()
   if (!win) return
 
   // Dialog to confirm
@@ -42,7 +42,7 @@ export const clearAllDataAndConfirm = async () => {
 }
 
 export const clearAllData = async () => {
-  const win = getMainWindow()
+  const win = WindowManager.getMainWindow()
   if (!win) return
   const ses = win.webContents.session
   const caller = callWindowExpose(win)

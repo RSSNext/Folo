@@ -3,7 +3,7 @@ import { extractElectronWindowOptions } from "@follow/shared/electron"
 import type { BrowserWindow } from "electron/main"
 
 import { logger } from "~/logger"
-import { createMainWindow, createWindow, getMainWindow } from "~/window"
+import { WindowManager } from "~/manager/window"
 
 export const handleUrlRouting = (url: string) => {
   const options = extractElectronWindowOptions(url)
@@ -84,7 +84,7 @@ export const handleUrlRouting = (url: string) => {
 
       default: {
         const { height, resizable = true, width } = options || {}
-        createWindow({
+        WindowManager.createWindow({
           extraPath: `#${uri}`,
           width: width ?? 800,
           height: height ?? 700,
@@ -101,9 +101,9 @@ export const handleUrlRouting = (url: string) => {
 }
 
 const callMainWindow = (url: string, fn: (mainWindow: BrowserWindow) => any) => {
-  const mainWindow = getMainWindow()
+  const mainWindow = WindowManager.getMainWindow()
   if (!mainWindow) {
-    createMainWindow()
+    WindowManager.createMainWindow()
 
     return handleUrlRouting(url)
   }

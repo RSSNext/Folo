@@ -1,8 +1,8 @@
 import { views } from "@follow/constants"
 import type { FeedOrListRespModel } from "@follow/models/types"
 import type { EntryModel } from "@follow/store/entry/types"
-import { useFeedById } from "@follow/store/feed/hooks"
-import { useListById } from "@follow/store/list/hooks"
+import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
+import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import { useTranslation } from "react-i18next"
 
@@ -36,8 +36,10 @@ export const useFeedHeaderTitle = () => {
   const { feedId: currentFeedId, view, listId: currentListId } = useRouteParams()
 
   const feedTitle = useFeedById(currentFeedId, getPreferredTitle)
-
   const listTitle = useListById(currentListId, getPreferredTitle)
+
+  usePrefetchFeed(currentFeedId, { enabled: !feedTitle })
+  usePrefetchListById(currentListId, { enabled: !listTitle })
 
   switch (currentFeedId) {
     case ROUTE_FEED_PENDING: {

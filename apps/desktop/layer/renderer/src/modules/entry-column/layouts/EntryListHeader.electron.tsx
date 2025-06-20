@@ -183,13 +183,11 @@ const PreviewHeaderInfoWrapper: Component = ({ children }) => {
         className="text-accent cursor-button from-accent/10 via-accent/15 to-accent/20 hover:bg-accent animate-gradient-x -mx-4 mt-3.5 flex place-items-center justify-center gap-1 bg-gradient-to-r px-3 py-2 font-semibold transition-all duration-300 hover:text-white"
         onClick={() => {
           const { feedId, listId } = getRouteParams()
-          if (!feedId) return
           const feed = getFeedById(feedId)
-          if (!feed) return
           follow({
             isList: !!listId,
             id: listId ?? feedId,
-            url: feed.type === "feed" ? feed.url : undefined,
+            url: feed?.type === "feed" ? feed.url : undefined,
           })
         }}
       >

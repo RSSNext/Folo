@@ -1,26 +1,55 @@
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
+import { tsImport } from "tsx/esm/api"
 import type { UserConfig } from "vite"
 
+import { cleanupUnnecessaryFilesPlugin } from "../plugins/vite/cleanup"
 import { createPlatformSpecificImportPlugin } from "../plugins/vite/specific-import"
 import { viteRenderBaseConfig } from "./vite.render.config"
 
+const routeBuilderPluginV2 = await tsImport(
+  "@follow/vite-plugin-route-builder",
+  import.meta.url,
+).then((m) => m.default)
+
 const root = resolve(fileURLToPath(dirname(import.meta.url)), "..")
 
+const VITE_ROOT = resolve(root, "layer/renderer")
 export default {
   ...viteRenderBaseConfig,
 
-  plugins: [...viteRenderBaseConfig.plugins, createPlatformSpecificImportPlugin("electron")],
+  plugins: [
+    ...viteRenderBaseConfig.plugins,
+    createPlatformSpecificImportPlugin("electron"),
+    routeBuilderPluginV2({
+      pagePattern: `${resolve(VITE_ROOT, "./src/pages")}/**/*.tsx`,
+      outputPath: `${resolve(VITE_ROOT, "./src/generated-routes.ts")}`,
+      enableInDev: true,
+    }),
+    cleanupUnnecessaryFilesPlugin([
+      "og-image.png",
+      "icon-512x512.png",
+      "opengraph-image.png",
+      "favicon.ico",
+      "icon-192x192.png",
+      "favicon-dev.ico",
+      "apple-touch-icon-180x180.png",
+      "maskable-icon-512x512.png",
+      "pwa-64x64.png",
+      "pwa-192x192.png",
+      "pwa-512x512.png",
+    ]),
+  ],
 
-  root: resolve(root, "layer/renderer"),
+  root: VITE_ROOT,
   build: {
     outDir: resolve(root, "dist/renderer"),
     sourcemap: !!process.env.CI,
     target: "esnext",
     rollupOptions: {
       input: {
-        main: resolve(root, "layer/renderer/index.html"),
+        main: resolve(VITE_ROOT, "index.html"),
       },
     },
     minify: true,
