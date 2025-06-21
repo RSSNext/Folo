@@ -95,7 +95,7 @@ export const EntryContent: Component<{
 
   return (
     <WrappedElementProvider>
-      <ScrollElementContext value={scrollElement}>
+      <ScrollElementContext value={{ element: scrollElement }}>
         <div className="flex h-screen flex-col">
           <EntryHeader
             entryId={entryId}

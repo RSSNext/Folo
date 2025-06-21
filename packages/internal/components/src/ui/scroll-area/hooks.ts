@@ -100,4 +100,6 @@ export const useMaskScrollArea = <T extends HTMLElement = HTMLElement>({
  * Get the scroll area element when in radix scroll area
  * @returns
  */
-export const useScrollViewElement = () => use(ScrollElementContext)
+export const useScrollViewElement = () => use(ScrollElementContext).element
+
+export const useUpdateMaxScroll = () => use(ScrollElementContext).onUpdateMaxScroll
