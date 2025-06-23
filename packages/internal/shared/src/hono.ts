@@ -8235,7 +8235,8 @@ declare enum UserRole {
     Admin = "admin",
     PreProTrial = "pre_pro_trial",
     PrePro = "pre_pro",
-    Free = "free"
+    Free = "free",
+    FreeDeprecated = "trial"
 }
 
 declare const auth: {
@@ -12003,7 +12004,7 @@ declare const auth: {
                                             fromUserId: string;
                                             toUserId: string | null;
                                         } | undefined;
-                                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                                         roleEndDate: Date | undefined;
                                     } | null;
                                 } : {
@@ -12040,7 +12041,7 @@ declare const auth: {
                                         fromUserId: string;
                                         toUserId: string | null;
                                     } | undefined;
-                                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                                     roleEndDate: Date | undefined;
                                 } | null>;
                                 options: {
@@ -14407,7 +14408,7 @@ declare const auth: {
                                                     fromUserId: string;
                                                     toUserId: string | null;
                                                 } | undefined;
-                                                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                                                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                                                 roleEndDate: Date | undefined;
                                             } | null;
                                         } : {
@@ -14444,7 +14445,7 @@ declare const auth: {
                                                 fromUserId: string;
                                                 toUserId: string | null;
                                             } | undefined;
-                                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                                             roleEndDate: Date | undefined;
                                         } | null>;
                                         options: {
@@ -17910,7 +17911,7 @@ declare const auth: {
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                     roleEndDate: Date | undefined;
                 } | null;
             } : {
@@ -17947,7 +17948,7 @@ declare const auth: {
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                 roleEndDate: Date | undefined;
             } | null>;
             options: {
@@ -20015,7 +20016,7 @@ declare const auth: {
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                             roleEndDate: Date | undefined;
                         } | null;
                     } : {
@@ -20052,7 +20053,7 @@ declare const auth: {
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
+                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
                         roleEndDate: Date | undefined;
                     } | null>;
                     options: {

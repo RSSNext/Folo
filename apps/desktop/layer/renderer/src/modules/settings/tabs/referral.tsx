@@ -84,7 +84,7 @@ export function SettingReferral() {
                 dateString: dayjs(roleEndDate).format("MMMM D, YYYY"),
                 daysLeft,
               })
-            : role === UserRole.Free
+            : role === UserRole.Free || role === UserRole.FreeDeprecated
               ? t("referral.pro_status.trial")
               : ""}
       </Card>

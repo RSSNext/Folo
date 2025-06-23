@@ -114,7 +114,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {
-            if (role !== UserRole.Free) {
+            if (role !== UserRole.Free && role !== UserRole.FreeDeprecated) {
               presentAchievement()
             } else {
               presentActivationModal()

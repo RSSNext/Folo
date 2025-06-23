@@ -17,4 +17,5 @@ export enum UserRole {
   PreProTrial = "pre_pro_trial",
   PrePro = "pre_pro",
   Free = "free",
+  FreeDeprecated = "trial",
 }

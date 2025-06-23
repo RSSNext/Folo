@@ -418,7 +418,7 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-ai-cute-re" />,
         category,
         run: () => {
-          if (role === UserRole.Free) {
+          if (role === UserRole.Free || role === UserRole.FreeDeprecated) {
             presentActivationModal()
             return
           }
@@ -431,7 +431,7 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-translate-2-ai-cute-re" />,
         category,
         run: () => {
-          if (role === UserRole.Free) {
+          if (role === UserRole.Free || role === UserRole.FreeDeprecated) {
             presentActivationModal()
             return
           }

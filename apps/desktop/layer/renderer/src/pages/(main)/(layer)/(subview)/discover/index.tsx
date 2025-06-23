@@ -65,7 +65,8 @@ export function Component() {
   const role = useUserRole()
 
   const currentTabs = tabs.map((tab) => {
-    const disabled = tab.disableForTrial && role === UserRole.Free
+    const disabled =
+      tab.disableForTrial && (role === UserRole.Free || role === UserRole.FreeDeprecated)
     return {
       ...tab,
       disabled,

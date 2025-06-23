@@ -41,7 +41,7 @@ export const UserProvider = () => {
     const isToastDismissed = localStorage.getItem(getStorageNS("pro-preview-toast-dismissed"))
     if (session.role && session.role !== UserRole.PrePro && !isToastDismissed) {
       toast.info(
-        session.role === UserRole.Free
+        session.role === UserRole.Free || session.role === UserRole.FreeDeprecated
           ? "You are currently on a trial plan. Some features may be limited."
           : session.role === UserRole.PreProTrial
             ? `You are currently on a preview plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
