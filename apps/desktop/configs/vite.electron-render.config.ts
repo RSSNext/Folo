@@ -9,7 +9,7 @@ import { createPlatformSpecificImportPlugin } from "../plugins/vite/specific-imp
 import { viteRenderBaseConfig } from "./vite.render.config"
 
 const routeBuilderPluginV2 = await tsImport(
-  "@follow/vite-plugin-route-builder",
+  "@follow-app/vite-plugin-route-builder",
   import.meta.url,
 ).then((m) => m.default)
 

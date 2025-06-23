@@ -22,7 +22,7 @@ import manifestPlugin from "./plugins/vite/manifest"
 import { createPlatformSpecificImportPlugin } from "./plugins/vite/specific-import"
 
 const routeBuilderPluginV2 = await tsImport(
-  "@follow/vite-plugin-route-builder",
+  "@follow-app/vite-plugin-route-builder",
   import.meta.url,
 ).then((m) => m.default)
 

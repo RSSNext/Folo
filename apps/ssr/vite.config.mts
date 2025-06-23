@@ -9,7 +9,7 @@ import { viteRenderBaseConfig } from "../desktop/configs/vite.render.config"
 import { astPlugin } from "../desktop/plugins/vite/ast"
 
 const routeBuilderPluginV2 = await tsImport(
-  "@follow/vite-plugin-route-builder",
+  "@follow-app/vite-plugin-route-builder",
   import.meta.url,
 ).then((m) => m.default)
 
@@ -39,6 +39,7 @@ export default defineConfig({
       pagePattern: `${resolve(__dirname, "./client/pages")}/**/*.tsx`,
       outputPath: `${resolve(__dirname, "./client/generated-routes.ts")}`,
       enableInDev: true,
+      segmentGroupOrder: ["(main)", "(login)"],
     }),
     react(),
     astPlugin,

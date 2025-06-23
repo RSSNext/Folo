@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
@@ -193,12 +194,7 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
         initial="initial"
         animate={controller}
         variants={modalVariant}
-        transition={{
-          type: "spring",
-          mass: 0.4,
-          tension: 100,
-          friction: 1,
-        }}
+        transition={Spring.presets.snappy}
         exit="exit"
         layout="size"
         className={cn(

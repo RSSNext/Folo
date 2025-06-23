@@ -14,7 +14,7 @@
     "@mozilla/readability": "0.6.0",
     "chardet": "2.1.0",
     "dompurify": "3.2.6",
-    "linkedom": "0.18.10"
+    "linkedom": "0.18.11"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",

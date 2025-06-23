@@ -47,6 +47,32 @@ pages/
 4. **Dynamic Routes**: `[param].tsx` creates dynamic parameter routes
 5. **Catch-all Routes**: `[...name].tsx` creates catch-all routes
 6. **Layouts**: `layout.tsx` files provide wrapper components for child routes
+7. **Sync Loading**: Files with `.sync.tsx` extension are loaded synchronously instead of lazy loading
+
+### Synchronous vs Asynchronous Loading
+
+The plugin supports two loading strategies:
+
+- **Asynchronous Loading (default)**: Files with `.tsx` extension are lazy-loaded for optimal performance
+- **Synchronous Loading**: Files with `.sync.tsx` extension are imported directly and loaded synchronously
+
+```
+pages/
+├── home.tsx              # Lazy loaded: const lazy1 = () => import("./pages/home")
+├── critical.sync.tsx     # Sync loaded: import SyncComponent1 from "./pages/critical"
+└── settings/
+    ├── layout.sync.tsx   # Sync loaded layout
+    └── profile.tsx       # Lazy loaded page
+```
+
+#### When to Use Sync Loading
+
+Use `.sync.tsx` extension for:
+
+- Critical above-the-fold components
+- Small, lightweight components that don't benefit from code splitting
+- Components that need to be immediately available (no loading state)
+- Layout components that are always needed
 
 ## Implementation Details
 
@@ -102,18 +128,20 @@ function findFileForRoute(route: RouteObject, pageFiles: string[]): string | nul
 }
 ```
 
-### 4. Lazy Loading Implementation
+### 4. Loading Strategy Implementation
 
-The plugin generates lazy-loaded components for optimal performance:
+The plugin generates different import strategies based on file extensions:
+
+#### Asynchronous Loading (.tsx files)
 
 ```typescript
-// Generate lazy imports only for routes that have corresponding files
+// Generate lazy imports for .tsx files
 const lazyComponents = new Map<string, string>()
 let lazyCounter = 1
 
 function collectLazyFunctions(route: RouteObject, pageFiles: string[]) {
   const file = findFileForRoute(route, pageFiles)
-  if (file && !lazyComponents.has(file)) {
+  if (file && !file.endsWith(".sync.tsx") && !lazyComponents.has(file)) {
     const relativePath = path.relative(
       path.dirname("./src/generated-routes.ts"),
       file.replace("./src/", "./src/"),
@@ -121,7 +149,45 @@ function collectLazyFunctions(route: RouteObject, pageFiles: string[]) {
     const varName = `LazyComponent${lazyCounter++}`
     lazyComponents.set(file, varName)
 
-    return `const ${varName} = lazy(() => import("${relativePath}"))`
+    return `const ${varName} = () => import("${relativePath}")`
+  }
+}
+```
+
+#### Synchronous Loading (.sync.tsx files)
+
+```typescript
+// Generate direct imports for .sync.tsx files
+const syncComponents = new Map<string, string>()
+let syncCounter = 1
+
+function collectSyncImports(route: RouteObject, pageFiles: string[]) {
+  const file = findFileForRoute(route, pageFiles)
+  if (file && file.endsWith(".sync.tsx") && !syncComponents.has(file)) {
+    const relativePath = path.relative(
+      path.dirname("./src/generated-routes.ts"),
+      file.replace("./src/", "./src/"),
+    )
+    const varName = `SyncComponent${syncCounter++}`
+    syncComponents.set(file, varName)
+
+    return `import ${varName} from "${relativePath}"`
+  }
+}
+```
+
+#### Route Object Assignment
+
+Routes use different properties based on loading strategy:
+
+```typescript
+function assignComponentToRoute(route: RouteObject, file: string) {
+  if (file.endsWith(".sync.tsx")) {
+    // Sync components use Component property
+    route.Component = syncComponents.get(file)
+  } else {
+    // Async components use lazy property
+    route.lazy = lazyComponents.get(file)
   }
 }
 ```
@@ -163,26 +229,38 @@ interface RouteObject {
 ### Example Generated Output
 
 ```typescript
-const LazyComponent1 = lazy(() => import("./pages/(main)/layout"))
-const LazyComponent2 = lazy(() => import("./pages/(main)/index"))
-const LazyComponent3 = lazy(() => import("./pages/settings/layout"))
+// Synchronous imports (loaded immediately)
+import SyncComponent1 from "./pages/(main)/layout"
+import SyncComponent2 from "./pages/critical-page"
+
+// Asynchronous imports (lazy loaded)
+const LazyComponent1 = () => import("./pages/(main)/index")
+const LazyComponent2 = () => import("./pages/settings/layout")
+const LazyComponent3 = () => import("./pages/settings/profile")
 
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: LazyComponent1,
+    Component: SyncComponent1, // Sync loaded layout
     children: [
       {
         index: true,
-        element: LazyComponent2,
+        lazy: LazyComponent1, // Lazy loaded page
+      },
+      {
+        path: "critical",
+        Component: SyncComponent2, // Sync loaded critical page
       },
     ],
   },
   {
     path: "/settings",
-    element: LazyComponent3,
+    lazy: LazyComponent2, // Lazy loaded layout
     children: [
-      // ... nested routes
+      {
+        path: "profile",
+        lazy: LazyComponent3, // Lazy loaded page
+      },
     ],
   },
 ]
@@ -229,6 +307,112 @@ console.log("📝 Generated lazy imports:", lazyComponents.size)
 
 - **File Caching**: Plugin processes files once and caches results
 - **Selective Import**: Only imports files that are actually used in routes
+
+## Configuration Options
+
+The plugin accepts the following configuration options:
+
+### RouteBuilderPluginOptions
+
+```typescript
+interface RouteBuilderPluginOptions {
+  /** Page files glob pattern */
+  pagePattern?: string
+  /** Output path for generated routes */
+  outputPath?: string
+  /** Whether to enable in dev mode */
+  enableInDev?: boolean
+  /** Custom file to route path transformation logic */
+  transformPath?: (path: string) => string
+  /** Whether to disable logging */
+  debug?: boolean
+  /** Custom order for segment groups in route tree. Array of group names (without parentheses). Default: filesystem order */
+  segmentGroupOrder?: string[]
+}
+```
+
+### Option Descriptions
+
+- **`pagePattern`** (default: `"./pages/**/*.{tsx,sync.tsx}"`): Glob pattern for discovering page files
+- **`outputPath`** (default: `"./src/generated-routes.ts"`): Output path for the generated route configuration
+- **`enableInDev`** (default: `true`): Whether to enable route generation in development mode
+- **`transformPath`**: Custom function to transform file paths before route generation
+- **`debug`** (default: `false`): Enable detailed logging for troubleshooting
+- **`segmentGroupOrder`** (default: `[]`): Custom ordering for route segment groups
+
+### Segment Group Ordering
+
+By default, route groups (directories with parentheses like `(main)`, `(external)`) are ordered alphabetically based on the filesystem. The `segmentGroupOrder` option allows you to specify a custom order:
+
+```typescript
+// Example: Place (main) routes before (external) routes
+routeBuilder({
+  segmentGroupOrder: ["main", "external"], // Without parentheses
+})
+
+// Or with parentheses (both formats supported)
+routeBuilder({
+  segmentGroupOrder: ["(main)", "(external)"], // With parentheses
+})
+```
+
+#### Default Behavior (Filesystem Order)
+
+```
+pages/
+├── (admin)/        # Third
+├── (external)/     # First (alphabetically)
+├── (main)/         # Second
+└── (settings)/     # Fourth
+```
+
+#### With Custom Order
+
+```typescript
+// Configuration
+segmentGroupOrder: ['main', 'admin']
+
+// Result:
+pages/
+├── (main)/         # First (specified in order)
+├── (admin)/        # Second (specified in order)
+├── (external)/     # Third (not specified, filesystem order)
+└── (settings)/     # Fourth (not specified, filesystem order)
+```
+
+#### Usage Examples
+
+```typescript
+// Basic usage with default options
+import routeBuilder from "./vite-plugin-route-builder"
+
+export default defineConfig({
+  plugins: [routeBuilder()],
+})
+
+// Advanced configuration with parentheses format
+export default defineConfig({
+  plugins: [
+    routeBuilder({
+      pagePattern: "./src/pages/**/*.{tsx,sync.tsx}",
+      outputPath: "./src/router/generated-routes.ts",
+      enableInDev: true,
+      debug: true,
+      segmentGroupOrder: ["(main)", "(dashboard)", "(settings)", "(external)"],
+      transformPath: (path) => path.replace(/\.sync\.tsx$/, ".tsx"),
+    }),
+  ],
+})
+
+// Mixed format is also supported
+export default defineConfig({
+  plugins: [
+    routeBuilder({
+      segmentGroupOrder: ["(main)", "dashboard", "settings", "(external)"],
+    }),
+  ],
+})
+```
 
 ## Integration Points
 
@@ -283,3 +467,9 @@ The plugin architecture allows for easy extension:
 ## Conclusion
 
 The Vite Route Builder plugin successfully transforms file system-based routing into optimized React Router configurations. By leveraging build-time generation, it provides excellent performance while maintaining developer ergonomics similar to Next.js App Router. The robust path matching and lazy loading implementation ensures reliable route generation for complex application structures.
+
+## License
+
+2025 © Innei, Released under the MIT License.
+
+> [Personal Website](https://innei.in/) · GitHub [@Innei](https://github.com/innei/)

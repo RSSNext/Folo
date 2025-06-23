@@ -412,12 +412,7 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
       onPointerDownCapture={stopPropagation}
       variants={variants}
       onWheel={stopPropagation}
-      transition={{
-        type: "spring",
-        mass: 0.4,
-        tension: 120,
-        friction: 1.4,
-      }}
+      transition={Spring.presets.snappy}
       exit="exit"
       layout="size"
       className={cn(

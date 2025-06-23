@@ -49,6 +49,7 @@ export function PagerList({
       ref={pagerRef}
       initialPageIndex={initialPageIndex}
       onScroll={(percent, direction, position) => {
+        if (!dragging) return
         const progress = clamp(
           percent * (direction === "left" ? -1 : direction === "right" ? 1 : 0) + position,
           0,

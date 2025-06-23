@@ -1,5 +1,4 @@
 import { get, omit } from "es-toolkit/compat"
-import type { RouteObject } from "react-router"
 
 type NestedStructure = { [key: string]: NestedStructure }
 
@@ -7,10 +6,18 @@ function nestPaths(paths: string[]): NestedStructure {
   const result: NestedStructure = {}
 
   paths.forEach((path) => {
-    // Remove the './pages' prefix and the '.tsx' suffix
+    // Remove the './pages' prefix and the file extension
     const prefix = "./pages/"
-    const suffix = ".tsx"
-    const trimmedPath = path.slice(prefix.length, -suffix.length)
+    let suffix = ".tsx"
+    let trimmedPath: string
+
+    // Check if it's a .sync.tsx file
+    if (path.endsWith(".sync.tsx")) {
+      suffix = ".sync.tsx"
+      trimmedPath = path.slice(prefix.length, -suffix.length)
+    } else {
+      trimmedPath = path.slice(prefix.length, -suffix.length)
+    }
 
     const parts = trimmedPath.split("/")
 
@@ -26,18 +33,34 @@ function nestPaths(paths: string[]): NestedStructure {
   return result
 }
 
-export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): RouteObject[] {
+// Extended RouteObject to include sync loading information
+interface ExtendedRouteObject {
+  path?: string
+  index?: boolean
+  children?: ExtendedRouteObject[]
+  lazy?: any
+  handle?: {
+    fs: string
+    fullPath: string
+    isSync?: boolean
+  }
+}
+
+export function buildGlobRoutes(
+  glob: Record<string, () => Promise<any>>,
+  options: { segmentGroupOrder?: string[] } = {},
+): ExtendedRouteObject[] {
   const keys = Object.keys(glob)
   const paths = nestPaths(keys)
   const pathGetterSet = new Set<string>()
+  const { segmentGroupOrder = [] } = options
 
-  const routeObject: RouteObject[] = []
+  const routeObject: ExtendedRouteObject[] = []
 
   function dfsRoutes(
     parentKey: string,
-    children: RouteObject[],
+    children: ExtendedRouteObject[],
     paths: NestedStructure,
-
     parentPath = "",
   ) {
     const pathKeys = Object.keys(paths)
@@ -69,12 +92,40 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
       return 0
     })
 
-    // TODO biz priority
-    // move `(main)` to the top
-    const mainIndex = pathKeys.indexOf("(main)")
-    if (mainIndex !== -1) {
-      pathKeys.splice(mainIndex, 1)
-      pathKeys.unshift("(main)")
+    // Custom segment group ordering based on segmentGroupOrder option
+    if (segmentGroupOrder.length > 0) {
+      pathKeys.sort((a, b) => {
+        const isAGroup = a.startsWith("(") && a.endsWith(")")
+        const isBGroup = b.startsWith("(") && b.endsWith(")")
+
+        // If both are groups, sort by the custom order
+        if (isAGroup && isBGroup) {
+          // Support both formats: "(main)" and "main"
+          const aIndex = segmentGroupOrder.findIndex(
+            (item) => item === a || item === a.slice(1, -1),
+          )
+          const bIndex = segmentGroupOrder.findIndex(
+            (item) => item === b || item === b.slice(1, -1),
+          )
+
+          // If both are in the custom order, sort by their position
+          if (aIndex !== -1 && bIndex !== -1) {
+            return aIndex - bIndex
+          }
+          // If only a is in custom order, a comes first
+          if (aIndex !== -1 && bIndex === -1) {
+            return -1
+          }
+          // If only b is in custom order, b comes first
+          if (aIndex === -1 && bIndex !== -1) {
+            return 1
+          }
+          // If neither is in custom order, use filesystem order (localeCompare)
+          return a.localeCompare(b)
+        }
+
+        return 0 // Non-groups maintain their existing sort order
+      })
     }
 
     for (const key of pathKeys) {
@@ -83,20 +134,30 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
       const segmentPathKey = parentKey + key
 
       if (isGroupedRoute) {
-        const accessPath = `${segmentPathKey}/layout.tsx`
-        const globGetter = get(glob, accessPath) || undefined
-        if (pathGetterSet.has(accessPath)) {
-          // throw new Error(`duplicate path: ` + accessPath)
+        // Check for both sync and async layout files
+        const syncLayoutPath = `${segmentPathKey}/layout.sync.tsx`
+        const asyncLayoutPath = `${segmentPathKey}/layout.tsx`
 
+        let accessPath: string
+        let isSync = false
+        const syncGlobGetter = get(glob, syncLayoutPath)
+        let globGetter
+
+        if (syncGlobGetter) {
+          accessPath = syncLayoutPath
+          isSync = true
+          globGetter = syncGlobGetter
+        } else {
+          accessPath = asyncLayoutPath
+          globGetter = get(glob, accessPath) || undefined
+        }
+
+        if (pathGetterSet.has(accessPath)) {
           console.error(`duplicate path: ${accessPath}`)
         }
         pathGetterSet.add(accessPath)
 
-        // if (!globGetter) {
-        //   throw new Error("grouped route must have a layout file")
-        // }
-
-        const childrenChildren: RouteObject[] = []
+        const childrenChildren: ExtendedRouteObject[] = []
         dfsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, parentPath)
         children.push({
           path: "",
@@ -105,6 +166,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
           handle: {
             fs: segmentPathKey,
             fullPath: parentPath,
+            isSync,
           },
         })
       } else if (key === "layout") {
@@ -112,11 +174,23 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
         if (parentKey.endsWith(")/")) {
           continue
         }
-        // if `key` is `layout`, then it's a grouped route
-        const accessPath = `${segmentPathKey}.tsx`
-        const globGetter = get(glob, accessPath)
 
-        const childrenChildren: RouteObject[] = []
+        // Check for both sync and async layout files
+        const syncLayoutPath = `${segmentPathKey}.sync.tsx`
+        const asyncLayoutPath = `${segmentPathKey}.tsx`
+
+        let isSync = false
+        const syncGlobGetter = get(glob, syncLayoutPath)
+        let globGetter
+
+        if (syncGlobGetter) {
+          isSync = true
+          globGetter = syncGlobGetter
+        } else {
+          globGetter = get(glob, asyncLayoutPath)
+        }
+
+        const childrenChildren: ExtendedRouteObject[] = []
         // should omit layout, because layout is already handled
         dfsRoutes(parentKey, childrenChildren, omit(paths, "layout") as NestedStructure, parentPath)
         children.push({
@@ -126,6 +200,7 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
           handle: {
             fs: segmentPathKey,
             fullPath: parentPath,
+            isSync,
           },
         })
         break
@@ -136,13 +211,26 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
         const normalizeKey = normalizePathKey(key)
 
         if (!hasChild) {
-          const accessPath = `${segmentPathKey}.tsx`
-          const globGetter = get(glob, accessPath)
+          // Check for both sync and async files
+          const syncPath = `${segmentPathKey}.sync.tsx`
+          const asyncPath = `${segmentPathKey}.tsx`
 
-          if (pathGetterSet.has(`${segmentPathKey}.tsx`)) {
-            // throw new Error(`duplicate path: ` + accessPath)
+          let accessPath: string
+          let isSync = false
+          const syncGlobGetter = get(glob, syncPath)
+          let globGetter
+
+          if (syncGlobGetter) {
+            accessPath = syncPath
+            isSync = true
+            globGetter = syncGlobGetter
+          } else {
+            accessPath = asyncPath
+            globGetter = get(glob, asyncPath)
+          }
+
+          if (pathGetterSet.has(accessPath)) {
             console.error(`duplicate path: ${accessPath}`)
-            // continue
           }
           pathGetterSet.add(accessPath)
 
@@ -152,10 +240,11 @@ export function buildGlobRoutes(glob: Record<string, () => Promise<any>>): Route
             handle: {
               fs: `${segmentPathKey}/${normalizeKey}`,
               fullPath: `${parentPath}/${normalizeKey}`,
+              isSync,
             },
           })
         } else {
-          const childrenChildren: RouteObject[] = []
+          const childrenChildren: ExtendedRouteObject[] = []
           const fullPath = `${parentPath}/${normalizeKey}`
           dfsRoutes(`${segmentPathKey}/`, childrenChildren, paths[key]!, fullPath)
           children.push({

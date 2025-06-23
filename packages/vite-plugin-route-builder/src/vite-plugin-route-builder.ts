@@ -3,7 +3,6 @@ import { dirname, relative, resolve } from "node:path"
 import { inspect } from "node:util"
 
 import glob from "fast-glob"
-import type { RouteObject } from "react-router"
 import type { Logger, Plugin } from "vite"
 
 import { buildGlobRoutes } from "./utils/route-builder"
@@ -17,14 +16,20 @@ export interface RouteBuilderPluginOptions {
   enableInDev?: boolean
   /** Custom file to route path transformation logic */
   transformPath?: (path: string) => string
+  /** Whether to disable logging */
+  debug?: boolean
+  /** Custom order for segment groups in route tree. Array of group names (with or without parentheses). Default: filesystem order */
+  segmentGroupOrder?: string[]
 }
 
 export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): Plugin {
   const {
-    pagePattern = "./pages/**/*.tsx",
+    pagePattern = "./pages/**/*.{tsx,sync.tsx}",
     outputPath = "./src/generated-routes.ts",
     enableInDev = true,
     transformPath,
+    debug = false,
+    segmentGroupOrder = [],
   } = options
 
   let isProduction = false
@@ -32,57 +37,72 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
   let logger: Logger
 
   function generateRouteFileContent(
-    routes: RouteObject[],
+    routes: any[],
     fileToImportMap: Record<string, string>,
   ): string {
-    // Collect all used lazy functions
+    // Collect all used lazy functions and sync imports
     const usedLazyFunctions = new Set<string>()
+    const usedSyncImports = new Set<string>()
     const lazyFunctionMap = new Map<string, string>()
+    const syncImportMap = new Map<string, string>()
     let lazyCounter = 0
+    let syncCounter = 0
 
-    // Recursively traverse route tree, collect all used lazy functions
-    function collectUsedLazyFunctions(routes: RouteObject[]) {
+    // Recursively traverse route tree, collect all used functions
+    function collectUsedFunctions(routes: any[]) {
       routes.forEach((route) => {
         if (route.lazy && route.handle?.fs) {
           const fsPath = route.handle.fs
+          const { isSync } = route.handle
 
           // Try to find the corresponding file
           let matchedKey: string | undefined
 
-          // Direct match strategy: according to route-builder.ts logic
-          // 1. For grouped routes, fs is segmentPathKey, need to find ${fs}/layout.tsx
-          // 2. For layout files, fs is segmentPathKey, need to find ${fs}.tsx
-          // 3. For normal pages, fs is ${segmentPathKey}/${normalizeKey}, but the actual file is ${segmentPathKey}.tsx
-
-          // Strategy 1: Direct match fs.tsx
-          if (fileToImportMap[`${fsPath}.tsx`]) {
+          // Strategy 1: Direct match with sync extension
+          if (isSync && fileToImportMap[`${fsPath}.sync.tsx`]) {
+            matchedKey = `${fsPath}.sync.tsx`
+          }
+          // Strategy 2: Direct match with normal extension
+          else if (fileToImportMap[`${fsPath}.tsx`]) {
             matchedKey = `${fsPath}.tsx`
           }
-          // Strategy 2: layout file (for grouped routes)
+          // Strategy 3: layout file (for grouped routes) - sync
+          else if (isSync && fileToImportMap[`${fsPath}/layout.sync.tsx`]) {
+            matchedKey = `${fsPath}/layout.sync.tsx`
+          }
+          // Strategy 4: layout file (for grouped routes) - async
           else if (fileToImportMap[`${fsPath}/layout.tsx`]) {
             matchedKey = `${fsPath}/layout.tsx`
           }
-          // Strategy 3: index file
+          // Strategy 5: index file - sync
+          else if (isSync && fileToImportMap[`${fsPath}/index.sync.tsx`]) {
+            matchedKey = `${fsPath}/index.sync.tsx`
+          }
+          // Strategy 6: index file - async
           else if (fileToImportMap[`${fsPath}/index.tsx`]) {
             matchedKey = `${fsPath}/index.tsx`
           }
-          // Strategy 4: For special path correction
+          // Strategy 7: For special path correction
           else {
             // If fsPath ends with /, it might be an index page
             if (fsPath.endsWith("/")) {
               const correctedPath = fsPath.slice(0, -1) // Remove trailing /
-              if (fileToImportMap[`${correctedPath}/index.tsx`]) {
+              if (isSync && fileToImportMap[`${correctedPath}/index.sync.tsx`]) {
+                matchedKey = `${correctedPath}/index.sync.tsx`
+              } else if (fileToImportMap[`${correctedPath}/index.tsx`]) {
                 matchedKey = `${correctedPath}/index.tsx`
+              } else if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                matchedKey = `${correctedPath}.sync.tsx`
               } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                 matchedKey = `${correctedPath}.tsx`
               }
             }
             // For dynamic routes, remove /:param part, keep file path
             else if (fsPath.includes("/:")) {
-              // Handle cases like "./pages/category/[category]/:category"
-              // Remove /:param part, keep the previous path
               const correctedPath = fsPath.replace(/\/:[^/]+(?:\/.*)?$/, "")
-              if (fileToImportMap[`${correctedPath}.tsx`]) {
+              if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                matchedKey = `${correctedPath}.sync.tsx`
+              } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                 matchedKey = `${correctedPath}.tsx`
               }
             }
@@ -96,7 +116,9 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
                 // If the last two path segments are the same, remove the last one
                 if (lastPart === secondLastPart) {
                   const correctedPath = pathParts.slice(0, -1).join("/")
-                  if (fileToImportMap[`${correctedPath}.tsx`]) {
+                  if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                    matchedKey = `${correctedPath}.sync.tsx`
+                  } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                     matchedKey = `${correctedPath}.tsx`
                   }
                 }
@@ -105,13 +127,25 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
           }
 
           if (matchedKey && fileToImportMap[matchedKey]) {
-            const lazyFuncName = `lazy${lazyCounter++}`
-            usedLazyFunctions.add(matchedKey)
-            lazyFunctionMap.set(matchedKey, lazyFuncName)
-
-            logger.info(
-              `[route-builder-v2] Mapped lazy function: ${fsPath} -> ${matchedKey} -> ${lazyFuncName}`,
-            )
+            if (isSync) {
+              const syncImportName = `SyncComponent${syncCounter++}`
+              usedSyncImports.add(matchedKey)
+              syncImportMap.set(matchedKey, syncImportName)
+              if (debug) {
+                logger.info(
+                  `[route-builder-v2] Mapped sync import: ${fsPath} -> ${matchedKey} -> ${syncImportName}`,
+                )
+              }
+            } else {
+              const lazyFuncName = `lazy${lazyCounter++}`
+              usedLazyFunctions.add(matchedKey)
+              lazyFunctionMap.set(matchedKey, lazyFuncName)
+              if (debug) {
+                logger.info(
+                  `[route-builder-v2] Mapped lazy function: ${fsPath} -> ${matchedKey} -> ${lazyFuncName}`,
+                )
+              }
+            }
           } else {
             logger.warn(`[route-builder-v2] Could not find file for fs path: ${fsPath}`)
             logger.warn(
@@ -123,15 +157,27 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
         }
 
         if (route.children) {
-          collectUsedLazyFunctions(route.children)
+          collectUsedFunctions(route.children)
         }
       })
     }
 
-    collectUsedLazyFunctions(routes)
+    collectUsedFunctions(routes)
 
     // Generate import statements
     const imports: string[] = []
+
+    // Generate sync imports
+    usedSyncImports.forEach((key) => {
+      const importPath = fileToImportMap[key]
+      const syncImportName = syncImportMap.get(key)
+      if (importPath && syncImportName) {
+        // Use import * as to avoid errors when loader doesn't exist
+        imports.push(`import * as ${syncImportName} from "${importPath}"`)
+      }
+    })
+
+    // Generate lazy imports
     usedLazyFunctions.forEach((key) => {
       const importPath = fileToImportMap[key]
       const lazyFuncName = lazyFunctionMap.get(key)
@@ -141,39 +187,50 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
     })
 
     // Recursively process routes, replace lazy functions and remove handle
-    function processRoutes(routes: RouteObject[]): any {
+    function processRoutes(routes: any[]): any {
       return routes.map((route) => {
         const newRoute: any = { ...route }
 
-        // Process lazy functions
+        // Process lazy functions and sync imports
         if (route.lazy && route.handle?.fs) {
           const fsPath = route.handle.fs
+          const { isSync } = route.handle
 
           // Find matching file - use the same matching logic
           let matchedKey: string | undefined
 
-          if (fileToImportMap[`${fsPath}.tsx`]) {
+          if (isSync && fileToImportMap[`${fsPath}.sync.tsx`]) {
+            matchedKey = `${fsPath}.sync.tsx`
+          } else if (fileToImportMap[`${fsPath}.tsx`]) {
             matchedKey = `${fsPath}.tsx`
+          } else if (isSync && fileToImportMap[`${fsPath}/layout.sync.tsx`]) {
+            matchedKey = `${fsPath}/layout.sync.tsx`
           } else if (fileToImportMap[`${fsPath}/layout.tsx`]) {
             matchedKey = `${fsPath}/layout.tsx`
+          } else if (isSync && fileToImportMap[`${fsPath}/index.sync.tsx`]) {
+            matchedKey = `${fsPath}/index.sync.tsx`
           } else if (fileToImportMap[`${fsPath}/index.tsx`]) {
             matchedKey = `${fsPath}/index.tsx`
           } else {
             // For special path correction
             if (fsPath.endsWith("/")) {
               const correctedPath = fsPath.slice(0, -1) // Remove trailing /
-              if (fileToImportMap[`${correctedPath}/index.tsx`]) {
+              if (isSync && fileToImportMap[`${correctedPath}/index.sync.tsx`]) {
+                matchedKey = `${correctedPath}/index.sync.tsx`
+              } else if (fileToImportMap[`${correctedPath}/index.tsx`]) {
                 matchedKey = `${correctedPath}/index.tsx`
+              } else if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                matchedKey = `${correctedPath}.sync.tsx`
               } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                 matchedKey = `${correctedPath}.tsx`
               }
             }
             // For dynamic routes, remove /:param part, keep file path
             else if (fsPath.includes("/:")) {
-              // Handle cases like "./pages/category/[category]/:category"
-              // Remove /:param part, keep the previous path
               const correctedPath = fsPath.replace(/\/:[^/]+(?:\/.*)?$/, "")
-              if (fileToImportMap[`${correctedPath}.tsx`]) {
+              if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                matchedKey = `${correctedPath}.sync.tsx`
+              } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                 matchedKey = `${correctedPath}.tsx`
               }
             }
@@ -187,7 +244,9 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
                 // If the last two path segments are the same, remove the last one
                 if (lastPart === secondLastPart) {
                   const correctedPath = pathParts.slice(0, -1).join("/")
-                  if (fileToImportMap[`${correctedPath}.tsx`]) {
+                  if (isSync && fileToImportMap[`${correctedPath}.sync.tsx`]) {
+                    matchedKey = `${correctedPath}.sync.tsx`
+                  } else if (fileToImportMap[`${correctedPath}.tsx`]) {
                     matchedKey = `${correctedPath}.tsx`
                   }
                 }
@@ -195,12 +254,24 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
             }
           }
 
-          if (matchedKey && lazyFunctionMap.has(matchedKey)) {
-            newRoute.lazy = `__LAZY_${lazyFunctionMap.get(matchedKey)}__`
+          if (matchedKey) {
+            if (isSync && syncImportMap.has(matchedKey)) {
+              // For sync imports, use Component property instead of lazy
+              const syncComponentName = syncImportMap.get(matchedKey)
+              newRoute.Component = `__SYNC_${syncComponentName}.Component__`
+              // Conditionally add loader if it exists
+              newRoute.loader = `__SYNC_${syncComponentName}.loader__`
+              delete newRoute.lazy
+            } else if (lazyFunctionMap.has(matchedKey)) {
+              newRoute.lazy = `__LAZY_${lazyFunctionMap.get(matchedKey)}__`
+            } else {
+              // If no matching function is found, delete lazy property
+              delete newRoute.lazy
+              logger.warn(`[route-builder-v2] No function for route: ${fsPath}`)
+            }
           } else {
-            // If no matching file is found, delete lazy property
             delete newRoute.lazy
-            logger.warn(`[route-builder-v2] No lazy function for route: ${fsPath}`)
+            logger.warn(`[route-builder-v2] No matching file for route: ${fsPath}`)
           }
         }
 
@@ -218,11 +289,13 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
 
     const processedRoutes = processRoutes(routes)
 
-    // Convert routes object to string and replace lazy function placeholders
-    const routesString = JSON.stringify(processedRoutes, null, 2).replaceAll(
-      /"__LAZY_(\w+)__"/g,
-      "$1",
-    )
+    // Convert routes object to string and replace function placeholders
+    const routesString = JSON.stringify(processedRoutes, null, 2)
+      .replaceAll(/"__LAZY_(\w+)__"/g, "$1")
+      .replaceAll(/"__SYNC_([^.]+)\.Component__"/g, "$1.Component")
+      .replaceAll(/"__SYNC_([^.]+)\.loader__"/g, "$1.loader")
+      // Remove loader property if it's undefined
+      .replaceAll(/,?\s*"loader":\s*undefined/g, "")
 
     return `// This file is auto-generated by vite-plugin-route-builder
 // Do not edit manually
@@ -231,7 +304,7 @@ export function routeBuilderPluginV2(options: RouteBuilderPluginOptions = {}): P
 
 import type { RouteObject } from "react-router"
 
-// Lazy imports for page components
+// Imports for page components
 ${imports.join("\n")}
 
 // Generated route configuration
@@ -286,17 +359,26 @@ export default routes
           importPath = `./${importPath}`
         }
 
-        // Remove .tsx extension
-        importPath = importPath.replace(/\.tsx$/, "")
+        // Store the import path with different handling for sync vs async
+        let finalImportPath: string
+        if (importPath.endsWith(".sync.tsx")) {
+          // For sync files, remove .tsx but keep .sync for the import path
+          finalImportPath = importPath.replace(/\.tsx$/, "")
+        } else {
+          // For async files, remove .tsx extension
+          finalImportPath = importPath.replace(/\.tsx$/, "")
+        }
 
         globObject[routeKey] = () => Promise.resolve({ default: () => null })
-        fileToImportMap[routeKey] = importPath
+        fileToImportMap[routeKey] = finalImportPath
 
-        logger.info(`[route-builder-v2] Mapped: ${routeKey} -> ${importPath}`)
+        if (debug) {
+          logger.info(`[route-builder-v2] Mapped: ${routeKey} -> ${finalImportPath}`)
+        }
       })
 
       // Use existing route building logic
-      const routes = buildGlobRoutes(globObject)
+      const routes = buildGlobRoutes(globObject, { segmentGroupOrder })
 
       // Generate route file content
       const routeFileContent = generateRouteFileContent(routes, fileToImportMap)
@@ -337,7 +419,10 @@ export default routes
 
       function handleFileChange(path: string) {
         const relativePath = relative(root, path)
-        if (relativePath.includes("/pages/") && relativePath.endsWith(".tsx")) {
+        if (
+          relativePath.includes("/pages/") &&
+          (relativePath.endsWith(".tsx") || relativePath.endsWith(".sync.tsx"))
+        ) {
           logger.info(`[route-builder-v2] Page file changed: ${relativePath}`)
           generateRoutes()
 
