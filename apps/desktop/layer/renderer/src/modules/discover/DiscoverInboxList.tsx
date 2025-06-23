@@ -17,7 +17,7 @@ const useCanCreateMoreInboxAndNotify = () => {
   const presentActivationModal = useActivationModal()
 
   return useEventCallback(() => {
-    if (role === UserRole.Trial) {
+    if (role === UserRole.Free) {
       const can = false
       if (!can) {
         presentActivationModal()

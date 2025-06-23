@@ -291,7 +291,7 @@ export const useEntryActions = ({
             view,
           ),
         active: isShowAISummaryOnce,
-        disabled: userRole === UserRole.Trial,
+        disabled: userRole === UserRole.Free,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -303,7 +303,7 @@ export const useEntryActions = ({
             view,
           ),
         active: isShowAITranslationOnce,
-        disabled: userRole === UserRole.Trial,
+        disabled: userRole === UserRole.Free,
         entryId,
       }),
       new EntryActionMenuItem({

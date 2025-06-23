@@ -25,7 +25,7 @@ type UserStore = {
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
   users: {},
   whoami: null,
-  role: UserRole.Trial,
+  role: UserRole.Free,
 }))
 
 const get = useUserStore.getState
@@ -173,7 +173,7 @@ class UserSyncService {
     const res = await apiClient().invitations.use.$post({ json: { code } })
     if (res.code === 0) {
       immerSet((state) => {
-        state.role = UserRole.User
+        state.role = UserRole.PrePro
       })
     }
 

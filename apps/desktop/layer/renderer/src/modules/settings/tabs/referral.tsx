@@ -16,6 +16,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
+import { UserRole } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
@@ -71,19 +72,19 @@ export function SettingReferral() {
       <Card
         className={cn(
           "p-3",
-          role === "user"
+          role === UserRole.PrePro
             ? "border-blue-100 bg-green-50 dark:border-green-900 dark:bg-green-950"
             : "border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950",
         )}
       >
-        {role === "user"
+        {role === UserRole.PrePro
           ? t("referral.pro_status.user")
-          : role === "preview"
+          : role === UserRole.PreProTrial
             ? t("referral.pro_status.preview", {
                 dateString: dayjs(roleEndDate).format("MMMM D, YYYY"),
                 daysLeft,
               })
-            : role === "trial"
+            : role === UserRole.Free
               ? t("referral.pro_status.trial")
               : ""}
       </Card>
@@ -95,7 +96,7 @@ export function SettingReferral() {
             {validInvitationsAmount} / {requiredInvitationsAmount}
           </span>
         </div>
-        {role === "preview" && (
+        {role === UserRole.PreProTrial && (
           <>
             <p>Alternatively:</p>
             <Button

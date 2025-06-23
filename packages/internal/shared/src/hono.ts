@@ -8231,6 +8231,13 @@ declare const rsshubPurchase: drizzle_orm_pg_core.PgTableWithColumns<{
     dialect: "pg";
 }>;
 
+declare enum UserRole {
+    Admin = "admin",
+    PreProTrial = "pre_pro_trial",
+    PrePro = "pre_pro",
+    Free = "free"
+}
+
 declare const auth: {
     handler: (request: Request) => Promise<Response>;
     api: better_auth.InferAPI<{
@@ -11996,7 +12003,7 @@ declare const auth: {
                                             fromUserId: string;
                                             toUserId: string | null;
                                         } | undefined;
-                                        role: string;
+                                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                                         roleEndDate: Date | undefined;
                                     } | null;
                                 } : {
@@ -12033,7 +12040,7 @@ declare const auth: {
                                         fromUserId: string;
                                         toUserId: string | null;
                                     } | undefined;
-                                    role: string;
+                                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                                     roleEndDate: Date | undefined;
                                 } | null>;
                                 options: {
@@ -14400,7 +14407,7 @@ declare const auth: {
                                                     fromUserId: string;
                                                     toUserId: string | null;
                                                 } | undefined;
-                                                role: string;
+                                                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                                                 roleEndDate: Date | undefined;
                                             } | null;
                                         } : {
@@ -14437,7 +14444,7 @@ declare const auth: {
                                                 fromUserId: string;
                                                 toUserId: string | null;
                                             } | undefined;
-                                            role: string;
+                                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                                             roleEndDate: Date | undefined;
                                         } | null>;
                                         options: {
@@ -17903,7 +17910,7 @@ declare const auth: {
                         fromUserId: string;
                         toUserId: string | null;
                     } | undefined;
-                    role: string;
+                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                     roleEndDate: Date | undefined;
                 } | null;
             } : {
@@ -17940,7 +17947,7 @@ declare const auth: {
                     fromUserId: string;
                     toUserId: string | null;
                 } | undefined;
-                role: string;
+                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                 roleEndDate: Date | undefined;
             } | null>;
             options: {
@@ -20008,7 +20015,7 @@ declare const auth: {
                                 fromUserId: string;
                                 toUserId: string | null;
                             } | undefined;
-                            role: string;
+                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                             roleEndDate: Date | undefined;
                         } | null;
                     } : {
@@ -20045,7 +20052,7 @@ declare const auth: {
                             fromUserId: string;
                             toUserId: string | null;
                         } | undefined;
-                        role: string;
+                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free;
                         roleEndDate: Date | undefined;
                     } | null>;
                     options: {
@@ -23501,7 +23508,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     DAILY_POWER_PERCENTAGES: number[];
                     DAILY_POWER_SUPPLY: number;
                     IMPORTING_TITLE: string;
-                    INVITATION_ENABLED: boolean;
                     INVITATION_INTERVAL_DAYS: number;
                     INVITATION_PRICE: number;
                     IS_RSS3_TESTNET: boolean;

@@ -216,7 +216,7 @@ const NavigationLinkGroup: FC<{
                 </GroupedInsetListNavigationLinkIcon>
               }
               onPress={() => {
-                if (link.trialNotAllowed && role === UserRole.Trial) {
+                if (link.trialNotAllowed && role === UserRole.Free) {
                   navigation.presentControllerView(InvitationScreen)
                 } else {
                   link.onPress({ navigation })

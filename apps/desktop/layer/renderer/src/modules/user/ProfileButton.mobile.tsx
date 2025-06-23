@@ -64,7 +64,7 @@ export const ProfileButton: FC<ProfileButtonProps> = () => {
             <Item
               label={t("user_button.achievement")}
               onClick={() => {
-                if (role !== UserRole.Trial) {
+                if (role !== UserRole.Free) {
                   presentAchievement()
                 } else {
                   presentActivationModal()
