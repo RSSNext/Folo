@@ -18,12 +18,14 @@ export enum UserRole {
   PrePro = "pre_pro",
   Free = "free",
   FreeDeprecated = "trial",
+  Pro = "pro",
 }
 
 export const UserRoleName: Record<UserRole, string> = {
   [UserRole.Admin]: "Admin",
-  [UserRole.PreProTrial]: "Early Premium Trial",
-  [UserRole.PrePro]: "Early Premium",
+  [UserRole.PreProTrial]: "Pro Preview Trial",
+  [UserRole.PrePro]: "Pro Preview",
   [UserRole.Free]: "Free",
   [UserRole.FreeDeprecated]: "Free",
+  [UserRole.Pro]: "Pro",
 } as const

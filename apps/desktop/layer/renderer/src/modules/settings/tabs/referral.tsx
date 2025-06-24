@@ -1,4 +1,3 @@
-import { Button } from "@follow/components/ui/button/index.js"
 import { Card } from "@follow/components/ui/card/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Progress } from "@follow/components/ui/progress/index.js"
@@ -16,16 +15,14 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
-import { UserRole } from "@follow/constants"
+import { UserRole, UserRoleName } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
-import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { useUserRole, useUserRoleEndDate, useWhoami } from "~/atoms/user"
+import { useUserRole, useWhoami } from "~/atoms/user"
 import { CopyButton } from "~/components/ui/button/CopyButton"
-import { subscription } from "~/lib/auth"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { useReferralInfo } from "~/queries/referral"
@@ -34,16 +31,11 @@ export function SettingReferral() {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
-  const skipPrice = serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const { data: referralInfo } = useReferralInfo()
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const user = useWhoami()
   const role = useUserRole()
-  const roleEndDate = useUserRoleEndDate()
-  const daysLeft = roleEndDate
-    ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : null
   const referralLink = `${env.VITE_WEB_URL}/register?referral=${user?.handle || user?.id}`
   const presentUserProfile = usePresentUserProfileModal("drawer")
   return (
@@ -63,56 +55,24 @@ export function SettingReferral() {
         </p>
       </div>
       <Divider className="my-6" />
-      <p className="my-2">{t("referral.link")}</p>
-      <Card className="flex items-center gap-2 px-4 py-2">
+      <p className="my-2 font-semibold">{t("referral.link")}</p>
+      <Card className="flex items-center gap-2 px-3 py-1.5">
         <span>{referralLink}</span>
         <CopyButton variant="outline" value={referralLink} />
       </Card>
-      <Divider className="my-6" />
-      <Card
-        className={cn(
-          "p-3",
-          role === UserRole.PrePro
-            ? "border-blue-100 bg-green-50 dark:border-green-900 dark:bg-green-950"
-            : "border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950",
-        )}
-      >
-        {role === UserRole.PrePro
-          ? t("referral.pro_status.user")
-          : role === UserRole.PreProTrial
-            ? t("referral.pro_status.preview", {
-                dateString: dayjs(roleEndDate).format("MMMM D, YYYY"),
-                daysLeft,
-              })
-            : role === UserRole.Free || role === UserRole.FreeDeprecated
-              ? t("referral.pro_status.trial")
-              : ""}
-      </Card>
-      <div className="mt-4 space-y-2">
-        <p>Referral Progress:</p>
-        <div className="flex items-center gap-4">
-          <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
-          <span className="shrink-0">
-            {validInvitationsAmount} / {requiredInvitationsAmount}
-          </span>
+      {role !== UserRole.PrePro && (
+        <div className="mt-4 space-y-2">
+          <p className="font-semibold">
+            Referral Progress for the Free {UserRoleName[UserRole.PrePro]}:
+          </p>
+          <div className="flex items-center gap-4">
+            <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
+            <span className="shrink-0">
+              {validInvitationsAmount} / {requiredInvitationsAmount}
+            </span>
+          </div>
         </div>
-        {role === UserRole.PreProTrial && (
-          <>
-            <p>Alternatively:</p>
-            <Button
-              onClick={() => {
-                subscription.upgrade({
-                  plan: "folo pro preview",
-                  successUrl: env.VITE_WEB_URL,
-                  cancelUrl: env.VITE_WEB_URL,
-                })
-              }}
-            >
-              Pay ${skipPrice} to Extend Pro Preview Now
-            </Button>
-          </>
-        )}
-      </div>
+      )}
       {!!referralInfo?.invitations.length && (
         <>
           <Divider className="my-6" />

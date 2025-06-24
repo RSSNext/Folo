@@ -94,7 +94,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
               withText
               className="mt-0.5 w-full justify-center"
               onClick={() => {
-                settingModalPresent("referral")
+                settingModalPresent("plan")
               }}
             />
           </div>
