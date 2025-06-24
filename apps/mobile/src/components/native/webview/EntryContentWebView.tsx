@@ -66,11 +66,9 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
 
   // Handle image preview events
   useEffect(() => {
-    // Subscribe to image preview events through EventBus
     return EventBus.subscribe("PREVIEW_IMAGE", (event) => {
       const { imageUrls, index } = event
 
-      // Use the same pattern as in the Android implementation
       runOnUI(() => {
         "worklet"
         runOnJS(openLightbox)({

@@ -34,9 +34,7 @@ export const prepareEntryRenderWebView = () => {
   //   jotaiStore.set(sharedWebViewHeightAtom, height)
   // })
 
-  // Listen for image preview events and dispatch using EventBus
   SharedWebViewModule.addListener("onImagePreview", (event: ImagePreviewEvent) => {
-    // Dispatch the event through EventBus instead of using atom
     EventBus.dispatch("PREVIEW_IMAGE", event)
   })
 }
