@@ -32,29 +32,29 @@ import { HotkeyScope } from "~/constants"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
+import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
+import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
-import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding } from "../command/hooks/use-command-binding"
-import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
-import { EntryContentHTMLRenderer } from "../renderer/html"
-import { AISummary } from "./AISummary"
-import { ApplyEntryActions } from "./ApplyEntryActions"
-import { EntryTimelineSidebar } from "./components/EntryTimelineSidebar"
-import { EntryTitle } from "./components/EntryTitle"
-import { SourceContentPanel } from "./components/SourceContentView"
-import { SupportCreator } from "./components/SupportCreator"
-import { EntryHeader } from "./header"
-import { useEntryContent, useEntryMediaInfo } from "./hooks"
-import type { EntryContentProps } from "./index.shared"
+import { AISummary } from "../../AISummary"
+import { ApplyEntryActions } from "../../ApplyEntryActions"
+import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { EntryHeader } from "../entry-header"
+import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
+import { EntryTitle } from "../EntryTitle"
+import { SourceContentPanel } from "../SourceContentView"
+import { SupportCreator } from "../SupportCreator"
+import type { EntryContentProps } from "./components"
 import {
   ContainerToc,
   NoContent,
   ReadabilityNotice,
   RenderError,
   TitleMetaHandler,
-} from "./index.shared"
-import { EntryContentLoading } from "./loading"
+} from "./components"
+import { EntryContentLoading } from "./EntryContentLoading"
 
 const pageMotionVariants = {
   initial: { opacity: 0, y: 25 },

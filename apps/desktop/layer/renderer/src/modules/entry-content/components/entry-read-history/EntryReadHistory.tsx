@@ -6,7 +6,7 @@ import { useWhoami } from "~/atoms/user"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAppLayoutGridContainerWidth } from "~/providers/app-grid-layout-container-provider"
 
-import { EntryUser } from "./EntryReadHistory.shared"
+import { EntryUser } from "./EntryUser"
 
 const getLimit = (width: number): number => {
   const routeParams = getRouteParams()

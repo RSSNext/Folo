@@ -26,22 +26,24 @@ import { FocusablePresets } from "~/components/common/Focusable"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useFeedQuery } from "~/queries/feed"
 
-import { COMMAND_ID } from "../command/commands/id"
-import { useCommandBinding } from "../command/hooks/use-command-binding"
-import { useCommandHotkey } from "../command/hooks/use-register-hotkey"
-import { useIsPreviewFeed } from "../entry-column/hooks/useIsPreviewFeed"
+import { COMMAND_ID } from "../../command/commands/id"
+import { useCommandBinding } from "../../command/hooks/use-command-binding"
+import { useCommandHotkey } from "../../command/hooks/use-register-hotkey"
+import { useIsPreviewFeed } from "../../entry-column/hooks/useIsPreviewFeed"
 import {
   resetSelectedFeedIds,
   setFeedAreaScrollProgressValue,
   setSelectedFeedIds,
   useSelectedFeedIdsState,
-} from "./atom"
-import { DraggableContext } from "./context"
-import { FeedItem, ListItemAutoHideUnread } from "./FeedItem"
-import { useShouldFreeUpSpace } from "./hook"
-import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "./sort-by"
-import type { SubscriptionProps } from "./SubscriptionList.entry"
-import { EmptyFeedList, ListHeader, StarredItem } from "./SubscriptionList.shared"
+} from "../atom"
+import { DraggableContext } from "../context"
+import { FeedItem, ListItemAutoHideUnread } from "../FeedItem"
+import { useShouldFreeUpSpace } from "../hook"
+import { SortableFeedList, SortByAlphabeticalInbox, SortByAlphabeticalList } from "../sort-by"
+import { EmptyFeedList } from "./EmptyFeedList"
+import { ListHeader } from "./ListHeader"
+import { StarredItem } from "./StarredItem"
+import type { SubscriptionProps } from "./SubscriptionListGuard"
 
 const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")

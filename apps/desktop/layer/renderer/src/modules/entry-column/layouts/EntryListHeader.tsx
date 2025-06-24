@@ -22,7 +22,7 @@ import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useRunCommandFn } from "~/modules/command/hooks/use-command"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
-import { EntryHeader } from "~/modules/entry-content/header"
+import { EntryHeader } from "~/modules/entry-content/components/entry-header"
 import { useRefreshFeedMutation } from "~/queries/feed"
 import { useFeedHeaderTitle } from "~/store/feed/hooks"
 

@@ -7,8 +7,7 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
-
-import { usePresentUserProfileModal } from "../../profile/hooks"
+import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 
 export const EntryUser: Component<{
   userId: string

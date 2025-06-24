@@ -18,6 +18,7 @@ import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRoutePara
 import { useFeedQuery } from "~/queries/feed"
 import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
+import { EntryColumnWrapper } from "./components/entry-column-wrapper/EntryColumnWrapper"
 import { FooterMarkItem } from "./components/FooterMarkItem"
 import { EntryColumnGrid } from "./grid"
 import { useEntriesByView } from "./hooks/useEntriesByView"
@@ -25,7 +26,6 @@ import { useSnapEntryIdList } from "./hooks/useEntryIdListSnap"
 import { useEntryMarkReadHandler } from "./hooks/useEntryMarkReadHandler"
 import { EntryListHeader } from "./layouts/EntryListHeader"
 import { EntryEmptyList, EntryList } from "./list"
-import { EntryColumnWrapper } from "./wrapper"
 
 function EntryColumnImpl() {
   const listRef = useRef<Virtualizer<HTMLElement, Element>>(undefined)

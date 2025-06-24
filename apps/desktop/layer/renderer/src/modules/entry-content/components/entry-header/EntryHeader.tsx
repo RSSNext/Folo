@@ -6,11 +6,11 @@ import { memo } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 
-import { EntryHeaderActions } from "./actions/header-actions"
-import { MoreActions } from "./actions/more-actions"
-import { useEntryContentScrollToTop, useEntryTitleMeta } from "./atoms"
-import { EntryReadHistory } from "./components/EntryReadHistory"
-import type { EntryHeaderProps } from "./header.shared"
+import { EntryHeaderActions } from "../../actions/header-actions"
+import { MoreActions } from "../../actions/more-actions"
+import { useEntryContentScrollToTop, useEntryTitleMeta } from "../../atoms"
+import { EntryReadHistory } from "../entry-read-history"
+import type { EntryHeaderProps } from "./types"
 
 function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps) {
   const entry = useEntry(entryId, () => ({}))

@@ -1,19 +1,16 @@
-import { withResponsiveSyncComponent } from "@follow/components/utils/selector.js"
 import type { FeedViewType } from "@follow/constants"
 import { cn } from "@follow/utils"
 
-import { SubscriptionList as FeedListDesktop } from "./SubscriptionList.electron"
-import { SubscriptionList as FeedListMobile } from "./SubscriptionList.mobile"
+import { SubscriptionList as FeedListDesktop } from "./SubscriptionList"
 
-const SubscriptionListSelector = withResponsiveSyncComponent(FeedListDesktop, FeedListMobile)
-export const SubscriptionList = function SubscriptionList(props: SubscriptionProps) {
+export const SubscriptionListGuard = function SubscriptionListGuard(props: SubscriptionProps) {
   const { ref, className, view } = props
 
   if (typeof view !== "number") {
     return null
   }
   return (
-    <SubscriptionListSelector
+    <FeedListDesktop
       className={cn("flex size-full flex-col text-sm", className)}
       view={view}
       ref={ref}

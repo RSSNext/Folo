@@ -32,8 +32,8 @@ import {
   useWrappedElementSize,
 } from "~/providers/wrapped-element-provider"
 
-import { ReadabilityAutoToggleEffect } from "./ApplyEntryActions"
-import { setEntryContentScrollToTop, setEntryTitleMeta } from "./atoms"
+import { ReadabilityAutoToggleEffect } from "../../ApplyEntryActions"
+import { setEntryContentScrollToTop, setEntryTitleMeta } from "../../atoms"
 
 export interface EntryContentProps {
   entryId: string
@@ -163,19 +163,6 @@ export const RenderError: FallbackRender = ({ error }) => {
         onClick={() => {
           window.open(
             getNewIssueUrl({
-              // body: [
-              //   "### Error",
-              //   "",
-              //   nextError.message,
-              //   "",
-              //   "### Stack",
-              //   "",
-              //   "```",
-              //   nextError.stack,
-              //   "```",
-              // ].join("\n"),
-              // label: "bug",
-              // title: "Render error",
               template: "bug_report.yml",
             }),
           )

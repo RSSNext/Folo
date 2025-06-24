@@ -22,8 +22,8 @@ import { RelativeTime } from "~/components/ui/datetime"
 import { getBlockchainExplorerUrl } from "~/lib/utils"
 import { useWalletTransactions } from "~/queries/wallet"
 
-import type { TxTableProps } from "./tx-table.shared"
-import { BalanceRenderer, TypeRenderer, UserRenderer } from "./tx-table.shared"
+import type { TxTableProps } from "./components"
+import { BalanceRenderer, TypeRenderer, UserRenderer } from "./components"
 
 export const TxTable = ({ className, type }: ComponentType<TxTableProps>) => {
   const { t } = useTranslation("settings")
