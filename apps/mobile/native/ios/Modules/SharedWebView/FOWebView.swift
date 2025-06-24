@@ -200,11 +200,7 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
             let urls = data.payload.imageUrls
             let index = data.payload.index ?? 0
             if !urls.isEmpty {
-              NotificationCenter.default.post(
-                name: Notification.Name("ImagePreview"),
-                object: nil,
-                userInfo: ["imageUrls": urls, "index": index]
-              )
+              self.state.previewImages(urls: urls, index: index)
             }
           }
 

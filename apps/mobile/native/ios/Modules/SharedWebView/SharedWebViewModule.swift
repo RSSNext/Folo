@@ -13,7 +13,7 @@ let onImagePreview = "onImagePreview"
 
 public class SharedWebViewModule: Module {
     private var pendingJavaScripts: [String] = []
-    private var notificationObserver: NSObjectProtocol?
+    private var cancellables = Set<AnyCancellable>()
 
     public static var sharedWebView: WKWebView? {
         WebViewManager.shared
@@ -47,31 +47,28 @@ public class SharedWebViewModule: Module {
         Events(onContentHeightChanged)
         Events(onImagePreview)
 
-        var cancellable: AnyCancellable?
         OnStartObserving {
-            cancellable = WebViewManager.state.$contentHeight
+            // Monitor content height changes
+            WebViewManager.state.$contentHeight
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] height in
                     self?.sendEvent(onContentHeightChanged, ["height": height])
                 }
+                .store(in: &self.cancellables)
 
-            self.notificationObserver = NotificationCenter.default.addObserver(
-                forName: Notification.Name("ImagePreview"),
-                object: nil,
-                queue: .main
-            ) { [weak self] notification in
-                if let imageUrls = notification.userInfo?["imageUrls"] as? [String],
-                   let index = notification.userInfo?["index"] as? Int {
-                    self?.sendEvent(onImagePreview, ["imageUrls": imageUrls, "index": index])
+            // Monitor image preview events
+            WebViewManager.state.$imagePreviewEvent
+                .receive(on: DispatchQueue.main)
+                .compactMap { $0 } // Filter out nil values
+                .sink { [weak self] event in
+                    self?.sendEvent(onImagePreview, ["imageUrls": event.imageUrls, "index": event.index])
                 }
-            }
+                .store(in: &self.cancellables)
         }
+
         OnStopObserving {
-            cancellable?.cancel()
-            if let observer = self.notificationObserver {
-                NotificationCenter.default.removeObserver(observer)
-                self.notificationObserver = nil
-            }
+            self.cancellables.forEach { $0.cancel() }
+            self.cancellables.removeAll()
         }
     }
 
