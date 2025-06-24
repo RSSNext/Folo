@@ -47,7 +47,7 @@
     "eslint-plugin-react-native": "5.0.0",
     "fast-glob": "3.3.3",
     "lint-staged": "16.1.2",
-    "prettier": "3.5.3",
+    "prettier": "3.6.0",
     "prettier-plugin-tailwindcss": "0.6.13",
     "raw-body": "3.0.0",
     "react": "19.0.0",

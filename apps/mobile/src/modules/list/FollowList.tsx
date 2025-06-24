@@ -53,7 +53,7 @@ export const FollowList = (props: { id: string }) => {
 
 const formSchema = z.object({
   view: z.number(),
-  isPrivate: z.boolean().default(false),
+  isPrivate: z.boolean(),
   title: z.string().optional(),
 })
 

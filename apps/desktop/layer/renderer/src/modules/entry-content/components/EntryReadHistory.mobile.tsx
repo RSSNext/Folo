@@ -123,7 +123,9 @@ const Content: Component<{
       {entryHistory?.userIds
         ?.filter((id) => id !== me?.id)
         .slice(LIMIT)
-        .map((userId) => <EntryUserRow userId={userId} key={userId} />)}
+        .map((userId) => (
+          <EntryUserRow userId={userId} key={userId} />
+        ))}
     </ul>
   )
 }

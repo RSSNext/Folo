@@ -26,7 +26,11 @@ export const InboxTable = () => {
           <TableHead className="center px-0">{t("discover.inbox.actions")}</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>{inboxes?.map((inbox) => <Row id={inbox.id} key={inbox.id} />)}</TableBody>
+      <TableBody>
+        {inboxes?.map((inbox) => (
+          <Row id={inbox.id} key={inbox.id} />
+        ))}
+      </TableBody>
     </Table>
   )
 }

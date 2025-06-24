@@ -271,15 +271,12 @@ export const routes: RouteObject[] = [
 ### Common Issues and Solutions
 
 1. **Path Mismatch**: Routes generated without corresponding lazy functions
-
    - **Solution**: Enhanced file matching with multiple strategies and path normalization
 
 2. **Incorrect Import Paths**: Absolute paths causing import failures
-
    - **Solution**: Proper relative path calculation using `path.relative()`
 
 3. **Unused Lazy Variables**: Too many lazy imports for non-existent files
-
    - **Solution**: Only generate lazy imports for routes with actual file matches
 
 4. **Index Route Handling**: Paths ending with `/` causing mapping issues

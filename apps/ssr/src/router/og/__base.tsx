@@ -7,17 +7,16 @@ export const OGCanvas = ({ children, seed }: { children: React.ReactNode; seed: 
   return (
     <div
       style={{
-        background: `linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%)`,
+        background: "#0a0f1a",
         width: "100%",
         height: "100%",
         display: "flex",
-        textAlign: "center",
-        alignItems: "center",
-        justifyContent: "center",
         position: "relative",
+        fontFamily: "SN Pro",
+        color: "#e6edf3",
       }}
     >
-      {/* Subtle background pattern */}
+      {/* Background Grid Pattern */}
       <div
         style={{
           position: "absolute",
@@ -25,12 +24,14 @@ export const OGCanvas = ({ children, seed }: { children: React.ReactNode; seed: 
           left: 0,
           width: "100%",
           height: "100%",
-          background: `radial-gradient(circle at 20% 80%, ${bgAccent}15 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${bgAccentLight}10 0%, transparent 50%)`,
-          opacity: 0.6,
+          background: `
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
         }}
       />
-
-      {/* Grid pattern overlay */}
+      {/* Background Glows */}
       <div
         style={{
           position: "absolute",
@@ -38,65 +39,83 @@ export const OGCanvas = ({ children, seed }: { children: React.ReactNode; seed: 
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage: "radial-gradient(circle, #ffffff08 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          opacity: 0.3,
+          background: `
+            radial-gradient(circle at 15% 20%, ${bgAccent}20 0%, transparent 40%),
+            radial-gradient(circle at 85% 80%, ${bgAccentLight}15 0%, transparent 40%)
+          `,
         }}
       />
 
-      {/* Main content card */}
+      {/* Main layout container */}
       <div
         style={{
-          position: "relative",
-          width: "calc(100% - 100px)",
-          height: "calc(100% - 100px)",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "linear-gradient(145deg, #ffffff 0%, #fafafa 100%)",
-          borderRadius: 32,
-          border: "1px solid #e5e5e5",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)",
-          gap: "3rem",
-          padding: "3rem",
+          flexDirection: "column",
+          width: "100%",
+          height: "100%",
+          padding: "40px 60px",
+          gap: 40,
         }}
       >
-        {/* Brand mark */}
+        {/* Header */}
         <div
           style={{
-            position: "absolute",
-            right: 32,
-            bottom: 32,
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            gap: "1rem",
-            opacity: 0.8,
+            alignItems: "center",
+            width: "100%",
           }}
         >
-          <FollowIcon />
-          <span
-            style={{
-              fontSize: "2rem",
-              color: "#FF5C02",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Folo
-          </span>
+          {/* Follow Logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <FollowIcon />
+            <span
+              style={{ fontSize: 28, fontWeight: "bold", color: "white", letterSpacing: "0.05em" }}
+            >
+              Folo
+            </span>
+          </div>
+
+          {/* AI RSS */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 20, color: "#afb8c1" }}>Follow everything in one place</span>
+            <RSSIcon color={bgAccent || "#e6edf3"} />
+          </div>
         </div>
 
-        {children}
+        {/* Content */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )
 }
 
+function RSSIcon({ color }: { color: string }) {
+  return (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M8.24 2.546c-2.117.11-3.311.502-4.229 1.387-.813.783-1.204 1.745-1.401 3.439-.062.542-.07 1.047-.07 4.628 0 3.581.008 4.086.07 4.628.197 1.694.588 2.656 1.401 3.439.804.775 1.708 1.131 3.361 1.323.542.062 1.047.07 4.628.07 3.581 0 4.086-.008 4.628-.07 1.653-.192 2.557-.548 3.361-1.323.813-.783 1.204-1.745 1.401-3.439.062-.542.07-1.047.07-4.628 0-3.581-.008-4.086-.07-4.628-.197-1.694-.588-2.656-1.401-3.439-.796-.768-1.702-1.128-3.32-1.319-.49-.058-1.094-.068-4.369-.074-2.09-.004-3.917-.001-4.06.006m1.1 4.494c2.476.272 4.679 1.553 6.087 3.54 1.06 1.495 1.627 3.369 1.565 5.167-.015.43-.033.544-.11.704a1.06 1.06 0 0 1-.618.53c-.252.075-.328.074-.579-.007a.976.976 0 0 1-.605-.542c-.079-.184-.09-.272-.084-.692.024-1.916-.614-3.527-1.913-4.822-1.306-1.302-2.917-1.941-4.823-1.913-.421.006-.506-.004-.69-.084-.373-.162-.582-.485-.582-.901 0-.489.302-.864.792-.983.181-.044 1.152-.042 1.56.003m-.411 3.543a5.77 5.77 0 0 1 2.25.93 6.866 6.866 0 0 1 1.308 1.308c.611.86.984 1.979 1.002 3.003.005.301-.01.434-.063.556-.154.353-.552.619-.926.619-.373 0-.777-.269-.921-.615-.036-.086-.081-.356-.1-.6-.074-.942-.371-1.596-1.019-2.244-.648-.648-1.302-.945-2.244-1.019-.494-.039-.691-.104-.891-.293a.984.984 0 0 1-.231-1.128c.148-.316.391-.505.766-.594.119-.028.671.012 1.069.077m.172 3.552c.313.143.622.45.766.761.098.21.113.293.113.604 0 .31-.015.393-.112.6a1.698 1.698 0 0 1-.764.767c-.21.098-.293.113-.604.113-.31 0-.393-.015-.6-.112a1.698 1.698 0 0 1-.767-.764c-.098-.21-.113-.293-.113-.604 0-.32.014-.389.124-.62.273-.573.795-.893 1.417-.867.223.009.362.041.54.122"
+        fill={color}
+        fillRule="evenodd"
+      />
+    </svg>
+  )
+}
+
 function FollowIcon() {
   return (
-    <svg width="48" height="48" viewBox="0 0 91 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="91" height="89" rx="26" fill="#FF5C02" />
+    <svg width="48" height="48" viewBox="0 0 91 89" fill="none">
+      <rect width="91" height="89" rx="20" fill="#FF5C02" />
       <path
         d="M69.0242 22.0703H37.1962C33.3473 22.0703 30.2272 25.1785 30.2272 29.0126C30.2272 32.8468 33.3473 35.955 37.1962 35.955H69.0242C72.8731 35.955 75.9933 32.8468 75.9933 29.0126C75.9933 25.1785 72.8731 22.0703 69.0242 22.0703Z"
         fill="white"
@@ -140,7 +159,7 @@ export const OGAvatar: React.FC<{ base64?: Nullable<string>; title: string }> = 
   base64,
   title,
 }) => {
-  const [, , , bgAccent, bgAccentLight, bgAccentUltraLight] = getBackgroundGradient(title)
+  const [, , , bgAccent, bgAccentLight] = getBackgroundGradient(title)
   return (
     <>
       {base64 ? (
@@ -155,12 +174,11 @@ export const OGAvatar: React.FC<{ base64?: Nullable<string>; title: string }> = 
           <img
             src={base64}
             style={{
-              width: 180,
-              height: 180,
+              width: 160,
+              height: 160,
               borderRadius: "50%",
-              border: "4px solid #ffffff",
-              boxShadow:
-                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              border: `3px solid ${bgAccentLight}50`,
+              boxShadow: `0 0 25px ${bgAccent}40`,
             }}
           />
         </div>
@@ -168,20 +186,20 @@ export const OGAvatar: React.FC<{ base64?: Nullable<string>; title: string }> = 
         <div
           style={{
             position: "relative",
-            width: 180,
-            height: 180,
+            width: 160,
+            height: 160,
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: `linear-gradient(135deg, ${bgAccent} 0%, ${bgAccentLight} 50%, ${bgAccentUltraLight} 100%)`,
-            border: "4px solid #ffffff",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            background: `linear-gradient(135deg, ${bgAccent} 0%, ${bgAccentLight} 100%)`,
+            border: `3px solid ${bgAccentLight}50`,
+            boxShadow: `0 0 25px ${bgAccent}40`,
           }}
         >
           <span
             style={{
-              fontSize: 72,
+              fontSize: 64,
               fontWeight: 700,
               color: "white",
               letterSpacing: "-0.02em",

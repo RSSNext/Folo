@@ -280,7 +280,9 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="border-t-[12px] border-transparent">
-            {list.feedIds?.map((feedId) => <RowRender feedId={feedId} key={feedId} listId={id} />)}
+            {list.feedIds?.map((feedId) => (
+              <RowRender feedId={feedId} key={feedId} listId={id} />
+            ))}
           </TableBody>
         </Table>
       </ScrollArea.ScrollArea>
