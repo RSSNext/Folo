@@ -1,6 +1,9 @@
 import { mkdirSync } from "node:fs"
 import fs from "node:fs/promises"
-import path from "node:path"
+import path, { dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 mkdirSync(path.join(__dirname, "../.generated"), { recursive: true })
 
@@ -12,21 +15,8 @@ async function generateIndexHtmlData() {
   )
 }
 
-async function replaceEnvFile() {
-  const envFile = await fs.readFile(path.join(__dirname, "../src/lib/env.ts"), "utf-8")
-
-  await fs.writeFile(
-    path.join(__dirname, "../src/lib/env.ts"),
-    // For tree shaking
-    envFile.replace(
-      `export const isDev = process.env.NODE_ENV === "development"`,
-      `export const isDev = ${process.env.NODE_ENV === "development"}`,
-    ),
-  )
-}
-
 async function main() {
-  await Promise.all([generateIndexHtmlData(), replaceEnvFile()])
+  await generateIndexHtmlData()
 }
 
 main()

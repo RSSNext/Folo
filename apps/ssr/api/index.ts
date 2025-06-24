@@ -1,4 +1,6 @@
-const { createApp } = require("../dist/server/index.js")
+// @ts-ignore
+// eslint-disable-next-line antfu/no-import-dist
+import { createApp } from "../dist/server/index.js"
 
 // export const config = {
 //   runtime: "nodejs", // this is a pre-requisite

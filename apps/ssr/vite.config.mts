@@ -1,4 +1,5 @@
-import { resolve } from "node:path"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
@@ -12,6 +13,8 @@ const routeBuilderPluginV2 = await tsImport(
   "@follow-app/vite-plugin-route-builder",
   import.meta.url,
 ).then((m) => m.default)
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   resolve: {
