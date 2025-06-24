@@ -27,10 +27,10 @@ function getDefaultReferralCode() {
   const referralCodeFromUrl = urlParams.get("referral")
 
   if (referralCodeFromUrl) {
-    localStorage.setItem(getStorageNS("referral"), referralCodeFromUrl)
+    localStorage.setItem(getStorageNS("referral-code"), referralCodeFromUrl)
   }
 
-  const referralCodeFromLocalStorage = localStorage.getItem(getStorageNS("referral"))
+  const referralCodeFromLocalStorage = localStorage.getItem(getStorageNS("referral-code"))
   return referralCodeFromUrl || referralCodeFromLocalStorage || ""
 }
 
@@ -52,7 +52,7 @@ export function ReferralForm({ className }: { className?: string }) {
     const sub = watch((value) => {
       const referralCode = value.referral
       if (referralCode) {
-        localStorage.setItem(getStorageNS("referral"), referralCode)
+        localStorage.setItem(getStorageNS("referral-code"), referralCode)
       }
     })
     return () => sub.unsubscribe()

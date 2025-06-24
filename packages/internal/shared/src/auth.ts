@@ -53,7 +53,7 @@ export class Auth {
       plugins: baseAuthPlugins,
       fetchOptions: {
         onRequest(context) {
-          const referralCode = localStorage.getItem(getStorageNS("referral"))
+          const referralCode = localStorage.getItem(getStorageNS("referral-code"))
           if (referralCode) {
             context.headers.set("folo-referral-code", referralCode)
           }
