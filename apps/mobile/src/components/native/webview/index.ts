@@ -1,13 +1,18 @@
-import { jotaiStore } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import type { NativeModule } from "expo"
 import { requireNativeModule } from "expo-modules-core"
-import { atom } from "jotai"
 
 import { htmlUrl } from "./constants"
 
-interface ImagePreviewEvent {
+export interface ImagePreviewEvent {
   imageUrls: string[]
   index: number
+}
+
+declare module "@follow/utils/event-bus" {
+  export interface CustomEvent {
+    PREVIEW_IMAGE: ImagePreviewEvent
+  }
 }
 
 declare class ISharedWebViewModule extends NativeModule<{
@@ -20,9 +25,6 @@ declare class ISharedWebViewModule extends NativeModule<{
 
 export const SharedWebViewModule = requireNativeModule<ISharedWebViewModule>("FOSharedWebView")
 
-// Create an atom to store image preview events
-export const imagePreviewEventAtom = atom<ImagePreviewEvent | null>(null)
-
 let prepareOnce = false
 export const prepareEntryRenderWebView = () => {
   if (prepareOnce) return
@@ -32,9 +34,9 @@ export const prepareEntryRenderWebView = () => {
   //   jotaiStore.set(sharedWebViewHeightAtom, height)
   // })
 
-  // Listen for image preview events
+  // Listen for image preview events and dispatch using EventBus
   SharedWebViewModule.addListener("onImagePreview", (event: ImagePreviewEvent) => {
-    // Store the event in the atom, which will be consumed by components that use useLightbox
-    jotaiStore.set(imagePreviewEventAtom, event)
+    // Dispatch the event through EventBus instead of using atom
+    EventBus.dispatch("PREVIEW_IMAGE", event)
   })
 }

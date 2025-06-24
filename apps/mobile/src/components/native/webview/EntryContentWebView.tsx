@@ -2,6 +2,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
 import * as React from "react"
@@ -17,7 +18,7 @@ import { useLightboxControls } from "../../lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
-import { imagePreviewEventAtom, prepareEntryRenderWebView, SharedWebViewModule } from "./index"
+import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
 import { NativeWebView } from "./native-webview"
 
 type EntryContentWebViewProps = {
@@ -51,7 +52,6 @@ const setReaderRenderInlineStyle = (value: boolean) => {
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
-  const [imagePreviewEvent, setImagePreviewEvent] = useAtom(imagePreviewEventAtom)
   const { openLightbox } = useLightboxControls()
 
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
@@ -66,8 +66,9 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
 
   // Handle image preview events
   useEffect(() => {
-    if (imagePreviewEvent) {
-      const { imageUrls, index } = imagePreviewEvent
+    // Subscribe to image preview events through EventBus
+    return EventBus.subscribe("PREVIEW_IMAGE", (event) => {
+      const { imageUrls, index } = event
 
       // Use the same pattern as in the Android implementation
       runOnUI(() => {
@@ -84,11 +85,8 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
           index,
         })
       })()
-
-      // Reset the atom
-      setImagePreviewEvent(null)
-    }
-  }, [imagePreviewEvent, openLightbox, setImagePreviewEvent])
+    })
+  }, [openLightbox])
 
   useEffect(() => {
     setNoMedia(!!noMedia)
