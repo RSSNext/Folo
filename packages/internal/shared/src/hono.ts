@@ -20920,8 +20920,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -20932,8 +20930,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     } | undefined;
                     list?: {
@@ -20967,8 +20963,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -20979,8 +20973,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -20993,8 +20985,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     } | undefined;
                     docs?: string | undefined;
@@ -21104,8 +21094,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -21116,8 +21104,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[];
                     };
@@ -21198,8 +21184,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     read: boolean | null;
@@ -21296,8 +21280,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                 } | undefined;
@@ -21459,8 +21441,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21471,8 +21451,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     read: boolean | null;
@@ -21571,8 +21549,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21583,8 +21559,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                 } | undefined;
@@ -21741,8 +21715,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21753,8 +21725,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     tipAmount: number;
@@ -21832,8 +21802,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21844,8 +21812,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     readCount: number;
@@ -22240,8 +22206,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -22252,8 +22216,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     feedId: string;
@@ -22322,8 +22284,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -22334,8 +22294,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -22348,8 +22306,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     listId: string;
@@ -22379,8 +22335,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     inboxId: string;
@@ -22743,8 +22697,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -22755,8 +22707,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     } | null | undefined;
                 }[];
@@ -22956,8 +22906,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -22968,8 +22916,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             }[] | null | undefined;
                         };
                         language: string | null;
@@ -23035,8 +22981,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -23047,8 +22991,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
-                                role: string | null;
-                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -23061,8 +23003,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     readCount: number;
@@ -23130,8 +23070,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -23142,8 +23080,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -23156,8 +23092,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     } | null | undefined;
                 };
             };
@@ -23241,8 +23175,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -23253,8 +23185,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -23268,8 +23198,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     } | null | undefined;
                     purchaseAmount?: number | undefined;
                 }[];
@@ -23312,8 +23240,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     } | null | undefined;
                     tipUsers?: {
                         id: string;
@@ -23324,8 +23250,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     }[] | null | undefined;
                 }[];
             };
@@ -23452,8 +23376,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     } | null | undefined;
                 };
             };
@@ -23589,8 +23511,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
-                        role: string | null;
-                        roleEndAt: string | null;
                     } | null | undefined;
                 }[];
             };
@@ -24041,8 +23961,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -24053,8 +23971,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
-                            role: string | null;
-                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     analytics: {

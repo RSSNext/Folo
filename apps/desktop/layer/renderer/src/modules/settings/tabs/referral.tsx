@@ -37,7 +37,7 @@ export function SettingReferral() {
   const skipPrice = serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const { data: referralInfo } = useReferralInfo()
-  const validInvitationsAmount = referralInfo?.invitations.length || 0
+  const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const user = useWhoami()
   const role = useUserRole()
   const roleEndDate = useUserRoleEndDate()
