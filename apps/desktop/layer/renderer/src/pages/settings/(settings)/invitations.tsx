@@ -15,6 +15,7 @@ export const loader = defineSettingPageData({
     ctx.role === UserRole.Free || ctx.role === UserRole.FreeDeprecated,
     DisableWhy.NotActivation,
   ],
+  hideIf: (_, serverConfigs) => !serverConfigs?.INVITATION_ENABLED,
 })
 
 export function Component() {

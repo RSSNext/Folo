@@ -23675,6 +23675,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     DAILY_POWER_PERCENTAGES: number[];
                     DAILY_POWER_SUPPLY: number;
                     IMPORTING_TITLE: string;
+                    INVITATION_ENABLED: boolean;
                     INVITATION_INTERVAL_DAYS: number;
                     INVITATION_PRICE: number;
                     IS_RSS3_TESTNET: boolean;
