@@ -1,11 +1,10 @@
 import { Header } from "@client/components/layout/header"
 import { openInFollowApp } from "@client/lib/helper"
-import { jotaiStore } from "@client/lib/store"
+import { RootProviders } from "@client/providers/root-providers"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { PoweredByFooter } from "@follow/components/common/PoweredByFooter.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
 import { useSyncThemeWebApp, useTitle } from "@follow/hooks"
-import { Provider } from "jotai"
 import { m, useAnimationControls } from "motion/react"
 import { Fragment, useEffect, useState } from "react"
 
@@ -283,8 +282,8 @@ const NotFoundContent = () => {
 
 export const NotFound = () => {
   return (
-    <Provider store={jotaiStore}>
+    <RootProviders>
       <NotFoundContent />
-    </Provider>
+    </RootProviders>
   )
 }
