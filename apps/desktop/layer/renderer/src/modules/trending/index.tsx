@@ -1,4 +1,4 @@
-import { useUpdateMaxScroll } from "@follow/components/ui/scroll-area/hooks.js"
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { views } from "@follow/constants"
@@ -54,7 +54,7 @@ export function Trending({
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const lang = useUISettingKey("discoverLanguage")
-  const updateMaxScroll = useUpdateMaxScroll()
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const [selectedView, setSelectedView] = useState<View>("all")
 
@@ -73,7 +73,7 @@ export function Trending({
 
   useEffect(() => {
     if (!isLoading) {
-      updateMaxScroll?.()
+      onUpdateMaxScroll?.()
     }
   }, [isLoading])
 

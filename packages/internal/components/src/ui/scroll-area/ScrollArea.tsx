@@ -3,7 +3,7 @@ import { cn } from "@follow/utils/utils"
 import * as ScrollAreaBase from "@radix-ui/react-scroll-area"
 import * as React from "react"
 
-import { ScrollElementContext } from "./ctx"
+import { ScrollElementContext, ScrollElementUpdateContext } from "./ctx"
 import styles from "./index.module.css"
 
 const Corner = ({
@@ -162,21 +162,23 @@ export const ScrollArea = ({
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
   return (
-    <ScrollElementContext value={{ element: viewportRef, onUpdateMaxScroll }}>
-      <Root className={rootClassName}>
-        <Viewport
-          ref={setViewportRef}
-          onWheel={stopPropagation}
-          className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
-          mask={mask}
-          asChild={asChild}
-          onScroll={onScroll}
-          focusable={focusable}
-        >
-          {children}
-        </Viewport>
-        <Scrollbar orientation={orientation} className={scrollbarClassName} />
-      </Root>
+    <ScrollElementContext value={viewportRef}>
+      <ScrollElementUpdateContext value={{ onUpdateMaxScroll }}>
+        <Root className={rootClassName}>
+          <Viewport
+            ref={setViewportRef}
+            onWheel={stopPropagation}
+            className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
+            mask={mask}
+            asChild={asChild}
+            onScroll={onScroll}
+            focusable={focusable}
+          >
+            {children}
+          </Viewport>
+          <Scrollbar orientation={orientation} className={scrollbarClassName} />
+        </Root>
+      </ScrollElementUpdateContext>
     </ScrollElementContext>
   )
 }

@@ -2,7 +2,7 @@ import { EmptyIcon } from "@follow/components/icons/empty.js"
 import { Card } from "@follow/components/ui/card/index.jsx"
 import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
-import { useUpdateMaxScroll } from "@follow/components/ui/scroll-area/hooks.js"
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { cn, formatNumber } from "@follow/utils/utils"
@@ -109,16 +109,16 @@ export const Component = () => {
     })
   }, [items, search])
 
-  const updateMaxScroll = useUpdateMaxScroll()
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
   useEffect(() => {
-    if (!isLoading && updateMaxScroll) {
+    if (!isLoading && onUpdateMaxScroll) {
       // Defer to next tick to avoid blocking main thread
       const timeoutId = setTimeout(() => {
-        updateMaxScroll()
+        onUpdateMaxScroll()
       }, 0)
       return () => clearTimeout(timeoutId)
     }
-  }, [isLoading, updateMaxScroll])
+  }, [isLoading])
 
   return (
     <div className="w-full max-w-[800px]">

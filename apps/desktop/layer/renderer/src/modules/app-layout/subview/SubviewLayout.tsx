@@ -8,7 +8,7 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn, getOS } from "@follow/utils/utils"
 import { m } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 import { NavigationType, Outlet, useLocation, useNavigate, useNavigationType } from "react-router"
@@ -40,12 +40,12 @@ function SubviewLayoutInner() {
   const isTitleVisible = scrollY > 60
   const isHeaderElevated = scrollY > 20
 
-  const updateMaxScroll = () => {
+  const updateMaxScroll = useCallback(() => {
     if (!scrollRef) return
 
     const { scrollHeight, clientHeight } = scrollRef
     setMaxScroll(Math.max(0, scrollHeight - clientHeight))
-  }
+  }, [scrollRef])
 
   useEffect(() => {
     if (!scrollRef) return
@@ -55,7 +55,7 @@ function SubviewLayoutInner() {
     resizeObserver.observe(scrollRef)
 
     return () => resizeObserver.disconnect()
-  }, [scrollRef])
+  }, [scrollRef, updateMaxScroll])
 
   useEffect(() => {
     // Scroll to top search bar when re-navigating to Discover page while already on it

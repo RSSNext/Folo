@@ -1,8 +1,9 @@
 import { createContext } from "react"
 
-export const ScrollElementContext = createContext<{
-  element: HTMLElement | null
+export const ScrollElementContext = createContext<HTMLElement | null>(document.documentElement)
+
+export const ScrollElementUpdateContext = createContext<{
   onUpdateMaxScroll?: () => void
 }>({
-  element: document.documentElement,
+  onUpdateMaxScroll: undefined,
 })
