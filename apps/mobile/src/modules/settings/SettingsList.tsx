@@ -111,7 +111,7 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: "#EC4899",
     anonymous: false,
-    hideIf: (serverConfigs) => !serverConfigs?.INVITATION_ENABLED,
+    hideIf: () => true,
   },
 ]
 
