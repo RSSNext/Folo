@@ -1,4 +1,4 @@
-import { UserRole } from "@follow/constants"
+import { UserRole, UserRoleName } from "@follow/constants"
 import { getStorageNS } from "@follow/utils/ns"
 import { useEffect } from "react"
 import { toast } from "sonner"
@@ -40,16 +40,16 @@ export const UserProvider = () => {
 
     const isToastDismissed = localStorage.getItem(getStorageNS("pro-preview-toast-dismissed"))
     if (session.role && session.role !== UserRole.PrePro && !isToastDismissed) {
-      toast.info(
+      toast.warning(
         session.role === UserRole.Free || session.role === UserRole.FreeDeprecated
-          ? "You are currently on the Free plan. Some features may be limited."
+          ? `You are currently on the ${UserRoleName[UserRole.Free]} plan. Some features may be limited.`
           : session.role === UserRole.PreProTrial
-            ? `You are currently on the Pro Trial plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
+            ? `You are currently on the ${UserRoleName[UserRole.PreProTrial]} plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
             : "",
         {
           duration: Number.POSITIVE_INFINITY,
           action: {
-            label: "Check",
+            label: "More",
             onClick: () => {
               settingModalPresent("referral")
               localStorage.setItem(getStorageNS("pro-preview-toast-dismissed"), "true")

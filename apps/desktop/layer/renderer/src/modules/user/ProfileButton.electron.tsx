@@ -23,7 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
-import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -35,6 +34,7 @@ import { useCommandShortcuts } from "../command/hooks/use-command-binding"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
+import { UserProBadge } from "./UserProBadge"
 
 const rsshubLogo = new URL(rsshubLogoUrl, import.meta.url).href
 
@@ -89,13 +89,14 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            {!!user?.handle && (
-              <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
-                <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
-                  @{user.handle}
-                </EllipsisHorizontalTextWithTooltip>
-              </a>
-            )}
+            <UserProBadge
+              role={role}
+              withText
+              className="mt-0.5 w-full justify-center"
+              onClick={() => {
+                settingModalPresent("referral")
+              }}
+            />
           </div>
         </DropdownMenuLabel>
 
