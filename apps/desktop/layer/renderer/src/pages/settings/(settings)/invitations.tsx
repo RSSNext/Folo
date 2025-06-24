@@ -12,7 +12,7 @@ export const loader = defineSettingPageData({
   name: "titles.invitations",
   priority,
   disableIf: (ctx) => [
-    ctx.role === UserRole.Free || ctx.role === UserRole.FreeDeprecated,
+    ctx.role === UserRole.Free || ctx.role === UserRole.Trial,
     DisableWhy.NotActivation,
   ],
   hideIf: (_, serverConfigs) => !serverConfigs?.INVITATION_ENABLED,

@@ -78,14 +78,13 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {renderUserData?.role !== UserRole.Free &&
-        renderUserData?.role !== UserRole.FreeDeprecated && (
-          <UserProBadge
-            className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
-            iconClassName="size-full"
-            role={renderUserData?.role as UserRole | undefined}
-          />
-        )}
+      {renderUserData?.role !== UserRole.Free && renderUserData?.role !== UserRole.Trial && (
+        <UserProBadge
+          className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
+          iconClassName="size-full"
+          role={renderUserData?.role as UserRole | undefined}
+        />
+      )}
       {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}
     </div>
   )

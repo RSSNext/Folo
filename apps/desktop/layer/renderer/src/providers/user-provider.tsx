@@ -38,30 +38,36 @@ export const UserProvider = () => {
       setUserRoleEndDate(roleEndDate)
     }
 
-    const isToastDismissed = localStorage.getItem(getStorageNS("pro-preview-toast-dismissed"))
+    const itemKey = getStorageNS("pro-preview-toast-dismissed")
+
+    const isToastDismissed = localStorage.getItem(itemKey)
+
     if (session.role && session.role !== UserRole.PrePro && !isToastDismissed) {
-      toast.warning(
-        session.role === UserRole.Free || session.role === UserRole.FreeDeprecated
+      const message =
+        session.role === UserRole.Free || session.role === UserRole.Trial
           ? `You are currently on the ${UserRoleName[UserRole.Free]} plan. Some features may be limited.`
           : session.role === UserRole.PreProTrial
             ? `You are currently on the ${UserRoleName[UserRole.PreProTrial]} plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
-            : "",
-        {
-          duration: Number.POSITIVE_INFINITY,
-          action: {
-            label: "More",
-            onClick: () => {
-              settingModalPresent("referral")
-              localStorage.setItem(getStorageNS("pro-preview-toast-dismissed"), "true")
-            },
-          },
-          onDismiss: () => {
-            localStorage.setItem(getStorageNS("pro-preview-toast-dismissed"), "true")
+            : ""
+      if (!message) {
+        localStorage.setItem(itemKey, "true")
+        return
+      }
+      toast.warning(message, {
+        duration: Number.POSITIVE_INFINITY,
+        action: {
+          label: "More",
+          onClick: () => {
+            settingModalPresent("referral")
+            localStorage.setItem(itemKey, "true")
           },
         },
-      )
+        onDismiss: () => {
+          localStorage.setItem(itemKey, "true")
+        },
+      })
     }
-  }, [session?.role, roleEndDate?.toString()])
+  }, [roleEndDate, session?.role, settingModalPresent])
 
   return null
 }

@@ -17,7 +17,12 @@ export enum UserRole {
   PreProTrial = "pre_pro_trial",
   PrePro = "pre_pro",
   Free = "free",
-  FreeDeprecated = "trial",
+  /**
+   * @deprecated
+   * @see UserRole.Free
+   */
+  // TODO: remove this
+  Trial = "trial",
   Pro = "pro",
 }
 
@@ -26,6 +31,10 @@ export const UserRoleName: Record<UserRole, string> = {
   [UserRole.PreProTrial]: "Pro Preview Trial",
   [UserRole.PrePro]: "Pro Preview",
   [UserRole.Free]: "Free",
-  [UserRole.FreeDeprecated]: "Free",
+  /**
+   * @deprecated
+   * @see UserRole.Free
+   */
+  [UserRole.Trial]: "Free",
   [UserRole.Pro]: "Pro",
 } as const

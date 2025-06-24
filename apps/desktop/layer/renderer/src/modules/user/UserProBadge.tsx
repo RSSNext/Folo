@@ -22,9 +22,7 @@ export const UserProBadge = ({
     <div
       className={cn(
         "flex items-center gap-1",
-        role === UserRole.FreeDeprecated || role === UserRole.Free
-          ? "text-text-secondary"
-          : "text-accent",
+        role === UserRole.Trial || role === UserRole.Free ? "text-text-secondary" : "text-accent",
         className,
       )}
       onClick={onClick}

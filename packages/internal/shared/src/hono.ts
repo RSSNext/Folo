@@ -8310,7 +8310,11 @@ declare enum UserRole {
     PreProTrial = "pre_pro_trial",
     PrePro = "pre_pro",
     Free = "free",
-    FreeDeprecated = "trial"
+    /**
+     * @deprecated use `UserRole.Free` instead
+     *
+     */
+    Trial = "trial"
 }
 
 declare const auth: {
@@ -12099,7 +12103,7 @@ declare const auth: {
                                             ipAddress?: string | null | undefined | undefined;
                                             userAgent?: string | null | undefined | undefined;
                                         };
-                                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                                         roleEndAt: Date | null | undefined;
                                     } | null;
                                 } : {
@@ -12131,7 +12135,7 @@ declare const auth: {
                                         ipAddress?: string | null | undefined | undefined;
                                         userAgent?: string | null | undefined | undefined;
                                     };
-                                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                                     roleEndAt: Date | null | undefined;
                                 } | null>;
                                 options: {
@@ -14499,7 +14503,7 @@ declare const auth: {
                                                     ipAddress?: string | null | undefined | undefined;
                                                     userAgent?: string | null | undefined | undefined;
                                                 };
-                                                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                                                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                                                 roleEndAt: Date | null | undefined;
                                             } | null;
                                         } : {
@@ -14531,7 +14535,7 @@ declare const auth: {
                                                 ipAddress?: string | null | undefined | undefined;
                                                 userAgent?: string | null | undefined | undefined;
                                             };
-                                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                                             roleEndAt: Date | null | undefined;
                                         } | null>;
                                         options: {
@@ -17992,7 +17996,7 @@ declare const auth: {
                         ipAddress?: string | null | undefined | undefined;
                         userAgent?: string | null | undefined | undefined;
                     };
-                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                     roleEndAt: Date | null | undefined;
                 } | null;
             } : {
@@ -18024,7 +18028,7 @@ declare const auth: {
                     ipAddress?: string | null | undefined | undefined;
                     userAgent?: string | null | undefined | undefined;
                 };
-                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                 roleEndAt: Date | null | undefined;
             } | null>;
             options: {
@@ -20093,7 +20097,7 @@ declare const auth: {
                                 ipAddress?: string | null | undefined | undefined;
                                 userAgent?: string | null | undefined | undefined;
                             };
-                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                             roleEndAt: Date | null | undefined;
                         } | null;
                     } : {
@@ -20125,7 +20129,7 @@ declare const auth: {
                             ipAddress?: string | null | undefined | undefined;
                             userAgent?: string | null | undefined | undefined;
                         };
-                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
+                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
                         roleEndAt: Date | null | undefined;
                     } | null>;
                     options: {

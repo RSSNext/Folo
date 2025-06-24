@@ -12,7 +12,7 @@ export const loader = defineSettingPageData({
   name: "titles.notifications",
   priority,
   disableIf: (ctx) => [
-    ctx.role === UserRole.Free || ctx.role === UserRole.FreeDeprecated,
+    ctx.role === UserRole.Free || ctx.role === UserRole.Trial,
     DisableWhy.NotActivation,
   ],
 })
