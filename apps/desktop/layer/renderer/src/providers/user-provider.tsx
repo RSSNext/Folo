@@ -1,6 +1,6 @@
 import { UserRole, UserRoleName } from "@follow/constants"
 import { getStorageNS } from "@follow/utils/ns"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
 import { setUserRole, setUserRoleEndDate, setWhoami } from "~/atoms/user"
@@ -21,18 +21,19 @@ export const UserProvider = () => {
     setIntegrationIdentify(session.user)
   }, [session?.user])
 
-  const roleEndDate = session?.roleEndAt
-    ? typeof session.roleEndAt === "string"
-      ? new Date(session.roleEndAt)
-      : session.roleEndAt
-    : undefined
-
+  const roleEndDate = useMemo(
+    () =>
+      session?.roleEndAt
+        ? typeof session.roleEndAt === "string"
+          ? new Date(session.roleEndAt)
+          : session.roleEndAt
+        : undefined,
+    [session?.roleEndAt],
+  )
   useEffect(() => {
     if (!session?.role) return
 
-    if (session.role) {
-      setUserRole(session.role as UserRole)
-    }
+    setUserRole(session.role as UserRole)
 
     if (roleEndDate) {
       setUserRoleEndDate(roleEndDate)

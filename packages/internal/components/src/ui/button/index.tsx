@@ -28,6 +28,7 @@ const motionBaseMap = {
 export const MotionButtonBase = ({
   ref,
   children,
+  disabled,
   ...rest
 }: HTMLMotionProps<"button"> & { ref?: React.Ref<HTMLButtonElement | null> }) => {
   const isMobile = useMobile()
@@ -35,7 +36,8 @@ export const MotionButtonBase = ({
     <m.button
       layout="size"
       initial
-      {...motionBaseMap[isMobile ? "mobile" : "pc"]}
+      disabled={disabled}
+      {...(disabled ? {} : motionBaseMap[isMobile ? "mobile" : "pc"])}
       {...rest}
       ref={ref}
     >
