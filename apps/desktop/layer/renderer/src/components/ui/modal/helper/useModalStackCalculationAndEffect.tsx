@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import { useEffect } from "react"
 
-import { modalStackAtom } from "./atom"
+import { modalStackAtom } from "../stacked/atom"
 
 export const useModalStackCalculationAndEffect = () => {
   const stack = useAtomValue(modalStackAtom)

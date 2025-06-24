@@ -4,10 +4,10 @@ import { redirect } from "react-router"
 
 import { getGeneralSettings } from "~/atoms/settings/general"
 import { ROUTE_ENTRY_PENDING, ROUTE_FEED_PENDING } from "~/constants"
-import { MobileFeedScreen } from "~/modules/app-layout/subscription-column/index"
 
 export function Component() {
-  return <MobileFeedScreen />
+  // TODO Write a mobile download page
+  return null
 }
 
 export const loader = () => {

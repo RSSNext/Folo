@@ -1,68 +1,39 @@
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { PanelSplitter } from "@follow/components/ui/divider/index.js"
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
-import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import type { FeedViewType } from "@follow/constants"
-import { DEV, IN_ELECTRON, PROD } from "@follow/shared/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
-import { preventDefault } from "@follow/utils/dom"
-import { cn } from "@follow/utils/utils"
+import { cn } from "@follow/utils"
 import { Slot } from "@radix-ui/react-slot"
 import { debounce } from "es-toolkit/compat"
 import type { PropsWithChildren } from "react"
 import * as React from "react"
-import { Suspense, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Trans } from "react-i18next"
 import { useResizable } from "react-resizable-layout"
-import { Outlet } from "react-router"
 
-import { setMainContainerElement, setRootContainerElement } from "~/atoms/dom"
-import { getIsZenMode, getUISettings, setUISetting, useUISettingKey } from "~/atoms/settings/ui"
+import { getIsZenMode, getUISettings, setUISetting } from "~/atoms/settings/ui"
 import {
   getTimelineColumnTempShow,
   setTimelineColumnTempShow,
   useTimelineColumnShow,
   useTimelineColumnTempShow,
 } from "~/atoms/sidebar"
-import { useLoginModalShow, useWhoami } from "~/atoms/user"
-import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
-import { ErrorComponentType } from "~/components/errors/enum"
-import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
-import { DeclarativeModal } from "~/components/ui/modal/stacked/declarative-modal"
 import { FloatingLayerScope } from "~/constants"
-import { ROOT_CONTAINER_ID } from "~/constants/dom"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
-import { EnvironmentIndicator } from "~/modules/app/EnvironmentIndicator"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
-import { LoginModalContent } from "~/modules/auth/LoginModalContent"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
-import { DebugRegistry } from "~/modules/debug/registry"
-import { CmdF } from "~/modules/panel/cmdf"
-import { SearchCmdK } from "~/modules/panel/cmdk"
-import { CmdNTrigger } from "~/modules/panel/cmdn"
 import { CornerPlayer } from "~/modules/player/corner-player"
 import { SubscriptionColumn } from "~/modules/subscription-column"
 import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/subscription-column/atom"
 import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
-import { AppNotificationContainer } from "~/modules/upgrade/lazy/index"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { NewUserGuide } from "./index.shared"
-
-const errorTypes = [
-  ErrorComponentType.Page,
-  ErrorComponentType.FeedFoundCanBeFollow,
-  ErrorComponentType.FeedNotFound,
-] as ErrorComponentType[]
-
-export function MainDestopLayout() {
-  const isAuthFail = useLoginModalShow()
-  const user = useWhoami()
-
+export const SubscriptionColumnContainer = () => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   const sensors = useSensors(
@@ -72,6 +43,7 @@ export function MainDestopLayout() {
       },
     }),
   )
+
   const { mutate } = useBatchUpdateSubscription()
   const handleDragEnd = React.useCallback(
     (event: DragEndEvent) => {
@@ -92,93 +64,24 @@ export function MainDestopLayout() {
   )
 
   return (
-    <RootContainer ref={containerRef}>
-      {!PROD && <EnvironmentIndicator />}
+    <AppLayoutGridContainerProvider>
+      <FeedResponsiveResizerContainer containerRef={containerRef}>
+        <DndContext
+          autoScroll={{ threshold: { x: 0, y: 0.2 } }}
+          sensors={sensors}
+          collisionDetection={pointerWithin}
+          onDragEnd={handleDragEnd}
+        >
+          <SubscriptionColumn>
+            <CornerPlayer />
 
-      <Suspense>
-        <AppNotificationContainer />
-      </Suspense>
-      <AppLayoutGridContainerProvider>
-        <FeedResponsiveResizerContainer containerRef={containerRef}>
-          <DndContext
-            autoScroll={{ threshold: { x: 0, y: 0.2 } }}
-            sensors={sensors}
-            collisionDetection={pointerWithin}
-            onDragEnd={handleDragEnd}
-          >
-            <SubscriptionColumn>
-              <CornerPlayer />
+            <UpdateNotice />
 
-              <UpdateNotice />
-
-              <NetworkStatusIndicator />
-            </SubscriptionColumn>
-          </DndContext>
-        </FeedResponsiveResizerContainer>
-      </AppLayoutGridContainerProvider>
-
-      <main
-        ref={setMainContainerElement}
-        className="bg-theme-background flex min-w-0 flex-1 pt-[calc(var(--fo-window-padding-top)_-10px)] !outline-none"
-        // NOTE: tabIndex for main element can get by `document.activeElement`
-        tabIndex={-1}
-      >
-        <AppErrorBoundary errorType={errorTypes}>
-          <Outlet />
-        </AppErrorBoundary>
-      </main>
-
-      <NewUserGuide />
-
-      {isAuthFail && !user && (
-        <RootPortal>
-          <DeclarativeModal
-            id="login"
-            CustomModalComponent={PlainModal}
-            open
-            overlay
-            title="Login"
-            canClose={false}
-            clickOutsideToDismiss={false}
-          >
-            <LoginModalContent canClose={false} runtime={IN_ELECTRON ? "app" : "browser"} />
-          </DeclarativeModal>
-        </RootPortal>
-      )}
-
-      <SearchCmdK />
-      <CmdNTrigger />
-      {ELECTRON && <CmdF />}
-    </RootContainer>
-  )
-}
-
-const RootContainer = ({
-  ref,
-  children,
-}: PropsWithChildren & { ref?: React.Ref<HTMLDivElement | null> }) => {
-  const feedColWidth = useUISettingKey("feedColWidth")
-
-  const [elementRef, _setElementRef] = useState<HTMLDivElement | null>(null)
-  const setElementRef = React.useCallback((el: HTMLDivElement | null) => {
-    _setElementRef(el)
-    setRootContainerElement(el)
-  }, [])
-  React.useImperativeHandle(ref, () => elementRef!)
-  return (
-    <div
-      ref={setElementRef}
-      style={
-        {
-          "--fo-feed-col-w": `${feedColWidth}px`,
-        } as any
-      }
-      className="relative z-0 flex h-screen overflow-hidden print:h-auto print:overflow-auto"
-      onContextMenu={preventDefault}
-      id={ROOT_CONTAINER_ID}
-    >
-      {children}
-    </div>
+            <NetworkStatusIndicator />
+          </SubscriptionColumn>
+        </DndContext>
+      </FeedResponsiveResizerContainer>
+    </AppLayoutGridContainerProvider>
   )
 }
 
@@ -327,28 +230,4 @@ const FeedResponsiveResizerContainer = ({
       )}
     </>
   )
-}
-
-if (DEV) {
-  DebugRegistry.add("New User Guide", () => {
-    import("~/modules/new-user-guide/guide-modal-content").then((m) => {
-      window.presentModal({
-        title: "New User Guide",
-        content: ({ dismiss }) => (
-          <m.GuideModalContent
-            onClose={() => {
-              dismiss()
-            }}
-          />
-        ),
-
-        CustomModalComponent: PlainModal,
-        modalContainerClassName: "flex items-center justify-center",
-
-        canClose: false,
-        clickOutsideToDismiss: false,
-        overlay: true,
-      })
-    })
-  })
 }

@@ -5,8 +5,8 @@ import { createContext, createElement, use } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import type { ModalActionsInternal } from "~/components/ui/modal"
-import type { UseAsyncFetcher } from "~/components/ui/modal/helper/async-loading"
-import { AsyncModalContent } from "~/components/ui/modal/helper/async-loading"
+import type { UseAsyncFetcher } from "~/components/ui/modal/stacked/AsyncModalContent"
+import { AsyncModalContent } from "~/components/ui/modal/stacked/AsyncModalContent"
 import { NoopChildren } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 

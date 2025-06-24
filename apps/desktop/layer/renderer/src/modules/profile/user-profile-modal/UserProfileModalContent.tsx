@@ -27,9 +27,9 @@ import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
-import { getSocialLink, socialCopyMap, socialIconClassNames } from "./user-profile-modal.constants"
-import type { SubscriptionModalContentProps } from "./user-profile-modal.shared"
-import { SubscriptionItems } from "./user-profile-modal.shared"
+import { getSocialLink, socialCopyMap, socialIconClassNames } from "./constants"
+import type { SubscriptionModalContentProps } from "./shared"
+import { SubscriptionItems } from "./shared"
 
 type ItemVariant = "loose" | "compact"
 const itemVariantAtom = atomWithStorage(

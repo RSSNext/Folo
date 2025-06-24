@@ -18,7 +18,7 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
 
 import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
 
-export const RightContentDesktop = () => {
+export const RightContent = () => {
   const { entryId } = useParams()
   const { view } = useRouteParams()
   const navigate = useNavigateEntry()

@@ -10,7 +10,9 @@ import { useInboxById, useInboxList } from "@follow/store/inbox/hooks"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { InboxActions, InboxEmail, InboxSecret } from "./InboxTable.shared"
+import { InboxActions } from "./InboxActions"
+import { InboxEmail } from "./InboxEmail"
+import { InboxSecret } from "./InboxSecret"
 
 export const InboxTable = () => {
   const { t } = useTranslation()

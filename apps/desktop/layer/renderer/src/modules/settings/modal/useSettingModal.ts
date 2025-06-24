@@ -3,14 +3,14 @@ import { createElement, useCallback } from "react"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
-import { SettingModalContent } from "./content"
+import { SettingModalContent } from "./SettingModalContent"
 
 export const useSettingModal = () => {
   const { present } = useModalStack()
 
   return useCallback(
-    (initialTab?: string) =>
-      present({
+    (initialTab?: string) => {
+      return present({
         title: "Setting",
         id: "setting",
         content: () =>
@@ -19,7 +19,8 @@ export const useSettingModal = () => {
           }),
         CustomModalComponent: PlainModal,
         modalContainerClassName: "overflow-hidden",
-      }),
+      })
+    },
     [present],
   )
 }

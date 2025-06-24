@@ -6,7 +6,7 @@ import { lazy } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useWhoami } from "~/atoms/user"
-import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
+import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { useUserSubscriptionsQuery } from "~/modules/profile/hooks"
 

@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { parse } from "tldts"
 
 import { useWhoami } from "~/atoms/user"
-import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
+import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"

@@ -1,11 +1,8 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { MdiMeditation } from "@follow/components/icons/Meditation.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { DividerVertical } from "@follow/components/ui/divider/Divider.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
 import { Slider } from "@follow/components/ui/slider/index.js"
-import { tracker } from "@follow/tracker"
 import { clsx, cn } from "@follow/utils/utils"
 import {
   HoverCard,
@@ -14,39 +11,12 @@ import {
   HoverCardTrigger,
 } from "@radix-ui/react-hover-card"
 import { debounce } from "es-toolkit/compat"
-import type { FC } from "react"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 
-import {
-  setUISetting,
-  useIsZenMode,
-  useRealInWideMode,
-  useSetZenMode,
-  useUISettingKey,
-} from "~/atoms/settings/ui"
-import { useAIDailyReportModal } from "~/modules/ai/ai-daily/useAIDailyReportModal"
-import { COMMAND_ID } from "~/modules/command/commands/id"
-import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
+import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 
-import { setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
-
-export const DailyReportButton: FC = () => {
-  const present = useAIDailyReportModal()
-  const { t } = useTranslation()
-
-  return (
-    <ActionButton
-      onClick={() => {
-        present()
-        tracker.dailyReportModal()
-      }}
-      tooltip={t("entry_list_header.daily_report")}
-    >
-      <i className="i-mgc-ai-cute-re" />
-    </ActionButton>
-  )
-}
+import { setMasonryColumnValue, useMasonryColumnValue } from "../../atoms"
 
 export const SwitchToMasonryButton = () => {
   const isMasonry = useUISettingKey("pictureViewMasonry")
@@ -139,58 +109,4 @@ export const SwitchToMasonryButton = () => {
       </HoverCardPortal>
     </HoverCard>
   )
-}
-
-export const WideModeButton = () => {
-  const isWideMode = useRealInWideMode()
-  const isZenMode = useIsZenMode()
-  const { t } = useTranslation()
-
-  const setIsZenMode = useSetZenMode()
-  const shortcuts = useCommandShortcuts()
-  return (
-    <ActionButton
-      shortcut={shortcuts[COMMAND_ID.layout.toggleWideMode]}
-      onClick={() => {
-        if (isZenMode) {
-          setIsZenMode(false)
-        } else {
-          setUISetting("wideMode", !isWideMode)
-          // TODO: Remove this after useMeasure can get bounds in time
-          window.dispatchEvent(new Event("resize"))
-        }
-        tracker.wideMode({ mode: isWideMode ? "wide" : "normal" })
-      }}
-      tooltip={
-        isZenMode
-          ? t("zen.exit")
-          : !isWideMode
-            ? t("entry_list_header.switch_to_widemode")
-            : t("entry_list_header.switch_to_normalmode")
-      }
-    >
-      {isZenMode ? (
-        <MdiMeditation />
-      ) : (
-        <i
-          className={cn(isWideMode ? "i-mgc-align-justify-cute-re" : "i-mgc-align-left-cute-re")}
-        />
-      )}
-    </ActionButton>
-  )
-}
-
-export const AppendTaildingDivider = ({ children }: { children: React.ReactNode }) => (
-  <>
-    {children}
-    {React.Children.toArray(children).filter(Boolean).length > 0 && (
-      <DividerVertical className="mx-2 w-px" />
-    )}
-  </>
-)
-
-export interface EntryListHeaderProps {
-  refetch: () => void
-  isRefreshing: boolean
-  hasUpdate: boolean
 }
