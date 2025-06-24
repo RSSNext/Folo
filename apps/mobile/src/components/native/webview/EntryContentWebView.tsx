@@ -7,15 +7,17 @@ import { useAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
 import { TouchableOpacity, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 
+import { useLightboxControls } from "../../lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
-import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
+import { imagePreviewEventAtom, prepareEntryRenderWebView, SharedWebViewModule } from "./index"
 import { NativeWebView } from "./native-webview"
 
 type EntryContentWebViewProps = {
@@ -49,6 +51,8 @@ const setReaderRenderInlineStyle = (value: boolean) => {
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
+  const [imagePreviewEvent, setImagePreviewEvent] = useAtom(imagePreviewEventAtom)
+  const { openLightbox } = useLightboxControls()
 
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
@@ -59,6 +63,32 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const translation = useEntryTranslation(entryId, language)
 
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
+
+  // Handle image preview events
+  useEffect(() => {
+    if (imagePreviewEvent) {
+      const { imageUrls, index } = imagePreviewEvent
+
+      // Use the same pattern as in the Android implementation
+      runOnUI(() => {
+        "worklet"
+        runOnJS(openLightbox)({
+          images: imageUrls.map((url: string) => ({
+            uri: url,
+            dimensions: null,
+            thumbUri: url,
+            thumbDimensions: null,
+            thumbRect: null,
+            type: "image",
+          })),
+          index,
+        })
+      })()
+
+      // Reset the atom
+      setImagePreviewEvent(null)
+    }
+  }, [imagePreviewEvent, openLightbox, setImagePreviewEvent])
 
   useEffect(() => {
     setNoMedia(!!noMedia)

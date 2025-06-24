@@ -9,9 +9,11 @@ import ExpoModulesCore
 import WebKit
 
 let onContentHeightChanged = "onContentHeightChanged"
+let onImagePreview = "onImagePreview"
 
 public class SharedWebViewModule: Module {
     private var pendingJavaScripts: [String] = []
+    private var notificationObserver: NSObjectProtocol?
 
     public static var sharedWebView: WKWebView? {
         WebViewManager.shared
@@ -43,6 +45,8 @@ public class SharedWebViewModule: Module {
         }
 
         Events(onContentHeightChanged)
+        Events(onImagePreview)
+
         var cancellable: AnyCancellable?
         OnStartObserving {
             cancellable = WebViewManager.state.$contentHeight
@@ -50,9 +54,24 @@ public class SharedWebViewModule: Module {
                 .sink { [weak self] height in
                     self?.sendEvent(onContentHeightChanged, ["height": height])
                 }
+
+            self.notificationObserver = NotificationCenter.default.addObserver(
+                forName: Notification.Name("ImagePreview"),
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                if let imageUrls = notification.userInfo?["imageUrls"] as? [String],
+                   let index = notification.userInfo?["index"] as? Int {
+                    self?.sendEvent(onImagePreview, ["imageUrls": imageUrls, "index": index])
+                }
+            }
         }
         OnStopObserving {
             cancellable?.cancel()
+            if let observer = self.notificationObserver {
+                NotificationCenter.default.removeObserver(observer)
+                self.notificationObserver = nil
+            }
         }
     }
 
