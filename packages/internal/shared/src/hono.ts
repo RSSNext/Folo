@@ -6246,23 +6246,6 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        stripeCustomerId: drizzle_orm_pg_core.PgColumn<{
-            name: "stripe_customer_id";
-            tableName: "user";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
         twoFactorEnabled: drizzle_orm_pg_core.PgColumn<{
             name: "two_factor_enabled";
             tableName: "user";
@@ -6383,6 +6366,57 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
                 youtube: string;
             };
         }>;
+        stripeCustomerId: drizzle_orm_pg_core.PgColumn<{
+            name: "stripe_customer_id";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        role: drizzle_orm_pg_core.PgColumn<{
+            name: "role";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        roleEndAt: drizzle_orm_pg_core.PgColumn<{
+            name: "role_end_at";
+            tableName: "user";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -6534,23 +6568,6 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        stripeCustomerId: drizzle_orm_pg_core.PgColumn<{
-            name: "stripe_customer_id";
-            tableName: "user";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
         twoFactorEnabled: drizzle_orm_pg_core.PgColumn<{
             name: "two_factor_enabled";
             tableName: "user";
@@ -6671,6 +6688,57 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
                 youtube: string;
             };
         }>;
+        stripeCustomerId: drizzle_orm_pg_core.PgColumn<{
+            name: "stripe_customer_id";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        role: drizzle_orm_pg_core.PgColumn<{
+            name: "role";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        roleEndAt: drizzle_orm_pg_core.PgColumn<{
+            name: "role_end_at";
+            tableName: "user";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -6684,7 +6752,6 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     handle: zod.ZodNullable<zod.ZodString>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
-    stripeCustomerId: zod.ZodNullable<zod.ZodString>;
     twoFactorEnabled: zod.ZodNullable<zod.ZodBoolean>;
     isAnonymous: zod.ZodNullable<zod.ZodBoolean>;
     suspended: zod.ZodNullable<zod.ZodBoolean>;
@@ -6703,6 +6770,9 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
         facebook: string;
         youtube: string;
     }>>;
+    stripeCustomerId: zod.ZodNullable<zod.ZodString>;
+    role: zod.ZodNullable<zod.ZodString>;
+    roleEndAt: zod.ZodNullable<zod.ZodDate>;
 }, "email">, "strip", zod.ZodTypeAny, {
     id: string;
     name: string | null;
@@ -6711,7 +6781,6 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     handle: string | null;
     createdAt: Date;
     updatedAt: Date;
-    stripeCustomerId: string | null;
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
@@ -6724,6 +6793,9 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
         facebook: string;
         youtube: string;
     } | null;
+    stripeCustomerId: string | null;
+    role: string | null;
+    roleEndAt: Date | null;
 }, {
     id: string;
     name: string | null;
@@ -6732,7 +6804,6 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     handle: string | null;
     createdAt: Date;
     updatedAt: Date;
-    stripeCustomerId: string | null;
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
@@ -6745,6 +6816,9 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
         facebook: string;
         youtube: string;
     } | null;
+    stripeCustomerId: string | null;
+    role: string | null;
+    roleEndAt: Date | null;
 }>;
 declare const account: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "account";
@@ -8704,6 +8778,8 @@ declare const auth: {
                         bio: string;
                         website: string;
                         socialLinks: string;
+                        role: string;
+                        roleEndAt: Date;
                     } & {
                         id: string;
                         name: string;
@@ -8717,6 +8793,8 @@ declare const auth: {
                         bio: string;
                         website: string;
                         socialLinks: string;
+                        role: string;
+                        roleEndAt: Date;
                     } & {
                         id: string;
                         name: string;
@@ -8730,6 +8808,8 @@ declare const auth: {
                         bio: string;
                         website: string;
                         socialLinks: string;
+                        role: string;
+                        roleEndAt: Date;
                     };
                 } | null;
             } : {
@@ -8755,6 +8835,8 @@ declare const auth: {
                     bio: string;
                     website: string;
                     socialLinks: string;
+                    role: string;
+                    roleEndAt: Date;
                 } & {
                     id: string;
                     name: string;
@@ -8768,6 +8850,8 @@ declare const auth: {
                     bio: string;
                     website: string;
                     socialLinks: string;
+                    role: string;
+                    roleEndAt: Date;
                 } & {
                     id: string;
                     name: string;
@@ -8781,6 +8865,8 @@ declare const auth: {
                     bio: string;
                     website: string;
                     socialLinks: string;
+                    role: string;
+                    roleEndAt: Date;
                 };
             } | null>;
             options: {
@@ -8900,11 +8986,15 @@ declare const auth: {
                     bio: string;
                     website: string;
                     socialLinks: string;
+                    role: string;
+                    roleEndAt: Date;
                 } & {
                     handle?: string | null | undefined;
                     bio?: string | null | undefined;
                     website?: string | null | undefined;
                     socialLinks?: string | null | undefined;
+                    role?: string | null | undefined;
+                    roleEndAt?: Date | null | undefined;
                 };
             } & {
                 method?: "POST" | undefined;
@@ -8989,11 +9079,15 @@ declare const auth: {
                             bio: string;
                             website: string;
                             socialLinks: string;
+                            role: string;
+                            roleEndAt: Date;
                         } & {
                             handle?: string | null | undefined;
                             bio?: string | null | undefined;
                             website?: string | null | undefined;
                             socialLinks?: string | null | undefined;
+                            role?: string | null | undefined;
+                            roleEndAt?: Date | null | undefined;
                         };
                     };
                     openapi: {
@@ -10030,6 +10124,12 @@ declare const auth: {
                             };
                             website: {
                                 type: "string";
+                            };
+                            role: {
+                                type: "string";
+                            };
+                            roleEndAt: {
+                                type: "date";
                             };
                         };
                         changeEmail: {
@@ -11986,6 +12086,8 @@ declare const auth: {
                                             socialLinks: Record<string, string> | null;
                                             bio: string | null;
                                             website: string | null;
+                                            role: string | null;
+                                            roleEndAt: Date | null;
                                         };
                                         session: {
                                             id: string;
@@ -11997,15 +12099,8 @@ declare const auth: {
                                             ipAddress?: string | null | undefined | undefined;
                                             userAgent?: string | null | undefined | undefined;
                                         };
-                                        invitation: true | {
-                                            code: string;
-                                            createdAt: Date | null;
-                                            usedAt: Date | null;
-                                            fromUserId: string;
-                                            toUserId: string | null;
-                                        } | undefined;
                                         role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                                        roleEndDate: Date | undefined;
+                                        roleEndAt: Date | null | undefined;
                                     } | null;
                                 } : {
                                     user: {
@@ -12023,6 +12118,8 @@ declare const auth: {
                                         socialLinks: Record<string, string> | null;
                                         bio: string | null;
                                         website: string | null;
+                                        role: string | null;
+                                        roleEndAt: Date | null;
                                     };
                                     session: {
                                         id: string;
@@ -12034,15 +12131,8 @@ declare const auth: {
                                         ipAddress?: string | null | undefined | undefined;
                                         userAgent?: string | null | undefined | undefined;
                                     };
-                                    invitation: true | {
-                                        code: string;
-                                        createdAt: Date | null;
-                                        usedAt: Date | null;
-                                        fromUserId: string;
-                                        toUserId: string | null;
-                                    } | undefined;
                                     role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                                    roleEndDate: Date | undefined;
+                                    roleEndAt: Date | null | undefined;
                                 } | null>;
                                 options: {
                                     method: "GET";
@@ -12434,6 +12524,12 @@ declare const auth: {
                                     };
                                     website: {
                                         type: "string";
+                                    };
+                                    role: {
+                                        type: "string";
+                                    };
+                                    roleEndAt: {
+                                        type: "date";
                                     };
                                 };
                                 changeEmail: {
@@ -14390,6 +14486,8 @@ declare const auth: {
                                                     socialLinks: Record<string, string> | null;
                                                     bio: string | null;
                                                     website: string | null;
+                                                    role: string | null;
+                                                    roleEndAt: Date | null;
                                                 };
                                                 session: {
                                                     id: string;
@@ -14401,15 +14499,8 @@ declare const auth: {
                                                     ipAddress?: string | null | undefined | undefined;
                                                     userAgent?: string | null | undefined | undefined;
                                                 };
-                                                invitation: true | {
-                                                    code: string;
-                                                    createdAt: Date | null;
-                                                    usedAt: Date | null;
-                                                    fromUserId: string;
-                                                    toUserId: string | null;
-                                                } | undefined;
                                                 role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                                                roleEndDate: Date | undefined;
+                                                roleEndAt: Date | null | undefined;
                                             } | null;
                                         } : {
                                             user: {
@@ -14427,6 +14518,8 @@ declare const auth: {
                                                 socialLinks: Record<string, string> | null;
                                                 bio: string | null;
                                                 website: string | null;
+                                                role: string | null;
+                                                roleEndAt: Date | null;
                                             };
                                             session: {
                                                 id: string;
@@ -14438,15 +14531,8 @@ declare const auth: {
                                                 ipAddress?: string | null | undefined | undefined;
                                                 userAgent?: string | null | undefined | undefined;
                                             };
-                                            invitation: true | {
-                                                code: string;
-                                                createdAt: Date | null;
-                                                usedAt: Date | null;
-                                                fromUserId: string;
-                                                toUserId: string | null;
-                                            } | undefined;
                                             role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                                            roleEndDate: Date | undefined;
+                                            roleEndAt: Date | null | undefined;
                                         } | null>;
                                         options: {
                                             method: "GET";
@@ -17893,6 +17979,8 @@ declare const auth: {
                         socialLinks: Record<string, string> | null;
                         bio: string | null;
                         website: string | null;
+                        role: string | null;
+                        roleEndAt: Date | null;
                     };
                     session: {
                         id: string;
@@ -17904,15 +17992,8 @@ declare const auth: {
                         ipAddress?: string | null | undefined | undefined;
                         userAgent?: string | null | undefined | undefined;
                     };
-                    invitation: true | {
-                        code: string;
-                        createdAt: Date | null;
-                        usedAt: Date | null;
-                        fromUserId: string;
-                        toUserId: string | null;
-                    } | undefined;
                     role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                    roleEndDate: Date | undefined;
+                    roleEndAt: Date | null | undefined;
                 } | null;
             } : {
                 user: {
@@ -17930,6 +18011,8 @@ declare const auth: {
                     socialLinks: Record<string, string> | null;
                     bio: string | null;
                     website: string | null;
+                    role: string | null;
+                    roleEndAt: Date | null;
                 };
                 session: {
                     id: string;
@@ -17941,15 +18024,8 @@ declare const auth: {
                     ipAddress?: string | null | undefined | undefined;
                     userAgent?: string | null | undefined | undefined;
                 };
-                invitation: true | {
-                    code: string;
-                    createdAt: Date | null;
-                    usedAt: Date | null;
-                    fromUserId: string;
-                    toUserId: string | null;
-                } | undefined;
                 role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                roleEndDate: Date | undefined;
+                roleEndAt: Date | null | undefined;
             } | null>;
             options: {
                 method: "GET";
@@ -18042,6 +18118,12 @@ declare const auth: {
                 };
                 website: {
                     type: "string";
+                };
+                role: {
+                    type: "string";
+                };
+                roleEndAt: {
+                    type: "date";
                 };
             };
             changeEmail: {
@@ -19998,6 +20080,8 @@ declare const auth: {
                                 socialLinks: Record<string, string> | null;
                                 bio: string | null;
                                 website: string | null;
+                                role: string | null;
+                                roleEndAt: Date | null;
                             };
                             session: {
                                 id: string;
@@ -20009,15 +20093,8 @@ declare const auth: {
                                 ipAddress?: string | null | undefined | undefined;
                                 userAgent?: string | null | undefined | undefined;
                             };
-                            invitation: true | {
-                                code: string;
-                                createdAt: Date | null;
-                                usedAt: Date | null;
-                                fromUserId: string;
-                                toUserId: string | null;
-                            } | undefined;
                             role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                            roleEndDate: Date | undefined;
+                            roleEndAt: Date | null | undefined;
                         } | null;
                     } : {
                         user: {
@@ -20035,6 +20112,8 @@ declare const auth: {
                             socialLinks: Record<string, string> | null;
                             bio: string | null;
                             website: string | null;
+                            role: string | null;
+                            roleEndAt: Date | null;
                         };
                         session: {
                             id: string;
@@ -20046,15 +20125,8 @@ declare const auth: {
                             ipAddress?: string | null | undefined | undefined;
                             userAgent?: string | null | undefined | undefined;
                         };
-                        invitation: true | {
-                            code: string;
-                            createdAt: Date | null;
-                            usedAt: Date | null;
-                            fromUserId: string;
-                            toUserId: string | null;
-                        } | undefined;
                         role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.FreeDeprecated;
-                        roleEndDate: Date | undefined;
+                        roleEndAt: Date | null | undefined;
                     } | null>;
                     options: {
                         method: "GET";
@@ -20364,6 +20436,8 @@ declare const auth: {
                 bio: string;
                 website: string;
                 socialLinks: string;
+                role: string;
+                roleEndAt: Date;
                 stripeCustomerId?: string | null | undefined;
                 twoFactorEnabled: boolean | null | undefined;
             };
@@ -20671,8 +20745,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             input: {
                 json: {
                     messages: {
-                        content: string;
                         role: "user" | "assistant";
+                        content: string;
                     }[];
                 };
             };
@@ -20846,6 +20920,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -20856,6 +20932,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     } | undefined;
                     list?: {
@@ -20889,6 +20967,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -20899,6 +20979,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -20911,6 +20993,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     } | undefined;
                     docs?: string | undefined;
@@ -21020,6 +21104,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -21030,6 +21116,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[];
                     };
@@ -21110,6 +21198,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     read: boolean | null;
@@ -21206,6 +21296,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                 } | undefined;
@@ -21367,6 +21459,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21377,6 +21471,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     read: boolean | null;
@@ -21475,6 +21571,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21485,6 +21583,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                 } | undefined;
@@ -21641,6 +21741,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21651,6 +21753,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     tipAmount: number;
@@ -21728,6 +21832,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -21738,6 +21844,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     readCount: number;
@@ -21903,7 +22011,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     handle: string | null;
                     createdAt: string;
                     updatedAt: string;
-                    stripeCustomerId: string | null;
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
@@ -21916,6 +22023,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         facebook: string;
                         youtube: string;
                     } | null;
+                    stripeCustomerId: string | null;
+                    role: string | null;
+                    roleEndAt: string | null;
                 };
             };
             outputFormat: "json";
@@ -21941,7 +22051,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
@@ -21954,6 +22063,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             facebook: string;
                             youtube: string;
                         } | null;
+                        stripeCustomerId: string | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     };
                 };
             };
@@ -22128,6 +22240,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -22138,6 +22252,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     feedId: string;
@@ -22151,7 +22267,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             handle: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            stripeCustomerId: string | null;
                             twoFactorEnabled: boolean | null;
                             isAnonymous: boolean | null;
                             suspended: boolean | null;
@@ -22164,6 +22279,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 facebook: string;
                                 youtube: string;
                             } | null;
+                            stripeCustomerId: string | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[];
                     };
                 } | {
@@ -22204,6 +22322,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -22214,6 +22334,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -22226,6 +22348,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     listId: string;
@@ -22255,6 +22379,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     inboxId: string;
@@ -22557,7 +22683,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
@@ -22570,6 +22695,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             facebook: string;
                             youtube: string;
                         } | null;
+                        stripeCustomerId: string | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                     toUser?: {
                         id: string;
@@ -22579,7 +22707,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
@@ -22592,6 +22719,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             facebook: string;
                             youtube: string;
                         } | null;
+                        stripeCustomerId: string | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                     toFeed?: {
                         id: string;
@@ -22613,6 +22743,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -22623,6 +22755,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     } | null | undefined;
                 }[];
@@ -22740,7 +22874,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         handle: string | null;
                         createdAt: string;
                         updatedAt: string;
-                        stripeCustomerId: string | null;
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
@@ -22753,6 +22886,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             facebook: string;
                             youtube: string;
                         } | null;
+                        stripeCustomerId: string | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     };
                     userId: string;
                     rank: number | null;
@@ -22820,6 +22956,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -22830,6 +22968,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             }[] | null | undefined;
                         };
                         language: string | null;
@@ -22895,6 +23035,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             } | null | undefined;
                             tipUsers?: {
                                 id: string;
@@ -22905,6 +23047,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                                 createdAt: string;
                                 updatedAt: string;
                                 suspended: boolean | null;
+                                role: string | null;
+                                roleEndAt: string | null;
                             }[] | null | undefined;
                         }[] | undefined;
                         ownerUserId?: string | null | undefined;
@@ -22917,6 +23061,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                     };
                     readCount: number;
@@ -22984,6 +23130,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -22994,6 +23142,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -23006,6 +23156,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                 };
             };
@@ -23089,6 +23241,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -23099,6 +23253,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     }[] | undefined;
                     ownerUserId?: string | null | undefined;
@@ -23112,6 +23268,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                     purchaseAmount?: number | undefined;
                 }[];
@@ -23154,6 +23312,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                     tipUsers?: {
                         id: string;
@@ -23164,6 +23324,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     }[] | null | undefined;
                 }[];
             };
@@ -23290,6 +23452,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                 };
             };
@@ -23425,6 +23589,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         createdAt: string;
                         updatedAt: string;
                         suspended: boolean | null;
+                        role: string | null;
+                        roleEndAt: string | null;
                     } | null | undefined;
                 }[];
             };
@@ -23576,7 +23742,6 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     handle: string | null;
                     createdAt: string;
                     updatedAt: string;
-                    stripeCustomerId: string | null;
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
@@ -23589,6 +23754,9 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         facebook: string;
                         youtube: string;
                     } | null;
+                    stripeCustomerId: string | null;
+                    role: string | null;
+                    roleEndAt: string | null;
                 }[];
             };
             outputFormat: "json";
@@ -23872,6 +24040,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         } | null | undefined;
                         tipUsers?: {
                             id: string;
@@ -23882,6 +24052,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             createdAt: string;
                             updatedAt: string;
                             suspended: boolean | null;
+                            role: string | null;
+                            roleEndAt: string | null;
                         }[] | null | undefined;
                     };
                     analytics: {

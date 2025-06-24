@@ -21,10 +21,10 @@ export const UserProvider = () => {
     setIntegrationIdentify(session.user)
   }, [session?.user])
 
-  const roleEndDate = session?.roleEndDate
-    ? typeof session.roleEndDate === "string"
-      ? new Date(session.roleEndDate)
-      : session.roleEndDate
+  const roleEndDate = session?.roleEndAt
+    ? typeof session.roleEndAt === "string"
+      ? new Date(session.roleEndAt)
+      : session.roleEndAt
     : undefined
 
   useEffect(() => {
@@ -42,9 +42,9 @@ export const UserProvider = () => {
     if (session.role && session.role !== UserRole.PrePro && !isToastDismissed) {
       toast.info(
         session.role === UserRole.Free || session.role === UserRole.FreeDeprecated
-          ? "You are currently on a trial plan. Some features may be limited."
+          ? "You are currently on the Free plan. Some features may be limited."
           : session.role === UserRole.PreProTrial
-            ? `You are currently on a preview plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
+            ? `You are currently on the Pro Trial plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
             : "",
         {
           duration: Number.POSITIVE_INFINITY,
