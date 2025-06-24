@@ -1,3 +1,4 @@
+import { cn } from "@follow/utils"
 import { useCallback, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
@@ -14,6 +15,7 @@ import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScree
 import { TermsMarkdown, TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
 import { EmailLogin, EmailSignUp } from "./email"
+import { ReferralForm } from "./referral"
 import { SocialLogin } from "./social"
 
 export function Login() {
@@ -65,6 +67,7 @@ export function Login() {
         </View>
       </TouchableWithoutFeedback>
       <TermsCheckBox />
+      {isRegister && <ReferralForm className={cn(isEmail ? "max-w-sm" : "px-6")} />}
       <View className="mt-14">
         {isEmail ? (
           <Text

@@ -16,6 +16,7 @@ export type UserModel = OptionalKey<
   | "bio"
   | "website"
   | "socialLinks"
+  | "stripeCustomerId"
 >
 
 export type ExtractBizResponse<T extends (...args: any[]) => any> = Exclude<

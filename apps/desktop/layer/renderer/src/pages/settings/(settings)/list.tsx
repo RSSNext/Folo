@@ -11,7 +11,10 @@ export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.lists",
   priority,
-  disableIf: (ctx) => [ctx.role === UserRole.Trial, DisableWhy.NotActivation],
+  disableIf: (ctx) => [
+    ctx.role === UserRole.Free || ctx.role === UserRole.Trial,
+    DisableWhy.NotActivation,
+  ],
   hideIf: (ctx) => ctx.isInMASReview,
 })
 
