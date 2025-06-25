@@ -3,7 +3,7 @@ import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
 import { use, useCallback, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { ScrollElementContext, ScrollElementUpdateContext } from "./ctx"
+import { ScrollElementContext, ScrollElementEventsContext } from "./ctx"
 
 const THRESHOLD = 0
 export const useMaskScrollArea = <T extends HTMLElement = HTMLElement>({
@@ -102,4 +102,4 @@ export const useMaskScrollArea = <T extends HTMLElement = HTMLElement>({
  */
 export const useScrollViewElement = () => use(ScrollElementContext)
 
-export const useScrollElementUpdate = () => use(ScrollElementUpdateContext)
+export const useScrollElementUpdate = () => use(ScrollElementEventsContext)

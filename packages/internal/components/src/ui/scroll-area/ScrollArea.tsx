@@ -3,7 +3,7 @@ import { cn } from "@follow/utils/utils"
 import * as ScrollAreaBase from "@radix-ui/react-scroll-area"
 import * as React from "react"
 
-import { ScrollElementContext, ScrollElementUpdateContext } from "./ctx"
+import { ScrollElementContext, ScrollElementEventsContext } from "./ctx"
 import styles from "./index.module.css"
 
 const Corner = ({
@@ -161,9 +161,11 @@ export const ScrollArea = ({
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
+  const events = React.useMemo(() => ({ onUpdateMaxScroll }), [onUpdateMaxScroll])
+
   return (
     <ScrollElementContext value={viewportRef}>
-      <ScrollElementUpdateContext value={{ onUpdateMaxScroll }}>
+      <ScrollElementEventsContext value={events}>
         <Root className={rootClassName}>
           <Viewport
             ref={setViewportRef}
@@ -178,7 +180,7 @@ export const ScrollArea = ({
           </Viewport>
           <Scrollbar orientation={orientation} className={scrollbarClassName} />
         </Root>
-      </ScrollElementUpdateContext>
+      </ScrollElementEventsContext>
     </ScrollElementContext>
   )
 }
