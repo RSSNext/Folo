@@ -11,6 +11,8 @@ import { useUserRole, useUserRoleEndDate } from "~/atoms/user"
 import { subscription } from "~/lib/auth"
 import { useReferralInfo } from "~/queries/referral"
 
+import { useSetSettingTab } from "../modal/context"
+
 // Plan configuration types
 interface Plan {
   id: string
@@ -40,7 +42,7 @@ const PLAN_CONFIGS: Plan[] = [
     id: "free",
     title: UserRoleName[UserRole.Free],
     price: "$0",
-    period: "forever",
+    period: "",
     features: ["50 feeds", "10 lists"],
     isPopular: false,
     role: UserRole.Free,
@@ -49,10 +51,10 @@ const PLAN_CONFIGS: Plan[] = [
   {
     id: "pro-preview",
     title: UserRoleName[UserRole.PrePro],
-    price: "$1",
-    period: "per preview",
+    price: "$1 or 3 invitations",
+    period: "",
     features: ["1000 feeds and lists", "10 inboxes", "10 actions", "100 webhooks"],
-    isPopular: true,
+    isPopular: false,
     role: UserRole.PrePro,
     tier: PLAN_TIER_MAP[UserRole.PrePro],
   },
@@ -114,6 +116,7 @@ export function SettingPlan() {
               key={plan.id}
               plan={plan}
               currentUserRole={role || null}
+              daysLeft={daysLeft}
               isCurrentPlan={
                 role === plan.role ||
                 (plan.role === UserRole.PrePro && role === UserRole.PreProTrial)
@@ -277,64 +280,78 @@ interface UpgradeSectionProps {
   onUpgrade: () => void
 }
 
-const UpgradeSection = ({ skipPrice, onUpgrade }: UpgradeSectionProps) => (
-  <div className="border-fill-tertiary border-t pt-4">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm font-medium">Skip the wait</p>
-        <p className="text-text-secondary text-xs">Get instant access to Pro Preview</p>
+const UpgradeSection = ({ skipPrice, onUpgrade }: UpgradeSectionProps) => {
+  const setTab = useSetSettingTab()
+
+  return (
+    <div className="border-fill-tertiary border-t pt-4">
+      <div className="flex items-center justify-end gap-4">
+        <Button
+          size="sm"
+          buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
+          onClick={() => {
+            setTab("referral")
+          }}
+        >
+          Invite friends
+        </Button>
+        <Button
+          size="sm"
+          buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
+          onClick={onUpgrade}
+        >
+          Pay ${skipPrice} Now
+        </Button>
       </div>
-      <Button
-        size="sm"
-        buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-        onClick={onUpgrade}
-      >
-        Pay ${skipPrice} Now
-      </Button>
     </div>
-  </div>
-)
+  )
+}
 
 // Reusable PlanCard Component
 interface PlanCardProps {
   plan: Plan
   currentUserRole: UserRole | null
   isCurrentPlan: boolean
+  daysLeft: number | null
 }
 
-const PlanCard = ({ plan, currentUserRole, isCurrentPlan }: PlanCardProps) => {
-  const getPlanActionType = (
-    currentUserRole: UserRole | null,
-    targetPlan: Plan,
-  ): "current" | "upgrade" | "downgrade" | "coming-soon" => {
-    if (targetPlan.isComingSoon) return "coming-soon"
+const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardProps) => {
+  const getPlanActionType = (): "current" | "upgrade" | "coming-soon" | "in-trial" | null => {
+    if (plan.isComingSoon) return "coming-soon"
 
     if (!currentUserRole) {
-      return targetPlan.tier > PLAN_TIER_MAP[UserRole.Free] ? "upgrade" : "current"
+      return plan.tier > PLAN_TIER_MAP[UserRole.Free] ? "upgrade" : "current"
     }
 
     const currentTier = PLAN_TIER_MAP[currentUserRole]
-    const targetTier = targetPlan.tier
+    const targetTier = plan.tier
 
-    if (currentTier === targetTier) return "current"
+    if (currentTier === targetTier) {
+      if (currentUserRole === UserRole.PreProTrial) {
+        return "in-trial"
+      } else {
+        return "current"
+      }
+    }
     if (targetTier > currentTier) return "upgrade"
-    return "downgrade"
+    return null
   }
 
-  const actionType = getPlanActionType(currentUserRole, plan)
+  const actionType = getPlanActionType()
 
   return (
     <div
       className={cn(
         "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
         plan.isPopular
-          ? "border-accent from-accent/5 shadow-accent/10 bg-gradient-to-b to-transparent shadow-lg"
+          ? "border-accent"
           : "border-fill-tertiary bg-background hover:border-fill-secondary",
-        isCurrentPlan && "ring-accent ring-offset-background ring-2 ring-offset-2",
+        isCurrentPlan &&
+          "ring-accent ring-offset-background from-accent/5 shadow-accent/10 bg-gradient-to-b to-transparent shadow-lg ring-2 ring-offset-2",
         plan.isComingSoon && "opacity-75",
       )}
     >
-      <PlanBadges isPopular={plan.isPopular || false} isCurrentPlan={isCurrentPlan} />
+      <PlanBadges isPopular={plan.isPopular || false} />
 
       <div className="@md:p-5 flex h-full flex-col p-4">
         <div className="@md:space-y-4 flex-1 space-y-3">
@@ -346,6 +363,7 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan }: PlanCardProps) => {
         <PlanAction
           isPopular={plan.isPopular || false}
           actionType={actionType}
+          daysLeft={daysLeft}
           onSelect={() => {
             if (
               !plan.isComingSoon &&
@@ -371,26 +389,12 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan }: PlanCardProps) => {
 }
 
 // Plan card sub-components
-const PlanBadges = ({
-  isPopular,
-  isCurrentPlan,
-}: {
-  isPopular: boolean
-  isCurrentPlan: boolean
-}) => (
+const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
   <>
     {isPopular && (
       <div className="absolute -top-px right-4 z-10">
         <div className="from-accent to-accent/80 text-caption rounded-b-lg bg-gradient-to-r px-1.5 py-1 font-medium text-white shadow-sm">
           Most Popular
-        </div>
-      </div>
-    )}
-
-    {isCurrentPlan && (
-      <div className="absolute left-4 top-4 z-10">
-        <div className="bg-green flex size-6 items-center justify-center rounded-full text-white shadow-sm">
-          <i className="i-mgc-check-cute-re text-xs" />
         </div>
       </div>
     )}
@@ -401,7 +405,7 @@ const PlanHeader = ({ title, price, period }: { title: string; price: string; pe
   <div className="space-y-1">
     <h3 className="@md:text-lg text-base font-semibold">{title}</h3>
     <div className="flex items-baseline gap-1">
-      <span className="@md:text-2xl font-default text-xl font-bold">{price}</span>
+      <span className="font-default text-xl font-bold">{price}</span>
       {period && <span className="text-text-secondary @md:text-sm text-xs">/{period}</span>}
     </div>
   </div>
@@ -424,10 +428,12 @@ const PlanAction = ({
   isPopular,
   actionType,
   onSelect,
+  daysLeft,
 }: {
   isPopular: boolean
-  actionType: "current" | "upgrade" | "downgrade" | "coming-soon"
+  actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | null
   onSelect?: () => void
+  daysLeft: number | null
 }) => {
   const getButtonConfig = () => {
     switch (actionType) {
@@ -447,6 +453,14 @@ const PlanAction = ({
           disabled: true,
         }
       }
+      case "in-trial": {
+        return {
+          text: `In Trial (${daysLeft} days left)`,
+          variant: "outline" as const,
+          className: "w-full h-9 @md:h-10 text-xs @md:text-sm",
+          disabled: false,
+        }
+      }
       case "upgrade": {
         return {
           text: "Upgrade",
@@ -457,19 +471,17 @@ const PlanAction = ({
           disabled: false,
         }
       }
-      case "downgrade": {
-        return {
-          text: "Downgrade",
-          variant: "outline" as const,
-          className:
-            "w-full h-9 @md:h-10 text-xs @md:text-sm border-orange text-orange hover:bg-orange/5",
-          disabled: false,
-        }
+      case null: {
+        return null
       }
     }
   }
 
   const buttonConfig = getButtonConfig()
+
+  if (!buttonConfig) {
+    return null
+  }
 
   return (
     <div>
