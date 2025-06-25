@@ -4,7 +4,8 @@ import { CollectionService } from "@follow/database/services/collection"
 
 import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
-import type { Hydratable } from "../internal/base"
+import { invalidateEntriesQuery } from "../entry/hooks"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createTransaction, createZustandStore } from "../internal/helper"
 
 interface CollectionState {
@@ -52,6 +53,8 @@ class CollectionSyncService {
     })
 
     await tx.run()
+
+    invalidateEntriesQuery({ collection: true })
   }
 
   async unstarEntry(entryId: string) {
@@ -75,20 +78,24 @@ class CollectionSyncService {
     })
 
     await tx.run()
+
+    invalidateEntriesQuery({ collection: true })
   }
 }
 
-class CollectionActions implements Hydratable {
+class CollectionActions implements Hydratable, Resetable {
   async hydrate() {
     const collections = await CollectionService.getCollectionAll()
     collectionActions.upsertManyInSession(collections)
   }
 
-  upsertManyInSession(collections: CollectionSchema[]) {
+  upsertManyInSession(collections: CollectionSchema[], options?: { reset?: boolean }) {
     const state = get()
-    const nextCollections: CollectionState["collections"] = {
-      ...state.collections,
-    }
+    const nextCollections: CollectionState["collections"] = options?.reset
+      ? {}
+      : {
+          ...state.collections,
+        }
     collections.forEach((collection) => {
       if (!collection.entryId) return
       nextCollections[collection.entryId] = collection
@@ -99,18 +106,18 @@ class CollectionActions implements Hydratable {
     })
   }
 
-  async upsertMany(collections: CollectionSchema[]) {
+  async upsertMany(collections: CollectionSchema[], options?: { reset?: boolean }) {
     const tx = createTransaction()
     tx.store(() => {
-      this.upsertManyInSession(collections)
+      this.upsertManyInSession(collections, options)
     })
     tx.persist(() => {
-      return CollectionService.upsertMany(collections)
+      return CollectionService.upsertMany(collections, options)
     })
     await tx.run()
   }
 
-  async deleteInSession(entryId: string) {
+  deleteInSession(entryId: string) {
     const state = useCollectionStore.getState()
     const nextCollections: CollectionState["collections"] = {
       ...state.collections,
@@ -133,8 +140,17 @@ class CollectionActions implements Hydratable {
     tx.run()
   }
 
-  reset() {
-    set(defaultState)
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set(defaultState)
+    })
+
+    tx.persist(() => {
+      return CollectionService.reset()
+    })
+
+    await tx.run()
   }
 }
 

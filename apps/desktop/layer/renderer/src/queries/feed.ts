@@ -12,8 +12,6 @@ import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { toastFetchError } from "~/lib/error-parser"
 
-import { entries } from "./entries"
-
 type FeedQueryParams = { id?: string; url?: string }
 
 export const feed = {
@@ -76,15 +74,6 @@ export const useRefreshFeedMutation = (feedId?: string) =>
   useMutation({
     mutationKey: ["refreshFeed", feedId],
     mutationFn: () => apiClient.feeds.refresh.$get({ query: { id: feedId! } }),
-
-    onSuccess() {
-      if (!feedId) return
-      entries
-        .entries({
-          feedId: feedId!,
-        })
-        .invalidateRoot()
-    },
     async onError(err) {
       toastFetchError(err)
     },
@@ -99,8 +88,7 @@ export const useResetFeed = () => {
       toastIDRef.current = toast.loading(t("sidebar.feed_actions.resetting_feed"))
       await apiClient.feeds.reset.$get({ query: { id: feedId } })
     },
-    onSuccess: (_, feedId) => {
-      entries.entries({ feedId }).invalidateRoot()
+    onSuccess: () => {
       toast.success(
         t("sidebar.feed_actions.reset_feed_success"),
         toastIDRef.current ? { id: toastIDRef.current } : undefined,

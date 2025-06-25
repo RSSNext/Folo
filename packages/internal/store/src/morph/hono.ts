@@ -146,7 +146,7 @@ class Morph {
   }
 
   toCollections(
-    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post,
+    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post | undefined,
     view: FeedViewType,
   ): CollectionModel[] {
     if (!data) return [] satisfies CollectionModel[]

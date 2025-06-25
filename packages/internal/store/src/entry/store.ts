@@ -489,12 +489,11 @@ class EntrySyncServices {
 
     await entryActions.upsertMany(entries)
 
-    if (isCollection && res.data) {
-      if (view === undefined) {
-        console.error("view is required for collection")
-      }
-      const collections = honoMorph.toCollections(res.data, view ?? 0)
-      await collectionActions.upsertMany(collections)
+    if (typeof view === "number") {
+      const collections = honoMorph.toCollections(res.data, view)
+      await collectionActions.upsertMany(collections, {
+        reset: params.isCollection && !pageParam,
+      })
     }
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
