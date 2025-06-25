@@ -145,8 +145,8 @@ export default ({ mode }) => {
       ...((viteRenderBaseConfig.plugins ?? []) as any),
 
       routeBuilderPluginV2({
-        pagePattern: `${resolve(ROOT, "./src/pages")}/**/*.tsx`,
-        outputPath: `${resolve(ROOT, "./src/generated-routes.ts")}`,
+        pagePattern: "src/pages/**/*.tsx",
+        outputPath: "src/generated-routes.ts",
         enableInDev: true,
       }),
       localesPlugin(),
