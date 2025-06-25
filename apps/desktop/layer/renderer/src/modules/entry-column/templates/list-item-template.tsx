@@ -287,6 +287,11 @@ function AudioCover({
     playerValue.src === src && playerValue.show ? playerValue.status : false,
   )
 
+  const language = useGeneralSettingKey("language")
+  const isChinese = useMemo(() => {
+    return language === "zh-CN"
+  }, [language])
+
   const seconds = formatTimeToSeconds(durationInSeconds)
   const estimatedMins = seconds && Math.floor(seconds / 60)
 
@@ -345,7 +350,7 @@ function AudioCover({
               isMobile && "backdrop-blur-background opacity-100",
             )}
           >
-            {formatEstimatedMins(estimatedMins)}
+            {isChinese ? `${estimatedMins} 分钟` : formatEstimatedMins(estimatedMins)}
           </div>
         </div>
       )}
