@@ -8,7 +8,7 @@ import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteDownLineIcon } from "@/src/icons/mingcute_down_line"
 import { accentColor } from "@/src/theme/colors"
 
-import { AnimatedBottomModal } from "../modal/AnimatedBottomModal"
+import { BottomModal } from "../modal/BottomModal"
 import { FormLabel } from "./Label"
 
 interface SelectProps<T> {
@@ -111,7 +111,7 @@ export function Select<T>({
   )
 
   const SelectModal = (
-    <AnimatedBottomModal visible={isModalVisible} onClose={closeModal}>
+    <BottomModal visible={isModalVisible} onClose={closeModal}>
       <View className="border-opaque-separator flex-row items-center justify-between border-b p-4">
         <Text className="text-label text-xl font-semibold">Select an option</Text>
         <TouchableOpacity onPress={closeModal}>
@@ -130,7 +130,7 @@ export function Select<T>({
           marginBottom: insets.bottom + 16,
         }}
       />
-    </AnimatedBottomModal>
+    </BottomModal>
   )
 
   if (!label) {
