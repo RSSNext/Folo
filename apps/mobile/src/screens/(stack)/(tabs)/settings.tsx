@@ -34,7 +34,11 @@ export function Settings() {
         className="bg-system-grouped-background flex-1"
         contentViewClassName="-mt-24 pb-8"
       >
-        <UserHeaderBanner scrollY={screenContext.reAnimatedScrollY} userId={whoami?.id} />
+        <UserHeaderBanner
+          scrollY={screenContext.reAnimatedScrollY}
+          userId={whoami?.id}
+          showRoleBadge
+        />
 
         <SettingsList />
       </SafeNavigationScrollView>

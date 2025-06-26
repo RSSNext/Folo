@@ -20,12 +20,14 @@ type UserStore = {
   users: Record<string, UserModel>
   whoami: MeModel | null
   role: UserRole
+  roleEndAt?: Date | null
 }
 
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
   users: {},
   whoami: null,
   role: UserRole.Free,
+  roleEndAt: null,
 }))
 
 const get = useUserStore.getState
@@ -68,7 +70,8 @@ class UserSyncService {
       const user = honoMorph.toUser(res.user, true)
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user.emailVerified }
-        state.role = res.role as UserRole
+        state.role = res.role
+        state.roleEndAt = res.roleEndAt
       })
       userActions.upsertMany([user])
 

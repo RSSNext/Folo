@@ -1,7 +1,10 @@
+import { UserRole } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { Text, View } from "react-native"
 
+import { PowerIcon } from "@/src/icons/power"
 import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"
+import { accentColor } from "@/src/theme/colors"
 
 import { Galeria } from "../image/galeria"
 import { Image } from "../image/Image"
@@ -12,8 +15,8 @@ interface UserAvatarProps {
   name?: string | null
   className?: string
   color?: string
-
   preview?: boolean
+  role?: UserRole
 }
 
 export const UserAvatar = ({
@@ -23,6 +26,7 @@ export const UserAvatar = ({
   className,
   color,
   preview = true,
+  role,
 }: UserAvatarProps) => {
   if (!image) {
     return (
@@ -44,6 +48,14 @@ export const UserAvatar = ({
           </Text>
         ) : (
           <User4CuteFiIcon width={size} height={size} color={color} />
+        )}
+        {role && role !== UserRole.Free && role !== UserRole.Trial && (
+          <View
+            className="absolute bottom-0 right-0 rounded-full"
+            style={{ width: size / 3, height: size / 3 }}
+          >
+            <PowerIcon color={accentColor} width={size / 3} height={size / 3} />
+          </View>
         )}
       </View>
     )
