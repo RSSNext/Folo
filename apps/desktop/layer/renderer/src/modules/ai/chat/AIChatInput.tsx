@@ -8,9 +8,10 @@ import {
 } from "@follow/components/ui/select/index.jsx"
 import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
-import { useRef, useState } from "react"
+import { use, useState } from "react"
 
 import { AIIcon } from "../icon"
+import { AIPanelRefsContext } from "./__internal__/AIChatContext"
 import { AIChatShortcuts } from "./AIShortcuts"
 
 export const AIChatInput = ({
@@ -32,8 +33,7 @@ export const AIChatInput = ({
 
   const [isShrink, setIsShrink] = useState(autoShrink)
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
+  const { inputRef: textareaRef } = use(AIPanelRefsContext)
   const handleSubmit = (value: string) => {
     if (textareaRef.current) {
       onSubmit?.(value)

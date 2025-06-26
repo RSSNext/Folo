@@ -8,16 +8,17 @@ import { whoami } from "~/atoms/user"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { AIIcon } from "../icon"
-import { AIChatContext } from "./__internal__/AIChatContext"
+import { AIChatContext, AIPanelRefsContext } from "./__internal__/AIChatContext"
 import { AIChatInput } from "./AIChatInput"
 import { AIMessageList } from "./AIMessageList"
 
 // Header component for both states
 const ChatHeader = ({ inChat }: { inChat: boolean }) => {
   const settingModalPresent = useSettingModal()
+  const { panelRef } = use(AIPanelRefsContext)
 
   return (
-    <div className="flex w-full flex-row items-center justify-between">
+    <div className="flex w-full flex-row items-center justify-between" ref={panelRef}>
       {inChat && <AIIcon />}
       <div className="flex h-8 w-full flex-row justify-end gap-2">
         {inChat && (
@@ -77,7 +78,6 @@ const ChatInputWrapper = ({
   return (
     <AIChatInput
       hideIcon
-      autoShrink
       onSubmit={(value) => {
         append({
           role: "user" as const,
