@@ -40,7 +40,7 @@ import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
-import { ContainerToc } from "./ContainerToc"
+import { EntryContentAccessories } from "./accessories"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
@@ -277,7 +277,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} />),
+    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
     [isInPeekModal],
   )
 
