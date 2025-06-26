@@ -116,11 +116,11 @@ export function SettingReferral() {
                   <TableCell size="sm">{dayjs(row.createdAt).format("MMMM D, YYYY")}</TableCell>
                   <TableCell size="sm">
                     {row.usedAt ? (
-                      t("referral.invited_friend_status.active")
+                      t("referral.invited_friend_status.valid")
                     ) : (
                       <Tooltip>
                         <TooltipTrigger>
-                          {t("referral.invited_friend_status.signed_up")}
+                          {t("referral.invited_friend_status.pending")}
                         </TooltipTrigger>
                         <TooltipPortal>
                           <TooltipContent>Active status are refreshed daily</TooltipContent>

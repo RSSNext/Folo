@@ -77,7 +77,7 @@ export function SettingPlan() {
   const skipPrice = serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const { data: referralInfo } = useReferralInfo()
-  const validInvitationsAmount = referralInfo?.invitations.length || 0
+  const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const role = useUserRole()
   const roleEndDate = useUserRoleEndDate()
   const daysLeft = roleEndDate
@@ -293,14 +293,15 @@ const UpgradeSection = ({ skipPrice, onUpgrade }: UpgradeSectionProps) => {
             setTab("referral")
           }}
         >
-          Invite friends
+          Invite 3 friends
         </Button>
+        <span>or</span>
         <Button
           size="sm"
           buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
           onClick={onUpgrade}
         >
-          Pay ${skipPrice} Now
+          Pay ${skipPrice}
         </Button>
       </div>
     </div>
