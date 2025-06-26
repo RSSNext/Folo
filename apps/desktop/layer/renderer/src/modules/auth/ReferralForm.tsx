@@ -1,5 +1,4 @@
-// sync this file with apps/desktop/layer/renderer/src/modules/auth/ReferralForm.tsx
-import { apiClient } from "@client/lib/api-fetch"
+// sync this file with apps/ssr/client/modules/referral/index.tsx
 import {
   Form,
   FormControl,
@@ -18,6 +17,8 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
+
+import { apiClient } from "~/lib/api-fetch"
 
 const formSchema = z.object({
   referral: z.string().optional(),

@@ -18,6 +18,7 @@ import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
 import { LegalModalContent } from "./LegalModal"
+import { ReferralForm } from "./ReferralForm"
 import { TokenModalContent } from "./TokenModal"
 
 interface LoginModalContentProps {
@@ -135,6 +136,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
       )}
 
       <Divider className="mb-5 mt-4" />
+      {isRegister && <ReferralForm className="mb-4" />}
       {isEmail ? (
         <div className="flex items-center justify-center pb-2">
           <MotionButtonBase
