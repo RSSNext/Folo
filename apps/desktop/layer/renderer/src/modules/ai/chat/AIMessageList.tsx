@@ -1,9 +1,10 @@
 import type { UIMessage } from "@ai-sdk/ui-utils"
 import { Button } from "@follow/components/ui/button/index.js"
+import { Card } from "@follow/components/ui/card/index.js"
 import { use } from "react"
 
 import { Markdown } from "~/components/ui/markdown/Markdown"
-import { FeedSummary } from "~/modules/discover/FeedSummary"
+import { TrendingFeedCard } from "~/modules/discover/TrendingFeedCard"
 
 import { AIChatContext } from "./__internal__/AIChatContext"
 
@@ -31,15 +32,11 @@ export const AIMessageList = ({ messages }: { messages: UIMessage[] }) => {
                     if (toolName === "displayFeeds") {
                       const { result } = part.toolInvocation
                       return (
-                        <div key={toolCallId} className="my-4 grid grid-cols-2 gap-2">
+                        <Card key={toolCallId} className="my-4 grid grid-cols-2 gap-8 p-6">
                           {result.feedList.map((item) => (
-                            <FeedSummary
-                              key={item.feed.feedId}
-                              feed={item.feed}
-                              analytics={item.analytics}
-                            />
+                            <TrendingFeedCard key={item.feed.feedId} item={item} />
                           ))}
-                        </div>
+                        </Card>
                       )
                     }
                   } else {
