@@ -4,7 +4,7 @@ import { cn } from "@follow/utils"
 import { use, useState } from "react"
 
 import { whoami } from "~/atoms/user"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 
 import { AIIcon } from "../icon"
 import { AIChatContext } from "./__internal__/AIChatContext"
