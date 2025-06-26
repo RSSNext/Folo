@@ -1,5 +1,6 @@
 import type { UseChatHelpers } from "@ai-sdk/react"
 import { Button } from "@follow/components/ui/button/index.js"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils"
 import { use, useState } from "react"
 
@@ -20,26 +21,44 @@ const ChatHeader = ({ inChat }: { inChat: boolean }) => {
       {inChat && <AIIcon />}
       <div className="flex h-8 w-full flex-row justify-end gap-2">
         {inChat && (
-          <Button
-            variant="ghost"
-            buttonClassName="text-text-secondary text-sm font-normal"
-            onClick={() => {}}
-          >
-            New Chat
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                buttonClassName="text-text-secondary hover:text-text size-8 p-0"
+                onClick={() => {}}
+              >
+                <i className="i-mgc-add-cute-fi text-base" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Chat</TooltipContent>
+          </Tooltip>
         )}
-        <Button variant="ghost" buttonClassName="text-text-secondary text-sm font-normal">
-          History
-        </Button>
-        <Button
-          variant="ghost"
-          buttonClassName="text-text-secondary text-sm font-normal"
-          onClick={() => {
-            settingModalPresent("ai")
-          }}
-        >
-          Personalize
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              buttonClassName="text-text-secondary hover:text-text size-8 p-0"
+            >
+              <i className="i-mgc-time-cute-re text-base" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>History</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              buttonClassName="text-text-secondary hover:text-text size-8 p-0"
+              onClick={() => {
+                settingModalPresent("ai")
+              }}
+            >
+              <i className="i-mgc-user-setting-cute-re text-base" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Personalize</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )
@@ -158,28 +177,28 @@ const AIChatHelp = ({ onSuggestionClick }: { onSuggestionClick: (suggestion: str
   const suggestionsData = [
     {
       category: "My unread items",
-      icon: "📚",
+      icon: "i-mgc-round-cute-re",
       suggestions: [
-        "🧠 Organize all unread items into a mind map",
-        "✂️ According to my reading habits and interests, reduce unread items to less than 100",
-        '🌟 Highlight unread items containing "OpenAI" in their content',
+        "Organize all unread items into a mind map",
+        "According to my reading habits and interests, reduce unread items to less than 100",
+        'Highlight unread items containing "OpenAI" in their content',
       ],
     },
     {
       category: "My subscriptions",
-      icon: "⭐",
+      icon: "i-mgc-star-cute-re",
       suggestions: [
-        "🖼️ Summarize my starred items from the past week and make it into a poster",
-        "📑 Create a timeline of AI-related content",
+        "Summarize my starred items from the past week and make it into a poster",
+        "Create a timeline of AI-related content",
       ],
     },
     {
-      category: "Everything on Folo",
-      icon: "🌐",
+      category: `Everything on ${APP_NAME}`,
+      icon: "i-mgc-world-2-cute-re",
       suggestions: [
-        "💡 Generate a list of technology podcasts",
-        "📊 Compare the crypto market sentiment this week with last week",
-        "🔍 Which podcasts have recently mentioned OpenAI's o3 model?",
+        "Generate a list of technology podcasts",
+        "Compare the crypto market sentiment this week with last week",
+        "Which podcasts have recently mentioned OpenAI's o3 model?",
       ],
     },
   ]
@@ -188,66 +207,79 @@ const AIChatHelp = ({ onSuggestionClick }: { onSuggestionClick: (suggestion: str
     <div className="w-full max-w-4xl">
       {/* Header with expand/collapse */}
       <div className="mb-6 flex items-center justify-center">
-        <Button
-          variant="ghost"
-          buttonClassName="text-text-secondary text-sm font-normal hover:text-text transition-colors"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        <div className="text-text-secondary text-sm font-normal">
           <div className="flex items-center gap-2">
             <i className="i-mgc-question-cute-re text-base" />
             <span>What can I do for you?</span>
-            <i
-              className={cn(
-                "i-mingcute-down-line text-xs transition-transform duration-200",
-                isExpanded && "rotate-180",
-              )}
-            />
           </div>
-        </Button>
+        </div>
       </div>
 
       {/* Suggestions Grid */}
       <div
         className={cn(
           "overflow-hidden transition-all duration-300 ease-in-out",
-          isExpanded ? "max-h-[600px] opacity-100" : "max-h-32 opacity-60",
+          isExpanded ? "max-h-[800px] opacity-100" : "max-h-96 opacity-100",
         )}
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {suggestionsData.map((section) => (
-            <div
-              key={section.category}
-              className="bg-fill-vibrant-secondary/50 border-fill-tertiary hover:border-fill-secondary rounded-xl border p-5 backdrop-blur-sm transition-all duration-200"
-            >
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-lg">{section.icon}</span>
-                <h3 className="text-text text-sm font-medium">{section.category}</h3>
+          {suggestionsData.map((section) => {
+            const displaySuggestions = isExpanded
+              ? section.suggestions
+              : section.suggestions.slice(0, 1)
+            const hasMoreSuggestions = section.suggestions.length > 1
+
+            return (
+              <div
+                key={section.category}
+                className="bg-material-medium border-fill-tertiary hover:border-fill-secondary rounded-xl border p-5 backdrop-blur-sm transition-all duration-200"
+              >
+                <div className="mb-4 flex items-start gap-3">
+                  <i className={cn(section.icon, "text-accent mt-0.5 flex-shrink-0 text-lg")} />
+                  <h3 className="text-text text-sm font-medium">{section.category}</h3>
+                </div>
+                <div className="ml-7">
+                  <ul className="space-y-3">
+                    {displaySuggestions.map((suggestion, suggestionIndex) => (
+                      <li
+                        key={suggestionIndex}
+                        className="text-text-secondary hover:text-text hover:bg-fill-tertiary/50 cursor-pointer rounded-lg text-xs leading-relaxed transition-colors"
+                        onClick={() => onSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                  {!isExpanded && hasMoreSuggestions && (
+                    <div className="border-fill-tertiary mt-3 flex justify-end border-t pt-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsExpanded(true)}
+                        className="text-accent hover:text-accent/80 flex items-center gap-1 text-xs font-medium transition-colors"
+                      >
+                        <span>+{section.suggestions.length - 1} more</span>
+                        <i className="i-mgc-right-cute-re text-xs" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <ul className="space-y-3">
-                {section.suggestions.map((suggestion, suggestionIndex) => (
-                  <li
-                    key={suggestionIndex}
-                    className="text-text-secondary hover:text-text hover:bg-fill-tertiary/50 cursor-pointer rounded-lg p-2 text-xs leading-relaxed transition-colors"
-                    onClick={() => {
-                      // Remove emoji and clean the suggestion text
-                      const cleanSuggestion = suggestion.replace(
-                        /^[\u{1F000}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]\s*/u,
-                        "",
-                      )
-                      onSuggestionClick(cleanSuggestion)
-                    }}
-                  >
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {!isExpanded && (
-          <div className="mt-4 text-center">
-            <div className="text-text-tertiary text-xs">Click above to see more suggestions</div>
+          <div className="mt-6 text-center">
+            <Button
+              variant="ghost"
+              buttonClassName="text-text-tertiary hover:text-text-secondary text-xs"
+              onClick={() => setIsExpanded(true)}
+            >
+              <div className="flex items-center gap-2">
+                <span>View all suggestions</span>
+                <i className="i-mingcute-down-line text-xs" />
+              </div>
+            </Button>
           </div>
         )}
       </div>
