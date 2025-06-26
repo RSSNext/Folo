@@ -113,6 +113,7 @@ export function ListItem({
     }
   }, [settingWideMode, simple, translation?.description, translation?.title, bilingual])
 
+  const dimRead = useGeneralSettingKey("dimRead")
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
   if (!entry || !(feed || inbox)) return null
 
@@ -162,6 +163,7 @@ export function ListItem({
             "flex gap-1 text-[10px] font-bold",
             "text-text-secondary",
             isInCollection && "text-text-secondary",
+            isRead && dimRead && "text-text-tertiary",
           )}
         >
           <EllipsisHorizontalTextWithTooltip className="truncate">
@@ -180,6 +182,7 @@ export function ListItem({
             "text-text",
             !!isInCollection && "pr-5",
             entry?.title ? "font-medium" : "text-[13px]",
+            isRead && dimRead && "text-text-secondary",
           )}
         >
           {entry?.title ? (
@@ -198,7 +201,13 @@ export function ListItem({
           {!!isInCollection && <StarIcon className="absolute right-0 top-0" />}
         </div>
         {!simple && (
-          <div className={cn("text-[13px]", "text-text-secondary")}>
+          <div
+            className={cn(
+              "text-[13px]",
+              "text-text-secondary",
+              isRead && dimRead && "text-text-tertiary",
+            )}
+          >
             <EntryTranslation
               className={cn("hyphens-auto", lineClamp.description)}
               source={entry?.description}
@@ -278,6 +287,11 @@ function AudioCover({
     playerValue.src === src && playerValue.show ? playerValue.status : false,
   )
 
+  const language = useGeneralSettingKey("language")
+  const isChinese = useMemo(() => {
+    return language === "zh-CN"
+  }, [language])
+
   const seconds = formatTimeToSeconds(durationInSeconds)
   const estimatedMins = seconds && Math.floor(seconds / 60)
 
@@ -336,7 +350,7 @@ function AudioCover({
               isMobile && "backdrop-blur-background opacity-100",
             )}
           >
-            {formatEstimatedMins(estimatedMins)}
+            {isChinese ? `${estimatedMins} 分钟` : formatEstimatedMins(estimatedMins)}
           </div>
         </div>
       )}

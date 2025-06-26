@@ -7,12 +7,12 @@ import * as React from "react"
 import type { LayoutChangeEvent } from "react-native"
 import {
   Clipboard,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native"
 import Animated, {
@@ -26,6 +26,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
+import { BottomModal } from "@/src/components/ui/modal/BottomModal"
 import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
@@ -108,13 +109,13 @@ export const AISummary: FC<{
           </MaskedView>
         </View>
         {summaryTextForSheet && (
-          <Pressable
+          <TouchableOpacity
             onPress={() => setSheetOpen(true)}
             className="bg-quaternary-system-fill rounded-full p-1.5 active:opacity-70"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <CopyCuteReIcon width={14} height={14} color={purpleColor} />
-          </Pressable>
+          </TouchableOpacity>
         )}
       </View>
       <Animated.View style={animatedContentStyle}>
@@ -191,82 +192,40 @@ const SelectableTextSheet: FC<{
   text: string
 }> = ({ visible, onClose, text }) => {
   const insets = useSafeAreaInsets()
-  const translateY = useSharedValue(500)
-  const [isRendered, setIsRendered] = React.useState(visible)
-
   const textColor = useColor("label")
-
-  const sheetAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }))
-
-  React.useEffect(() => {
-    if (visible) {
-      setIsRendered(true)
-      translateY.value = withSpring(0, {
-        damping: 20,
-        stiffness: 150,
-        overshootClamping: true,
-      })
-    } else {
-      if (isRendered) {
-        translateY.value = withTiming(800, { duration: 250 })
-        setTimeout(() => {
-          setIsRendered(false)
-        }, 250)
-      }
-    }
-  }, [visible, isRendered, translateY])
-
-  if (!isRendered) {
-    return null
-  }
-
-  const handleClose = () => {
-    onClose()
-  }
 
   const handleCopyAll = () => {
     Clipboard.setString(text)
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    handleClose()
+    onClose()
   }
 
   return (
-    <Modal
-      transparent
-      visible={isRendered}
-      onRequestClose={handleClose}
-      animationType="fade"
-      statusBarTranslucent
-    >
-      <Pressable onPress={handleClose} style={StyleSheet.absoluteFill}>
-        <View className="bg-black/40" style={StyleSheet.absoluteFill} />
-      </Pressable>
-      <Animated.View
-        className="bg-system-background absolute inset-x-0 bottom-0 max-h-[70%] overflow-hidden rounded-t-2xl border-t-zinc-200 p-4 dark:border-t-zinc-800"
-        style={[{ paddingBottom: insets.bottom + 10 }, sheetAnimatedStyle]}
-      >
-        <View className="mb-4 flex-row items-center justify-between">
-          <Pressable
-            onPress={handleCopyAll}
-            className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
-          >
-            <CopyCuteReIcon width={18} height={18} color={textColor} />
-          </Pressable>
-          <Text className="text-label text-lg font-semibold">AI Summary</Text>
-          <Pressable
-            onPress={handleClose}
-            className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
-          >
-            <CloseCuteReIcon width={18} height={18} color={textColor} />
-          </Pressable>
+    // Wrap in a View to avoid rendering issues with Modal on Android
+    <View>
+      <BottomModal visible={visible} onClose={onClose}>
+        <View className="p-4" style={{ paddingBottom: insets.bottom + 10 }}>
+          <View className="mb-4 flex-row items-center justify-between">
+            <TouchableOpacity
+              onPress={handleCopyAll}
+              className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
+            >
+              <CopyCuteReIcon width={18} height={18} color={textColor} />
+            </TouchableOpacity>
+            <Text className="text-label text-lg font-semibold">AI Summary</Text>
+            <TouchableOpacity
+              onPress={onClose}
+              className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
+            >
+              <CloseCuteReIcon width={18} height={18} color={textColor} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
+          </ScrollView>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
-        </ScrollView>
-      </Animated.View>
-    </Modal>
+      </BottomModal>
+    </View>
   )
 }
 
@@ -295,33 +254,5 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 0.5,
     elevation: 2,
-  },
-  sheetContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    maxHeight: "70%",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    overflow: "hidden",
-  },
-  sheetHeader: {
-    alignItems: "center",
-    paddingBottom: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  sheetTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  textScrollView: {
-    marginVertical: 15,
-  },
-  selectableText: {
-    fontSize: 16,
-    lineHeight: 24,
   },
 })

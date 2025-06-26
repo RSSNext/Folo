@@ -2,11 +2,12 @@ import { EmptyIcon } from "@follow/components/icons/empty.js"
 import { Card } from "@follow/components/ui/card/index.jsx"
 import { Input } from "@follow/components/ui/input/Input.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.js"
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { cn, formatNumber } from "@follow/utils/utils"
 import { keepPreviousData } from "@tanstack/react-query"
-import { useMemo, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useParams } from "react-router"
 
@@ -80,13 +81,17 @@ export const Component = () => {
 
   const [search, setSearch] = useState("")
 
-  const items = keys.map((key) => {
-    return {
-      key,
-      data: data![key],
-      routePrefix: key,
-    }
-  })
+  const items = useMemo(
+    () =>
+      keys.map((key) => {
+        return {
+          key,
+          data: data![key],
+          routePrefix: key,
+        }
+      }),
+    [keys, data],
+  )
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -103,6 +108,17 @@ export const Component = () => {
       })
     })
   }, [items, search])
+
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
+  useEffect(() => {
+    if (!isLoading && onUpdateMaxScroll) {
+      // Defer to next tick to avoid blocking main thread
+      const timeoutId = setTimeout(() => {
+        onUpdateMaxScroll()
+      }, 0)
+      return () => clearTimeout(timeoutId)
+    }
+  }, [isLoading])
 
   return (
     <div className="w-full max-w-[800px]">
@@ -158,187 +174,218 @@ export const Component = () => {
   )
 }
 
-const RecommendationListItem = ({
-  data,
-  routePrefix,
-  rsshubAnalyticsData,
-}: {
-  data: RouteData[string]
-  routePrefix: string
-  rsshubAnalyticsData: Awaited<
-    ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
-  >["data"]
-}) => {
-  const { t } = useTranslation()
-  const { present } = useModalStack()
+const RecommendationListItem = memo(
+  ({
+    data,
+    routePrefix,
+    rsshubAnalyticsData,
+  }: {
+    data: RouteData[string]
+    routePrefix: string
+    rsshubAnalyticsData: Awaited<
+      ReturnType<(typeof apiClient)["discover"]["rsshub-analytics"]["$get"]>
+    >["data"]
+  }) => {
+    const { t } = useTranslation()
+    const { present } = useModalStack()
 
-  const { maintainers, categories, routes } = useMemo(() => {
-    const maintainers = new Set<string>()
-    const categories = new Set<string>()
-    const routes = Object.keys(data.routes).sort((a, b) => {
-      const aHeat = rsshubAnalyticsData?.[`/${routePrefix}${a}`]?.subscriptionCount ?? 0
-      const bHeat = rsshubAnalyticsData?.[`/${routePrefix}${b}`]?.subscriptionCount ?? 0
-      return bHeat - aHeat
-    })
+    const { maintainers, categories, routes } = useMemo(() => {
+      const maintainers = new Set<string>()
+      const categories = new Set<string>()
+      const routes = Object.keys(data.routes).sort((a, b) => {
+        const aHeat = rsshubAnalyticsData?.[`/${routePrefix}${a}`]?.subscriptionCount ?? 0
+        const bHeat = rsshubAnalyticsData?.[`/${routePrefix}${b}`]?.subscriptionCount ?? 0
+        return bHeat - aHeat
+      })
 
-    for (const route in data.routes) {
-      const routeData = data.routes[route]!
-      if (routeData.maintainers) {
-        routeData.maintainers.forEach((m) => maintainers.add(m))
+      for (const route in data.routes) {
+        const routeData = data.routes[route]!
+        if (routeData.maintainers) {
+          routeData.maintainers.forEach((m) => maintainers.add(m))
+        }
+        if (routeData.categories) {
+          routeData.categories.forEach((c) => categories.add(c))
+        }
       }
-      if (routeData.categories) {
-        routeData.categories.forEach((c) => categories.add(c))
+      categories.delete("popular")
+      return {
+        maintainers: Array.from(maintainers),
+        categories: Array.from(categories) as unknown as typeof RSSHubCategories,
+        routes,
       }
-    }
-    categories.delete("popular")
-    return {
-      maintainers: Array.from(maintainers),
-      categories: Array.from(categories) as unknown as typeof RSSHubCategories,
-      routes,
-    }
-  }, [data, rsshubAnalyticsData, routePrefix])
+    }, [data, rsshubAnalyticsData, routePrefix])
 
-  const follow = useFollow()
+    const follow = useFollow()
 
-  return (
-    <Card className="shadow-background border-border overflow-hidden rounded-lg border transition-shadow duration-200 hover:shadow-md">
-      <div className="border-border flex items-center gap-3 border-b p-4">
-        <div className="bg-background size-8 overflow-hidden rounded-full">
-          <FeedIcon className="mr-0 size-8" size={32} siteUrl={`https://${data.url}`} />
-        </div>
-        <div className="flex w-full flex-1 justify-between">
-          <h3 className="line-clamp-1 text-base font-medium">
-            <a
-              href={`https://${data.url}`}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:underline"
-            >
-              {data.name}
-            </a>
-          </h3>
+    const handleRouteClick = useCallback(
+      (route: string) => {
+        present({
+          id: `recommendation-content-${route}`,
+          content: () => (
+            <RecommendationContent routePrefix={routePrefix} route={data.routes[route]!} />
+          ),
+          icon: <FeedIcon className="size-4" size={16} siteUrl={`https://${data.url}`} />,
+          title: `${data.name} - ${data.routes[route]!.name}`,
+        })
+      },
+      [present, routePrefix, data, data.url, data.name],
+    )
 
-          <div className="flex flex-wrap gap-1.5 text-xs">
-            {categories.map((c) => (
-              <Link
-                to={`/discover/category/${c}`}
-                key={c}
-                className={cn(
-                  "bg-accent/10 cursor-pointer rounded-full px-2 py-0.5 leading-5 duration-200",
-                  !RSSHubCategories.includes(c) ? "pointer-events-none opacity-50" : "",
-                )}
-              >
-                {RSSHubCategories.includes(c)
-                  ? t(`discover.category.${c}`, { ns: "common" })
-                  : c.charAt(0).toUpperCase() + c.slice(1)}
-              </Link>
-            ))}
+    const handleFeedClick = useCallback(
+      (feedId: string) => {
+        follow({
+          isList: false,
+          id: feedId,
+        })
+      },
+      [follow],
+    )
+
+    return (
+      <Card className="shadow-background border-border overflow-hidden rounded-lg border transition-shadow duration-200 hover:shadow-md">
+        <div className="border-border flex items-center gap-3 border-b p-4">
+          <div className="bg-background size-8 overflow-hidden rounded-full">
+            <FeedIcon className="mr-0 size-8" size={32} siteUrl={`https://${data.url}`} />
           </div>
-        </div>
-      </div>
-      <div className="p-4 pt-2">
-        <ul className="text-text mb-3">
-          {routes.map((route) => {
-            const routeData = data.routes[route]!
-            if (Array.isArray(routeData.path)) {
-              routeData.path = routeData.path.find((p) => p === route) ?? routeData.path[0]
-            }
-
-            const analytics = rsshubAnalyticsData?.[`/${routePrefix}${routeData.path}`]
-
-            return (
-              <li
-                key={route}
-                className="hover:bg-material-opaque -mx-4 rounded p-3 px-5 transition-colors"
-                role="button"
-                onClick={() => {
-                  present({
-                    id: `recommendation-content-${route}`,
-                    content: () => (
-                      <RecommendationContent
-                        routePrefix={routePrefix}
-                        route={data.routes[route]!}
-                      />
-                    ),
-                    icon: <FeedIcon className="size-4" size={16} siteUrl={`https://${data.url}`} />,
-                    title: `${data.name} - ${data.routes[route]!.name}`,
-                  })
-                }}
+          <div className="flex w-full flex-1 justify-between">
+            <h3 className="line-clamp-1 text-base font-medium">
+              <a
+                href={`https://${data.url}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
               >
-                <div className="w-full">
-                  <div className="flex w-full items-center gap-8">
-                    <div className="flex flex-1 items-center gap-2">
-                      <div className="bg-accent mr-2 size-1.5 rounded-full" />
-                      <div className="relative h-5 grow">
-                        <div className="text-title3 absolute inset-0 flex items-center gap-3 font-medium">
-                          <EllipsisHorizontalTextWithTooltip>
-                            {routeData.name}
-                          </EllipsisHorizontalTextWithTooltip>
-                          <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-xs">{`rsshub://${routePrefix}${routeData.path}`}</EllipsisHorizontalTextWithTooltip>
-                        </div>
-                      </div>
-                    </div>
-                    {!!analytics?.subscriptionCount && (
-                      <div className="flex items-center gap-0.5 text-xs">
-                        <i className="i-mgc-fire-cute-re" />
-                        {formatNumber(analytics?.subscriptionCount || 0)}
-                      </div>
-                    )}
-                  </div>
-                  {analytics?.topFeeds && (
-                    <div className="mt-2 flex items-center gap-10 pl-5 text-xs">
-                      {analytics.topFeeds.slice(0, 2).map((feed) => (
-                        <div key={feed.id} className="flex w-2/5 flex-1 items-center text-sm">
-                          <FeedIcon
-                            feed={feed}
-                            className="mask-squircle mask shrink-0 rounded-none"
-                            size={16}
-                          />
-                          <div
-                            className="min-w-0 leading-tight"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              follow({
-                                isList: false,
-                                id: feed.id,
-                              })
-                            }}
-                          >
-                            <EllipsisHorizontalTextWithTooltip className="truncate">
-                              {getPreferredTitle(feed) || feed?.title}
-                            </EllipsisHorizontalTextWithTooltip>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                {data.name}
+              </a>
+            </h3>
+
+            <div className="flex flex-wrap gap-1.5 text-xs">
+              {categories.map((c) => (
+                <Link
+                  to={`/discover/category/${c}`}
+                  key={c}
+                  className={cn(
+                    "bg-accent/10 cursor-pointer rounded-full px-2 py-0.5 leading-5 duration-200",
+                    !RSSHubCategories.includes(c) ? "pointer-events-none opacity-50" : "",
                   )}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-
-        {maintainers.length > 0 && (
-          <div className="text-text-secondary mt-2 flex items-center text-xs">
-            <i className="i-mgc-hammer-cute-re mr-1 shrink-0 translate-y-0.5 self-start" />
-            <span>
-              {maintainers.map((m, i) => (
-                <span key={m}>
-                  <a
-                    href={`https://github.com/${m}`}
-                    className="hover:underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    @{m}
-                  </a>
-                  {i < maintainers.length - 1 ? ", " : ""}
-                </span>
+                >
+                  {RSSHubCategories.includes(c)
+                    ? t(`discover.category.${c}`, { ns: "common" })
+                    : c.charAt(0).toUpperCase() + c.slice(1)}
+                </Link>
               ))}
-            </span>
+            </div>
           </div>
-        )}
-      </div>
-    </Card>
-  )
-}
+        </div>
+        <div className="p-4 pt-2">
+          <ul className="text-text mb-3">
+            {routes.map((route) => (
+              <RouteItem
+                key={route}
+                route={route}
+                routeData={data.routes[route]!}
+                routePrefix={routePrefix}
+                rsshubAnalyticsData={rsshubAnalyticsData}
+                onRouteClick={handleRouteClick}
+                onFeedClick={handleFeedClick}
+              />
+            ))}
+          </ul>
+
+          {maintainers.length > 0 && (
+            <div className="text-text-secondary mt-2 flex items-center text-xs">
+              <i className="i-mgc-hammer-cute-re mr-1 shrink-0 translate-y-0.5 self-start" />
+              <span>
+                {maintainers.map((m, i) => (
+                  <span key={m}>
+                    <a
+                      href={`https://github.com/${m}`}
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      @{m}
+                    </a>
+                    {i < maintainers.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </span>
+            </div>
+          )}
+        </div>
+      </Card>
+    )
+  },
+)
+
+const RouteItem = memo(
+  ({
+    route,
+    routeData,
+    routePrefix,
+    rsshubAnalyticsData,
+    onRouteClick,
+    onFeedClick,
+  }: {
+    route: string
+    routeData: any
+    routePrefix: string
+    rsshubAnalyticsData: any
+    onRouteClick: (route: string) => void
+    onFeedClick: (feedId: string) => void
+  }) => {
+    if (Array.isArray(routeData.path)) {
+      routeData.path = routeData.path.find((p: string) => p === route) ?? routeData.path[0]
+    }
+
+    const analytics = rsshubAnalyticsData?.[`/${routePrefix}${routeData.path}`]
+
+    return (
+      <li
+        className="hover:bg-material-opaque -mx-4 rounded p-3 px-5 transition-colors"
+        role="button"
+        onClick={() => onRouteClick(route)}
+      >
+        <div className="w-full">
+          <div className="flex w-full items-center gap-8">
+            <div className="flex flex-1 items-center gap-2">
+              <div className="bg-accent mr-2 size-1.5 rounded-full" />
+              <div className="relative h-5 grow">
+                <div className="text-title3 absolute inset-0 flex items-center gap-3 font-medium">
+                  <EllipsisHorizontalTextWithTooltip>
+                    {routeData.name}
+                  </EllipsisHorizontalTextWithTooltip>
+                  <EllipsisHorizontalTextWithTooltip className="text-text-secondary text-xs">{`rsshub://${routePrefix}${routeData.path}`}</EllipsisHorizontalTextWithTooltip>
+                </div>
+              </div>
+            </div>
+            {!!analytics?.subscriptionCount && (
+              <div className="flex items-center gap-0.5 text-xs">
+                <i className="i-mgc-fire-cute-re" />
+                {formatNumber(analytics?.subscriptionCount || 0)}
+              </div>
+            )}
+          </div>
+          {analytics?.topFeeds && (
+            <div className="mt-2 flex items-center gap-10 pl-5 text-xs">
+              {analytics.topFeeds.slice(0, 2).map((feed: any) => (
+                <div key={feed.id} className="flex w-2/5 flex-1 items-center text-sm">
+                  <FeedIcon
+                    feed={feed}
+                    className="mask-squircle mask shrink-0 rounded-none"
+                    size={16}
+                  />
+                  <div className="min-w-0 leading-tight" onClick={() => onFeedClick(feed.id)}>
+                    <EllipsisHorizontalTextWithTooltip className="truncate">
+                      {getPreferredTitle(feed) || feed?.title}
+                    </EllipsisHorizontalTextWithTooltip>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </li>
+    )
+  },
+)

@@ -347,6 +347,7 @@
   "share.title": "分享内容",
   "shortcuts.guide.title": "快捷键指南",
   "sidebar.add_more_feeds": "添加订阅源",
+  "sidebar.already_on_discover_page": "你已位于发现页面！请将想要订阅的内容添加到右侧面板。",
   "sidebar.category_remove_dialog.cancel": "取消",
   "sidebar.category_remove_dialog.continue": "继续",
   "sidebar.category_remove_dialog.description": "正在删除分类，操作后仍保留订阅源并按网站域名分组。",

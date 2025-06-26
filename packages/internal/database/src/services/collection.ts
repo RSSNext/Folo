@@ -13,6 +13,7 @@ class CollectionServiceStatic implements Resetable {
 
   async upsertMany(collections: CollectionSchema[]) {
     if (collections.length === 0) return
+
     await db
       .insert(collectionsTable)
       .values(collections)

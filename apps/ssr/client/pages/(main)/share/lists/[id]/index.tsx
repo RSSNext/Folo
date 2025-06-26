@@ -190,9 +190,9 @@ export function Component() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
-            {listData.feedIds
-              ?.slice(0, SIZE)
-              .map((feedId) => <FeedRow feed={feedMap[feedId]!} key={feedId} />)}
+            {listData.feedIds?.slice(0, SIZE).map((feedId) => (
+              <FeedRow feed={feedMap[feedId]!} key={feedId} />
+            ))}
           </div>
 
           {"feedCount" in list.data && list.data.feedCount > SIZE && (

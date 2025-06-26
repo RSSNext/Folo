@@ -14,6 +14,7 @@ export interface GeneralSettings {
   renderMarkUnread: boolean
   groupByDate: boolean
   jumpOutLinkWarn: boolean
+  dimRead: boolean
   // TTS
   voice: string
 

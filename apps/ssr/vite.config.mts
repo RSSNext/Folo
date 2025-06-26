@@ -36,8 +36,8 @@ export default defineConfig({
   },
   plugins: [
     routeBuilderPluginV2({
-      pagePattern: `${resolve(__dirname, "./client/pages")}/**/*.tsx`,
-      outputPath: `${resolve(__dirname, "./client/generated-routes.ts")}`,
+      pagePattern: "client/pages/**/*.tsx",
+      outputPath: "client/generated-routes.ts",
       enableInDev: true,
       segmentGroupOrder: ["(main)", "(login)"],
     }),

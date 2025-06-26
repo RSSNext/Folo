@@ -45,7 +45,7 @@ export const PanelSplitter = (
           />
         </div>
       </TooltipTrigger>
-      <TooltipContent sideOffset={-height / 2}>{tooltip}</TooltipContent>
+      {tooltip && <TooltipContent sideOffset={-height / 2}>{tooltip}</TooltipContent>}
     </Tooltip>
   )
 }
