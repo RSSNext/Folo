@@ -3,6 +3,7 @@ import { AppService } from "./services/app"
 import { AuthService } from "./services/auth"
 import { DebugService } from "./services/debug"
 import { DockService } from "./services/dock"
+import { GA4Service } from "./services/ga4"
 import { IntegrationService } from "./services/integration"
 import { MenuService } from "./services/menu"
 import { ReaderService } from "./services/reader"
@@ -18,6 +19,7 @@ export const services = {
   reader: new ReaderService(),
   setting: new SettingService(),
   integration: new IntegrationService(),
+  ga4: new GA4Service(),
 } as const
 
 // Extract method types automatically from services
@@ -30,6 +32,7 @@ export type IpcServices = {
   reader: ExtractServiceMethods<ReaderService>
   setting: ExtractServiceMethods<SettingService>
   integration: ExtractServiceMethods<IntegrationService>
+  ga4: ExtractServiceMethods<GA4Service>
 }
 
 // Initialize all services (this will register all IPC handlers)

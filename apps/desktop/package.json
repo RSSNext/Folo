@@ -35,7 +35,8 @@
   },
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "1.12.0",
-    "cookie-es": "2.0.0"
+    "cookie-es": "2.0.0",
+    "uuid": "11.1.0"
   },
   "devDependencies": {
     "@clack/prompts": "0.11.0",
