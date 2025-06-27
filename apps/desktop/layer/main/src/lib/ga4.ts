@@ -2,6 +2,8 @@ import { env } from "@follow/shared/env.desktop"
 import { ofetch } from "ofetch"
 import { v4 as uuidv4 } from "uuid"
 
+import { logger } from "~/logger"
+
 class Analytics4 {
   private trackingID: string
   private secretKey: string
@@ -75,6 +77,10 @@ class Analytics4 {
 }
 
 const firebaseConfig = env.VITE_FIREBASE_CONFIG ? JSON.parse(env.VITE_FIREBASE_CONFIG) : null
+
+if (firebaseConfig?.measurementId && env.VITE_GA4_KEY) {
+  logger.info(`GA4 is enabled with measurementId: ${firebaseConfig.measurementId}`)
+}
 
 export const ga4 =
   firebaseConfig?.measurementId && env.VITE_GA4_KEY

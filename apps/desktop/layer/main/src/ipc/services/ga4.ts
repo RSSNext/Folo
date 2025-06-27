@@ -1,4 +1,5 @@
 import { ga4 } from "~/lib/ga4"
+import { logger } from "~/logger"
 import { WindowManager } from "~/manager/window"
 
 import type { IpcContext } from "../base"
@@ -17,6 +18,7 @@ export class GA4Service extends IpcService {
       params: Record<string, any>
     },
   ) {
+    logger.info(`ga4 logEvent: ${input.name}`)
     const window = WindowManager.getMainWindow()
     const userAgent = window?.webContents.getUserAgent()
     await ga4?.logEvent(input.name, input.params, userAgent)
