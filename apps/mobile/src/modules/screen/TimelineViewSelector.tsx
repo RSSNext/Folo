@@ -1,16 +1,12 @@
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useUnreadByView } from "@follow/store/unread/hooks"
+import { cn } from "@follow/utils"
 import * as React from "react"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import type { StyleProp, ViewStyle } from "react-native"
 import { ScrollView, Text, useWindowDimensions, View } from "react-native"
-import Animated, {
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated"
+import Animated, { interpolate, interpolateColor, useAnimatedStyle } from "react-native-reanimated"
 
 import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
 import { TIMELINE_VIEW_SELECTOR_HEIGHT } from "@/src/constants/ui"
@@ -28,7 +24,7 @@ import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMe
 
 const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
-const ACTIVE_TEXT_WIDTH = 85
+const ACTIVE_TEXT_WIDTH = 95
 
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
@@ -69,15 +65,16 @@ function ItemWrapper({
   index,
   activeColor,
   children,
-  isActive,
   onPress,
   style,
+  className,
 }: {
   children: React.ReactNode
   index: number
   isActive: boolean
   activeColor: string
   onPress: () => void
+  className?: string
   style?: Exclude<StyleProp<ViewStyle>, number>
 }) {
   const { width: windowWidth } = useWindowDimensions()
@@ -88,13 +85,14 @@ function ItemWrapper({
     windowWidth - (INACTIVE_WIDTH + 12) * (activeViews.length - 1) - 8 * 2,
     ACTIVE_WIDTH,
   )
-
-  const textWidth = useSharedValue(0)
   const bgColor = useColor("gray5")
 
   return (
     <ReAnimatedPressable
-      className="relative flex h-12 flex-row items-center justify-center gap-2 overflow-hidden rounded-[1.2rem] pl-2"
+      className={cn(
+        "relative flex h-12 flex-row items-center justify-center gap-2 overflow-hidden rounded-[1.2rem] pl-2",
+        className,
+      )}
       onPress={onPress}
       style={useAnimatedStyle(() => ({
         backgroundColor: interpolateColor(
@@ -105,22 +103,13 @@ function ItemWrapper({
         width: interpolate(
           dragProgress.get(),
           [index - 1, index, index + 1],
-          [INACTIVE_WIDTH, Math.max(activeWidth, textWidth.value + INACTIVE_WIDTH), INACTIVE_WIDTH],
+          [INACTIVE_WIDTH, Math.max(activeWidth, INACTIVE_WIDTH), INACTIVE_WIDTH],
           "clamp",
         ),
         ...style,
       }))}
     >
-      <View
-        className="flex-row items-center gap-2"
-        onLayout={({ nativeEvent }) => {
-          if (isActive) {
-            textWidth.set(nativeEvent.layout.width)
-          }
-        }}
-      >
-        {children}
-      </View>
+      {children}
     </ReAnimatedPressable>
   )
 }
@@ -192,7 +181,7 @@ function ViewItem({
           </View>
 
           <Animated.View
-            className="flex flex-row items-center gap-2 overflow-hidden"
+            className="flex flex-row items-center justify-center gap-2"
             style={useAnimatedStyle(() => ({
               width: interpolate(
                 dragProgress.get(),
@@ -202,21 +191,28 @@ function ViewItem({
               ),
             }))}
           >
-            <Text key={view.name} className="text-sm font-semibold text-white" numberOfLines={1}>
+            <Text
+              key={view.name}
+              className="text-sm font-semibold text-white"
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
               {t(view.name)}
             </Text>
             <UnreadCount
               max={99}
               unread={unreadCount}
               dotClassName="size-1.5 rounded-full bg-white"
-              textClassName="text-white font-bold"
+              textClassName="text-white font-bold flex-1"
             />
           </Animated.View>
 
           {/* Unread indicator for inactive items */}
           <Animated.View
-            className="absolute -top-0.5 left-5 size-2 rounded-full border"
+            className="absolute size-2 rounded-full border"
             style={useAnimatedStyle(() => ({
+              left: 30,
+              top: 10,
               backgroundColor: textColor,
               borderColor,
               display: unreadCount ? "flex" : "none",

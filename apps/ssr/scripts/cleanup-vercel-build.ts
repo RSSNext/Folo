@@ -6,5 +6,5 @@ rmSync(resolve(__dirname, "../.generated"), { recursive: true, force: true })
 
 writeFileSync(
   resolve(__dirname, "../src/lib/env.ts"),
-  `export const isDev = process.env.NODE_ENV === "development"`,
+  `export const isDev = process.env.NODE_ENV === "development"\n`,
 )

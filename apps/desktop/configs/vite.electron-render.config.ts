@@ -23,8 +23,8 @@ export default {
     ...viteRenderBaseConfig.plugins,
     createPlatformSpecificImportPlugin("electron"),
     routeBuilderPluginV2({
-      pagePattern: `${resolve(VITE_ROOT, "./src/pages")}/**/*.tsx`,
-      outputPath: `${resolve(VITE_ROOT, "./src/generated-routes.ts")}`,
+      pagePattern: "src/pages/**/*.tsx",
+      outputPath: "src/generated-routes.ts",
       enableInDev: true,
     }),
     cleanupUnnecessaryFilesPlugin([

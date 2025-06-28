@@ -9,9 +9,11 @@ import ExpoModulesCore
 import WebKit
 
 let onContentHeightChanged = "onContentHeightChanged"
+let onImagePreview = "onImagePreview"
 
 public class SharedWebViewModule: Module {
     private var pendingJavaScripts: [String] = []
+    private var cancellables = Set<AnyCancellable>()
 
     public static var sharedWebView: WKWebView? {
         WebViewManager.shared
@@ -43,16 +45,30 @@ public class SharedWebViewModule: Module {
         }
 
         Events(onContentHeightChanged)
-        var cancellable: AnyCancellable?
+        Events(onImagePreview)
+
         OnStartObserving {
-            cancellable = WebViewManager.state.$contentHeight
+            // Monitor content height changes
+            WebViewManager.state.$contentHeight
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] height in
                     self?.sendEvent(onContentHeightChanged, ["height": height])
                 }
+                .store(in: &self.cancellables)
+
+            // Monitor image preview events
+            WebViewManager.state.$imagePreviewEvent
+                .receive(on: DispatchQueue.main)
+                .compactMap { $0 } // Filter out nil values
+                .sink { [weak self] event in
+                    self?.sendEvent(onImagePreview, ["imageUrls": event.imageUrls, "index": event.index])
+                }
+                .store(in: &self.cancellables)
         }
+
         OnStopObserving {
-            cancellable?.cancel()
+            self.cancellables.forEach { $0.cancel() }
+            self.cancellables.removeAll()
         }
     }
 

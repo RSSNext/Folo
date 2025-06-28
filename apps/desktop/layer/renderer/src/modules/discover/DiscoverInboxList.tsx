@@ -9,8 +9,8 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { CustomSafeError } from "~/errors/CustomSafeError"
 
 import { useActivationModal } from "../activation"
+import { InboxTable } from "./Inbox"
 import { InboxForm } from "./InboxForm"
-import { InboxTable } from "./InboxTable"
 
 const useCanCreateMoreInboxAndNotify = () => {
   const role = useUserRole()
