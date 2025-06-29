@@ -74,6 +74,7 @@ export const loadLanguageAndApply = async (lang: string) => {
     }
     EventBus.dispatch("I18N_UPDATE", "")
   } else {
+    if (ELECTRON) return
     let importFilePath = ""
 
     if (IN_ELECTRON) {
