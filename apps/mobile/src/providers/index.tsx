@@ -17,6 +17,7 @@ import { useCurrentColorsVariants } from "react-native-uikit-colors"
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { LightboxStateProvider } from "../components/lightbox/lightboxState"
+import { ImperativeModalProvider } from "../components/ui/modal/imperativeModal"
 import { queryClient } from "../lib/query-client"
 import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
 import { MigrationProvider } from "./migration"
@@ -36,6 +37,7 @@ const contexts = [
   <TimelineSelectorDragProgressProvider children={null} />,
   <PortalProvider children={null} />,
   <SafeAreaProvider />,
+  <ImperativeModalProvider />,
 ]
 /* eslint-enable @eslint-react/no-missing-key */
 
