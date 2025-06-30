@@ -1,3 +1,4 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PassviseFragment } from "@follow/components/common/Fragment.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
@@ -10,10 +11,11 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
 import { atom } from "jotai"
-import { useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
@@ -82,6 +84,17 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
       setShowAction(false)
     }
   }, [])
+
+  const isDropdownMenuOpen = useGlobalFocusableScopeSelector(
+    FocusablePresets.isNotFloatingLayerScope,
+  )
+
+  useEffect(() => {
+    // Hide the action bar when dropdown menu is open and click outside
+    if (isDropdownMenuOpen) {
+      setShowAction(false)
+    }
+  }, [isDropdownMenuOpen])
 
   useLayoutEffect(() => {
     if (ref.current) {
