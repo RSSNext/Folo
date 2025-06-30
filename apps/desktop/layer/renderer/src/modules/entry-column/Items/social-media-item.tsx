@@ -1,6 +1,6 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PassviseFragment } from "@follow/components/common/Fragment.js"
-import { useMobile } from "@follow/components/hooks/useMobile.js"
+import { Spring } from "@follow/components/constants/spring.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
@@ -70,7 +70,6 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [showAction, setShowAction] = useState(false)
 
-  const isMobile = useMobile()
   const handleMouseEnter = useMemo(() => {
     return () => setShowAction(true)
   }, [])
@@ -172,9 +171,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
         <SocialMediaGallery entryId={entryId} />
       </div>
 
-      <AnimatePresence>
-        {showAction && !isMobile && <ActionBar entryId={entryId} />}
-      </AnimatePresence>
+      <AnimatePresence>{showAction && <ActionBar entryId={entryId} />}</AnimatePresence>
     </div>
   )
 }
@@ -194,7 +191,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
       initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
       animate={{ opacity: 1, scale: 1, y: "-1/2" }}
       exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
-      transition={{ duration: 0.2 }}
+      transition={Spring.presets.smooth}
       className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
     >
       <div className="flex items-center gap-1">
