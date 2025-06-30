@@ -35,7 +35,7 @@ const TooltipContent = ({
     <m.div
       initial={{ opacity: 0.82, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={Spring.presets.snappy}
+      transition={Spring.snappy(0.1)}
     >
       {/* https://github.com/radix-ui/primitives/discussions/868 */}
       <TooltipPrimitive.Arrow className="z-50 fill-white [clip-path:inset(0_-10px_-10px_-10px)] dark:fill-neutral-950 dark:drop-shadow-[0_0_1px_theme(colors.white/0.5)]" />

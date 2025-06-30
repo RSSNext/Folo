@@ -1,6 +1,7 @@
 import { views } from "@follow/constants"
 import { useCollectionEntryList } from "@follow/store/collection/hooks"
 import {
+  useEntriesQuery,
   useEntryIdsByFeedId,
   useEntryIdsByFeedIds,
   useEntryIdsByInboxId,
@@ -21,7 +22,7 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ROUTE_FEED_PENDING } from "~/constants/app"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
-import { entries, useEntries } from "~/queries/entries"
+import { entries } from "~/queries/entries"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
@@ -45,8 +46,10 @@ const useRemoteEntries = (): UseEntriesReturn => {
       inboxId,
       listId,
       view,
-      ...(unreadOnly === true && !isPreview && { read: false }),
-      ...(hidePrivateSubscriptionsInTimeline === true && { excludePrivate: true }),
+      ...(unreadOnly === true && !isPreview && { unreadOnly: true }),
+      ...(hidePrivateSubscriptionsInTimeline === true && {
+        hidePrivateSubscriptionsInTimeline: true,
+      }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -64,7 +67,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     view,
     hidePrivateSubscriptionsInTimeline,
   ])
-  const query = useEntries(entriesOptions)
+  const query = useEntriesQuery(entriesOptions)
 
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
@@ -155,15 +158,16 @@ const useLocalEntries = (): UseEntriesReturn => {
   const allEntries = useEntryStore(
     useCallback(
       (state) => {
-        const ids = showEntriesByView
-          ? (entryIdsByView ?? [])
-          : (getEntryIdsFromMultiplePlace(
-              entryIdsByCollections,
-              entryIdsByFeedId,
-              entryIdsByCategory,
-              entryIdsByListId,
-              entryIdsByInboxId,
-            ) ?? [])
+        const ids = isCollection
+          ? entryIdsByCollections
+          : showEntriesByView
+            ? (entryIdsByView ?? [])
+            : (getEntryIdsFromMultiplePlace(
+                entryIdsByFeedId,
+                entryIdsByCategory,
+                entryIdsByListId,
+                entryIdsByInboxId,
+              ) ?? [])
 
         return ids
           .map((id) => {

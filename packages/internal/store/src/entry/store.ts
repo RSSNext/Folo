@@ -489,12 +489,12 @@ class EntrySyncServices {
 
     await entryActions.upsertMany(entries)
 
-    if (isCollection && res.data) {
-      if (view === undefined) {
-        console.error("view is required for collection")
-      }
-      const collections = honoMorph.toCollections(res.data, view ?? 0)
-      await collectionActions.upsertMany(collections)
+    if (typeof view === "number") {
+      const { collections, entryIdsNotInCollections } = honoMorph.toCollections(res.data, view)
+      await collectionActions.upsertMany(collections, {
+        reset: params.isCollection && !pageParam,
+      })
+      await collectionActions.delete(entryIdsNotInCollections)
     }
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
@@ -606,7 +606,7 @@ class EntrySyncServices {
                 cookie: options.cookie,
               }
             : undefined,
-          credentials: options?.cookie ? undefined : "include",
+          credentials: options?.cookie ? "omit" : "include",
           body: JSON.stringify({
             ids: nextIds,
           }),

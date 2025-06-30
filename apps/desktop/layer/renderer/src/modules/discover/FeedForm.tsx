@@ -15,6 +15,7 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { EntryModelSimple, FeedAnalyticsModel, FeedModel } from "@follow/models/types"
+import { invalidateEntriesQuery } from "@follow/store/entry/hooks"
 import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
 import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
@@ -36,7 +37,6 @@ import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
-import { entries as entriesQuery } from "~/queries/entries"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
@@ -250,13 +250,7 @@ const FeedInnerForm = ({
     },
     onSuccess: (data, variables) => {
       if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
-        entriesQuery
-          .entries({
-            feedId: "all",
-            view: Number(variables.view),
-            excludePrivate: true,
-          })
-          .invalidate({ exact: true })
+        invalidateEntriesQuery({ views: [Number(variables.view)] })
       }
 
       if ("unread" in data) {

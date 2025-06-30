@@ -1,13 +1,12 @@
 import { whoami } from "@follow/store/user/getters"
-import { setFirebaseTracker, setOpenPanelTracker, tracker } from "@follow/tracker"
+import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
 import { getAnalytics } from "@react-native-firebase/analytics"
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
+import PostHog from "posthog-react-native"
 
-import { getUserAgent } from "../lib/native/user-agent"
-import { op } from "../lib/op"
+import { proxyEnv } from "../lib/proxy-env"
 
 export const initAnalytics = async () => {
-  setOpenPanelTracker(op)
   setFirebaseTracker(getAnalytics())
 
   const user = whoami()
@@ -15,13 +14,23 @@ export const initAnalytics = async () => {
     tracker.identify(user)
   }
 
-  op.setGlobalProperties({
+  tracker.manager.appendUserProperties({
     build: "rn",
     version: nativeApplicationVersion,
     buildId: nativeBuildVersion,
   })
 
-  op.setHeaders({
-    "User-Agent": await getUserAgent(),
-  })
+  if (proxyEnv.POSTHOG_KEY) {
+    setPostHogTracker(new PostHog(proxyEnv.POSTHOG_KEY))
+  }
+
+  // op.setGlobalProperties({
+  //   build: "rn",
+  //   version: nativeApplicationVersion,
+  //   buildId: nativeBuildVersion,
+  // })
+
+  // op.setHeaders({
+  //   "User-Agent": await getUserAgent(),
+  // })
 }

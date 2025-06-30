@@ -1,11 +1,11 @@
 import { env } from "@follow/shared/env.desktop"
 import type { AuthSession } from "@follow/shared/hono"
-import { setOpenPanelTracker, setPostHogTracker, tracker } from "@follow/tracker"
+import { setFirebaseTracker, setPostHogTracker, tracker } from "@follow/tracker"
 import posthog from "posthog-js"
 
 import { QUERY_PERSIST_KEY } from "~/constants/app"
 
-import { op } from "./op"
+import { ga4 } from "../lib/ga4"
 
 export const initAnalytics = async () => {
   tracker.manager.appendUserProperties({
@@ -15,11 +15,12 @@ export const initAnalytics = async () => {
     language: navigator.language,
   })
 
-  setOpenPanelTracker(op)
+  setFirebaseTracker(ga4)
+
   setPostHogTracker(
     posthog.init(env.VITE_POSTHOG_KEY, {
       api_host: env.VITE_POSTHOG_HOST,
-      person_profiles: "always",
+      person_profiles: "identified_only",
       defaults: "2025-05-24",
     }),
   )

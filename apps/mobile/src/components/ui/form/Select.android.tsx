@@ -78,7 +78,7 @@ export function Select<T>({
             )}
           </TouchableOpacity>
           <View
-            className={cn("bg-opaque-separator/70 ml-4")}
+            className={cn("bg-opaque-separator/70 mb-px ml-4")}
             style={{ height: StyleSheet.hairlineWidth }}
           />
         </>
@@ -112,7 +112,7 @@ export function Select<T>({
 
   const SelectModal = (
     <BottomModal visible={isModalVisible} onClose={closeModal}>
-      <View className="border-opaque-separator flex-row items-center justify-between border-b p-4">
+      <View className="border-b-hairline border-opaque-separator flex-row items-center justify-between p-4">
         <Text className="text-label text-xl font-semibold">Select an option</Text>
         <TouchableOpacity onPress={closeModal}>
           <Text style={{ color: accentColor }} className="text-lg font-bold">

@@ -13,6 +13,7 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { ListAnalyticsModel } from "@follow/models/types"
+import { invalidateEntriesQuery } from "@follow/store/entry/hooks"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
@@ -34,7 +35,6 @@ import { useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
-import { entries as entriesQuery } from "~/queries/entries"
 
 import { useTOTPModalWrapper } from "../profile/hooks"
 import { ViewSelectorRadioGroup } from "../shared/ViewSelectorRadioGroup"
@@ -224,13 +224,7 @@ const ListInnerForm = ({
     },
     onSuccess: (data, variables) => {
       if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
-        entriesQuery
-          .entries({
-            feedId: "all",
-            view: Number(variables.view),
-            excludePrivate: true,
-          })
-          .invalidate({ exact: true })
+        invalidateEntriesQuery({ views: [Number(variables.view)] })
       }
 
       if ("unread" in data) {

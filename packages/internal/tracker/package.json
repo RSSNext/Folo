@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
-  "dependencies": {
-    "posthog-js": "1.255.0"
+  "peerDependencies": {
+    "posthog-js": "^1.255.0",
+    "posthog-react-native": "^4.1.3"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",

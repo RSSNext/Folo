@@ -7,7 +7,6 @@ import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
 import PKG from "../../../desktop/package.json"
-import { isDev } from "./env"
 
 const getBaseURL = () => {
   const req = requestContext.get("req")!
@@ -34,7 +33,7 @@ export const createApiFetch = () => {
     credentials: "include",
     retry: false,
     onRequest(context) {
-      if (isDev) console.info(`request: ${context.request}`)
+      if (__DEV__) console.info(`request: ${context.request}`)
 
       context.options.headers.set("User-Agent", `Folo External Server Api Client/${PKG.version}`)
     },
@@ -57,7 +56,7 @@ export const createApiClient = () => {
     headers() {
       return {
         "X-App-Version": PKG.version,
-        "X-App-Dev": isDev ? "1" : "0",
+        "X-App-Dev": __DEV__ ? "1" : "0",
         "User-Agent": `Folo External Server Api Client/${PKG.version}`,
         Cookie: authSessionToken ? `__Secure-better-auth.session_token=${authSessionToken}` : "",
       }

@@ -36,7 +36,6 @@
     "electron-store": "10.1.0",
     "electron-updater": "6.6.2",
     "es-toolkit": "1.39.3",
-    "fast-folder-size": "2.4.0",
     "font-list": "1.5.1",
     "i18next": "25.2.1",
     "js-yaml": "4.1.0",

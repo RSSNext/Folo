@@ -4,6 +4,7 @@ import { tracker } from "@follow/tracker"
 import { omit } from "es-toolkit"
 
 import { apiClient } from "../context"
+import { invalidateEntriesQuery } from "../entry/hooks"
 import { getFeedById } from "../feed/getter"
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
@@ -584,6 +585,10 @@ class SubscriptionSyncService {
     await this.batchUpdateSubscription({
       feedIds: folderFeedIds,
       view: newView,
+    })
+
+    invalidateEntriesQuery({
+      views: [currentView, newView],
     })
   }
 

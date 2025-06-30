@@ -152,7 +152,7 @@
   "appearance.zen_mode.description": "禅定模式是一种不受干扰的阅读模式，让你能够专注于内容而不受任何干扰。启用禅定模式将会隐藏侧边栏。",
   "appearance.zen_mode.description_simple": "不受干扰的阅读模式（隐藏侧边栏）",
   "appearance.zen_mode.label": "禅定模式",
-  "common.give_star": "<HeartIcon />喜欢我们的产品吗？ <Link>在 GitHub 上给我们「标星」吧！</Link>",
+  "common.give_star": "<HeartIcon />喜欢我们的产品吗？ <Link>在 GitHub 上给我们「Star」吧！</Link>",
   "customizeToolbar.more_actions.description": "将显示在下拉菜单中",
   "customizeToolbar.more_actions.title": "更多操作",
   "customizeToolbar.quick_actions.description": "自定义并重新排列您常用的操作",

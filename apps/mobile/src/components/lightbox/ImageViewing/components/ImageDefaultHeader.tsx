@@ -10,38 +10,97 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
+import { Download2CuteReIcon } from "@/src/icons/download_2_cute_re"
+import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 
 type Props = {
   onRequestClose: () => void
+  onPressSave: (uri: string) => void
+  onPressShare: (uri: string) => void
+  currentImageUri?: string
 }
 
-const ImageDefaultHeader = ({ onRequestClose }: Props) => {
+const ImageDefaultHeader = ({
+  onRequestClose,
+  onPressSave,
+  onPressShare,
+  currentImageUri,
+}: Props) => {
   const insets = useSafeAreaInsets()
+
   return (
-    <View style={[styles.root, { marginTop: insets.top, marginRight: insets.right }]}>
-      <TouchableOpacity
-        style={[styles.closeButton, styles.blurredBackground]}
-        onPress={onRequestClose}
-        hitSlop={16}
-        accessibilityRole="button"
-        accessibilityLabel={`Close image`}
-        accessibilityHint={`Closes viewer for header image`}
-        onAccessibilityEscape={onRequestClose}
-      >
-        <CloseCuteReIcon color="#fff" />
-      </TouchableOpacity>
+    <View
+      style={[
+        styles.root,
+        { marginTop: insets.top, marginLeft: insets.left, marginRight: insets.right },
+      ]}
+    >
+      {/* Left side - Close button */}
+      <View style={styles.leftActions}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.blurredBackground]}
+          onPress={onRequestClose}
+          hitSlop={16}
+          accessibilityRole="button"
+          accessibilityLabel="Close image"
+          accessibilityHint="Closes viewer for header image"
+          onAccessibilityEscape={onRequestClose}
+        >
+          <CloseCuteReIcon color="#fff" width={20} height={20} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Right side - Save and Share buttons */}
+      <View style={styles.rightActions}>
+        {currentImageUri && (
+          <>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.blurredBackground]}
+              onPress={() => onPressSave(currentImageUri)}
+              hitSlop={16}
+              accessibilityRole="button"
+              accessibilityLabel="Save image"
+              accessibilityHint="Saves image to photo library"
+            >
+              <Download2CuteReIcon color="#fff" width={20} height={20} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.blurredBackground]}
+              onPress={() => onPressShare(currentImageUri)}
+              hitSlop={16}
+              accessibilityRole="button"
+              accessibilityLabel="Share image"
+              accessibilityHint="Shares image with other apps"
+            >
+              <ShareForwardCuteReIcon color="#fff" width={20} height={20} />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   root: {
-    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 16,
+    paddingTop: 16,
     pointerEvents: "box-none",
   },
-  closeButton: {
-    marginRight: 10,
-    marginTop: 10,
+  leftActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rightActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  actionButton: {
     width: 44,
     height: 44,
     alignItems: "center",

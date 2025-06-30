@@ -1,4 +1,5 @@
-import { dirname, resolve } from "node:path"
+import { dirname } from "node:path"
+import { resolve } from "node:path/posix"
 import { fileURLToPath } from "node:url"
 
 import { tsImport } from "tsx/esm/api"

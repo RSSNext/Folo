@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { setServerConfigs } from "@/src/atoms/server-configs"
 import { apiClient } from "@/src/lib/api-fetch"
 
-export const ServerConfigsProvider = () => {
+export const ServerConfigsLoader = () => {
   const serverConfigs = useServerConfigsQuery()
 
   useEffect(() => {

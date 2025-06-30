@@ -199,12 +199,25 @@ function ViewItem({
             >
               {t(view.name)}
             </Text>
-            <UnreadCount
-              max={99}
-              unread={unreadCount}
-              dotClassName="size-1.5 rounded-full bg-white"
-              textClassName="text-white font-bold flex-1"
-            />
+            <Animated.View
+              style={useAnimatedStyle(() => ({
+                opacity: interpolate(
+                  dragProgress.get(),
+                  [index - 1, index, index + 1],
+                  [0, 1, 0],
+                  "clamp",
+                ),
+              }))}
+            >
+              {unreadCount > 0 && (
+                <UnreadCount
+                  max={99}
+                  unread={unreadCount}
+                  dotClassName="size-1.5 rounded-full bg-white"
+                  textClassName="text-white font-bold flex-1"
+                />
+              )}
+            </Animated.View>
           </Animated.View>
 
           {/* Unread indicator for inactive items */}

@@ -1,6 +1,7 @@
 import { nextFrame } from "@follow/utils/dom"
 import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { cn } from "@follow/utils/utils"
+import { ErrorBoundary } from "@sentry/react"
 import { useForceUpdate } from "motion/react"
 import type { FC, ImgHTMLAttributes, VideoHTMLAttributes } from "react"
 import * as React from "react"
@@ -343,14 +344,16 @@ const MediaImpl: FC<MediaProps> = ({
             }}
           >
             {props.blurhash && (
-              <span
-                className={cn(
-                  "absolute inset-0 overflow-hidden rounded",
-                  mediaLoadState === "loaded" && "animate-out fade-out-0 fill-mode-forwards",
-                )}
-              >
-                <BlurhashCanvas hash={props.blurhash} className="size-full" />
-              </span>
+              <ErrorBoundary>
+                <span
+                  className={cn(
+                    "absolute inset-0 overflow-hidden rounded",
+                    mediaLoadState === "loaded" && "animate-out fade-out-0 fill-mode-forwards",
+                  )}
+                >
+                  <BlurhashCanvas hash={props.blurhash} className="size-full" />
+                </span>
+              </ErrorBoundary>
             )}
           </span>
         </div>

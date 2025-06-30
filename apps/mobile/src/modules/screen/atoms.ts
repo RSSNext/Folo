@@ -234,15 +234,16 @@ function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
   const allEntries = useEntryStore(
     useCallback(
       (state) => {
-        const ids = showEntriesByView
-          ? (entryIdsByView ?? [])
-          : (getEntryIdsFromMultiplePlace(
-              entryIdsByCollections,
-              entryIdsByFeedId,
-              entryIdsByCategory,
-              entryIdsByListId,
-              entryIdsByInboxId,
-            ) ?? [])
+        const ids = isCollection
+          ? entryIdsByCollections
+          : showEntriesByView
+            ? (entryIdsByView ?? [])
+            : (getEntryIdsFromMultiplePlace(
+                entryIdsByFeedId,
+                entryIdsByCategory,
+                entryIdsByListId,
+                entryIdsByInboxId,
+              ) ?? [])
 
         return ids
           .map((id) => {

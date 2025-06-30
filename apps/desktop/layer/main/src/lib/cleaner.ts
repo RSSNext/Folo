@@ -1,8 +1,6 @@
 import { statSync } from "node:fs"
 import fsp from "node:fs/promises"
-import { createRequire } from "node:module"
 import path from "node:path"
-import { promisify } from "node:util"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { app, dialog } from "electron"
@@ -14,13 +12,37 @@ import { WindowManager } from "~/manager/window"
 import { t } from "./i18n"
 import { store, StoreKey } from "./store"
 
-const esModuleInterop = (module: any) => {
-  return module.default || module
+const getFolderSize = async (dir: string): Promise<number> => {
+  try {
+    const files = await fsp.readdir(dir, { withFileTypes: true })
+    const sizes = await Promise.all(
+      files.map(async (file) => {
+        const filePath = path.join(dir, file.name)
+
+        if (file.isSymbolicLink()) {
+          return 0
+        }
+
+        if (file.isDirectory()) {
+          return await getFolderSize(filePath)
+        }
+
+        if (file.isFile()) {
+          try {
+            const { size } = await fsp.stat(filePath)
+            return size
+          } catch {
+            return 0
+          }
+        }
+        return 0
+      }),
+    )
+    return sizes.reduce((acc, size) => acc + size, 0)
+  } catch {
+    return 0
+  }
 }
-const require = createRequire(import.meta.url)
-const fastFolderSize = esModuleInterop(
-  require("fast-folder-size"),
-) as typeof import("fast-folder-size").default
 
 export const clearAllDataAndConfirm = async () => {
   const win = WindowManager.getMainWindow()
@@ -71,12 +93,12 @@ export const clearAllData = async () => {
     caller.toast.error(`Error resetting app data: ${error.message}`)
   }
 }
-const fastFolderSizeAsync = promisify(fastFolderSize)
+
 export const getCacheSize = async () => {
   const cachePath = path.join(app.getPath("userData"), "cache")
 
   // Size is in bytes
-  const sizeInBytes = await fastFolderSizeAsync(cachePath).catch((error) => {
+  const sizeInBytes = await getFolderSize(cachePath).catch((error) => {
     logger.error(error)
   })
   return sizeInBytes || 0
@@ -155,7 +177,7 @@ export const clearCacheCronJob = () => {
 export const checkAndCleanCodeCache = async () => {
   const cachePath = path.join(app.getPath("userData"), "Code Cache")
 
-  const size = await fastFolderSizeAsync(cachePath).catch((error) => {
+  const size = await getFolderSize(cachePath).catch((error) => {
     logger.error(error)
   })
 

@@ -35,7 +35,6 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { createErrorToaster } from "~/lib/error-parser"
-import { invalidateEntriesQuery } from "~/queries/entries"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useModalStack } from "../../components/ui/modal/stacked/hooks"
@@ -160,12 +159,6 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
         category: folderName,
         currentView: view,
         newView: nextView,
-      })
-    },
-
-    onSuccess(_data, variables) {
-      invalidateEntriesQuery({
-        views: [view, variables],
       })
     },
   })

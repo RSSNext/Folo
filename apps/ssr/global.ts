@@ -1,5 +1,11 @@
-export const defineGlobalConstants = () => {
+Object.assign(globalThis, {
+  APP_NAME: "Folo",
+})
+
+try {
+  void __DEV__
+} catch {
   Object.assign(globalThis, {
-    APP_NAME: "Folo",
+    __DEV__: process.env.NODE_ENV === "development",
   })
 }
