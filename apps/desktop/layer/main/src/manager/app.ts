@@ -1,5 +1,3 @@
-import path from "node:path"
-
 import { PushReceiver } from "@eneris/push-receiver"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV, LEGACY_APP_PROTOCOL } from "@follow/shared/constants"
@@ -7,6 +5,7 @@ import { env } from "@follow/shared/env.desktop"
 import type { MessagingData } from "@follow/shared/hono"
 import { app, nativeTheme, Notification, shell } from "electron"
 import contextMenu from "electron-context-menu"
+import path from "pathe"
 
 import { WindowManager } from "~/manager/window"
 

@@ -1,9 +1,9 @@
 import { statSync } from "node:fs"
 import fsp from "node:fs/promises"
-import path from "node:path"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { app, dialog } from "electron"
+import path from "pathe"
 
 import { getIconPath } from "~/helper"
 import { logger } from "~/logger"

@@ -1,6 +1,6 @@
 import fs from "node:fs"
-import path from "node:path"
 
+import path from "pathe"
 import { parse } from "svg-parser"
 
 const DIST_DIR = "apps/mobile/src/icons"

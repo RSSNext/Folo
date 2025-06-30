@@ -1,9 +1,8 @@
 // @ts-check
-import path from "node:path"
-
 import { fixupPluginRules } from "@eslint/compat"
 import { defineConfig } from "eslint-config-hyoban"
 import reactNative from "eslint-plugin-react-native"
+import path from "pathe"
 
 import checkI18nJson from "./plugins/eslint/eslint-check-i18n-json.js"
 import noDebug from "./plugins/eslint/eslint-no-debug.js"

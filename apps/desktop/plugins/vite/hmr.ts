@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import { red, yellow } from "kolorist"
+import path from "pathe"
 import type { HmrContext, Plugin } from "vite"
 
 function isNodeWithinCircularImports(

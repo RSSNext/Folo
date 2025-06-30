@@ -1,6 +1,6 @@
 const { getDefaultConfig } = require("expo/metro-config")
 const { withNativeWind } = require("nativewind/metro")
-const path = require("node:path")
+const path = require("pathe")
 const { wrapWithReanimatedMetroConfig } = require("react-native-reanimated/metro-config")
 
 const config = getDefaultConfig(__dirname, { isCSSEnabled: true })

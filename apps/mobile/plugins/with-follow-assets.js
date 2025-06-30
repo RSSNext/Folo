@@ -9,7 +9,7 @@
 
 const { withDangerousMod, withXcodeProject, IOSConfig } = require("@expo/config-plugins")
 const fs = require("node:fs")
-const path = require("node:path")
+const path = require("pathe")
 const { execSync } = require("node:child_process")
 
 const IOS_GROUP_NAME = "Assets"

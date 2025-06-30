@@ -167,6 +167,9 @@ importers:
       cookie-es:
         specifier: 2.0.0
         version: 2.0.0
+      pathe:
+        specifier: 2.0.3
+        version: 2.0.3
     devDependencies:
       '@clack/prompts':
         specifier: 0.11.0

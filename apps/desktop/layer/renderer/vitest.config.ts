@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
-import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
+import { resolve } from "pathe"
 import tsconfigPath from "vite-tsconfig-paths"
 import { defineProject } from "vitest/config"
 

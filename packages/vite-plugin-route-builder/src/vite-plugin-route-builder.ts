@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs"
-import { dirname, relative, resolve } from "node:path"
 import { inspect } from "node:util"
 
 import glob from "fast-glob"
+import { dirname, relative, resolve } from "pathe"
 import type { Logger, Plugin } from "vite"
 
 import { buildGlobRoutes } from "./utils/route-builder"

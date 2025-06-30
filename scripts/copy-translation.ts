@@ -1,5 +1,6 @@
 import fs from "node:fs"
-import path from "node:path"
+
+import path from "pathe"
 
 const sourceDir = "./locales/app"
 const targetDir = "./locales/mobile/default"

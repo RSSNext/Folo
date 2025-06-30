@@ -1,5 +1,4 @@
 import { readFileSync } from "node:fs"
-import path, { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { env } from "@follow/shared/env.ssr"
@@ -7,6 +6,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { minify } from "html-minifier-terser"
 import { parseHTML } from "linkedom"
 import { FetchError } from "ofetch"
+import path, { dirname, resolve } from "pathe"
 import xss from "xss"
 
 import { NotFoundError } from "~/lib/not-found"

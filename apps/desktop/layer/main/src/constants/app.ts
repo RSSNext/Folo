@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import { app } from "electron"
+import path from "pathe"
 
 export const UNREAD_BACKGROUND_POLLING_INTERVAL = 1000 * 60 * 5
 

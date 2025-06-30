@@ -1,10 +1,10 @@
 import fsp from "node:fs/promises"
-import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
+import path from "pathe"
 
 import { getCacheSize } from "~/lib/cleaner"
 import { i18n } from "~/lib/i18n"

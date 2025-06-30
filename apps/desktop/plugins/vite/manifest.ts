@@ -1,6 +1,6 @@
 import fs from "node:fs"
-import path from "node:path"
 
+import path from "pathe"
 import type { Plugin } from "vite"
 
 export default function manifestPlugin(): Plugin {

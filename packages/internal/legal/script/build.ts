@@ -3,6 +3,7 @@ import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { marked } from "marked"
+import { resolve } from "pathe"
 
 // Define paths to markdown and output files
 const __dirname = fileURLToPath(new URL(".", import.meta.url))

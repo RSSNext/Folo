@@ -1,7 +1,7 @@
 import fs from "node:fs"
-import path from "node:path"
 
 import { app } from "electron"
+import path from "pathe"
 import { major, minor } from "semver"
 
 let _isSquirrelBuild: boolean | null = null
