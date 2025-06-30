@@ -2,7 +2,6 @@ import type { Ref } from "react"
 
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 
-import { EntryAIChatInput } from "./AIChatInput"
 import { ContainerToc } from "./ContainerToc"
 
 export type EntryContentAccessoriesRef = {
@@ -12,7 +11,7 @@ export const EntryContentAccessories = ({ ref }: { ref: EntryContentAccessoriesR
   return (
     <>
       <ContainerToc ref={ref.tocRef} />
-      <EntryAIChatInput />
+      {/* <EntryAIChatInput /> */}
     </>
   )
 }

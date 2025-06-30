@@ -1,0 +1,216 @@
+import { Spring } from "@follow/components/constants/spring.js"
+import { useMousePosition } from "@follow/components/hooks/useMouse.js"
+import { AnimatePresence, m } from "motion/react"
+import * as React from "react"
+import { useEffect, useState } from "react"
+
+import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
+
+const AIAmbientSidebar: React.FC<{
+  selectedText: string
+  onExpand: () => void
+}> = ({ selectedText, onExpand }) => {
+  const [intensity, setIntensity] = useState(0)
+  const [showPrompt, setShowPrompt] = useState(false)
+
+  const isShowPromptRef = React.useRef(false)
+
+  const mousePosition = useMousePosition()
+
+  // Calculate the distance between the mouse and the right edge of the screen
+  useEffect(() => {
+    const rightEdgeDistance = window.innerWidth - mousePosition.x
+    const maxDistance = 500 // Maximum sensing distance
+    const threshold = 80 // Threshold distance for showing prompt
+    const showedThreshold = 300
+
+    if (isShowPromptRef.current && rightEdgeDistance <= showedThreshold) {
+      return
+    }
+    if (rightEdgeDistance <= maxDistance) {
+      const newIntensity = Math.max(0, (maxDistance - rightEdgeDistance) / maxDistance)
+      setIntensity(newIntensity)
+      const showPrompt = rightEdgeDistance <= threshold
+      setShowPrompt(showPrompt)
+      isShowPromptRef.current = showPrompt
+    } else {
+      setIntensity(0)
+      setShowPrompt(false)
+      isShowPromptRef.current = false
+    }
+  }, [mousePosition])
+
+  return (
+    <>
+      {/* Blurred gradient bar - Adheres to the right edge */}
+      <m.div
+        className="pointer-events-none fixed right-0 top-0 z-40 h-full w-2"
+        animate={{
+          opacity: intensity * 0.8,
+          width: intensity > 0 ? 8 + intensity * 40 : 2,
+          // Breathing effect - Starts breathing when intensity is greater than 0.3
+          scale: intensity > 0.3 ? [1, 1.1, 1] : 1,
+        }}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut",
+          // Breathing animation configuration
+          scale: {
+            repeat: intensity > 0.3 ? Infinity : 0,
+            duration: 2,
+            ease: "easeInOut",
+          },
+        }}
+        style={{
+          background: `linear-gradient(to left, 
+            rgba(59, 130, 246, ${intensity * 0.4}) 0%, 
+            rgba(147, 51, 234, ${intensity * 0.3}) 50%, 
+            transparent 100%)`,
+          transformOrigin: "right center",
+        }}
+      />
+
+      <AnimatePresence>
+        {showPrompt && (
+          <>
+            <m.div
+              className="pointer-events-none fixed bottom-12 right-0 z-40"
+              initial={{ opacity: 0, scale: 0.5, x: 0 }}
+              animate={{
+                opacity: intensity * 0.6,
+                scale: 0.5 + intensity * 1.5,
+                x: intensity > 0 ? -10 - intensity * 30 : 0,
+              }}
+              transition={Spring.presets.smooth}
+              exit={{
+                opacity: 0,
+                scale: 0.5,
+                x: 0,
+              }}
+              style={{
+                width: 100,
+                height: 100,
+                background: `radial-gradient(circle, 
+                rgba(59, 130, 246, ${intensity * 0.3}) 0%, 
+                rgba(147, 51, 234, ${intensity * 0.2}) 40%, 
+                transparent 70%)`,
+              }}
+            />
+            <m.div
+              className="fixed bottom-12 right-6 z-50 flex flex-col items-end gap-3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={Spring.presets.smooth}
+            >
+              {/* Text prompt */}
+              <m.div className="bg-background/90 border-blue/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
+                <div className="text-right">
+                  <p className="text-text text-sm font-medium">
+                    {selectedText ? "Ask AI about selection" : "Ask AI anything"}
+                  </p>
+                  <p className="text-text-secondary mt-1 text-xs">
+                    {selectedText
+                      ? `"${selectedText.slice(0, 30)}..."`
+                      : "Get insights about this article"}
+                  </p>
+                </div>
+              </m.div>
+
+              {/* Clickable area */}
+              <m.button
+                className="from-blue/20 to-purple/20 hover:from-blue/30 hover:to-purple/30 border-blue/40 rounded-full border bg-gradient-to-r px-6 py-2 backdrop-blur-xl transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onExpand}
+              >
+                <div className="flex items-center gap-2">
+                  <m.div
+                    className="from-blue to-purple size-2 rounded-full bg-gradient-to-r"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.7, 1, 0.7],
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <span className="text-text text-sm font-medium">Open AI Chat</span>
+                </div>
+              </m.button>
+            </m.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+// AI Chat Panel Component - Expanded chat panel
+const AIChatSidePanel: React.FC<{
+  onClose: () => void
+}> = ({ onClose }) => (
+  <m.div
+    className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 w-96 border-l shadow-2xl backdrop-blur-xl"
+    initial={{ x: "100%" }}
+    animate={{ x: 0 }}
+    exit={{ x: "100%" }}
+    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+  >
+    {/* Panel header */}
+    <div className="border-border flex items-center justify-between border-b p-4">
+      <div className="flex items-center gap-3">
+        <div className="from-blue to-purple flex size-8 items-center justify-center rounded-full bg-gradient-to-r">
+          <i className="i-mgc-ai-cute-re size-4 text-white" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold">AI Assistant</h3>
+          <p className="text-text-secondary text-xs">Ready to help</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="bg-fill-tertiary hover:bg-fill-secondary flex size-8 items-center justify-center rounded-full transition-colors"
+        onClick={onClose}
+      >
+        <i className="i-mgc-close-cute-re size-4" />
+      </button>
+    </div>
+
+    {/* AI Chat content */}
+    <div className="h-[calc(100%-73px)]">
+      <AIChatRoot>{/* <AIChatPanel /> */}</AIChatRoot>
+    </div>
+  </m.div>
+)
+
+// Main AI Smart Sidebar Component
+export const AISmartSidebar = () => {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [selectedText, setSelectedText] = useState("")
+
+  // Listen for text selection
+  useEffect(() => {
+    const handleSelection = () => {
+      const selection = window.getSelection()
+      const text = selection?.toString().trim()
+      setSelectedText(text || "")
+    }
+
+    document.addEventListener("selectionchange", handleSelection)
+    return () => document.removeEventListener("selectionchange", handleSelection)
+  }, [])
+
+  return (
+    <>
+      {!isExpanded && (
+        <AIAmbientSidebar selectedText={selectedText} onExpand={() => setIsExpanded(true)} />
+      )}
+      <AnimatePresence>
+        {isExpanded && <AIChatSidePanel onClose={() => setIsExpanded(false)} />}
+      </AnimatePresence>
+    </>
+  )
+}

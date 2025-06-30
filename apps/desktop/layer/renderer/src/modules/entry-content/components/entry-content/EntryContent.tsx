@@ -41,6 +41,7 @@ import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
 import { EntryContentAccessories } from "./accessories"
+import { AISmartSidebar } from "./ai"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
@@ -232,6 +233,8 @@ export const EntryContent: Component<EntryContentProps> = ({
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
+
+      <AISmartSidebar />
     </>
   )
 }

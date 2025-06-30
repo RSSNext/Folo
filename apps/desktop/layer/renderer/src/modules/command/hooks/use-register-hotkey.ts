@@ -53,6 +53,7 @@ export const useCommandHotkey = <T extends FollowCommandId>({
 
       keyMap[nextKey] = (event) => {
         const { target } = event
+
         if (!options?.forceInputElement && checkIsEditableElement(target as HTMLElement)) {
           return
         }

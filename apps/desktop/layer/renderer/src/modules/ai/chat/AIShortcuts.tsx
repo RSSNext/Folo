@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn } from "@follow/utils"
 
-import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { mockShortcuts } from "../mock-data"
 
