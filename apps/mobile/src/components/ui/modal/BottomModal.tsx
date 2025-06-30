@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useState } from "react"
-import { Modal, Pressable } from "react-native"
+import { KeyboardAvoidingView, Modal, Pressable } from "react-native"
 import Animated, {
   Easing,
   runOnJS,
@@ -144,23 +144,25 @@ export function BottomModal({
       statusBarTranslucent
       navigationBarTranslucent
     >
-      <Animated.View className="absolute inset-0 bg-black" style={backdropStyle}>
-        <Pressable
-          className="flex-1"
-          onPress={handleBackdropPress}
-          android_ripple={{ color: "white" }}
-        />
-      </Animated.View>
+      <KeyboardAvoidingView className="flex-1" behavior="padding">
+        <Animated.View className="absolute inset-0 bg-black" style={backdropStyle}>
+          <Pressable
+            className="flex-1"
+            onPress={handleBackdropPress}
+            android_ripple={{ color: "white" }}
+          />
+        </Animated.View>
 
-      <Animated.View
-        className={cn(
-          "bg-system-background mt-auto flex-1 overflow-hidden rounded-t-2xl",
-          className,
-        )}
-        style={modalContentStyle}
-      >
-        {children}
-      </Animated.View>
+        <Animated.View
+          className={cn(
+            "bg-system-background mt-auto flex-1 overflow-hidden rounded-t-2xl",
+            className,
+          )}
+          style={modalContentStyle}
+        >
+          {children}
+        </Animated.View>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }
