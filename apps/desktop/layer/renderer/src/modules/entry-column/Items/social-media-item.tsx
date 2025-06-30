@@ -217,7 +217,7 @@ export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProp
   )
 }
 
-export const SocialMediaItemSkeleton = () => (
+export const SocialMediaItemSkeleton = (
   <div className="relative m-auto w-[645px] rounded-md">
     <div className="relative">
       <div className="group relative flex px-8 py-6">
