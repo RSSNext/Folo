@@ -72,7 +72,15 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
     return () => setShowAction(true)
   }, [])
   const handleMouseLeave = useMemo(() => {
-    return () => setShowAction(false)
+    return (e: React.MouseEvent) => {
+      const relatedTarget = e.relatedTarget as Element
+      const currentTarget = e.currentTarget as Element
+
+      if (relatedTarget && currentTarget.contains(relatedTarget)) {
+        return
+      }
+      setShowAction(false)
+    }
   }, [])
 
   useLayoutEffect(() => {
