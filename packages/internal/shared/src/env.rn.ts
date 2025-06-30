@@ -46,5 +46,7 @@ export const env = {
   API_URL: envProfileMap[profile].API_URL,
   APP_CHECK_DEBUG_TOKEN: process.env.EXPO_PUBLIC_APP_CHECK_DEBUG_TOKEN,
   OPENPANEL_CLIENT_ID: envProfileMap[profile].OPENPANEL_CLIENT_ID,
+  POSTHOG_KEY: envProfileMap[profile].POSTHOG_KEY,
+  POSTHOG_HOST: envProfileMap[profile].POSTHOG_HOST,
   OPENPANEL_API_URL: envProfileMap[profile].OPENPANEL_API_URL,
 }

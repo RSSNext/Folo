@@ -32,6 +32,7 @@ import { useEventCallback } from "usehooks-ts"
 
 import { useActionLanguage, useGeneralSettingKey } from "~/atoms/settings/general"
 import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
+import type { StoreImageType } from "~/store/image"
 import { imageActions } from "~/store/image"
 
 import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
@@ -54,6 +55,7 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
   const deferIsInitLayout = useDeferredValue(isInitLayout)
   const restoreDimensions = useEventCallback(async () => {
     const images = [] as string[]
+
     data.forEach((entryId) => {
       const entry = getEntry(entryId)
       if (!entry) return
@@ -68,7 +70,30 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
         setIsInitDim(true)
       })
     })
-  }, [])
+  }, [restoreDimensions])
+
+  useLayoutEffect(() => {
+    const images: StoreImageType[] = []
+    data.forEach((entryId) => {
+      const entry = getEntry(entryId)
+      if (!entry) return
+
+      if (!entry.media) return
+      for (const media of entry.media) {
+        if (!media.height || !media.width) continue
+
+        images.push({
+          src: media.url,
+          width: media.width,
+          height: media.height,
+          ratio: media.width / media.height,
+        })
+      }
+    })
+    if (images.length > 0) {
+      imageActions.saveImages(images)
+    }
+  }, [JSON.stringify(data)])
 
   const customizeColumn = useMasonryColumnValue()
   const { containerRef, currentColumn, currentItemWidth, calcItemWidth } = useMasonryColumn(

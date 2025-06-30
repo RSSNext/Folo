@@ -28,6 +28,7 @@ import m0024 from "./0024_spooky_alex_power.sql"
 import m0025 from "./0025_colorful_valkyrie.sql"
 import m0026 from "./0026_numerous_slyde.sql"
 import m0027 from "./0027_nostalgic_human_torch.sql"
+import m0028 from "./0028_chief_cyclops.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -61,5 +62,6 @@ export default {
     m0025,
     m0026,
     m0027,
+    m0028,
   },
 }

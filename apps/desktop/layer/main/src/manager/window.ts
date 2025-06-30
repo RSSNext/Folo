@@ -298,7 +298,7 @@ class WindowManagerStatic {
         webviewTag: true,
         webSecurity: !DEV,
         nodeIntegration: true,
-        contextIsolation: true,
+        contextIsolation: false,
       },
       ...this.getPlatformSpecificWindowConfig(),
     }

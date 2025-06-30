@@ -1,4 +1,5 @@
-import { dirname, resolve } from "node:path"
+import { dirname } from "node:path"
+import { resolve } from "node:path/posix"
 import { fileURLToPath } from "node:url"
 
 import { tsImport } from "tsx/esm/api"
@@ -23,8 +24,8 @@ export default {
     ...viteRenderBaseConfig.plugins,
     createPlatformSpecificImportPlugin("electron"),
     routeBuilderPluginV2({
-      pagePattern: `${resolve(VITE_ROOT, "./src/pages")}/**/*.tsx`,
-      outputPath: `${resolve(VITE_ROOT, "./src/generated-routes.ts")}`,
+      pagePattern: "src/pages/**/*.tsx",
+      outputPath: "src/generated-routes.ts",
       enableInDev: true,
     }),
     cleanupUnnecessaryFilesPlugin([

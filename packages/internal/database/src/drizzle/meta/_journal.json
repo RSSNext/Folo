@@ -197,6 +197,13 @@
       "when": 1749790511829,
       "tag": "0027_nostalgic_human_torch",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "6",
+      "when": 1751278105927,
+      "tag": "0028_chief_cyclops",
+      "breakpoints": true
     }
   ]
 }

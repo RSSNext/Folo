@@ -84,6 +84,7 @@ export function EmailManagement() {
             />
           )}
         </div>
+
         {!user?.emailVerified && (
           <Button
             variant="outline"
@@ -92,7 +93,7 @@ export function EmailManagement() {
             onClick={() => {
               verifyEmailMutation.mutate()
             }}
-            buttonClassName="mt-2"
+            buttonClassName="absolute right-20"
           >
             {t("profile.email.send_verification")}
           </Button>

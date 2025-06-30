@@ -5,5 +5,6 @@ declare global {
     electron?: ElectronAPI
     api?: { canWindowBlur: boolean }
     platform: NodeJS.Platform
+    mas: boolean
   }
 }

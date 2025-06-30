@@ -9,12 +9,14 @@ export default defineConfig({
   outDir: "dist/server",
 
   clean: true,
-  format: ["cjs"],
+  format: ["esm"],
   external: ["lightningcss", "vite"],
   treeshake: true,
+
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === "development"),
   },
+
   hooks(hooks) {
     hooks.hook("build:done", async () => {
       if (process.env.VERCEL !== "1") return
@@ -24,10 +26,11 @@ export default defineConfig({
 
       try {
         const insertCode = `try {
-require.resolve("@fontsource/sn-pro")
-require.resolve('kose-font')
-require.resolve('kose-font/fonts/KosefontP-JP.ttf')
-require.resolve('kose-font/fonts/Kosefont-JP.ttf')
+const noop = () => {}
+import("@fontsource/sn-pro").then(noop)
+import('kose-font').then(noop)
+import('kose-font/fonts/KosefontP-JP.ttf').then(noop)
+import('kose-font/fonts/Kosefont-JP.ttf').then(noop)
 ${(() => {
   const require = createRequire(import.meta.url)
   const fontDepsPath = require.resolve("@fontsource/sn-pro")

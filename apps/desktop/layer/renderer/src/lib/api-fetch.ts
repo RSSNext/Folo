@@ -12,6 +12,8 @@ import { setLoginModalShow } from "~/atoms/user"
 import { NeedActivationToast } from "~/modules/activation/NeedActivationToast"
 import { DebugRegistry } from "~/modules/debug/registry"
 
+import { getClientId, getSessionId } from "./client-session"
+
 export const apiFetch = ofetch.create({
   baseURL: env.VITE_API_URL,
   credentials: "include",
@@ -19,11 +21,13 @@ export const apiFetch = ofetch.create({
   onRequest: ({ options }) => {
     const header = new Headers(options.headers)
 
-    header.set("x-app-version", PKG.version)
+    header.set("X-App-Version", PKG.version)
     if (DEV) {
       header.set("X-App-Dev", "1")
     }
     header.set("X-App-Name", "Folo Web")
+    header.set("X-Client-Id", getClientId())
+    header.set("X-Session-Id", getSessionId())
     options.headers = header
   },
   onResponse() {
@@ -61,6 +65,7 @@ export const apiFetch = ofetch.create({
             {
               closeButton: true,
               duration: 10e4,
+
               classNames: {
                 content: tw`w-full`,
               },
@@ -86,6 +91,8 @@ export const apiClient = hc<AppType>(env.VITE_API_URL, {
     return {
       "X-App-Version": PKG.version,
       "X-App-Name": "Folo Web",
+      "X-Client-Id": getClientId(),
+      "X-Session-Id": getSessionId(),
     }
   },
 })

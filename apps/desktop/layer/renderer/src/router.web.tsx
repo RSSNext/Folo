@@ -4,6 +4,7 @@ import { createBrowserRouter, createHashRouter } from "react-router"
 
 import { ErrorElement } from "./components/common/ErrorElement"
 import { NotFound } from "./components/common/NotFound"
+// @ts-ignore
 import { routes as tree } from "./generated-routes"
 
 let routerCreator =

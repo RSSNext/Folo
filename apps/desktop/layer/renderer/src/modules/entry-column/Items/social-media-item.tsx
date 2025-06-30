@@ -1,5 +1,6 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PassviseFragment } from "@follow/components/common/Fragment.js"
-import { useMobile } from "@follow/components/hooks/useMobile.js"
+import { Spring } from "@follow/components/constants/spring.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
@@ -10,10 +11,12 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
 import { atom } from "jotai"
-import { useLayoutEffect, useMemo, useRef, useState } from "react"
+import { AnimatePresence, m } from "motion/react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { FocusablePresets } from "~/components/common/Focusable"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
@@ -67,13 +70,32 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [showAction, setShowAction] = useState(false)
 
-  const isMobile = useMobile()
   const handleMouseEnter = useMemo(() => {
     return () => setShowAction(true)
   }, [])
   const handleMouseLeave = useMemo(() => {
-    return () => setShowAction(false)
+    return (e: React.MouseEvent) => {
+      // If the mouse is over the action bar, don't hide the action bar
+      const relatedTarget = e.relatedTarget as Element
+      const currentTarget = e.currentTarget as Element
+
+      if (relatedTarget && currentTarget.contains(relatedTarget)) {
+        return
+      }
+      setShowAction(false)
+    }
   }, [])
+
+  const isDropdownMenuOpen = useGlobalFocusableScopeSelector(
+    FocusablePresets.isNotFloatingLayerScope,
+  )
+
+  useEffect(() => {
+    // Hide the action bar when dropdown menu is open and click outside
+    if (isDropdownMenuOpen) {
+      setShowAction(false)
+    }
+  }, [isDropdownMenuOpen])
 
   useLayoutEffect(() => {
     if (ref.current) {
@@ -149,7 +171,7 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
         <SocialMediaGallery entryId={entryId} />
       </div>
 
-      {showAction && !isMobile && <ActionBar entryId={entryId} />}
+      <AnimatePresence>{showAction && <ActionBar entryId={entryId} />}</AnimatePresence>
     </div>
   )
 }
@@ -165,12 +187,18 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
   if (entryActions.length === 0) return null
 
   return (
-    <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
+    <m.div
+      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
+      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      transition={Spring.presets.smooth}
+      className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
+    >
       <div className="flex items-center gap-1">
         <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
         <MoreActions entryId={entryId} view={FeedViewType.SocialMedia} />
       </div>
-    </div>
+    </m.div>
   )
 }
 

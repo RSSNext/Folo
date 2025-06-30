@@ -201,6 +201,8 @@
   "general.data_file.label": "Data File",
   "general.data_persist.description": "Persist data locally to enable offline access and local search.",
   "general.data_persist.label": "Persist data for offline usage",
+  "general.dim_read.description": "Diminish the color displayed in the timeline for entries that have been read.",
+  "general.dim_read.label": "Dim read",
   "general.enhanced.description": "Enabling the enhanced settings offers more customization options, but may also introduce unforeseen issues. !!! Keep this as the gateway to truly experimental/complex things if needed later, otherwise it might be removable if other settings cover specifics.",
   "general.enhanced.disabled.tip": "Enhanced settings are disabled, you can enable them in the General settings - Advanced.",
   "general.enhanced.enable.modal.cancel": "Cancel",

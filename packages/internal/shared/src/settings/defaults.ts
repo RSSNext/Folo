@@ -27,9 +27,10 @@ export const defaultGeneralSettings: GeneralSettings = {
   scrollMarkUnread: true,
   hoverMarkUnread: true,
   renderMarkUnread: false,
-  // UX
+  // timeline
   groupByDate: true,
   autoExpandLongSocialMedia: false,
+  dimRead: false,
 
   // Secure
   jumpOutLinkWarn: true,

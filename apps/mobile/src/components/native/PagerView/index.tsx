@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { cssInterop } from "nativewind"
 import type { FC, ReactNode, Ref } from "react"
-import { useEffect, useImperativeHandle, useRef, useState } from "react"
+import { useImperativeHandle, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet } from "react-native"
 
@@ -50,14 +50,6 @@ export const PagerView: FC<PagerViewProps> = ({
   const [currentPage, setCurrentPage] = useState(page ?? 0)
 
   const nativeRef = useRef<PagerRef>(null)
-  useEffect(() => {
-    if (nativeRef.current) {
-      const state = nativeRef.current.getState()
-      if (state === "idle" && currentPage !== nativeRef.current.getPage()) {
-        nativeRef.current.setPage(currentPage)
-      }
-    }
-  }, [currentPage])
   useImperativeHandle(ref, () => ({
     setPage: (index: number) => {
       setCurrentPage(index)

@@ -1,5 +1,6 @@
 {
   "name": "@follow/ssr",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsx scripts/prepare-vercel-build.ts && tsdown && tsx scripts/cleanup-vercel-build.ts",

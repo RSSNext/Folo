@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { m } from "~/components/common/Motion"
 
-import { EntryContentLoading } from "../loading"
+import { EntryContentLoading } from "./entry-content/EntryContentLoading"
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 const variants = {

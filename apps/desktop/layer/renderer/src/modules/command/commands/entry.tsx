@@ -452,7 +452,7 @@ export type TipCommand = Command<{
 
 export type StarCommand = Command<{
   id: typeof COMMAND_ID.entry.star
-  fn: (data: { entryId: string; view?: FeedViewType }) => void
+  fn: (data: { entryId: string; view: FeedViewType }) => void
 }>
 
 export type DeleteCommand = Command<{

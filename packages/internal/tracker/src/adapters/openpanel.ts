@@ -1,6 +1,6 @@
+import { TrackerMapper } from "../enums"
 import type { OpenPanel } from "../op"
-import type { Optional } from "../points"
-import { TrackerMapper } from "../points"
+import type { Optional } from "../types"
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 
 export interface OpenPanelAdapterConfig {

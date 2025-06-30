@@ -57,12 +57,12 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
             toast.dismiss(toastId)
           }
 
-          const toastId = toast("", {
+          const toastId = toast.warning("", {
             duration: 3000,
             description: <UnfollowInfo title={feed.title!} undo={undo} />,
             action: {
               label: (
-                <span className="flex items-center gap-1">
+                <span className={"flex items-center gap-1 px-1"}>
                   {t("words.undo")}
                   <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
                     $mod+Z
@@ -95,13 +95,15 @@ const UnfollowInfo = ({ title, undo }: { title: string; undo: () => any }) => {
     preventDefault: true,
   })
   return (
-    <Trans
-      ns="app"
-      i18nKey="notify.unfollow_feed"
-      components={{
-        FeedItem: <i className="mr-px font-semibold">{title}</i>,
-      }}
-    />
+    <span className="text-text font-medium">
+      <Trans
+        ns="app"
+        i18nKey="notify.unfollow_feed"
+        components={{
+          FeedItem: <i className="mr-px font-semibold">{title}</i>,
+        }}
+      />
+    </span>
   )
 }
 

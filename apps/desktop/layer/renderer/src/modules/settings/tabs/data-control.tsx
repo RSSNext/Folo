@@ -112,7 +112,7 @@ export const SettingDataControl = () => {
             description: t("general.log_file.description"),
             buttonText: t("general.log_file.button"),
             action: () => {
-              ;(ipcServices as any)?.revealLogFile?.()
+              ipcServices?.app.revealLogFile?.()
             },
           },
         ]}
@@ -244,7 +244,7 @@ const CleanElectronCache = () => {
             {t("data_control.clean_cache.button")}
             <MotionButtonBase
               onClick={() => {
-                ;(ipcServices as any)?.openCacheFolder?.()
+                ipcServices?.app.openCacheFolder?.()
               }}
               className="center flex"
             >
@@ -253,7 +253,7 @@ const CleanElectronCache = () => {
           </span>
         }
         action={async () => {
-          await (ipcServices as any)?.clearCache?.()
+          await ipcServices?.app.clearCache?.()
           queryClient.setQueryData(["app", "cache", "size"], 0)
         }}
         buttonText={t("data_control.clean_cache.button")}
@@ -267,7 +267,7 @@ const AppCacheLimit = () => {
   const { data: cacheSize, isLoading: isLoadingCacheSize } = useQuery({
     queryKey: ["app", "cache", "size"],
     queryFn: async () => {
-      const byteSize = (await (ipcServices as any)?.getCacheSize?.()) ?? 0
+      const byteSize = (await ipcServices?.app.getCacheSize?.()) ?? 0
       return Math.round(byteSize / 1024 / 1024)
     },
     refetchOnMount: "always",
@@ -279,13 +279,13 @@ const AppCacheLimit = () => {
   } = useQuery({
     queryKey: ["app", "cache", "limit"],
     queryFn: async () => {
-      const size = (await (ipcServices as any)?.getCacheLimit?.()) ?? 0
+      const size = (await ipcServices?.app.getCacheLimit?.()) ?? 0
       return size
     },
   })
 
   const onChange = (value: number[]) => {
-    ;(ipcServices as any)?.limitCacheSize?.(value[0]!)
+    ipcServices?.app.limitCacheSize?.(value[0]!)
     refetchCacheLimit()
   }
 
@@ -294,7 +294,7 @@ const AppCacheLimit = () => {
   const InfinitySymbol = <CarbonInfinitySymbol />
   return (
     <SettingItemGroup>
-      <div className={"mb-3 flex items-center justify-between gap-4"}>
+      <div className={"mb-3 mt-4 flex items-center justify-between gap-4"}>
         <Label className="center flex">
           {t("data_control.app_cache_limit.label")}
 

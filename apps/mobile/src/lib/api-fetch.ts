@@ -6,13 +6,14 @@ import { FetchError, ofetch } from "ofetch"
 
 import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
 import { getCookie } from "./auth"
+import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
 import { proxyEnv } from "./proxy-env"
 
 export const apiFetch = ofetch.create({
   retry: false,
-
+  credentials: "omit",
   baseURL: proxyEnv.API_URL,
   onRequest: async (ctx) => {
     const { options, request } = ctx
@@ -68,6 +69,8 @@ export const apiClient = hc<AppType>(proxyEnv.API_URL, {
       "X-App-Name": "Folo Mobile",
       cookie: getCookie(),
       "User-Agent": await getUserAgent(),
+      "X-Client-Id": getClientId(),
+      "X-Session-Id": getSessionId(),
     }
   },
 })

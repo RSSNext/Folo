@@ -1,6 +1,6 @@
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./adapters"
-import type { TrackerMapper } from "./points"
-import { CodeToTrackerName } from "./points"
+import type { TrackerMapper } from "./enums"
+import { CodeToTrackerName } from "./utils"
 
 export interface TrackerManagerConfig {
   enableBatchProcessing?: boolean
