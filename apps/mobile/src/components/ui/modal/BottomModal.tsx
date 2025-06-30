@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-interface BottomModalProps {
+export interface BottomModalProps {
   /**
    * Whether the modal is visible
    */
@@ -19,7 +19,7 @@ interface BottomModalProps {
   /**
    * Function to call when the modal should be closed (backdrop press or programmatically)
    */
-  onClose: () => void
+  onClose?: () => void
 
   /**
    * Content to render inside the modal
@@ -109,7 +109,9 @@ export function BottomModal({
       },
       () => {
         runOnJS(setInternalVisible)(false)
-        runOnJS(onClose)()
+        if (onClose) {
+          runOnJS(onClose)()
+        }
       },
     )
   }, [backdropAnim, contentTranslateY, closeDuration, onClose])
