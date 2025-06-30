@@ -1,9 +1,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { marked } from "marked"
 
 // Define paths to markdown and output files
+const __dirname = fileURLToPath(new URL(".", import.meta.url))
+
 const PRIVACY_MD_PATH = resolve(__dirname, "../privacy.md")
 const TOS_MD_PATH = resolve(__dirname, "../tos.md")
 const OUTPUT_PATH = resolve(__dirname, "../dist")
@@ -20,7 +23,7 @@ const githubMarkdownCSS = `
     max-width: 980px;
     margin: 0 auto;
   }
-  .markdown-body h1, .markdown-body h2, .markdown-body h3, 
+  .markdown-body h1, .markdown-body h2, .markdown-body h3,
   .markdown-body h4, .markdown-body h5, .markdown-body h6 {
     margin-top: 24px;
     margin-bottom: 16px;
