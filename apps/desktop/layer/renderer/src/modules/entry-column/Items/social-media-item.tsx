@@ -11,6 +11,7 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
 import { atom } from "jotai"
+import { AnimatePresence, m } from "motion/react"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -171,7 +172,9 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
         <SocialMediaGallery entryId={entryId} />
       </div>
 
-      {showAction && !isMobile && <ActionBar entryId={entryId} />}
+      <AnimatePresence>
+        {showAction && !isMobile && <ActionBar entryId={entryId} />}
+      </AnimatePresence>
     </div>
   )
 }
@@ -187,12 +190,18 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
   if (entryActions.length === 0) return null
 
   return (
-    <div className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900">
+    <m.div
+      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
+      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      transition={{ duration: 0.2 }}
+      className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
+    >
       <div className="flex items-center gap-1">
         <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
         <MoreActions entryId={entryId} view={FeedViewType.SocialMedia} />
       </div>
-    </div>
+    </m.div>
   )
 }
 
