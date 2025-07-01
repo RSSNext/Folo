@@ -6,6 +6,7 @@ export const EntryAIChatInput: Component = () => {
   const { entryId } = useRouteParamsSelector((s) => ({
     entryId: s.entryId,
   }))
+
   return (
     <div className="sticky bottom-0 -mx-10">
       <AIChatRoot>

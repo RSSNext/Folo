@@ -8,9 +8,45 @@ import { AIChatInput } from "./AIChatInput"
 import { AIChatMessage, AIChatTypingIndicator } from "./AIChatMessage"
 import { useAutoScroll } from "./useAutoScroll"
 
+declare const APP_NAME: string
+
 interface AIChatContainerProps {
   disabled?: boolean
   onSendMessage?: (message: string) => void
+}
+
+const Welcome: React.FC = () => {
+  return (
+    <div className="flex flex-1 items-center justify-center p-6">
+      <div className="max-w-md space-y-6 text-center">
+        <div className="from-accent mx-auto flex size-16 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
+          <i className="i-mgc-ai-cute-re size-8 text-white" />
+        </div>
+
+        <div>
+          <h2 className="text-text mb-2 text-xl font-semibold">Welcome to {APP_NAME} AI</h2>
+          <p className="text-text-secondary text-sm">
+            I can help you analyze content, answer questions, and provide insights about your feeds.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-text-tertiary text-xs">Ask me anything about:</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            <span className="bg-fill-tertiary text-text-secondary rounded-full px-3 py-1 text-xs">
+              Content analysis
+            </span>
+            <span className="bg-fill-tertiary text-text-secondary rounded-full px-3 py-1 text-xs">
+              Summaries
+            </span>
+            <span className="bg-fill-tertiary text-text-secondary rounded-full px-3 py-1 text-xs">
+              Insights
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const SendingMessageOverlay: React.FC<{
@@ -74,169 +110,110 @@ const SendingMessageOverlay: React.FC<{
   )
 }
 
-// Welcome screen suggestions
-const welcomeSuggestions = [
-  {
-    icon: "i-mgc-translate-2-cute-re",
-    text: "Read a foreign language article with AI",
-    action: "translate",
-  },
-  {
-    icon: "i-mgc-mind-map-cute-re",
-    text: "Tidy an article with AI MindMap Action",
-    action: "mindmap",
-  },
-  {
-    icon: "i-mgc-comment-2-cute-re",
-    text: "Freely communicate with AI",
-    action: "chat",
-  },
-]
+export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
+  ({ disabled, onSendMessage }) => {
+    const { inputRef } = React.use(AIPanelRefsContext)
+    const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+    const { messages, status } = React.use(AIChatContext)
 
-const Welcome = () => {
-  const handleSuggestionClick = (_action: string) => {
-    // TODO: Implement suggestion click
-  }
+    // Sending animation state
+    const [sendingMessage, setSendingMessage] = React.useState<string | null>(null)
+    const [inputRect, setInputRect] = React.useState<DOMRect | null>(null)
+    const [messagesAreaRect, setMessagesAreaRect] = React.useState<DOMRect | null>(null)
 
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center p-8">
-      {/* AI Icon */}
-      <div className="mb-8">
-        <div className="from-orange flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br to-red-500 shadow-lg">
-          <div className="relative">
-            <i className="i-mgc-ai-cute-re size-8 text-white" />
-            <div className="from-orange/20 absolute -inset-2 animate-pulse rounded-full bg-gradient-to-br to-red-500/20" />
-          </div>
-        </div>
-      </div>
+    // Auto-scroll logic
+    const { resetScrollState, scrollToBottom } = useAutoScroll(
+      scrollAreaRef.current,
+      status === "streaming",
+    )
 
-      {/* Welcome Title */}
-      <div className="mb-4 text-center">
-        <h2 className="text-text mb-2 text-xl font-semibold">What can I help you with?</h2>
-      </div>
+    const handleSendMessage = (message: string) => {
+      // Get the input box position for the animation
+      if (inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect()
+        setInputRect(rect)
+        setSendingMessage(message)
 
-      {/* Suggestions */}
-      <div className="w-full max-w-md">
-        {welcomeSuggestions.map((suggestion, index) => (
-          <button
-            type="button"
-            key={index}
-            onClick={() => handleSuggestionClick(suggestion.action)}
-            className="hover:bg-fill-secondary group flex w-full items-center gap-4 rounded-xl p-4 text-left transition-all duration-200 hover:scale-[1.02]"
-          >
-            <div className="bg-fill-tertiary group-hover:bg-fill-secondary flex size-10 items-center justify-center rounded-lg transition-colors">
-              <i className={`${suggestion.icon} text-text-secondary size-5`} />
-            </div>
-            <span className="text-text flex-1 text-sm font-medium">{suggestion.text}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
+        // Get the message area position
+        if (scrollAreaRef.current) {
+          const messagesRect = scrollAreaRef.current.getBoundingClientRect()
+          setMessagesAreaRect(messagesRect)
+        }
 
-export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSendMessage }) => {
-  const { inputRef } = React.use(AIPanelRefsContext)
-  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
-  const { messages, status } = React.use(AIChatContext)
-
-  // Sending animation state
-  const [sendingMessage, setSendingMessage] = React.useState<string | null>(null)
-  const [inputRect, setInputRect] = React.useState<DOMRect | null>(null)
-  const [messagesAreaRect, setMessagesAreaRect] = React.useState<DOMRect | null>(null)
-
-  // Auto-scroll logic
-  const { resetScrollState, scrollToBottom } = useAutoScroll(
-    scrollAreaRef.current,
-    status === "streaming",
-  )
-
-  const handleSendMessage = (message: string) => {
-    // Get the input box position for the animation
-    if (inputRef.current) {
-      const rect = inputRef.current.getBoundingClientRect()
-      setInputRect(rect)
-      setSendingMessage(message)
-
-      // Get the message area position
-      if (scrollAreaRef.current) {
-        const messagesRect = scrollAreaRef.current.getBoundingClientRect()
-        setMessagesAreaRect(messagesRect)
+        inputRef.current.value = ""
       }
 
-      inputRef.current.value = ""
+      // Call the actual sending logic
+      if (onSendMessage) {
+        onSendMessage(message)
+      } else {
+        // Demo fallback for no onSendMessage
+        console.info("Sending message:", message)
+      }
+
+      // Reset scroll state when sending a new message
+      resetScrollState()
+
+      // Scroll to bottom after new message
+      requestAnimationFrame(() => {
+        scrollToBottom()
+      })
     }
 
-    // Call the actual sending logic
-    if (onSendMessage) {
-      onSendMessage(message)
-    } else {
-      // Demo fallback for no onSendMessage
-      console.info("Sending message:", message)
+    const handleAnimationComplete = () => {
+      setSendingMessage(null)
+      setInputRect(null)
+      setMessagesAreaRect(null)
     }
 
-    // Reset scroll state when sending a new message
-    resetScrollState()
+    // Show welcome screen if no messages
+    const showWelcome = messages.length === 0
 
-    // Scroll to bottom after new message
-    requestAnimationFrame(() => {
-      scrollToBottom()
-    })
-  }
+    return (
+      <>
+        <div className="flex h-full flex-col">
+          {showWelcome ? (
+            <Welcome />
+          ) : (
+            // Chat messages
+            <ScrollArea
+              ref={scrollAreaRef}
+              flex
+              viewportClassName="p-6"
+              rootClassName="min-h-[500px] flex-1"
+            >
+              <div className="flex flex-col gap-6">
+                {messages.map((message) => (
+                  <AIChatMessage key={message.id} message={message} />
+                ))}
+                {status === "submitted" && <AIChatTypingIndicator />}
+              </div>
+            </ScrollArea>
+          )}
 
-  const handleAnimationComplete = () => {
-    setSendingMessage(null)
-    setInputRect(null)
-    setMessagesAreaRect(null)
-  }
-
-  // Show welcome screen if no messages
-  const showWelcome = messages.length === 0
-
-  return (
-    <>
-      <div className="flex h-full flex-col">
-        {showWelcome ? (
-          <Welcome />
-        ) : (
-          // Chat messages
-          <ScrollArea
-            ref={scrollAreaRef}
-            flex
-            viewportClassName="p-6"
-            rootClassName="min-h-[500px] flex-1"
-          >
-            <div className="flex flex-col gap-6">
-              {messages.map((message) => (
-                <AIChatMessage key={message.id} message={message} />
-              ))}
-              {status === "submitted" && <AIChatTypingIndicator />}
-            </div>
-          </ScrollArea>
-        )}
-
-        {/* Input area */}
-        <div className="border-border pb-safe-offset-3 shrink-0 border px-6 pt-6">
-          <AIChatInput
-            inputRef={inputRef}
-            onSend={handleSendMessage}
-            disabled={disabled}
-            placeholder={showWelcome ? "What are your thoughts?" : "Ask me anything..."}
-          />
+          {/* Input area */}
+          <div className="border-border pb-safe-offset-3 shrink-0 border px-6 pt-6">
+            <AIChatInput
+              inputRef={inputRef}
+              onSend={handleSendMessage}
+              disabled={disabled}
+              placeholder={showWelcome ? "What are your thoughts?" : "Ask me anything..."}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Sending message animation overlay */}
-      <AnimatePresence>
-        {sendingMessage && inputRect && (
-          <SendingMessageOverlay
-            message={sendingMessage}
-            inputRect={inputRect}
-            messagesAreaRect={messagesAreaRect}
-            onAnimationComplete={handleAnimationComplete}
-          />
-        )}
-      </AnimatePresence>
-    </>
-  )
-}
+        {/* Sending message animation overlay */}
+        <AnimatePresence>
+          {sendingMessage && inputRect && (
+            <SendingMessageOverlay
+              message={sendingMessage}
+              inputRect={inputRect}
+              messagesAreaRect={messagesAreaRect}
+              onAnimationComplete={handleAnimationComplete}
+            />
+          )}
+        </AnimatePresence>
+      </>
+    )
+  },
+)

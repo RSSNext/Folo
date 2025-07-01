@@ -234,7 +234,7 @@ export const EntryContent: Component<EntryContentProps> = ({
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
 
-      <AISmartSidebar />
+      <AISmartSidebar entryId={entryId} />
     </>
   )
 }

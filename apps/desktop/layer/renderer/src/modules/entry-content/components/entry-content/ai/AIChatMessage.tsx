@@ -54,7 +54,11 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
             <span className="text-text-secondary text-xs font-medium">{APP_NAME} AI</span>
           </div>
         )}
-        <div className={`text-[0.95rem] ${message.role === "user" ? "text-white" : "text-text"}`}>
+        <div
+          className={`select-text text-[0.95rem] ${
+            message.role === "user" ? "text-white" : "text-text"
+          }`}
+        >
           {markdownElement}
         </div>
         <div

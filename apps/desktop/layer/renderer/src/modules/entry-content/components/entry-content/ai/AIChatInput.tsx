@@ -39,6 +39,10 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
 
       onSend(message)
       setIsEmpty(true)
+
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus()
+      })
     }
   }
 
@@ -78,6 +82,8 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
   React.useEffect(() => {
     if (textareaRef.current) {
       autoResize()
+
+      textareaRef.current.focus()
     }
   }, [])
 

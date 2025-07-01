@@ -3,28 +3,44 @@ import { useMousePosition } from "@follow/components/hooks/useMouse.js"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useState } from "react"
+import { create } from "zustand"
 
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import {
+  AIChatContext,
+  useAIChatSetContextInfo,
+} from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
 import { AIChatContainer } from "./AIChatContainer"
+import type { IEntryAIContext } from "./context"
+import { EntryAIContext, useEntryAIContextStore } from "./context"
 
 const AIChat: React.FC = () => {
   const { append } = React.use(AIChatContext)
-  const handleSendMessage = (message: string) => {
-    append({
-      role: "user",
-      content: message,
+  const handleSendMessage = React.useCallback(
+    (message: string) => {
+      append({
+        role: "user",
+        content: message,
+      })
+    },
+    [append],
+  )
+
+  const setContextInfo = useAIChatSetContextInfo()
+  const store = useEntryAIContextStore()()
+
+  useEffect(() => {
+    setContextInfo({
+      entryId: store.entryId ?? undefined,
+      selectedText: store.selectedText ?? undefined,
     })
-  }
+  }, [store, setContextInfo])
 
   return <AIChatContainer onSendMessage={handleSendMessage} />
 }
 
-const AIAmbientSidebar: React.FC<{
-  selectedText: string
-  onExpand: () => void
-}> = ({ selectedText, onExpand }) => {
+const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
   const [intensity, setIntensity] = useState(0)
   const [showPrompt, setShowPrompt] = useState(false)
 
@@ -63,6 +79,8 @@ const AIAmbientSidebar: React.FC<{
       isShowPromptRef.current = false
     }
   }, [mousePosition])
+
+  const selectedText = useEntryAIContextStore()((s) => s.selectedText)
 
   return (
     <>
@@ -173,9 +191,7 @@ const AIAmbientSidebar: React.FC<{
 }
 
 // AI Chat Panel Component - Expanded chat panel
-const AIChatSidePanel: React.FC<{
-  onClose: () => void
-}> = ({ onClose }) => (
+const AIChatSidePanel: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <m.div
     className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 flex w-96 flex-col border-l shadow-2xl backdrop-blur-xl"
     initial={{ x: "100%" }}
@@ -212,30 +228,38 @@ const AIChatSidePanel: React.FC<{
 )
 
 // Main AI Smart Sidebar Component
-export const AISmartSidebar = () => {
+// Inject main context info here
+export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [selectedText, setSelectedText] = useState("")
 
+  const setContextInfo = useAIChatSetContextInfo()
+
+  const ctxStore = React.useMemo(() => {
+    return create<IEntryAIContext>(() => ({
+      entryId,
+      selectedText: "",
+    }))
+  }, [entryId])
   // Listen for text selection
   useEffect(() => {
     const handleSelection = () => {
       const selection = window.getSelection()
       const text = selection?.toString().trim()
-      setSelectedText(text || "")
+      ctxStore.setState({
+        selectedText: text || "",
+      })
     }
 
     document.addEventListener("selectionchange", handleSelection)
     return () => document.removeEventListener("selectionchange", handleSelection)
-  }, [])
+  }, [ctxStore, setContextInfo])
 
   return (
-    <>
-      {!isExpanded && (
-        <AIAmbientSidebar selectedText={selectedText} onExpand={() => setIsExpanded(true)} />
-      )}
+    <EntryAIContext value={ctxStore}>
+      {!isExpanded && <AIAmbientSidebar onExpand={() => setIsExpanded(true)} />}
       <AnimatePresence>
         {isExpanded && <AIChatSidePanel onClose={() => setIsExpanded(false)} />}
       </AnimatePresence>
-    </>
+    </EntryAIContext>
   )
 }
