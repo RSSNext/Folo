@@ -9,8 +9,12 @@ export interface MarkAllFilter {
   endTime: number
 }
 
-export const markAllByRoute = async (time?: MarkAllFilter) => {
-  const routerParams = getRouteParams()
+export const markAllByRoute = async (
+  time?: MarkAllFilter,
+  overrideRouterParams?: ReturnType<typeof getRouteParams>,
+) => {
+  const routerParams = overrideRouterParams || getRouteParams()
+
   const { feedId, view, inboxId, listId } = routerParams
   const folderIds = getFolderFeedsByFeedId({
     feedId,

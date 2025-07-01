@@ -3,7 +3,7 @@ import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle } from "react"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
@@ -56,6 +56,7 @@ export const EntryListContentPicture = ({
       numColumns={2}
       style={hackStyle}
       estimatedItemSize={100}
+      contentContainerStyle={styles.contentContainer}
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
@@ -70,6 +71,12 @@ export const EntryListContentPicture = ({
     />
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingHorizontal: 8,
+  },
+})
 
 const defaultKeyExtractor = (item: string) => {
   return item

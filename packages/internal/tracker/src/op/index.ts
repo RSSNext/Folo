@@ -1,4 +1,4 @@
-import type { Optional } from "../points"
+import type { Optional } from "../types"
 import { Api } from "./api"
 
 export type TrackHandlerPayload =

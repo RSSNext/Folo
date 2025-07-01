@@ -18,7 +18,6 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useIsDark } from "@follow/hooks"
-import { DEEPLINK_SCHEME } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.ssr"
 import { cn } from "@follow/utils/utils"
 import HCaptcha from "@hcaptcha/react-hcaptcha"
@@ -57,7 +56,7 @@ export function Login() {
     const { data } = await oneTimeToken.generate()
     if (!data) return null
     return {
-      url: `${DEEPLINK_SCHEME}auth?token=${data.token}`,
+      url: `auth?token=${data.token}`,
     }
   }, [])
 

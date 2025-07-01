@@ -28,6 +28,7 @@
     "@follow/utils": "workspace:*",
     "@openpanel/web": "1.0.1",
     "@sentry/electron": "6.8.0",
+    "@sindresorhus/slugify": "2.2.1",
     "builder-util-runtime": "9.3.1",
     "cookie-es": "2.0.0",
     "electron-context-menu": "4.0.5",

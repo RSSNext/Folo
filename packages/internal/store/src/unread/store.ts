@@ -196,9 +196,15 @@ class UnreadSyncService {
     })
 
     tx.request(async () => {
-      await apiClient().reads.$post({
-        json: { entryIds: [entryId] },
-      })
+      if (read) {
+        await apiClient().reads.$post({
+          json: { entryIds: [entryId] },
+        })
+      } else {
+        await apiClient().reads.$delete({
+          json: { entryId },
+        })
+      }
     })
 
     tx.rollback(() => {
