@@ -5,7 +5,7 @@ import { toast } from "sonner"
 
 import { setUserRole, setUserRoleEndDate, setWhoami } from "~/atoms/user"
 import { setIntegrationIdentify } from "~/initialize/helper"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { useSession } from "~/queries/auth"
 
 export const UserProvider = () => {
