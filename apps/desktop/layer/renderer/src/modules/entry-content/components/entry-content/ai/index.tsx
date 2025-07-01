@@ -6,6 +6,18 @@ import { useEffect, useState } from "react"
 
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
+import { AIChatContainer } from "./AIChatContainer"
+
+// AI Chat Demo Component - now simplified using the container
+const AIChatDemo: React.FC = () => {
+  const handleSendMessage = (message: string) => {
+    // In real implementation, this would send the message to the AI service
+    console.info("Sending message:", message)
+  }
+
+  return <AIChatContainer onSendMessage={handleSendMessage} />
+}
+
 const AIAmbientSidebar: React.FC<{
   selectedText: string
   onExpand: () => void
@@ -23,6 +35,15 @@ const AIAmbientSidebar: React.FC<{
     const maxDistance = 500 // Maximum sensing distance
     const threshold = 80 // Threshold distance for showing prompt
     const showedThreshold = 300
+    const topBoundary = 100 // Top boundary to avoid toolbar area
+
+    // Don't trigger if mouse is in the toolbar area (top 100px)
+    if (mousePosition.y <= topBoundary) {
+      setIntensity(0)
+      setShowPrompt(false)
+      isShowPromptRef.current = false
+      return
+    }
 
     if (isShowPromptRef.current && rightEdgeDistance <= showedThreshold) {
       return
@@ -63,8 +84,8 @@ const AIAmbientSidebar: React.FC<{
         }}
         style={{
           background: `linear-gradient(to left, 
-            rgba(59, 130, 246, ${intensity * 0.4}) 0%, 
-            rgba(147, 51, 234, ${intensity * 0.3}) 50%, 
+            rgba(255, 92, 0, ${intensity * 0.4}) 0%, 
+            rgba(255, 140, 0, ${intensity * 0.3}) 50%, 
             transparent 100%)`,
           transformOrigin: "right center",
         }}
@@ -91,8 +112,8 @@ const AIAmbientSidebar: React.FC<{
                 width: 100,
                 height: 100,
                 background: `radial-gradient(circle, 
-                rgba(59, 130, 246, ${intensity * 0.3}) 0%, 
-                rgba(147, 51, 234, ${intensity * 0.2}) 40%, 
+                rgba(255, 92, 0, ${intensity * 0.3}) 0%, 
+                rgba(255, 140, 0, ${intensity * 0.2}) 40%, 
                 transparent 70%)`,
               }}
             />
@@ -104,7 +125,7 @@ const AIAmbientSidebar: React.FC<{
               transition={Spring.presets.smooth}
             >
               {/* Text prompt */}
-              <m.div className="bg-background/90 border-blue/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
+              <m.div className="bg-background/90 border-accent/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
                 <div className="text-right">
                   <p className="text-text text-sm font-medium">
                     {selectedText ? "Ask AI about selection" : "Ask AI anything"}
@@ -119,14 +140,14 @@ const AIAmbientSidebar: React.FC<{
 
               {/* Clickable area */}
               <m.button
-                className="from-blue/20 to-purple/20 hover:from-blue/30 hover:to-purple/30 border-blue/40 rounded-full border bg-gradient-to-r px-6 py-2 backdrop-blur-xl transition-all duration-300"
+                className="border-accent/40 from-accent/20 hover:from-accent/30 rounded-full border bg-gradient-to-r to-red-500/20 px-6 py-2 backdrop-blur-xl transition-all duration-300 hover:to-red-500/30"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onExpand}
               >
                 <div className="flex items-center gap-2">
                   <m.div
-                    className="from-blue to-purple size-2 rounded-full bg-gradient-to-r"
+                    className="from-accent size-2 rounded-full bg-gradient-to-r to-red-500"
                     animate={{
                       scale: [1, 1.2, 1],
                       opacity: [0.7, 1, 0.7],
@@ -153,7 +174,7 @@ const AIChatSidePanel: React.FC<{
   onClose: () => void
 }> = ({ onClose }) => (
   <m.div
-    className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 w-96 border-l shadow-2xl backdrop-blur-xl"
+    className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 flex w-96 flex-col border-l shadow-2xl backdrop-blur-xl"
     initial={{ x: "100%" }}
     animate={{ x: 0 }}
     exit={{ x: "100%" }}
@@ -162,12 +183,11 @@ const AIChatSidePanel: React.FC<{
     {/* Panel header */}
     <div className="border-border flex items-center justify-between border-b p-4">
       <div className="flex items-center gap-3">
-        <div className="from-blue to-purple flex size-8 items-center justify-center rounded-full bg-gradient-to-r">
+        <div className="from-accent flex size-8 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
           <i className="i-mgc-ai-cute-re size-4 text-white" />
         </div>
         <div>
           <h3 className="text-sm font-semibold">AI Assistant</h3>
-          <p className="text-text-secondary text-xs">Ready to help</p>
         </div>
       </div>
       <button
@@ -180,8 +200,10 @@ const AIChatSidePanel: React.FC<{
     </div>
 
     {/* AI Chat content */}
-    <div className="h-[calc(100%-73px)]">
-      <AIChatRoot>{/* <AIChatPanel /> */}</AIChatRoot>
+    <div className="min-h-[500px] grow">
+      <AIChatRoot>
+        <AIChatDemo />
+      </AIChatRoot>
     </div>
   </m.div>
 )
