@@ -1,5 +1,6 @@
 import type { UIMessage } from "@ai-sdk/ui-utils"
 import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
+import { m } from "motion/react"
 import * as React from "react"
 
 export interface ChatMessage {
@@ -20,7 +21,24 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
   )
 
   return (
-    <div className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}>
+    <m.div
+      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
+      initial={{
+        opacity: 0,
+        y: 20,
+        scale: 0.95,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: [0.25, 0.46, 0.45, 0.94],
+        delay: message.role === "user" ? 0.1 : 0.2, // 用户消息稍快出现
+      }}
+    >
       <div
         className={`max-w-[85%] rounded-2xl px-5 py-4 shadow-sm ${
           message.role === "user"
@@ -45,14 +63,20 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
           {message.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
-    </div>
+    </m.div>
   )
 }
 
 // Typing indicator component
 export const AIChatTypingIndicator: React.FC = () => {
   return (
-    <div className="flex justify-start">
+    <m.div
+      className="flex justify-start"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+    >
       <div className="bg-fill-secondary max-w-[85%] rounded-2xl px-4 py-3">
         <div className="mb-2 flex items-center gap-2">
           <div className="from-orange flex size-5 items-center justify-center rounded-full bg-gradient-to-r to-red-500">
@@ -66,6 +90,6 @@ export const AIChatTypingIndicator: React.FC = () => {
           <div className="bg-text-tertiary size-2 animate-bounce rounded-full" />
         </div>
       </div>
-    </div>
+    </m.div>
   )
 }

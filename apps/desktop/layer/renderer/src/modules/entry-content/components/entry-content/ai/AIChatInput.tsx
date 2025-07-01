@@ -1,4 +1,5 @@
 import { cn } from "@follow/utils"
+import { m } from "motion/react"
 import * as React from "react"
 
 import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
@@ -25,6 +26,7 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
 }) => {
   const [height, setHeight] = React.useState(minHeight)
   const [isEmpty, setIsEmpty] = React.useState(true)
+  const [isSending, setIsSending] = React.useState(false)
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -34,9 +36,16 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
   }
 
   const handleSend = () => {
-    if (textareaRef.current) {
-      onSend(textareaRef.current.value)
-      onChange?.("")
+    if (textareaRef.current && textareaRef.current.value.trim()) {
+      const message = textareaRef.current.value.trim()
+
+      // 触发发送动画
+      setIsSending(true)
+      setTimeout(() => setIsSending(false), 200)
+
+      onSend(message)
+      // 注意：不再在这里清空输入框，这个逻辑移到了 AIChatContainer 中
+      // 以便配合发送动画效果
     }
   }
 
@@ -71,7 +80,16 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
   const { status } = React.use(AIChatContext)
 
   return (
-    <div className="relative">
+    <m.div
+      className="relative"
+      animate={{
+        scale: isSending ? 0.98 : 1,
+      }}
+      transition={{
+        duration: 0.15,
+        ease: "easeOut",
+      }}
+    >
       <textarea
         ref={textareaRef}
         value={value}
@@ -90,17 +108,23 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
       {/* Action buttons inside input */}
       <div className="absolute right-2 top-2 flex items-center gap-2">
         {/* Send button */}
-        <button
+        <m.button
           type="button"
           onClick={handleSend}
           disabled={disabled || isEmpty || status === "streaming"}
           className={cn(
             "from-orange hover:from-orange/90 disabled:bg-control-disabled flex size-8 items-center justify-center rounded-lg bg-gradient-to-r to-red-500 transition-all hover:to-red-500/90 disabled:opacity-50",
           )}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{
+            duration: 0.15,
+            ease: "easeInOut",
+          }}
         >
           <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
-        </button>
+        </m.button>
       </div>
-    </div>
+    </m.div>
   )
 }

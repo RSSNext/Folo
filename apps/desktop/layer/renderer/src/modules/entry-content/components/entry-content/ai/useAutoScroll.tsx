@@ -9,6 +9,10 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
   const userScrolledUpRef = React.useRef(false)
   const lastScrollTopRef = React.useRef(0)
   const resizeObserverRef = React.useRef<ResizeObserver | null>(null)
+  // 添加程序滚动标记，避免误判用户滚动
+  const isProgrammaticScrollRef = React.useRef(false)
+  // 记录滚动动画完成的 callback
+  const scrollAnimationCompleteRef = React.useRef<number | null>(null)
 
   const isNearBottom = React.useCallback((element: HTMLElement) => {
     return element.scrollTop + element.clientHeight >= element.scrollHeight - 10
@@ -19,6 +23,14 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
 
     const targetScrollTop = viewport.scrollHeight - viewport.clientHeight
     if (targetScrollTop <= 0) return
+
+    // 标记为程序滚动
+    isProgrammaticScrollRef.current = true
+
+    // 清除之前的动画完成定时器
+    if (scrollAnimationCompleteRef.current) {
+      window.clearTimeout(scrollAnimationCompleteRef.current)
+    }
 
     // Stop any existing animation
     if (scrollAnimationRef.current) {
@@ -31,6 +43,18 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
       stop: () => animation.stop(),
     }
 
+    // 动画完成后重置程序滚动标记
+    animation
+      .then(() => {
+        scrollAnimationCompleteRef.current = window.setTimeout(() => {
+          isProgrammaticScrollRef.current = false
+        }, 100) // 给一个小的延迟，确保所有相关的 scroll 事件都被正确标记
+      })
+      .catch(() => {
+        // 动画被中断时也要重置标记
+        isProgrammaticScrollRef.current = false
+      })
+
     lastScrollTopRef.current = targetScrollTop
   }, [viewport])
 
@@ -40,6 +64,13 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
 
     const handleScroll = () => {
       const currentScrollTop = viewport.scrollTop
+
+      // 如果是程序滚动，不进行用户滚动检测
+      if (isProgrammaticScrollRef.current) {
+        lastScrollTopRef.current = currentScrollTop
+        return
+      }
+
       const scrollDelta = lastScrollTopRef.current - currentScrollTop
 
       // If user scrolled up more than threshold, disable auto-scroll
@@ -91,6 +122,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
   // Reset user scroll state when new messages start
   const resetScrollState = React.useCallback(() => {
     userScrolledUpRef.current = false
+    isProgrammaticScrollRef.current = false
     if (viewport) {
       lastScrollTopRef.current = viewport.scrollTop
     }
@@ -104,6 +136,9 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
       }
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect()
+      }
+      if (scrollAnimationCompleteRef.current) {
+        window.clearTimeout(scrollAnimationCompleteRef.current)
       }
     }
   }, [])
