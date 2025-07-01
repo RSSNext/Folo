@@ -14,9 +14,11 @@ import {
   AIPanelRefsContext,
 } from "./__internal__/AIChatContext"
 
-interface AIChatRootProps extends PropsWithChildren {}
+interface AIChatRootProps extends PropsWithChildren {
+  wrapFocusable?: boolean
+}
 
-export const AIChatRoot: FC<AIChatRootProps> = ({ children }) => {
+export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true }) => {
   const [contextInfo, setContextInfo] = useState<AIChatContextInfo>({})
 
   const ctx = useChat({
@@ -61,15 +63,22 @@ export const AIChatRoot: FC<AIChatRootProps> = ({ children }) => {
   //   }
   // }, [])
 
-  return (
-    <Focusable scope={HotkeyScope.AIChat} className="size-full">
-      <AIChatContext value={ctx}>
-        <AIPanelRefsContext value={refsContext}>
-          <AIChatSetContextInfoContext value={setContextInfo}>
-            <AIChatContextInfoContext value={contextInfo}>{children}</AIChatContextInfoContext>
-          </AIChatSetContextInfoContext>
-        </AIPanelRefsContext>
-      </AIChatContext>
-    </Focusable>
+  const Element = (
+    <AIChatContext value={ctx}>
+      <AIPanelRefsContext value={refsContext}>
+        <AIChatSetContextInfoContext value={setContextInfo}>
+          <AIChatContextInfoContext value={contextInfo}>{children}</AIChatContextInfoContext>
+        </AIChatSetContextInfoContext>
+      </AIPanelRefsContext>
+    </AIChatContext>
   )
+
+  if (wrapFocusable) {
+    return (
+      <Focusable scope={HotkeyScope.AIChat} className="size-full">
+        {Element}
+      </Focusable>
+    )
+  }
+  return Element
 }

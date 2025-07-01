@@ -192,7 +192,7 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
           )}
 
           {/* Input area */}
-          <div className="border-border pb-safe-offset-3 shrink-0 border px-6 pt-6">
+          <div className="border-border pb-safe-offset-3 shrink-0 border-t px-6 pt-6">
             <AIChatInput
               inputRef={inputRef}
               onSend={handleSendMessage}
