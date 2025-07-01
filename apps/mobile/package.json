@@ -66,6 +66,7 @@
     "expo-document-picker": "13.1.6",
     "expo-file-system": "18.1.10",
     "expo-haptics": "14.1.4",
+    "expo-iap": "2.5.0",
     "expo-image": "2.3.0",
     "expo-image-manipulator": "13.1.7",
     "expo-image-picker": "~16.1.4",
