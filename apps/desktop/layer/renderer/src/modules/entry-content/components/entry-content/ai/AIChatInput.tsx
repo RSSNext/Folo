@@ -1,5 +1,6 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils"
-import { m } from "motion/react"
+import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
 import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
@@ -26,26 +27,35 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
 }) => {
   const [height, setHeight] = React.useState(minHeight)
   const [isEmpty, setIsEmpty] = React.useState(true)
-  const [isSending, setIsSending] = React.useState(false)
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+  const { status, stop } = React.use(AIChatContext)
+
+  // Determine if we should show stop button
+  const isProcessing = status === "submitted" || status === "streaming"
 
   const handleSend = () => {
     if (textareaRef.current && textareaRef.current.value.trim()) {
       const message = textareaRef.current.value.trim()
 
-      // 触发发送动画
-      setIsSending(true)
-      setTimeout(() => setIsSending(false), 200)
-
       onSend(message)
-      // 注意：不再在这里清空输入框，这个逻辑移到了 AIChatContainer 中
-      // 以便配合发送动画效果
+      setIsEmpty(true)
+    }
+  }
+
+  const handleButtonClick = () => {
+    if (isProcessing) {
+      // Stop the AI processing
+      stop?.()
+    } else {
+      // Send the message
+      handleSend()
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleButtonClick()
     }
   }
 
@@ -58,7 +68,7 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
       setHeight(newHeight)
       textareaRef.current.style.height = `${newHeight}px`
     }
-  }, [])
+  }, [textareaRef])
 
   // Auto-resize when value changes
   React.useEffect(() => {
@@ -77,19 +87,8 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
     setIsEmpty(e.target.value.trim() === "")
   }
 
-  const { status } = React.use(AIChatContext)
-
   return (
-    <m.div
-      className="relative"
-      animate={{
-        scale: isSending ? 0.98 : 1,
-      }}
-      transition={{
-        duration: 0.15,
-        ease: "easeOut",
-      }}
-    >
+    <div className="relative">
       <textarea
         ref={textareaRef}
         value={value}
@@ -107,24 +106,47 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
 
       {/* Action buttons inside input */}
       <div className="absolute right-2 top-2 flex items-center gap-2">
-        {/* Send button */}
+        {/* Send/Stop button */}
         <m.button
           type="button"
-          onClick={handleSend}
-          disabled={disabled || isEmpty || status === "streaming"}
+          onClick={handleButtonClick}
+          disabled={disabled || (!isProcessing && isEmpty)}
           className={cn(
-            "from-orange hover:from-orange/90 disabled:bg-control-disabled flex size-8 items-center justify-center rounded-lg bg-gradient-to-r to-red-500 transition-all hover:to-red-500/90 disabled:opacity-50",
+            "relative flex size-8 items-center justify-center overflow-hidden rounded-lg transition-all",
+            "bg-fill-secondary disabled:opacity-50",
+            "before:from-orange before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:to-red-500",
+            "before:transition-opacity before:duration-200 hover:before:opacity-90",
+            "disabled:before:opacity-0",
+            isProcessing ? "before:opacity-0" : "before:opacity-100",
           )}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          transition={{
-            duration: 0.15,
-            ease: "easeInOut",
-          }}
+          transition={Spring.presets.smooth}
         >
-          <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
+          <AnimatePresence mode="popLayout">
+            <m.div
+              key={isProcessing ? "stop" : "send"}
+              className="relative z-10 flex items-center justify-center"
+              initial={{
+                scale: 0,
+              }}
+              animate={{
+                scale: 1,
+              }}
+              exit={{
+                scale: 0,
+              }}
+              transition={Spring.presets.smooth}
+            >
+              {isProcessing ? (
+                <i className="i-mgc-stop-circle-cute-fi text-text size-4" />
+              ) : (
+                <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
+              )}
+            </m.div>
+          </AnimatePresence>
         </m.button>
       </div>
-    </m.div>
+    </div>
   )
 }

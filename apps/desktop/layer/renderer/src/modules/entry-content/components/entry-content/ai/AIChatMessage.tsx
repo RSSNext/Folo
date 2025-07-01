@@ -36,7 +36,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
       transition={{
         duration: 0.3,
         ease: [0.25, 0.46, 0.45, 0.94],
-        delay: message.role === "user" ? 0.1 : 0.2, // 用户消息稍快出现
+        delay: message.role === "user" ? 0.1 : 0.2,
       }}
     >
       <div

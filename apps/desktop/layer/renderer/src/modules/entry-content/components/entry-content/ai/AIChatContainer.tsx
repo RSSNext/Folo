@@ -13,7 +13,6 @@ interface AIChatContainerProps {
   onSendMessage?: (message: string) => void
 }
 
-// 发送中的消息动画组件
 const SendingMessageOverlay: React.FC<{
   message: string
   inputRect: DOMRect | null
@@ -22,10 +21,10 @@ const SendingMessageOverlay: React.FC<{
 }> = ({ message, inputRect, messagesAreaRect, onAnimationComplete }) => {
   if (!inputRect) return null
 
-  // 计算动画的目标位置
+  // Calculate the target position for the animation
   const targetY = messagesAreaRect
-    ? -(inputRect.bottom - messagesAreaRect.bottom + 80) // 移动到消息区域底部
-    : -200 // 默认向上移动更多距离
+    ? -(inputRect.bottom - messagesAreaRect.bottom + 80) // Move to the bottom of the message area
+    : -200 // Default to move up more distance
 
   return (
     <m.div
@@ -48,7 +47,7 @@ const SendingMessageOverlay: React.FC<{
       }}
       transition={{
         duration: 0.45,
-        ease: [0.25, 0.46, 0.45, 0.94], // iOS 风格缓动函数
+        ease: [0.25, 0.46, 0.45, 0.94], // iOS style easing function
       }}
       onAnimationComplete={onAnimationComplete}
     >
@@ -141,7 +140,7 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
   const { messages, status } = React.use(AIChatContext)
 
-  // 发送动画状态
+  // Sending animation state
   const [sendingMessage, setSendingMessage] = React.useState<string | null>(null)
   const [inputRect, setInputRect] = React.useState<DOMRect | null>(null)
   const [messagesAreaRect, setMessagesAreaRect] = React.useState<DOMRect | null>(null)
@@ -153,27 +152,26 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
   )
 
   const handleSendMessage = (message: string) => {
-    // 获取输入框位置用于动画
+    // Get the input box position for the animation
     if (inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect()
       setInputRect(rect)
       setSendingMessage(message)
 
-      // 获取消息区域位置
+      // Get the message area position
       if (scrollAreaRef.current) {
         const messagesRect = scrollAreaRef.current.getBoundingClientRect()
         setMessagesAreaRect(messagesRect)
       }
 
-      // 清空输入框
       inputRef.current.value = ""
     }
 
-    // 调用实际的发送逻辑
+    // Call the actual sending logic
     if (onSendMessage) {
       onSendMessage(message)
     } else {
-      // Demo fallback
+      // Demo fallback for no onSendMessage
       console.info("Sending message:", message)
     }
 
@@ -228,7 +226,7 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
         </div>
       </div>
 
-      {/* 发送消息动画覆盖层 */}
+      {/* Sending message animation overlay */}
       <AnimatePresence>
         {sendingMessage && inputRect && (
           <SendingMessageOverlay
