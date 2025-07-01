@@ -1,11 +1,11 @@
-import type { UIMessage } from "@ai-sdk/ui-utils"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 
 import { AIChatInput } from "./AIChatInput"
-import { AIChatMessage } from "./AIChatMessage"
+import { AIChatMessage, AIChatTypingIndicator } from "./AIChatMessage"
+import { useAutoScroll } from "./useAutoScroll"
 
 interface AIChatContainerProps {
   disabled?: boolean
@@ -76,8 +76,14 @@ const Welcome = () => {
 
 export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSendMessage }) => {
   const { inputRef } = React.use(AIPanelRefsContext)
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+  const { messages, status } = React.use(AIChatContext)
 
-  const { messages } = React.use(AIChatContext)
+  // Auto-scroll logic
+  const { resetScrollState, scrollToBottom } = useAutoScroll(
+    scrollAreaRef.current,
+    status === "streaming",
+  )
 
   const handleSendMessage = (message: string) => {
     if (onSendMessage) {
@@ -89,7 +95,24 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
     if (inputRef.current) {
       inputRef.current.value = ""
     }
+
+    // Reset scroll state when sending a new message
+    resetScrollState()
+
+    // Scroll to bottom after new message
+    requestAnimationFrame(() => {
+      scrollToBottom()
+    })
   }
+
+  // // Scroll to bottom when messages change (new message added)
+  // React.useEffect(() => {
+  //   if (messages.length > 0) {
+  //     requestAnimationFrame(() => {
+  //       scrollToBottom()
+  //     })
+  //   }
+  // }, [messages.length, scrollToBottom])
 
   // Show welcome screen if no messages
   const showWelcome = messages.length === 0
@@ -100,17 +123,23 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
         <Welcome />
       ) : (
         // Chat messages
-        <ScrollArea flex viewportClassName="p-6">
+        <ScrollArea
+          ref={scrollAreaRef}
+          flex
+          viewportClassName="p-6"
+          rootClassName="min-h-[500px] flex-1"
+        >
           <div className="flex flex-col gap-6">
             {messages.map((message) => (
               <AIChatMessage key={message.id} message={message} />
             ))}
+            {status === "submitted" && <AIChatTypingIndicator />}
           </div>
         </ScrollArea>
       )}
 
       {/* Input area */}
-      <div className="shrink-0 p-6 pt-4">
+      <div className="border-border pb-safe-offset-3 shrink-0 border px-6 pt-6">
         <AIChatInput
           inputRef={inputRef}
           onSend={handleSendMessage}
@@ -121,73 +150,3 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = ({ disabled, onSe
     </div>
   )
 }
-// Demo placeholder data
-export const DEMO_MESSAGES: UIMessage[] = [
-  {
-    id: "1",
-    role: "user",
-    content: "Can you summarize the main points from my recent RSS feeds about AI developments?",
-    createdAt: new Date("2024-01-15T10:30:00"),
-    parts: [],
-  },
-  {
-    id: "2",
-    role: "assistant",
-    content: `Based on your recent RSS feeds, here are the key AI developments:
-
-## 🚀 Major Breakthroughs
-- **OpenAI's GPT-4 Turbo** introduced with improved reasoning capabilities
-- **Google's Gemini Ultra** showing competitive performance in multimodal tasks
-- **Meta's Code Llama** advancing open-source AI development
-
-## 📊 Industry Trends
-- Increased focus on AI safety and alignment research
-- Growing adoption of AI in enterprise workflows
-- Rising investment in AI infrastructure and tooling
-
-## 🔬 Research Highlights
-- New techniques in prompt engineering showing 40% efficiency gains
-- Breakthrough in multimodal AI understanding text, images, and code simultaneously
-- Advances in AI memory and long-term context handling
-
-Would you like me to dive deeper into any of these topics?`,
-    createdAt: new Date("2024-01-15T10:31:00"),
-    parts: [],
-  },
-  {
-    id: "3",
-    role: "user",
-    content: "Tell me more about the prompt engineering techniques",
-    createdAt: new Date("2024-01-15T10:32:00"),
-    parts: [],
-  },
-  {
-    id: "4",
-    role: "assistant",
-    content: `Here are the latest prompt engineering techniques that are gaining traction:
-
-## 🎯 Chain-of-Thought (CoT) Prompting
-- Break complex problems into step-by-step reasoning
-- Example: "Let's think through this step by step..."
-- **40% improvement** in logical reasoning tasks
-
-## 🔄 Few-Shot Learning
-- Provide 2-3 examples before asking for the task
-- Dramatically improves output consistency
-- Works particularly well for formatting tasks
-
-## 🎭 Role-Based Prompting
-- Assign specific roles: "You are an expert data scientist..."
-- Helps AI adopt appropriate tone and expertise level
-- Increases relevance of responses
-
-## 🧩 Template Prompting
-- Use structured formats with placeholders
-- Ensures consistent output structure
-- Great for automated workflows
-
-These techniques are being integrated into major AI platforms and showing significant improvements in both accuracy and user satisfaction.`,
-    createdAt: new Date("2024-01-15T10:33:00"),
-    parts: [],
-  },
-]

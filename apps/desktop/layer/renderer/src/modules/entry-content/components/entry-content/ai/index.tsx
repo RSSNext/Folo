@@ -4,15 +4,18 @@ import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useState } from "react"
 
+import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
 import { AIChatContainer } from "./AIChatContainer"
 
-// AI Chat Demo Component - now simplified using the container
-const AIChatDemo: React.FC = () => {
+const AIChat: React.FC = () => {
+  const { append } = React.use(AIChatContext)
   const handleSendMessage = (message: string) => {
-    // In real implementation, this would send the message to the AI service
-    console.info("Sending message:", message)
+    append({
+      role: "user",
+      content: message,
+    })
   }
 
   return <AIChatContainer onSendMessage={handleSendMessage} />
@@ -187,7 +190,7 @@ const AIChatSidePanel: React.FC<{
           <i className="i-mgc-ai-cute-re size-4 text-white" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold">AI Assistant</h3>
+          <h3 className="text-sm font-semibold">{APP_NAME} AI</h3>
         </div>
       </div>
       <button
@@ -202,7 +205,7 @@ const AIChatSidePanel: React.FC<{
     {/* AI Chat content */}
     <div className="min-h-[500px] grow">
       <AIChatRoot>
-        <AIChatDemo />
+        <AIChat />
       </AIChatRoot>
     </div>
   </m.div>

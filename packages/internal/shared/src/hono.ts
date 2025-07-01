@@ -19509,6 +19509,23 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             input: {};
             output: {
                 code: 0;
+                data: {
+                    successfulItems: {
+                        id?: string | undefined;
+                        title?: string | null | undefined;
+                        url?: string | undefined;
+                    }[];
+                    conflictItems: {
+                        id: string;
+                        url: string;
+                        title?: string | null | undefined;
+                    }[];
+                    parsedErrorItems: {
+                        url: string;
+                        id?: string | undefined;
+                        title?: string | null | undefined;
+                    }[];
+                };
             };
             outputFormat: "json";
             status: 200;

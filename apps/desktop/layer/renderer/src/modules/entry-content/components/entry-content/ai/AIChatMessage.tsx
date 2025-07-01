@@ -1,4 +1,5 @@
 import type { UIMessage } from "@ai-sdk/ui-utils"
+import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
 import * as React from "react"
 
 export interface ChatMessage {
@@ -13,6 +14,11 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
+  const markdownElement = React.useMemo(
+    () => parseMarkdown(message.content).content,
+    [message.content],
+  )
+
   return (
     <div className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}>
       <div
@@ -27,47 +33,11 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
             <div className="from-orange flex size-6 items-center justify-center rounded-full bg-gradient-to-r to-red-500 shadow-sm">
               <i className="i-mgc-ai-cute-re size-3 text-white" />
             </div>
-            <span className="text-text-secondary text-xs font-medium">AI Assistant</span>
+            <span className="text-text-secondary text-xs font-medium">{APP_NAME} AI</span>
           </div>
         )}
-        <div
-          className={`text-sm leading-relaxed ${message.role === "user" ? "text-white" : "text-text"}`}
-        >
-          {message.content.split("\n").map((line, index) => {
-            // Handle markdown-style formatting
-            if (line.startsWith("## ")) {
-              return (
-                <h3 key={index} className="mb-3 mt-4 text-base font-semibold first:mt-0">
-                  {line.replace("## ", "")}
-                </h3>
-              )
-            }
-            if (line.startsWith("- ")) {
-              return (
-                <div key={index} className="mb-2 ml-4 flex items-start gap-2">
-                  <span
-                    className={`mt-1.5 size-1.5 rounded-full ${message.role === "user" ? "bg-white/70" : "bg-orange"}`}
-                  />
-                  <span className="flex-1">{line.replace("- ", "")}</span>
-                </div>
-              )
-            }
-            if (line.startsWith("**") && line.endsWith("**")) {
-              return (
-                <div key={index} className="mb-2 font-semibold">
-                  {line.replaceAll("**", "")}
-                </div>
-              )
-            }
-            if (line.trim() === "") {
-              return <div key={index} className="h-3" />
-            }
-            return (
-              <div key={index} className="mb-2 last:mb-0">
-                {line}
-              </div>
-            )
-          })}
+        <div className={`text-[0.95rem] ${message.role === "user" ? "text-white" : "text-text"}`}>
+          {markdownElement}
         </div>
         <div
           className={`mt-3 text-xs ${message.role === "user" ? "text-white/70" : "text-text-tertiary"}`}
@@ -88,7 +58,7 @@ export const AIChatTypingIndicator: React.FC = () => {
           <div className="from-orange flex size-5 items-center justify-center rounded-full bg-gradient-to-r to-red-500">
             <i className="i-mgc-ai-cute-re size-3 text-white" />
           </div>
-          <span className="text-text-secondary text-xs font-medium">AI Assistant</span>
+          <span className="text-text-secondary text-xs font-medium">{APP_NAME} AI</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="bg-text-tertiary size-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
