@@ -41,7 +41,7 @@ export const FocusableGuardProvider = () => {
   const hasModalRef = useRefValue(hasModal)
 
   useEffect(() => {
-    const timer: NodeJS.Timeout = setTimeout(() => {
+    const timer: ReturnType<typeof setTimeout> = setTimeout(() => {
       if (checkIsFocusInIframe()) {
         return
       }
