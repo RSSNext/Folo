@@ -17807,6 +17807,10 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         content: string;
                         role: "user" | "assistant";
                     }[];
+                    context?: {
+                        entryId?: string | undefined;
+                        selectedText?: string | undefined;
+                    } | undefined;
                 };
             };
             output: Response;
