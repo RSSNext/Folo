@@ -357,6 +357,9 @@ importers:
       '@sentry/electron':
         specifier: 6.8.0
         version: 6.8.0(patch_hash=a5a19cbba4427bc1e6f675a47170c6e03adc0fcec259258bfa07288185b5a979)
+      '@sindresorhus/slugify':
+        specifier: 2.2.1
+        version: 2.2.1
       builder-util-runtime:
         specifier: 9.3.1
         version: 9.3.1
@@ -514,9 +517,6 @@ importers:
       '@shikijs/transformers':
         specifier: 3.7.0
         version: 3.7.0
-      '@sindresorhus/slugify':
-        specifier: 2.2.1
-        version: 2.2.1
       '@tanstack/query-sync-storage-persister':
         specifier: 5.80.10
         version: 5.80.10
