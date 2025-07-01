@@ -1,12 +1,16 @@
 import { nanoid } from "nanoid/non-secure"
 import type { PropsWithChildren, ReactNode } from "react"
 import { createContext, use, useCallback, useMemo, useState } from "react"
+import { View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
 import type { BottomModalProps } from "./BottomModal"
 import { BottomModal } from "./BottomModal"
 
-export type Modal = { id: string; content: ReactNode } & Omit<BottomModalProps, "visible">
+export type Modal = { id: string; content: ReactNode } & Omit<
+  BottomModalProps,
+  "visible" | "children"
+>
 
 export type ModalInput = Omit<Modal, "id" | "closeOnBackdropPress"> & {
   /**
@@ -115,7 +119,9 @@ export function ImperativeModalProvider({ children }: PropsWithChildren) {
     <ModalContext value={state}>
       <ModalControlContext value={methods}>
         {children}
-        <ImperativeModal />
+        <View>
+          <ImperativeModal />
+        </View>
       </ModalControlContext>
     </ModalContext>
   )
@@ -125,9 +131,12 @@ const ImperativeModal = () => {
   const modals = useModals()
   const { closeModal } = useModalControls()
 
-  const onClose = useCallback(() => {
-    closeModal()
-  }, [closeModal])
+  const onClose = useCallback(
+    (id: string) => {
+      closeModal(id)
+    },
+    [closeModal],
+  )
 
   return modals.activeModals.map((modal) => (
     <BottomModal
@@ -137,7 +146,7 @@ const ImperativeModal = () => {
       {...modal}
       onClose={() => {
         modal.onClose?.()
-        onClose()
+        onClose(modal.id)
       }}
     >
       {modal.content}
