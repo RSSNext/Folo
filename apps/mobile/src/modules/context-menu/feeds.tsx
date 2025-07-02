@@ -12,14 +12,17 @@ import type { CSSProperties, FC, PropsWithChildren } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
-import { Alert, FlatList, View } from "react-native"
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native"
 
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { ModalTemplate, useModalControls } from "@/src/components/ui/modal/imperative-modal"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
+import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
@@ -269,6 +272,7 @@ export const SubscriptionFeedCategoryContextMenu = ({
 }>) => {
   const { t } = useTranslation()
   const [currentView, setCurrentView] = useState<FeedViewType>(FeedViewType.Articles)
+  const { openModal } = useModalControls()
 
   return (
     <ContextMenu.Root
@@ -327,20 +331,37 @@ export const SubscriptionFeedCategoryContextMenu = ({
         <ContextMenu.Item
           key="EditCategory"
           onSelect={() => {
-            Alert.prompt(
-              t("operation.rename_category"),
-              t("operation.enter_new_name_for_category", {
-                category,
-              }),
-              (newCategory) => {
-                if (!newCategory) return
-                subscriptionSyncService.renameCategory({
-                  lastCategory: category,
-                  newCategory,
-                  view: currentView,
-                })
-              },
-            )
+            const handleRenameCategory = async (newCategory: string) => {
+              if (!newCategory) return
+              await subscriptionSyncService.renameCategory({
+                lastCategory: category,
+                newCategory,
+                view: currentView,
+              })
+              toast.success("Category renamed successfully")
+            }
+            if (isIOS) {
+              Alert.prompt(
+                t("operation.rename_category"),
+                t("operation.enter_new_name_for_category", {
+                  category,
+                }),
+                handleRenameCategory,
+              )
+              return
+            }
+            const abortController = new AbortController()
+            openModal({
+              abortController,
+              closeOnBackdropPress: false,
+              content: (
+                <RenameCategoryModal
+                  category={category}
+                  onSave={handleRenameCategory}
+                  abortController={abortController}
+                />
+              ),
+            })
           }}
         >
           <ContextMenu.ItemTitle>{t("operation.rename_category")}</ContextMenu.ItemTitle>
@@ -412,6 +433,55 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSeparator}
       />
+    </View>
+  )
+}
+
+const RenameCategoryModal = ({
+  category,
+  onSave,
+  abortController,
+}: {
+  category: string
+  onSave: (newCategory: string) => void
+  abortController: AbortController
+}) => {
+  const [text, setText] = useState(category)
+  return (
+    <View className="flex-1">
+      <ModalTemplate.Header
+        renderLeft={() => (
+          <HeaderSubmitTextButton
+            label={t("words.cancel", { ns: "common" })}
+            isValid={true}
+            onPress={() => {
+              abortController.abort()
+            }}
+          />
+        )}
+      >
+        <ModalTemplate.HeaderText>{t("operation.rename_category")}</ModalTemplate.HeaderText>
+      </ModalTemplate.Header>
+      <View className="flex flex-1 gap-4 p-4">
+        <ModalTemplate.Input
+          className="box-border w-full"
+          value={text}
+          onChangeText={setText}
+          placeholder={t("operation.enter_new_name_for_category", { category })}
+        />
+        <TouchableOpacity
+          className="bg-accent w-full rounded-xl px-6 py-3"
+          disabled={text.trim().length === 0}
+          onPress={() => {
+            onSave(text)
+            abortController.abort()
+          }}
+        >
+          <Text className="text-center text-base font-semibold text-white">
+            {t("words.save", { ns: "common" })}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }

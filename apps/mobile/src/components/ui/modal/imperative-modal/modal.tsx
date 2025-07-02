@@ -4,8 +4,8 @@ import { createContext, use, useCallback, useMemo, useState } from "react"
 import { View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
-import type { BottomModalProps } from "./BottomModal"
-import { BottomModal } from "./BottomModal"
+import type { BottomModalProps } from "../BottomModal"
+import { BottomModal } from "../BottomModal"
 
 export type Modal = { id: string; content: ReactNode } & Omit<
   BottomModalProps,
@@ -26,7 +26,8 @@ export type ModalInput = Omit<Modal, "id" | "closeOnBackdropPress"> & {
    *
    * @default 'plain'
    */
-  type?: "plain" // | 'select' | 'confirm' | 'input' | 'custom'
+  // type?: "plain" // | 'select' | 'confirm' | 'input' | 'custom'
+  abortController?: AbortController
 }
 
 const ModalContext = createContext<{
@@ -38,6 +39,7 @@ const ModalContext = createContext<{
 })
 
 const ModalControlContext = createContext<{
+  abortController?: AbortController
   openModal: (modal: ModalInput) => Promise<void>
   closeModal: (id?: string) => boolean
   closeAllModals: () => boolean
@@ -61,19 +63,22 @@ export function ImperativeModalProvider({ children }: PropsWithChildren) {
 
   const openModal = useEventCallback((modal: ModalInput) => {
     const promise = Promise.withResolvers<void>()
+    const id = modal.id || nanoid()
 
-    // TODO add other modal types like 'select', 'confirm', 'input', etc.
-    const content = !modal.type || modal.type === "plain" ? modal.content : null
+    const abortController = modal.abortController || new AbortController()
+    abortController.signal.addEventListener("abort", () => {
+      closeModal(id)
+      modal.onClose?.()
+      promise.resolve()
+    })
 
     setActiveModals((modals) => [
       ...modals,
       {
-        id: nanoid(),
+        id,
         ...modal,
-        content,
         onClose: () => {
-          modal.onClose?.()
-          promise.resolve()
+          abortController.abort()
         },
       },
     ])
