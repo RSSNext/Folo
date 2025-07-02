@@ -86,6 +86,15 @@ export const EntryItemWrapper: FC<
   }, [entry?.id])
   const handleClick = useCallback(
     (e) => {
+      const target = e.target as HTMLElement
+      const targetTag = target.tagName
+
+      if (["A"].includes(targetTag)) {
+        const href = target.getAttribute("href")
+        href && window.open(href, "_blank")
+        return
+      }
+
       e.preventDefault()
       e.stopPropagation()
 
