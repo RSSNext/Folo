@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { UserRole } from "@follow/constants"
-import { usePrefetchUser, useWhoami } from "@follow/store/user/hooks"
+import { usePrefetchUser, useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
@@ -34,6 +34,7 @@ export const UserAvatar = ({
     enabled: !userId,
   })
   const whoami = useWhoami()
+  const role = useUserRole()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
   const profile = usePrefetchUser(userId)
@@ -77,11 +78,11 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {renderUserData?.role !== UserRole.Free && renderUserData?.role !== UserRole.Trial && (
+      {userId === whoami?.id && role !== UserRole.Free && role !== UserRole.Trial && (
         <UserProBadge
           className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
           iconClassName="size-full"
-          role={renderUserData?.role as UserRole | undefined}
+          role={role}
         />
       )}
       {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}

@@ -2,12 +2,12 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { UserRole, UserRoleName } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
+import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { Trans } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { useUserRole, useUserRoleEndDate } from "~/atoms/user"
 import { subscription } from "~/lib/auth"
 import { useReferralInfo } from "~/queries/referral"
 
@@ -79,7 +79,7 @@ export function SettingPlan() {
   const { data: referralInfo } = useReferralInfo()
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const role = useUserRole()
-  const roleEndDate = useUserRoleEndDate()
+  const roleEndDate = useRoleEndAt()
   const daysLeft = roleEndDate
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null

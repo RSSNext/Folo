@@ -17,11 +17,11 @@ import {
 } from "@follow/components/ui/tooltip/index.js"
 import { UserRole, UserRoleName } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
+import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import dayjs from "dayjs"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { useUserRole, useWhoami } from "~/atoms/user"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { UserAvatar } from "~/modules/user/UserAvatar"

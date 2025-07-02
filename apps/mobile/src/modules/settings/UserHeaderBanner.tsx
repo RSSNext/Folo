@@ -1,6 +1,6 @@
 import { UserRole, UserRoleName } from "@follow/constants"
 import { useImageColors } from "@follow/store/image/hooks"
-import { useRole, useUserById } from "@follow/store/user/hooks"
+import { useUserById, useUserRole } from "@follow/store/user/hooks"
 import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import type { FC } from "react"
@@ -53,7 +53,7 @@ export const UserHeaderBanner = ({
   const avatarIconColor = useColor("secondaryLabel")
 
   const user = useUserById(userId)
-  const role = useRole()
+  const role = useUserRole()
 
   usePrefetchImageColors(user?.image)
   const insets = useSafeAreaInsets()

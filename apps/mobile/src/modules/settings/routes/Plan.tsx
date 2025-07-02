@@ -1,5 +1,5 @@
 import { UserRole, UserRoleName } from "@follow/constants"
-import { useRole, useRoleEndAt } from "@follow/store/user/hooks"
+import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -102,7 +102,7 @@ export const PlanScreen: NavigationControllerView = () => {
   const { data: referralInfo } = useReferralInfoQuery()
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
 
-  const role = useRole()
+  const role = useUserRole()
   const roleEndDate = useRoleEndAt()
   const daysLeft = roleEndDate
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))

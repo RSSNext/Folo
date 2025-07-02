@@ -3,7 +3,6 @@ import { getStorageNS } from "@follow/utils/ns"
 import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
-import { setUserRole, setUserRoleEndDate } from "~/atoms/user"
 import { setIntegrationIdentify } from "~/initialize/helper"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { useSession } from "~/queries/auth"
@@ -30,12 +29,6 @@ export const UserProvider = () => {
   )
   useEffect(() => {
     if (!session?.role) return
-
-    setUserRole(session.role as UserRole)
-
-    if (roleEndDate) {
-      setUserRoleEndDate(roleEndDate)
-    }
 
     const itemKey = getStorageNS("pro-preview-toast-dismissed")
 
