@@ -1,4 +1,4 @@
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { useMemo } from "react"
 
 import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
@@ -7,7 +7,7 @@ import { getMemoizedSettings } from "../settings-glob"
 import type { SettingPageContext } from "../utils"
 
 export const useSettingPageContext = (): SettingPageContext => {
-  const role = useRole()
+  const role = useUserRole()
   const isInMASReview = useIsInMASReview()
   return useMemo(() => ({ role, isInMASReview }), [role, isInMASReview])
 }

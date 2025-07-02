@@ -9,7 +9,7 @@ import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { whoami } from "@follow/store/user/getters"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
@@ -179,7 +179,7 @@ export const useEntryActions = ({
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
 
-  const userRole = useRole()
+  const userRole = useUserRole()
 
   const shortcuts = useCommandShortcuts()
 

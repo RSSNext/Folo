@@ -5,7 +5,7 @@ import {
   useFeedSubscriptionCount,
   useListSubscriptionCount,
 } from "@follow/store/subscription/hooks"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { t } from "i18next"
 import { useCallback } from "react"
 import { withoutTrailingSlash, withTrailingSlash } from "ufo"
@@ -21,7 +21,7 @@ import type { ListFormDataValuesType } from "~/modules/discover/ListForm"
 import { ListForm } from "~/modules/discover/ListForm"
 
 const useCanFollowMoreInboxAndNotify = () => {
-  const role = useRole()
+  const role = useUserRole()
   const listCurrentCount = useListSubscriptionCount()
   const feedCurrentCount = useFeedSubscriptionCount()
   const presentActivationModal = useActivationModal()

@@ -7,14 +7,14 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { DEV, MODE } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
 import { DebugRegistry } from "../debug/registry"
 
 export const EnvironmentIndicator = () => {
-  const role = useRole()
+  const role = useUserRole()
   const { present } = useModalStack()
   return (
     <Tooltip>

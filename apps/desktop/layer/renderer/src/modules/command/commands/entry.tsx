@@ -6,7 +6,7 @@ import { collectionSyncService } from "@follow/store/collection/store"
 import { getEntry } from "@follow/store/entry/getter"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -109,7 +109,7 @@ export const useRegisterEntryCommands = () => {
   const read = useRead()
   const unread = useUnread()
 
-  const role = useRole()
+  const role = useUserRole()
   const presentActivationModal = useActivationModal()
 
   const voice = useGeneralSettingKey("voice")

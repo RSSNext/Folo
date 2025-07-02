@@ -1,6 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { UserRole } from "@follow/constants"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { repository } from "@pkg"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
@@ -13,7 +13,7 @@ import { InboxTable } from "./Inbox"
 import { InboxForm } from "./InboxForm"
 
 const useCanCreateMoreInboxAndNotify = () => {
-  const role = useRole()
+  const role = useUserRole()
   const presentActivationModal = useActivationModal()
 
   return useEventCallback(() => {

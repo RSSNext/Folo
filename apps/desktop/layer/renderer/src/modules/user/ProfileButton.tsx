@@ -4,7 +4,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { UserRole } from "@follow/constants"
 import { useMeasure } from "@follow/hooks"
-import { useRole } from "@follow/store/user/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
@@ -54,7 +54,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const navigate = useNavigate()
 
-  const role = useRole()
+  const role = useUserRole()
   const presentActivationModal = useActivationModal()
   const zenModeSetting = useIsZenMode()
   const setZenMode = useSetZenMode()

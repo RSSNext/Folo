@@ -38,7 +38,7 @@ export const useWhoami = () => {
   return useUserStore((state) => state.whoami)
 }
 
-export const useRole = () => {
+export const useUserRole = () => {
   return useUserStore((state) => state.role)
 }
 
