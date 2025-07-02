@@ -72,6 +72,7 @@
     "masonic": "4.1.0",
     "mdast-util-gfm-table": "2.0.0",
     "mdast-util-to-markdown": "2.1.2",
+    "mermaid": "11.7.0",
     "motion": "12.18.1",
     "nanoid": "5.1.5",
     "ofetch": "1.4.1",

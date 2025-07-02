@@ -1,6 +1,8 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultAISettings } from "@follow/shared/settings/defaults"
 import type { AISettings } from "@follow/shared/settings/interface"
+import { jotaiStore } from "@follow/utils"
+import { atom, useAtomValue } from "jotai"
 
 export const createDefaultSettings = (): AISettings => defaultAISettings
 
@@ -13,3 +15,11 @@ export const {
   getSettings: getAISettings,
   useSettingValue: useAISettingValue,
 } = createSettingAtom("AI", createDefaultSettings)
+
+// Local Setting for ai
+
+const aiChatPinnedAtom = atom<boolean>(false)
+export const useAIChatPinned = () => useAtomValue(aiChatPinnedAtom)
+export const setAIChatPinned = (pinned: boolean) => {
+  jotaiStore.set(aiChatPinnedAtom, pinned)
+}

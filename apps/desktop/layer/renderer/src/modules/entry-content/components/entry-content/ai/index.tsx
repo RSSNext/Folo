@@ -1,16 +1,19 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMousePosition } from "@follow/components/hooks/useMouse.js"
 import { AnimatePresence, m } from "motion/react"
+import type { FC } from "react"
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { create } from "zustand"
 
+import { useAIChatPinned } from "~/atoms/settings/ai"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { AIChatContext, useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
 import { AIChatContainer } from "./AIChatContainer"
+import { AIPanelHeader } from "./AIPanelHeader"
 import type { IEntryAIContext } from "./context"
 import { EntryAIContext, useEntryAIContextStore } from "./context"
 
@@ -203,7 +206,7 @@ const AIChatSidePanel: React.FC<{ onClose: () => void }> = ({ onClose }) => (
       <AIPanelHeader onClose={onClose} />
 
       {/* AI Chat content */}
-      <div className="min-h-[500px] grow">
+      <div className="flex min-h-[500px] grow flex-col">
         <Focusable scope={HotkeyScope.AIChat} asChild>
           <AIChat />
         </Focusable>
@@ -212,42 +215,7 @@ const AIChatSidePanel: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </AIChatRoot>
 )
 
-const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { setMessages } = React.use(AIChatContext)
-  return (
-    <div className="border-border flex items-center justify-between border-b p-4">
-      <div className="flex items-center gap-3">
-        <div className="from-accent flex size-8 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
-          <i className="i-mgc-ai-cute-re size-4 text-white" />
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold">{APP_NAME} AI</h3>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="hover:bg-fill-secondary flex size-8 items-center justify-center rounded-full transition-colors"
-          onClick={() => setMessages([])}
-        >
-          <i className="i-mgc-add-cute-re size-4" />
-        </button>
-        <button
-          type="button"
-          className="bg-fill-tertiary hover:bg-fill-secondary flex size-8 items-center justify-center rounded-full transition-colors"
-          onClick={onClose}
-        >
-          <i className="i-mgc-close-cute-re size-4" />
-        </button>
-      </div>
-    </div>
-  )
-}
-// Main AI Smart Sidebar Component
-
-export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-
+const useCreateEntryAIContext = (entryId: string) => {
   const ctxStore = React.useMemo(() => {
     return create<IEntryAIContext>(() => ({
       entryId,
@@ -258,6 +226,14 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   useEffect(() => {
     const handleSelection = () => {
       const selection = window.getSelection()
+
+      if (
+        selection?.anchorNode?.firstChild?.nodeName === "INPUT" ||
+        selection?.anchorNode?.firstChild?.nodeName === "TEXTAREA"
+      ) {
+        return
+      }
+
       const text = selection?.toString().trim()
 
       if (text)
@@ -270,12 +246,46 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
     return () => document.removeEventListener("selectionchange", handleSelection)
   }, [ctxStore])
 
+  return ctxStore
+}
+export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const ctxStore = useCreateEntryAIContext(entryId)
+
+  if (useAIChatPinned()) return null
+
   return (
     <EntryAIContext value={ctxStore}>
       {!isExpanded && <AIAmbientSidebar onExpand={() => setIsExpanded(true)} />}
       <AnimatePresence>
         {isExpanded && <AIChatSidePanel onClose={() => setIsExpanded(false)} />}
       </AnimatePresence>
+    </EntryAIContext>
+  )
+}
+
+export const AIChatPanelContainer: FC<{ entryId: string; onClose: () => void }> = ({
+  entryId,
+  onClose,
+}) => {
+  const ctxStore = useCreateEntryAIContext(entryId)
+
+  return (
+    <EntryAIContext value={ctxStore}>
+      <AIChatRoot wrapFocusable={false}>
+        <div className="bg-background relative flex grow flex-col overflow-hidden">
+          {/* Panel header */}
+          <AIPanelHeader onClose={onClose} />
+
+          {/* AI Chat content */}
+          <div className="relative flex grow flex-col overflow-hidden">
+            <Focusable scope={HotkeyScope.AIChat} asChild>
+              <AIChat />
+            </Focusable>
+          </div>
+        </div>
+      </AIChatRoot>
     </EntryAIContext>
   )
 }

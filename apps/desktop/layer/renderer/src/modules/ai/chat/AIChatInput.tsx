@@ -1,21 +1,12 @@
 import { TextArea } from "@follow/components/ui/input/TextArea.js"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@follow/components/ui/select/index.jsx"
-import { useEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils"
 import { use, useState } from "react"
 
 import { AIIcon } from "../icon"
-import { AIPanelRefsContext, useAIChatStore } from "./__internal__/AIChatContext"
+import { AIPanelRefsContext } from "./__internal__/AIChatContext"
 import { AIChatShortcuts } from "./AIShortcuts"
 
 export const AIChatInput = ({
-  entryId,
   autoShrink,
   hideIcon,
   onSubmit,
@@ -29,9 +20,6 @@ export const AIChatInput = ({
   input?: string
   setInput?: (value: string) => void
 }) => {
-  const entryTitle = useEntry(entryId, (state) => state.title)
-  const contextInfo = useAIChatStore()
-
   const [isShrink, setIsShrink] = useState(autoShrink)
 
   const { inputRef: textareaRef } = use(AIPanelRefsContext)
@@ -40,14 +28,6 @@ export const AIChatInput = ({
       onSubmit?.(value)
       textareaRef.current.value = ""
     }
-  }
-
-  // Determine the default context selection
-  const getDefaultContextValue = () => {
-    if (contextInfo.selectedText) return "selection"
-    if (contextInfo.entryId || entryTitle) return "entry"
-    if (contextInfo.feedId) return "feed"
-    return "unread"
   }
 
   return (
@@ -79,51 +59,7 @@ export const AIChatInput = ({
         >
           {!isShrink && (
             <div className="absolute inset-x-4 bottom-3 flex items-center justify-between leading-none">
-              <div className="flex flex-1 flex-row items-center gap-3 text-sm">
-                <Select defaultValue={getDefaultContextValue()}>
-                  <SelectTrigger className="h-7 w-auto max-w-60 rounded-3xl py-0 [&>span]:truncate">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="mt-2 max-w-60 rounded-xl">
-                    {contextInfo.selectedText && (
-                      <SelectItem
-                        className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
-                        value="selection"
-                      >
-                        Selected text: "{contextInfo.selectedText.slice(0, 30)}..."
-                      </SelectItem>
-                    )}
-                    {(contextInfo.entryId || entryTitle) && (
-                      <SelectItem
-                        className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
-                        value="entry"
-                      >
-                        Current entry: {entryTitle || contextInfo.entryId}
-                      </SelectItem>
-                    )}
-                    {contextInfo.feedId && (
-                      <SelectItem
-                        className="w-auto rounded-lg pr-6 [&>span]:max-w-full [&>span]:truncate"
-                        value="feed"
-                      >
-                        Current feed: {contextInfo.feedId}
-                      </SelectItem>
-                    )}
-                    <SelectItem className="rounded-lg" value="unread">
-                      My unread items
-                    </SelectItem>
-                    <SelectItem className="rounded-lg" value="subscriptions">
-                      My subscriptions
-                    </SelectItem>
-                    <SelectItem className="rounded-lg" value="folo">
-                      Everything on Follow
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-text-secondary shrink-0 font-normal">
-                  @ Mention a date or source
-                </span>
-              </div>
+              <div className="flex flex-1 flex-row items-center gap-3 text-sm" />
               <div className="flex flex-row items-center gap-3">
                 <i className="i-mgc-mic-cute-re text-xl" />
                 <i
