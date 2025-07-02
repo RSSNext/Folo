@@ -24,7 +24,7 @@ import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMe
 
 const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
-const ACTIVE_TEXT_WIDTH = 95
+const ACTIVE_TEXT_WIDTH = 100
 
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
@@ -181,7 +181,7 @@ function ViewItem({
           </View>
 
           <Animated.View
-            className="flex flex-row items-center justify-center gap-2"
+            className="flex flex-row items-center justify-center gap-2 overflow-hidden"
             style={useAnimatedStyle(() => ({
               width: interpolate(
                 dragProgress.get(),
@@ -199,25 +199,13 @@ function ViewItem({
             >
               {t(view.name)}
             </Text>
-            <Animated.View
-              style={useAnimatedStyle(() => ({
-                opacity: interpolate(
-                  dragProgress.get(),
-                  [index - 1, index, index + 1],
-                  [0, 1, 0],
-                  "clamp",
-                ),
-              }))}
-            >
-              {unreadCount > 0 && (
-                <UnreadCount
-                  max={99}
-                  unread={unreadCount}
-                  dotClassName="size-1.5 rounded-full bg-white"
-                  textClassName="text-white font-bold flex-1"
-                />
-              )}
-            </Animated.View>
+
+            <UnreadCount
+              max={99}
+              unread={unreadCount}
+              dotClassName="size-1.5 rounded-full bg-white"
+              textClassName="text-white font-bold flex-1"
+            />
           </Animated.View>
 
           {/* Unread indicator for inactive items */}

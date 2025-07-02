@@ -39,7 +39,6 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld("electron", electronAPI)
     contextBridge.exposeInMainWorld("api", api)
     contextBridge.exposeInMainWorld("platform", process.platform)
-    contextBridge.exposeInMainWorld("mas", process.mas)
   } catch (error) {
     console.error(error)
   }
@@ -50,8 +49,6 @@ if (process.contextIsolated) {
   window.api = api
   // @ts-ignore (define in dts)
   window.platform = process.platform
-  // @ts-ignore (define in dts)
-  window.mas = process.mas
 
   Object.defineProperty(window.navigator, "clipboard", {
     get: () => {

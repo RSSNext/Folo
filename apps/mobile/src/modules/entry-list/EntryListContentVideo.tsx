@@ -3,7 +3,7 @@ import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo } from "react"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { checkLanguage } from "@/src/lib/translation"
@@ -71,9 +71,16 @@ export const EntryListContentVideo = ({
       {...rest}
       onRefresh={refetch}
       style={hackStyle}
+      contentContainerStyle={styles.contentContainer}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingHorizontal: 8,
+  },
+})
 
 const defaultKeyExtractor = (item: string) => {
   return item

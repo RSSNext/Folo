@@ -432,7 +432,7 @@ const FallbackableImage: FC<
     blurhash?: string
     onZoomChange?: (isZoomed: boolean) => void
   }
-> = ({ src, fallbackUrl, containerClassName, onZoomChange }) => {
+> = ({ src, fallbackUrl, containerClassName, onZoomChange, loading }) => {
   const [currentSrc, setCurrentSrc] = useState(() => replaceImgUrlIfNeed(src))
   const [isAllError, setIsAllError] = useState(false)
 
@@ -480,6 +480,7 @@ const FallbackableImage: FC<
           maxZoom={2}
           src={currentSrc}
           alt="preview"
+          loading={loading}
           highResLoaded={!isLoading}
           onLoad={() => setIsLoading(false)}
           onError={handleError}
@@ -519,7 +520,7 @@ const FallbackableImage: FC<
       )}
 
       {currentState === "fallback" && (
-        <div className="bg-material-thick backdrop-blur-background text-text absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg px-3 py-2 text-center text-xs">
+        <div className="bg-material-thick backdrop-blur-background text-text absolute bottom-8 left-1/2 mt-4 -translate-x-1/2 rounded-lg px-3 py-2 text-center text-xs opacity-70">
           <span>
             This image is preview in low quality, because the original image is not available.
           </span>
@@ -551,6 +552,7 @@ const DOMImageViewer: FC<{
   src: string
   alt: string
   highResLoaded: boolean
+  loading?: "lazy" | "eager"
   onLoad?: () => void
   onError?: () => void
 }> = ({
@@ -562,6 +564,7 @@ const DOMImageViewer: FC<{
   src,
   alt,
   highResLoaded,
+  loading = "eager",
   onLoad,
   onError,
 }) => {
@@ -649,7 +652,7 @@ const DOMImageViewer: FC<{
               highResLoaded ? "opacity-100" : "opacity-0",
             )}
             draggable={false}
-            loading="eager"
+            loading={loading}
             decoding="async"
             onLoad={onLoad}
             onClick={stopPropagation}

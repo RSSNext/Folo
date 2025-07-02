@@ -7,6 +7,7 @@ import type { PressableProps, ViewProps } from "react-native"
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
+import { titleCase } from "title-case"
 
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
@@ -189,7 +190,6 @@ export const GroupedInsetListNavigationLinkIcon: FC<
     </View>
   )
 }
-
 export const GroupedInsetListCell: FC<
   {
     label: string
@@ -208,7 +208,7 @@ export const GroupedInsetListCell: FC<
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
-          <Text className="text-label">{label}</Text>
+          <Text className="text-label">{titleCase(label)}</Text>
         </View>
         {!!description && (
           <Text className="text-secondary-label text-sm leading-tight">{description}</Text>

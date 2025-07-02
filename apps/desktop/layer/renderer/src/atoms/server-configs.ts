@@ -10,5 +10,9 @@ export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = crea
 
 export const useIsInMASReview = () => {
   const serverConfigs = useServerConfigs()
-  return window.mas && serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
+  return (
+    typeof process !== "undefined" &&
+    process.mas &&
+    serverConfigs?.MAS_IN_REVIEW_VERSION === PKG.version
+  )
 }

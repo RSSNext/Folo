@@ -1,6 +1,7 @@
 import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { AppType } from "@follow/shared/hono"
+import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
 import { hc } from "hono/client"
 import { FetchError, ofetch } from "ofetch"
@@ -21,11 +22,12 @@ export const apiFetch = ofetch.create({
   onRequest: ({ options }) => {
     const header = new Headers(options.headers)
 
-    header.set("X-App-Version", PKG.version)
-    if (DEV) {
-      header.set("X-App-Dev", "1")
-    }
-    header.set("X-App-Name", "Folo Web")
+    const headers = createDesktopAPIHeaders({ version: PKG.version })
+
+    Object.entries(headers).forEach(([key, value]) => {
+      header.set(key, value)
+    })
+
     header.set("X-Client-Id", getClientId())
     header.set("X-Session-Id", getSessionId())
     options.headers = header
@@ -87,14 +89,6 @@ export const apiClient = hc<AppType>(env.VITE_API_URL, {
       }
       throw err
     }),
-  headers() {
-    return {
-      "X-App-Version": PKG.version,
-      "X-App-Name": "Folo Web",
-      "X-Client-Id": getClientId(),
-      "X-Session-Id": getSessionId(),
-    }
-  },
 })
 
 if (DEV) {

@@ -1,6 +1,5 @@
-import type { TrackerPoints } from "@follow/tracker"
+import type { AllTrackers, TrackerPoints } from "@follow/tracker"
 import { tracker } from "@follow/tracker"
-import type { AllTrackers } from "@follow/tracker/src/points"
 import { memo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 

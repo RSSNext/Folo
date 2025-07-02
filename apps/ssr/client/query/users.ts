@@ -29,7 +29,8 @@ const groupSubscriptions = (
     delete groupFolder[UN_CATEGORIZED]
 
     Reflect.defineProperty(groupFolder, UN_CATEGORIZED, {
-      value: temp?.sort((a, b) => sortByAlphabet(a.title!, b.title!)) || [],
+      value:
+        temp?.sort((a, b) => (a.title && b.title ? sortByAlphabet(a.title, b.title) : 0)) || [],
       writable: true,
       configurable: true,
       enumerable: true,

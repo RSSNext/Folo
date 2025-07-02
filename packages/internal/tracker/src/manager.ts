@@ -14,7 +14,7 @@ export class TrackerManager {
   private adapters = new Map<string, TrackerAdapter>()
   private config: TrackerManagerConfig
   private batchQueue: Array<{ adapter: TrackerAdapter; payload: TrackPayload }> = []
-  private batchTimer?: NodeJS.Timeout
+  private batchTimer?: ReturnType<typeof setTimeout>
 
   constructor(config: TrackerManagerConfig = {}) {
     this.config = {

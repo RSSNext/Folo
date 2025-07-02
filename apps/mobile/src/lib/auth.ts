@@ -40,6 +40,7 @@ const plugins = [
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   plugins,
+  // TODO: add x-app-platform, x-app-version headers
 })
 
 // @keep-sorted
