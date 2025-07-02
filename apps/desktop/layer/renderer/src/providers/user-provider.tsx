@@ -1,11 +1,9 @@
-import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { useEffect } from "react"
 
 import { setIntegrationIdentify } from "~/initialize/helper"
 import { useSession } from "~/queries/auth"
 
 export const UserProvider = () => {
-  usePrefetchSessionUser()
   const { session } = useSession()
 
   useEffect(() => {
