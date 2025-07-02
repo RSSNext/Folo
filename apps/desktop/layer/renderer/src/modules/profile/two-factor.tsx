@@ -9,6 +9,8 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.js"
+import { useWhoami } from "@follow/store/user/hooks"
+import { userActions } from "@follow/store/user/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { m, useAnimation } from "motion/react"
@@ -19,7 +21,6 @@ import QRCode from "react-qr-code"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { setWhoami, useWhoami } from "~/atoms/user"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { twoFactor } from "~/lib/auth"
 import { getFetchErrorInfo } from "~/lib/error-parser"
@@ -221,10 +222,7 @@ export const TwoFactorForm = () => {
           }
           toast.success(t("profile.two_factor.enabled"))
           modal.dismiss()
-          setWhoami((prev) => {
-            if (!prev) return prev
-            return { ...prev, twoFactorEnabled: true }
-          })
+          userActions.updateWhoami({ twoFactorEnabled: true })
         }}
       />
     </div>
@@ -242,10 +240,7 @@ export const TwoFactorForm = () => {
         } else {
           toast.success(t("profile.two_factor.disabled"))
           modal.dismiss()
-          setWhoami((prev) => {
-            if (!prev) return prev
-            return { ...prev, twoFactorEnabled: false }
-          })
+          userActions.updateWhoami({ twoFactorEnabled: false })
         }
       }}
     />

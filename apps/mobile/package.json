@@ -106,6 +106,7 @@
     "react-native-awesome-slider": "2.9.0",
     "react-native-bouncy-checkbox": "4.1.2",
     "react-native-color-matrix-image-filters": "7.0.2",
+    "react-native-device-info": "14.0.4",
     "react-native-gesture-handler": "2.26.0",
     "react-native-image-colors": "2.4.0",
     "react-native-ios-context-menu": "3.1.2",

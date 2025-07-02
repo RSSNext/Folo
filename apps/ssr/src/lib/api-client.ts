@@ -3,6 +3,7 @@ import "./load-env"
 import { requestContext } from "@fastify/request-context"
 import { env } from "@follow/shared/env.ssr"
 import type { AppType } from "@follow/shared/hono"
+import { createSSRAPIHeaders } from "@follow/utils/headers"
 import { hc } from "hono/client"
 import { ofetch } from "ofetch"
 
@@ -35,7 +36,15 @@ export const createApiFetch = () => {
     onRequest(context) {
       if (__DEV__) console.info(`request: ${context.request}`)
 
-      context.options.headers.set("User-Agent", `Folo External Server Api Client/${PKG.version}`)
+      const header = new Headers(context.options.headers)
+
+      const headers = createSSRAPIHeaders({ version: PKG.version })
+
+      Object.entries(headers).forEach(([key, value]) => {
+        header.set(key, value)
+      })
+
+      context.options.headers = header
     },
     onRequestError(context) {
       if (context.error.name === "AbortError") {
@@ -55,8 +64,6 @@ export const createApiClient = () => {
     fetch: async (input: any, options = {}) => apiFetch(input.toString(), options),
     headers() {
       return {
-        "X-App-Version": PKG.version,
-        "X-App-Dev": __DEV__ ? "1" : "0",
         "User-Agent": `Folo External Server Api Client/${PKG.version}`,
         Cookie: authSessionToken ? `__Secure-better-auth.session_token=${authSessionToken}` : "",
       }

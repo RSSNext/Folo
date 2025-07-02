@@ -3,7 +3,7 @@ import { getStorageNS } from "@follow/utils/ns"
 import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
-import { setUserRole, setUserRoleEndDate, setWhoami } from "~/atoms/user"
+import { setUserRole, setUserRoleEndDate } from "~/atoms/user"
 import { setIntegrationIdentify } from "~/initialize/helper"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { useSession } from "~/queries/auth"
@@ -15,8 +15,6 @@ export const UserProvider = () => {
 
   useEffect(() => {
     if (!session?.user) return
-    setWhoami(session.user)
-
     // @ts-expect-error FIXME
     setIntegrationIdentify(session.user)
   }, [session?.user])

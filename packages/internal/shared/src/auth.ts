@@ -1,7 +1,7 @@
 import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
 import type { authPlugins } from "@follow/shared/hono"
-import type { BetterAuthClientPlugin } from "better-auth/client"
+import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 
@@ -46,17 +46,22 @@ export class Auth {
     private readonly options: {
       apiURL: string
       webURL: string
+      fetchOptions?: BetterFetchOption
     },
   ) {
     this.authClient = createAuthClient({
       baseURL: `${this.options.apiURL}/better-auth`,
       plugins: baseAuthPlugins,
       fetchOptions: {
-        onRequest(context) {
+        ...this.options.fetchOptions,
+        onRequest: (context) => {
           const referralCode = localStorage.getItem(getStorageNS("referral-code"))
           if (referralCode) {
             context.headers.set("folo-referral-code", referralCode)
           }
+
+          this.options.fetchOptions?.onRequest?.(context)
+
           return context
         },
       },

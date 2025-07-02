@@ -61,7 +61,7 @@ export const MarkAllReadButton = ({
         duration: 3000,
         onAutoClose() {
           if (cancel) return
-          markAllByRoute(undefined, routerParams)
+          markAllByRoute(routerParams)
         },
         action: {
           label: (
@@ -99,7 +99,7 @@ export const MarkAllReadButton = ({
       className={className}
       ref={ref}
       onClick={() => {
-        markAllByRoute()
+        markAllByRoute(getRouteParams())
       }}
     >
       <i className="i-mgc-check-circle-cute-re" />
@@ -154,7 +154,7 @@ export const FlatMarkAllReadButton: FC<
         className,
       )}
       onClick={() => {
-        markAllByRoute(filter)
+        markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))
       }}

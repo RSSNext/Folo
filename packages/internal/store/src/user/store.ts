@@ -77,7 +77,7 @@ class UserSyncService {
       })
       userActions.upsertMany([user])
 
-      return res.user
+      return res
     } else {
       return null
     }
@@ -215,6 +215,13 @@ class UserActions implements Hydratable {
           state.whoami = { ...user, emailVerified: user.emailVerified ?? false }
         }
       }
+    })
+  }
+
+  updateWhoami(data: Partial<MeModel>) {
+    immerSet((state) => {
+      if (!state.whoami) return
+      state.whoami = { ...state.whoami, ...data }
     })
   }
 

@@ -1,8 +1,8 @@
+import type { FeedViewType } from "@follow/constants"
 import { getFolderFeedsByFeedId } from "@follow/store/subscription/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 
 import { getGeneralSettings } from "~/atoms/settings/general"
-import { getRouteParams } from "~/hooks/biz/useRouteParams"
 
 export interface MarkAllFilter {
   startTime: number
@@ -10,21 +10,26 @@ export interface MarkAllFilter {
 }
 
 export const markAllByRoute = async (
-  time?: MarkAllFilter,
-  overrideRouterParams?: ReturnType<typeof getRouteParams>,
-) => {
-  const routerParams = overrideRouterParams || getRouteParams()
+  data: {
+    feedId?: string | undefined
+    view: FeedViewType
+    inboxId?: string | undefined
+    listId?: string | undefined
 
-  const { feedId, view, inboxId, listId } = routerParams
+    isAllFeeds?: boolean
+  },
+  time?: MarkAllFilter,
+) => {
+  const { feedId, view, inboxId, listId, isAllFeeds } = data
   const folderIds = getFolderFeedsByFeedId({
     feedId,
     view,
   })
 
-  if (!routerParams) return
+  if (!feedId) return
 
   const { hidePrivateSubscriptionsInTimeline: excludePrivate } = getGeneralSettings()
-  if (typeof routerParams.feedId === "number" || routerParams.isAllFeeds) {
+  if (typeof feedId === "number" || isAllFeeds) {
     unreadSyncService.markBatchAsRead({
       view,
       time,
@@ -57,10 +62,10 @@ export const markAllByRoute = async (
       time,
       excludePrivate,
     })
-  } else if (routerParams.feedId) {
+  } else if (feedId) {
     unreadSyncService.markBatchAsRead({
       filter: {
-        feedIdList: routerParams.feedId?.split(","),
+        feedIdList: feedId?.split(","),
       },
       view,
       time,

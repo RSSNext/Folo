@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
 import type { AppType } from "@follow/shared"
 import { userActions } from "@follow/store/user/store"
+import { createMobileAPIHeaders } from "@follow/utils/headers"
+import { nativeApplicationVersion } from "expo-application"
 import { hc } from "hono/client"
 import { FetchError, ofetch } from "ofetch"
+import { Platform } from "react-native"
+import DeviceInfo from "react-native-device-info"
 
 import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
 import { getCookie } from "./auth"
@@ -25,6 +29,19 @@ export const apiFetch = ofetch.create({
     // add cookie
     options.headers = options.headers || new Headers()
     options.headers.set("cookie", getCookie())
+
+    const headers = createMobileAPIHeaders({
+      version: nativeApplicationVersion || "",
+      rnPlatform: {
+        OS: Platform.OS,
+        isPad: Platform.OS === "ios" && Platform.isPad,
+      },
+      installerPackageName: await DeviceInfo.getInstallerPackageName(),
+    })
+
+    Object.entries(headers).forEach(([key, value]) => {
+      options.headers.set(key, value)
+    })
   },
   onRequestError: ({ error, request, options }) => {
     if (__DEV__) {
@@ -66,7 +83,6 @@ export const apiClient = hc<AppType>(proxyEnv.API_URL, {
     }),
   async headers() {
     return {
-      "X-App-Name": "Folo Mobile",
       cookie: getCookie(),
       "User-Agent": await getUserAgent(),
       "X-Client-Id": getClientId(),

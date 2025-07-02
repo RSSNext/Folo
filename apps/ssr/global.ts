@@ -1,5 +1,6 @@
 Object.assign(globalThis, {
   APP_NAME: "Folo",
+  ELECTRON: false,
 })
 
 try {

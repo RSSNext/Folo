@@ -63,6 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
+        monochromeImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
       },
       googleServicesFile: "./build/google-services.json",

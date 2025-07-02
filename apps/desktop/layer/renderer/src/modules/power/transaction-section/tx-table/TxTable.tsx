@@ -14,10 +14,10 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { TransactionTypes } from "@follow/models"
+import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
-import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
 import { getBlockchainExplorerUrl } from "~/lib/utils"
 import { useWalletTransactions } from "~/queries/wallet"

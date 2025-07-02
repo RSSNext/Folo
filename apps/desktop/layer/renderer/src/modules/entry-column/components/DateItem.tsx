@@ -11,7 +11,7 @@ import { useDebounceCallback } from "usehooks-ts"
 import { SafeFragment } from "~/components/common/Fragment"
 import { RelativeDay } from "~/components/ui/datetime"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { markAllByRoute } from "../hooks/useMarkAll"
 
@@ -112,7 +112,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
           onClick={() => {
             if (confirmMark) {
               clearTimeout(timerRef.current)
-              markAllByRoute({
+              markAllByRoute(getRouteParams(), {
                 startTime,
                 endTime,
               })
