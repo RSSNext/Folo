@@ -375,6 +375,9 @@ class SubscriptionSyncService {
     })
 
     await tx.run()
+    invalidateEntriesQuery({
+      views: Array.from(new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view))),
+    })
     return feedsAndLists
   }
 
