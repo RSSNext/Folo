@@ -4,7 +4,7 @@ import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 
-import { AIChatInput } from "./AIChatInput"
+import { AIChatBottom } from "./AIChatInput"
 import { AIChatMessage, AIChatTypingIndicator } from "./AIChatMessage"
 import { useAutoScroll } from "./useAutoScroll"
 
@@ -114,7 +114,7 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
   ({ disabled, onSendMessage }) => {
     const { inputRef } = React.use(AIPanelRefsContext)
     const scrollAreaRef = React.useRef<HTMLDivElement>(null)
-    const { messages, status } = React.use(AIChatContext)
+    const { messages, status, input: _input } = React.use(AIChatContext)
 
     // Sending animation state
     const [sendingMessage, setSendingMessage] = React.useState<string | null>(null)
@@ -182,7 +182,7 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
               viewportClassName="p-6"
               rootClassName="min-h-[500px] flex-1"
             >
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
                 {messages.map((message) => (
                   <AIChatMessage key={message.id} message={message} />
                 ))}
@@ -192,9 +192,8 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
           )}
 
           {/* Input area */}
-          <div className="border-border pb-safe-offset-3 shrink-0 border-t px-6 pt-6">
-            <AIChatInput
-              inputRef={inputRef}
+          <div className="border-border pb-safe shrink-0 border-t">
+            <AIChatBottom
               onSend={handleSendMessage}
               disabled={disabled}
               placeholder={showWelcome ? "What are your thoughts?" : "Ask me anything..."}

@@ -1,25 +1,27 @@
 import { useChat } from "@ai-sdk/react"
 import { env } from "@follow/shared/env.desktop"
 import type { FC, PropsWithChildren } from "react"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
-import type { AIChatContextInfo, AIPanelRefs } from "./__internal__/AIChatContext"
+import type { AIPanelRefs } from "./__internal__/AIChatContext"
 import {
   AIChatContext,
-  AIChatContextInfoContext,
-  AIChatSetContextInfoContext,
+  AIChatContextStoreContext,
   AIPanelRefsContext,
 } from "./__internal__/AIChatContext"
+import { createAIChatContextStore } from "./__internal__/store"
 
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean
 }
 
 export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true }) => {
-  const [contextInfo, setContextInfo] = useState<AIChatContextInfo>({})
+  const useAiContextStore = useMemo(createAIChatContextStore, [])
+
+  const context = useAiContextStore((s) => s.state)
 
   const ctx = useChat({
     api: `${env.VITE_API_URL}/ai/chat`,
@@ -28,7 +30,7 @@ export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true
     },
     credentials: "include",
     body: {
-      context: contextInfo,
+      context,
     },
   })
 
@@ -66,9 +68,7 @@ export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true
   const Element = (
     <AIChatContext value={ctx}>
       <AIPanelRefsContext value={refsContext}>
-        <AIChatSetContextInfoContext value={setContextInfo}>
-          <AIChatContextInfoContext value={contextInfo}>{children}</AIChatContextInfoContext>
-        </AIChatSetContextInfoContext>
+        <AIChatContextStoreContext value={useAiContextStore}>{children}</AIChatContextStoreContext>
       </AIPanelRefsContext>
     </AIChatContext>
   )

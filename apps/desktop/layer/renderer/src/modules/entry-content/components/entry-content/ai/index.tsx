@@ -7,10 +7,7 @@ import { create } from "zustand"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
-import {
-  AIChatContext,
-  useAIChatSetContextInfo,
-} from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AIChatContext, useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
 import { AIChatContainer } from "./AIChatContainer"
@@ -29,15 +26,15 @@ const AIChat: React.FC = () => {
     [append],
   )
 
-  const setContextInfo = useAIChatSetContextInfo()
   const store = useEntryAIContextStore()()
 
+  // const setContextInfo = useAIChatStore((s) => s.setContextInfo)
+  const useAiContextStore = useAIChatStore()
   useEffect(() => {
-    setContextInfo({
-      entryId: store.entryId ?? undefined,
-      selectedText: store.selectedText ?? undefined,
-    })
-  }, [store, setContextInfo])
+    const aiContextStore = useAiContextStore.getState()
+    aiContextStore.setEntryId(store.entryId ?? undefined)
+    aiContextStore.setSelectedText(store.selectedText ?? undefined)
+  }, [store.entryId, store.selectedText, useAiContextStore])
 
   return <AIChatContainer onSendMessage={handleSendMessage} />
 }
@@ -251,8 +248,6 @@ const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const setContextInfo = useAIChatSetContextInfo()
-
   const ctxStore = React.useMemo(() => {
     return create<IEntryAIContext>(() => ({
       entryId,
@@ -264,14 +259,16 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
     const handleSelection = () => {
       const selection = window.getSelection()
       const text = selection?.toString().trim()
-      ctxStore.setState({
-        selectedText: text || "",
-      })
+
+      if (text)
+        ctxStore.setState({
+          selectedText: text || "",
+        })
     }
 
     document.addEventListener("selectionchange", handleSelection)
     return () => document.removeEventListener("selectionchange", handleSelection)
-  }, [ctxStore, setContextInfo])
+  }, [ctxStore])
 
   return (
     <EntryAIContext value={ctxStore}>

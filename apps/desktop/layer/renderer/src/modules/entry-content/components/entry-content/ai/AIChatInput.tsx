@@ -3,7 +3,9 @@ import { cn } from "@follow/utils"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+
+import { AIChatContextBar } from "./AIChatContextBar"
 
 interface AIChatInputProps {
   value?: string
@@ -11,20 +13,46 @@ interface AIChatInputProps {
   onSend: (message: string) => void
   placeholder?: string
   disabled?: boolean
-  inputRef: React.RefObject<HTMLTextAreaElement>
 }
 
-const minHeight = 32
-const maxHeight = 120
+const minHeight = 120
+const maxHeight = 200
 
-export const AIChatInput: React.FC<AIChatInputProps> = ({
+export const AIChatBottom: React.FC<AIChatInputProps> = ({
   value,
   onChange,
-  inputRef: textareaRef,
+
   onSend,
   placeholder = "Ask me anything about your feeds, or describe a task...",
   disabled = false,
 }) => {
+  return (
+    <div className="bg-background relative overflow-hidden">
+      {/* Context Bar */}
+      <div className="border-border border-b">
+        <AIChatContextBar />
+      </div>
+
+      {/* Input Container */}
+      <AIChatInputContainer
+        value={value}
+        onChange={onChange}
+        onSend={onSend}
+        placeholder={placeholder}
+        disabled={disabled}
+      />
+    </div>
+  )
+}
+
+const AIChatInputContainer = ({
+  value,
+  onChange,
+  onSend,
+  placeholder = "Ask me anything about your feeds, or describe a task...",
+  disabled = false,
+}: AIChatInputProps) => {
+  const { inputRef: textareaRef } = React.use(AIPanelRefsContext)
   const [height, setHeight] = React.useState(minHeight)
   const [isEmpty, setIsEmpty] = React.useState(true)
 
@@ -82,7 +110,6 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
   React.useEffect(() => {
     if (textareaRef.current) {
       autoResize()
-
       textareaRef.current.focus()
     }
   }, [])
@@ -102,7 +129,10 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
         onKeyPress={handleKeyPress}
         placeholder={placeholder}
         disabled={disabled}
-        className="bg-background scrollbar-none border-border placeholder:text-text-tertiary focus:border-accent w-full resize-none rounded-lg border px-4 py-3 pr-12 text-sm shadow-sm outline-none transition-all focus:shadow-md disabled:opacity-50"
+        className={cn(
+          "scrollbar-none placeholder:text-text-tertiary w-full resize-none border-0 bg-transparent text-sm outline-none transition-all disabled:opacity-50",
+          "px-4 py-3 pr-12",
+        )}
         style={{
           height: `${height}px`,
           minHeight: `${minHeight}px`,
@@ -111,7 +141,7 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
       />
 
       {/* Action buttons inside input */}
-      <div className="absolute right-2 top-2 flex items-center gap-2">
+      <div className="absolute right-3 top-3 flex items-center gap-2">
         {/* Send/Stop button */}
         <m.button
           type="button"
@@ -119,7 +149,7 @@ export const AIChatInput: React.FC<AIChatInputProps> = ({
           disabled={disabled || (!isProcessing && isEmpty)}
           className={cn(
             "relative flex size-8 items-center justify-center overflow-hidden rounded-lg transition-all",
-            "bg-fill-secondary disabled:opacity-50",
+            "bg-fill disabled:opacity-80",
             "before:from-orange before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:to-red-500",
             "before:transition-opacity before:duration-200 hover:before:opacity-90",
             "disabled:before:opacity-0",

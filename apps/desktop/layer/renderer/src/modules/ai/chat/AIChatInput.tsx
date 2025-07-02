@@ -11,7 +11,7 @@ import { cn } from "@follow/utils"
 import { use, useState } from "react"
 
 import { AIIcon } from "../icon"
-import { AIPanelRefsContext, useAIChatContextInfo } from "./__internal__/AIChatContext"
+import { AIPanelRefsContext, useAIChatStore } from "./__internal__/AIChatContext"
 import { AIChatShortcuts } from "./AIShortcuts"
 
 export const AIChatInput = ({
@@ -30,7 +30,7 @@ export const AIChatInput = ({
   setInput?: (value: string) => void
 }) => {
   const entryTitle = useEntry(entryId, (state) => state.title)
-  const contextInfo = useAIChatContextInfo()
+  const contextInfo = useAIChatStore()
 
   const [isShrink, setIsShrink] = useState(autoShrink)
 
