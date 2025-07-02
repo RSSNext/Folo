@@ -201,31 +201,28 @@ const SelectableTextSheet: FC<{
   }
 
   return (
-    // Wrap in a View to avoid rendering issues with Modal on Android
-    <View>
-      <BottomModal visible={visible} onClose={onClose}>
-        <View className="p-4" style={{ paddingBottom: insets.bottom + 10 }}>
-          <View className="mb-4 flex-row items-center justify-between">
-            <TouchableOpacity
-              onPress={handleCopyAll}
-              className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
-            >
-              <CopyCuteReIcon width={18} height={18} color={textColor} />
-            </TouchableOpacity>
-            <Text className="text-label text-lg font-semibold">AI Summary</Text>
-            <TouchableOpacity
-              onPress={onClose}
-              className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
-            >
-              <CloseCuteReIcon width={18} height={18} color={textColor} />
-            </TouchableOpacity>
-          </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
-          </ScrollView>
+    <BottomModal visible={visible} onClose={onClose}>
+      <View className="p-4" style={{ paddingBottom: insets.bottom + 10 }}>
+        <View className="mb-4 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={handleCopyAll}
+            className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
+          >
+            <CopyCuteReIcon width={18} height={18} color={textColor} />
+          </TouchableOpacity>
+          <Text className="text-label text-lg font-semibold">AI Summary</Text>
+          <TouchableOpacity
+            onPress={onClose}
+            className="rounded-full bg-zinc-100 p-2 active:opacity-80 dark:bg-zinc-800"
+          >
+            <CloseCuteReIcon width={18} height={18} color={textColor} />
+          </TouchableOpacity>
         </View>
-      </BottomModal>
-    </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <SelectableText className="text-label text-base leading-6">{text}</SelectableText>
+        </ScrollView>
+      </View>
+    </BottomModal>
   )
 }
 
