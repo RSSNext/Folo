@@ -17,7 +17,7 @@ export const usePrefetchSessionUser = () => {
 
   useEffect(() => {
     if (query.data) {
-      const user = query.data
+      const { user } = query.data
       tracker.identify(user)
     }
   }, [query.data])

@@ -72,7 +72,7 @@ class UserSyncService {
       })
       userActions.upsertMany([user])
 
-      return res.user
+      return res
     } else {
       return null
     }
