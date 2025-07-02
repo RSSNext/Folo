@@ -1,10 +1,10 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { UserRole } from "@follow/constants"
+import { useRole } from "@follow/store/user/hooks"
 import { repository } from "@pkg"
 import { useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
-import { useUserRole } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { CustomSafeError } from "~/errors/CustomSafeError"
 
@@ -13,7 +13,7 @@ import { InboxTable } from "./Inbox"
 import { InboxForm } from "./InboxForm"
 
 const useCanCreateMoreInboxAndNotify = () => {
-  const role = useUserRole()
+  const role = useRole()
   const presentActivationModal = useActivationModal()
 
   return useEventCallback(() => {

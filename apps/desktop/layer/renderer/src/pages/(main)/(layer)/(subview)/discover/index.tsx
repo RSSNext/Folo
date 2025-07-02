@@ -3,12 +3,12 @@ import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
 import { UserRole } from "@follow/constants"
+import { useRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { createElement } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
-import { useUserRole } from "~/atoms/user"
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { useActivationModal } from "~/modules/activation"
@@ -63,7 +63,7 @@ export function Component() {
   useSubViewTitle("words.discover")
 
   const presentActivationModal = useActivationModal()
-  const role = useUserRole()
+  const role = useRole()
   const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const currentTabs = tabs.map((tab) => {

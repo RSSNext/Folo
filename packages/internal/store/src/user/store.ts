@@ -213,6 +213,13 @@ class UserActions implements Hydratable {
     })
   }
 
+  updateWhoami(data: Partial<MeModel>) {
+    immerSet((state) => {
+      if (!state.whoami) return
+      state.whoami = { ...state.whoami, ...data }
+    })
+  }
+
   async upsertMany(users: UserModel[]) {
     const tx = createTransaction()
     tx.store(() => this.upsertManyInSession(users))

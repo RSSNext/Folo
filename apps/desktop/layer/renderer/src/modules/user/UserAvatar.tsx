@@ -1,9 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
-import { usePrefetchUser } from "@follow/store/user/hooks"
+import { usePrefetchUser, useWhoami } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
-import { useWhoami } from "~/atoms/user"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"

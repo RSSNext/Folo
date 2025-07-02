@@ -1,12 +1,11 @@
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
+import { whoami } from "@follow/store/user/getters"
 import { appSessionTraceId } from "@follow/utils/environment"
 import { version } from "@pkg"
 import { nanoid } from "nanoid"
 import { useEffect } from "react"
 import { createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from "react-router"
-
-import { whoami } from "~/atoms/user"
 
 import { SentryConfig } from "./sentry.config"
 

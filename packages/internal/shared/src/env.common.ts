@@ -27,8 +27,8 @@ export const DEFAULT_VALUES = {
     POSTHOG_HOST: "https://us.posthog.com",
   },
   LOCAL: {
-    API_URL: "http://localhost:3000",
-    WEB_URL: "http://localhost:2233",
+    API_URL: "http://10.0.0.222:3000",
+    WEB_URL: "http://10.0.0.222:2233",
     INBOXES_EMAIL: "@follow.re",
   },
 }
