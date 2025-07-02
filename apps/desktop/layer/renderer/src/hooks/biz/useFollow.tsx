@@ -5,13 +5,13 @@ import {
   useFeedSubscriptionCount,
   useListSubscriptionCount,
 } from "@follow/store/subscription/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { t } from "i18next"
 import { useCallback } from "react"
 import { withoutTrailingSlash, withTrailingSlash } from "ufo"
 import { useEventCallback } from "usehooks-ts"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { useUserRole } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { CustomSafeError } from "~/errors/CustomSafeError"
 import { useActivationModal } from "~/modules/activation"

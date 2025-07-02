@@ -1,10 +1,10 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
+import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
-import { useWhoami } from "~/atoms/user"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { Balance } from "~/modules/wallet/balance"

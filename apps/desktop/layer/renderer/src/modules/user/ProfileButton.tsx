@@ -4,6 +4,7 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/EllipsisWithTooltip.js"
 import { UserRole } from "@follow/constants"
 import { useMeasure } from "@follow/hooks"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { repository } from "@pkg"
 import type { FC } from "react"
@@ -14,7 +15,6 @@ import { useNavigate } from "react-router"
 import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
-import { useUserRole } from "~/atoms/user"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +62,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const shortcuts = useCommandShortcuts()
 
-  if (status !== "authenticated") {
+  if (status === "unauthenticated") {
     return <LoginButton {...props} />
   }
 
