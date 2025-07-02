@@ -71,7 +71,9 @@ class UserSyncService {
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user.emailVerified }
         state.role = res.role
-        state.roleEndAt = res.roleEndAt
+        if (res.roleEndAt) {
+          state.roleEndAt = new Date(res.roleEndAt)
+        }
       })
       userActions.upsertMany([user])
 

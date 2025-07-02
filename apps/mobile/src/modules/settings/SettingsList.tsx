@@ -22,6 +22,7 @@ import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { NotificationCuteReIcon } from "@/src/icons/notification_cute_re"
 import { PaletteCuteFiIcon } from "@/src/icons/palette_cute_fi"
+import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { SafeLockFilledIcon } from "@/src/icons/safe_lock_filled"
 import { Settings1CuteFiIcon } from "@/src/icons/settings_1_cute_fi"
@@ -31,6 +32,7 @@ import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { InvitationScreen } from "@/src/screens/(modal)/InvitationScreen"
+import { accentColor } from "@/src/theme/colors"
 
 import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
@@ -42,7 +44,9 @@ import { GeneralScreen } from "./routes/General"
 import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
+import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
+import { ReferralScreen } from "./routes/Referral"
 
 interface GroupNavigationLink {
   label: Extract<ParseKeys<"settings">, `titles.${string}`>
@@ -112,6 +116,29 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#EC4899",
     anonymous: false,
     hideIf: (serverConfigs) => !serverConfigs?.INVITATION_ENABLED,
+  },
+]
+
+const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
+  {
+    label: "titles.plan.short",
+    icon: PowerOutlineIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(PlanScreen)
+    },
+    iconBackgroundColor: accentColor,
+    anonymous: false,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+  },
+  {
+    label: "titles.referral.short",
+    icon: LoveCuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(ReferralScreen)
+    },
+    iconBackgroundColor: "#EC4899",
+    anonymous: false,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
   },
 ]
 
@@ -232,6 +259,7 @@ const NavigationLinkGroup: FC<{
 const navigationGroups = [
   SettingGroupNavigationLinks,
   DataGroupNavigationLinks,
+  ReferralGroupNavigationLinks,
   BetaGroupNavigationLinks,
   PrivacyGroupNavigationLinks,
   ActionGroupNavigationLinks,
