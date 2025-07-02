@@ -8,6 +8,8 @@ import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { whoami } from "@follow/store/user/getters"
+import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
@@ -21,7 +23,6 @@ import {
   useEntryIsInReadability,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
-import { useUserRole, whoami } from "~/atoms/user"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"

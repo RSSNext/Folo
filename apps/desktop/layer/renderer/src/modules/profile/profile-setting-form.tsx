@@ -10,6 +10,8 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { useWhoami } from "@follow/store/user/hooks"
+import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -18,7 +20,6 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { setWhoami, useWhoami } from "~/atoms/user"
 import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { updateUser } from "~/lib/auth"
@@ -113,7 +114,7 @@ export const ProfileSettingForm = ({
     },
     onSuccess: (_, variables) => {
       if (user && variables) {
-        setWhoami({ ...user, ...variables })
+        userActions.updateWhoami({ ...variables })
       }
       toast(t("profile.updateSuccess"), {
         duration: 3000,

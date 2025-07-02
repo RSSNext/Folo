@@ -1,7 +1,7 @@
+import { useUserRole } from "@follow/store/user/hooks"
 import { useMemo } from "react"
 
 import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
-import { useUserRole } from "~/atoms/user"
 
 import { getMemoizedSettings } from "../settings-glob"
 import type { SettingPageContext } from "../utils"

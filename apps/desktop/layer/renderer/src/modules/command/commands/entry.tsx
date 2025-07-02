@@ -6,6 +6,7 @@ import { collectionSyncService } from "@follow/store/collection/store"
 import { getEntry } from "@follow/store/entry/getter"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -22,7 +23,6 @@ import {
   toggleShowSourceContent,
   useSourceContentModal,
 } from "~/atoms/source-content"
-import { useUserRole } from "~/atoms/user"
 import { SharePanel } from "~/components/common/SharePanel"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"

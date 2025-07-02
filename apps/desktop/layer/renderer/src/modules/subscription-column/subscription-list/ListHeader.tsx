@@ -6,7 +6,6 @@ import {
 } from "@follow/store/subscription/hooks"
 import { subscriptionActions } from "@follow/store/subscription/store"
 import { usePrefetchUnread, useUnreadByView } from "@follow/store/unread/hooks"
-import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { stopPropagation } from "@follow/utils"
 import { useTranslation } from "react-i18next"
 
@@ -17,7 +16,6 @@ import { SortButton } from "./SortButton"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
   usePrefetchSubscription()
-  usePrefetchSessionUser()
   usePrefetchUnread()
 
   const { t } = useTranslation()
