@@ -1,11 +1,15 @@
 import { nanoid } from "nanoid/non-secure"
-import type { PropsWithChildren, ReactNode } from "react"
-import { createContext, use, useCallback, useMemo, useState } from "react"
-import { View } from "react-native"
-import { useEventCallback } from "usehooks-ts"
+import type { ReactNode } from "react"
+import { cloneElement, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Text, TouchableOpacity, View } from "react-native"
+import RootSiblings from "react-native-root-siblings"
+
+import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 
 import type { BottomModalProps } from "../BottomModal"
 import { BottomModal } from "../BottomModal"
+import { Header, HeaderText, Input } from "./templates"
 
 export type Modal = { id: string; content: ReactNode } & Omit<
   BottomModalProps,
@@ -30,139 +34,110 @@ export type ModalInput = Omit<Modal, "id" | "closeOnBackdropPress"> & {
   abortController?: AbortController
 }
 
-const ModalContext = createContext<{
-  isModalActive: boolean
-  activeModals: Modal[]
-}>({
-  isModalActive: false,
-  activeModals: [],
-})
+export const openModal = (modal: ModalInput) => {
+  const promise = Promise.withResolvers<void>()
+  const abortController = modal.abortController || new AbortController()
 
-const ModalControlContext = createContext<{
-  abortController?: AbortController
-  openModal: (modal: ModalInput) => Promise<void>
-  closeModal: (id?: string) => boolean
-  closeAllModals: () => boolean
-}>({
-  openModal: () => {
-    console.error("useModal must be used within ImperativeModalProvider")
-    return Promise.resolve()
-  },
-  closeModal: () => {
-    console.error("useModal must be used within ImperativeModalProvider")
-    return false
-  },
-  closeAllModals: () => {
-    console.error("useModal must be used within ImperativeModalProvider")
-    return false
-  },
-})
-
-export function ImperativeModalProvider({ children }: PropsWithChildren) {
-  const [activeModals, setActiveModals] = useState<Modal[]>([])
-
-  const openModal = useEventCallback((modal: ModalInput) => {
-    const promise = Promise.withResolvers<void>()
-    const id = modal.id || nanoid()
-
-    const abortController = modal.abortController || new AbortController()
-    abortController.signal.addEventListener("abort", () => {
-      closeModal(id)
-      modal.onClose?.()
-      promise.resolve()
-    })
-
-    setActiveModals((modals) => [
-      ...modals,
-      {
-        id,
-        ...modal,
-        onClose: () => {
-          abortController.abort()
-        },
-      },
-    ])
-
-    return promise.promise
-  })
-
-  const closeModal = useEventCallback((id) => {
-    const wasActive = id ? activeModals.some((modal) => modal.id === id) : activeModals.length > 0
-    setActiveModals((modals) => {
-      if (id) {
-        return modals.filter((modal) => modal.id !== id)
-      }
-      return modals.slice(0, -1)
-    })
-    return wasActive
-  })
-
-  const closeAllModals = useEventCallback(() => {
-    const wasActive = activeModals.length > 0
-    setActiveModals([])
-    return wasActive
-  })
-
-  const state = useMemo(
-    () => ({
-      isModalActive: activeModals.length > 0,
-      activeModals,
-    }),
-    [activeModals],
-  )
-
-  const methods = useMemo(
-    () => ({
-      openModal,
-      closeModal,
-      closeAllModals,
-    }),
-    [openModal, closeModal, closeAllModals],
-  )
-
-  return (
-    <ModalContext value={state}>
-      <ModalControlContext value={methods}>
-        {children}
-        <View>
-          <ImperativeModal />
-        </View>
-      </ModalControlContext>
-    </ModalContext>
-  )
-}
-
-const ImperativeModal = () => {
-  const modals = useModals()
-  const { closeModal } = useModalControls()
-
-  const onClose = useCallback(
-    (id: string) => {
-      closeModal(id)
-    },
-    [closeModal],
-  )
-
-  return modals.activeModals.map((modal) => (
+  const node = (
     <BottomModal
-      key={modal.id}
-      // Always visible when rendered as it's actively shown in the modal stack
+      id={modal.id || nanoid()}
       visible={true}
       {...modal}
       onClose={() => {
+        abortController.abort()
+        siblings.destroy()
         modal.onClose?.()
-        onClose(modal.id)
+        promise.resolve()
       }}
     >
       {modal.content}
     </BottomModal>
-  ))
+  )
+  const siblings = new RootSiblings(node)
+
+  abortController.signal.addEventListener("abort", () => {
+    const newNode = cloneElement(node, {
+      visible: false,
+    })
+    siblings.update(newNode)
+  })
+
+  return promise.promise
 }
 
-export function useModals() {
-  return use(ModalContext)
+const PromptModal = ({
+  defaultValue,
+  title,
+  placeholder,
+  onSave,
+  abortController,
+}: {
+  defaultValue?: string
+  title?: string
+  placeholder?: string
+  onSave: (newCategory: string) => void
+  abortController: AbortController
+}) => {
+  const { t } = useTranslation()
+  const [text, setText] = useState(defaultValue ?? "")
+  return (
+    <View className="flex-1">
+      <Header
+        renderLeft={() => (
+          <HeaderSubmitTextButton
+            label={t("words.cancel", { ns: "common" })}
+            isValid={true}
+            onPress={() => {
+              abortController.abort()
+            }}
+          />
+        )}
+      >
+        <HeaderText>{title}</HeaderText>
+      </Header>
+      <View className="flex flex-1 gap-4 p-4">
+        <Input
+          className="box-border w-full"
+          value={text}
+          onChangeText={setText}
+          placeholder={placeholder}
+        />
+        <TouchableOpacity
+          className="bg-accent w-full rounded-xl px-6 py-3"
+          disabled={text.trim().length === 0}
+          onPress={() => {
+            onSave(text)
+            abortController.abort()
+          }}
+        >
+          <Text className="text-center text-base font-semibold text-white">
+            {t("words.save", { ns: "common" })}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
 }
 
-export function useModalControls() {
-  return use(ModalControlContext)
+export const modalPrompt = (
+  title: string,
+  message: string,
+  callback: (text: string) => void,
+  type?: undefined,
+  defaultValue?: string,
+) => {
+  const abortController = new AbortController()
+  openModal({
+    abortController,
+    closeOnBackdropPress: false,
+    content: (
+      <PromptModal
+        title={title}
+        defaultValue={defaultValue}
+        placeholder={message}
+        abortController={abortController}
+        onSave={callback}
+      />
+    ),
+  })
 }
