@@ -89,18 +89,6 @@ export const EntryItemWrapper: FC<
       e.preventDefault()
       e.stopPropagation()
 
-      const target = e.target as HTMLElement
-      const linkElement = target.closest("a")
-
-      if (linkElement) {
-        const href = linkElement.getAttribute("href")
-        if (!href) return
-
-        if (entry?.id && href.endsWith(entry.id)) return
-        window.open(href, "_blank")
-        return
-      }
-
       const shouldNavigate = getRouteParams().entryId !== entry?.id
 
       if (!shouldNavigate) return
