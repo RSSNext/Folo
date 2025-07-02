@@ -111,6 +111,23 @@ export default defineConfig(
     },
   },
   {
+    files: ["**/*.{js,ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "node:path",
+              message:
+                "For better cross-platform compatibility, please use 'pathe' instead of 'node:path'",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     plugins: {
       // @ts-expect-error
       "react-native": fixupPluginRules(reactNative),
