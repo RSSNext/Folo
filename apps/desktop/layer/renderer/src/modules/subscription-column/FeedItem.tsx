@@ -10,6 +10,11 @@ import {
 } from "@follow/components/ui/tooltip/index.jsx"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import type { FeedViewType } from "@follow/constants"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useInboxById } from "@follow/store/inbox/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
+import { useUnreadById, useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn, isKeyForMultiSelectPressed } from "@follow/utils/utils"
 import { createElement, memo, use, useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -29,11 +34,7 @@ import { getNewIssueUrl } from "~/lib/issues"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
-import { getPreferredTitle, useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
-import { useListById } from "~/store/list"
-import { useSubscriptionByFeedId } from "~/store/subscription"
-import { useUnreadById, useUnreadByListId } from "~/store/unread/hooks"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useSelectedFeedIdsState } from "./atom"
 import { DraggableContext } from "./context"
@@ -81,7 +82,6 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
       image: feed.image,
       siteUrl: feed.siteUrl,
       ownerUserId: feed.ownerUserId,
-      owner: feed.owner,
     }
   })
 

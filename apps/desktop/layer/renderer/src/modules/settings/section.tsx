@@ -5,6 +5,7 @@ import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import { cloneElement } from "react"
 import * as React from "react"
+import { titleCase } from "title-case"
 
 import { SettingActionItem, SettingDescription, SettingSwitch } from "./control"
 
@@ -15,11 +16,11 @@ export const SettingSectionTitle: FC<{
 }> = ({ title, margin }) => (
   <div
     className={cn(
-      "text-text text-headline shrink-0 font-bold capitalize opacity-50 first:mt-0",
+      "text-text text-headline shrink-0 font-bold opacity-50 first:mt-0",
       margin === "compact" ? "mb-2 mt-8" : "mb-4 mt-10",
     )}
   >
-    {title}
+    {typeof title === "string" ? titleCase(title) : title}
   </div>
 )
 

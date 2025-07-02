@@ -1,5 +1,11 @@
+import { getMousePosition } from "@follow/components/hooks/useMouse.js"
 import { FeedViewType, UserRole } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
+import { isEntryStarred } from "@follow/store/collection/getter"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { getEntry } from "@follow/store/entry/getter"
+import { entrySyncServices } from "@follow/store/entry/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -8,6 +14,7 @@ import { toast } from "sonner"
 import { toggleShowAISummaryOnce } from "~/atoms/ai-summary"
 import { toggleShowAITranslationOnce } from "~/atoms/ai-translation"
 import { AudioPlayer, getAudioPlayerAtomValue } from "~/atoms/player"
+import { showPopover } from "~/atoms/popover"
 import { useIsInMASReview } from "~/atoms/server-configs"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import {
@@ -16,16 +23,17 @@ import {
   useSourceContentModal,
 } from "~/atoms/source-content"
 import { useUserRole } from "~/atoms/user"
+import { SharePanel } from "~/components/common/SharePanel"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
+import { copyToClipboard } from "~/lib/clipboard"
 import { parseHtml } from "~/lib/parse-html"
 import { useActivationModal } from "~/modules/activation"
 import { markAllByRoute } from "~/modules/entry-column/hooks/useMarkAll"
 import { useGalleryModal } from "~/modules/entry-content/hooks"
 import { useTipModal } from "~/modules/wallet/hooks"
-import { entryActions, useEntryStore } from "~/store/entry"
 
 import { useRegisterFollowCommand } from "../hooks/use-register-command"
 import type { Command, CommandCategory } from "../types"
@@ -36,8 +44,11 @@ const category: CommandCategory = "category.entry"
 const useCollect = () => {
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: async ({ entryId, view }: { entryId: string; view?: FeedViewType }) =>
-      entryActions.markStar(entryId, true, view),
+    mutationFn: async ({ entryId, view }: { entryId: string; view: FeedViewType }) =>
+      collectionSyncService.starEntry({
+        entryId,
+        view,
+      }),
 
     onSuccess: () => {
       toast.success(t("entry_actions.starred"), {
@@ -50,7 +61,7 @@ const useCollect = () => {
 const useUnCollect = () => {
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: async (entryId: string) => entryActions.markStar(entryId, false),
+    mutationFn: async (entryId: string) => collectionSyncService.unstarEntry(entryId),
 
     onSuccess: () => {
       toast.success(t("entry_actions.unstarred"), {
@@ -64,7 +75,7 @@ const useDeleteInboxEntry = () => {
   const { t } = useTranslation()
   return useMutation({
     mutationFn: async (entryId: string) => {
-      await entryActions.deleteInboxEntry(entryId)
+      await entrySyncServices.deleteInboxEntry(entryId)
     },
     onSuccess: () => {
       toast.success(t("entry_actions.deleted"))
@@ -77,22 +88,14 @@ const useDeleteInboxEntry = () => {
 
 export const useRead = () =>
   useMutation({
-    mutationFn: async ({ feedId, entryId }: { feedId: string; entryId: string }) =>
-      entryActions.markRead({
-        feedId,
-        entryId,
-        read: true,
-      }),
+    mutationFn: async ({ entryId }: { entryId: string }) =>
+      unreadSyncService.markEntryAsRead(entryId),
   })
 
 export const useUnread = () =>
   useMutation({
-    mutationFn: async ({ feedId, entryId }: { feedId: string; entryId: string }) =>
-      entryActions.markRead({
-        feedId,
-        entryId,
-        read: false,
-      }),
+    mutationFn: async ({ entryId }: { entryId: string }) =>
+      unreadSyncService.markEntryAsUnread(entryId),
   })
 
 export const useRegisterEntryCommands = () => {
@@ -144,14 +147,15 @@ export const useRegisterEntryCommands = () => {
           />
         ),
         run: ({ entryId, view }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
+          const isStarred = isEntryStarred(entryId)
           if (!entry) {
             toast.error("Failed to star: entry is not available", { duration: 3000 })
             return
           }
 
-          if (entry.collections) {
-            uncollect.mutate(entry.entries.id)
+          if (isStarred) {
+            uncollect.mutate(entry.id)
           } else {
             collect.mutate({ entryId, view })
           }
@@ -163,12 +167,12 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-delete-2-cute-re" />,
         category,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
           if (!entry) {
             toast.error("Failed to delete: entry is not available", { duration: 3000 })
             return
           }
-          deleteInboxEntry.mutate(entry.entries.id)
+          deleteInboxEntry.mutate(entry.id)
         },
       },
       {
@@ -177,13 +181,13 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-link-cute-re" />,
         category,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
           if (!entry) {
             toast.error("Failed to copy link: entry is not available", { duration: 3000 })
             return
           }
-          if (!entry.entries.url) return
-          navigator.clipboard.writeText(entry.entries.url)
+          if (!entry.url) return
+          copyToClipboard(entry.url)
           toast(t("entry_actions.copied_notify", { which: t("words.link") }), {
             duration: 1000,
           })
@@ -195,7 +199,7 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-pdf-cute-re" />,
         category,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
 
           if (!entry) {
             toast.error("Failed to export as pdf: entry is not available", { duration: 3000 })
@@ -211,13 +215,13 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-copy-cute-re" />,
         category,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
           if (!entry) {
             toast.error("Failed to copy link: entry is not available", { duration: 3000 })
             return
           }
-          if (!entry.entries.title) return
-          navigator.clipboard.writeText(entry.entries.title)
+          if (!entry.title) return
+          copyToClipboard(entry.title)
           toast(t("entry_actions.copied_notify", { which: t("words.title") }), {
             duration: 1000,
           })
@@ -231,23 +235,26 @@ export const useRegisterEntryCommands = () => {
         category,
         icon: <i className="i-mgc-world-2-cute-re" />,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
-          if (!entry || !entry.entries.url) {
+          const entry = getEntry(entryId)
+          if (!entry || !entry.url) {
             toast.error("Failed to open in browser: url is not available", { duration: 3000 })
             return
           }
-          window.open(entry.entries.url, "_blank")
+          window.open(entry.url, "_blank")
         },
       },
       {
         id: COMMAND_ID.entry.viewSourceContent,
-        label: t("entry_actions.view_source_content"),
+        label: {
+          title: t("entry_actions.view_source_content"),
+          description: t("entry_actions.view_source_content_description"),
+        },
         icon: <i className="i-mgc-web-cute-re" />,
         category,
         run: ({ entryId, siteUrl }) => {
           if (!getShowSourceContent()) {
-            const entry = useEntryStore.getState().flatMapEntries[entryId]
-            if (!entry || !entry.entries.url) {
+            const entry = getEntry(entryId)
+            if (!entry || !entry.url) {
               toast.error("Failed to view source content: url is not available", { duration: 3000 })
               return
             }
@@ -259,14 +266,14 @@ export const useRegisterEntryCommands = () => {
             ].includes(routeParams.view)
             if (viewPreviewInModal) {
               showSourceContentModal({
-                title: entry.entries.title ?? undefined,
-                src: siteUrl ? resolveUrlWithBase(entry?.entries.url, siteUrl) : entry?.entries.url,
+                title: entry.title ?? undefined,
+                src: siteUrl ? resolveUrlWithBase(entry.url, siteUrl) : entry.url,
               })
               return
             }
             const layoutEntryId = routeParams.entryId
-            if (layoutEntryId !== entry.entries.id) {
-              navigateEntry({ entryId: entry.entries.id })
+            if (layoutEntryId !== entry.id) {
+              navigateEntry({ entryId: entry.id })
             }
           }
           toggleShowSourceContent()
@@ -278,24 +285,20 @@ export const useRegisterEntryCommands = () => {
         icon: <i className="i-mgc-share-forward-cute-re" />,
         category,
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
-          if (!entry || !entry.entries.url) {
+          const entry = getEntry(entryId)
+          if (!entry || !entry.url) {
             toast.error("Failed to share: url is not available", { duration: 3000 })
             return
           }
-          if (!entry.entries.url) return
 
-          if (IN_ELECTRON) {
-            return tipcClient?.showShareMenu(entry.entries.url)
-          } else {
-            const { title, description } = entry.entries
-            navigator.share({
-              title: title || undefined,
-              text: description || undefined,
-              url: entry.entries.url,
-            })
-          }
-          return
+          const xy = getMousePosition()
+          showPopover(
+            {
+              x: xy.x,
+              y: xy.y + 20,
+            },
+            <SharePanel entryId={entry.id} />,
+          )
         },
       },
       {
@@ -303,7 +306,7 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_actions.mark_above_as_read"),
         category,
         run: ({ publishedAt }: { publishedAt: string }) => {
-          return markAllByRoute({
+          return markAllByRoute(getRouteParams(), {
             startTime: new Date(publishedAt).getTime() + 1,
             endTime: Date.now(),
           })
@@ -317,15 +320,15 @@ export const useRegisterEntryCommands = () => {
           <i className={cn(props?.isActive ? "i-mgc-round-cute-re" : "i-mgc-round-cute-fi")} />
         ),
         run: ({ entryId }) => {
-          const entry = useEntryStore.getState().flatMapEntries[entryId]
+          const entry = getEntry(entryId)
           if (!entry) {
             toast.error("Failed to mark as unread: feed is not available", { duration: 3000 })
             return
           }
           if (entry.read) {
-            unread.mutate({ entryId, feedId: entry.feedId })
+            unread.mutate({ entryId })
           } else {
-            read.mutate({ entryId, feedId: entry.feedId })
+            read.mutate({ entryId })
           }
         },
       },
@@ -334,7 +337,7 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_actions.mark_below_as_read"),
         category,
         run: ({ publishedAt }: { publishedAt: string }) => {
-          return markAllByRoute({
+          return markAllByRoute(getRouteParams(), {
             startTime: 1,
             endTime: new Date(publishedAt).getTime() - 1,
           })
@@ -342,7 +345,10 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.imageGallery,
-        label: t("entry_actions.image_gallery"),
+        label: {
+          title: t("entry_actions.image_gallery"),
+          description: t("entry_actions.image_gallery_description"),
+        },
         icon: <i className="i-mgc-pic-cute-fi" />,
         category,
         run: ({ entryId }) => {
@@ -351,14 +357,21 @@ export const useRegisterEntryCommands = () => {
       },
       {
         id: COMMAND_ID.entry.tts,
-        label: t("entry_content.header.play_tts"),
+        label: {
+          title: t("entry_content.header.play_tts"),
+          description: t("entry_content.header.play_tts_description"),
+        },
         category,
         icon: <i className="i-mgc-voice-cute-re" />,
-        run: async ({ entryId, entryContent }) => {
+        run: async ({ entryId }) => {
           if (getAudioPlayerAtomValue().entryId === entryId) {
             AudioPlayer.togglePlayAndPause()
           } else {
-            const filePath = await tipcClient?.tts({
+            const entryContent = getEntry(entryId)?.content
+            if (!entryContent) {
+              return
+            }
+            const filePath = await ipcServices?.reader.tts({
               id: entryId,
               text: parseHtml(entryContent).toText(),
               voice,
@@ -439,7 +452,7 @@ export type TipCommand = Command<{
 
 export type StarCommand = Command<{
   id: typeof COMMAND_ID.entry.star
-  fn: (data: { entryId: string; view?: FeedViewType }) => void
+  fn: (data: { entryId: string; view: FeedViewType }) => void
 }>
 
 export type DeleteCommand = Command<{
@@ -509,7 +522,7 @@ export type ImageGalleryCommand = Command<{
 
 export type TTSCommand = Command<{
   id: typeof COMMAND_ID.entry.tts
-  fn: (data: { entryId: string; entryContent: string }) => void
+  fn: (data: { entryId: string }) => void
 }>
 
 export type ReadabilityCommand = Command<{

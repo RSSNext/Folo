@@ -1,13 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
+import { usePrefetchUser } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
-import { useAuthQuery } from "~/hooks/common"
-import { defineQuery } from "~/lib/defineQuery"
+import { useWhoami } from "~/atoms/user"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"
-import { userActions } from "~/store/user"
 
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
@@ -30,25 +29,19 @@ export const UserAvatar = ({
   enableModal?: boolean
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
-  const { session, status } = useSession({
+  const { status } = useSession({
     enabled: !userId,
   })
+  const whoami = useWhoami()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
-  const profile = useAuthQuery(
-    defineQuery(["profiles", userId], async () => {
-      return userActions.getOrFetchProfile(userId!)
-    }),
-    {
-      enabled: !!userId,
-    },
-  )
+  const profile = usePrefetchUser(userId)
 
   if (!userId && status !== "authenticated") {
     return <LoginButton {...props} />
   }
 
-  const renderUserData = userId ? profile.data : session?.user
+  const renderUserData = userId ? profile.data : whoami
   const randomColor = stringToHue(renderUserData?.name || "")
   return (
     <div
@@ -83,7 +76,7 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {!hideName && <div>{renderUserData?.name}</div>}
+      {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}
     </div>
   )
 }

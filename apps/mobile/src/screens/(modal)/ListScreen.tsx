@@ -1,10 +1,9 @@
 import { useActionSheet } from "@expo/react-native-action-sheet"
 import { FeedViewType } from "@follow/constants"
-import { getList } from "@follow/store/list/getters"
-import { useList } from "@follow/store/list/hooks"
-import type { ListModel } from "@follow/store/list/store"
+import { getListById } from "@follow/store/list/getters"
+import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
-import type { CreateListModel } from "@follow/store/list/types"
+import type { CreateListModel, ListModel } from "@follow/store/list/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -58,7 +57,7 @@ export const ListScreen: NavigationControllerView<{
   listId?: string
 }> = ({ listId }) => {
   const { t } = useTranslation("settings")
-  const list = useList(listId || "")
+  const list = useListById(listId || "")
   const form = useForm({
     defaultValues: list || defaultValues,
     resolver: zodResolver(listSchema),
@@ -184,7 +183,7 @@ export const ListScreen: NavigationControllerView<{
                   },
                   async (index) => {
                     if (index === 0) {
-                      await listSyncServices.deleteList({ listId: listId! })
+                      await listSyncServices.deleteList(listId)
                       navigation.dismiss()
                     }
                   },
@@ -244,7 +243,7 @@ const ScreenOptions = memo(({ title, listId }: ScreenOptionsProps) => {
                   })
                 return
               }
-              const list = getList(listId!)
+              const list = getListById(listId!)
               if (!list) return
               setIsLoading(true)
               listSyncServices

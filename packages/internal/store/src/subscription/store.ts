@@ -1,37 +1,39 @@
 import { FeedViewType } from "@follow/constants"
-import type { SubscriptionSchema } from "@follow/database/schemas/types"
 import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
+import { omit } from "es-toolkit"
 
+import { apiClient } from "../context"
+import { invalidateEntriesQuery } from "../entry/hooks"
+import { getFeedById } from "../feed/getter"
 import { feedActions } from "../feed/store"
 import { inboxActions } from "../inbox/store"
-import type { Hydratable } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { getListById } from "../list/getters"
 import { listActions } from "../list/store"
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
 import { buildSubscriptionDbId, storeDbMorph } from "../morph/store-db"
 import { whoami } from "../user/getters"
-import type { SubscriptionForm } from "./types"
-import { getInboxStoreId, getSubscriptionStoreId } from "./utils"
+import { getCategoryFeedIds } from "./getter"
+import type { SubscriptionForm, SubscriptionModel } from "./types"
+import { getDefaultCategory, getInboxStoreId, getSubscriptionStoreId } from "./utils"
 
 type FeedId = string
 type ListId = string
-type InboxId = string
-export type SubscriptionModel = Omit<SubscriptionSchema, "id">
 
-interface SubscriptionState {
+export interface SubscriptionState {
   /**
-   * Key: feedId
+   * Key: FeedId, ListId, `inbox/${inboxId}`
    * Value: SubscriptionPlainModel
    */
-  data: Record<FeedId, SubscriptionModel>
+  data: Record<string, SubscriptionModel>
 
   feedIdByView: Record<FeedViewType, Set<FeedId>>
 
   listIdByView: Record<FeedViewType, Set<ListId>>
 
-  inboxIdByView: Record<FeedViewType, Set<InboxId>>
   /**
    * All named categories names set
    */
@@ -40,6 +42,8 @@ interface SubscriptionState {
    * All subscription ids set
    */
   subscriptionIdSet: Set<string>
+
+  categoryOpenStateByView: Record<FeedViewType, Record<string, boolean>>
 }
 
 const emptyDataSetByView: Record<FeedViewType, Set<FeedId>> = {
@@ -50,13 +54,22 @@ const emptyDataSetByView: Record<FeedViewType, Set<FeedId>> = {
   [FeedViewType.SocialMedia]: new Set(),
   [FeedViewType.Videos]: new Set(),
 }
+const emptyCategoryOpenStateByView: Record<FeedViewType, Record<string, boolean>> = {
+  [FeedViewType.Articles]: {},
+  [FeedViewType.Audios]: {},
+  [FeedViewType.Notifications]: {},
+  [FeedViewType.Pictures]: {},
+  [FeedViewType.SocialMedia]: {},
+  [FeedViewType.Videos]: {},
+}
+
 const defaultState: SubscriptionState = {
   data: {},
   feedIdByView: { ...emptyDataSetByView },
   listIdByView: { ...emptyDataSetByView },
-  inboxIdByView: { ...emptyDataSetByView },
   categories: { ...emptyDataSetByView },
   subscriptionIdSet: new Set(),
+  categoryOpenStateByView: { ...emptyCategoryOpenStateByView },
 }
 export const useSubscriptionStore = createZustandStore<SubscriptionState>("subscription")(
   () => defaultState,
@@ -65,7 +78,7 @@ export const useSubscriptionStore = createZustandStore<SubscriptionState>("subsc
 const get = useSubscriptionStore.getState
 
 const immerSet = createImmerSetter(useSubscriptionStore)
-class SubscriptionActions implements Hydratable {
+class SubscriptionActions implements Hydratable, Resetable {
   async hydrate() {
     const subscriptions = await SubscriptionService.getSubscriptionAll()
     subscriptionActions.upsertManyInSession(
@@ -92,7 +105,6 @@ class SubscriptionActions implements Hydratable {
         if (subscription.inboxId && subscription.type === "inbox") {
           draft.data[getInboxStoreId(subscription.inboxId)] = subscription
           draft.subscriptionIdSet.add(`${subscription.type}/${subscription.inboxId}`)
-          draft.inboxIdByView[subscription.view as FeedViewType].add(subscription.inboxId)
         }
       }
     })
@@ -126,22 +138,51 @@ class SubscriptionActions implements Hydratable {
     immerSet((draft) => {
       draft.feedIdByView[view] = new Set()
       draft.listIdByView[view] = new Set()
-      draft.inboxIdByView[view] = new Set()
       draft.categories[view] = new Set()
       draft.subscriptionIdSet = new Set()
     })
   }
 
-  reset() {
-    immerSet((draft) => {
-      Object.assign(draft, defaultState)
+  toggleCategoryOpenState(view: FeedViewType, category: string) {
+    immerSet((state) => {
+      state.categoryOpenStateByView[view][category] = !state.categoryOpenStateByView[view][category]
     })
+  }
+
+  changeCategoryOpenState(view: FeedViewType, category: string, status: boolean) {
+    immerSet((state) => {
+      state.categoryOpenStateByView[view][category] = status
+    })
+  }
+
+  expandCategoryOpenStateByView(view: FeedViewType, isOpen: boolean) {
+    immerSet((state) => {
+      for (const category in state.categoryOpenStateByView[view]) {
+        state.categoryOpenStateByView[view][category] = isOpen
+      }
+    })
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      // set(defaultState)
+      immerSet((draft) => {
+        Object.assign(draft, omit(defaultState, ["categoryOpenStateByView"]))
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.reset()
+    })
+
+    await tx.run()
   }
 }
 
 class SubscriptionSyncService {
   async fetch(view?: FeedViewType) {
-    const res = await apiClient.subscriptions.$get({
+    const res = await apiClient().subscriptions.$get({
       query: {
         view: view !== undefined ? String(view) : undefined,
       },
@@ -210,7 +251,7 @@ class SubscriptionSyncService {
       })
     })
     tx.request(async () => {
-      await apiClient.subscriptions.$patch({
+      await apiClient().subscriptions.$patch({
         json: {
           view: subscription.view,
           feedId: subscription.feedId ?? undefined,
@@ -230,7 +271,7 @@ class SubscriptionSyncService {
   }
 
   async subscribe(subscription: SubscriptionForm) {
-    const data = await apiClient.subscriptions.$post({
+    const data = await apiClient().subscriptions.$post({
       json: {
         url: subscription.url,
         view: subscription.view,
@@ -251,6 +292,9 @@ class SubscriptionSyncService {
         {
           ...data.list,
           userId: data.list.ownerUserId,
+          type: "list",
+          subscriptionCount: null,
+          purchaseAmount: null,
         },
       ])
       tracker.subscribe({ listId: data.list.id, view: subscription.view })
@@ -272,54 +316,346 @@ class SubscriptionSyncService {
     ])
   }
 
-  async unsubscribe(subscriptionId: string) {
-    const subscription = get().data[subscriptionId]
+  async unsubscribe(id: string | undefined | null | (string | undefined | null)[]) {
+    const normalizedIds = (Array.isArray(id) ? id : [id]).filter((i) => typeof i === "string")
+    const subscriptionList = normalizedIds.map((id) => get().data[id]).filter((i) => !!i)
+    const feedsAndLists = normalizedIds
+      .map((id) => getFeedById(id) ?? getListById(id))
+      .filter((i) => !!i)
+    if (subscriptionList.length === 0) return feedsAndLists
 
-    if (!subscription) return
+    const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed")
+    const listSubscriptions = subscriptionList.filter((i) => i.type === "list")
 
-    const tx = createTransaction(subscription)
+    const tx = createTransaction(subscriptionList)
 
     tx.store(() => {
       immerSet((draft) => {
-        delete draft.data[subscriptionId]
-        draft.subscriptionIdSet.delete(getSubscriptionStoreId(subscription))
-        if (subscription.feedId)
-          draft.feedIdByView[subscription.view as FeedViewType].delete(subscription.feedId)
-        if (subscription.listId)
-          draft.listIdByView[subscription.view as FeedViewType].delete(subscription.listId)
-        if (subscription.inboxId)
-          draft.inboxIdByView[subscription.view as FeedViewType].delete(subscription.inboxId)
-        if (subscription.category)
-          draft.categories[subscription.view as FeedViewType].delete(subscription.category)
+        for (const id of normalizedIds) {
+          delete draft.data[id]
+          const subscription = draft.data[id]
+          if (!subscription) continue
+          draft.subscriptionIdSet.delete(getSubscriptionStoreId(subscription))
+          if (subscription.feedId) draft.feedIdByView[subscription.view].delete(subscription.feedId)
+          if (subscription.listId) draft.listIdByView[subscription.view].delete(subscription.listId)
+          if (subscription.category)
+            draft.categories[subscription.view].delete(subscription.category)
+        }
       })
     })
 
-    tx.persist(() => {
-      return SubscriptionService.delete(buildSubscriptionDbId(subscription))
-    })
-
     tx.request(async () => {
-      await apiClient.subscriptions.$delete({
+      const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
+      await apiClient().subscriptions.$delete({
         json: {
-          feedId: subscription.feedId ?? undefined,
-          listId: subscription.listId ?? undefined,
+          feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
+          listId: listSubscriptions.at(0)?.listId || undefined,
         },
       })
     })
 
     tx.rollback((current) => {
       immerSet((draft) => {
-        draft.data[subscriptionId] = current
+        for (const [index, id] of normalizedIds.entries()) {
+          const subscription = current[index]
+          if (!subscription) continue
 
-        draft.subscriptionIdSet.add(`${subscription.type}/${subscription.feedId}`)
-        if (subscription.feedId)
-          draft.feedIdByView[subscription.view as FeedViewType].add(subscription.feedId)
-        if (subscription.listId)
-          draft.listIdByView[subscription.view as FeedViewType].add(subscription.listId)
-        if (subscription.inboxId)
-          draft.inboxIdByView[subscription.view as FeedViewType].add(subscription.inboxId)
-        if (subscription.category)
-          draft.categories[subscription.view as FeedViewType].add(subscription.category)
+          draft.data[id] = subscription
+
+          draft.subscriptionIdSet.add(`${subscription.type}/${subscription.feedId}`)
+          if (subscription.feedId) draft.feedIdByView[subscription.view].add(subscription.feedId)
+          if (subscription.listId) draft.listIdByView[subscription.view].add(subscription.listId)
+          if (subscription.category) draft.categories[subscription.view].add(subscription.category)
+        }
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.delete(subscriptionList.map((i) => buildSubscriptionDbId(i)))
+    })
+
+    await tx.run()
+    return feedsAndLists
+  }
+
+  async batchUpdateSubscription({
+    feedIds,
+    category: newCategory,
+    view: newView,
+  }: {
+    feedIds: string[]
+    category?: string | null
+    view: FeedViewType
+  }) {
+    const current = feedIds
+      .map((id) => get().data[id])
+      .map((i) =>
+        i
+          ? {
+              view: i.view,
+              category: i.category,
+            }
+          : null,
+      )
+
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet((draft) => {
+        for (const feedId of feedIds) {
+          const subscription = draft.data[feedId]
+          if (!subscription) continue
+
+          const currentView = subscription.view
+          draft.feedIdByView[currentView].delete(feedId)
+          draft.feedIdByView[newView].add(feedId)
+          subscription.view = newView
+
+          if (newCategory) {
+            const currentCategory = subscription.category
+            if (currentCategory) {
+              draft.categories[newView].delete(currentCategory)
+            }
+            draft.categories[newView].add(newCategory)
+            subscription.category = newCategory
+          }
+        }
+      })
+    })
+
+    tx.request(async () => {
+      await apiClient().subscriptions.batch.$patch({
+        json: {
+          feedIds,
+          category: newCategory,
+          view: newView,
+        },
+      })
+    })
+
+    tx.rollback(() => {
+      immerSet((draft) => {
+        for (const [index, feedId] of feedIds.entries()) {
+          const subscription = draft.data[feedId]
+          if (!subscription) continue
+          if (!current[index]) continue
+
+          subscription.view = current[index].view
+          draft.feedIdByView[newView].delete(feedId)
+          draft.feedIdByView[current[index].view].add(feedId)
+
+          if (newCategory) {
+            const currentCategory = current[index].category
+            draft.categories[newView].delete(newCategory)
+            if (currentCategory) {
+              draft.categories[current[index].view].add(currentCategory)
+            }
+            subscription.category = currentCategory
+          }
+        }
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.patchMany({
+        feedIds,
+        data: {
+          view: newView,
+          category: newCategory,
+        },
+      })
+    })
+
+    await tx.run()
+  }
+
+  async changeListView({ listId, view }: { listId: string; view: FeedViewType }) {
+    const current = get().data[listId]
+    if (!current) {
+      return
+    }
+
+    const currentView = current.view
+    const newView = view
+
+    const tx = createTransaction(current)
+    tx.store(() => {
+      immerSet((draft) => {
+        if (!draft.data[listId]) {
+          return
+        }
+
+        draft.data[listId].view = newView
+        draft.listIdByView[currentView].delete(listId)
+        draft.listIdByView[newView].add(listId)
+      })
+    })
+
+    tx.request(async () => {
+      await apiClient().subscriptions.$patch({
+        json: {
+          view,
+          listId,
+        },
+      })
+    })
+
+    tx.rollback((current) => {
+      immerSet((draft) => {
+        if (!draft.data[listId]) {
+          return
+        }
+
+        draft.data[listId].view = current.view
+        draft.listIdByView[newView].delete(listId)
+        draft.listIdByView[currentView].add(listId)
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.patch(
+        storeDbMorph.toSubscriptionSchema({
+          ...current,
+          view,
+        }),
+      )
+    })
+
+    await tx.run()
+  }
+
+  async deleteCategory({ category, view }: { category: string; view: FeedViewType }) {
+    const feedIds = getCategoryFeedIds(category, view)
+
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet((draft) => {
+        for (const feedId of feedIds) {
+          const subscription = draft.data[feedId]
+          if (!subscription) continue
+          subscription.category = null
+        }
+        draft.categories[view].delete(category)
+      })
+    })
+
+    tx.request(async () => {
+      await apiClient().categories.$delete({
+        json: {
+          feedIdList: feedIds,
+          deleteSubscriptions: false,
+        },
+      })
+    })
+
+    tx.rollback(() => {
+      immerSet((draft) => {
+        for (const feedId of feedIds) {
+          const subscription = draft.data[feedId]
+          if (!subscription) continue
+          subscription.category = category
+        }
+
+        draft.categories[view].add(category)
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.patchMany({
+        feedIds,
+        data: {
+          category: null,
+        },
+      })
+    })
+
+    await tx.run()
+  }
+
+  async changeCategoryView({
+    category,
+    currentView,
+    newView,
+  }: {
+    category: string
+    currentView: FeedViewType
+    newView: FeedViewType
+  }) {
+    const folderFeedIds = getCategoryFeedIds(category, currentView)
+
+    await this.batchUpdateSubscription({
+      feedIds: folderFeedIds,
+      view: newView,
+    })
+
+    invalidateEntriesQuery({
+      views: [currentView, newView],
+    })
+  }
+
+  async renameCategory({
+    lastCategory,
+    newCategory,
+    view,
+  }: {
+    lastCategory: string
+    newCategory: string
+    view: FeedViewType
+  }) {
+    const feedIds = getCategoryFeedIds(lastCategory, view)
+
+    const tx = createTransaction()
+    tx.store(() => {
+      immerSet((draft) => {
+        for (const id of feedIds) {
+          const subscription = draft.data[id]
+          if (!subscription) continue
+          subscription.category = newCategory
+        }
+        draft.categories[view].add(newCategory)
+        draft.categories[view].delete(lastCategory)
+
+        const lastCategoryOpenState = draft.categoryOpenStateByView[view][lastCategory]
+        if (typeof lastCategoryOpenState === "boolean") {
+          draft.categoryOpenStateByView[view][newCategory] = lastCategoryOpenState
+          delete draft.categoryOpenStateByView[view][lastCategory]
+        }
+      })
+    })
+
+    tx.request(async () => {
+      await apiClient().categories.$patch({
+        json: {
+          feedIdList: feedIds,
+          category: newCategory,
+        },
+      })
+    })
+
+    tx.rollback(() => {
+      immerSet((draft) => {
+        for (const id of feedIds) {
+          const subscription = draft.data[id]
+          if (!subscription) continue
+          const defaultCategory = getDefaultCategory(subscription)
+          subscription.category = lastCategory !== defaultCategory ? lastCategory : null
+        }
+        draft.categories[view].delete(newCategory)
+        draft.categories[view].add(lastCategory)
+
+        const lastCategoryOpenState = draft.categoryOpenStateByView[view][newCategory]
+        if (typeof lastCategoryOpenState === "boolean") {
+          draft.categoryOpenStateByView[view][lastCategory] = lastCategoryOpenState
+          delete draft.categoryOpenStateByView[view][newCategory]
+        }
+      })
+    })
+
+    tx.persist(() => {
+      return SubscriptionService.patchMany({
+        feedIds,
+        data: {
+          category: newCategory,
+        },
       })
     })
 

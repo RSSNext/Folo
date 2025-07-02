@@ -26,8 +26,8 @@ const AvatarContainer = React.memo(({ children, zIndex, transition, translate }:
       >
         <motion.div
           variants={{
-            initial: { translateY: 0 },
-            hover: { translateY: translate },
+            initial: { y: 0 },
+            hover: { y: translate },
           }}
           transition={transition}
         >
@@ -49,7 +49,7 @@ function AvatarGroup({
   children,
   className,
   transition = Spring.presets.smooth,
-  translate = "-30%",
+  translate = "-10%",
 
   ...props
 }: AvatarGroupProps) {

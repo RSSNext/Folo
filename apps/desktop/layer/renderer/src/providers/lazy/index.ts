@@ -10,6 +10,11 @@ const LazyContextMenuProvider = lazy(() =>
     default: res.ContextMenuProvider,
   })),
 )
+const LazyPopoverProvider = lazy(() =>
+  import("./../popover-provider").then((res) => ({
+    default: res.PopoverProvider,
+  })),
+)
 
 const LazyExtensionExposeProvider = lazy(() =>
   import("./../extension-expose-provider").then((res) => ({
@@ -47,6 +52,7 @@ export {
   LazyContextMenuProvider,
   LazyExtensionExposeProvider,
   LazyLottieRenderContainer,
+  LazyPopoverProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,
 }

@@ -1,5 +1,11 @@
 # What's new in vNEXT_VERSION
 
+## Shiny new things
+
+## Improvements
+
 ## No longer broken
 
-Performance: Fix context menu re-render loop.
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions

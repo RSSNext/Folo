@@ -2,7 +2,9 @@ import { UserRole } from "@follow/constants"
 import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthSession } from "@follow/shared/hono"
+import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
+import { apiClient, authClient } from "../context"
 import type { Hydratable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { honoMorph } from "../morph/hono"
@@ -30,8 +32,36 @@ const get = useUserStore.getState
 const immerSet = createImmerSetter(useUserStore)
 
 class UserSyncService {
+  private userBatcher = create({
+    fetcher: async (userIds: string[]) => {
+      const res = await apiClient().profiles.batch.$post({
+        json: { ids: userIds },
+      })
+
+      if (res.code === 0) {
+        const { whoami } = get()
+        const usersObject = res.data
+        const usersArray = Object.values(usersObject)
+
+        immerSet((state) => {
+          for (const user of usersArray) {
+            state.users[user.id] = {
+              email: null,
+              isMe: whoami?.id === user.id,
+              ...user,
+            }
+          }
+        })
+        return usersObject
+      }
+      return {}
+    },
+    resolver: indexedResolver(),
+    scheduler: windowScheduler(100),
+  })
+
   async whoami() {
-    const res = (await (apiClient["better-auth"] as any)[
+    const res = (await (apiClient()["better-auth"] as any)[
       "get-session"
     ].$get()) as AuthSession | null
     if (res) {
@@ -61,7 +91,7 @@ class UserSyncService {
     })
 
     tx.request(async () => {
-      await authClient.updateUser({
+      await authClient().updateUser({
         ...data,
       })
     })
@@ -86,7 +116,7 @@ class UserSyncService {
   async sendVerificationEmail() {
     const me = get().whoami
     if (!me?.email) return
-    await authClient.sendVerificationEmail({ email: me.email! })
+    await authClient().sendVerificationEmail({ email: me.email! })
   }
 
   async updateTwoFactor(enabled: boolean, password: string) {
@@ -95,8 +125,8 @@ class UserSyncService {
     if (!me) throw new Error("user not login")
 
     const res = enabled
-      ? await authClient.twoFactor.enable({ password })
-      : await authClient.twoFactor.disable({ password })
+      ? await authClient().twoFactor.enable({ password })
+      : await authClient().twoFactor.disable({ password })
 
     if (!res.error) {
       immerSet((state) => {
@@ -123,7 +153,7 @@ class UserSyncService {
     tx.request(async () => {
       const { whoami } = get()
       if (!whoami) return
-      await authClient.changeEmail({ newEmail: email })
+      await authClient().changeEmail({ newEmail: email })
     })
     tx.rollback(() => {
       immerSet((state) => {
@@ -140,7 +170,7 @@ class UserSyncService {
   }
 
   async applyInvitationCode(code: string) {
-    const res = await apiClient.invitations.use.$post({ json: { code } })
+    const res = await apiClient().invitations.use.$post({ json: { code } })
     if (res.code === 0) {
       immerSet((state) => {
         state.role = UserRole.User
@@ -150,20 +180,20 @@ class UserSyncService {
     return res
   }
 
-  async fetchUser(userId: string) {
-    const res = await apiClient.profiles.$get({ query: { id: userId } })
-    if (res.code === 0) {
-      const { whoami } = get()
-      immerSet((state) => {
-        state.users[userId] = {
-          email: null,
-          isMe: whoami?.id === userId,
-          ...res.data,
-        }
-      })
-    }
+  async fetchUser(userId: string | undefined) {
+    if (!userId) return null
 
-    return res.data
+    // 使用批处理器获取用户
+    const user = await this.userBatcher.fetch(userId)
+    return user || null
+  }
+
+  async fetchUsers(userIds: string[]) {
+    const validUserIds = userIds.filter(Boolean)
+    if (validUserIds.length === 0) return []
+
+    const users = await Promise.all(validUserIds.map((id) => this.userBatcher.fetch(id)))
+    return users.filter(Boolean)
   }
 }
 

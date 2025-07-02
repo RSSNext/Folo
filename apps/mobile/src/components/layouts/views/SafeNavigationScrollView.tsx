@@ -1,4 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { cn } from "@follow/utils"
 import { useSetAtom, useStore } from "jotai"
 import type { PropsWithChildren } from "react"
 import { use, useImperativeHandle, useLayoutEffect, useRef, useState } from "react"
@@ -114,6 +115,7 @@ export const SafeNavigationScrollView = ({
           onContentSizeChange={useTypeScriptHappyCallback(
             (w, h) => {
               screenCtxValue.scrollViewContentHeight.value = h
+              checkScrollToBottom()
             },
             [screenCtxValue.scrollViewContentHeight],
           )}
@@ -133,7 +135,7 @@ export const SafeNavigationScrollView = ({
           {...props}
         >
           <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
-          <View style={contentViewStyle} className={contentViewClassName}>
+          <View style={contentViewStyle} className={cn("flex-1", contentViewClassName)}>
             {children}
           </View>
           {ScrollViewBottom}

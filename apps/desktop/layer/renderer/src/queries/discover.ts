@@ -39,9 +39,13 @@ export const discover = {
       })
       return res.data
     }),
-  rsshubAnalytics: () =>
-    defineQuery(["discover", "rsshub", "analytics"], async () => {
-      const res = await apiClient.discover["rsshub-analytics"].$get()
+  rsshubAnalytics: ({ lang }: { lang?: string }) =>
+    defineQuery(["discover", "rsshub", "analytics", lang], async () => {
+      const res = await apiClient.discover["rsshub-analytics"].$get({
+        query: {
+          ...(lang !== "all" && { lang }),
+        },
+      })
       return res.data
     }),
 }

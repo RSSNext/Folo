@@ -1,9 +1,10 @@
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
@@ -53,6 +54,7 @@ export function Trending({
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const lang = useUISettingKey("discoverLanguage")
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const [selectedView, setSelectedView] = useState<View>("all")
 
@@ -69,9 +71,21 @@ export function Trending({
     },
   })
 
+  useEffect(() => {
+    if (!isLoading) {
+      onUpdateMaxScroll?.()
+    }
+  }, [isLoading])
+
   return (
-    <div className={cn("mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
-      <div className={cn("flex justify-between", narrow && "flex-col gap-4")}>
+    <div className={cn("mx-auto mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>
+      <div
+        className={cn(
+          "justify-between md:flex",
+          "grid grid-cols-1 grid-rows-2",
+          narrow && "flex-col gap-4",
+        )}
+      >
         <div
           className={cn(
             "flex w-full items-center gap-2 text-xl font-bold",
@@ -81,9 +95,10 @@ export function Trending({
           <i className="i-mgc-trending-up-cute-re text-xl" />
           <span>{t("words.trending")}</span>
         </div>
-        <div className={cn("flex gap-4", center && "center")}>
+        <div className={cn("flex gap-4", center && "md:center justify-end")}>
           <div className="flex items-center">
             <span className="text-text shrink-0 text-sm font-medium">{t("words.language")}:</span>
+
             <ResponsiveSelect
               value={lang}
               onValueChange={(value) => {
@@ -92,7 +107,8 @@ export function Trending({
               triggerClassName="h-8 rounded border-0"
               size="sm"
               items={LanguageOptions}
-              renderItem={(item) => <>{tCommon(item.label as any)}</>}
+              renderItem={(item) => tCommon(item.label as any)}
+              renderValue={(item) => tCommon(item.label as any)}
             />
           </div>
           <div className="flex items-center">

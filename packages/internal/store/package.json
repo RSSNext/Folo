@@ -21,10 +21,25 @@
       "require": "./src/action/*.ts",
       "import": "./src/action/*.ts"
     },
+    "./atoms/*": {
+      "types": "./src/atoms/*.ts",
+      "require": "./src/atoms/*.ts",
+      "import": "./src/atoms/*.ts"
+    },
     "./collection/*": {
       "types": "./src/collection/*.ts",
       "require": "./src/collection/*.ts",
       "import": "./src/collection/*.ts"
+    },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "require": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts"
+    },
+    "./context": {
+      "types": "./src/context.ts",
+      "require": "./src/context.ts",
+      "import": "./src/context.ts"
     },
     "./entry/*": {
       "types": "./src/entry/*.ts",
@@ -35,6 +50,11 @@
       "types": "./src/feed/*.ts",
       "require": "./src/feed/*.ts",
       "import": "./src/feed/*.ts"
+    },
+    "./hydrate": {
+      "types": "./src/hydrate.ts",
+      "require": "./src/hydrate.ts",
+      "import": "./src/hydrate.ts"
     },
     "./image/*": {
       "types": "./src/image/*.ts",
@@ -96,8 +116,8 @@
     "@follow/shared": "workspace:*",
     "@follow/tracker": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@tanstack/react-query": "5.77.2",
-    "es-toolkit": "1.38.0",
+    "@tanstack/react-query": "5.80.10",
+    "es-toolkit": "1.39.3",
     "immer": "10.1.1",
     "zustand": "5.0.5"
   }

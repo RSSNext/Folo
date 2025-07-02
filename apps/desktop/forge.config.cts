@@ -35,7 +35,7 @@ const ymlMapsMap = {
   win32: "latest.yml",
 }
 
-const keepModules = new Set(["font-list", "vscode-languagedetection", "fast-folder-size"])
+const keepModules = new Set(["font-list", "vscode-languagedetection"])
 const keepLanguages = new Set(["en", "en_GB", "en-US", "en_US"])
 
 // remove folders & files not to be included in the app

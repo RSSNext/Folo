@@ -12,7 +12,7 @@ import { getGitHash } from "../../../scripts/lib"
 import { astPlugin } from "../plugins/vite/ast"
 import { circularImportRefreshPlugin } from "../plugins/vite/hmr"
 import { customI18nHmrPlugin } from "../plugins/vite/i18n-hmr"
-import { localesPlugin } from "../plugins/vite/locales"
+import { localesJsonPlugin } from "../plugins/vite/locales-json"
 import i18nCompleteness from "../plugins/vite/utils/i18n-completeness"
 
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
@@ -33,6 +33,12 @@ const getChangelogFileContent = () => {
 
 const changelogFile = getChangelogFileContent()
 export const viteRenderBaseConfig = {
+  worker: {
+    format: "es",
+  },
+  optimizeDeps: {
+    exclude: ["sqlocal"],
+  },
   resolve: {
     alias: {
       "~": resolve("layer/renderer/src"),
@@ -44,6 +50,21 @@ export const viteRenderBaseConfig = {
   base: "/",
 
   plugins: [
+    {
+      name: "import-sql",
+      transform(code, id) {
+        if (id.endsWith(".sql")) {
+          const json = JSON.stringify(code)
+            .replaceAll("\u2028", "\\u2028")
+            .replaceAll("\u2029", "\\u2029")
+
+          return {
+            code: `export default ${json}`,
+          }
+        }
+      },
+    },
+    localesJsonPlugin(),
     react({
       // jsxImportSource: "@welldone-software/why-did-you-render", // <-----
     }),
@@ -82,7 +103,6 @@ export const viteRenderBaseConfig = {
       },
     }),
 
-    localesPlugin(),
     astPlugin,
     customI18nHmrPlugin(),
   ],

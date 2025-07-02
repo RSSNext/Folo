@@ -16,7 +16,12 @@ type VideoContextMenuProps = PropsWithChildren<{
 
 export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) => {
   const { t } = useTranslation()
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+    title: state.title,
+    url: state.url,
+  }))
   const feedId = entry?.feedId
 
   const isEntryStarred = useIsEntryStarred(entryId)
@@ -56,7 +61,6 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId,
                   view: FeedViewType.Videos,
                 })

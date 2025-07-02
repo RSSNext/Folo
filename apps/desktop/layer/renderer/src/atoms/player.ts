@@ -60,7 +60,7 @@ export const [
 
 export const AudioPlayer = {
   audio: new Audio(),
-  currentTimeTimer: null as NodeJS.Timeout | null,
+  currentTimeTimer: null as ReturnType<typeof setInterval> | null,
 
   __currentActionId: 0,
   get() {

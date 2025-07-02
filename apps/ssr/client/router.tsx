@@ -1,11 +1,9 @@
-import { buildGlobRoutes } from "@follow/utils/route-builder"
 import { wrapCreateBrowserRouterV7 } from "@sentry/react"
 import { createBrowserRouter, createHashRouter } from "react-router"
 
-import { NotFound } from "./components/common/NotFound"
-
-const globTree = import.meta.glob("./pages/**/*.tsx")
-const tree = buildGlobRoutes(globTree)
+import { NotFound } from "./components/common/404"
+// @ts-ignore
+import tree from "./generated-routes"
 
 declare global {
   interface Window {

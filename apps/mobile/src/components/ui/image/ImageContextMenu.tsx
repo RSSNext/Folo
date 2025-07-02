@@ -3,21 +3,18 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
-import ImageEditor from "@react-native-community/image-editor"
 import { requireNativeModule } from "expo"
-import * as FileSystem from "expo-file-system"
-import { saveToLibraryAsync } from "expo-media-library"
-import { shareAsync } from "expo-sharing"
 import type { PropsWithChildren } from "react"
 import { useRef } from "react"
 import { useTranslation } from "react-i18next"
 import type { View } from "react-native"
-import { findNodeHandle, Image, Pressable } from "react-native"
+import { findNodeHandle, Pressable } from "react-native"
 
 import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
 
 import { ContextMenu } from "../context-menu"
+import { shareImage, useSaveImageToMediaLibrary } from "./utils"
 
 type ImageContextMenuProps = PropsWithChildren<{
   imageUrl?: string
@@ -38,44 +35,19 @@ const getIOSNativeImageActions = () => {
 
 export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageContextMenuProps) => {
   const { t } = useTranslation()
-  const entry = useEntry(entryId!)
+  const entry = useEntry(entryId, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+  }))
   const feedId = entry?.feedId
 
   const isEntryStarred = useIsEntryStarred(entryId!)
 
   const contextMenuTriggerRef = useRef<View>(null)
+  const saveImageToAlbum = useSaveImageToMediaLibrary()
 
   if (!imageUrl || !entry) {
     return children
-  }
-
-  const getImageData = async () => {
-    const size = await Image.getSize(imageUrl)
-    const croppedImage = await ImageEditor.cropImage(imageUrl, {
-      offset: {
-        x: 0,
-        y: 0,
-      },
-      size,
-      format: "png",
-      includeBase64: true,
-    })
-
-    return croppedImage
-  }
-
-  const createTempFile = async (base64: string) => {
-    const fileUri = await FileSystem.getInfoAsync(FileSystem.cacheDirectory!)
-    const filename = `${imageUrl.split("/").pop()}.png`
-    const filePath = `${fileUri.uri}/${filename}`
-    await FileSystem.writeAsStringAsync(filePath, base64, {
-      encoding: FileSystem.EncodingType.Base64,
-    })
-
-    return {
-      filePath,
-      cleanup: () => FileSystem.deleteAsync(filePath),
-    }
   }
 
   return (
@@ -113,7 +85,6 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
                   toast.success("Unstarred")
                 } else {
                   collectionSyncService.starEntry({
-                    feedId,
                     entryId,
                     view,
                   })
@@ -144,11 +115,7 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
               }
               getIOSNativeImageActions().saveImageByHandle(handle)
             } else {
-              const croppedImage = await getImageData()
-              const { filePath, cleanup } = await createTempFile(croppedImage.base64)
-              await saveToLibraryAsync(filePath)
-              toast.success("Image saved to library")
-              cleanup()
+              saveImageToAlbum(imageUrl)
             }
           }}
         >
@@ -170,13 +137,7 @@ export const ImageContextMenu = ({ imageUrl, entryId, children, view }: ImageCon
               }
               getIOSNativeImageActions().shareImageByHandle(handle, imageUrl)
             } else {
-              const croppedImage = await getImageData()
-              const { filePath, cleanup } = await createTempFile(croppedImage.base64)
-              await shareAsync(filePath, {
-                dialogTitle: "Share Image",
-              })
-
-              cleanup()
+              shareImage({ uri: imageUrl })
             }
           }}
         >

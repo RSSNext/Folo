@@ -48,7 +48,7 @@ export const StepPreferences = () => {
         >
           <View className="flex flex-row items-center justify-between">
             <Text className="text-text text-base font-medium">
-              {t("general.language", { ns: "settings" })}
+              {t("general.language.title", { ns: "settings" })}
             </Text>
             <View className="w-[150px]">
               <LanguageSelect settingKey="language" />

@@ -113,7 +113,7 @@ const NewRuleButton = () => {
       <GroupedPlainButtonCell
         label={t("actions.newRule")}
         onPress={() => {
-          actionActions.addRule()
+          actionActions.addRule((number) => t("actions.actionName", { number }))
         }}
       />
     </GroupedInsetListCard>

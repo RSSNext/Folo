@@ -4,8 +4,8 @@ import type { FeedSchema, InboxSchema } from "@follow/database/schemas/types"
 import type { CollectionModel } from "../collection/types"
 import type { EntryModel } from "../entry/types"
 import type { FeedModel } from "../feed/types"
-import type { ListModel } from "../list/store"
-import type { SubscriptionModel } from "../subscription/store"
+import type { ListModel } from "../list/types"
+import type { SubscriptionModel } from "../subscription/types"
 import type { MeModel } from "../user/store"
 import type { HonoApiClient } from "./types"
 
@@ -59,7 +59,8 @@ class Morph {
 
         collections.inboxes.push({
           id: inbox.id,
-          title: inbox.title!,
+          title: inbox.title,
+          secret: inbox.secret,
         })
       }
 
@@ -78,6 +79,9 @@ class Morph {
             ownerUserId: list.owner.id,
             feedIds: list.feedIds!,
             fee: list.fee!,
+            subscriptionCount: null,
+            purchaseAmount: null,
+            type: "list",
           })
       }
 
@@ -98,7 +102,11 @@ class Morph {
       feedIds: data.feedIds!,
       fee: data.fee!,
       subscriptionCount: "subscriptionCount" in data ? data.subscriptionCount : null,
-      purchaseAmount: "purchaseAmount" in data ? String(data.purchaseAmount) : null,
+      purchaseAmount:
+        "purchaseAmount" in data && data.purchaseAmount !== null
+          ? String(data.purchaseAmount)
+          : null,
+      type: "list",
     }
   }
 
@@ -138,23 +146,33 @@ class Morph {
   }
 
   toCollections(
-    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post,
+    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post | undefined,
     view: FeedViewType,
-  ): CollectionModel[] {
-    if (!data) return [] satisfies CollectionModel[]
-    return data
-      .map((item) => {
-        if (!item.collections) {
-          return null
-        }
-        return {
-          createdAt: item.collections.createdAt,
-          entryId: item.entries.id,
-          feedId: item.feeds.id,
-          view,
-        } satisfies CollectionModel
+  ): {
+    collections: CollectionModel[]
+    entryIdsNotInCollections: string[]
+  } {
+    if (!data) return { collections: [], entryIdsNotInCollections: [] }
+
+    const collections: CollectionModel[] = []
+    const entryIdsNotInCollections: string[] = []
+    for (const item of data) {
+      if (!item.collections) {
+        entryIdsNotInCollections.push(item.entries.id)
+        continue
+      }
+      collections.push({
+        createdAt: item.collections.createdAt,
+        entryId: item.entries.id,
+        feedId: item.feeds.id,
+        view,
       })
-      .filter((i) => i !== null)
+    }
+
+    return {
+      collections,
+      entryIdsNotInCollections,
+    }
   }
 
   toEntry(data?: HonoApiClient.Entry_Get | HonoApiClient.Entry_Inbox_Get): EntryModel | null {
@@ -192,15 +210,17 @@ class Morph {
 
   toFeed(data: HonoApiClient.Feed_Get["feed"]): FeedModel {
     return {
+      type: "feed",
       id: data.id,
-      title: data.title!,
+      title: data.title,
       url: data.url,
-      image: data.image!,
-      description: data.description!,
-      ownerUserId: data.ownerUserId!,
-      errorAt: data.errorAt!,
-      errorMessage: data.errorMessage!,
-      siteUrl: data.siteUrl!,
+      image: data.image,
+      description: data.description,
+      ownerUserId: data.ownerUserId,
+      errorAt: data.errorAt,
+      errorMessage: data.errorMessage,
+      siteUrl: data.siteUrl,
+      tipUserIds: data.tipUsers ? data.tipUsers.map((user) => user.id) : [],
     }
   }
 
@@ -214,6 +234,9 @@ class Morph {
       isMe: isMe ?? false,
       emailVerified: data.emailVerified,
       twoFactorEnabled: data.twoFactorEnabled,
+      bio: data.bio,
+      website: data.website,
+      socialLinks: data.socialLinks,
     }
   }
 }

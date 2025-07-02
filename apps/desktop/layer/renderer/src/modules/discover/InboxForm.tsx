@@ -10,9 +10,10 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
-import { FeedViewType } from "@follow/constants"
-import type { InboxModel } from "@follow/models/types"
 import { env } from "@follow/shared/env.desktop"
+import { useInboxById } from "@follow/store/inbox/hooks"
+import { inboxSyncService } from "@follow/store/inbox/store"
+import type { InboxModel } from "@follow/store/inbox/types"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -21,23 +22,14 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { apiClient } from "~/lib/api-fetch"
+import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { createErrorToaster } from "~/lib/error-parser"
 import { FollowSummary } from "~/modules/feed/feed-summary"
-import { useInbox } from "~/queries/inboxes"
-import { useInboxById } from "~/store/inbox"
-import { subscriptionActions } from "~/store/subscription"
 
 export const InboxForm: Component<{
   id?: string
   asWidget?: boolean
-  onSuccess?: () => void
-}> = ({ id: _id, asWidget, onSuccess }) => {
-  const queryParams = { id: _id }
-
-  const feedQuery = useInbox(queryParams)
-
-  const id = feedQuery.data?.id || _id
+}> = ({ id, asWidget }) => {
   const inbox = useInboxById(id)
 
   const isSubscribed = true
@@ -59,7 +51,6 @@ export const InboxForm: Component<{
       )}
       <InboxInnerForm
         {...{
-          onSuccess,
           inbox,
         }}
       />
@@ -78,13 +69,9 @@ const formSchema = z.object({
   title: z.string(),
 })
 
-const InboxInnerForm = ({
-  onSuccess,
-  inbox,
-}: {
-  onSuccess?: () => void
-  inbox?: Nullable<InboxModel>
-}) => {
+const InboxInnerForm = ({ inbox }: { inbox?: Nullable<InboxModel> }) => {
+  const currentModal = useCurrentModal()
+
   const { t } = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -96,16 +83,12 @@ const InboxInnerForm = ({
 
   const mutationCreate = useMutation({
     mutationFn: async ({ handle, title }: { handle: string; title: string }) => {
-      await apiClient.inboxes.$post({
-        json: {
-          handle,
-          title,
-        },
+      await inboxSyncService.createInbox({
+        handle,
+        title,
       })
-      onSuccess?.()
     },
     onSuccess: (_) => {
-      subscriptionActions.fetchByView(FeedViewType.Articles)
       toast.success(t("discover.inbox_create_success"))
     },
     onError: createErrorToaster(t("discover.inbox_create_error")),
@@ -113,16 +96,12 @@ const InboxInnerForm = ({
 
   const mutationChange = useMutation({
     mutationFn: async ({ handle, title }: { handle: string; title: string }) => {
-      await apiClient.inboxes.$put({
-        json: {
-          handle,
-          title,
-        },
+      await inboxSyncService.updateInbox({
+        handle,
+        title,
       })
-      onSuccess?.()
     },
     onSuccess: () => {
-      subscriptionActions.fetchByView(FeedViewType.Articles)
       toast.success(t("discover.inbox_update_success"))
     },
     onError: createErrorToaster(t("discover.inbox_update_error")),
@@ -134,6 +113,7 @@ const InboxInnerForm = ({
     } else {
       mutationCreate.mutate({ handle: values.handle, title: values.title })
     }
+    currentModal.dismiss?.()
   }
 
   return (

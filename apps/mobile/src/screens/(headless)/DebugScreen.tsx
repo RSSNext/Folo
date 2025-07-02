@@ -1,4 +1,5 @@
 import type { envProfileMap } from "@follow/shared/env.rn"
+import { whoami } from "@follow/store/user/getters"
 import { sleep } from "@follow/utils"
 import { requireNativeModule } from "expo"
 import * as Clipboard from "expo-clipboard"
@@ -31,6 +32,7 @@ import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { setEnvProfile, useEnvProfile } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 
+import { ProfileScreen } from "../(modal)/ProfileScreen"
 import { MarkdownScreen } from "./(debug)/markdown"
 
 interface MenuSection {
@@ -159,6 +161,12 @@ export const DebugScreen: NavigationControllerView = () => {
             navigation.pushControllerView(MarkdownScreen)
           },
         },
+        {
+          title: "Present Profile Modal",
+          onPress: () => {
+            navigation.presentControllerView(ProfileScreen, { userId: whoami()!.id })
+          },
+        },
       ],
     },
   ]
@@ -176,6 +184,7 @@ export const DebugScreen: NavigationControllerView = () => {
             { label: "Dev", value: "dev" },
             { label: "Prod", value: "prod" },
             { label: "Staging", value: "staging" },
+            { label: "Local", value: "local" },
           ]}
           value={envProfile}
           onValueChange={(value) => {

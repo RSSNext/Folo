@@ -1,51 +1,31 @@
 import { views } from "@follow/constants"
+import { useCollectionEntryList } from "@follow/store/collection/hooks"
+import {
+  useEntriesQuery,
+  useEntryIdsByFeedId,
+  useEntryIdsByFeedIds,
+  useEntryIdsByInboxId,
+  useEntryIdsByListId,
+  useEntryIdsByView,
+} from "@follow/store/entry/hooks"
+import { entryActions, entrySyncServices, useEntryStore } from "@follow/store/entry/store"
+import type { UseEntriesReturn } from "@follow/store/entry/types"
+import { fallbackReturn } from "@follow/store/entry/utils"
+import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { debounce } from "es-toolkit/compat"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
+import { ROUTE_FEED_PENDING } from "~/constants/app"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useAuthQuery } from "~/hooks/common"
-import { apiClient, apiFetch } from "~/lib/api-fetch"
-import { Queries } from "~/queries"
-import { entries, useEntries } from "~/queries/entries"
-import { entryActions, getEntry, useEntryIdsByFeedIdOrView } from "~/store/entry"
-import { useFolderFeedsByFeedId } from "~/store/subscription"
+import { entries } from "~/queries/entries"
 
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
-interface UseEntriesReturn {
-  entriesIds: string[]
-  hasNext: boolean
-  hasUpdate: boolean
-  refetch: () => Promise<void>
-
-  fetchNextPage: () => Promise<void>
-  isLoading: boolean
-  isReady: boolean
-  isFetching: boolean
-  isFetchingNextPage: boolean
-
-  hasNextPage: boolean
-  error: Error | null
-}
-
-const fallbackReturn: UseEntriesReturn = {
-  entriesIds: [],
-  hasNext: false,
-  hasUpdate: false,
-  refetch: async () => {},
-
-  fetchNextPage: async () => {},
-
-  isLoading: true,
-  isReady: false,
-  isFetching: false,
-  isFetchingNextPage: false,
-  hasNextPage: false,
-  error: null,
-}
 const useRemoteEntries = (): UseEntriesReturn => {
   const { feedId, view, inboxId, listId } = useRouteParams()
   const isPreview = useIsPreviewFeed()
@@ -66,8 +46,10 @@ const useRemoteEntries = (): UseEntriesReturn => {
       inboxId,
       listId,
       view,
-      ...(unreadOnly === true && !isPreview && { read: false }),
-      ...(hidePrivateSubscriptionsInTimeline === true && { excludePrivate: true }),
+      ...(unreadOnly === true && !isPreview && { unreadOnly: true }),
+      ...(hidePrivateSubscriptionsInTimeline === true && {
+        hidePrivateSubscriptionsInTimeline: true,
+      }),
     }
 
     if (feedId && listId && isBizId(feedId)) {
@@ -85,7 +67,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     view,
     hidePrivateSubscriptionsInTimeline,
   ])
-  const query = useEntries(entriesOptions)
+  const query = useEntriesQuery(entriesOptions)
 
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
@@ -135,6 +117,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
 
     fetchNextPage,
     isLoading: query.isFetching,
+    isRefetching: query.isRefetching,
     isReady: query.isSuccess,
     isFetchingNextPage: query.isFetchingNextPage,
     isFetching: query.isFetching,
@@ -143,9 +126,12 @@ const useRemoteEntries = (): UseEntriesReturn => {
   }
 }
 
-const useLocalEntries = (): UseEntriesReturn => {
-  const { feedId, view, inboxId, listId, isAllFeeds } = useRouteParams()
+function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | null>) {
+  return entryIds.find((ids) => ids?.length) ?? []
+}
 
+const useLocalEntries = (): UseEntriesReturn => {
+  const { feedId, view, inboxId, listId, isCollection } = useRouteParams()
   const unreadOnly = useGeneralSettingKey("unreadOnly")
   const hidePrivateSubscriptionsInTimeline = useGeneralSettingKey(
     "hidePrivateSubscriptionsInTimeline",
@@ -155,14 +141,56 @@ const useLocalEntries = (): UseEntriesReturn => {
     feedId,
     view,
   })
+  const entryIdsByView = useEntryIdsByView(view, hidePrivateSubscriptionsInTimeline)
+  const entryIdsByCollections = useCollectionEntryList(view)
+  const entryIdsByFeedId = useEntryIdsByFeedId(feedId)
+  const entryIdsByCategory = useEntryIdsByFeedIds(folderIds)
+  const entryIdsByListId = useEntryIdsByListId(listId)
+  const entryIdsByInboxId = useEntryIdsByInboxId(inboxId)
 
-  const allEntries = useEntryIdsByFeedIdOrView(
-    listId || inboxId || (isAllFeeds ? view : folderIds.length > 0 ? folderIds : feedId!),
-    {
-      unread: unreadOnly,
-      view,
-      excludePrivate: hidePrivateSubscriptionsInTimeline,
-    },
+  const showEntriesByView =
+    (!feedId || feedId === ROUTE_FEED_PENDING) &&
+    folderIds.length === 0 &&
+    !isCollection &&
+    !inboxId &&
+    !listId
+
+  const allEntries = useEntryStore(
+    useCallback(
+      (state) => {
+        const ids = isCollection
+          ? entryIdsByCollections
+          : showEntriesByView
+            ? (entryIdsByView ?? [])
+            : (getEntryIdsFromMultiplePlace(
+                entryIdsByFeedId,
+                entryIdsByCategory,
+                entryIdsByListId,
+                entryIdsByInboxId,
+              ) ?? [])
+
+        return ids
+          .map((id) => {
+            const entry = state.data[id]
+            if (!entry) return null
+            if (unreadOnly && entry.read) {
+              return null
+            }
+            return entry.id
+          })
+          .filter((id) => typeof id === "string")
+      },
+      [
+        entryIdsByCategory,
+        entryIdsByCollections,
+        entryIdsByFeedId,
+        entryIdsByInboxId,
+        entryIdsByListId,
+        entryIdsByView,
+        showEntriesByView,
+        unreadOnly,
+      ],
+    ),
   )
 
   const [page, setPage] = useState(0)
@@ -202,6 +230,7 @@ const useLocalEntries = (): UseEntriesReturn => {
     refetch,
     fetchNextPage: fetchNextPage as () => Promise<void>,
     isLoading: false,
+    isRefetching: false,
     isReady: true,
     isFetchingNextPage: false,
     isFetching: false,
@@ -211,7 +240,7 @@ const useLocalEntries = (): UseEntriesReturn => {
 }
 
 export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
-  const { feedId, view, isCollection, listId } = useRouteParams()
+  const { feedId, view, listId } = useRouteParams()
 
   const remoteQuery = useRemoteEntries()
   const localQuery = useLocalEntries()
@@ -258,12 +287,6 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     prevEntryIdsRef.current = nextIds
   }, [entryIdsAsDeps])
 
-  const sortEntries = useMemo(
-    () =>
-      isCollection ? sortEntriesIdByStarAt(entryIds) : sortEntriesIdByEntryPublishedAt(entryIds),
-    [entryIds, isCollection],
-  )
-
   const groupByDate = useGeneralSettingKey("groupByDate")
   const groupedCounts: number[] | undefined = useMemo(() => {
     if (views[view]!.gridMode) {
@@ -275,14 +298,12 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     const entriesId2Map = entryActions.getFlattenMapEntries()
     const counts = [] as number[]
     let lastDate = ""
-    for (const id of sortEntries) {
+    for (const id of entryIds) {
       const entry = entriesId2Map[id]
       if (!entry) {
         continue
       }
-      const date = new Date(
-        listId ? entry.entries.insertedAt : entry.entries.publishedAt,
-      ).toDateString()
+      const date = new Date(listId ? entry.insertedAt : entry.publishedAt).toDateString()
       if (date !== lastDate) {
         counts.push(1)
         lastDate = date
@@ -293,7 +314,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     }
 
     return counts
-  }, [groupByDate, listId, sortEntries, view])
+  }, [groupByDate, listId, entryIds, view])
 
   return {
     ...query,
@@ -301,107 +322,19 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     hasUpdate: query.hasUpdate,
     refetch: useCallback(() => {
       const promise = query.refetch()
-      Queries.subscription.unreadAll().invalidate()
+      unreadSyncService.resetFromRemote()
       return promise
     }, [query]),
-    entriesIds: sortEntries,
+    entriesIds: entryIds,
     groupedCounts,
   }
-}
-
-function sortEntriesIdByEntryPublishedAt(entries: string[]) {
-  const entriesId2Map = entryActions.getFlattenMapEntries()
-  return entries
-    .slice()
-    .sort(
-      (a, b) =>
-        entriesId2Map[b]?.entries.publishedAt.localeCompare(
-          entriesId2Map[a]?.entries.publishedAt!,
-        ) || 0,
-    )
-}
-
-function sortEntriesIdByStarAt(entries: string[]) {
-  const entriesId2Map = entryActions.getFlattenMapEntries()
-  return entries.slice().sort((a, b) => {
-    const aStar = entriesId2Map[a]?.collections?.createdAt
-    const bStar = entriesId2Map[b]?.collections?.createdAt
-    if (!aStar || !bStar) return 0
-    return bStar.localeCompare(aStar)
-  })
 }
 
 const useFetchEntryContentByStream = (remoteEntryIds?: string[]) => {
   const { mutate: updateEntryContent } = useMutation({
     mutationKey: ["stream-entry-content", remoteEntryIds],
-    mutationFn: async (remoteEntryIds: string[]) => {
-      const onlyNoStored = true
-
-      const nextIds = [] as string[]
-      if (onlyNoStored) {
-        for (const id of remoteEntryIds) {
-          const entry = getEntry(id)!
-          if (entry.entries.content) {
-            continue
-          }
-
-          nextIds.push(id)
-        }
-      }
-
-      if (nextIds.length === 0) return
-
-      const readStream = async () => {
-        const response = await apiFetch(apiClient.entries.stream.$url().toString(), {
-          method: "post",
-          body: JSON.stringify({
-            ids: nextIds,
-          }),
-          responseType: "stream",
-        })
-
-        const reader = response.getReader()
-        if (!reader) return
-
-        const decoder = new TextDecoder()
-        let buffer = ""
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            buffer += decoder.decode(value, { stream: true })
-            const lines = buffer.split("\n")
-
-            // Process all complete lines
-            for (let i = 0; i < lines.length - 1; i++) {
-              if (lines[i]!.trim()) {
-                const json = JSON.parse(lines[i]!)
-                // Handle each JSON line here
-                entryActions.updateEntryContent(json.id, json.content)
-              }
-            }
-
-            // Keep the last incomplete line in the buffer
-            buffer = lines.at(-1) || ""
-          }
-
-          // Process any remaining data
-          if (buffer.trim()) {
-            const json = JSON.parse(buffer)
-
-            entryActions.updateEntryContent(json.id, json.content)
-          }
-        } catch (error) {
-          console.error("Error reading stream:", error)
-        } finally {
-          reader.releaseLock()
-        }
-      }
-
-      readStream()
-    },
+    mutationFn: (remoteEntryIds: string[]) =>
+      entrySyncServices.fetchEntryContentByStream(remoteEntryIds),
   })
 
   useEffect(() => {

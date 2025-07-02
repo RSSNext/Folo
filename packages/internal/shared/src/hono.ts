@@ -134,42 +134,6 @@ declare const authPlugins: ({
         };
     };
 } | {
-    id: "customUpdateUser";
-    endpoints: {
-        customUpdateUser: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "POST" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: string | null;
-            } : string | null>;
-            options: {
-                method: "POST";
-            } & {
-                use: any[];
-            };
-            path: "/update-user-ccc";
-        };
-    };
-} | {
     id: "oneTimeToken";
     endpoints: {
         generateOneTimeToken: {
@@ -489,16 +453,16 @@ declare const achievementsOpenAPISchema: zod.ZodObject<{
 
 declare const languageSchema: z.ZodEnum<["en", "ja", "zh-CN", "zh-TW"]>;
 declare const conditionItemSchema: z.ZodObject<{
-    field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "status"]>;
+    field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
     operator: z.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
     value: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     value: string;
-    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
 }, {
     value: string;
-    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
 }>;
 type ConditionItem = z.infer<typeof conditionItemSchema>;
@@ -566,11 +530,11 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
                 name: string;
                 condition: {
                     value: string;
-                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                 }[] | {
                     value: string;
-                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                 }[][];
                 result: {
@@ -610,11 +574,11 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
                 name: string;
                 condition: {
                     value: string;
-                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                 }[] | {
                     value: string;
-                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                    field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                     operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                 }[][];
                 result: {
@@ -646,28 +610,28 @@ declare const actions: drizzle_orm_pg_core.PgTableWithColumns<{
 declare const actionsItemOpenAPISchema: z.ZodObject<{
     name: z.ZodString;
     condition: z.ZodUnion<[z.ZodArray<z.ZodObject<{
-        field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "status"]>;
+        field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
         operator: z.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
         value: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }, {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }>, "many">, z.ZodArray<z.ZodArray<z.ZodObject<{
-        field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "status"]>;
+        field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
         operator: z.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
         value: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }, {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }>, "many">, "many">]>;
     result: z.ZodObject<{
@@ -749,11 +713,11 @@ declare const actionsItemOpenAPISchema: z.ZodObject<{
     name: string;
     condition: {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }[] | {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }[][];
     result: {
@@ -781,11 +745,11 @@ declare const actionsItemOpenAPISchema: z.ZodObject<{
     name: string;
     condition: {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }[] | {
         value: string;
-        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+        field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
         operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
     }[][];
     result: {
@@ -868,28 +832,28 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
     rules: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
         condition: z.ZodUnion<[z.ZodArray<z.ZodObject<{
-            field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "status"]>;
+            field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
             operator: z.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
             value: z.ZodString;
         }, "strip", z.ZodTypeAny, {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }, {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }>, "many">, z.ZodArray<z.ZodArray<z.ZodObject<{
-            field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "status"]>;
+            field: z.ZodEnum<["view", "title", "site_url", "feed_url", "category", "entry_title", "entry_content", "entry_url", "entry_author", "entry_media_length", "entry_attachments_duration", "status"]>;
             operator: z.ZodEnum<["contains", "not_contains", "eq", "not_eq", "gt", "lt", "regex"]>;
             value: z.ZodString;
         }, "strip", z.ZodTypeAny, {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }, {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }>, "many">, "many">]>;
         result: z.ZodObject<{
@@ -971,11 +935,11 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
         name: string;
         condition: {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[] | {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[][];
         result: {
@@ -1003,11 +967,11 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
         name: string;
         condition: {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[] | {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[][];
         result: {
@@ -1040,11 +1004,11 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
         name: string;
         condition: {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[] | {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[][];
         result: {
@@ -1077,11 +1041,11 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
         name: string;
         condition: {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[] | {
             value: string;
-            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
         }[][];
         result: {
@@ -1112,6 +1076,98 @@ declare const actionsRelations: drizzle_orm.Relations<"actions", {
 }>;
 type ActionsModel = z.infer<typeof actionsOpenAPISchema>;
 type SettingsModel = Exclude<z.infer<typeof actionsItemOpenAPISchema>["result"], undefined>;
+
+declare const activities: drizzle_orm_pg_core.PgTableWithColumns<{
+    name: "activities";
+    schema: undefined;
+    columns: {
+        userId: drizzle_orm_pg_core.PgColumn<{
+            name: "user_id";
+            tableName: "activities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        activeAt: drizzle_orm_pg_core.PgColumn<{
+            name: "active_at";
+            tableName: "activities";
+            dataType: "date";
+            columnType: "PgDate";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        platform: drizzle_orm_pg_core.PgColumn<{
+            name: "platform";
+            tableName: "activities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        version: drizzle_orm_pg_core.PgColumn<{
+            name: "version";
+            tableName: "activities";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+declare const activitiesOpenAPISchema: zod.ZodObject<{
+    userId: zod.ZodString;
+    activeAt: zod.ZodString;
+    platform: zod.ZodString;
+    version: zod.ZodNullable<zod.ZodString>;
+}, zod.UnknownKeysParam, zod.ZodTypeAny, {
+    userId: string;
+    activeAt: string;
+    platform: string;
+    version: string | null;
+}, {
+    userId: string;
+    activeAt: string;
+    platform: string;
+    version: string | null;
+}>;
 
 declare const detailModelSchema: z.ZodNullable<z.ZodObject<{
     "Invitations count": z.ZodNumber;
@@ -3068,6 +3124,23 @@ declare const feeds: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        nsfw: drizzle_orm_pg_core.PgColumn<{
+            name: "nsfw";
+            tableName: "feeds";
+            dataType: "boolean";
+            columnType: "PgBoolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -3089,6 +3162,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: zod.ZodNullable<zod.ZodString>;
     rsshubRoute: zod.ZodNullable<zod.ZodString>;
     rsshubNamespace: zod.ZodNullable<zod.ZodString>;
+    nsfw: zod.ZodNullable<zod.ZodBoolean>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     id: string;
     image: string | null;
@@ -3107,6 +3181,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: string | null;
     rsshubRoute: string | null;
     rsshubNamespace: string | null;
+    nsfw: boolean | null;
 }, {
     id: string;
     image: string | null;
@@ -3125,6 +3200,7 @@ declare const feedsOpenAPISchema: zod.ZodObject<{
     migrateTo: string | null;
     rsshubRoute: string | null;
     rsshubNamespace: string | null;
+    nsfw: boolean | null;
 }>;
 declare const feedsRelations: drizzle_orm.Relations<"feeds", {
     subscriptions: drizzle_orm.Many<"subscriptions">;
@@ -5926,6 +6002,23 @@ declare const trendingFeeds: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        nsfw: drizzle_orm_pg_core.PgColumn<{
+            name: "nsfw";
+            tableName: "trendings_feeds";
+            dataType: "boolean";
+            columnType: "PgBoolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
     };
     dialect: "pg";
 }>;
@@ -5941,9 +6034,11 @@ declare const trendingFeedsOpenAPISchema: zod.ZodObject<{
     score30d: zod.ZodString;
     view: zod.ZodNumber;
     language: zod.ZodString;
+    nsfw: zod.ZodNullable<zod.ZodBoolean>;
 }, zod.UnknownKeysParam, zod.ZodTypeAny, {
     view: number;
     language: string;
+    nsfw: boolean | null;
     feedId: string;
     rankedAt: string;
     score1d: string;
@@ -5953,6 +6048,7 @@ declare const trendingFeedsOpenAPISchema: zod.ZodObject<{
 }, {
     view: number;
     language: string;
+    nsfw: boolean | null;
     feedId: string;
     rankedAt: string;
     score1d: string;
@@ -6117,7 +6213,7 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "name";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6129,12 +6225,14 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         email: drizzle_orm_pg_core.PgColumn<{
             name: "email";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: true;
@@ -6146,7 +6244,9 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         emailVerified: drizzle_orm_pg_core.PgColumn<{
             name: "emailVerified";
             tableName: "user";
@@ -6168,7 +6268,7 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "image";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6180,12 +6280,14 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         handle: drizzle_orm_pg_core.PgColumn<{
             name: "handle";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6197,7 +6299,9 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 36;
+        }>;
         createdAt: drizzle_orm_pg_core.PgColumn<{
             name: "created_at";
             tableName: "user";
@@ -6283,6 +6387,75 @@ declare const user: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        bio: drizzle_orm_pg_core.PgColumn<{
+            name: "bio";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 256;
+        }>;
+        website: drizzle_orm_pg_core.PgColumn<{
+            name: "website";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 256;
+        }>;
+        socialLinks: drizzle_orm_pg_core.PgColumn<{
+            name: "social_links";
+            tableName: "user";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+            driverParam: unknown;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+        }>;
     };
     dialect: "pg";
 }>;
@@ -6311,7 +6484,7 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "name";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6323,12 +6496,14 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         email: drizzle_orm_pg_core.PgColumn<{
             name: "email";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: true;
@@ -6340,7 +6515,9 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 64;
+        }>;
         emailVerified: drizzle_orm_pg_core.PgColumn<{
             name: "emailVerified";
             tableName: "user";
@@ -6362,7 +6539,7 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             name: "image";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6374,12 +6551,14 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 256;
+        }>;
         handle: drizzle_orm_pg_core.PgColumn<{
             name: "handle";
             tableName: "user";
             dataType: "string";
-            columnType: "PgText";
+            columnType: "PgVarchar";
             data: string;
             driverParam: string;
             notNull: false;
@@ -6391,7 +6570,9 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 36;
+        }>;
         createdAt: drizzle_orm_pg_core.PgColumn<{
             name: "created_at";
             tableName: "user";
@@ -6477,6 +6658,75 @@ declare const users: drizzle_orm_pg_core.PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        bio: drizzle_orm_pg_core.PgColumn<{
+            name: "bio";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 256;
+        }>;
+        website: drizzle_orm_pg_core.PgColumn<{
+            name: "website";
+            tableName: "user";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 256;
+        }>;
+        socialLinks: drizzle_orm_pg_core.PgColumn<{
+            name: "social_links";
+            tableName: "user";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+            driverParam: unknown;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: {
+                twitter: string;
+                github: string;
+                instagram: string;
+                facebook: string;
+                youtube: string;
+            };
+        }>;
     };
     dialect: "pg";
 }>;
@@ -6493,6 +6743,21 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: zod.ZodNullable<zod.ZodBoolean>;
     isAnonymous: zod.ZodNullable<zod.ZodBoolean>;
     suspended: zod.ZodNullable<zod.ZodBoolean>;
+    bio: zod.ZodNullable<zod.ZodString>;
+    website: zod.ZodNullable<zod.ZodString>;
+    socialLinks: zod.ZodNullable<zod.ZodType<{
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    }, zod.ZodTypeDef, {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    }>>;
 }, "email">, "strip", zod.ZodTypeAny, {
     id: string;
     name: string | null;
@@ -6504,6 +6769,15 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
+    bio: string | null;
+    website: string | null;
+    socialLinks: {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    } | null;
 }, {
     id: string;
     name: string | null;
@@ -6515,6 +6789,15 @@ declare const usersOpenApiSchema: zod.ZodObject<Omit<{
     twoFactorEnabled: boolean | null;
     isAnonymous: boolean | null;
     suspended: boolean | null;
+    bio: string | null;
+    website: string | null;
+    socialLinks: {
+        twitter: string;
+        github: string;
+        instagram: string;
+        facebook: string;
+        youtube: string;
+    } | null;
 }>;
 declare const account: drizzle_orm_pg_core.PgTableWithColumns<{
     name: "account";
@@ -8252,6 +8535,9 @@ declare const auth: {
                         updatedAt: Date;
                         image?: string | null | undefined | undefined;
                         handle: string;
+                        bio: string;
+                        website: string;
+                        socialLinks: string;
                     } & {
                         id: string;
                         name: string;
@@ -8262,6 +8548,9 @@ declare const auth: {
                         image?: string | null | undefined | undefined;
                         twoFactorEnabled: boolean | null | undefined;
                         handle: string;
+                        bio: string;
+                        website: string;
+                        socialLinks: string;
                     };
                 } | null;
             } : {
@@ -8284,6 +8573,9 @@ declare const auth: {
                     updatedAt: Date;
                     image?: string | null | undefined | undefined;
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 } & {
                     id: string;
                     name: string;
@@ -8294,6 +8586,9 @@ declare const auth: {
                     image?: string | null | undefined | undefined;
                     twoFactorEnabled: boolean | null | undefined;
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 };
             } | null>;
             options: {
@@ -8413,8 +8708,14 @@ declare const auth: {
                     callbackURL?: string;
                 } & {} & {})) & {
                     handle: string;
+                    bio: string;
+                    website: string;
+                    socialLinks: string;
                 } & {
                     handle?: string | null | undefined;
+                    bio?: string | null | undefined;
+                    website?: string | null | undefined;
+                    socialLinks?: string | null | undefined;
                 };
             } & {
                 method?: "POST" | undefined;
@@ -8499,8 +8800,14 @@ declare const auth: {
                             callbackURL?: string;
                         } & {} & {})) & {
                             handle: string;
+                            bio: string;
+                            website: string;
+                            socialLinks: string;
                         } & {
                             handle?: string | null | undefined;
+                            bio?: string | null | undefined;
+                            website?: string | null | undefined;
+                            socialLinks?: string | null | undefined;
                         };
                     };
                     openapi: {
@@ -9491,7 +9798,9 @@ declare const auth: {
                     appName: string;
                     database: (options: BetterAuthOptions) => better_auth.Adapter;
                     advanced: {
-                        generateId: false;
+                        database: {
+                            generateId: false;
+                        };
                         defaultCookieAttributes: {
                             sameSite: "none";
                             secure: true;
@@ -9506,6 +9815,19 @@ declare const auth: {
                     user: {
                         additionalFields: {
                             handle: {
+                                type: "string";
+                            };
+                            socialLinks: {
+                                type: "string";
+                                transform: {
+                                    input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                                    output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                                };
+                            };
+                            bio: {
+                                type: "string";
+                            };
+                            website: {
                                 type: "string";
                             };
                         };
@@ -10785,6 +11107,9 @@ declare const auth: {
                                             image: string | null;
                                             handle: string | null;
                                             twoFactorEnabled: boolean | null;
+                                            socialLinks: Record<string, string> | null;
+                                            bio: string | null;
+                                            website: string | null;
                                         };
                                         session: {
                                             id: string;
@@ -10818,6 +11143,9 @@ declare const auth: {
                                         image: string | null;
                                         handle: string | null;
                                         twoFactorEnabled: boolean | null;
+                                        socialLinks: Record<string, string> | null;
+                                        bio: string | null;
+                                        website: string | null;
                                     };
                                     session: {
                                         id: string;
@@ -10993,42 +11321,6 @@ declare const auth: {
                                     use: any[];
                                 };
                                 path: "/get-account-info";
-                            };
-                        };
-                    } | {
-                        id: "customUpdateUser";
-                        endpoints: {
-                            customUpdateUser: {
-                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
-                                    body?: undefined;
-                                } & {
-                                    method?: "POST" | undefined;
-                                } & {
-                                    query?: Record<string, any> | undefined;
-                                } & {
-                                    params?: Record<string, any>;
-                                } & {
-                                    request?: Request;
-                                } & {
-                                    headers?: HeadersInit;
-                                } & {
-                                    asResponse?: boolean;
-                                    returnHeaders?: boolean;
-                                    use?: better_call.Middleware[];
-                                    path?: string;
-                                } & {
-                                    asResponse?: AsResponse_1 | undefined;
-                                    returnHeaders?: ReturnHeaders_14 | undefined;
-                                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
-                                    headers: Headers;
-                                    response: string | null;
-                                } : string | null>;
-                                options: {
-                                    method: "POST";
-                                } & {
-                                    use: any[];
-                                };
-                                path: "/update-user-ccc";
                             };
                         };
                     } | {
@@ -11218,7 +11510,9 @@ declare const auth: {
                             appName: string;
                             database: (options: BetterAuthOptions) => better_auth.Adapter;
                             advanced: {
-                                generateId: false;
+                                database: {
+                                    generateId: false;
+                                };
                                 defaultCookieAttributes: {
                                     sameSite: "none";
                                     secure: true;
@@ -11233,6 +11527,19 @@ declare const auth: {
                             user: {
                                 additionalFields: {
                                     handle: {
+                                        type: "string";
+                                    };
+                                    socialLinks: {
+                                        type: "string";
+                                        transform: {
+                                            input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                                            output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                                        };
+                                    };
+                                    bio: {
+                                        type: "string";
+                                    };
+                                    website: {
                                         type: "string";
                                     };
                                 };
@@ -12512,6 +12819,9 @@ declare const auth: {
                                                     image: string | null;
                                                     handle: string | null;
                                                     twoFactorEnabled: boolean | null;
+                                                    socialLinks: Record<string, string> | null;
+                                                    bio: string | null;
+                                                    website: string | null;
                                                 };
                                                 session: {
                                                     id: string;
@@ -12545,6 +12855,9 @@ declare const auth: {
                                                 image: string | null;
                                                 handle: string | null;
                                                 twoFactorEnabled: boolean | null;
+                                                socialLinks: Record<string, string> | null;
+                                                bio: string | null;
+                                                website: string | null;
                                             };
                                             session: {
                                                 id: string;
@@ -12720,42 +13033,6 @@ declare const auth: {
                                             use: any[];
                                         };
                                         path: "/get-account-info";
-                                    };
-                                };
-                            } | {
-                                id: "customUpdateUser";
-                                endpoints: {
-                                    customUpdateUser: {
-                                        <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                                            body?: undefined;
-                                        } & {
-                                            method?: "POST" | undefined;
-                                        } & {
-                                            query?: Record<string, any> | undefined;
-                                        } & {
-                                            params?: Record<string, any>;
-                                        } & {
-                                            request?: Request;
-                                        } & {
-                                            headers?: HeadersInit;
-                                        } & {
-                                            asResponse?: boolean;
-                                            returnHeaders?: boolean;
-                                            use?: better_call.Middleware[];
-                                            path?: string;
-                                        } & {
-                                            asResponse?: AsResponse | undefined;
-                                            returnHeaders?: ReturnHeaders | undefined;
-                                        }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                                            headers: Headers;
-                                            response: string | null;
-                                        } : string | null>;
-                                        options: {
-                                            method: "POST";
-                                        } & {
-                                            use: any[];
-                                        };
-                                        path: "/update-user-ccc";
                                     };
                                 };
                             } | {
@@ -14316,39 +14593,6 @@ declare const auth: {
             path: "/get-account-info";
         };
     } & {
-        customUpdateUser: {
-            <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                body?: undefined;
-            } & {
-                method?: "POST" | undefined;
-            } & {
-                query?: Record<string, any> | undefined;
-            } & {
-                params?: Record<string, any>;
-            } & {
-                request?: Request;
-            } & {
-                headers?: HeadersInit;
-            } & {
-                asResponse?: boolean;
-                returnHeaders?: boolean;
-                use?: better_call.Middleware[];
-                path?: string;
-            } & {
-                asResponse?: AsResponse | undefined;
-                returnHeaders?: ReturnHeaders | undefined;
-            }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                headers: Headers;
-                response: string | null;
-            } : string | null>;
-            options: {
-                method: "POST";
-            } & {
-                use: any[];
-            };
-            path: "/update-user-ccc";
-        };
-    } & {
         generateOneTimeToken: {
             <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
                 body?: undefined;
@@ -15474,6 +15718,9 @@ declare const auth: {
                         image: string | null;
                         handle: string | null;
                         twoFactorEnabled: boolean | null;
+                        socialLinks: Record<string, string> | null;
+                        bio: string | null;
+                        website: string | null;
                     };
                     session: {
                         id: string;
@@ -15507,6 +15754,9 @@ declare const auth: {
                     image: string | null;
                     handle: string | null;
                     twoFactorEnabled: boolean | null;
+                    socialLinks: Record<string, string> | null;
+                    bio: string | null;
+                    website: string | null;
                 };
                 session: {
                     id: string;
@@ -15572,7 +15822,9 @@ declare const auth: {
         appName: string;
         database: (options: BetterAuthOptions) => better_auth.Adapter;
         advanced: {
-            generateId: false;
+            database: {
+                generateId: false;
+            };
             defaultCookieAttributes: {
                 sameSite: "none";
                 secure: true;
@@ -15587,6 +15839,19 @@ declare const auth: {
         user: {
             additionalFields: {
                 handle: {
+                    type: "string";
+                };
+                socialLinks: {
+                    type: "string";
+                    transform: {
+                        input: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => string;
+                        output: (value: string | number | boolean | string[] | Date | number[] | null | undefined) => any;
+                    };
+                };
+                bio: {
+                    type: "string";
+                };
+                website: {
                     type: "string";
                 };
             };
@@ -16866,6 +17131,9 @@ declare const auth: {
                                 image: string | null;
                                 handle: string | null;
                                 twoFactorEnabled: boolean | null;
+                                socialLinks: Record<string, string> | null;
+                                bio: string | null;
+                                website: string | null;
                             };
                             session: {
                                 id: string;
@@ -16899,6 +17167,9 @@ declare const auth: {
                             image: string | null;
                             handle: string | null;
                             twoFactorEnabled: boolean | null;
+                            socialLinks: Record<string, string> | null;
+                            bio: string | null;
+                            website: string | null;
                         };
                         session: {
                             id: string;
@@ -17077,42 +17348,6 @@ declare const auth: {
                 };
             };
         } | {
-            id: "customUpdateUser";
-            endpoints: {
-                customUpdateUser: {
-                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
-                        body?: undefined;
-                    } & {
-                        method?: "POST" | undefined;
-                    } & {
-                        query?: Record<string, any> | undefined;
-                    } & {
-                        params?: Record<string, any>;
-                    } & {
-                        request?: Request;
-                    } & {
-                        headers?: HeadersInit;
-                    } & {
-                        asResponse?: boolean;
-                        returnHeaders?: boolean;
-                        use?: better_call.Middleware[];
-                        path?: string;
-                    } & {
-                        asResponse?: AsResponse | undefined;
-                        returnHeaders?: ReturnHeaders | undefined;
-                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
-                        headers: Headers;
-                        response: string | null;
-                    } : string | null>;
-                    options: {
-                        method: "POST";
-                    } & {
-                        use: any[];
-                    };
-                    path: "/update-user-ccc";
-                };
-            };
-        } | {
             id: "oneTimeToken";
             endpoints: {
                 generateOneTimeToken: {
@@ -17260,6 +17495,9 @@ declare const auth: {
                 updatedAt: Date;
                 image?: string | null | undefined | undefined;
                 handle: string;
+                bio: string;
+                website: string;
+                socialLinks: string;
                 twoFactorEnabled: boolean | null | undefined;
             };
         };
@@ -17419,11 +17657,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         name: string;
                         condition: {
                             value: string;
-                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                         }[] | {
                             value: string;
-                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                         }[][];
                         result: {
@@ -17463,11 +17701,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         name: string;
                         condition: {
                             value: string;
-                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                         }[] | {
                             value: string;
-                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length";
+                            field: "title" | "status" | "view" | "site_url" | "feed_url" | "category" | "entry_title" | "entry_content" | "entry_url" | "entry_author" | "entry_media_length" | "entry_attachments_duration";
                             operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
                         }[][];
                         result: {
@@ -17558,6 +17796,22 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             };
             outputFormat: "json";
             status: 200;
+        };
+    };
+} & {
+    "/chat": {
+        $post: {
+            input: {
+                json: {
+                    messages: {
+                        content: string;
+                        role: "user" | "assistant";
+                    }[];
+                };
+            };
+            output: Response;
+            outputFormat: "json";
+            status: hono_utils_http_status.StatusCode;
         };
     };
 }, "/ai"> | hono_types.MergeSchemaPath<{
@@ -17870,7 +18124,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 } & {
     "/rsshub-analytics": {
         $get: {
-            input: {};
+            input: {
+                query: {
+                    lang?: string | undefined;
+                };
+            };
             output: {
                 data: {
                     [x: string]: {
@@ -18542,6 +18800,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                 query: {
                     id?: string | undefined;
                     url?: string | undefined;
+                    entriesLimit?: number | undefined;
                 };
             };
             output: {
@@ -18780,6 +19039,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
+                    bio: string | null;
+                    website: string | null;
+                    socialLinks: {
+                        twitter: string;
+                        github: string;
+                        instagram: string;
+                        facebook: string;
+                        youtube: string;
+                    } | null;
                 };
             };
             outputFormat: "json";
@@ -18808,6 +19076,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     };
                 };
             };
@@ -19008,6 +19285,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                             twoFactorEnabled: boolean | null;
                             isAnonymous: boolean | null;
                             suspended: boolean | null;
+                            bio: string | null;
+                            website: string | null;
+                            socialLinks: {
+                                twitter: string;
+                                github: string;
+                                instagram: string;
+                                facebook: string;
+                                youtube: string;
+                            } | null;
                         }[];
                     };
                 } | {
@@ -19142,6 +19428,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     migrateTo: string | null;
                     rsshubRoute: string | null;
                     rsshubNamespace: string | null;
+                    nsfw: boolean | null;
                 } | null;
                 list: {
                     id: string;
@@ -19222,6 +19509,23 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             input: {};
             output: {
                 code: 0;
+                data: {
+                    successfulItems: {
+                        id?: string | undefined;
+                        title?: string | null | undefined;
+                        url?: string | undefined;
+                    }[];
+                    conflictItems: {
+                        id: string;
+                        url: string;
+                        title?: string | null | undefined;
+                    }[];
+                    parsedErrorItems: {
+                        url: string;
+                        id?: string | undefined;
+                        title?: string | null | undefined;
+                    }[];
+                };
             };
             outputFormat: "json";
             status: 200;
@@ -19403,6 +19707,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     toUser?: {
                         id: string;
@@ -19415,6 +19728,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     } | null | undefined;
                     toFeed?: {
                         id: string;
@@ -19566,6 +19888,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                         twoFactorEnabled: boolean | null;
                         isAnonymous: boolean | null;
                         suspended: boolean | null;
+                        bio: string | null;
+                        website: string | null;
+                        socialLinks: {
+                            twitter: string;
+                            github: string;
+                            instagram: string;
+                            facebook: string;
+                            youtube: string;
+                        } | null;
                     };
                     userId: string;
                     rank: number | null;
@@ -19864,7 +20195,11 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 } & {
     "/list": {
         $get: {
-            input: {};
+            input: {
+                query: {
+                    userId?: string | undefined;
+                };
+            };
             output: {
                 code: 0;
                 data: {
@@ -20027,6 +20362,8 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             input: {
                 json: {
                     type: string;
+                    nsfw?: boolean | undefined;
+                    feedId?: string | undefined;
                 };
             };
             output: {
@@ -20383,6 +20720,15 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     twoFactorEnabled: boolean | null;
                     isAnonymous: boolean | null;
                     suspended: boolean | null;
+                    bio: string | null;
+                    website: string | null;
+                    socialLinks: {
+                        twitter: string;
+                        github: string;
+                        instagram: string;
+                        facebook: string;
+                        youtube: string;
+                    } | null;
                 }[];
             };
             outputFormat: "json";
@@ -20691,7 +21037,18 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
             status: 200;
         };
     };
-}, "/trending">, "/">;
+}, "/trending"> | hono_types.MergeSchemaPath<{
+    "/g": {
+        $post: {
+            input: {
+                json: any;
+            };
+            output: Response;
+            outputFormat: "json";
+            status: hono_utils_http_status.StatusCode;
+        };
+    };
+}, "/data">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

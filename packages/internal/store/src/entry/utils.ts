@@ -1,18 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 
-import type { EntryModel } from "./types"
-
-/// Feed
-export const FEED_COLLECTION_LIST = "collections"
-
-/// Route Keys
-export const ROUTE_FEED_PENDING = "all"
-export const ROUTE_ENTRY_PENDING = "pending"
-export const ROUTE_FEED_IN_FOLDER = "folder-"
-export const ROUTE_FEED_IN_LIST = "list-"
-export const ROUTE_FEED_IN_INBOX = "inbox-"
-
-export const INBOX_PREFIX_ID = "inbox-"
+import { FEED_COLLECTION_LIST, ROUTE_FEED_PENDING } from "../constants/app"
+import type { UseEntriesReturn } from "./types"
 
 export function getEntriesParams({
   feedId,
@@ -61,12 +50,29 @@ export function getEntriesParams({
   }
 }
 
-export function getInboxFrom(entry?: EntryModel) {
+export function getInboxFrom(entry?: { inboxHandle?: string | null; authorUrl?: string | null }) {
   if (isInboxEntry(entry)) {
-    return entry.authorUrl?.replace("mailto:", "")
+    return entry?.authorUrl?.replace("mailto:", "")
   }
 }
 
-export function isInboxEntry(entry?: EntryModel): entry is EntryModel {
+export function isInboxEntry(entry?: { inboxHandle?: string | null }) {
   return !!entry?.inboxHandle
+}
+
+export const fallbackReturn: UseEntriesReturn = {
+  entriesIds: [],
+  hasNext: false,
+  hasUpdate: false,
+  refetch: async () => {},
+
+  fetchNextPage: async () => {},
+
+  isLoading: true,
+  isReady: false,
+  isFetching: false,
+  isRefetching: false,
+  isFetchingNextPage: false,
+  hasNextPage: false,
+  error: null,
 }

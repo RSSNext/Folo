@@ -1,5 +1,17 @@
 import { useGlobalFocusableHasScope } from "@follow/components/common/Focusable/hooks.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuPortal,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@follow/components/ui/context-menu/context-menu.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { nextFrame, preventDefault } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -13,18 +25,6 @@ import {
   MenuItemType,
   useContextMenuState,
 } from "~/atoms/context-menu"
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuPortal,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "~/components/ui/context-menu"
 import { HotkeyScope } from "~/constants"
 
 export const ContextMenuProvider: Component = ({ children }) => (

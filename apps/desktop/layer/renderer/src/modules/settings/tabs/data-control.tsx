@@ -13,18 +13,19 @@ import { Input } from "@follow/components/ui/input/Input.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { RadioGroup, RadioGroupItem } from "@follow/components/ui/radio-group/motion.js"
 import { Slider } from "@follow/components/ui/slider/index.js"
+import { exportDB } from "@follow/database/db"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { setGeneralSetting, useGeneralSettingValue } from "~/atoms/settings/general"
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { exportDB } from "~/database"
-import { tipcClient } from "~/lib/client"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import { ipcServices } from "~/lib/client"
 import { queryClient } from "~/lib/query-client"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
@@ -36,59 +37,32 @@ const { defineSettingItem, SettingBuilder } = createSetting(
   useGeneralSettingValue,
   setGeneralSetting,
 )
+
 export const SettingDataControl = () => {
   const { t } = useTranslation("settings")
   const { present } = useModalStack()
+  const { ask } = useDialog()
 
   return (
     <div className="mt-4">
+      {/* Top Level - Most Important */}
       <SettingBuilder
         settings={[
           {
             type: "title",
             value: t("general.data"),
           },
+
           defineSettingItem("dataPersist", {
             label: t("general.data_persist.label"),
             description: t("general.data_persist.description"),
           }),
 
           {
-            label: t("general.rebuild_database.label"),
-            action: () => {
-              present({
-                title: t("general.rebuild_database.title"),
-                clickOutsideToDismiss: true,
-                content: () => (
-                  <div className="text-sm">
-                    <p>{t("general.rebuild_database.warning.line1")}</p>
-                    <p>{t("general.rebuild_database.warning.line2")}</p>
-                    <div className="mt-4 flex justify-end">
-                      <Button
-                        buttonClassName="bg-red-500 px-3 text-white"
-                        onClick={async () => {
-                          await clearLocalPersistStoreData()
-                          window.location.reload()
-                        }}
-                      >
-                        {t("ok", { ns: "common" })}
-                      </Button>
-                    </div>
-                  </div>
-                ),
-              })
-            },
-            description: t("general.rebuild_database.description"),
-            buttonText: t("general.rebuild_database.button"),
+            type: "title",
+            value: t("general.export_data.title"),
           },
-          {
-            label: t("general.export_database.label"),
-            description: t("general.export_database.description"),
-            buttonText: t("general.export_database.button"),
-            action: () => {
-              exportDB()
-            },
-          },
+
           {
             label: t("general.export.label"),
             description: t("general.export.description"),
@@ -101,23 +75,44 @@ export const SettingDataControl = () => {
               })
             },
           },
-
-          ELECTRON_BUILD && {
-            type: "title",
-            value: t("general.cache"),
+          {
+            label: t("general.export_database.label"),
+            description: t("general.export_database.description"),
+            buttonText: t("general.export_database.button"),
+            action: () => {
+              exportDB()
+            },
           },
-          ELECTRON_BUILD && AppCacheLimit,
-          ELECTRON_BUILD ? CleanElectronCache : CleanCacheStorage,
-          ELECTRON_BUILD && {
+
+          {
             type: "title",
-            value: t("general.data_file.label"),
+            value: t("general.maintenance.title"),
+          },
+          ELECTRON_BUILD ? CleanElectronCache : CleanCacheStorage,
+          ELECTRON_BUILD && AppCacheLimit,
+          {
+            label: t("general.rebuild_database.label"),
+            action: () => {
+              ask({
+                title: t("general.rebuild_database.title"),
+                variant: "danger",
+                message: `${t("general.rebuild_database.warning.line1")}\n${t("general.rebuild_database.warning.line2")}`,
+                confirmText: t("ok", { ns: "common" }),
+                onConfirm: async () => {
+                  await clearLocalPersistStoreData()
+                  window.location.reload()
+                },
+              })
+            },
+            description: t("general.rebuild_database.description"),
+            buttonText: t("general.rebuild_database.button"),
           },
           ELECTRON_BUILD && {
             label: t("general.log_file.label"),
             description: t("general.log_file.description"),
             buttonText: t("general.log_file.button"),
             action: () => {
-              tipcClient?.revealLogFile()
+              ipcServices?.app.revealLogFile?.()
             },
           },
         ]}
@@ -227,7 +222,9 @@ const CleanCacheStorage = () => {
               if (key.startsWith("workbox-precache-")) return null
               return caches.delete(key)
             }),
-          )
+          ).then(() => {
+            toast.success(t("data_control.clean_cache.success"))
+          })
         }}
         buttonText={t("data_control.clean_cache.button")}
       />
@@ -247,7 +244,7 @@ const CleanElectronCache = () => {
             {t("data_control.clean_cache.button")}
             <MotionButtonBase
               onClick={() => {
-                tipcClient?.openCacheFolder()
+                ipcServices?.app.openCacheFolder?.()
               }}
               className="center flex"
             >
@@ -256,7 +253,7 @@ const CleanElectronCache = () => {
           </span>
         }
         action={async () => {
-          await tipcClient?.clearCache()
+          await ipcServices?.app.clearCache?.()
           queryClient.setQueryData(["app", "cache", "size"], 0)
         }}
         buttonText={t("data_control.clean_cache.button")}
@@ -270,7 +267,7 @@ const AppCacheLimit = () => {
   const { data: cacheSize, isLoading: isLoadingCacheSize } = useQuery({
     queryKey: ["app", "cache", "size"],
     queryFn: async () => {
-      const byteSize = (await tipcClient?.getCacheSize()) ?? 0
+      const byteSize = (await ipcServices?.app.getCacheSize?.()) ?? 0
       return Math.round(byteSize / 1024 / 1024)
     },
     refetchOnMount: "always",
@@ -282,13 +279,13 @@ const AppCacheLimit = () => {
   } = useQuery({
     queryKey: ["app", "cache", "limit"],
     queryFn: async () => {
-      const size = (await tipcClient?.getCacheLimit()) ?? 0
+      const size = (await ipcServices?.app.getCacheLimit?.()) ?? 0
       return size
     },
   })
 
   const onChange = (value: number[]) => {
-    tipcClient?.limitCacheSize(value[0]!)
+    ipcServices?.app.limitCacheSize?.(value[0]!)
     refetchCacheLimit()
   }
 
@@ -297,7 +294,7 @@ const AppCacheLimit = () => {
   const InfinitySymbol = <CarbonInfinitySymbol />
   return (
     <SettingItemGroup>
-      <div className={"mb-3 flex items-center justify-between gap-4"}>
+      <div className={"mb-3 mt-4 flex items-center justify-between gap-4"}>
         <Label className="center flex">
           {t("data_control.app_cache_limit.label")}
 

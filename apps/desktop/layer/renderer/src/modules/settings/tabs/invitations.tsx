@@ -26,6 +26,7 @@ import { CopyButton } from "~/components/ui/button/CopyButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
+import { copyToClipboard } from "~/lib/clipboard"
 import { toastFetchError } from "~/lib/error-parser"
 import { usePresentUserProfileModal, useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { UserAvatar } from "~/modules/user/UserAvatar"
@@ -179,7 +180,7 @@ const ConfirmModalContent = ({ dismiss }: { dismiss: () => void }) => {
     onSuccess(data) {
       Queries.invitations.list().invalidate()
       toast(t("invitation.newInvitationSuccess"))
-      navigator.clipboard.writeText(data.data)
+      copyToClipboard(data.data)
       dismiss()
     },
   })

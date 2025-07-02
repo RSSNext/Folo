@@ -24,6 +24,7 @@ import {
   LazyExtensionExposeProvider,
   LazyExternalJumpInProvider,
   LazyLottieRenderContainer,
+  LazyPopoverProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,
 } from "./lazy/index"
@@ -56,6 +57,7 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                 <Suspense>
                   <LazyExtensionExposeProvider />
                   <LazyContextMenuProvider />
+                  <LazyPopoverProvider />
                   <LazyLottieRenderContainer />
                   <LazyExternalJumpInProvider />
                   <LazyReloadPrompt />

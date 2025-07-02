@@ -19,18 +19,16 @@ class UnreadServiceStatic implements Resetable {
 
   async upsertMany(unreads: UnreadSchema[], options?: UnreadUpdateOptions) {
     if (unreads.length === 0) return
-    await db.transaction(async (tx) => {
-      if (options?.reset) {
-        await tx.delete(unreadTable).execute()
-      }
-      await tx
-        .insert(unreadTable)
-        .values(unreads)
-        .onConflictDoUpdate({
-          target: [unreadTable.subscriptionId],
-          set: conflictUpdateAllExcept(unreadTable, ["subscriptionId"]),
-        })
-    })
+    if (options?.reset) {
+      await db.delete(unreadTable).execute()
+    }
+    await db
+      .insert(unreadTable)
+      .values(unreads)
+      .onConflictDoUpdate({
+        target: [unreadTable.id],
+        set: conflictUpdateAllExcept(unreadTable, ["id"]),
+      })
   }
 }
 

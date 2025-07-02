@@ -1,5 +1,6 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
 import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import { openInFollowApp } from "@client/lib/helper"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -16,8 +17,9 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import { DEEPLINK_SCHEME } from "@follow/shared/constants"
+import { useIsDark } from "@follow/hooks"
 import { env } from "@follow/shared/env.ssr"
+import { cn } from "@follow/utils/utils"
 import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -54,14 +56,22 @@ export function Login() {
     const { data } = await oneTimeToken.generate()
     if (!data) return null
     return {
-      url: `${DEEPLINK_SCHEME}auth?token=${data.token}`,
+      url: `auth?token=${data.token}`,
     }
   }, [])
 
+  const [openFailed, setOpenFailed] = useState(false)
+  const [callbackUrl, setCallbackUrl] = useState<string>()
   const handleOpenApp = useCallback(async () => {
     const callbackUrl = await getCallbackUrl()
     if (!callbackUrl) return
-    window.open(callbackUrl.url, "_top")
+    setCallbackUrl(callbackUrl.url)
+    openInFollowApp({
+      deeplink: callbackUrl.url,
+      fallback: () => {
+        setOpenFailed(true)
+      },
+    })
   }, [getCallbackUrl])
 
   const onceRef = useRef(false)
@@ -75,6 +85,7 @@ export function Login() {
   const navigate = useNavigate()
 
   const [isEmail, setIsEmail] = useState(false)
+  const isDark = useIsDark()
 
   const LoginOrStatusContent = useMemo(() => {
     switch (true) {
@@ -120,6 +131,20 @@ export function Login() {
                 {t("redirect.openApp", { app_name: APP_NAME })}
               </Button>
             </div>
+            {openFailed && callbackUrl && (
+              <div className="text-text mt-8 w-[31rem] space-y-2 text-center text-sm">
+                <p>{t("login.enter_token")}</p>
+                <p className="bg-fill-tertiary flex items-center justify-center gap-4 rounded-lg p-3">
+                  <span className="blur-sm hover:blur-none">{callbackUrl}</span>
+                  <i
+                    className="i-mgc-copy-2-cute-re size-4 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(callbackUrl)
+                    }}
+                  />
+                </p>
+              </div>
+            )}
           </div>
         )
       }
@@ -143,11 +168,12 @@ export function Login() {
                     className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
                   >
                     <img
-                      className="absolute left-9 h-5"
-                      style={{
-                        color: provider.color,
-                      }}
-                      src={provider.icon64}
+                      className={cn(
+                        "absolute left-9 h-5",
+                        !provider.iconDark64 &&
+                          "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                      )}
+                      src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                     />
                     <span>{t("login.continueWith", { provider: provider.name })}</span>
                   </MotionButtonBase>
@@ -179,7 +205,18 @@ export function Login() {
         )
       }
     }
-  }, [authProviders, handleOpenApp, isAuthenticated, refetch, t, isEmail, navigate])
+  }, [
+    authProviders,
+    handleOpenApp,
+    isAuthenticated,
+    refetch,
+    t,
+    isEmail,
+    navigate,
+    openFailed,
+    callbackUrl,
+    isDark,
+  ])
   const Content = useMemo(() => {
     switch (true) {
       case redirecting: {

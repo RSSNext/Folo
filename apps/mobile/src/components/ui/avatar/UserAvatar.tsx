@@ -37,7 +37,7 @@ export const UserAvatar = ({
         {name ? (
           <Text
             className="text-secondary-label p-2 text-center uppercase"
-            style={{ fontSize: size }}
+            style={{ fontSize: size / 3 }}
             adjustsFontSizeToFit
           >
             {name.slice(0, 2)}

@@ -230,8 +230,8 @@ const NavigationLinkGroup: FC<{
 }
 
 const navigationGroups = [
-  DataGroupNavigationLinks,
   SettingGroupNavigationLinks,
+  DataGroupNavigationLinks,
   BetaGroupNavigationLinks,
   PrivacyGroupNavigationLinks,
   ActionGroupNavigationLinks,

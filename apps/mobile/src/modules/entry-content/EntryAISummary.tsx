@@ -1,10 +1,9 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { SummaryGeneratingStatus } from "@follow/store/summary/enum"
-import { usePrefetchSummary, useSummary } from "@follow/store/summary/hooks"
-import { useSummaryStore } from "@follow/store/summary/store"
+import { usePrefetchSummary, useSummary, useSummaryStatus } from "@follow/store/summary/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Text } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -21,25 +20,42 @@ export const EntryAISummary: FC<{
   const showReadability = useAtomValue(ctx.showReadabilityAtom)
   const showAISummaryOnce = useAtomValue(ctx.showAISummaryAtom)
   const showAISummary = useGeneralSettingKey("summary") || showAISummaryOnce
-  const entryReadabilityContent = useEntry(entryId, (state) => state.readabilityContent)
-  const summary = useSummary(entryId)
+  const entry = useEntry(
+    entryId,
+    useCallback(
+      (state) => {
+        const target =
+          showReadability && state.readabilityContent ? "readabilityContent" : "content"
+
+        return {
+          target,
+        } as const
+      },
+      [showReadability],
+    ),
+  )
   const actionLanguage = useActionLanguage()
+  const summary = useSummary(entryId, actionLanguage)
   usePrefetchSummary({
     entryId,
-    target: showReadability && entryReadabilityContent ? "readabilityContent" : "content",
+    target: entry?.target || "content",
     actionLanguage,
     enabled: showAISummary,
   })
+  const maybeMarkdown = showReadability
+    ? summary?.readabilitySummary || summary?.summary
+    : summary?.summary
   const summaryToShow = useMemo(() => {
-    const maybeMarkdown = showReadability
-      ? summary?.readabilitySummary || summary?.summary
-      : summary?.summary
     if (!maybeMarkdown) return null
 
     return renderMarkdown(maybeMarkdown)
-  }, [showReadability, summary?.readabilitySummary, summary?.summary])
+  }, [maybeMarkdown])
 
-  const status = useSummaryStore((state) => state.generatingStatus[entryId])
+  const status = useSummaryStatus({
+    entryId,
+    actionLanguage,
+    target: entry?.target || "content",
+  })
   if (!showAISummary) return null
 
   return (
@@ -52,6 +68,7 @@ export const EntryAISummary: FC<{
     >
       <AISummary
         className="my-3"
+        rawSummaryForCopy={maybeMarkdown}
         summary={summaryToShow}
         pending={status === SummaryGeneratingStatus.Pending}
         error={status === SummaryGeneratingStatus.Error ? "Failed to generate summary" : undefined}

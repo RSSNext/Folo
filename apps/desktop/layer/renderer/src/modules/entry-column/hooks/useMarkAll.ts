@@ -1,52 +1,75 @@
+import type { FeedViewType } from "@follow/constants"
+import { getFolderFeedsByFeedId } from "@follow/store/subscription/getter"
+import { unreadSyncService } from "@follow/store/unread/store"
+
 import { getGeneralSettings } from "~/atoms/settings/general"
-import { getRouteParams } from "~/hooks/biz/useRouteParams"
-import { getFolderFeedsByFeedId, subscriptionActions } from "~/store/subscription"
 
 export interface MarkAllFilter {
   startTime: number
   endTime: number
 }
 
-export const markAllByRoute = async (filter?: MarkAllFilter) => {
-  const routerParams = getRouteParams()
-  const { feedId, view, inboxId, listId } = routerParams
+export const markAllByRoute = async (
+  data: {
+    feedId?: string | undefined
+    view: FeedViewType
+    inboxId?: string | undefined
+    listId?: string | undefined
+
+    isAllFeeds?: boolean
+  },
+  time?: MarkAllFilter,
+) => {
+  const { feedId, view, inboxId, listId, isAllFeeds } = data
   const folderIds = getFolderFeedsByFeedId({
     feedId,
     view,
   })
 
-  if (!routerParams) return
+  if (!feedId) return
 
-  if (typeof routerParams.feedId === "number" || routerParams.isAllFeeds) {
-    const { hidePrivateSubscriptionsInTimeline } = getGeneralSettings()
-    subscriptionActions.markReadByView({
+  const { hidePrivateSubscriptionsInTimeline: excludePrivate } = getGeneralSettings()
+  if (typeof feedId === "number" || isAllFeeds) {
+    unreadSyncService.markBatchAsRead({
       view,
-      filter,
-      excludePrivate: hidePrivateSubscriptionsInTimeline,
+      time,
+      excludePrivate,
     })
   } else if (inboxId) {
-    subscriptionActions.markReadByIds({
-      inboxId,
+    unreadSyncService.markBatchAsRead({
+      filter: {
+        inboxId,
+      },
       view,
-      filter,
+      time,
+      excludePrivate,
     })
   } else if (listId) {
-    subscriptionActions.markReadByIds({
-      listId,
+    unreadSyncService.markBatchAsRead({
+      filter: {
+        listId,
+      },
       view,
-      filter,
+      time,
+      excludePrivate,
     })
   } else if (folderIds?.length) {
-    subscriptionActions.markReadByIds({
-      feedIds: folderIds,
+    unreadSyncService.markBatchAsRead({
+      filter: {
+        feedIdList: folderIds,
+      },
       view,
-      filter,
+      time,
+      excludePrivate,
     })
-  } else if (routerParams.feedId) {
-    subscriptionActions.markReadByIds({
-      feedIds: routerParams.feedId?.split(","),
+  } else if (feedId) {
+    unreadSyncService.markBatchAsRead({
+      filter: {
+        feedIdList: feedId?.split(","),
+      },
       view,
-      filter,
+      time,
+      excludePrivate,
     })
   }
 }

@@ -1,4 +1,5 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { usePrefetchUser } from "@follow/store/user/hooks"
 import { capitalizeFirstLetter } from "@follow/utils/utils"
 import { createElement, lazy, useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -6,14 +7,13 @@ import { toast } from "sonner"
 import { parse } from "tldts"
 
 import { useWhoami } from "~/atoms/user"
-import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
+import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
 import { PlainModal } from "~/components/ui/modal/stacked/custom-modal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { getFetchErrorInfo } from "~/lib/error-parser"
-import { users } from "~/queries/users"
 
 import { TOTPForm, TwoFactorForm } from "./two-factor"
 
@@ -64,17 +64,17 @@ export const usePresentUserProfileModal = (variant: Variant = "dialog") => {
 
       if (isMobile()) {
         const useDataFetcher = () => {
-          const user = useAuthQuery(users.profile({ userId }))
-          const subscriptions = useUserSubscriptionsQuery(user.data?.id)
+          const user = usePrefetchUser(userId)
+          const subscriptions = useUserSubscriptionsQuery(user?.data?.id)
           return {
             ...user,
             isLoading: user.isLoading || subscriptions.isLoading,
           }
         }
-        type ResponseType = Awaited<ReturnType<ReturnType<typeof useDataFetcher>["fn"]>>
+        type ResponseType = ReturnType<typeof useDataFetcher>["data"]
         return presentAsync<ResponseType>({
           id: `user-profile-${userId}`,
-          title: (data: ResponseType) => `${data.name}'s Profile`,
+          title: (data: ResponseType) => `${data?.name}'s Profile`,
 
           content: () => createElement(LazyUserProfileModalContent, { userId }),
           useDataFetcher,

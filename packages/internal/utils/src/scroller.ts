@@ -1,9 +1,9 @@
 // @see https://github.com/Innei/sprightly/blob/2444dcdb789ca585337a4d241095640a524231db/src/lib/scroller.ts
 
-import type { Spring } from "motion/react"
+import type { Transition } from "motion/react"
 import { animateValue } from "motion/react"
 
-const spring: Spring = {
+const spring: Transition = {
   type: "spring",
   stiffness: 1000,
   damping: 250,

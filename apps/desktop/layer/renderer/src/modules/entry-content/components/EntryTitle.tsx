@@ -1,17 +1,19 @@
-import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils/utils"
-import { useMemo } from "react"
+import { useEntry, useEntryReadHistory } from "@follow/store/entry/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useInboxById } from "@follow/store/inbox/hooks"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
+import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
 
+import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { useWhoami } from "~/atoms/user"
 import { RelativeTime } from "~/components/ui/datetime"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
+import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
-import { useEntryTranslation } from "~/store/ai/hook"
-import { useEntry, useEntryReadHistory } from "~/store/entry"
-import { getPreferredTitle, useFeedById } from "~/store/feed"
-import { useInboxById } from "~/store/inbox"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { EntryTranslation } from "../../entry-column/translation"
 
@@ -22,31 +24,44 @@ interface EntryLinkProps {
 
 export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   const user = useWhoami()
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => {
+    const { feedId, inboxHandle } = state
+    const { author, authorAvatar, authorUrl, publishedAt, title } = state
+
+    const attachments = state.attachments || []
+    const { duration_in_seconds } =
+      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
+    const seconds = duration_in_seconds ? formatTimeToSeconds(duration_in_seconds) : undefined
+    const estimatedMins = seconds ? formatEstimatedMins(Math.floor(seconds / 60)) : undefined
+
+    const media = state.media || []
+    const firstPhoto = media.find((a) => a.type === "photo")
+    const firstPhotoUrl = firstPhoto?.url
+    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+    const titleEntry = { authorUrl }
+
+    return {
+      author,
+      estimatedMins,
+      feedId,
+      iconEntry,
+      inboxId: inboxHandle,
+      publishedAt,
+      title,
+      titleEntry,
+    }
+  })
+
   const feed = useFeedById(entry?.feedId)
   const inbox = useInboxById(entry?.inboxId)
-  const entryHistory = useEntryReadHistory(entryId)
+  const data = useEntryReadHistory(entryId)
+  const entryHistory = data?.entryReadHistories
   const populatedFullHref = useFeedSafeUrl(entryId)
-  const translation = useEntryTranslation({ entry, extraFields: ["title"] })
+  const actionLanguage = useActionLanguage()
+
+  const translation = useEntryTranslation(entryId, actionLanguage)
 
   const dateFormat = useUISettingKey("dateFormat")
-
-  const audioAttachment = useMemo(() => {
-    return entry?.entries?.attachments?.find((a) => a.mime_type?.startsWith("audio") && a.url)
-  }, [entry?.entries?.attachments])
-
-  const estimatedMins = useMemo(() => {
-    if (!audioAttachment?.duration_in_seconds) {
-      return
-    }
-
-    const durationInSeconds = formatTimeToSeconds(audioAttachment.duration_in_seconds)
-    if (!durationInSeconds) {
-      return
-    }
-
-    return formatEstimatedMins(Math.floor(durationInSeconds / 60))
-  }, [audioAttachment])
 
   const navigateEntry = useNavigateEntry()
 
@@ -54,13 +69,13 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
   return compact ? (
     <div className="cursor-button @sm:-mx-3 @sm:p-3 -mx-6 flex items-center gap-2 rounded-lg p-6 transition-colors">
-      <FeedIcon fallback feed={feed || inbox} entry={entry.entries} size={50} />
+      <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={50} />
       <div className="leading-6">
         <div className="flex items-center gap-1 text-base font-semibold">
-          <span>{entry.entries.author || feed?.title || inbox?.title}</span>
+          <span>{entry.author || feed?.title || inbox?.title}</span>
         </div>
         <div className="text-zinc-500">
-          <RelativeTime date={entry.entries.publishedAt} />
+          <RelativeTime date={entry.publishedAt} />
         </div>
       </div>
     </div>
@@ -75,8 +90,8 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
             className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
           >
             <EntryTranslation
-              source={titleCase(entry.entries.title ?? "")}
-              target={titleCase(translation.data?.title ?? "")}
+              source={titleCase(entry.title ?? "")}
+              target={titleCase(translation?.title ?? "")}
               className="text-text inline-block select-text hyphens-auto duration-200"
               inline={false}
               bilingual
@@ -95,20 +110,20 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 })
               }
             >
-              <FeedIcon fallback feed={feed || inbox} entry={entry.entries} size={16} />
-              {getPreferredTitle(feed || inbox, entry.entries)}
+              <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={16} />
+              {getPreferredTitle(feed || inbox, entry.titleEntry)}
             </div>
             <div className="flex items-center gap-1.5">
               <i className="i-mgc-calendar-time-add-cute-re text-base" />
               <span className="text-xs tabular-nums">
-                <RelativeTime date={entry.entries.publishedAt} dateFormatTemplate={dateFormat} />
+                <RelativeTime date={entry.publishedAt} dateFormatTemplate={dateFormat} />
               </span>
             </div>
 
-            {estimatedMins && (
+            {entry.estimatedMins && (
               <div className="flex items-center gap-1.5">
                 <i className="i-mgc-time-cute-re text-base" />
-                <span className="text-xs tabular-nums">{estimatedMins}</span>
+                <span className="text-xs tabular-nums">{entry.estimatedMins}</span>
               </div>
             )}
 

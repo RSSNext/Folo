@@ -1,9 +1,7 @@
+import type { FeedViewType } from "@follow/constants"
 import type { EntrySchema } from "@follow/database/schemas/types"
 
-import type { EntryTranslation } from "../translation/types"
-
 export type EntryModel = EntrySchema
-export type EntryWithTranslation = EntryModel & { translation?: EntryTranslation }
 export type FetchEntriesProps = {
   feedId?: string
   feedIdList?: string[]
@@ -18,6 +16,31 @@ export type FetchEntriesProps = {
 }
 
 export type FetchEntriesPropsSettings = {
-  hidePrivateSubscriptionsInTimeline: boolean
-  unreadOnly: boolean
+  hidePrivateSubscriptionsInTimeline?: boolean
+  unreadOnly?: boolean
 }
+
+export type UseEntriesProps = {
+  viewId?: FeedViewType
+  active?: boolean
+}
+
+export type UseEntriesReturn = {
+  entriesIds: string[]
+  hasNext: boolean
+  hasUpdate: boolean
+  refetch: () => Promise<void>
+  fetchNextPage: () => Promise<void> | void
+  isLoading: boolean
+  isRefetching: boolean
+  isReady: boolean
+  isFetching: boolean
+  isFetchingNextPage: boolean
+  hasNextPage: boolean
+  error: Error | null
+}
+
+export type UseEntriesControl = Pick<
+  UseEntriesReturn,
+  "fetchNextPage" | "isFetching" | "refetch" | "isRefetching" | "hasNextPage"
+>

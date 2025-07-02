@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useList } from "@follow/store/list/hooks"
+import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
@@ -33,7 +33,7 @@ import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
-  const list = useList(id)
+  const list = useListById(id)
   const { isLoading } = useQuery({
     queryKey: ["list", id],
     queryFn: () => listSyncServices.fetchListById({ id }),
@@ -53,7 +53,7 @@ export const FollowList = (props: { id: string }) => {
 
 const formSchema = z.object({
   view: z.number(),
-  isPrivate: z.boolean().default(false),
+  isPrivate: z.boolean(),
   title: z.string().optional(),
 })
 
@@ -61,7 +61,7 @@ const Impl = (props: { id: string }) => {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const { id } = props
-  const list = useList(id)
+  const list = useListById(id)
 
   const subscription = useSubscriptionByListId(id)
   const isSubscribed = !!subscription

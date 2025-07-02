@@ -1,14 +1,20 @@
-import type { EntryModel, EntryWithTranslation } from "@follow/store/entry/types"
+import { useEntry } from "@follow/store/entry/hooks"
+import type { EntryModel } from "@follow/store/entry/types"
+import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
 import { TouchableOpacity, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
+import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 
+import { useLightboxControls } from "../../lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
@@ -16,7 +22,7 @@ import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
 import { NativeWebView } from "./native-webview"
 
 type EntryContentWebViewProps = {
-  entry: EntryWithTranslation
+  entryId: string
   noMedia?: boolean
   showReadability?: boolean
   showTranslation?: boolean
@@ -28,7 +34,8 @@ const setCodeTheme = (light: string, dark: string) => {
   )
 }
 
-const setWebViewEntry = (entry: EntryModel) => {
+const setWebViewEntry = (entry?: EntryModel | null) => {
+  if (!entry) return
   SharedWebViewModule.evaluateJavaScript(
     `setEntry(JSON.parse(${JSON.stringify(JSON.stringify(entry))}))`,
   )
@@ -45,13 +52,39 @@ const setReaderRenderInlineStyle = (value: boolean) => {
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
+  const { openLightbox } = useLightboxControls()
 
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
-  const { entry, noMedia, showReadability, showTranslation } = props
+  const { entryId, noMedia, showReadability, showTranslation } = props
+  const entry = useEntry(entryId, (state) => state)
+  const language = useActionLanguage()
+  const translation = useEntryTranslation(entryId, language)
 
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
+
+  // Handle image preview events
+  useEffect(() => {
+    return EventBus.subscribe("PREVIEW_IMAGE", (event) => {
+      const { imageUrls, index } = event
+
+      runOnUI(() => {
+        "worklet"
+        runOnJS(openLightbox)({
+          images: imageUrls.map((url: string) => ({
+            uri: url,
+            dimensions: null,
+            thumbUri: url,
+            thumbDimensions: null,
+            thumbRect: null,
+            type: "image",
+          })),
+          index,
+        })
+      })()
+    })
+  }, [openLightbox])
 
   useEffect(() => {
     setNoMedia(!!noMedia)
@@ -66,17 +99,25 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   }, [codeThemeLight, codeThemeDark, mode])
 
   const entryInWebview = React.useMemo(() => {
-    const entryContent = showReadability ? entry.readabilityContent : entry.content
+    if (!entry) return null
+
+    const entryContent = showReadability ? entry?.readabilityContent : entry?.content
     const translatedContent = showReadability
-      ? entry.translation?.readabilityContent
-      : entry.translation?.content
+      ? translation?.readabilityContent
+      : translation?.content
     const content = showTranslation ? translatedContent || entryContent : entryContent
 
     return {
       ...entry,
       content,
     }
-  }, [entry, showReadability, showTranslation])
+  }, [
+    entry,
+    showReadability,
+    showTranslation,
+    translation?.content,
+    translation?.readabilityContent,
+  ])
 
   useEffect(() => {
     setWebViewEntry(entryInWebview)
@@ -105,7 +146,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
       </View>
 
       <Portal>
-        {(showReadability ? !entry.readabilityContent : !entry.content) && (
+        {(showReadability ? !entry?.readabilityContent : !entry?.content) && (
           <View className="absolute inset-0 items-center justify-center">
             <PlatformActivityIndicator />
           </View>

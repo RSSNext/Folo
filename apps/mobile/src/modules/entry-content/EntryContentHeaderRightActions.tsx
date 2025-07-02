@@ -2,8 +2,8 @@ import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
-import { useFeed } from "@follow/store/feed/hooks"
-import { useSubscription } from "@follow/store/subscription/hooks"
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { summaryActions, summarySyncService } from "@follow/store/summary/store"
 import { translationSyncService } from "@follow/store/translation/store"
 import { setStringAsync } from "expo-clipboard"
@@ -84,8 +84,8 @@ const HeaderRightActionsImpl = ({
     useGeneralSettingKey("translation") || !!entry?.settings?.translation
   const showReadabilitySetting = !!entry?.settings?.readability
 
-  const feed = useFeed(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
-  const subscription = useSubscription(feed?.feedId as string)
+  const feed = useFeedById(entry?.feedId as string, (feed) => feed && { feedId: feed.id })
+  const subscription = useSubscriptionById(feed?.feedId as string)
 
   const handleToggleStar = () => {
     if (!entry || !feed || !subscription) return
@@ -94,7 +94,6 @@ const HeaderRightActionsImpl = ({
       ? collectionSyncService.unstarEntry(entryId)
       : collectionSyncService.starEntry({
           entryId,
-          feedId: feed.feedId,
           view: subscription.view,
         })
   }
@@ -112,7 +111,7 @@ const HeaderRightActionsImpl = ({
     if (!entry) return
 
     const getCachedOrGenerateSummary = async () => {
-      const hasSummary = summaryActions.getSummary(entryId)
+      const hasSummary = summaryActions.getSummary(entryId, getActionLanguage())
       if (hasSummary) return
 
       const hideGlowEffect = showIntelligenceGlowEffect()

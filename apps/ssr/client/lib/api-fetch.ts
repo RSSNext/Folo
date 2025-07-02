@@ -1,7 +1,10 @@
 import { env } from "@follow/shared/env.ssr"
 import type { AppType } from "@follow/shared/hono"
+import { createSSRAPIHeaders } from "@follow/utils/headers"
 import { hc } from "hono/client"
 import { ofetch } from "ofetch"
+
+import PKG from "../../../desktop/package.json"
 
 const apiFetch = ofetch.create({
   credentials: "include",
@@ -9,7 +12,12 @@ const apiFetch = ofetch.create({
   onRequest: ({ options }) => {
     const header = new Headers(options.headers)
 
-    header.set("x-app-version", "Web External")
+    const headers = createSSRAPIHeaders({ version: PKG.version })
+
+    Object.entries(headers).forEach(([key, value]) => {
+      header.set(key, value)
+    })
+
     options.headers = header
   },
 })
@@ -19,9 +27,4 @@ export const apiClient = hc<AppType>(env.VITE_EXTERNAL_API_URL || env.VITE_API_U
     apiFetch(input.toString(), options).catch((err) => {
       throw err
     }),
-  headers() {
-    return {
-      "X-App-Version": "Web External",
-    }
-  },
 })

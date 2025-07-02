@@ -1,7 +1,6 @@
+import { parseHtml } from "@follow/utils/html"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { useInsertionEffect } from "react"
-
-import { parseHtml } from "./parse-html"
 
 export type ParseHtmlOptions = {
   renderInlineStyle?: boolean

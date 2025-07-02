@@ -1,19 +1,19 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardContent, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { RelativeTime } from "@follow/components/ui/datetime/index.js"
+import { useIsSubscribed } from "@follow/store/subscription/hooks"
 import { getBackgroundGradient } from "@follow/utils/color"
-import { cn } from "@follow/utils/utils"
+import { cn, formatNumber } from "@follow/utils/utils"
 import type { FC } from "react"
-import { memo, useMemo } from "react"
+import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import type { apiClient } from "~/lib/api-fetch"
-import { useIsSubscribed } from "~/store/subscription"
 
 import { FollowSummary } from "../feed/feed-summary"
 
@@ -95,8 +95,7 @@ interface DiscoverFeedCardProps {
 
 export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   ({ item, onSuccess, className }) => {
-    const numberFormatter = useMemo(() => new Intl.NumberFormat("en-US", {}), [])
-    const { t } = useTranslation()
+    const { t } = useTranslation("common")
 
     const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")
 
@@ -104,24 +103,22 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
       <Card
         data-feed-id={item.feed?.id || item.list?.id}
         className={cn(
-          "select-text overflow-hidden rounded-b-none border-0 border-b border-zinc-200/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-zinc-800/50 dark:bg-neutral-800/50",
+          "select-text overflow-hidden border border-zinc-200/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-zinc-800/50 dark:bg-neutral-800/50",
           className,
         )}
       >
-        <CardHeader className="p-0 pb-2">
+        <CardHeader className="p-4 pb-2">
           <FollowSummary feed={item.feed || item.list!} docs={item.docs} />
         </CardHeader>
-        {item.docs ? (
-          <CardContent className="p-0">
+        <CardContent className="px-4">
+          {item.docs ? (
             <a href={item.docs} target="_blank" rel="noreferrer">
               <Button buttonClassName="rounded-full bg-zinc-900 px-6 text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-zinc-900">
                 View Docs
               </Button>
             </a>
-          </CardContent>
-        ) : (
-          <>
-            <CardContent className="p-0">
+          ) : (
+            <>
               {!!item.entries?.length && (
                 <div className="mt-2">
                   <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -133,14 +130,14 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                   </div>
                 </div>
               )}
-              <div className="mt-2 flex justify-between gap-4">
+              <div className="mt-4 flex justify-between gap-4">
                 <div className="text-text-secondary flex items-center gap-3 text-sm">
                   {!!item.analytics?.subscriptionCount && (
                     <div className="flex items-center gap-1.5">
                       <i className="i-mgc-user-3-cute-re" />
 
                       <span>
-                        {numberFormatter.format(item.analytics.subscriptionCount)}{" "}
+                        {formatNumber(item.analytics.subscriptionCount)}{" "}
                         {t("feed.follower", { count: item.analytics.subscriptionCount })}
                       </span>
                     </div>
@@ -163,12 +160,11 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                     </div>
                   ) : null}
                 </div>
-
                 <FeedCardActions item={item} onSuccess={onSuccess} isSubscribed={isSubscribed} />
               </div>
-            </CardContent>
-          </>
-        )}
+            </>
+          )}
+        </CardContent>
       </Card>
     )
   },

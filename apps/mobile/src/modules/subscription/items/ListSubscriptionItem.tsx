@@ -1,6 +1,6 @@
-import { useList } from "@follow/store/list/hooks"
-import { useSubscription } from "@follow/store/subscription/hooks"
-import { useListUnreadCount } from "@follow/store/unread/hooks"
+import { useListById } from "@follow/store/list/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
+import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
 import { Text, View } from "react-native"
@@ -26,9 +26,9 @@ interface ListSubscriptionItemProps extends SubscriptionItemBaseProps {}
 export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscriptionItemProps) => {
   const colorLabel = useColor("label")
 
-  const list = useList(id)
-  const subscription = useSubscription(id)
-  const unreadCount = useListUnreadCount(id)
+  const list = useListById(id)
+  const subscription = useSubscriptionById(id)
+  const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
 
   if (!list) return null

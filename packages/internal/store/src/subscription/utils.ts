@@ -1,7 +1,7 @@
 import { capitalizeFirstLetter, parseUrl } from "@follow/utils/utils"
 
-import { getFeed } from "../feed/getter"
-import type { SubscriptionModel } from "./store"
+import { getFeedById } from "../feed/getter"
+import type { SubscriptionModel } from "./types"
 
 export const getInboxStoreId = (inboxId: string) => `inbox/${inboxId}`
 
@@ -16,7 +16,7 @@ export const getDefaultCategory = (subscription?: SubscriptionModel) => {
   if (!subscription) return null
   const { feedId } = subscription
   if (!feedId) return null
-  const siteUrl = getFeed(feedId)?.siteUrl
+  const siteUrl = getFeedById(feedId)?.siteUrl
   if (!siteUrl) return null
   const parsed = parseUrl(siteUrl)
   return parsed?.domain ? capitalizeFirstLetter(parsed.domain) : null

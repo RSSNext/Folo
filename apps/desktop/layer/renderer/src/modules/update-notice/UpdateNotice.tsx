@@ -2,26 +2,16 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { m, useMotionTemplate, useMotionValue } from "motion/react"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
 import { getUpdaterStatus, setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
-import { tipcClient } from "~/lib/client"
-import { handlers } from "~/tipc"
+import { ipcServices } from "~/lib/client"
 
 export const UpdateNotice = () => {
   const updaterStatus = useUpdaterStatus()
   const { t } = useTranslation()
-
-  useEffect(() => {
-    return handlers?.updateDownloaded.listen(() => {
-      setUpdaterStatus({
-        type: "app",
-        status: "ready",
-      })
-    })
-  }, [])
 
   const handleClick = useRef(() => {
     const status = getUpdaterStatus()
@@ -31,11 +21,11 @@ export const UpdateNotice = () => {
     })
     switch (status.type) {
       case "app": {
-        tipcClient?.quitAndInstall()
+        ipcServices?.app.quitAndInstall()
         break
       }
       case "renderer": {
-        tipcClient?.rendererUpdateReload()
+        ipcServices?.app.rendererUpdateReload()
         break
       }
       case "pwa": {

@@ -1,9 +1,10 @@
+import { useFeedStore } from "@follow/store/feed/store"
+import { useSubscriptionStore } from "@follow/store/subscription/store"
+import { getInboxHandleOrFeedIdFromFeedId } from "@follow/store/unread/utils"
 import { sortByAlphabet } from "@follow/utils/utils"
 import { Fragment, useCallback } from "react"
 
-import { getInboxOrFeedIdFromFeedId } from "~/constants"
-import { getPreferredTitle, useFeedStore } from "~/store/feed"
-import { useSubscriptionStore } from "~/store/subscription"
+import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useFeedListSortSelector } from "../atom"
 import { FeedCategoryAutoHideUnread } from "../FeedCategory"
@@ -96,7 +97,7 @@ export const SortByAlphabeticalFeedList = ({
 export const SortByAlphabeticalListList = ({ view, data }: ListListProps) => {
   return (
     <div>
-      {Object.keys(data).map((listId) => (
+      {data.map((listId) => (
         <ListItemAutoHideUnread key={listId} listId={listId} view={view} />
       ))}
     </div>
@@ -106,8 +107,8 @@ export const SortByAlphabeticalListList = ({ view, data }: ListListProps) => {
 export const SortByAlphabeticalInboxList = ({ view, data }: ListListProps) => {
   return (
     <div>
-      {Object.keys(data).map((feedId) => (
-        <InboxItem key={feedId} inboxId={getInboxOrFeedIdFromFeedId(feedId)} view={view} />
+      {data.map((feedId) => (
+        <InboxItem key={feedId} inboxId={getInboxHandleOrFeedIdFromFeedId(feedId)} view={view} />
       ))}
     </div>
   )

@@ -6,7 +6,7 @@ import { HTML } from "~/components/ui/markdown/HTML"
 
 export const EntryTranslation: Component<{
   source?: string | null
-  target?: string
+  target?: string | null
   isHTML?: boolean
   inline?: boolean
   bilingual?: boolean

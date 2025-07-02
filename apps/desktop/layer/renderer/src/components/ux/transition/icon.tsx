@@ -1,14 +1,14 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils/utils"
-import type { Target, Transition } from "motion/react"
+import type { TargetAndTransition, Transition } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { cloneElement, useEffect, useState } from "react"
 
 type TransitionType = {
-  initial: Target | boolean
-  animate: Target
-  exit: Target
+  initial: TargetAndTransition | boolean
+  animate: TargetAndTransition
+  exit: TargetAndTransition
 }
 
 type IconTransitionProps = {
@@ -93,9 +93,9 @@ const Presets = {
 export const IconTransition = (
   props: React.PropsWithChildren<{
     animatedKey: string
-    initial?: Target
-    animate?: Target
-    exit?: Target
+    initial?: TargetAndTransition
+    animate?: TargetAndTransition
+    exit?: TargetAndTransition
     transition?: Transition
 
     preset?: "fade"

@@ -11,7 +11,10 @@ import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingSelector } from "~/atoms/settings/ui"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
+
+import { SettingDescription } from "../control"
+import { SettingItemGroup } from "../section"
 
 const FALLBACK_FONT = "Default (UI Font)"
 const DEFAULT_FONT = "SN Pro"
@@ -19,7 +22,7 @@ const CUSTOM_FONT = "Custom"
 const useFontDataElectron = () => {
   const { t } = useTranslation("settings")
   const { data } = useQuery({
-    queryFn: () => tipcClient?.getSystemFonts(),
+    queryFn: () => ipcServices?.setting.getSystemFonts(),
     queryKey: ["systemFonts"],
   })
 
@@ -84,27 +87,30 @@ export const ContentFontSelector = () => {
   )
 
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("appearance.content_font.label")}</span>
-      <ResponsiveSelect
-        defaultValue={FALLBACK_FONT}
-        value={readerFontFamily}
-        onValueChange={(value) => {
-          if (value === CUSTOM_FONT) {
-            setCustom()
-            return
-          }
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("appearance.content_font.label")}</span>
+        <ResponsiveSelect
+          defaultValue={FALLBACK_FONT}
+          value={readerFontFamily}
+          onValueChange={(value) => {
+            if (value === CUSTOM_FONT) {
+              setCustom()
+              return
+            }
 
-          setUISetting("readerFontFamily", value)
-        }}
-        size="sm"
-        triggerClassName="w-48"
-        items={[
-          isCustomFont && { label: readerFontFamily, value: readerFontFamily },
-          ...data,
-        ].filter((i) => typeof i === "object")}
-      />
-    </div>
+            setUISetting("readerFontFamily", value)
+          }}
+          size="sm"
+          triggerClassName="w-48"
+          items={[
+            isCustomFont && { label: readerFontFamily, value: readerFontFamily },
+            ...data,
+          ].filter((i) => typeof i === "object")}
+        />
+      </div>
+      <SettingDescription>{t("appearance.content_font.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 
@@ -122,28 +128,31 @@ export const UIFontSelector = () => {
   )
 
   return (
-    <div className="-mt-1 mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("appearance.ui_font")}</span>
-      <ResponsiveSelect
-        defaultValue={FALLBACK_FONT}
-        value={uiFont}
-        onValueChange={(value) => {
-          if (value === CUSTOM_FONT) {
-            setCustom()
-            return
-          }
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("appearance.ui_font.label")}</span>
+        <ResponsiveSelect
+          defaultValue={FALLBACK_FONT}
+          value={uiFont}
+          onValueChange={(value) => {
+            if (value === CUSTOM_FONT) {
+              setCustom()
+              return
+            }
 
-          setUISetting("uiFontFamily", value)
-        }}
-        size="sm"
-        triggerClassName="w-48"
-        items={[
-          isCustomFont && { label: uiFont, value: uiFont },
-          { label: DEFAULT_FONT, value: DEFAULT_FONT },
-          ...data,
-        ].filter((i) => typeof i === "object")}
-      />
-    </div>
+            setUISetting("uiFontFamily", value)
+          }}
+          size="sm"
+          triggerClassName="w-48"
+          items={[
+            isCustomFont && { label: uiFont, value: uiFont },
+            { label: DEFAULT_FONT, value: DEFAULT_FONT },
+            ...data,
+          ].filter((i) => typeof i === "object")}
+        />
+      </div>
+      <SettingDescription>{t("appearance.ui_font.description")}</SettingDescription>
+    </SettingItemGroup>
   )
 }
 

@@ -1,15 +1,13 @@
 import type { GetHydrateData } from "@client/lib/helper"
 import { APPLE_APP_STORE_ID } from "@follow/constants"
 
+import { callNotFound } from "~/lib/not-found"
 import { defineMetadata } from "~/meta-handler"
 
-const meta = defineMetadata(async ({ params, apiClient, origin, throwError }) => {
+const meta = defineMetadata(async ({ params, apiClient, origin }) => {
   const feedId = params.id
 
-  const feed = await apiClient.feeds.$get({ query: { id: feedId } }).catch((e) => {
-    throwError(e.response?.status || 500, "Feed not found")
-    throw e
-  })
+  const feed = await apiClient.feeds.$get({ query: { id: feedId } }).catch(callNotFound)
 
   const { title, description } = feed.data.feed
 

@@ -1,4 +1,4 @@
-import { migrateDb } from "@follow/database/db"
+import { migrateDB } from "@follow/database/db"
 import { useSyncExternalStore } from "react"
 
 let storeChangeFn: () => void
@@ -16,7 +16,7 @@ const migrateStore = {
 
 export const migrateDatabase = async () => {
   try {
-    await migrateDb()
+    await migrateDB()
     migrateStore.success = true
     storeChangeFn?.()
   } catch (error) {

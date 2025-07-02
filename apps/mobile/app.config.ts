@@ -63,6 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: adaptiveIconPath,
+        monochromeImage: adaptiveIconPath,
         backgroundColor: "#FF5C00",
       },
       googleServicesFile: "./build/google-services.json",
@@ -131,6 +132,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
 
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
+      require("./plugins/with-android-manifest-plugin.js"),
       "expo-secure-store",
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",

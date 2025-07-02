@@ -11,7 +11,7 @@ import type {
 } from "shiki"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 import { CopyButton } from "../../button/CopyButton"
 import { getLanguageIcon } from "../constants"
@@ -57,7 +57,7 @@ export const ShikiHighLighter: FC<ShikiProps> = (props) => {
     }
 
     function guessLanguage() {
-      return tipcClient?.detectCodeStringLanguage({ codeString: code }).then((result) => {
+      return ipcServices?.reader.detectCodeStringLanguage({ codeString: code }).then((result) => {
         if (!result) {
           return
         }

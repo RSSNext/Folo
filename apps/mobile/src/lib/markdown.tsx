@@ -1,6 +1,6 @@
 import { parseMarkdown } from "@follow/components/utils/parse-markdown.tsx"
 import * as React from "react"
-import { Linking, Text, View } from "react-native"
+import { Linking, Text, TextInput, View } from "react-native"
 
 // Helper function to ensure text is wrapped in Text component
 const wrapText = (children: any): any => {
@@ -91,48 +91,70 @@ export const renderMarkdown = (markdown: string) => {
     {
       // React Native compatible components - GitHub markdown style
       p: ({ children, node, ...props }: any) => (
-        <Text className="text-label mb-4 leading-[24px]" {...props}>
+        <TextInput className="text-label mb-4 leading-[24px]" multiline readOnly {...props}>
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
+
       h1: ({ children, node, ...props }: any) => (
-        <Text
+        <TextInput
+          readOnly
+          multiline
           className="text-label border-non-opaque-separator mb-4 mt-6 border-b pb-2 text-[32px] font-semibold leading-[40px]"
           {...props}
         >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       h2: ({ children, node, ...props }: any) => (
-        <Text
+        <TextInput
+          readOnly
+          multiline
           className="text-label border-non-opaque-separator mb-4 mt-6 border-b pb-2 text-[24px] font-semibold leading-[30px]"
           {...props}
         >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       h3: ({ children, node, ...props }: any) => (
-        <Text className="text-label mb-4 mt-6 text-[20px] font-semibold leading-[25px]" {...props}>
+        <TextInput
+          readOnly
+          multiline
+          className="text-label mb-4 mt-6 text-[20px] font-semibold leading-[25px]"
+          {...props}
+        >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       h4: ({ children, node, ...props }: any) => (
-        <Text className="text-label mb-4 mt-6 text-[16px] font-semibold leading-[20px]" {...props}>
+        <TextInput
+          readOnly
+          multiline
+          className="text-label mb-4 mt-6 text-[16px] font-semibold leading-[20px]"
+          {...props}
+        >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       h5: ({ children, node, ...props }: any) => (
-        <Text className="text-label mb-4 mt-6 text-[14px] font-semibold leading-[18px]" {...props}>
+        <TextInput
+          readOnly
+          multiline
+          className="text-label mb-4 mt-6 text-[14px] font-semibold leading-[18px]"
+          {...props}
+        >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       h6: ({ children, node, ...props }: any) => (
-        <Text
+        <TextInput
+          readOnly
+          multiline
           className="text-secondary-label mb-4 mt-6 text-[13px] font-semibold leading-[16px]"
           {...props}
         >
           {renderTextChildren(children)}
-        </Text>
+        </TextInput>
       ),
       ul: ({ children, node, ...props }: any) => (
         <View className="mb-4 pl-4" {...props}>
@@ -199,7 +221,7 @@ export const renderMarkdown = (markdown: string) => {
       ),
       blockquote: ({ children, node, ...props }: any) => (
         <View
-          className="border-non-opaque-separator bg-secondary-system-background border-l-accent mb-4 border-l-4 py-2 pl-4"
+          className="border-non-opaque-separator bg-secondary-system-background border-l-accent mb-4 rounded-r-lg border-l-4 py-2 pl-4"
           {...props}
         >
           <Text className="text-secondary-label italic leading-[24px]">
@@ -216,9 +238,7 @@ export const renderMarkdown = (markdown: string) => {
           {renderTextChildren(children)}
         </Text>
       ),
-      hr: ({ node, ..._props }: any) => (
-        <View className="border-non-opaque-separator my-6 h-px border-t" />
-      ),
+      hr: ({ node, ..._props }: any) => <View className="bg-non-opaque-separator my-3 h-px" />,
       br: ({ node, ..._props }: any) => <Text>{"\n"}</Text>,
       // Common HTML elements that might appear
       div: ({ children, node, ...props }: any) => <View {...props}>{wrapText(children)}</View>,
@@ -280,6 +300,26 @@ export const renderMarkdown = (markdown: string) => {
 
       // Not implemented
       img: ({ src, alt, node, ..._props }: any) => null,
+      del: ({ children, node, ...props }: any) => (
+        <Text className="text-label line-through" {...props}>
+          {renderTextChildren(children)}
+        </Text>
+      ),
+      sup: ({ children, node, ...props }: any) => (
+        <Text className="text-label text-[14px] leading-[20px]" {...props}>
+          {renderTextChildren(children)}
+        </Text>
+      ),
+      sub: ({ children, node, ...props }: any) => (
+        <Text className="text-label text-[14px] leading-[20px]" {...props}>
+          {renderTextChildren(children)}
+        </Text>
+      ),
+      section: ({ children, node, ...props }: any) => (
+        <View className="mb-4" {...props}>
+          {wrapText(children)}
+        </View>
+      ),
     },
     {
       get(target, prop) {

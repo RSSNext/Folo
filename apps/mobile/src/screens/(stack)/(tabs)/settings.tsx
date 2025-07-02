@@ -22,11 +22,8 @@ import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
 
 export function Settings() {
   const insets = useSafeAreaInsets()
-
   const screenContext = use(ScreenItemContext)
-
   const whoami = useWhoami()
-
   const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
 
   return (

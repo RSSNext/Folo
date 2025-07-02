@@ -1,14 +1,13 @@
-import { getRendererHandlers } from "@egoist/tipc/main"
+import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { autoUpdater as defaultAutoUpdater } from "electron-updater"
 
 import { GITHUB_OWNER, GITHUB_REPO } from "~/constants/app"
+import { WindowManager } from "~/manager/window"
 import { canUpdateRender, CanUpdateRenderState, hotUpdateRender } from "~/updater/hot-updater"
 
 import { channel, isWindows } from "../env"
 import { logger } from "../logger"
-import type { RendererHandlers } from "../renderer-handlers"
-import { destroyMainWindow, getMainWindow } from "../window"
 import { appUpdaterConfig } from "./configs"
 import { CustomGitHubProvider } from "./custom-github-provider"
 import { WindowsUpdater } from "./windows-updater"
@@ -20,10 +19,9 @@ const disabled = !appUpdaterConfig.enableAppUpdate
 const autoUpdater = isWindows ? new WindowsUpdater() : defaultAutoUpdater
 
 export const quitAndInstall = () => {
-  const mainWindow = getMainWindow()
-
-  destroyMainWindow()
+  const mainWindow = WindowManager.getMainWindow()
   logger.info("Quit and install update, close main window, ", mainWindow?.id)
+  WindowManager.destroyMainWindow()
 
   setTimeout(() => {
     logger.info("Window is closed, quit and install update")
@@ -143,11 +141,11 @@ export const registerUpdater = async () => {
     downloading = false
     logger.info("Update downloaded, ready to install")
 
-    const mainWindow = getMainWindow()
+    const mainWindow = WindowManager.getMainWindow()
     if (!mainWindow) return
-    const handlers = getRendererHandlers<RendererHandlers>(mainWindow.webContents)
+    const handlers = callWindowExpose(mainWindow)
 
-    handlers.updateDownloaded.send()
+    handlers.updateDownloaded()
   })
   autoUpdater.on("error", (e) => {
     logger.error("Error while updating client", e)

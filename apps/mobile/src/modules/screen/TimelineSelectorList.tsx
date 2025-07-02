@@ -162,15 +162,17 @@ export const TimelineSelectorMasonryList = ({
           refreshing={isRefetching}
         />
       }
-      scrollIndicatorInsets={{
-        top: headerHeight - insets.top,
-        bottom: tabBarHeight ? tabBarHeight - insets.bottom : undefined,
-      }}
+      {...props}
       contentContainerStyle={{
         paddingTop: headerHeight,
         paddingBottom: tabBarHeight,
+        ...props.contentContainerStyle,
       }}
-      {...props}
+      scrollIndicatorInsets={{
+        top: headerHeight - insets.top,
+        bottom: tabBarHeight ? tabBarHeight - insets.bottom : undefined,
+        ...props.scrollIndicatorInsets,
+      }}
       onScroll={onScroll}
     />
   )

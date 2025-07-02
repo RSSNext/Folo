@@ -1,4 +1,6 @@
 import { FeedViewType } from "@follow/constants"
+import { useEntry } from "@follow/store/entry/hooks"
+import { getFeedById } from "@follow/store/feed/getter"
 import { useMemo } from "react"
 import type { JSX } from "react/jsx-runtime"
 
@@ -9,8 +11,6 @@ import {
 import type { HTMLProps } from "~/components/ui/markdown/HTML"
 import { HTML } from "~/components/ui/markdown/HTML"
 import type { MarkdownImage, MarkdownRenderActions } from "~/components/ui/markdown/types"
-import { useEntry } from "~/store/entry/hooks"
-import { getFeedById } from "~/store/feed"
 
 import { TimeStamp } from "./components/TimeStamp"
 import { EntryInfoContext } from "./context"
@@ -27,11 +27,9 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
   entryId: string
   children: Nullable<string>
 } & HTMLProps<AS>) {
-  const entry = useEntry(entryId)
-
-  const images: Record<string, MarkdownImage> = useMemo(() => {
-    return (
-      entry?.entries.media?.reduce(
+  const entry = useEntry(entryId, (state) => {
+    const images =
+      state.media?.reduce(
         (acc, media) => {
           if (media.height && media.width) {
             acc[media.url] = media
@@ -40,8 +38,16 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
         },
         {} as Record<string, MarkdownImage>,
       ) ?? {}
-    )
-  }, [entry])
+
+    const { url } = state
+
+    return {
+      images,
+      url,
+    }
+  })
+
+  const images: Record<string, MarkdownImage> = useMemo(() => entry?.images ?? {}, [entry])
   const actions: MarkdownRenderActions = useMemo(() => {
     return {
       isAudio() {
@@ -49,16 +55,17 @@ export function EntryContentHTMLRenderer<AS extends keyof JSX.IntrinsicElements 
       },
       transformUrl(url) {
         if (!url || url.startsWith("http")) return url
-        const feed = getFeedById(feedId)
-        if (!feed) return url
-        const feedSiteUrl = "siteUrl" in feed ? feed.siteUrl : undefined
 
-        if (url.startsWith("/") && feedSiteUrl) return safeUrl(url, feedSiteUrl)
+        const feed = getFeedById(feedId)
+        if (url.startsWith("/") && feed?.siteUrl) return safeUrl(url, feed.siteUrl)
+
+        if (url?.startsWith(".") && entry?.url) return safeUrl(url, entry?.url)
+
         return url
       },
       ensureAndRenderTimeStamp,
     }
-  }, [feedId, view])
+  }, [entry, feedId, view])
   return (
     // eslint-disable-next-line @eslint-react/no-context-provider
     <MarkdownImageRecordContext.Provider value={images}>

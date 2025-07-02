@@ -1,9 +1,10 @@
+import type { ActionConditionIndex, ActionModel, ActionRules } from "@follow/models/types"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { FetchError } from "ofetch"
 import { useCallback } from "react"
 
 import type { GeneralMutationOptions } from "../types"
-import { actionSyncService, useActionStore } from "./store"
+import { actionActions, actionSyncService, useActionStore } from "./store"
 
 export const usePrefetchActions = () => {
   return useQuery({
@@ -30,25 +31,30 @@ export const useUpdateActionsMutation = (options?: GeneralMutationOptions) => {
   })
 }
 
-export const useActionRules = () => {
-  return useActionStore((state) => state.rules)
+export function useActionRules(): ActionRules
+export function useActionRules<T>(selector: (rules: ActionRules) => T): T
+export function useActionRules<T>(selector?: (rules: ActionRules) => T) {
+  return useActionStore((state) => {
+    const { rules } = state
+    return selector ? selector(rules) : rules
+  })
 }
 
-export const useActionRule = (index?: number) => {
-  return useActionStore(
-    useCallback((state) => (index !== undefined ? state.rules[index] : undefined), [index]),
-  )
+export function useActionRule(index: number): ActionModel | undefined
+export function useActionRule<T>(index: number, selector: (rule: ActionModel) => T): T
+export function useActionRule<T>(index: number, selector?: (rule: ActionModel) => T) {
+  return useActionStore((state) => {
+    const rule = state.rules[index]
+    if (!rule) return
+    return selector ? selector(rule) : rule
+  })
 }
 
 export function useActionRuleCondition({
   ruleIndex,
   groupIndex,
   conditionIndex,
-}: {
-  ruleIndex: number
-  groupIndex: number
-  conditionIndex: number
-}) {
+}: ActionConditionIndex) {
   return useActionStore(
     useCallback(
       (state) => state.rules[ruleIndex]?.condition[groupIndex]?.[conditionIndex],
@@ -65,4 +71,11 @@ export const useHasNotificationActions = () => {
   return useActionStore((state) => {
     return state.rules.some((rule) => !!rule.result.newEntryNotification && !rule.result.disabled)
   })
+}
+
+export const useActionImportExport = () => {
+  return {
+    exportRules: () => actionActions.exportRules(),
+    importRules: (jsonData: string) => actionActions.importRules(jsonData),
+  }
 }
