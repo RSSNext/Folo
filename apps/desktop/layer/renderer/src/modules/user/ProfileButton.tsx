@@ -62,7 +62,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
 
   const shortcuts = useCommandShortcuts()
 
-  if (status !== "authenticated") {
+  if (status === "unauthenticated") {
     return <LoginButton {...props} />
   }
 

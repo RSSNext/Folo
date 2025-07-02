@@ -70,7 +70,7 @@ export const useSession = (options?: { enabled?: boolean }) => {
           : data === null
             ? "unauthenticated"
             : "unknown",
-  }
+  } as const
 }
 
 export const handleSessionChanges = () => {
