@@ -164,7 +164,7 @@ export const ReferralScreen: NavigationControllerView = () => {
                 </Text>
               </View>
             </View>
-            <Text>
+            <Text className="text-label">
               {invitation.usedAt
                 ? t("referral.invited_friend_status.valid")
                 : t("referral.invited_friend_status.pending")}
