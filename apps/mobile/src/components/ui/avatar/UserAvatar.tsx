@@ -16,7 +16,7 @@ interface UserAvatarProps {
   className?: string
   color?: string
   preview?: boolean
-  role?: UserRole
+  role?: UserRole | null
 }
 
 export const UserAvatar = ({

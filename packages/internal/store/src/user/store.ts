@@ -19,8 +19,8 @@ export type MeModel = UserModel & {
 type UserStore = {
   users: Record<string, UserModel>
   whoami: MeModel | null
-  role: UserRole
-  roleEndAt?: Date | null
+  role: UserRole | null
+  roleEndAt: Date | null
 }
 
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
@@ -240,6 +240,8 @@ class UserActions implements Hydratable {
     tx.store(() => {
       immerSet((state) => {
         state.whoami = null
+        state.role = null
+        state.roleEndAt = null
       })
     })
     tx.persist(() => UserService.removeCurrentUser())

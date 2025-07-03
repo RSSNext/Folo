@@ -179,31 +179,33 @@ export const UserHeaderBanner = ({
             <Text className="text-text text-2xl font-bold">Folo Account</Text>
           )}
 
-          <View className="my-1 flex flex-row items-center gap-2">
-            <PowerIcon
-              color={
-                role === UserRole.Trial || role === UserRole.Free
-                  ? gradientLight
-                    ? "rgba(0,0,0,0.7)"
-                    : "rgba(255,255,255,0.7)"
-                  : accentColor
-              }
-              width={16}
-              height={16}
-            />
-            <Text
-              className={cn(
-                role === UserRole.Trial || role === UserRole.Free
-                  ? gradientLight
-                    ? "text-black/70"
-                    : "text-white/70"
-                  : "text-accent",
-                "font-semibold",
-              )}
-            >
-              {UserRoleName[role]}
-            </Text>
-          </View>
+          {role && (
+            <View className="my-1 flex flex-row items-center gap-2">
+              <PowerIcon
+                color={
+                  role === UserRole.Trial || role === UserRole.Free
+                    ? gradientLight
+                      ? "rgba(0,0,0,0.7)"
+                      : "rgba(255,255,255,0.7)"
+                    : accentColor
+                }
+                width={16}
+                height={16}
+              />
+              <Text
+                className={cn(
+                  role === UserRole.Trial || role === UserRole.Free
+                    ? gradientLight
+                      ? "text-black/70"
+                      : "text-white/70"
+                    : "text-accent",
+                  "font-semibold",
+                )}
+              >
+                {UserRoleName[role]}
+              </Text>
+            </View>
+          )}
 
           {user?.handle ? (
             <Text className={cn(gradientLight ? "text-black/70" : "text-white/70")}>
