@@ -248,10 +248,12 @@ class EntryActions implements Hydratable, Resetable {
     entryId,
     content,
     readabilityContent,
+    readabilityUpdatedAt,
   }: {
     entryId: EntryId
     content?: string
     readabilityContent?: string
+    readabilityUpdatedAt?: Date
   }) {
     immerSet((draft) => {
       const entry = draft.data[entryId]
@@ -261,6 +263,7 @@ class EntryActions implements Hydratable, Resetable {
       }
       if (readabilityContent) {
         entry.readabilityContent = readabilityContent
+        entry.readabilityUpdatedAt = readabilityUpdatedAt
       }
     })
   }
@@ -269,14 +272,21 @@ class EntryActions implements Hydratable, Resetable {
     entryId,
     content,
     readabilityContent,
+    readabilityUpdatedAt = new Date(),
   }: {
     entryId: EntryId
     content?: string
     readabilityContent?: string
+    readabilityUpdatedAt?: Date
   }) {
     const tx = createTransaction()
     tx.store(() => {
-      this.updateEntryContentInSession({ entryId, content, readabilityContent })
+      this.updateEntryContentInSession({
+        entryId,
+        content,
+        readabilityContent,
+        readabilityUpdatedAt,
+      })
     })
 
     tx.persist(() => {
@@ -285,7 +295,7 @@ class EntryActions implements Hydratable, Resetable {
       }
 
       if (readabilityContent) {
-        EntryService.patch({ id: entryId, readabilityContent })
+        EntryService.patch({ id: entryId, readabilityContent, readabilityUpdatedAt })
       }
     })
 
@@ -484,6 +494,7 @@ class EntrySyncServices {
       if (entryInDB) {
         entry.content = entryInDB.content
         entry.readabilityContent = entryInDB.readabilityContent
+        entry.readabilityUpdatedAt = entryInDB.readabilityUpdatedAt
       }
     }
 
@@ -541,30 +552,36 @@ class EntrySyncServices {
     fallBack?: () => Promise<string | null | undefined>,
   ) {
     const entry = getEntry(entryId)
+    if (!entry?.url) return entry
+    if (
+      entry.readabilityContent &&
+      entry.readabilityUpdatedAt &&
+      entry.readabilityUpdatedAt.getTime() > Date.now() - 1000 * 60 * 60 * 24 * 3
+    ) {
+      return entry
+    }
 
-    if (entry?.url && entry?.readabilityContent === null) {
-      let readabilityContent: string | null | undefined
+    let readabilityContent: string | null | undefined
 
-      try {
-        const { data: contentByFetch } = await apiClient().entries.readability.$get({
-          query: {
-            id: entryId,
-          },
-        })
-        readabilityContent = contentByFetch?.content || null
-      } catch (error) {
-        if (fallBack) {
-          readabilityContent = await fallBack()
-        } else {
-          throw error
-        }
+    try {
+      const { data: contentByFetch } = await apiClient().entries.readability.$get({
+        query: {
+          id: entryId,
+        },
+      })
+      readabilityContent = contentByFetch?.content || null
+    } catch (error) {
+      if (fallBack) {
+        readabilityContent = await fallBack()
+      } else {
+        throw error
       }
-      if (readabilityContent && entry?.readabilityContent !== readabilityContent) {
-        await entryActions.updateEntryContent({
-          entryId,
-          readabilityContent,
-        })
-      }
+    }
+    if (readabilityContent) {
+      await entryActions.updateEntryContent({
+        entryId,
+        readabilityContent,
+      })
     }
     return entry
   }

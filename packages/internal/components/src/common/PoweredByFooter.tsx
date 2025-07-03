@@ -18,7 +18,7 @@ const footerSections: FooterSection[] = [
   {
     title: "Product",
     links: [
-      { href: "https://follow.is", label: "Home", external: true },
+      { href: "https://folo.is", label: "Home", external: true },
       { href: "https://github.com/RSSNext/folo", label: "GitHub", external: true },
       { href: "https://github.com/RSSNext/folo/releases", label: "Download", external: true },
     ],
@@ -140,7 +140,7 @@ export const PoweredByFooter: Component = ({ className }) => (
             </p>
             <div className="flex items-center justify-center gap-4 md:justify-start">
               <a
-                href="https://app.follow.is/privacy-policy"
+                href="https://app.folo.is/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-text-secondary hover:text-text text-xs transition-colors"
@@ -148,7 +148,7 @@ export const PoweredByFooter: Component = ({ className }) => (
                 Privacy Policy
               </a>
               <a
-                href="https://app.follow.is/terms"
+                href="https://app.folo.is/terms"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-text-secondary hover:text-text text-xs transition-colors"

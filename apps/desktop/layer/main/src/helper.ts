@@ -26,5 +26,5 @@ export const getTrayIconPath = () => {
 }
 
 export const filePathToAppUrl = (filePath: string) => {
-  return `app://follow.is${pathToFileURL(filePath).pathname}`
+  return `app://folo.is${pathToFileURL(filePath).pathname}`
 }

@@ -204,6 +204,13 @@
       "when": 1751278105927,
       "tag": "0028_chief_cyclops",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "6",
+      "when": 1751514918051,
+      "tag": "0029_outstanding_captain_universe",
+      "breakpoints": true
     }
   ]
 }

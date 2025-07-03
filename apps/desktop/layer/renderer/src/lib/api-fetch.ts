@@ -1,6 +1,7 @@
 import { DEV } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import type { AppType } from "@follow/shared/hono"
+import { userActions } from "@follow/store/user/store"
 import { createDesktopAPIHeaders } from "@follow/utils/headers"
 import PKG from "@pkg"
 import { hc } from "hono/client"
@@ -50,6 +51,7 @@ export const apiFetch = ofetch.create({
       // router.navigate("/login")
       // If any response status is 401, we can set auth fail. Maybe some bug, but if navigate to login page, had same issues
       setLoginModalShow(true)
+      userActions.removeCurrentUser()
     }
     try {
       const json = JSON.parse(context.response._data)

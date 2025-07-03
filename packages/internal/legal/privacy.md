@@ -2,7 +2,7 @@
 
 **Effective Date:** 2025-05-15
 
-At Folo, your personalized RSS reader and content hub, we are committed to protecting your privacy and handling your personal data responsibly. This Privacy Policy explains how Natural Selection Limited ("we," "us," or "Folo"), the operator of Folo, collects, uses, shares, stores, and protects your personal data when you use our application and related services (collectively, the "Service"). By using Folo, you agree to the practices described in this Privacy Policy and our [Terms of Service](https://app.follow.is/terms).
+At Folo, your personalized RSS reader and content hub, we are committed to protecting your privacy and handling your personal data responsibly. This Privacy Policy explains how Natural Selection Limited ("we," "us," or "Folo"), the operator of Folo, collects, uses, shares, stores, and protects your personal data when you use our application and related services (collectively, the "Service"). By using Folo, you agree to the practices described in this Privacy Policy and our [Terms of Service](https://app.folo.is/terms).
 
 This policy is designed to comply with Singapore’s Personal Data Protection Act (PDPA) and, where applicable, other data protection laws such as the European Union’s General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA). If you have any questions, please contact us at follow@rss3.io.
 
@@ -120,7 +120,7 @@ When you use $POWER, we collect transaction data to facilitate rewards and preve
 
 ## 12. Updates to This Privacy Policy
 
-We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of significant changes (e.g., new data uses) at least 14 days in advance via email, in-app notification, or our website (https://app.follow.is). Continued use of the Service after updates constitutes acceptance. Check this page periodically for the latest version.
+We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of significant changes (e.g., new data uses) at least 14 days in advance via email, in-app notification, or our website (https://app.folo.is). Continued use of the Service after updates constitutes acceptance. Check this page periodically for the latest version.
 
 ## 13. Contact Us
 

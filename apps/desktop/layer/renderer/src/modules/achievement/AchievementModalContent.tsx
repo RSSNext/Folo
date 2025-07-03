@@ -47,32 +47,32 @@ const achievementActionIdMetaMap: Record<
   [AchievementsActionIdMap.FIRST_CLAIM_FEED]: {
     title: "achievement.first_claim_feed",
     description: "achievement.first_claim_feed_description",
-    video: "https://assets.follow.is/FeedOwnerBadge.webm",
+    video: "https://assets.folo.is/FeedOwnerBadge.webm",
   },
   [AchievementsActionIdMap.FIRST_CREATE_LIST]: {
     title: "achievement.first_create_list",
     description: "achievement.first_create_list_description",
-    video: "https://assets.follow.is/ListBadge.webm",
+    video: "https://assets.folo.is/ListBadge.webm",
   },
   [AchievementsActionIdMap.LIST_SUBSCRIBE_50]: {
     title: "achievement.list_subscribe_50",
     description: "achievement.list_subscribe_50_description",
-    video: "https://assets.follow.is/50Subs.webm",
+    video: "https://assets.folo.is/50Subs.webm",
   },
   [AchievementsActionIdMap.LIST_SUBSCRIBE_100]: {
     title: "achievement.list_subscribe_100",
     description: "achievement.list_subscribe_100_description",
-    video: "https://assets.follow.is/100Subs.webm",
+    video: "https://assets.folo.is/100Subs.webm",
   },
   [AchievementsActionIdMap.LIST_SUBSCRIBE_500]: {
     title: "achievement.list_subscribe_500",
     description: "achievement.list_subscribe_500_description",
-    video: "https://assets.follow.is/500Subs.webm",
+    video: "https://assets.folo.is/500Subs.webm",
   },
   [AchievementsActionIdMap.PRODUCT_HUNT_VOTE]: {
     title: "achievement.product_hunt_vote",
     description: "achievement.product_hunt_vote_description",
-    video: "https://assets.follow.is/ProductHunt.webm",
+    video: "https://assets.folo.is/ProductHunt.webm",
   },
   // [AchievementsActionIdMap.FOLLOW_SPECIAL_FEED]: {
   //   title: "achievement.follow_special_feed",
@@ -81,7 +81,7 @@ const achievementActionIdMetaMap: Record<
   [AchievementsActionIdMap.ALPHA_TESTER]: {
     title: "achievement.alpha_tester",
     description: "achievement.alpha_tester_description",
-    video: "https://assets.follow.is/AlphaBadge.webm",
+    video: "https://assets.folo.is/AlphaBadge.webm",
   },
   [AchievementsActionIdMap.FEED_BOOSTER]: {
     title: "achievement.feed_booster",

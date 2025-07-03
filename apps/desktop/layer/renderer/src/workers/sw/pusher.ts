@@ -25,7 +25,7 @@ export const registerPusher = (self: ServiceWorkerGlobalScope) => {
         case "new-entry": {
           const notificationPromise = self.registration.showNotification(payload.title, {
             body: payload.description,
-            icon: "https://app.follow.is/favicon.ico",
+            icon: "https://app.folo.is/favicon.ico",
             data: {
               type: payload.type,
               feedId: payload.feedId,

@@ -5,7 +5,7 @@ on:
 
 # Do not use secrets or variables to allow for public access
 env:
-  VITE_WEB_URL: https://app.follow.is
+  VITE_WEB_URL: https://app.folo.is
   VITE_API_URL: https://api.follow.is
 
 name: CI Format, Typecheck and Lint
