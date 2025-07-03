@@ -28,8 +28,8 @@
     <!-- <a href="https://github.com/RSSNext/Folo" target="_blank"><img src="https://github.com/user-attachments/assets/59b957fb-59ed-4ef0-994e-f6a402a6fe2b" alt="GitHub Trending" height="55"/></a>
     <br />
     <br /> -->
-    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/83168d47-b9b1-4f28-abec-4e37075c7f1b" alt="App Store" width="52%"/></a>
-    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/7b4f27f1-c345-400f-a307-9c61c43263ac" alt="GitHub Trending" width="46%"/></a>
+    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/35747716-28bf-413a-822b-aa49d49f1aa0" alt="Folo Mobile" width="52%"/></a>
+    <a href="https://apps.apple.com/us/app/folo-follow-everything/id6739802604" target="_blank"><img src="https://github.com/user-attachments/assets/198a0165-b8c9-45c1-9116-b473a13a8d0c" alt="Folo Desktop" width="46%"/></a>
     <br />
     <br />
   </p>
