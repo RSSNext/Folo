@@ -169,8 +169,8 @@ export const PlanScreen: NavigationControllerView = () => {
             <TimeCuteReIcon color="#fff" width={16} height={16} />
           </View>
           <View>
-            <Text className="font-medium">Current Status</Text>
-            <Text className="text-sm">
+            <Text className="text-label font-medium">Current Status</Text>
+            <Text className="text-label text-sm">
               {role === UserRole.PrePro
                 ? "You have an active Pro Preview plan"
                 : role === UserRole.PreProTrial
@@ -181,8 +181,8 @@ export const PlanScreen: NavigationControllerView = () => {
         </View>
 
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="font-medium">Referral Progress</Text>
-          <Text>
+          <Text className="text-label font-medium">Referral Progress</Text>
+          <Text className="text-label">
             {validInvitationsAmount} / {requiredInvitationsAmount}
           </Text>
         </View>
@@ -210,7 +210,7 @@ export const PlanScreen: NavigationControllerView = () => {
               <Text className="text-white">{`Invite ${serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3} friends`}</Text>
             </Pressable>
 
-            <Text>or</Text>
+            <Text className="text-label">or</Text>
 
             <Pressable className="bg-accent rounded-lg p-2">
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
@@ -238,8 +238,8 @@ function PlanCard({ plan, isCurrentPlan, daysLeft }: PlanCardProps) {
         plan.isComingSoon && "opacity-75",
       )}
     >
-      <Text className="text-lg font-bold">{plan.title}</Text>
-      <Text className="mb-4 text-lg font-bold">{plan.price}</Text>
+      <Text className="text-label text-lg font-bold">{plan.title}</Text>
+      <Text className="text-label mb-4 text-lg font-bold">{plan.price}</Text>
 
       {plan.features.map((feature, index) => (
         <View key={index} className="mb-2 flex-row items-center gap-2">
