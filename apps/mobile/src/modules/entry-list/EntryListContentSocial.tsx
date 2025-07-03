@@ -1,16 +1,19 @@
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { checkLanguage } from "@/src/lib/translation"
 
-import { useFetchEntriesControls } from "../screen/atoms"
+import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
+import type { EntryExtraData } from "./types"
 
 export const EntryListContentSocial = ({
   ref: forwardRef,
@@ -19,14 +22,16 @@ export const EntryListContentSocial = ({
 }: { entryIds: string[] | null; active?: boolean } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } =
-    useFetchEntriesControls()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
+  const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
   // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
   const renderItem = useCallback(
-    ({ item: id }: ListRenderItemInfo<string>) => <EntrySocialItem entryId={id} />,
+    ({ item: id, extraData }: ListRenderItemInfo<string>) => (
+      <EntrySocialItem entryId={id} extraData={extraData as EntryExtraData} />
+    ),
     [],
   )
 
@@ -40,7 +45,14 @@ export const EntryListContentSocial = ({
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    language: actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   return (
     <TimelineSelectorList
@@ -50,6 +62,7 @@ export const EntryListContentSocial = ({
       }}
       isRefetching={isRefetching}
       data={entryIds}
+      extraData={extraData}
       keyExtractor={(id) => id}
       estimatedItemSize={100}
       renderItem={renderItem}

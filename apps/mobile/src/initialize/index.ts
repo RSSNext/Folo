@@ -1,7 +1,8 @@
+import { initializeDB } from "@follow/database/db"
+import { hydrateDatabaseToStore } from "@follow/store/hydrate"
 import { tracker } from "@follow/tracker"
 import { nativeApplicationVersion } from "expo-application"
 
-import { initializeDb } from "../database"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
 import { initializeAppCheck } from "./app-check"
@@ -9,7 +10,7 @@ import { initBackgroundTask } from "./background"
 import { initCrashlytics } from "./crashlytics"
 import { initializeDayjs } from "./dayjs"
 import { initDeviceType } from "./device"
-import { hydrateDatabaseToStore, hydrateQueryClient, hydrateSettings } from "./hydrate"
+import { hydrateQueryClient, hydrateSettings } from "./hydrate"
 import { migrateDatabase } from "./migration"
 import { initializePlayer } from "./player"
 
@@ -20,14 +21,16 @@ export const initializeApp = async () => {
   const now = Date.now()
 
   await initDeviceType()
-  initializeDb()
+  initializeDB()
 
   await apm("migrateDatabase", migrateDatabase)
   initializeDayjs()
 
   await apm("hydrateSettings", hydrateSettings)
   let dataHydratedTime = Date.now()
-  await apm("hydrateDatabaseToStore", hydrateDatabaseToStore)
+  await apm("hydrateDatabaseToStore", () => {
+    return hydrateDatabaseToStore()
+  })
 
   dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)

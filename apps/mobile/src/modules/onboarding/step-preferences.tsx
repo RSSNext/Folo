@@ -48,7 +48,7 @@ export const StepPreferences = () => {
         >
           <View className="flex flex-row items-center justify-between">
             <Text className="text-text text-base font-medium">
-              {t("general.language", { ns: "settings" })}
+              {t("general.language.title", { ns: "settings" })}
             </Text>
             <View className="w-[150px]">
               <LanguageSelect settingKey="language" />
@@ -57,6 +57,23 @@ export const StepPreferences = () => {
           <Text className="text-secondary-label text-sm">
             {t("onboarding.language_description")}
           </Text>
+        </PreferenceCard>
+
+        {/* Import Card */}
+        <PreferenceCard
+          title={t("onboarding.import_content")}
+          icon={
+            <GroupedInsetListNavigationLinkIcon backgroundColor="#CBAD6D">
+              <FileImportCuteReIcon color="#fff" width={40} height={40} />
+            </GroupedInsetListNavigationLinkIcon>
+          }
+          onPress={importOpml}
+        >
+          <View className="flex-row">
+            <Text className="text-secondary-label flex-1">
+              {t("onboarding.import_description")}
+            </Text>
+          </View>
         </PreferenceCard>
 
         <PreferenceCard
@@ -102,23 +119,6 @@ export const StepPreferences = () => {
               {t("onboarding.reading_conservative_description")}
             </Text>
           )}
-        </PreferenceCard>
-
-        {/* Import Card */}
-        <PreferenceCard
-          title={t("onboarding.import_content")}
-          icon={
-            <GroupedInsetListNavigationLinkIcon backgroundColor="#CBAD6D">
-              <FileImportCuteReIcon color="#fff" width={40} height={40} />
-            </GroupedInsetListNavigationLinkIcon>
-          }
-          onPress={importOpml}
-        >
-          <View className="flex-row">
-            <Text className="text-secondary-label flex-1">
-              {t("onboarding.import_description")}
-            </Text>
-          </View>
         </PreferenceCard>
       </View>
     </OnboardingSectionScreenContainer>

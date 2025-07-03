@@ -8,6 +8,8 @@ import { IconTransition } from "~/components/ux/transition/icon"
 export const EnhancedSettingsIndicator = () => {
   const enhancedSettings = useGeneralSettingKey("enhancedSettings")
   const { t } = useTranslation("settings")
+
+  if (!enhancedSettings) return null
   return (
     <Tooltip>
       <TooltipTrigger>

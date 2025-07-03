@@ -7,6 +7,7 @@ import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
 import { parseHTML } from "linkedom"
+import { tsImport } from "tsx/esm/api"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"
 import { analyzer } from "vite-bundle-analyzer"
@@ -16,12 +17,18 @@ import { VitePWA } from "vite-plugin-pwa"
 import { viteRenderBaseConfig } from "./configs/vite.render.config"
 import { createDependencyChunksPlugin } from "./plugins/vite/deps"
 import { htmlInjectPlugin } from "./plugins/vite/html-inject"
+import { localesPlugin } from "./plugins/vite/locales"
 import manifestPlugin from "./plugins/vite/manifest"
 import { createPlatformSpecificImportPlugin } from "./plugins/vite/specific-import"
 
+const routeBuilderPluginV2 = await tsImport(
+  "@follow-app/vite-plugin-route-builder",
+  import.meta.url,
+).then((m) => m.default)
+
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 const isCI = process.env.CI === "true" || process.env.CI === "1"
-const ROOT = "./layer/renderer"
+const ROOT = resolve(__dirname, "./layer/renderer")
 
 const devPrint = (): PluginOption => ({
   name: "dev-print",
@@ -136,6 +143,13 @@ export default ({ mode }) => {
     },
     plugins: [
       ...((viteRenderBaseConfig.plugins ?? []) as any),
+
+      routeBuilderPluginV2({
+        pagePattern: "src/pages/**/*.tsx",
+        outputPath: "src/generated-routes.ts",
+        enableInDev: true,
+      }),
+      localesPlugin(),
       isWebBuild &&
         VitePWA({
           strategies: "injectManifest",
@@ -220,7 +234,7 @@ export default ({ mode }) => {
         ["react", "react-dom"],
         ["react-error-boundary", "react-dom/server", "react-router"],
         // Data Statement
-        ["zustand", "jotai", "use-context-selector", "immer", "dexie"],
+        ["zustand", "jotai", "use-context-selector", "immer"],
         // Remark
         [
           "remark-directive",

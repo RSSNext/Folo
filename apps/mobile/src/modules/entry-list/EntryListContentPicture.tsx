@@ -1,12 +1,14 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle } from "react"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
-import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { checkLanguage } from "@/src/lib/translation"
+import { useEntries } from "@/src/modules/screen/atoms"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
@@ -25,14 +27,19 @@ export const EntryListContentPicture = ({
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching } =
-    useFetchEntriesControls()
+  const { fetchNextPage, refetch, isRefetching, hasNextPage, isFetching } = useEntries()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
     onScroll: hackOnScroll,
   })
-
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    language: actionLanguage,
+    checkLanguage,
+    translation,
+  })
 
   return (
     <TimelineSelectorMasonryList
@@ -49,6 +56,7 @@ export const EntryListContentPicture = ({
       numColumns={2}
       style={hackStyle}
       estimatedItemSize={100}
+      contentContainerStyle={styles.contentContainer}
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
@@ -63,6 +71,12 @@ export const EntryListContentPicture = ({
     />
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingHorizontal: 8,
+  },
+})
 
 const defaultKeyExtractor = (item: string) => {
   return item

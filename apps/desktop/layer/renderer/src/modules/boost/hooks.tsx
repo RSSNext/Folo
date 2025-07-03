@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
+import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
 import { useI18n } from "~/hooks/common"
 
 import { useFeedBoostMap } from "./atom"

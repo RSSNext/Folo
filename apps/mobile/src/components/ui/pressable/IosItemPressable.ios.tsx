@@ -4,7 +4,7 @@ import type { ViewProps } from "react-native"
 
 const NativeItemPressable = requireNativeView<
   ViewProps & {
-    onItemPress: () => any
+    onItemPress?: () => any
     touchHighlight?: boolean
   }
 >("ItemPressable")

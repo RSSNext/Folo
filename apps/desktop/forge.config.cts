@@ -35,7 +35,7 @@ const ymlMapsMap = {
   win32: "latest.yml",
 }
 
-const keepModules = new Set(["font-list", "vscode-languagedetection", "fast-folder-size"])
+const keepModules = new Set(["font-list", "vscode-languagedetection"])
 const keepLanguages = new Set(["en", "en_GB", "en-US", "en_US"])
 
 // remove folders & files not to be included in the app
@@ -106,6 +106,10 @@ const config: ForgeConfig = {
       {
         name: "Folo",
         schemes: ["follow"],
+      },
+      {
+        name: "Folo",
+        schemes: ["folo"],
       },
     ],
 
@@ -214,6 +218,7 @@ const config: ForgeConfig = {
       publisherDisplayName: "Natural Selection Labs",
       identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
       packageBackgroundColor: "#FF5C00",
+      protocol: "follow", // TODO: use custom appx manifest to support both follow and folo
     }),
   ],
   plugins: [

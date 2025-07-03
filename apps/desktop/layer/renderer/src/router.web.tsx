@@ -1,13 +1,11 @@
 import { IN_ELECTRON } from "@follow/shared/constants"
-import { buildGlobRoutes } from "@follow/utils/route-builder"
 import { wrapCreateBrowserRouterV7 } from "@sentry/react"
 import { createBrowserRouter, createHashRouter } from "react-router"
 
 import { ErrorElement } from "./components/common/ErrorElement"
 import { NotFound } from "./components/common/NotFound"
-
-const globTree = import.meta.glob("./pages/**/*.tsx")
-const tree = buildGlobRoutes(globTree)
+// @ts-ignore
+import { routes as tree } from "./generated-routes"
 
 let routerCreator =
   IN_ELECTRON || globalThis["__DEBUG_PROXY__"] ? createHashRouter : createBrowserRouter

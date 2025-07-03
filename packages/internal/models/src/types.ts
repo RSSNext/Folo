@@ -3,8 +3,8 @@ import type { hc } from "hono/client"
 import type { z } from "zod"
 
 declare const _apiClient: ReturnType<typeof hc<AppType>>
-
-export type UserModel = Omit<
+type OptionalKey<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+export type UserModel = OptionalKey<
   typeof users.$inferSelect,
   | "createdAt"
   | "updatedAt"
@@ -13,14 +13,16 @@ export type UserModel = Omit<
   | "twoFactorEnabled"
   | "isAnonymous"
   | "suspended"
-> & {
-  email?: string
-}
+  | "bio"
+  | "website"
+  | "socialLinks"
+>
 
 export type ExtractBizResponse<T extends (...args: any[]) => any> = Exclude<
   Awaited<ReturnType<T>>,
   undefined
 >
+export type ExtractHonoParams<T extends (...args: any[]) => any> = Parameters<T>[0]["json"]
 
 export type ActiveList = {
   id: string | number
@@ -36,6 +38,10 @@ export type FeedModel = ExtractBizResponse<typeof _apiClient.feeds.$get>["data"]
 
 export type FeedAnalyticsModel = ExtractBizResponse<
   typeof _apiClient.feeds.$get
+>["data"]["analytics"]
+
+export type ListAnalyticsModel = ExtractBizResponse<
+  typeof _apiClient.lists.$get
 >["data"]["analytics"]
 
 export type ListModel = Omit<ListModelPoplutedFeeds, "feeds">
@@ -57,6 +63,8 @@ export type EntriesResponse = Array<
   | Exclude<Awaited<ReturnType<typeof _apiClient.entries.$post>>["data"], undefined>
   | Exclude<Awaited<ReturnType<typeof _apiClient.entries.inbox.$post>>["data"], undefined>
 >[number]
+
+export type ActionSettings = Exclude<EntriesResponse[number]["settings"], undefined>
 
 export type CombinedEntryModel = Omit<EntriesResponse[number], "feeds"> & {
   entries: {
@@ -84,6 +92,7 @@ export type DataResponse<T> = {
   data?: T
 }
 
+type Nullable<T> = T | null | undefined
 export type ActiveEntryId = Nullable<string>
 
 export type SubscriptionModel = ExtractBizResponse<
@@ -101,20 +110,6 @@ export type RecommendationItem = ExtractBizResponse<
   typeof _apiClient.discover.rsshub.$get
 >["data"][string]
 
-export type ActionOperation = "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex"
-export type ActionEntryField = "all" | "title" | "content" | "author" | "url" | "order"
-export type ActionFeedField =
-  | "view"
-  | "title"
-  | "site_url"
-  | "feed_url"
-  | "category"
-  | "entry_title"
-  | "entry_content"
-  | "entry_url"
-  | "entry_author"
-  | "entry_media_length"
-
 export type MediaModel = Exclude<
   ExtractBizResponse<typeof _apiClient.entries.$get>["data"],
   undefined
@@ -128,6 +123,8 @@ type ActionRulesRes = Exclude<
 export type ActionFilterItem = Partial<
   Exclude<ActionRulesRes["condition"][number], { length: number }>
 >
+export type ActionFeedField = Exclude<ActionFilterItem["field"], undefined>
+export type ActionOperation = Exclude<ActionFilterItem["operator"], undefined>
 export type ActionFilterGroup = ActionFilterItem[]
 export type ActionFilter = ActionFilterGroup[]
 
@@ -135,7 +132,7 @@ export type ActionModel = Omit<ActionRulesRes, "condition"> & {
   condition: ActionFilter
   index: number
 }
-export type ActionId = Exclude<keyof ActionModel["result"], "disabled">
+export type ActionId = Exclude<keyof ActionModel["result"], "disabled" | "blockRules">
 export type ActionRules = ActionModel[]
 
 export type ActionConditionIndex = {
@@ -169,4 +166,9 @@ export type EntryReadHistoriesModel = Optional<
   >["data"]["entryReadHistories"]
 > & {
   entryId: string
+}
+
+export type BizRespose<T> = {
+  data: T
+  code: 0
 }

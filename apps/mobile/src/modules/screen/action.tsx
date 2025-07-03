@@ -1,3 +1,5 @@
+import { getFeedById } from "@follow/store/feed/getter"
+import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import * as Haptics from "expo-haptics"
 import type { PropsWithChildren } from "react"
@@ -18,8 +20,6 @@ import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 import { LoginScreen } from "@/src/screens/(modal)/LoginScreen"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
-import { getFeed } from "@/src/store/feed/getter"
-import { useWhoami } from "@/src/store/user/hooks"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { MarkAllAsReadDialog } from "../dialogs/MarkAllAsReadDialog"
@@ -121,7 +121,7 @@ export const FeedShareActionButton = ({
       label={t("operation.share")}
       normalIcon={<ShareForwardCuteReIcon height={size} width={size} color={color} />}
       onPress={() => {
-        const feed = getFeed(feedId)
+        const feed = getFeedById(feedId)
         if (!feed) return
         const url = `${proxyEnv.WEB_URL}/share/feeds/${feedId}`
         Share.share({

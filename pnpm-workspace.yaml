@@ -25,6 +25,32 @@ onlyBuiltDependencies:
   - sharp
   - simple-git-hooks
   - utf-8-validate
+patchedDependencies:
+  "immer@10.1.1": "patches/immer@10.1.1.patch"
+  "re-resizable@6.11.2": "patches/re-resizable@6.11.2.patch"
+  hono: "patches/hono.patch"
+  "electron-context-menu@4.0.5": "patches/electron-context-menu@4.0.5.patch"
+  "@mozilla/readability@0.6.0": "patches/@mozilla__readability@0.6.0.patch"
+  "daisyui@4.12.24": "patches/daisyui@4.12.24.patch"
+  jsonpointer: "patches/jsonpointer.patch"
+  workbox-precaching: "patches/workbox-precaching.patch"
+  "@pengx17/electron-forge-maker-appimage": "patches/@pengx17__electron-forge-maker-appimage.patch"
+  "@microflash/remark-callout-directives": "patches/@microflash__remark-callout-directives.patch"
+  react-native-track-player: "patches/react-native-track-player.patch"
+  react-native-sheet-transitions: "patches/react-native-sheet-transitions.patch"
+  react-native-screens: "patches/react-native-screens.patch"
+  expo-image: "patches/expo-image.patch"
+  react-native-ios-utilities: "patches/react-native-ios-utilities.patch"
+  "@sentry/electron": "patches/@sentry__electron.patch"
+overrides:
+  "@electron/node-gyp": "10.2.0-electron.2"
+  is-core-module: "npm:@nolyfill/is-core-module@1.0.39"
+  isarray: "npm:@nolyfill/isarray@1.0.44"
+  "lan-network@<0.1.7": "0.1.7"
+  react: "19.0.0"
+  react-dom: "19.0.0"
+  react-native-ios-context-menu: "3.1.1"
+  react-native-ios-utilities: "5.1.5"
 
 catalog:
   typescript: "5.8.3"

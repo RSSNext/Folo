@@ -12,7 +12,10 @@ export type DefinedQuery<TQueryKey extends QueryKey, TData> = Readonly<{
   cancel: (key?: (key: TQueryKey) => QueryKey) => Promise<void>
   remove: (key?: (key: TQueryKey) => QueryKey) => Promise<void>
 
-  invalidate: (key?: (key: TQueryKey) => QueryKey) => Promise<void>
+  invalidate: (options?: {
+    keyExtractor?: (key: TQueryKey) => QueryKey
+    exact?: boolean
+  }) => Promise<void>
   invalidateRoot: () => void
 
   refetch: () => Promise<TData | undefined>
@@ -107,12 +110,14 @@ export function defineQuery<
       const queryKey = typeof keyExtactor === "function" ? keyExtactor(key) : key
       queryClient.removeQueries({ queryKey })
     },
-    invalidate: async (keyExtactor) => {
-      const queryKey = typeof keyExtactor === "function" ? keyExtactor(key) : key
+    invalidate: async (args) => {
+      const { keyExtractor, exact } = args || {}
+      const queryKey = typeof keyExtractor === "function" ? keyExtractor(key) : key
 
       await queryClient.invalidateQueries({
         queryKey,
         refetchType: "all",
+        exact,
       })
       options?.onInvalidate?.()
     },

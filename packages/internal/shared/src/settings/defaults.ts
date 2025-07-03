@@ -6,7 +6,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   language: "en",
   translation: false,
   translationMode: "bilingual",
-  summary: false,
+  summary: true,
   actionLanguage: "default",
 
   // mobile app
@@ -16,7 +16,10 @@ export const defaultGeneralSettings: GeneralSettings = {
   sendAnonymousData: true,
   showQuickTimeline: true,
 
+  // subscription
   autoGroup: true,
+  hideAllReadSubscriptions: false,
+  hidePrivateSubscriptionsInTimeline: false,
 
   // view
   unreadOnly: true,
@@ -24,9 +27,10 @@ export const defaultGeneralSettings: GeneralSettings = {
   scrollMarkUnread: true,
   hoverMarkUnread: true,
   renderMarkUnread: false,
-  // UX
+  // timeline
   groupByDate: true,
   autoExpandLongSocialMedia: false,
+  dimRead: false,
 
   // Secure
   jumpOutLinkWarn: true,
@@ -87,6 +91,9 @@ export const defaultUISettings: UISettings = {
 
   showUnreadCountViewAndSubscriptionMobile: false,
   showUnreadCountBadgeMobile: false,
+
+  // Discover
+  discoverLanguage: "all",
 }
 
 export const defaultIntegrationSettings: IntegrationSettings = {
@@ -121,6 +128,11 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   enableCubox: false,
   cuboxToken: "",
   enableCuboxAutoMemo: false,
+
+  // zotero
+  enableZotero: false,
+  zoteroUserID: "",
+  zoteroToken: "",
 
   saveSummaryAsDescription: false,
 }

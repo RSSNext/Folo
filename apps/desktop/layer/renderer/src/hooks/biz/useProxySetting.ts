@@ -2,12 +2,12 @@ import { IN_ELECTRON } from "@follow/shared/constants"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback } from "react"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 const proxyAtom = atom("")
 
 proxyAtom.onMount = (setAtom) => {
-  tipcClient?.getProxyConfig().then((proxy) => {
+  ipcServices?.setting.getProxyConfig().then((proxy) => {
     setAtom(proxy || "")
   })
 }
@@ -22,7 +22,7 @@ export const useSetProxy = () => {
         return
       }
       setProxy(proxyString)
-      tipcClient?.setProxyConfig(proxyString)
+      ipcServices?.setting.setProxyConfig(proxyString)
     },
     [setProxy],
   )

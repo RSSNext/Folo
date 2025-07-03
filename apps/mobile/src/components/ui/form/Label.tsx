@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/src/utils"
+import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { Text, View } from "react-native"

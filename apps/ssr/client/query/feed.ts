@@ -7,6 +7,7 @@ async function fetchFeedById(id: string) {
   const res = await apiClient.feeds.$get({
     query: {
       id,
+      entriesLimit: 8,
     },
   })
   return res.data

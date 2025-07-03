@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "cd html-renderer && vite build"
+    "build": "cd html-renderer && vite build",
+    "typecheck": "cd html-renderer && tsc --noEmit"
   }
 }

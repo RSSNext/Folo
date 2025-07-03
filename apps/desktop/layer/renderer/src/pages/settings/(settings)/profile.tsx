@@ -14,10 +14,10 @@ import { defineSettingPageData } from "~/modules/settings/utils"
 import { signOut } from "~/queries/auth"
 
 const iconName = "i-mgc-user-setting-cute-re"
-const priority = 1090
+const priority = (1000 << 3) + 10
 export const loader = defineSettingPageData({
   icon: iconName,
-  name: "titles.profile",
+  name: "titles.account",
   priority,
 })
 

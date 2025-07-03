@@ -15,6 +15,7 @@ export type SettingItem<T, K extends keyof T = keyof T> = {
   label: string
   description?: string
   onChange: (value: T[K]) => void
+  onChangeGuard?: (value: T[K]) => "handled" | void
   type?: "password"
 
   vertical?: boolean
@@ -92,7 +93,15 @@ export const createSettingBuilder =
               <SettingSwitch
                 className="mt-4"
                 checked={settingObject[assertSetting.key] as boolean}
-                onCheckedChange={(checked) => assertSetting.onChange(checked as T[keyof T])}
+                onCheckedChange={(checked) => {
+                  if (assertSetting.onChangeGuard) {
+                    const handled = assertSetting.onChangeGuard(checked as T[keyof T])
+                    if (handled === "handled") {
+                      return
+                    }
+                  }
+                  assertSetting.onChange(checked as T[keyof T])
+                }}
                 label={assertSetting.label}
               />
             )
@@ -119,6 +128,7 @@ export const createSettingBuilder =
       } else if ("action" in assertSetting) {
         ControlElement = <SettingActionItem {...assertSetting} key={index} />
       }
+
       return (
         <SettingItemGroup key={index}>
           {ControlElement}

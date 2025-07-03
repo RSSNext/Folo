@@ -1,5 +1,4 @@
 import { RelativeTime } from "@follow/components/ui/datetime/index.jsx"
-import { MagneticHoverEffect } from "@follow/components/ui/effect/MagneticHoverEffect.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { cn } from "@follow/utils/utils"
 import { memo } from "react"
@@ -23,7 +22,11 @@ function NormalListItemImpl({
   const displayTime = entry.entries.publishedAt
 
   return (
-    <MagneticHoverEffect className={"group relative mx-auto flex max-w-3xl gap-2 py-4 pl-3 pr-2"}>
+    <div
+      className={
+        "hover:before:bg-material-ultra-thick group relative mx-auto flex max-w-3xl gap-2 py-4 pl-3 pr-2 before:pointer-events-none before:absolute before:-inset-x-2 before:inset-y-0 before:z-[-1] before:scale-0 before:rounded-xl before:opacity-0 before:transition-all before:duration-200 hover:before:scale-100 hover:before:opacity-100"
+      }
+    >
       <FeedIcon feed={feed} fallback entry={entry.entries} />
       <div className={"-mt-0.5 flex-1 text-base leading-tight"}>
         <div className={cn("flex gap-1 text-xs font-bold", "text-text-secondary")}>
@@ -59,7 +62,7 @@ function NormalListItemImpl({
           />
         </div>
       )}
-    </MagneticHoverEffect>
+    </div>
   )
 }
 

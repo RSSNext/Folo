@@ -1,7 +1,6 @@
 import { atom } from "jotai"
 
 import { createAtomHooks } from "~/lib/jotai"
-import type { FlatEntryModel } from "~/store/entry/types"
 
 import { useGeneralSettingKey } from "./settings/general"
 
@@ -21,12 +20,12 @@ export const toggleShowAITranslationOnce = () => setShowAITranslationOnce((prev)
 export const enableShowAITranslationOnce = () => setShowAITranslationOnce(true)
 export const disableShowAITranslationOnce = () => setShowAITranslationOnce(false)
 
-export const useShowAITranslationAuto = (entry: FlatEntryModel | null) => {
-  return useGeneralSettingKey("translation") || !!entry?.settings?.translation
+export const useShowAITranslationAuto = (settings?: boolean | null) => {
+  return useGeneralSettingKey("translation") || !!settings
 }
 
-export const useShowAITranslation = (entry: FlatEntryModel | null) => {
-  const showAITranslationAuto = useShowAITranslationAuto(entry)
+export const useShowAITranslation = (settings?: boolean | null) => {
+  const showAITranslationAuto = useShowAITranslationAuto(settings)
   const showAITranslationOnce = useShowAITranslationOnce()
   return showAITranslationAuto || showAITranslationOnce
 }

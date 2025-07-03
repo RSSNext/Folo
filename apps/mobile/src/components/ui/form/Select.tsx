@@ -100,11 +100,9 @@ export function Select<T>({
   }
 
   return (
-    <View className="flex-1 flex-row items-center">
+    <View className="flex-1 flex-row items-center justify-between">
       <FormLabel className="pl-2" label={label} />
-      <View className="flex-1" />
-
-      {Trigger}
+      <View className="flex-1">{Trigger}</View>
     </View>
   )
 }

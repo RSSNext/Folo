@@ -1,12 +1,14 @@
 import type { FeedViewType } from "@follow/constants"
+import type { FeedSchema } from "@follow/database/schemas/types"
+import { cn } from "@follow/utils"
 import type { ReactNode } from "react"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 
-import type { FeedSchema } from "@/src/database/schemas/types"
 import { getFeedIconSource } from "@/src/lib/image"
 
 import type { ImageProps } from "../image/Image"
 import { Image } from "../image/Image"
+import { FallbackIcon } from "./fallback-icon"
 
 export type FeedIconRequiredFeed = Pick<
   FeedSchema,
@@ -34,17 +36,22 @@ export function FeedIcon({
   fallbackUrl,
   className,
   size = 20,
-  fallback = true,
+  fallback,
   fallbackElement,
   siteUrl,
   ...props
 }: FeedIconProps & ImageProps) {
+  const [isError, setIsError] = useState(false)
   const src = useMemo(() => {
     return getFeedIconSource(feed, siteUrl, fallback)
   }, [fallback, feed, siteUrl])
 
-  if (!src) {
-    return null
+  const handleError = useCallback(() => setIsError(true), [])
+
+  if (!src || isError) {
+    return (
+      <FallbackIcon title={feed?.title ?? ""} size={size} className={cn("rounded", className)} />
+    )
   }
   return (
     <Image
@@ -52,9 +59,10 @@ export function FeedIcon({
         width: size,
         height: size,
       }}
-      className="rounded"
+      className={cn("rounded", className)}
       style={{ height: size, width: size }}
       source={{ uri: src }}
+      onError={handleError}
       {...props}
     />
   )

@@ -1,4 +1,4 @@
-import { getUrlIcon } from "@follow/utils/src/utils"
+import { getUrlIcon } from "@follow/utils/utils"
 
 import type { FeedIconFeed } from "../components/ui/icon/feed-icon"
 
@@ -8,7 +8,7 @@ import type { FeedIconFeed } from "../components/ui/icon/feed-icon"
 export const getFeedIconSource = (
   feed?: FeedIconFeed,
   siteUrl?: string,
-  fallback = true,
+  fallback = false,
 ): string | undefined => {
   switch (true) {
     case !feed && !!siteUrl: {

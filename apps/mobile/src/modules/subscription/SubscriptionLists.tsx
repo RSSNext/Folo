@@ -1,11 +1,22 @@
-import type { FeedViewType } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
+import { FEED_COLLECTION_LIST } from "@follow/store/constants/app"
+import { useInboxList } from "@follow/store/inbox/hooks"
+import {
+  useGroupedSubscription,
+  useListSubscriptionIds,
+  useSortedGroupedSubscription,
+  useSortedListSubscription,
+  useSortedUngroupedSubscription,
+} from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { FlashList } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
-import { memo, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import { useEventCallback } from "usehooks-ts"
 
+import { useGeneralSettingKey, useHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
 import {
   GROUPED_ICON_TEXT_GAP,
@@ -19,19 +30,9 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { StarCuteFiIcon } from "@/src/icons/star_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
-import {
-  useGroupedSubscription,
-  useInboxSubscription,
-  useListSubscription,
-  useSortedGroupedSubscription,
-  useSortedListSubscription,
-  useSortedUngroupedSubscription,
-} from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
 
 import { usePagerListPerformanceHack } from "../entry-list/hooks"
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
@@ -54,17 +55,42 @@ const SubscriptionListImpl = ({
   view: FeedViewType
   active?: boolean
 }) => {
-  const listIds = useListSubscription(view)
-  const sortedListIds = useSortedListSubscription(listIds, "alphabet")
+  const hideAllReadSubscriptions = useHideAllReadSubscriptions()
+  const autoGroup = useGeneralSettingKey("autoGroup")
+  const listIds = useListSubscriptionIds(view)
+  const sortedListIds = useSortedListSubscription({
+    ids: listIds,
+    sortBy: "alphabet",
+    hideAllReadSubscriptions,
+  })
 
-  const inboxes = useInboxSubscription(view)
+  const inboxes = useInboxList(
+    useCallback(
+      (inboxes) => (view === FeedViewType.Articles ? inboxes.map((inbox) => inbox.id) : []),
+      [view],
+    ),
+  )
 
-  const { grouped, unGrouped } = useGroupedSubscription(view)
+  const { grouped, unGrouped } = useGroupedSubscription({
+    view,
+    autoGroup,
+  })
 
   const sortBy = useFeedListSortMethod()
   const sortOrder = useFeedListSortOrder()
-  const sortedGrouped = useSortedGroupedSubscription(view, grouped, sortBy, sortOrder)
-  const sortedUnGrouped = useSortedUngroupedSubscription(unGrouped, sortBy, sortOrder)
+  const sortedGrouped = useSortedGroupedSubscription({
+    view,
+    grouped,
+    sortBy,
+    sortOrder,
+    hideAllReadSubscriptions,
+  })
+  const sortedUnGrouped = useSortedUngroupedSubscription({
+    ids: unGrouped,
+    sortBy,
+    sortOrder,
+    hideAllReadSubscriptions,
+  })
 
   const data = useMemo(
     () => [
@@ -237,7 +263,7 @@ const StarItem = () => {
         itemStyle={ItemPressableStyle.Grouped}
         onPress={() => {
           selectFeed({ type: "feed", feedId: FEED_COLLECTION_LIST })
-          closeDrawer()
+
           navigation.pushControllerView(FeedScreen, {
             feedId: FEED_COLLECTION_LIST,
           })

@@ -3,7 +3,7 @@ import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
 
 const iconName = "i-mgc-department-cute-re"
-const priority = 1030
+const priority = (1000 << 1) + 20
 
 export const loader = defineSettingPageData({
   icon: iconName,

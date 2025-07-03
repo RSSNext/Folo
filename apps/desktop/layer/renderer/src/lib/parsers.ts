@@ -1,10 +1,8 @@
-import type { EntryModel } from "@follow/models/types"
 import { isTwitterUrl, isXUrl } from "@follow/utils/link-parser"
 
-export const parseSocialMedia = (entry: EntryModel) => {
-  const { authorUrl, url, guid } = entry
+export const parseSocialMedia = (parsedUrl?: string | null) => {
+  if (!parsedUrl) return
 
-  const parsedUrl = authorUrl || url || guid
   const isX = isXUrl(parsedUrl).validate || isTwitterUrl(parsedUrl).validate
 
   if (isX) {

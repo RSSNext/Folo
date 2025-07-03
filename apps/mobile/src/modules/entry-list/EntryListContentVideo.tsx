@@ -1,11 +1,13 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
 import type { MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo } from "react"
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
-import { useFetchEntriesControls } from "@/src/modules/screen/atoms"
-import { usePrefetchEntryTranslation } from "@/src/store/translation/hooks"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { checkLanguage } from "@/src/lib/translation"
+import { useEntries } from "@/src/modules/screen/atoms"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
@@ -23,14 +25,20 @@ export const EntryListContentVideo = ({
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)
-  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage } =
-    useFetchEntriesControls()
+  const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage } = useEntries()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
     onScroll: hackOnScroll,
   })
 
-  usePrefetchEntryTranslation({ entryIds: active ? viewableItems.map((item) => item.key) : [] })
+  const translation = useGeneralSettingKey("translation")
+  const actionLanguage = useActionLanguage()
+  usePrefetchEntryTranslation({
+    entryIds: active ? viewableItems.map((item) => item.key) : [],
+    language: actionLanguage,
+    translation,
+    checkLanguage,
+  })
 
   const ListFooterComponent = useMemo(
     () =>
@@ -63,9 +71,16 @@ export const EntryListContentVideo = ({
       {...rest}
       onRefresh={refetch}
       style={hackStyle}
+      contentContainerStyle={styles.contentContainer}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingHorizontal: 8,
+  },
+})
 
 const defaultKeyExtractor = (item: string) => {
   return item

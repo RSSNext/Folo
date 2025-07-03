@@ -1,4 +1,4 @@
-import { env } from "@follow/shared/src/env.rn"
+import { env } from "@follow/shared/env.rn"
 import { getApp } from "@react-native-firebase/app"
 import getAppCheck, {
   initializeAppCheck as firebaseInitializeAppCheck,

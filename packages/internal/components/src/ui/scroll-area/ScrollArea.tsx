@@ -3,7 +3,7 @@ import { cn } from "@follow/utils/utils"
 import * as ScrollAreaBase from "@radix-ui/react-scroll-area"
 import * as React from "react"
 
-import { ScrollElementContext } from "./ctx"
+import { ScrollElementContext, ScrollElementEventsContext } from "./ctx"
 import styles from "./index.module.css"
 
 const Corner = ({
@@ -32,9 +32,8 @@ const Thumb = ({
     ref={forwardedRef}
     className={cn(
       "relative w-full flex-1 rounded-xl transition-colors duration-150",
-      "bg-gray-300 hover:bg-neutral-400/80",
-      "active:bg-neutral-400",
-      "dark:bg-neutral-500 hover:dark:bg-neutral-400/80 active:dark:bg-neutral-400",
+      "bg-fill-secondary hover:bg-fill",
+      "active:bg-fill-vibrant",
       "before:absolute before:-left-1/2 before:-top-1/2 before:h-full before:min-h-[44]",
       'before:w-full before:min-w-[44] before:-translate-x-full before:-translate-y-full before:content-[""]',
 
@@ -75,9 +74,11 @@ const Viewport = ({
   ref: forwardedRef,
   className,
   mask = false,
+  focusable = true,
   ...rest
 }: React.ComponentPropsWithoutRef<typeof ScrollAreaBase.Viewport> & {
   mask?: boolean
+  focusable?: boolean
 } & { ref?: React.Ref<React.ElementRef<typeof ScrollAreaBase.Viewport> | null> }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const [shouldAddMask, setShouldAddMask] = React.useState(false)
@@ -105,7 +106,7 @@ const Viewport = ({
     <ScrollAreaBase.Viewport
       {...rest}
       ref={ref}
-      tabIndex={-1}
+      tabIndex={focusable ? -1 : void 0}
       className={cn("block size-full", shouldAddMask && styles["mask-scroller"], className)}
     />
   )
@@ -143,6 +144,8 @@ export const ScrollArea = ({
   onScroll,
   orientation = "vertical",
   asChild = false,
+  onUpdateMaxScroll,
+  focusable = true,
 }: React.PropsWithChildren & {
   rootClassName?: string
   viewportClassName?: string
@@ -150,27 +153,34 @@ export const ScrollArea = ({
   flex?: boolean
   mask?: boolean
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
+  onUpdateMaxScroll?: () => void
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
+  focusable?: boolean
 } & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
+  const events = React.useMemo(() => ({ onUpdateMaxScroll }), [onUpdateMaxScroll])
+
   return (
     <ScrollElementContext value={viewportRef}>
-      <Root className={rootClassName}>
-        <Viewport
-          ref={setViewportRef}
-          onWheel={stopPropagation}
-          className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
-          mask={mask}
-          asChild={asChild}
-          onScroll={onScroll}
-        >
-          {children}
-        </Viewport>
-        <Scrollbar orientation={orientation} className={scrollbarClassName} />
-      </Root>
+      <ScrollElementEventsContext value={events}>
+        <Root className={rootClassName}>
+          <Viewport
+            ref={setViewportRef}
+            onWheel={stopPropagation}
+            className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
+            mask={mask}
+            asChild={asChild}
+            onScroll={onScroll}
+            focusable={focusable}
+          >
+            {children}
+          </Viewport>
+          <Scrollbar orientation={orientation} className={scrollbarClassName} />
+        </Root>
+      </ScrollElementEventsContext>
     </ScrollElementContext>
   )
 }

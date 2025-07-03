@@ -8,14 +8,14 @@ import {
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useCallback, useLayoutEffect } from "react"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 const useSyncThemeElectron = () => {
   const appIsDark = useDarkQuery()
   const setTheme = internal_useSetTheme()
   useLayoutEffect(() => {
     let isMounted = true
-    tipcClient?.getAppearance().then((appearance) => {
+    ipcServices?.setting.getAppearance().then((appearance) => {
       if (!isMounted) return
       setTheme(appearance)
       disableTransition(["[role=switch]>*"])()
@@ -38,7 +38,7 @@ export const useSetTheme = () => {
       setTheme(colorMode)
 
       if (IN_ELECTRON) {
-        tipcClient?.setAppearance(colorMode)
+        ipcServices?.setting.setAppearance(colorMode)
       }
     },
     [setTheme],

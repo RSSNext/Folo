@@ -54,7 +54,7 @@ private class FOWKWebViewConfiguration: WKWebViewConfiguration {
     let hexAccentColor = Utils.accentColor.toHex()
     let css = """
         :root { overflow: hidden !important; overflow-behavior: none !important; }
-        body { 
+        body {
             overflow-y: visible !important;
             position: absolute !important;
             width: 100% !important;
@@ -198,8 +198,9 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
           guard let data = data else { return }
           DispatchQueue.main.async {
             let urls = data.payload.imageUrls
+            let index = data.payload.index ?? 0
             if !urls.isEmpty {
-              ImagePreview.quickLookImageUrls(urls)
+              self.state.previewImages(urls: urls, index: index)
             }
           }
 

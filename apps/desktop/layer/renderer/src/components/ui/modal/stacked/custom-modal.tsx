@@ -1,8 +1,10 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import { m, useAnimationControls } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useEffect, useState } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 import { ModalClose } from "./components"
 import { useCurrentModal } from "./hooks"
@@ -84,12 +86,7 @@ export const DrawerModalLayout: FC<PropsWithChildren> = ({ children }) => {
         initial="initial"
         animate={controller}
         variants={modalVariant}
-        transition={{
-          type: "spring",
-          mass: 0.4,
-          tension: 100,
-          friction: 1,
-        }}
+        transition={Spring.presets.snappy}
         onAnimationComplete={(definition) => {
           if (definition === "exit") {
             dismiss()
@@ -116,12 +113,7 @@ export const ScaleModal: ModalTemplateType = (props) => {
     <div className={"center container h-full"} onPointerDown={dismiss} onClick={stopPropagation}>
       <m.div
         onPointerDown={stopPropagation}
-        transition={{
-          type: "spring",
-          mass: 0.4,
-          tension: 100,
-          friction: 1,
-        }}
+        transition={Spring.presets.snappy}
         initial={{ transform: "scale(0)", opacity: 0 }}
         animate={{ transform: "scale(1)", opacity: 1 }}
         exit={{ transform: "scale(0.6)", opacity: 0 }}

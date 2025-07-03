@@ -16,7 +16,6 @@ import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import type { Processor } from "unified"
 import { unified } from "unified"
-import { VFile } from "vfile"
 
 export interface RemarkOptions {
   components: Partial<Components>
@@ -24,7 +23,6 @@ export interface RemarkOptions {
 }
 
 export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>) => {
-  const file = new VFile(content)
   const { components, applyMiddleware } = options || {}
 
   let pipeline: Processor<any, any, any, any, any> = unified()
@@ -75,7 +73,7 @@ export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>)
 
   const tree = pipeline.parse(content)
 
-  const hastTree = pipeline.runSync(tree, file)
+  const hastTree = pipeline.runSync(tree, content)
 
   return {
     content: toJsxRuntime(hastTree, {

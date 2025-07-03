@@ -1,17 +1,19 @@
 import type { AuthSession } from "@follow/shared/hono"
+import { whoamiQueryKey } from "@follow/store/user/hooks"
+import { userActions, userSyncService } from "@follow/store/user/store"
+import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
 
-import { setWhoami } from "~/atoms/user"
 import { QUERY_PERSIST_KEY } from "~/constants"
 import { useAuthQuery } from "~/hooks/common"
-import { getAccountInfo, getSession, signOut as signOutFn } from "~/lib/auth"
-import { tipcClient } from "~/lib/client"
+import { getAccountInfo, signOut as signOutFn } from "~/lib/auth"
+import { ipcServices } from "~/lib/client"
 import { defineQuery } from "~/lib/defineQuery"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
 export const auth = {
-  getSession: () => defineQuery(["auth", "session"], () => getSession()),
+  getSession: () => defineQuery(whoamiQueryKey, () => userSyncService.whoami()),
   getAccounts: () => defineQuery(["auth", "accounts"], () => getAccountInfo()),
 }
 
@@ -57,44 +59,38 @@ export const useSession = (options?: { enabled?: boolean }) => {
   const fetchError = error as FetchError
 
   return {
-    session: data?.data as AuthSession,
+    session: data as AuthSession,
     ...rest,
     status: isLoading
       ? "loading"
-      : data?.data
+      : data
         ? "authenticated"
         : fetchError
           ? "error"
-          : data?.data === null
+          : data === null
             ? "unauthenticated"
             : "unknown",
-  }
+  } as const
 }
 
 export const handleSessionChanges = () => {
-  tipcClient?.sessionChanged()
+  ipcServices?.auth.sessionChanged()
   window.location.reload()
 }
 
 export const signOut = async () => {
-  if (window.__RN__) {
-    window.ReactNativeWebView?.postMessage("sign-out")
-    return
-  }
-
   // Clear query cache
   localStorage.removeItem(QUERY_PERSIST_KEY)
 
-  // setLoginModalShow(true)
-  setWhoami(null)
+  userActions.removeCurrentUser()
+  // clear local store data
+  await clearLocalPersistStoreData()
 
   // Clear local storage
   clearStorage()
-
-  // clear local store data
-  await clearLocalPersistStoreData()
   // Sign out
-  await tipcClient?.signOut()
+  await tracker.manager.clear()
+  await ipcServices?.auth.signOut()
   await signOutFn()
   window.location.reload()
 }

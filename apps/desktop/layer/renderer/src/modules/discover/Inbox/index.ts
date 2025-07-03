@@ -1,0 +1,1 @@
+export { InboxTable } from "./InboxTable"

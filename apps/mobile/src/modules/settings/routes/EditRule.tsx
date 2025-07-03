@@ -1,4 +1,13 @@
-import type { ActionFilter, ActionModel } from "@follow/models/src/types"
+import type { ActionFilter, ActionModel } from "@follow/models/types"
+import type { ActionAction } from "@follow/store/action/constant"
+import {
+  availableActionMap,
+  filterFieldOptions,
+  filterOperatorOptions,
+} from "@follow/store/action/constant"
+import { useActionRule } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
+import { merge } from "es-toolkit/compat"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
@@ -19,13 +28,13 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import type { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { useActionRule } from "@/src/store/action/hooks"
-import { actionActions } from "@/src/store/action/store"
 import { accentColor, useColors } from "@/src/theme/colors"
 
-import { availableActionList, filterFieldOptions, filterOperatorOptions } from "../actions/constant"
 import { EditConditionScreen } from "./EditCondition"
+import { EditRewriteRulesScreen } from "./EditRewriteRules"
+import { EditWebhooksScreen } from "./EditWebhooks"
 
 export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
   const { t } = useTranslation("settings")
@@ -226,12 +235,27 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
   )
 }
 
+const extendedAvailableActionList = Object.values(
+  merge(availableActionMap, {
+    rewriteRules: {
+      onNavigate: (router: Navigation, index: number) => {
+        router.pushControllerView(EditRewriteRulesScreen, { index })
+      },
+    },
+    webhooks: {
+      onNavigate: (router: Navigation, index: number) => {
+        router.pushControllerView(EditWebhooksScreen, { index })
+      },
+    },
+  }),
+) as (ActionAction & { onNavigate?: (router: Navigation, index: number) => void })[]
+
 const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const { t } = useTranslation("settings")
-  const enabledActions = availableActionList.filter(
+  const enabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] !== undefined,
   )
-  const notEnabledActions = availableActionList.filter(
+  const notEnabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] === undefined,
   )
 

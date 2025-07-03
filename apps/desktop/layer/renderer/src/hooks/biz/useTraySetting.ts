@@ -2,13 +2,16 @@ import { IN_ELECTRON } from "@follow/shared/constants"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { useCallback } from "react"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 
 const minimizeToTrayAtom = atom<boolean>(true)
 
 minimizeToTrayAtom.onMount = (setAtom) => {
-  tipcClient?.getMinimizeToTray().then((proxy: boolean) => {
-    setAtom(proxy)
+  const result = ipcServices?.setting.getMinimizeToTray()
+  Promise.resolve(result).then((proxy) => {
+    if (typeof proxy === "boolean") {
+      setAtom(proxy)
+    }
   })
 }
 
@@ -20,7 +23,7 @@ export const useSetMinimizeToTray = () => {
     (value: boolean) => {
       if (!IN_ELECTRON) return
       setMinimizeToTray(value)
-      tipcClient?.setMinimizeToTray(value)
+      ipcServices?.setting.setMinimizeToTray(value)
     },
     [setMinimizeToTray],
   )

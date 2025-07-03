@@ -16,16 +16,13 @@ export function createCommand<
     id: options.id,
     run: options.run,
     icon: options.icon,
-    category: options.category ?? "follow:general",
+    category: options.category ?? "category.global",
     get label() {
       let { label } = options
       label = typeof label === "function" ? label?.() : label
       label = typeof label === "string" ? { title: label } : label
       return label
     },
-    // when: !!(options.when ?? true),
-    // keyBinding:
-    //   typeof options.keyBinding === "string" ? { binding: options.keyBinding } : options.keyBinding,
   }
 }
 

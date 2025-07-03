@@ -1,4 +1,5 @@
 import { MagneticHoverEffect } from "@follow/components/ui/effect/MagneticHoverEffect.js"
+import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import {
   Tooltip,
   TooltipContent,
@@ -8,7 +9,6 @@ import {
 import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
 import { use } from "react"
 
-import type { LinkProps } from "../../link"
 import { MarkdownRenderActionContext } from "../context"
 
 export const MarkdownLink = (props: LinkProps) => {

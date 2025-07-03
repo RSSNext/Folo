@@ -1,6 +1,5 @@
+import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { useMemo } from "react"
-
-import { useViewWithSubscription } from "~/store/subscription/hooks"
 
 export const useTimelineList = () => {
   const views = useViewWithSubscription()

@@ -1,10 +1,10 @@
+import { useIsInbox } from "@follow/store/inbox/hooks"
 import { setStringAsync } from "expo-clipboard"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { toast } from "@/src/lib/toast"
-import { useInbox } from "@/src/store/inbox/hooks"
 
 type InboxContextMenuProps = PropsWithChildren<{
   inboxId: string
@@ -12,9 +12,9 @@ type InboxContextMenuProps = PropsWithChildren<{
 
 export const InboxContextMenu = ({ inboxId, children }: InboxContextMenuProps) => {
   const { t } = useTranslation()
-  const inbox = useInbox(inboxId)
+  const isInbox = useIsInbox(inboxId)
 
-  if (!inbox) {
+  if (!isInbox) {
     return children
   }
 
@@ -26,7 +26,7 @@ export const InboxContextMenu = ({ inboxId, children }: InboxContextMenuProps) =
         <ContextMenu.Item
           key="CopyEmailAddress"
           onSelect={() => {
-            setStringAsync(`${inbox.id}@follow.re`).then(() => {
+            setStringAsync(`${inboxId}@follow.re`).then(() => {
               toast.success(
                 t("operation.copy_which_success", { which: t("operation.copy.email_address") }),
               )

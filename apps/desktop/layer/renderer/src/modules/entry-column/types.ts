@@ -4,6 +4,7 @@ import type {
   FeedModel,
   FeedOrListRespModel,
 } from "@follow/models/types"
+import type { EntryTranslation } from "@follow/store/translation/types"
 import type { FC } from "react"
 
 export type UniversalItemProps = {
@@ -13,11 +14,7 @@ export type UniversalItemProps = {
     feedId: string
     inboxId: string
   }
-  translation?: {
-    title?: string
-    description?: string
-    content?: string
-  } | null
+  translation?: EntryTranslation
 }
 
 export type EntryListItemFC<P extends object = object> = FC<P & UniversalItemProps> & {

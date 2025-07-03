@@ -4,7 +4,7 @@ import { nextFrame } from "@follow/utils/dom"
 import { getStorageNS } from "@follow/utils/ns"
 import { repository } from "@pkg"
 import type { FC } from "react"
-import { useEffect, useRef } from "react"
+import { Suspense, use, useEffect, useRef } from "react"
 import { toast } from "sonner"
 
 import { useServerConfigs } from "~/atoms/server-configs"
@@ -13,6 +13,8 @@ import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { Paper } from "~/components/ui/paper"
 import { DebugRegistry } from "~/modules/debug/registry"
+
+import { linkifyChangelog } from "./utils"
 
 const AppNotificationContainer: FC = () => {
   const { present } = useModalStack()
@@ -56,7 +58,7 @@ const AppNotificationContainer: FC = () => {
     const toaster = () => {
       toast.success("", {
         description: (
-          <div>
+          <div className="text-text font-medium">
             App is upgraded to{" "}
             <a
               href={`${repository.url}/releases/tag/v${APP_VERSION}`}
@@ -85,7 +87,11 @@ const AppNotificationContainer: FC = () => {
                     CustomModalComponent: ({ children }) => {
                       return <PeekModal>{children}</PeekModal>
                     },
-                    content: Changelog,
+                    content: () => (
+                      <Suspense>
+                        <Changelog />
+                      </Suspense>
+                    ),
                     overlay: true,
                   })
                 })
@@ -98,16 +104,23 @@ const AppNotificationContainer: FC = () => {
       setTimeout(toaster)
     }
 
-    DEV && DebugRegistry.add("simulate_app_upgraded_toast", toaster)
+    DEV && DebugRegistry.add("App Upgraded Toast", toaster)
   })
 
   return null
 }
-
 export default AppNotificationContainer
 
+const changelogContext = (async () => {
+  const repoUrl = repository.url
+  if (import.meta.env.DEV) {
+    const content = await import("../../../../../changelog/next.md?raw").then((m) => m.default)
+    return linkifyChangelog(content, repoUrl)
+  }
+  return linkifyChangelog(CHANGELOG_CONTENT, repoUrl)
+})()
 const Changelog = () => (
   <Paper>
-    <Markdown className="mt-8 w-full max-w-full">{CHANGELOG_CONTENT}</Markdown>
+    <Markdown className="mt-8 w-full max-w-full">{use(changelogContext)}</Markdown>
   </Paper>
 )

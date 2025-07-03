@@ -1,4 +1,5 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
+import { TouchableOpacity } from "react-native"
 
 import { GaleriaContext } from "./context"
 import type { Galeria as GaleriaInterface } from "./index.ios"
@@ -36,7 +37,17 @@ const Galeria: typeof GaleriaInterface = Object.assign(
   },
   {
     Image(props: GaleriaViewProps) {
-      return props.children
+      // const { urls, initialIndex } = use(GaleriaContext)
+
+      return (
+        <TouchableOpacity
+          onPress={useCallback(() => {
+            props.onPreview?.({ nativeEvent: { index: props.index ?? 0 } })
+          }, [props])}
+        >
+          {props.children}
+        </TouchableOpacity>
+      )
     },
   },
 ) as unknown as typeof GaleriaInterface

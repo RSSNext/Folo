@@ -1,9 +1,8 @@
-import { LazyMotion, MotionConfig } from "motion/react"
+import { domMax, LazyMotion, MotionConfig } from "motion/react"
 
-const loadFeatures = () => import("../framer-lazy-feature").then((res) => res.default)
 export const MotionProvider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <LazyMotion features={loadFeatures} strict key="framer">
+    <LazyMotion features={domMax} strict key="framer">
       <MotionConfig
         transition={{
           type: "tween",

@@ -1,4 +1,4 @@
-import { clsx } from "clsx"
+import { clsx } from "@follow/utils/utils"
 import type { ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
 

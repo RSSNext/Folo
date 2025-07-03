@@ -1,5 +1,5 @@
 import { cn } from "@follow/utils"
-import { EventBus } from "@follow/utils/src/event-bus"
+import { EventBus } from "@follow/utils/event-bus"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import {
   createElement,

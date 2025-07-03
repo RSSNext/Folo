@@ -1,4 +1,5 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
+import { cn } from "@follow/utils"
 import { useSetAtom, useStore } from "jotai"
 import type { PropsWithChildren } from "react"
 import { use, useImperativeHandle, useLayoutEffect, useRef, useState } from "react"
@@ -39,6 +40,7 @@ type SafeNavigationScrollViewProps = Omit<ScrollViewProps, "onScroll"> & {
   contentViewClassName?: string
 
   Header?: React.ReactNode
+  ScrollViewBottom?: React.ReactNode
 } & PropsWithChildren
 
 export interface ForwardedSafeNavigationScrollView extends ScrollView {
@@ -54,6 +56,7 @@ export const SafeNavigationScrollView = ({
   contentViewClassName,
   contentViewStyle,
   Header,
+  ScrollViewBottom,
   ...props
 }: SafeNavigationScrollViewProps & { ref?: React.Ref<ScrollView | null> }) => {
   const insets = useSafeAreaInsets()
@@ -94,7 +97,9 @@ export const SafeNavigationScrollView = ({
       if (reanimatedScrollY) {
         reanimatedScrollY.value = event.contentOffset.y
       }
-
+      if (onScroll) {
+        runOnJS(onScroll)(event)
+      }
       runOnJS(checkScrollToBottom)()
       screenCtxValue.reAnimatedScrollY.value = event.contentOffset.y
     },
@@ -110,6 +115,7 @@ export const SafeNavigationScrollView = ({
           onContentSizeChange={useTypeScriptHappyCallback(
             (w, h) => {
               screenCtxValue.scrollViewContentHeight.value = h
+              checkScrollToBottom()
             },
             [screenCtxValue.scrollViewContentHeight],
           )}
@@ -129,9 +135,10 @@ export const SafeNavigationScrollView = ({
           {...props}
         >
           <View style={{ height: headerHeight - (withTopInset ? insets.top : 0) }} />
-          <View style={contentViewStyle} className={contentViewClassName}>
+          <View style={contentViewStyle} className={cn("flex-1", contentViewClassName)}>
             {children}
           </View>
+          {ScrollViewBottom}
           <View style={{ height: tabBarHeight - (withBottomInset ? insets.bottom : 0) }} />
         </ReAnimatedScrollView>
       </SetNavigationHeaderHeightContext>

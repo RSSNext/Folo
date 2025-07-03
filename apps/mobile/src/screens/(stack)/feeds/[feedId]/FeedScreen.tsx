@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { useMemo } from "react"
 import { RootSiblingParent } from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -6,55 +7,29 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryListSelector } from "@/src/modules/entry-list/EntryListSelector"
-import { EntryListContext, useSelectedView } from "@/src/modules/screen/atoms"
+import { EntryListContext, useEntries, useSelectedView } from "@/src/modules/screen/atoms"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
-import { useCollectionEntryList } from "@/src/store/collection/hooks"
-import {
-  useEntryIdsByCategory,
-  useEntryIdsByFeedId,
-  useEntryIdsByInboxId,
-  useEntryIdsByListId,
-} from "@/src/store/entry/hooks"
-import { FEED_COLLECTION_LIST } from "@/src/store/entry/utils"
-import { useFeed } from "@/src/store/feed/hooks"
 
 export const FeedScreen: NavigationControllerView<{
   feedId: string
 }> = ({ feedId: feedIdentifier }) => {
   const insets = useSafeAreaInsets()
-  const feed = useFeed(feedIdentifier)
-
-  const isCollection = feedIdentifier === FEED_COLLECTION_LIST
-  const view = useSelectedView() ?? FeedViewType.Articles
-  const collectionEntryIds = useCollectionEntryList(view)
-
-  const entryIdsByFeedId = useEntryIdsByFeedId(feedIdentifier)
-  const entryIdsByCategory = useEntryIdsByCategory(feedIdentifier)
-  const entryIdsByListId = useEntryIdsByListId(feedIdentifier)
-  const entryIdsByInboxId = useEntryIdsByInboxId(feedIdentifier)
-
-  const entryIds = isCollection
-    ? collectionEntryIds
-    : getEntryIdsFromMultiplePlace(
-        entryIdsByFeedId,
-        entryIdsByCategory,
-        entryIdsByListId,
-        entryIdsByInboxId,
-      )
+  const feed = useFeedById(feedIdentifier)
 
   return (
     <EntryListContext value={useMemo(() => ({ type: "feed" }), [])}>
       <RootSiblingParent>
         <BottomTabBarHeightContext value={insets.bottom}>
           <TimelineHeader feedId={feed?.id} />
-
-          <EntryListSelector entryIds={entryIds} viewId={view} />
+          <FeedScreenEntryList />
         </BottomTabBarHeightContext>
       </RootSiblingParent>
     </EntryListContext>
   )
 }
 
-function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | null>) {
-  return entryIds.find((ids) => ids?.length) ?? []
+function FeedScreenEntryList() {
+  const { entriesIds } = useEntries()
+  const view = useSelectedView() ?? FeedViewType.Articles
+  return <EntryListSelector viewId={view} entryIds={entriesIds} />
 }

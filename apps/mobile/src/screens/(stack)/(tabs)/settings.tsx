@@ -1,3 +1,4 @@
+import { useWhoami } from "@follow/store/user/hooks"
 import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
@@ -18,15 +19,11 @@ import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { EditProfileScreen } from "@/src/modules/settings/routes/EditProfile"
 import { SettingsList } from "@/src/modules/settings/SettingsList"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
-import { useWhoami } from "@/src/store/user/hooks"
 
 export function Settings() {
   const insets = useSafeAreaInsets()
-
   const screenContext = use(ScreenItemContext)
-
   const whoami = useWhoami()
-
   const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
 
   return (
@@ -35,7 +32,7 @@ export function Settings() {
         ref={scrollViewRef}
         style={{ paddingTop: insets.top }}
         className="bg-system-grouped-background flex-1"
-        contentViewClassName="-mt-24 pb-36"
+        contentViewClassName="-mt-24 pb-8"
       >
         <UserHeaderBanner scrollY={screenContext.reAnimatedScrollY} userId={whoami?.id} />
 

@@ -1,4 +1,3 @@
-import type { Document } from "linkedom"
 import xss from "xss"
 
 export function buildSeoMetaTags(

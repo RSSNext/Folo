@@ -1,16 +1,20 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { Kbd, KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { useCountdown } from "@follow/hooks"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, ReactNode } from "react"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { HotKeyScopeMap } from "~/constants"
-import { shortcuts } from "~/constants/shortcuts"
+import { HotkeyScope } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
 import type { MarkAllFilter } from "../hooks/useMarkAll"
 import { markAllByRoute } from "../hooks/useMarkAll"
@@ -30,41 +34,51 @@ export const MarkAllReadButton = ({
   const { t } = useTranslation()
   const { t: commonT } = useTranslation("common")
 
-  useHotkeys(
-    shortcuts.entries.markAllAsRead.key,
-    () => {
+  // const activeScope = useGlobalFocusableScope()
+  const when = useGlobalFocusableScopeSelector(
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
+    useCallback(
+      (activeScope) => activeScope.or(HotkeyScope.Timeline, HotkeyScope.SubscriptionList),
+      [],
+    ),
+  )
+  useCommandBinding({
+    commandId: COMMAND_ID.subscription.markAllAsRead,
+    when,
+  })
+
+  useEffect(() => {
+    return EventBus.subscribe(COMMAND_ID.subscription.markAllAsRead, () => {
       let cancel = false
       const undo = () => {
         toast.dismiss(id)
         if (cancel) return
         cancel = true
       }
-      const id = toast("", {
+      const routerParams = getRouteParams()
+      const id = toast.warning("", {
         description: <ConfirmMarkAllReadInfo undo={undo} />,
         duration: 3000,
         onAutoClose() {
           if (cancel) return
-          markAllByRoute()
+          markAllByRoute(routerParams)
         },
         action: {
           label: (
             <span className="flex items-center gap-1">
               {t("mark_all_read_button.undo")}
-              <Kbd className="border-border inline-flex items-center border bg-transparent dark:text-white">
-                Meta+Z
+              <Kbd className="border-border inline-flex items-center border bg-transparent text-white">
+                $mod+z
               </Kbd>
             </span>
           ),
           onClick: undo,
         },
       })
-    },
-    {
-      preventDefault: true,
-      scopes: HotKeyScopeMap.Home,
-    },
-  )
+    })
+  }, [t])
 
+  const markAllAsReadShortcut = useCommandShortcuts()[COMMAND_ID.subscription.markAllAsRead]
   return (
     <ActionButton
       tooltip={
@@ -77,9 +91,7 @@ export const MarkAllReadButton = ({
           />
           {shortcut && (
             <div className="ml-1">
-              <KbdCombined className="text-text-secondary">
-                {shortcuts.entries.markAllAsRead.key}
-              </KbdCombined>
+              <KbdCombined className="text-text-secondary">{markAllAsReadShortcut}</KbdCombined>
             </div>
           )}
         </>
@@ -87,7 +99,7 @@ export const MarkAllReadButton = ({
       className={className}
       ref={ref}
       onClick={() => {
-        markAllByRoute()
+        markAllByRoute(getRouteParams())
       }}
     >
       <i className="i-mgc-check-circle-cute-re" />
@@ -100,16 +112,15 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   const [countdown] = useCountdown({ countStart: 3 })
 
   useHotkeys("ctrl+z,meta+z", undo, {
-    scopes: HotKeyScopeMap.Home,
     preventDefault: true,
   })
 
   return (
-    <div>
-      <p>{t("mark_all_read_button.confirm_mark_all_info")}</p>
-      <small className="opacity-50">
+    <div className="text-text flex flex-col">
+      <span>{t("mark_all_read_button.confirm_mark_all_info")}</span>
+      <span className="text-text-secondary">
         {t("mark_all_read_button.auto_confirm_info", { countdown })}
-      </small>
+      </span>
     </div>
   )
 }
@@ -137,13 +148,13 @@ export const FlatMarkAllReadButton: FC<
       variant="ghost"
       disabled={status === "done"}
       buttonClassName={buttonClassName}
-      className={cn(
+      textClassName={cn(
         "center relative flex h-auto gap-1",
 
         className,
       )}
       onClick={() => {
-        markAllByRoute(filter)
+        markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))
       }}

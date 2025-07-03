@@ -16,6 +16,10 @@ on:
           - preview
           - production
         description: "Build profile"
+      release:
+        type: boolean
+        default: false
+        description: "Create a release draft for the build"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.profile }}
@@ -82,3 +86,22 @@ jobs:
         if: github.event.inputs.profile == 'production'
         working-directory: apps/mobile
         run: eas submit --platform android --path ${{ github.workspace }}/build.aab --non-interactive
+
+      - name: Setup Version
+        if: github.event.inputs.release == 'true'
+        id: version
+        uses: ./.github/actions/setup-version
+        with:
+          # We don't want to create a new release for mobile
+          type: "desktop"
+
+      - name: Create Release Draft
+        if: github.event.inputs.release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.APP_VERSION }}
+          draft: false
+          prerelease: true
+          tag_name: v${{ steps.version.outputs.APP_VERSION }}
+          # .aab cannot be installed directly on your Android Emulator or device.
+          files: ${{ github.workspace }}/build.apk

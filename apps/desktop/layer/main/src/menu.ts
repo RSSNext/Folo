@@ -9,8 +9,8 @@ import { isMacOS, isMAS } from "./env"
 import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
+import { WindowManager } from "./manager/window"
 import { checkForAppUpdates, quitAndInstall } from "./updater"
-import { createWindow, getMainWindow, showSetting } from "./window"
 
 export const registerAppMenu = () => {
   const menus: Array<MenuItemConstructorOptions | MenuItem> = [
@@ -23,14 +23,14 @@ export const registerAppMenu = () => {
                 type: "normal",
                 label: t("menu.about", { name }),
                 click: () => {
-                  showSetting("about")
+                  WindowManager.showSetting("about")
                 },
               },
               { type: "separator" },
               {
                 label: t("menu.settings"),
                 accelerator: "CmdOrCtrl+,",
-                click: () => showSetting(),
+                click: () => WindowManager.showSetting(),
               },
               { type: "separator" },
               { role: "services", label: t("menu.services") },
@@ -57,7 +57,7 @@ export const registerAppMenu = () => {
           label: t("menu.quickAdd"),
           accelerator: "CmdOrCtrl+N",
           click: () => {
-            const mainWindow = getMainWindow()
+            const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
             mainWindow.show()
             const caller = callWindowExpose(mainWindow)
@@ -70,7 +70,7 @@ export const registerAppMenu = () => {
           label: t("menu.discover"),
           accelerator: "CmdOrCtrl+T",
           click: () => {
-            const mainWindow = getMainWindow()
+            const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
             mainWindow.show()
 
@@ -135,18 +135,7 @@ export const registerAppMenu = () => {
         { role: "zoomIn", label: t("menu.zoomIn") },
         { role: "zoomOut", label: t("menu.zoomOut") },
         { type: "separator" },
-        {
-          type: "normal",
-          label: t("menu.zenMode"),
-          accelerator: "Ctrl+Shift+Z",
-          click: () => {
-            const mainWindow = getMainWindow()
-            if (!mainWindow) return
 
-            const caller = callWindowExpose(mainWindow)
-            caller.zenMode()
-          },
-        },
         { role: "togglefullscreen", label: t("menu.toggleFullScreen") },
       ],
     },
@@ -172,9 +161,9 @@ export const registerAppMenu = () => {
         {
           label: "Always on top",
           type: "checkbox",
-          checked: getMainWindow()?.isAlwaysOnTop(),
+          checked: WindowManager.getMainWindow()?.isAlwaysOnTop(),
           click: () => {
-            const mainWindow = getMainWindow()
+            const mainWindow = WindowManager.getMainWindow()
             if (!mainWindow) return
             mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop())
             registerAppMenu()
@@ -197,7 +186,7 @@ export const registerAppMenu = () => {
               {
                 label: t("menu.checkForUpdates"),
                 click: async () => {
-                  getMainWindow()?.show()
+                  WindowManager.getMainWindow()?.show()
                   await checkForAppUpdates()
                 },
               },
@@ -214,7 +203,7 @@ export const registerAppMenu = () => {
         {
           label: t("menu.followReleases"),
           click: () => {
-            createWindow({
+            WindowManager.createWindow({
               extraPath: `#add?url=${encodeURIComponent(
                 "https://github.com/RSSNext/follow/releases.atom",
               )}`,

@@ -23,13 +23,14 @@ const SelectTrigger = ({
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex w-full items-center justify-between whitespace-nowrap rounded-[5px] bg-transparent",
-      "outline-none focus-within:outline-transparent",
-      "border-border border",
-      size === "sm" ? "h-7 px-2.5 text-sm" : "h-9 px-2.5 py-1.5 text-sm",
+      "flex w-full items-center justify-between whitespace-nowrap rounded-lg bg-transparent",
+      "focus-within:ring-material-medium outline-none transition-all duration-200 focus-within:outline-transparent focus-within:ring-2",
+      "border-border hover:border-fill border",
+      size === "sm" ? "h-8 px-3 text-sm" : "h-9 px-3.5 py-2 text-sm",
       "placeholder:text-text-secondary",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",
+      "shadow-material-thin shadow-sm hover:shadow",
       className,
       props.disabled && "cursor-not-allowed opacity-30",
     )}
@@ -37,7 +38,7 @@ const SelectTrigger = ({
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <i className="i-mingcute-down-line ml-2 size-3.5 shrink-0 opacity-50" />
+      <i className="i-mingcute-down-line -mr-1 ml-2 size-4 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 )

@@ -3,7 +3,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Card, CardHeader } from "@follow/components/ui/card/index.jsx"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
-import type { FeedModel } from "@follow/models/types"
+import { useFeedById } from "@follow/store/feed/hooks"
 import type { FC } from "react"
 import { useEffect } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -15,13 +15,12 @@ import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useAuthQuery } from "~/hooks/common"
 import { FollowSummary } from "~/modules/feed/feed-summary"
 import { feed as feedQuery, useClaimFeedMutation } from "~/queries/feed"
-import { useFeedById } from "~/store/feed"
 
 export const FeedClaimModalContent: FC<{
   feedId: string
 }> = ({ feedId }) => {
   const { t } = useTranslation()
-  const feed = useFeedById(feedId) as FeedModel
+  const feed = useFeedById(feedId)
   const {
     data: claimMessage,
     isLoading,

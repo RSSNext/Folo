@@ -21,6 +21,7 @@ export default defineConfig(
       "apps/mobile/ios/**",
       "apps/mobile/.expo",
       "apps/mobile/native/build/**",
+      "**/generated-routes.ts",
     ],
     preferESM: false,
     tailwindCSS: {
@@ -105,8 +106,9 @@ export default defineConfig(
       "package-json-extend": packageJsonExtend,
     },
     rules: {
-      "package-json-extend/ensure-package-version": "warn",
+      "package-json-extend/ensure-package-version": "error",
       "package-json-extend/no-duplicate-package": "error",
+      "package-json/require-type": 0,
     },
   },
   {

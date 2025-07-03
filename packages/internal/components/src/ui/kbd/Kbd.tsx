@@ -4,17 +4,26 @@ import * as React from "react"
 import { Fragment, memo } from "react"
 import { isHotkeyPressed } from "react-hotkeys-hook"
 
+const os = getOS()
+
 const SharedKeys = {
   backspace: "⌫",
   space: "␣",
   pageup: "PageUp",
   pagedown: "PageDown",
   tab: "Tab",
+  arrowup: "↑",
+  arrowdown: "↓",
+  arrowleft: "←",
+  arrowright: "→",
+
+  $mod: os === "macOS" ? "⌘" : "Ctrl",
 }
 const SpecialKeys = {
   Windows: {
     meta: "⊞",
     ctrl: "Ctrl",
+    control: "Ctrl",
     alt: "Alt",
     shift: "Shift",
     escape: "Esc",
@@ -22,6 +31,7 @@ const SpecialKeys = {
   macOS: {
     meta: "⌘",
     ctrl: "⌃",
+    control: "⌃",
     alt: "⌥",
     shift: "⇧",
     escape: "⎋",
@@ -29,6 +39,7 @@ const SpecialKeys = {
   Linux: {
     meta: "Super",
     ctrl: "Ctrl",
+    control: "Ctrl",
     alt: "Alt",
     shift: "Shift",
     escape: "Escape",
@@ -39,29 +50,35 @@ SpecialKeys.iOS = SpecialKeys.macOS
 // @ts-ignore
 SpecialKeys.Android = SpecialKeys.Linux
 
-const os = getOS()
 export const KbdCombined: FC<{
   children: string
   className?: string
   joint?: boolean
-}> = ({ children, joint, className }) => {
+  kbdProps?: Partial<React.ComponentProps<typeof Kbd>>
+}> = ({ children, joint, className, kbdProps }) => {
   const keys = children.split(",")
   return (
     <div className="flex items-center gap-1">
       {keys.map((k, i) => (
         <Fragment key={k}>
           {joint ? (
-            <Kbd className={className}>{k}</Kbd>
+            <Kbd className={className} {...kbdProps}>
+              {k}
+            </Kbd>
           ) : (
             <div className="flex items-center gap-1">
               {k.split("+").map((key) => (
-                <Kbd key={key} className={className}>
+                <Kbd key={key} className={className} {...kbdProps}>
                   {key}
                 </Kbd>
               ))}
             </div>
           )}
-          {i !== keys.length - 1 && " / "}
+          {i !== keys.length - 1 && (
+            <span>
+              <i className="i-mgc-line-cute-re text-text-secondary size-[0.75em] shrink-0 origin-center translate-y-[0.15em] rotate-[-25deg]" />
+            </span>
+          )}
         </Fragment>
       ))}
     </div>
@@ -292,39 +309,40 @@ function simulateKeyPress(key: string) {
 
   document.dispatchEvent(event)
 }
-export const Kbd: FC<{ children: string; className?: string }> = memo(({ children, className }) => {
-  let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
-  specialKeys = { ...SharedKeys, ...specialKeys }
+export const Kbd: FC<{ children: string; className?: string; wrapButton?: boolean }> = memo(
+  ({ children, className, wrapButton = true }) => {
+    let specialKeys = (SpecialKeys as any)[os] as Record<string, string>
+    specialKeys = { ...SharedKeys, ...specialKeys }
 
-  const [isKeyPressed, setIsKeyPressed] = React.useState(false)
-  React.useEffect(() => {
-    const handler = () => {
-      setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
-    }
-    document.addEventListener("keydown", handler)
-    document.addEventListener("keyup", handler)
+    const [isKeyPressed, setIsKeyPressed] = React.useState(false)
+    React.useEffect(() => {
+      const handler = () => {
+        setIsKeyPressed(isHotkeyPressed(children.toLowerCase()))
+      }
+      document.addEventListener("keydown", handler)
+      document.addEventListener("keyup", handler)
 
-    return () => {
-      document.removeEventListener("keydown", handler)
-      document.removeEventListener("keyup", handler)
-    }
-  }, [children])
+      return () => {
+        document.removeEventListener("keydown", handler)
+        document.removeEventListener("keyup", handler)
+      }
+    }, [children])
 
-  const handleClick = React.useCallback(() => {
-    setIsKeyPressed(true)
-    setTimeout(() => {
-      setIsKeyPressed(false)
-    }, 100)
+    const handleClick = React.useCallback(() => {
+      setIsKeyPressed(true)
+      setTimeout(() => {
+        setIsKeyPressed(false)
+      }, 100)
 
-    simulateKeyPress(children.trim())
-  }, [children])
-  return (
-    <button type="button" onClick={handleClick}>
+      simulateKeyPress(children.trim())
+    }, [children])
+
+    const Kbd = (
       <kbd
         className={cn(
-          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem]",
+          "kbd text-text box-border h-5 space-x-1 font-sans text-[0.7rem] tabular-nums transition-[border] duration-200",
 
-          isKeyPressed ? "" : "border-b-2",
+          wrapButton && (isKeyPressed ? "" : "border-b-2 hover:border-b"),
           className,
         )}
       >
@@ -373,9 +391,16 @@ export const Kbd: FC<{ children: string; className?: string }> = memo(({ childre
           }
         })}
       </kbd>
-    </button>
-  )
-})
+    )
+    return wrapButton ? (
+      <button type="button" className="contents" onClick={handleClick}>
+        {Kbd}
+      </button>
+    ) : (
+      Kbd
+    )
+  },
+)
 
 function MaterialSymbolsKeyboardCommandKey(props: React.SVGProps<SVGSVGElement>) {
   return (

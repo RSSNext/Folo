@@ -10,7 +10,8 @@ import type { RenderComponentProps } from "masonic"
 import { Masonry } from "masonic"
 import { useState } from "react"
 
-import { Media, MediaContainerWidthProvider } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
+import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 
 const gutter = 24
 

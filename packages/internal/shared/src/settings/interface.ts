@@ -14,9 +14,15 @@ export interface GeneralSettings {
   renderMarkUnread: boolean
   groupByDate: boolean
   jumpOutLinkWarn: boolean
+  dimRead: boolean
   // TTS
   voice: string
+
+  // subscription
   autoGroup: boolean
+  hideAllReadSubscriptions: boolean
+  hidePrivateSubscriptionsInTimeline: boolean
+
   /**
    * Top timeline for mobile
    */
@@ -72,6 +78,9 @@ export interface UISettings {
   // @mobile
   showUnreadCountViewAndSubscriptionMobile: boolean
   showUnreadCountBadgeMobile: boolean
+
+  // Discover
+  discoverLanguage: "all" | "eng" | "cmn"
 }
 
 export interface IntegrationSettings {
@@ -106,6 +115,11 @@ export interface IntegrationSettings {
   enableCubox: boolean
   cuboxToken: string
   enableCuboxAutoMemo: boolean
+
+  //zotero
+  enableZotero: boolean
+  zoteroUserID: string
+  zoteroToken: string
 
   saveSummaryAsDescription: boolean
 }

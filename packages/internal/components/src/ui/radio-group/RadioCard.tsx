@@ -37,6 +37,7 @@ export const RadioCard: FC<
         selected && "border-accent bg-accent/5 font-medium outline-none ring-2",
         wrapperClassName,
       )}
+      tabIndex={1}
     >
       <input
         id={id ?? fallbackId}

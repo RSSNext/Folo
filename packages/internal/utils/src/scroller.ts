@@ -1,9 +1,9 @@
 // @see https://github.com/Innei/sprightly/blob/2444dcdb789ca585337a4d241095640a524231db/src/lib/scroller.ts
 
-import type { Spring } from "motion/react"
+import type { Transition } from "motion/react"
 import { animateValue } from "motion/react"
 
-const spring: Spring = {
+const spring: Transition = {
   type: "spring",
   stiffness: 1000,
   damping: 250,
@@ -15,9 +15,12 @@ export const springScrollTo = (
 ) => {
   const scrollTop = scrollerElement?.scrollTop
 
+  let isStop = false
   const stopSpringScrollHandler = () => {
+    isStop = true
     animation.stop()
   }
+
   const el = scrollerElement || window
   const animation = animateValue({
     keyframes: [scrollTop + 1, y],
@@ -31,6 +34,11 @@ export const springScrollTo = (
     onUpdate(latest) {
       if (latest <= 0) {
         animation.stop()
+        return
+      }
+
+      if (isStop) {
+        return
       }
 
       el.scrollTo(0, latest)

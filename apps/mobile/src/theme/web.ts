@@ -1,1 +1,1 @@
-export { useCSSInjection } from "react-native-uikit-colors/dist/web"
+export { useCSSInjection } from "react-native-uikit-colors/web"

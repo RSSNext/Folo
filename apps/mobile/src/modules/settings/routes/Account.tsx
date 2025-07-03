@@ -1,3 +1,5 @@
+import { useWhoami } from "@follow/store/user/hooks"
+import { userSyncService } from "@follow/store/user/store"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import * as FileSystem from "expo-file-system"
 import type { FC } from "react"
@@ -36,8 +38,6 @@ import { loading } from "@/src/lib/loading"
 import { openLink } from "@/src/lib/native"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
-import { useWhoami } from "@/src/store/user/hooks"
-import { userSyncService } from "@/src/store/user/store"
 
 import { ConfirmPasswordDialog } from "../../dialogs/ConfirmPasswordDialog"
 import { TwoFASetting } from "./2FASetting"
@@ -156,7 +156,11 @@ const AccountLinker: FC<{
       label={provider2LabelMap[provider]}
       icon={provider2IconMap[provider]}
       postfix={
-        <Text ellipsizeMode="tail" className="text-secondary-label mr-1 max-w-[100px]">
+        <Text
+          ellipsizeMode="tail"
+          numberOfLines={1}
+          className="text-secondary-label mr-1 max-w-[150px]"
+        >
           {account?.profile?.email || account?.profile?.name || ""}
         </Text>
       }

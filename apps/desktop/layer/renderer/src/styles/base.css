@@ -2,6 +2,10 @@ html,
 #shadow-html {
   --fo-font-family: "SN Pro", system-ui, sans-serif;
 }
+
+html {
+  overflow: hidden;
+}
 :root {
   --sat: env(safe-area-inset-top);
   --sar: env(safe-area-inset-right);

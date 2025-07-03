@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import type { Location } from "react-router"
 import { Navigate, useLocation, useNavigate } from "react-router"
 
+import { useSyncTheme } from "~/hooks/common"
 import { removeAppSkeleton } from "~/lib/app"
 
 import { PoweredByFooter } from "./PoweredByFooter"
@@ -26,6 +27,8 @@ class AccessNotFoundError extends Error {
 }
 export const NotFound = () => {
   const location = useLocation()
+  useSyncTheme()
+
   useEffect(() => {
     if (!ELECTRON_BUILD) {
       return
@@ -44,7 +47,7 @@ export const NotFound = () => {
   }, [])
   const navigate = useNavigate()
 
-  if (window.__RN__ && location.pathname.endsWith("/index.html")) {
+  if (location.pathname.endsWith("/index.html")) {
     return <Navigate to="/" />
   }
 

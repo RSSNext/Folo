@@ -1,9 +1,9 @@
 import { extendConfig } from "@follow/configs/tailwindcss/web"
 import daisyui from "daisyui"
-import resolveConfig from "tailwindcss/resolveConfig"
+import { withUIKit } from "tailwindcss-uikit-colors/macos"
 
 /** @type {import('tailwindcss').Config} */
-export default resolveConfig(
+export default withUIKit(
   extendConfig({
     content: [
       "./client/**/*.{ts,tsx}",

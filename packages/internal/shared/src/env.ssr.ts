@@ -19,6 +19,9 @@ export const env = createEnv({
     VITE_OPENPANEL_CLIENT_ID: z.string().optional(),
     VITE_OPENPANEL_API_URL: z.string().url().optional(),
 
+    VITE_POSTHOG_KEY: z.string().optional().default(DEFAULT_VALUES.PROD.POSTHOG_KEY),
+    VITE_POSTHOG_HOST: z.string().url().optional().default(DEFAULT_VALUES.PROD.POSTHOG_HOST),
+
     // For external, use api_url if you don't want to fill it in.
     VITE_EXTERNAL_PROD_API_URL: z.string().optional(),
     VITE_EXTERNAL_DEV_API_URL: z.string().optional(),
@@ -26,8 +29,7 @@ export const env = createEnv({
     VITE_WEB_PROD_URL: z.string().optional(),
     VITE_WEB_DEV_URL: z.string().optional(),
 
-    VITE_RECAPTCHA_V2_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V2_SITE_KEY),
-    VITE_RECAPTCHA_V3_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.RECAPTCHA_V3_SITE_KEY),
+    VITE_HCAPTCHA_SITE_KEY: z.string().default(DEFAULT_VALUES.PROD.HCAPTCHA_SITE_KEY),
   },
 
   emptyStringAsUndefined: true,

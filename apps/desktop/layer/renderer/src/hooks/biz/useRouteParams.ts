@@ -4,6 +4,7 @@ import {
   useReadonlyRouteSelector,
 } from "@follow/components/atoms/route.js"
 import { FeedViewType } from "@follow/constants"
+import { getListById } from "@follow/store/list/getters"
 import { useMemo } from "react"
 import type { Params } from "react-router"
 import { useParams } from "react-router"
@@ -17,7 +18,6 @@ import {
   ROUTE_FEED_PENDING,
   ROUTE_TIMELINE_OF_VIEW,
 } from "~/constants"
-import { getListById } from "~/store/list"
 
 export const useRouteEntryId = () => {
   const { entryId } = useParams()

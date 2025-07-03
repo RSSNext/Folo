@@ -167,6 +167,7 @@ const SearchInput = () => {
           </Animated.View>
         )}
         <TextInput
+          textAlignVertical="center"
           enterKeyHint="search"
           autoFocus={isFocused}
           ref={inputRef}
@@ -203,7 +204,13 @@ const SearchInput = () => {
         className="absolute -right-20 w-20 pl-4"
         style={cancelButtonAnimatedStyle}
       >
-        <Text className="text-accent text-lg font-medium">Cancel</Text>
+        <Text
+          // Fix font scaling issues on Android
+          allowFontScaling={false}
+          className="text-accent text-lg font-medium"
+        >
+          Cancel
+        </Text>
       </ReAnimatedTouchableOpacity>
     </Animated.View>
   )

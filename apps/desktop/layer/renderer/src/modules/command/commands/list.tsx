@@ -6,12 +6,15 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useDeleteSubscription } from "~/hooks/biz/useSubscriptionActions"
+import { copyToClipboard } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
-import { ListForm } from "~/modules/discover/list-form"
+import { ListForm } from "~/modules/discover/ListForm"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
+import type { CommandCategory } from "../types"
 import { COMMAND_ID } from "./id"
 
+const category: CommandCategory = "category.list"
 export const useRegisterListCommands = () => {
   const { t } = useTranslation()
 
@@ -23,7 +26,7 @@ export const useRegisterListCommands = () => {
     {
       id: COMMAND_ID.list.edit,
       label: t("sidebar.feed_actions.edit"),
-      // keyBinding: "E",
+      category,
       run: ({ listId }) => {
         if (!listId) return
         present({
@@ -35,14 +38,13 @@ export const useRegisterListCommands = () => {
     {
       id: COMMAND_ID.list.unfollow,
       label: t("sidebar.feed_actions.unfollow"),
-      // keyBinding: "Meta+Backspace",
+      category,
       run: ({ subscription }) => deleteSubscription({ subscription }),
     },
     {
       id: COMMAND_ID.list.navigateTo,
       label: t("sidebar.feed_actions.navigate_to_list"),
-      // keyBinding: "Meta+G",
-      // when: routeListId !== listId,
+      category,
       run: ({ listId }) => {
         if (!listId) return
         navigateEntry({ listId })
@@ -53,7 +55,7 @@ export const useRegisterListCommands = () => {
       label: t("sidebar.feed_actions.open_list_in_browser", {
         which: IN_ELECTRON ? t("words.browser") : t("words.newTab"),
       }),
-      // keyBinding: "O",
+      category,
       run: ({ listId }) => {
         if (!listId) return
         const { view } = getRouteParams()
@@ -63,11 +65,11 @@ export const useRegisterListCommands = () => {
     {
       id: COMMAND_ID.list.copyUrl,
       label: t("sidebar.feed_actions.copy_list_url"),
-      // keyBinding: "Meta+C",
+      category,
       run: async ({ listId }) => {
         if (!listId) return
         const { view } = getRouteParams()
-        await navigator.clipboard.writeText(UrlBuilder.shareList(listId, view))
+        await copyToClipboard(UrlBuilder.shareList(listId, view))
         toast.success("copy success!", {
           duration: 1000,
         })
@@ -76,10 +78,10 @@ export const useRegisterListCommands = () => {
     {
       id: COMMAND_ID.list.copyId,
       label: t("sidebar.feed_actions.copy_list_id"),
-      // keyBinding: "Meta+Shift+C",
+      category,
       run: async ({ listId }) => {
         if (!listId) return
-        await navigator.clipboard.writeText(listId)
+        await copyToClipboard(listId)
         toast.success("copy success!", {
           duration: 1000,
         })

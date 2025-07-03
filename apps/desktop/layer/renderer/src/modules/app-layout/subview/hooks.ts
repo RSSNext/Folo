@@ -7,6 +7,8 @@ import { useI18n } from "~/hooks/common"
 
 const titleAtom = atom<string | ReactNode | null>(null)
 
+const rightViewAtom = atom<ReactNode | null>(null)
+
 export function useSubViewTitle(title: I18nKeys): void
 export function useSubViewTitle(title: ReactNode, fallbackTitleString: string): void
 
@@ -21,3 +23,7 @@ export function useSubViewTitle(title: I18nKeys | ReactNode, fallbackTitleString
 }
 
 export const useSubViewTitleValue = () => useAtomValue(titleAtom)
+
+export const useSubViewRightView = () => useAtomValue(rightViewAtom)
+
+export const useSetSubViewRightView = () => useSetAtom(rightViewAtom)

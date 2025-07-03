@@ -1,3 +1,4 @@
+import { userSyncService } from "@follow/store/user/store"
 import * as DocumentPicker from "expo-document-picker"
 import * as FileSystem from "expo-file-system"
 import * as Sharing from "expo-sharing"
@@ -6,7 +7,6 @@ import { getDbPath } from "@/src/database"
 import { apiClient, apiFetch, getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { pickImage } from "@/src/lib/native/picker"
 import { toast } from "@/src/lib/toast"
-import { userSyncService } from "@/src/store/user/store"
 
 export const setAvatar = async () => {
   const result = await pickImage({
@@ -31,9 +31,16 @@ export const setAvatar = async () => {
 
   const { url } = res
 
-  userSyncService.updateProfile({
-    image: url,
-  })
+  userSyncService
+    .updateProfile({
+      image: url,
+    })
+    .then(() => {
+      toast.success("Avatar updated")
+    })
+    .catch((err) => {
+      toast.error(getBizFetchErrorMessage(err))
+    })
 }
 
 type FeedResponseList = {

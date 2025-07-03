@@ -1,7 +1,7 @@
 import { useEventCallback } from "usehooks-ts"
 
-import { useAsyncModal } from "~/components/ui/modal/helper/use-async-modal"
-import { RecommendationContent } from "~/modules/discover/recommendation-content"
+import { useAsyncModal } from "~/components/ui/modal/helper/useAsyncModal"
+import { RecommendationContent } from "~/modules/discover/RecommendationContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { discover } from "~/queries/discover"
 

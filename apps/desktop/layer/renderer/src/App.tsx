@@ -5,33 +5,15 @@ import { cn, getOS } from "@follow/utils/utils"
 import { useEffect } from "react"
 import { Outlet } from "react-router"
 
-import { queryClient } from "~/lib/query-client"
-
 import { useAppIsReady } from "./atoms/app"
 import { useUISettingKey } from "./atoms/settings/ui"
-import { navigateEntry } from "./hooks/biz/useNavigateEntry"
 import { applyAfterReadyCallbacks } from "./initialize/queue"
 import { removeAppSkeleton } from "./lib/app"
 import { appLog } from "./lib/log"
 import { Titlebar } from "./modules/app/Titlebar"
 import { RootProviders } from "./providers/root-providers"
-import { handlers } from "./tipc"
 
 function App() {
-  useEffect(() => {
-    const cleanup = handlers?.invalidateQuery.listen((queryKey) => {
-      queryClient.invalidateQueries({
-        queryKey,
-      })
-    })
-
-    handlers?.navigateEntry.listen((options) => {
-      navigateEntry(options)
-    })
-
-    return cleanup
-  }, [])
-
   const windowsElectron = IN_ELECTRON && getOS() === "Windows"
   return (
     <RootProviders>

@@ -110,7 +110,20 @@ export const parseRegexpPathParams = (
   regexpPath: string,
   options?: ParseRegexpPathParamsOptions,
 ) => {
-  const { excludeNames = [], forceExcludeNames = [] } = options || {}
+  const {
+    excludeNames = [
+      "routeParams",
+      "functionalFlag",
+      "fulltext",
+      "disableEmbed",
+      "embed",
+      "date",
+      "language",
+      "lang",
+      "sort",
+    ],
+    forceExcludeNames = ["routeParams"],
+  } = options || {}
   const transformedPath = transformUriPath(regexpPath)
   const { tokens } = parse(transformedPath)
 

@@ -1,7 +1,7 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { stopPropagation } from "@follow/utils/dom"
 
-import { useFeedHeaderTitle } from "~/store/feed"
+import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
 export const EntryPlaceholderLogo = () => {
   const title = useFeedHeaderTitle()

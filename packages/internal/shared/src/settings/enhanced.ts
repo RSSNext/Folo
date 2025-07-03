@@ -6,7 +6,6 @@ export const enhancedGeneralSettingKeys = new Set<keyof GeneralSettings>([
 ])
 export const enhancedUISettingKeys = new Set<keyof UISettings>([
   "hideExtraBadge",
-  "thumbnailRatio",
   "codeHighlightThemeLight",
   "codeHighlightThemeDark",
   "dateFormat",

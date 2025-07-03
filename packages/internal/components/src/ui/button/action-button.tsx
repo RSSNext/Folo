@@ -1,8 +1,12 @@
-import { useFocusable } from "@follow/components/common/Focusable.jsx"
+import {
+  useFocusable,
+  useGlobalFocusableScopeSelector,
+} from "@follow/components/common/Focusable/index.js"
+import type { EnhanceSet } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
 import * as React from "react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import type { Options } from "react-hotkeys-hook"
 import { useHotkeys } from "react-hotkeys-hook"
 
@@ -32,6 +36,11 @@ export interface ActionButtonProps {
    * @default false
    */
   shortcutOnlyFocusWithIn?: boolean
+  /**
+   * @description only trigger shortcut when in the scope, if not provided, the shortcut will be triggered in any scope
+   * @default undefined
+   */
+  shortcutScope?: string | ((scope: EnhanceSet<string>) => boolean)
 }
 
 const actionButtonStyleVariant = {
@@ -62,6 +71,7 @@ export const ActionButton = ({
   size = "base",
   shortcutOnlyFocusWithIn,
   onClick,
+  shortcutScope,
   ...rest
 }: ComponentType<ActionButtonProps> &
   React.HTMLAttributes<HTMLButtonElement> & {
@@ -73,6 +83,22 @@ export const ActionButton = ({
   React.useImperativeHandle(ref, () => buttonRef.current!)
 
   const [shouldHighlightMotion, setShouldHighlightMotion] = useState(highlightMotion)
+  React.useEffect(() => {
+    setShouldHighlightMotion(highlightMotion)
+  }, [highlightMotion])
+
+  const inScope = useGlobalFocusableScopeSelector(
+    useCallback(
+      (scope) =>
+        shortcutScope
+          ? typeof shortcutScope === "function"
+            ? shortcutScope(scope)
+            : scope.has(shortcutScope)
+          : true,
+      [shortcutScope],
+    ),
+  )
+
   const [loading, setLoading] = useState(false)
 
   const Trigger = (
@@ -116,6 +142,7 @@ export const ActionButton = ({
             }
           : void 0
       }
+      id={id}
       {...rest}
     >
       {loading ? (
@@ -136,7 +163,7 @@ export const ActionButton = ({
 
   return (
     <>
-      {finalShortcut && !disableTriggerShortcut && (
+      {finalShortcut && !disableTriggerShortcut && inScope && (
         <HotKeyTrigger
           shortcut={finalShortcut}
           fn={() => buttonRef.current?.click()}
@@ -190,7 +217,7 @@ const HotKeyTrigger = ({
   const isFocusWithIn = useFocusable()
   const enabledInOptions = options?.enabled || true
 
-  useHotkeys(shortcut, fn, {
+  useHotkeys(replaceShortcut(shortcut), fn, {
     preventDefault: true,
     enabled: shortcutOnlyFocusWithIn
       ? isFocusWithIn
@@ -200,4 +227,10 @@ const HotKeyTrigger = ({
     ...options,
   })
   return null
+}
+
+const os = getOS()
+
+const replaceShortcut = (shortcut: string) => {
+  return shortcut.replace("$mod", os === "macOS" ? "Meta" : "Ctrl")
 }

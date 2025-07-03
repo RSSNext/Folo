@@ -1,6 +1,4 @@
-import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics"
-
-import type { Optional } from "../points"
+import type { Optional } from "../types"
 import { Api } from "./api"
 
 export type TrackHandlerPayload =
@@ -79,7 +77,6 @@ export class OpenPanel {
   profileId?: string
   global?: Record<string, unknown>
   queue: TrackHandlerPayload[] = []
-  firebaseAnalytics?: FirebaseAnalyticsTypes.Module
 
   constructor(public options: OpenPanelOptions) {
     const defaultHeaders: Record<string, string> = {

@@ -1,3 +1,11 @@
+import { useFeedById } from "@follow/store/feed/hooks"
+import { useListById, usePrefetchLists } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import {
+  useFeedSubscriptionIdsByView,
+  usePrefetchSubscription,
+  useSortedFeedSubscriptionByAlphabet,
+} from "@follow/store/subscription/hooks"
 import { useMutation } from "@tanstack/react-query"
 import type { MutableRefObject } from "react"
 import { createContext, use, useEffect, useMemo, useRef, useState } from "react"
@@ -21,14 +29,6 @@ import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
-import { useFeed } from "@/src/store/feed/hooks"
-import { useList, usePrefetchOwnedLists } from "@/src/store/list/hooks"
-import { listSyncServices } from "@/src/store/list/store"
-import {
-  useFeedSubscriptionByView,
-  usePrefetchSubscription,
-  useSortedFeedSubscriptionByAlphabet,
-} from "@/src/store/subscription/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 const ManageListContext = createContext<{
@@ -36,8 +36,8 @@ const ManageListContext = createContext<{
 }>(null!)
 
 export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id }) => {
-  usePrefetchOwnedLists()
-  const list = useList(id)
+  usePrefetchLists()
+  const list = useListById(id)
   const { t } = useTranslation("settings")
 
   const nextSelectedFeedIdRef = useRef(new Set<string>())
@@ -98,10 +98,10 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
 
 const ListImpl: React.FC<{ id: string }> = ({ id }) => {
   const { t } = useTranslation("settings")
-  const list = useList(id)!
+  const list = useListById(id)!
   usePrefetchSubscription(list.view)
 
-  const subscriptionIds = useFeedSubscriptionByView(list.view)
+  const subscriptionIds = useFeedSubscriptionIdsByView(list.view)
 
   const sortedSubscriptionIds = useSortedFeedSubscriptionByAlphabet(subscriptionIds)
 
@@ -128,7 +128,7 @@ const SeparatorComponent = () => {
 }
 
 const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
-  const feed = useFeed(props.feedId)
+  const feed = useFeedById(props.feedId)
 
   const { nextSelectedFeedIdRef } = use(ManageListContext)
 

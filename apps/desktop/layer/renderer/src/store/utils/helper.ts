@@ -6,8 +6,6 @@ import { shallow } from "zustand/shallow"
 import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
 import { createWithEqualityFn } from "zustand/traditional"
 
-import { runTransactionInScope } from "~/database"
-
 declare const window: any
 export const localStorage: PersistStorage<any> = {
   getItem: (name: string) => {
@@ -37,8 +35,8 @@ export const createZustandStore =
   <S, T extends StateCreator<S, [], []> = StateCreator<S, [], []>>(name: string) =>
   (store: T) => {
     if (import.meta.env.DEV && window[`store_${name}`]) {
-      import.meta.hot?.send("message", "The store has been changed, reloading...")
-      globalThis.location.reload()
+      // import.meta.hot?.send("message", "The store has been changed, reloading...")
+      // globalThis.location.reload()
     }
 
     const newStore = import.meta.env.DEV
@@ -172,12 +170,10 @@ class Transaction<S, Ctx> {
     }
 
     if (this.onPersist) {
-      await runTransactionInScope(() =>
-        Promise.resolve(this.onPersist!(this._snapshot, this._ctx)).catch((err) => {
-          console.error(err)
-          throw err
-        }),
-      )
+      await Promise.resolve(this.onPersist!(this._snapshot, this._ctx)).catch((err) => {
+        console.error(err)
+        throw err
+      })
     }
   }
 }

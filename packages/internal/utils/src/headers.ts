@@ -1,3 +1,5 @@
+import { DEV, WEB_BUILD } from "@follow/shared/constants"
+
 import { imageRefererMatches } from "./img-proxy"
 
 export const createBuildSafeHeaders =
@@ -14,7 +16,7 @@ export const createBuildSafeHeaders =
     }
 
     // referer and origin
-    if (selfRefererMatches.some((item) => url.startsWith(item))) {
+    if (selfRefererMatches.filter((i) => !!i).some((item) => url.startsWith(item))) {
       headers.Referer = webUrl
       return headers
     }
@@ -47,3 +49,107 @@ export const createBuildSafeHeaders =
 
     return headers
   }
+
+enum DesktopPlatform {
+  Desktop = "desktop",
+  DesktopWeb = "desktop/web",
+  DesktopMacOS = "desktop/macos",
+  DesktopMacOSDMG = "desktop/macos/dmg",
+  DesktopMacOSMAS = "desktop/macos/mas",
+  DesktopWindowsEXE = "desktop/windows/exe",
+  DesktopWindowsMS = "desktop/windows/ms",
+  DesktopLinux = "desktop/linux",
+}
+
+export const createDesktopAPIHeaders = ({ version }: { version: string }) => {
+  let platform: DesktopPlatform | null = null
+
+  if (WEB_BUILD) {
+    platform = DesktopPlatform.DesktopWeb
+  } else if (typeof process !== "undefined") {
+    switch (process.platform) {
+      case "darwin": {
+        if (process.mas) {
+          platform = DesktopPlatform.DesktopMacOSMAS
+        } else {
+          platform = DesktopPlatform.DesktopMacOSDMG
+        }
+        break
+      }
+      case "win32": {
+        if (process.windowsStore) {
+          platform = DesktopPlatform.DesktopWindowsMS
+        } else {
+          platform = DesktopPlatform.DesktopWindowsEXE
+        }
+        break
+      }
+      case "linux": {
+        platform = DesktopPlatform.DesktopLinux
+        break
+      }
+    }
+  }
+
+  return {
+    ...(platform ? { "X-App-Platform": platform } : {}),
+    "X-App-Name": "Folo Web",
+    "X-App-Version": version,
+    ...(DEV ? { "X-App-Dev": "1" } : {}),
+  }
+}
+
+enum SSRPlatform {
+  SSR = "ssr",
+}
+
+export const createSSRAPIHeaders = ({ version }: { version: string }) => {
+  return {
+    "X-App-Platform": SSRPlatform.SSR,
+    "X-App-Name": "Folo SSR",
+    "X-App-Version": version,
+    ...(DEV ? { "X-App-Dev": "1" } : {}),
+  }
+}
+
+enum MobilePlatform {
+  MobileIOSiPhone = "mobile/ios/iphone",
+  MobileIOSiPad = "mobile/ios/ipad",
+  MobileAndroidAPK = "mobile/android/apk",
+  MobileAndroidGooglePlay = "mobile/android/googleplay",
+}
+
+export const createMobileAPIHeaders = ({
+  version,
+  rnPlatform,
+  installerPackageName,
+}: {
+  version: string
+  rnPlatform: {
+    OS: "ios" | "android" | "windows" | "macos" | "web"
+    isPad: boolean
+  }
+  installerPackageName?: string
+}) => {
+  let platform: MobilePlatform | null = null
+
+  if (rnPlatform.OS === "ios") {
+    if (rnPlatform.isPad) {
+      platform = MobilePlatform.MobileIOSiPad
+    } else {
+      platform = MobilePlatform.MobileIOSiPhone
+    }
+  } else if (rnPlatform.OS === "android") {
+    if (installerPackageName === "com.android.vending") {
+      platform = MobilePlatform.MobileAndroidGooglePlay
+    } else {
+      platform = MobilePlatform.MobileAndroidAPK
+    }
+  }
+
+  return {
+    ...(platform ? { "X-App-Platform": platform } : {}),
+    "X-App-Name": "Folo Mobile",
+    "X-App-Version": version,
+  }
+}

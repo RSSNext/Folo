@@ -1,4 +1,5 @@
 import type { FeedViewType } from "@follow/constants"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { useEffect, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
@@ -9,7 +10,6 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { Galeria } from "@/src/components/ui/image/galeria"
-import type { MediaModel } from "@/src/database/schemas/types"
 import { EntryGridFooter } from "@/src/modules/entry-content/EntryGridFooter"
 
 import { Image } from "../image/Image"
@@ -91,7 +91,7 @@ export const MediaCarousel = ({
               if (m.type === "photo") {
                 return (
                   <View
-                    key={index}
+                    key={imageUrl}
                     className="relative"
                     style={{ width: containerWidth, height: containerHeight }}
                   >
@@ -102,7 +102,12 @@ export const MediaCarousel = ({
                 )
               } else if (m.type === "video") {
                 return (
-                  <ImageContextMenu key={index} entryId={entryId} imageUrl={imageUrl} view={view}>
+                  <ImageContextMenu
+                    key={imageUrl}
+                    entryId={entryId}
+                    imageUrl={imageUrl}
+                    view={view}
+                  >
                     <VideoPlayer
                       source={m.url}
                       height={containerHeight}

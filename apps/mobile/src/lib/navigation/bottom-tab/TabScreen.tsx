@@ -3,6 +3,7 @@ import type { FC, PropsWithChildren } from "react"
 import { use, useEffect, useMemo } from "react"
 import { StyleSheet } from "react-native"
 
+import { isIOS } from "../../platform"
 import { WrappedScreenItem } from "../WrappedScreenItem"
 import { BottomTabContext } from "./BottomTabContext"
 import { TabScreenWrapper } from "./native"
@@ -92,7 +93,7 @@ export const TabScreen: FC<PropsWithChildren<Omit<TabScreenProps, "tabScreenInde
   )
   const shouldLoadReact = mergedProps.lazy ? isSelected || isLoadedBefore : true
 
-  const render = __DEV__ ? isSelected : true
+  const render = !__DEV__ && isIOS ? true : isSelected
   return (
     <TabScreenWrapper style={StyleSheet.absoluteFill}>
       <TabScreenContext value={ctxValue}>

@@ -1,5 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 
+import type { FeedModel } from "./types"
+
 export type RSSHubRouteType = Record<string, RSSHubRouteDeclaration>
 export interface RSSHubRouteDeclaration {
   routes: Routes
@@ -27,4 +29,6 @@ export type RSSHubRoute = {
   location: string
   description: string
   view?: FeedViewType
+  heat?: number
+  topFeeds?: FeedModel[]
 }

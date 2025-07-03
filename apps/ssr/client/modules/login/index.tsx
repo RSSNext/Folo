@@ -1,5 +1,6 @@
 import { UserAvatar } from "@client/components/ui/user-avatar"
 import { loginHandler, oneTimeToken, signOut, twoFactor } from "@client/lib/auth"
+import { openInFollowApp } from "@client/lib/helper"
 import { queryClient } from "@client/lib/query-client"
 import { useSession } from "@client/query/auth"
 import { useAuthProviders } from "@client/query/users"
@@ -16,40 +17,17 @@ import {
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
-import { DEEPLINK_SCHEME } from "@follow/shared/constants"
+import { useIsDark } from "@follow/hooks"
 import { env } from "@follow/shared/env.ssr"
+import { cn } from "@follow/utils/utils"
+import HCaptcha from "@hcaptcha/react-hcaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import ReCAPTCHA from "react-google-recaptcha"
 import { useForm } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { Link, useLocation, useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
-
-function closeRecaptcha(
-  recaptchaRef: React.RefObject<ReCAPTCHA | null>,
-  resetLoadingState: () => void,
-) {
-  const handleClick = (e: MouseEvent) => {
-    const recaptchaIframeSelector =
-      'iframe[src*="recaptcha/api2"], iframe[src*="www.recaptcha.net"], iframe[src*="google.com/recaptcha"]'
-    const recaptchaChallengeIframe = document.querySelector(recaptchaIframeSelector)
-
-    if (
-      e.target instanceof Element &&
-      recaptchaChallengeIframe &&
-      !recaptchaChallengeIframe.contains(e.target) &&
-      !e.target.closest(".g-recaptcha")
-    ) {
-      recaptchaRef.current?.reset()
-      resetLoadingState()
-    }
-  }
-
-  document.addEventListener("click", handleClick)
-  return () => document.removeEventListener("click", handleClick)
-}
 
 export function Login() {
   const { status, refetch } = useSession()
@@ -78,14 +56,22 @@ export function Login() {
     const { data } = await oneTimeToken.generate()
     if (!data) return null
     return {
-      url: `${DEEPLINK_SCHEME}auth?token=${data.token}`,
+      url: `auth?token=${data.token}`,
     }
   }, [])
 
+  const [openFailed, setOpenFailed] = useState(false)
+  const [callbackUrl, setCallbackUrl] = useState<string>()
   const handleOpenApp = useCallback(async () => {
     const callbackUrl = await getCallbackUrl()
     if (!callbackUrl) return
-    window.open(callbackUrl.url, "_top")
+    setCallbackUrl(callbackUrl.url)
+    openInFollowApp({
+      deeplink: callbackUrl.url,
+      fallback: () => {
+        setOpenFailed(true)
+      },
+    })
   }, [getCallbackUrl])
 
   const onceRef = useRef(false)
@@ -99,13 +85,14 @@ export function Login() {
   const navigate = useNavigate()
 
   const [isEmail, setIsEmail] = useState(false)
+  const isDark = useIsDark()
 
   const LoginOrStatusContent = useMemo(() => {
     switch (true) {
       case isAuthenticated: {
         return (
-          <div className="flex w-full flex-col items-center justify-center gap-10 px-4">
-            <div className="relative flex items-center justify-center">
+          <div className="mt-4 flex w-full flex-col items-center justify-center px-4">
+            <div className="relative flex items-center justify-center gap-10">
               <UserAvatar className="gap-4 px-10 py-4 text-2xl" />
               <div className="absolute right-0">
                 <Button
@@ -119,15 +106,16 @@ export function Login() {
                 </Button>
               </div>
             </div>
-            <h2 className="text-center">
-              {t("redirect.successMessage", { app_name: APP_NAME })} <br />
-              <br />
+            <p className="mt-4 text-center">
+              {t("redirect.successMessage", { app_name: APP_NAME })}
+            </p>
+            <p className="text-text-secondary mt-2 text-center text-sm">
               {t("redirect.instruction", { app_name: APP_NAME })}
-            </h2>
-            <div className="center flex flex-col gap-20 sm:flex-row">
+            </p>
+            <div className="center mt-8 flex flex-col gap-4 sm:flex-row">
               <Button
                 variant="text"
-                className="h-14 text-base"
+                buttonClassName="h-14 text-base px-10 rounded-full"
                 onClick={() => {
                   window.location.href = "/"
                 }}
@@ -135,10 +123,28 @@ export function Login() {
                 {t("redirect.continueInBrowser")}
               </Button>
 
-              <Button className="h-14 !rounded-full px-5 text-lg" onClick={handleOpenApp}>
+              <Button
+                variant="primary"
+                buttonClassName="h-12 !rounded-full px-10 text-lg"
+                onClick={handleOpenApp}
+              >
                 {t("redirect.openApp", { app_name: APP_NAME })}
               </Button>
             </div>
+            {openFailed && callbackUrl && (
+              <div className="text-text mt-8 w-[31rem] space-y-2 text-center text-sm">
+                <p>{t("login.enter_token")}</p>
+                <p className="bg-fill-tertiary flex items-center justify-center gap-4 rounded-lg p-3">
+                  <span className="blur-sm hover:blur-none">{callbackUrl}</span>
+                  <i
+                    className="i-mgc-copy-2-cute-re size-4 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(callbackUrl)
+                    }}
+                  />
+                </p>
+              </div>
+            )}
           </div>
         )
       }
@@ -162,11 +168,12 @@ export function Login() {
                     className="center hover:bg-material-medium relative w-full gap-2 rounded-xl border p-2.5 pl-5 font-semibold duration-200"
                   >
                     <img
-                      className="absolute left-9 h-5"
-                      style={{
-                        color: provider.color,
-                      }}
-                      src={provider.icon64}
+                      className={cn(
+                        "absolute left-9 h-5",
+                        !provider.iconDark64 &&
+                          "dark:brightness-[0.85] dark:hue-rotate-180 dark:invert",
+                      )}
+                      src={isDark ? provider.iconDark64 || provider.icon64 : provider.icon64}
                     />
                     <span>{t("login.continueWith", { provider: provider.name })}</span>
                   </MotionButtonBase>
@@ -198,7 +205,18 @@ export function Login() {
         )
       }
     }
-  }, [authProviders, handleOpenApp, isAuthenticated, refetch, t, isEmail, navigate])
+  }, [
+    authProviders,
+    handleOpenApp,
+    isAuthenticated,
+    refetch,
+    t,
+    isEmail,
+    navigate,
+    openFailed,
+    callbackUrl,
+    isDark,
+  ])
   const Content = useMemo(() => {
     switch (true) {
       case redirecting: {
@@ -243,17 +261,7 @@ function LoginWithPassword() {
   const [needTwoFactor, setNeedTwoFactor] = useState(false)
   const [isButtonLoading, setIsButtonLoading] = useState(false)
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
-
-  const resetLoadingState = useCallback(() => {
-    setIsButtonLoading(false)
-  }, [])
-
-  useEffect(() => {
-    if (isButtonLoading) {
-      return closeRecaptcha(recaptchaRef, resetLoadingState)
-    }
-  }, [isButtonLoading, resetLoadingState])
+  const captchaRef = useRef<HCaptcha>(null)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsButtonLoading(true)
@@ -269,8 +277,8 @@ function LoginWithPassword() {
         return
       }
 
-      const token = await recaptchaRef.current?.executeAsync()
-      if (!token) {
+      const response = await captchaRef.current?.execute({ async: true })
+      if (!response?.response) {
         setIsButtonLoading(false)
         return
       }
@@ -278,7 +286,7 @@ function LoginWithPassword() {
       const res = await loginHandler("credential", "app", {
         ...values,
         headers: {
-          "x-token": `r2:${token}`,
+          "x-token": `hc:${response?.response}`,
         },
       })
 
@@ -356,7 +364,7 @@ function LoginWithPassword() {
             )}
           />
         )}
-        <ReCAPTCHA ref={recaptchaRef} sitekey={env.VITE_RECAPTCHA_V2_SITE_KEY} size="invisible" />
+        <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
         <Button
           type="submit"
           buttonClassName="!mt-3 w-full"

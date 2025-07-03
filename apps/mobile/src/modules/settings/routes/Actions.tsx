@@ -1,4 +1,11 @@
-import type { ActionModel } from "@follow/models/src/types"
+import type { ActionModel } from "@follow/models/types"
+import {
+  useActionRules,
+  useIsActionDataDirty,
+  usePrefetchActions,
+  useUpdateActionsMutation,
+} from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
@@ -24,13 +31,7 @@ import { Switch } from "@/src/components/ui/switch/Switch"
 import { Book6CuteReIcon } from "@/src/icons/book_6_cute_re"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import {
-  useActionRules,
-  useIsActionDataDirty,
-  usePrefetchActions,
-  useUpdateActionsMutation,
-} from "@/src/store/action/hooks"
-import { actionActions } from "@/src/store/action/store"
+import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
 
 import { EditRuleScreen } from "./EditRule"
@@ -112,7 +113,7 @@ const NewRuleButton = () => {
       <GroupedPlainButtonCell
         label={t("actions.newRule")}
         onPress={() => {
-          actionActions.addRule()
+          actionActions.addRule((number) => t("actions.actionName", { number }))
         }}
       />
     </GroupedInsetListCard>
@@ -120,7 +121,16 @@ const NewRuleButton = () => {
 }
 
 const SaveRuleButton = ({ disabled }: { disabled?: boolean }) => {
-  const { mutate, isPending } = useUpdateActionsMutation()
+  const navigation = useNavigation()
+  const { mutate, isPending } = useUpdateActionsMutation({
+    onSuccess() {
+      navigation.back()
+      toast.success("Actions saved")
+    },
+    onError(errorMessage) {
+      toast.error(errorMessage)
+    },
+  })
 
   return (
     <HeaderSubmitTextButton

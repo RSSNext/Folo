@@ -125,7 +125,11 @@ const TipModalContent_: FC<{
             <span className="text-text text-xs">{t("tip_modal.unclaimed_feed")}</span>
           </p>
           <div className="text-center">
-            <Button variant="text" className="w-fit p-0" onClick={() => claimFeed({ feedId })}>
+            <Button
+              variant="text"
+              buttonClassName="w-fit p-0"
+              onClick={() => claimFeed({ feedId })}
+            >
               {t("tip_modal.claim_feed")}
             </Button>
           </div>

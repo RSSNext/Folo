@@ -1,4 +1,5 @@
 import type { UserRole } from "@follow/constants"
+import type { ServerConfigs } from "@follow/models"
 
 export interface SettingPageContext {
   role: Nullable<UserRole>
@@ -15,8 +16,12 @@ export interface SettingPageConfig {
   name: I18nKeysForSettings
   priority: number
   headerIcon?: string | React.ReactNode
-  hideIf?: (ctx: SettingPageContext) => boolean
-  disableIf?: (ctx: SettingPageContext) => [boolean, DisableWhy]
+  hideIf?: (ctx: SettingPageContext, serverConfigs?: ServerConfigs | null) => boolean
+  disableIf?: (
+    ctx: SettingPageContext,
+    serverConfigs?: ServerConfigs | null,
+  ) => [boolean, DisableWhy]
+  viewportClassName?: string
 }
 export const defineSettingPageData = (config: SettingPageConfig) => ({
   ...config,

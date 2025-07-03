@@ -11,6 +11,8 @@ const PopoverTrigger = PopoverPrimitive.Trigger
 
 const PopoverClose = PopoverPrimitive.Close
 
+const PopoverArrow = PopoverPrimitive.Arrow
+
 const PopoverContent = ({
   ref,
   className,
@@ -37,4 +39,4 @@ const PopoverContent = ({
 )
 PopoverContent.displayName = PopoverPrimitive.Content.displayName
 
-export { Popover, PopoverClose, PopoverContent, PopoverTrigger }
+export { Popover, PopoverArrow, PopoverClose, PopoverContent, PopoverTrigger }

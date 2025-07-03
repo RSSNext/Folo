@@ -6,7 +6,6 @@ import { useAuthQuery, useI18n } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
 import { toastFetchError } from "~/lib/error-parser"
-import { userActions } from "~/store/user"
 
 import { updateFeedBoostStatus } from "./atom"
 
@@ -22,7 +21,13 @@ const query = {
     }),
   getBoosters: ({ feedId }: { feedId: string }) =>
     defineQuery(["boosters", feedId], async () => {
-      return userActions.getBoosters(feedId)
+      const res = await apiClient.boosts.boosters.$get({
+        query: {
+          feedId,
+        },
+      })
+
+      return res.data
     }),
 }
 
@@ -31,7 +36,7 @@ export const useBoostStatusQuery = (feedId: string) =>
     staleTime: 1000 * 60 * 5,
   })
 
-export const useFeedBoostersQuery = (feedId?: string) =>
+export const useFeedBoostersQuery = (feedId: string | null | undefined) =>
   useAuthQuery(query.getBoosters({ feedId: feedId ?? "" }), {
     staleTime: 1000 * 60 * 5,
     enabled: feedId !== undefined,

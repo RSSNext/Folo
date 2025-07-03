@@ -1,7 +1,7 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { LazyKateX } from "@follow/components/ui/katex/lazy.js"
-import { parseHtml as parseHtmlGeneral } from "@follow/components/ui/markdown/parse-html.js"
+import { parseHtml as parseHtmlGeneral } from "@follow/utils/html"
 import type { Element } from "hast"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
@@ -13,7 +13,7 @@ import { MarkdownBlockImage, MarkdownLink, MarkdownP } from "~/components/ui/mar
 import { useIsInParagraphContext } from "~/components/ui/markdown/renderers/ctx"
 import { createHeadingRenderer } from "~/components/ui/markdown/renderers/Heading"
 import { MarkdownInlineImage } from "~/components/ui/markdown/renderers/InlineImage"
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 
 function markInlineImage(node?: Element) {
   for (const item of node?.children ?? []) {
@@ -65,8 +65,27 @@ export const parseHtml = (
       },
       style: Style,
 
-      video: ({ node, ...props }) =>
-        createElement(Media, { ...props, popper: true, type: "video" }),
+      video: ({ node, ...props }) => {
+        const sourceElement = Array.isArray(props.children)
+          ? props.children.find((i) => i.type === "source")
+          : // Children is only the source element
+            props.children &&
+              typeof props.children === "object" &&
+              "type" in props.children &&
+              props.children.type === "source"
+            ? props.children
+            : null
+
+        const src = props.src || sourceElement?.props.src
+        return createElement(Media, {
+          ...props,
+          popper: true,
+          type: "video",
+          previewImageUrl: props.poster,
+          src,
+        })
+      },
+
       p: ({ node, ref, ...props }) => {
         if (node?.children && node.children.length !== 1) {
           for (const item of node.children) {
@@ -89,7 +108,7 @@ export const parseHtml = (
         markInlineImage(node)
         return createElement("i", props, props.children)
       },
-      // @ts-expect-error
+      // @ts-ignore
       math: Math,
       hr: ({ node, ...props }) =>
         createElement("hr", {
@@ -98,12 +117,11 @@ export const parseHtml = (
         }),
       input: ({ node, ...props }) => {
         if (props.type === "checkbox") {
-          // @ts-expect-error
           return createElement(Checkbox, {
             ...props,
             disabled: false,
             className: tw`pointer-events-none mr-2`,
-          })
+          } as any)
         }
         return createElement("input", props)
       },

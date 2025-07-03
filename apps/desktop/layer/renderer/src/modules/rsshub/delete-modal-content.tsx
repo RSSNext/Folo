@@ -29,7 +29,7 @@ export const ConfirmDeleteModalContent = ({ id, dismiss }: { dismiss: () => void
       </div>
       <div className="flex justify-end">
         <Button
-          className="bg-red-600"
+          buttonClassName="bg-red-600"
           onClick={() => {
             deleteMutation.mutate()
             dismiss()

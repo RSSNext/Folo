@@ -1,4 +1,5 @@
 import { memoize } from "es-toolkit/compat"
+import type { JSX } from "react/jsx-runtime"
 
 import type { SettingPageConfig } from "./utils"
 

@@ -1,6 +1,5 @@
+import { whoami } from "@follow/store/user/getters"
 import { getCrashlytics, setAttributes, setUserId } from "@react-native-firebase/crashlytics"
-
-import { whoami } from "../store/user/getters"
 
 export const initCrashlytics = async () => {
   const crashlytics = getCrashlytics()

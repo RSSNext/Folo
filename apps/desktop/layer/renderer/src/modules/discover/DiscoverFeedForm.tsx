@@ -38,7 +38,7 @@ import {
   useModalStack,
 } from "~/components/ui/modal/stacked/hooks"
 
-import { FeedForm } from "./feed-form"
+import { FeedForm } from "./FeedForm"
 import type { RSSHubRoute } from "./types"
 import { normalizeRSSHubParameters } from "./utils"
 
@@ -90,31 +90,17 @@ export const DiscoverFeedForm = ({
   noDescription,
   routeParams,
   viewportClassName,
+  rootClassName,
 }: {
   route: RSSHubRoute
   routePrefix: string
   noDescription?: boolean
   routeParams?: RouteParams
   viewportClassName?: string
+  rootClassName?: string
 }) => {
   const { t } = useTranslation()
-  const keys = useMemo(
-    () =>
-      parseRegexpPathParams(route.path, {
-        excludeNames: [
-          "routeParams",
-          "functionalFlag",
-          "fulltext",
-          "disableEmbed",
-          "date",
-          "language",
-          "lang",
-          "sort",
-        ],
-        forceExcludeNames: routeParams ? ["routeParams"] : [],
-      }),
-    [route.path, routeParams],
-  )
+  const keys = useMemo(() => parseRegexpPathParams(route.path), [route.path])
 
   const formPlaceholder = useMemo<Record<string, string>>(() => {
     if (!route.example) return {}
@@ -226,9 +212,8 @@ export const DiscoverFeedForm = ({
     <div className={cn("flex h-full flex-col", "mx-auto")} ref={rootContainerRef}>
       <Form {...form}>
         <ScrollArea.ScrollArea
-          flex
-          rootClassName={cn(isInModal && "-mx-4 px-4 -mt-4", "max-h-[calc(100vh-200px)] grow")}
-          viewportClassName={cn("pt-4", viewportClassName)}
+          rootClassName={cn(isInModal && "-mx-4 -mt-4", rootClassName)}
+          viewportClassName={cn("pt-4 px-4 max-h-[calc(100vh-200px)]", viewportClassName)}
         >
           <div className="flex">
             <div className="w-0 grow truncate">

@@ -16,7 +16,7 @@ interface AnimateChangeInHeightProps {
 export const AutoResizeHeight: React.FC<AnimateChangeInHeightProps> = ({
   children,
   className,
-  duration = 0.35,
+  duration = 0.2,
   spring = false,
   innerClassName,
 }) => {

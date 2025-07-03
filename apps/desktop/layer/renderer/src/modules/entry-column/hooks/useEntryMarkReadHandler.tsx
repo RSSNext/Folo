@@ -1,11 +1,12 @@
 import { views } from "@follow/constants"
+import { entryActions } from "@follow/store/entry/store"
+import { unreadSyncService } from "@follow/store/unread/store"
 import type { Range } from "@tanstack/react-virtual"
 import { useMemo } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { entryActions } from "~/store/entry"
 
 export const useEntryMarkReadHandler = (entriesIds: string[]) => {
   const renderAsRead = useGeneralSettingKey("renderMarkUnread")
@@ -41,21 +42,21 @@ export const useEntryMarkReadHandler = (entriesIds: string[]) => {
 }
 
 export function batchMarkRead(ids: string[]) {
-  const batchLikeIds = [] as [string, string][]
+  const batchLikeIds = [] as string[]
   const entriesId2Map = entryActions.getFlattenMapEntries()
   for (const id of ids) {
     const entry = entriesId2Map[id]
 
     if (!entry) continue
     const isRead = entry.read
-    if (!isRead) {
-      batchLikeIds.push([entry.feedId, id])
+    if (!isRead && entry.feedId) {
+      batchLikeIds.push(id)
     }
   }
 
   if (batchLikeIds.length > 0) {
-    for (const [feedId, id] of batchLikeIds) {
-      entryActions.markRead({ feedId, entryId: id, read: true })
+    for (const id of batchLikeIds) {
+      unreadSyncService.markEntryAsRead(id)
     }
   }
 }

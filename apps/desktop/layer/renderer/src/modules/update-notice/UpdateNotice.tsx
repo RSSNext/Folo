@@ -2,29 +2,18 @@ import { Spring } from "@follow/components/constants/spring.js"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { m, useMotionTemplate, useMotionValue } from "motion/react"
-import { useCallback, useEffect } from "react"
+import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAudioPlayerAtomSelector } from "~/atoms/player"
 import { getUpdaterStatus, setUpdaterStatus, useUpdaterStatus } from "~/atoms/updater"
-import { tipcClient } from "~/lib/client"
-import { handlers } from "~/tipc"
+import { ipcServices } from "~/lib/client"
 
 export const UpdateNotice = () => {
   const updaterStatus = useUpdaterStatus()
   const { t } = useTranslation()
 
-  useEffect(() => {
-    const unlisten = handlers?.updateDownloaded.listen(() => {
-      setUpdaterStatus({
-        type: "app",
-        status: "ready",
-      })
-    })
-    return unlisten
-  }, [])
-
-  const handleClick = useCallback(() => {
+  const handleClick = useRef(() => {
     const status = getUpdaterStatus()
     if (!status) return
     tracker.updateRestart({
@@ -32,11 +21,11 @@ export const UpdateNotice = () => {
     })
     switch (status.type) {
       case "app": {
-        tipcClient?.quitAndInstall()
+        ipcServices?.app.quitAndInstall()
         break
       }
       case "renderer": {
-        tipcClient?.rendererUpdateReload()
+        ipcServices?.app.rendererUpdateReload()
         break
       }
       case "pwa": {
@@ -45,7 +34,7 @@ export const UpdateNotice = () => {
       }
     }
     setUpdaterStatus(null)
-  }, [])
+  }).current
 
   const playerIsShow = useAudioPlayerAtomSelector((s) => s.show)
 
@@ -70,8 +59,8 @@ export const UpdateNotice = () => {
     <m.div
       onMouseMove={handleMouseMove}
       className={cn(
-        "bg-fill backdrop-blur-background group absolute inset-x-3 bottom-3 cursor-pointer overflow-hidden rounded-lg py-3 text-center text-sm shadow",
-        playerIsShow && "bottom-28",
+        "bg-background/80 macos:bg-background backdrop-blur-background group absolute inset-x-3 cursor-pointer overflow-hidden rounded-lg py-3 text-center text-sm shadow",
+        playerIsShow ? "bottom-[4.5rem]" : "bottom-3",
       )}
       onClick={handleClick}
       initial={{ y: 50, opacity: 0 }}

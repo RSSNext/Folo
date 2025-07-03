@@ -57,6 +57,7 @@ export const TextArea = ({
         isFocus && "!border-accent/80 ring-2",
 
         "placeholder:text-text-tertiary dark:text-zinc-200",
+        "bg-theme-background dark:bg-zinc-700/[0.15]",
         wrapperClassName,
       )}
       onMouseMove={handleMouseMove}

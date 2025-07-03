@@ -1,12 +1,12 @@
 import path from "node:path"
 
-import { DEV } from "@follow/shared/constants"
+import { DEV, MODE, ModeEnum } from "@follow/shared/constants"
 
 import { isWindows } from "../env"
 
 export const appUpdaterConfig = {
   // Disable renderer hot update will trigger app update when available
-  enableRenderHotUpdate: !DEV,
+  enableRenderHotUpdate: !DEV && MODE !== ModeEnum.staging,
   enableCoreUpdate:
     !process.mas &&
     !process.windowsStore &&

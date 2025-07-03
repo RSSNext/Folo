@@ -16,7 +16,7 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { hasCommand, useCommand } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
 
-export const MoreActions = ({ entryId, view }: { entryId: string; view?: FeedViewType }) => {
+export const MoreActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
   const { moreAction } = useSortedEntryActions({ entryId, view })
 
   const actionConfigs = useMemo(

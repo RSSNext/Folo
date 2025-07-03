@@ -12,9 +12,7 @@ import { useMutation } from "@tanstack/react-query"
 import { Trans, useTranslation } from "react-i18next"
 
 import { useServerConfigs } from "~/atoms/server-configs"
-import { CopyButton } from "~/components/ui/button/CopyButton"
 import { apiClient } from "~/lib/api-fetch"
-import { getBlockchainExplorerUrl } from "~/lib/utils"
 import { SettingSectionTitle } from "~/modules/settings/section"
 import { ActivityPoints } from "~/modules/wallet/activity-points"
 import { Balance } from "~/modules/wallet/balance"
@@ -60,38 +58,6 @@ export const MyWalletSection = ({ className }: { className?: string }) => {
   }
   return (
     <div className={cn(className)}>
-      <div className="text-sm">
-        <i className="i-mgc-power text-accent mr-0.5 size-3.5 translate-y-px align-text-top" />
-        <Trans
-          i18nKey="wallet.power.description2"
-          ns="settings"
-          values={{ blockchainName: "VSL" }}
-          components={{
-            Link: (
-              <a
-                className="underline"
-                target="_blank"
-                href={`${getBlockchainExplorerUrl()}/token/0xE06Af68F0c9e819513a6CD083EF6848E76C28CD8`}
-                rel="noreferrer noopener"
-              />
-            ),
-          }}
-        />
-      </div>
-      <SettingSectionTitle margin="compact" title={t("wallet.address.title")} />
-      <div className="group flex items-center gap-2 text-sm">
-        <a
-          href={`${getBlockchainExplorerUrl()}/address/${myWallet.address}`}
-          target="_blank"
-          className="underline"
-        >
-          {myWallet.address}
-        </a>
-        <CopyButton
-          value={myWallet.address!}
-          className="p-1 opacity-0 duration-200 group-hover:opacity-100 [&_i]:size-2.5"
-        />
-      </div>
       <SettingSectionTitle title={t("wallet.balance.title")} margin="compact" />
       <div className="mb-2 flex items-center justify-between">
         <div>

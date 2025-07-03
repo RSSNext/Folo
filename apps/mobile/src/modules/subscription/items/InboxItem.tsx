@@ -1,3 +1,6 @@
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
+import { getInboxStoreId } from "@follow/store/subscription/utils"
+import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { useColorScheme } from "nativewind"
 import { memo } from "react"
@@ -11,17 +14,14 @@ import { InboxCuteFiIcon } from "@/src/icons/inbox_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { useSubscription } from "@/src/store/subscription/hooks"
-import { getInboxStoreId } from "@/src/store/subscription/utils"
-import { useUnreadCount } from "@/src/store/unread/hooks"
 
 import { InboxContextMenu } from "../../context-menu/inbox"
 import type { SubscriptionItemBaseProps } from "./types"
 import { UnreadCount } from "./UnreadCount"
 
 export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProps) => {
-  const subscription = useSubscription(getInboxStoreId(id))
-  const unreadCount = useUnreadCount(id)
+  const subscription = useSubscriptionById(getInboxStoreId(id))
+  const unreadCount = useUnreadById(id)
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
   if (!subscription) return null

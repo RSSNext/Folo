@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 
-import { isBizId, omitShallow, toScientificNotation } from "./utils"
+import { doesTextContainHTML, isBizId, omitShallow, toScientificNotation } from "./utils"
 
 describe("utils", () => {
   test("isBizId", () => {
@@ -84,5 +84,13 @@ describe("utils", () => {
     expect(omitShallow(null)).toEqual(null)
     expect(omitShallow(void 0)).toEqual(void 0)
     expect(omitShallow([1, 2])).toEqual([1, 2])
+  })
+
+  test("does text contain html", () => {
+    expect(doesTextContainHTML("a<div>b</div>")).toBe(true)
+    expect(doesTextContainHTML("Test")).toBe(false)
+    expect(doesTextContainHTML("<p> </p>")).toBe(false)
+    expect(doesTextContainHTML("Test <p> </p>")).toBe(false)
+    expect(doesTextContainHTML("Test <br/>")).toBe(false)
   })
 })

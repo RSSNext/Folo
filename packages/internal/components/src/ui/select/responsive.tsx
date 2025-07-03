@@ -15,7 +15,7 @@ export interface ResponsiveSelectProps {
   onValueChange?: (value: string) => void
   placeholder?: string
   items: ResponsiveSelectItem[]
-  renderValue?: (value: string) => React.ReactNode
+  renderValue?: (item: ResponsiveSelectItem) => React.ReactNode
   renderItem?: (item: ResponsiveSelectItem) => React.ReactNode
   size?: "sm" | "default"
 
@@ -69,7 +69,8 @@ export const ResponsiveSelect = ({
         )}
       >
         <span className="flex">
-          {(renderValue?.(valueInner) ?? valueToLabelMap[valueInner]) || (
+          {(renderValue?.(items.find((item) => item.value === valueInner)!) ??
+            valueToLabelMap[valueInner]) || (
             <span className="text-text-tertiary">{placeholder}</span>
           )}
         </span>

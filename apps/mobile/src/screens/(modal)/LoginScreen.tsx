@@ -1,3 +1,4 @@
+import { useWhoami } from "@follow/store/user/hooks"
 import { Fragment, useEffect } from "react"
 import { ScrollView, Text, TouchableOpacity } from "react-native"
 
@@ -6,7 +7,6 @@ import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { useIsiPad } from "@/src/lib/platform"
 import { Login } from "@/src/modules/login"
-import { useWhoami } from "@/src/store/user/hooks"
 
 function exit() {
   const router = Navigation.rootNavigation

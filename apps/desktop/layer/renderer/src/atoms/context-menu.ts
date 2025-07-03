@@ -3,7 +3,7 @@ import { getOS, transformShortcut } from "@follow/utils/utils"
 import { atom } from "jotai"
 import { useCallback } from "react"
 
-import { tipcClient } from "~/lib/client"
+import { ipcServices } from "~/lib/client"
 import { createAtomHooks } from "~/lib/jotai"
 import type { ElectronMenuItem } from "~/lib/native-menu"
 import { showElectronContextMenu } from "~/lib/native-menu"
@@ -101,7 +101,7 @@ function transformMenuItemsForNative(nextItems: FollowMenuItem[]): ElectronMenuI
       click: item.click,
       enabled:
         (!item.disabled && item.click !== undefined) || (!!item.submenu && item.submenu.length > 0),
-      accelerator: item.shortcut?.replace("Meta", "CmdOrCtrl"),
+      accelerator: item.shortcut?.replace("$mod", "CmdOrCtrl"),
       checked: typeof item.checked === "boolean" ? item.checked : undefined,
       submenu:
         item.submenu.length > 0
@@ -118,7 +118,7 @@ function withDebugMenu(menuItems: Array<FollowMenuItem>, e: MouseEvent | React.M
       new MenuItemText({
         label: "Inspect Element",
         click: () => {
-          tipcClient?.inspectElement({
+          ipcServices?.debug.inspectElement({
             x: e.pageX,
             y: e.pageY,
           })
@@ -215,10 +215,12 @@ export class BaseMenuItemText {
   }
 }
 
-export type MenuItemTextConfig = BaseMenuItemTextConfig & {
-  hide?: boolean
-  submenu?: MenuItemInput[]
-}
+export type MenuItemTextConfig = Prettify<
+  BaseMenuItemTextConfig & {
+    hide?: boolean
+    submenu?: MenuItemInput[]
+  }
+>
 
 export class MenuItemText extends BaseMenuItemText {
   protected __submenu: FollowMenuItem[]

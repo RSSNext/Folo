@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/src/utils"
+import { cn } from "@follow/utils/utils"
 import { useRef } from "react"
 import { Pressable } from "react-native"
 import Animated, {

@@ -1,3 +1,4 @@
+import { getUnreadAll } from "@follow/store/unread/getters"
 import { themeNames } from "@shikijs/themes"
 import { useTranslation } from "react-i18next"
 import { useColorScheme, View } from "react-native"
@@ -15,7 +16,6 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { Switch } from "@/src/components/ui/switch/Switch"
 import { setBadgeCountAsyncWithPermission } from "@/src/lib/permission"
-import { getAllUnreadCount } from "@/src/store/unread/getter"
 
 export const AppearanceScreen = () => {
   const { t } = useTranslation("settings")
@@ -43,17 +43,23 @@ export const AppearanceScreen = () => {
         marginSize="small"
       />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("appearance.unread_count.badge.label")}>
+        <GroupedInsetListCell
+          label={t("appearance.unread_count.badge.label")}
+          description={t("appearance.unread_count.badge.description")}
+        >
           <Switch
             size="sm"
             value={showUnreadCountBadgeMobile}
             onValueChange={(val) => {
               setUISetting("showUnreadCountBadgeMobile", val)
-              setBadgeCountAsyncWithPermission(val ? getAllUnreadCount() : 0, true)
+              setBadgeCountAsyncWithPermission(val ? getUnreadAll() : 0, true)
             }}
           />
         </GroupedInsetListCell>
-        <GroupedInsetListCell label={t("appearance.unread_count.view_and_subscription.label")}>
+        <GroupedInsetListCell
+          label={t("appearance.unread_count.view_and_subscription.label")}
+          description={t("appearance.unread_count.view_and_subscription.description")}
+        >
           <Switch
             size="sm"
             value={showUnreadCountViewAndSubscriptionMobile}
@@ -99,18 +105,19 @@ export const AppearanceScreen = () => {
 
       <GroupedInsetListSectionHeader label="Content" />
       <GroupedInsetListCard>
-        <GroupedInsetListCell label={t("appearance.code_highlight_theme")}>
-          <Select
-            wrapperClassName="w-[120px]"
-            options={themeNames.map((theme) => ({
-              label: theme,
-              value: theme,
-            }))}
-            value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
-            onValueChange={(val) => {
-              setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
-            }}
-          />
+        <GroupedInsetListCell label={t("appearance.code_highlight_theme.label")}>
+          <View className="w-[120px]">
+            <Select
+              options={themeNames.map((theme) => ({
+                label: theme,
+                value: theme,
+              }))}
+              value={colorScheme === "dark" ? codeThemeDark : codeThemeLight}
+              onValueChange={(val) => {
+                setUISetting(`codeHighlightTheme${colorScheme === "dark" ? "Dark" : "Light"}`, val)
+              }}
+            />
+          </View>
         </GroupedInsetListCell>
 
         <GroupedInsetListCell

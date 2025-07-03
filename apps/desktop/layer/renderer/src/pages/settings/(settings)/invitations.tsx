@@ -5,14 +5,14 @@ import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData, DisableWhy } from "~/modules/settings/utils"
 
 const iconName = "i-mgc-love-cute-re"
-const priority = 1070
+const priority = (1000 << 3) + 20
 
 export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.invitations",
   priority,
   disableIf: (ctx) => [ctx.role === UserRole.Trial, DisableWhy.NotActivation],
-  hideIf: (ctx) => ctx.isInMASReview,
+  hideIf: (ctx, serverConfigs) => ctx.isInMASReview || !serverConfigs?.INVITATION_ENABLED,
 })
 
 export function Component() {

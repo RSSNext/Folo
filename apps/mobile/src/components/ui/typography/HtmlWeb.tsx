@@ -2,8 +2,8 @@
 import "@follow/components/assets/colors-media.css"
 import "@follow/components/assets/tailwind.css"
 
-import type { HtmlProps } from "@follow/components"
-import { Html } from "@follow/components"
+import type { HtmlProps } from "@follow/components/ui/markdown/html.tsx"
+import { Html } from "@follow/components/ui/markdown/html.tsx"
 import { useEffect } from "react"
 
 function useSize(callback: (size: [number, number]) => void) {

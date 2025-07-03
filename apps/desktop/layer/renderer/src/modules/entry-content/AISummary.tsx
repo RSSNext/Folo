@@ -1,4 +1,6 @@
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
+import { useEntry } from "@follow/store/entry/hooks"
+import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
@@ -7,31 +9,19 @@ import { useEntryIsInReadabilitySuccess } from "~/atoms/readability"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
-import { useAuthQuery } from "~/hooks/common"
-import { Queries } from "~/queries"
-import { useEntry } from "~/store/entry"
 
 export function AISummary({ entryId }: { entryId: string }) {
   const { t } = useTranslation()
-  const entry = useEntry(entryId)
+  const summarySetting = useEntry(entryId, (state) => state.settings?.summary)
   const isInReadabilitySuccess = useEntryIsInReadabilitySuccess(entryId)
-  const showAISummary = useShowAISummary(entry)
+  const showAISummary = useShowAISummary(summarySetting)
   const actionLanguage = useActionLanguage()
-  const summary = useAuthQuery(
-    Queries.ai.summary({
-      entryId,
-      language: actionLanguage,
-      target: isInReadabilitySuccess ? "readabilityContent" : "content",
-    }),
-    {
-      enabled: showAISummary,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      meta: {
-        persist: true,
-      },
-    },
-  )
+  const summary = usePrefetchSummary({
+    actionLanguage,
+    entryId,
+    target: isInReadabilitySuccess ? "readabilityContent" : "content",
+    enabled: showAISummary,
+  })
 
   if (!showAISummary || (!summary.isLoading && !summary.data)) {
     return null
@@ -106,10 +96,7 @@ export function AISummary({ entryId }: { entryId: string }) {
         )}
       </div>
 
-      <AutoResizeHeight
-        spring
-        className="mt-4 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300"
-      >
+      <AutoResizeHeight className="mt-4 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
         {summary.isLoading ? (
           <div className="space-y-2">
             <div className="bg-material-ultra-thick h-3 w-full rounded-lg" />

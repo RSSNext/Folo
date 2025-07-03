@@ -1,14 +1,14 @@
 import { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
 import { Share } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { toast } from "@/src/lib/toast"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { useEntry } from "@/src/store/entry/hooks"
-import { unreadSyncService } from "@/src/store/unread/store"
 
 type VideoContextMenuProps = PropsWithChildren<{
   entryId: string
@@ -16,7 +16,12 @@ type VideoContextMenuProps = PropsWithChildren<{
 
 export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) => {
   const { t } = useTranslation()
-  const entry = useEntry(entryId)
+  const entry = useEntry(entryId, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+    title: state.title,
+    url: state.url,
+  }))
   const feedId = entry?.feedId
 
   const isEntryStarred = useIsEntryStarred(entryId)
@@ -56,7 +61,6 @@ export const VideoContextMenu = ({ entryId, children }: VideoContextMenuProps) =
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId,
                   view: FeedViewType.Videos,
                 })

@@ -70,6 +70,26 @@
       ]
     },
     {
+      "source": "/terms",
+      "destination": "https://follow-external-ssr.vercel.app/terms",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "https://follow-external-ssr.vercel.app/privacy-policy",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
       "source": "/external-dist/:path*",
       "destination": "https://follow-external-ssr.vercel.app/external-dist/:path*",
       "has": [

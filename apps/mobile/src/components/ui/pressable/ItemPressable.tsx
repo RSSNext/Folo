@@ -1,7 +1,7 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { cn, composeEventHandlers } from "@follow/utils"
 import type { FC } from "react"
-import { Fragment, memo, useEffect, useState } from "react"
+import { Fragment, memo } from "react"
 import type { PressableProps } from "react-native"
 import { StyleSheet } from "react-native"
 import Animated, {
@@ -9,6 +9,7 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withSpring,
 } from "react-native-reanimated"
 
@@ -25,8 +26,6 @@ export interface ItemPressableProps extends PressableProps {
 
 export const ItemPressable: FC<ItemPressableProps> = memo(
   ({ children, itemStyle = ItemPressableStyle.Grouped, touchHighlight = true, ...props }) => {
-    const [isPressing, setIsPressing] = useState(false)
-
     const secondarySystemGroupedBackground = useColor("secondarySystemGroupedBackground")
     const plainBackground = useColor("systemBackground")
 
@@ -35,16 +34,6 @@ export const ItemPressable: FC<ItemPressableProps> = memo(
 
     const systemFill = useColor("systemFill")
     const pressed = useSharedValue(0)
-
-    useEffect(() => {
-      if (!touchHighlight) return
-      cancelAnimation(pressed)
-      if (isPressing) {
-        pressed.value = withSpring(1, { duration: 0.2 })
-      } else {
-        pressed.value = withSpring(0, gentleSpringPreset)
-      }
-    }, [isPressing, pressed, touchHighlight])
 
     const colorStyle = useAnimatedStyle(() => {
       return {
@@ -57,10 +46,13 @@ export const ItemPressable: FC<ItemPressableProps> = memo(
     return (
       <ReAnimatedPressable
         {...props}
-        onPressIn={composeEventHandlers(props.onPressIn, () => setIsPressing(true))}
-        onPressOut={composeEventHandlers(props.onPressOut, () => setIsPressing(false))}
-        onHoverIn={composeEventHandlers(props.onHoverIn, () => setIsPressing(true))}
-        onHoverOut={composeEventHandlers(props.onHoverOut, () => setIsPressing(false))}
+        onPress={composeEventHandlers(props.onPress, () => {
+          cancelAnimation(pressed)
+          pressed.value = withSequence(
+            withSpring(1, { duration: 0.2 }),
+            withSpring(0, gentleSpringPreset),
+          )
+        })}
         // This is a workaround to prevent context menu crash when release too quickly
         // https://github.com/nandorojo/zeego/issues/61
         onLongPress={composeEventHandlers(props.onLongPress, () => {})}

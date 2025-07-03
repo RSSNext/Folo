@@ -1,3 +1,5 @@
+import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
+import { formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { memo } from "react"
@@ -13,7 +15,6 @@ import { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { UrlBuilder } from "@/src/lib/url-builder"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
-import { useSubscriptionByListId } from "@/src/store/subscription/hooks"
 import { useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext } from "../ctx"
@@ -124,7 +125,9 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
       <View className="mt-4 flex-row items-center gap-6 pl-4 opacity-60">
         <View className="flex-row items-center gap-2">
           <User3CuteReIcon width={16} height={16} color={iconColor} />
-          <Text className="text-text">{item.subscriptionCount} followers</Text>
+          <Text className="text-text">
+            {formatNumber(item.analytics?.subscriptionCount || 0)} followers
+          </Text>
         </View>
       </View>
     </ItemPressable>

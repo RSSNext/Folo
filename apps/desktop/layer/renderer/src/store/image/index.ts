@@ -1,4 +1,4 @@
-import type { EntryModel } from "@follow/models/types"
+import type { EntryModel } from "@follow/store/entry/types"
 
 import { createZustandStore } from "../utils/helper"
 import { getImageDimensionsFromDb } from "./db"

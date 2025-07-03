@@ -49,9 +49,9 @@ function RadioGroupIndicator({ className, transition, ...props }: RadioGroupIndi
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="size-3 fill-current text-current"
           >
             <circle cx="12" cy="12" r="10" />
@@ -66,12 +66,14 @@ type RadioGroupItemProps = React.ComponentProps<typeof RadioGroupPrimitive.Item>
   HTMLMotionProps<"button"> & {
     transition?: Transition
     label?: string
+    labelClassName?: string
   }
 
 function RadioGroupItem({
   className,
   transition = Spring.presets.smooth,
   label,
+  labelClassName,
   ...props
 }: RadioGroupItemProps) {
   const id = React.useId()
@@ -91,7 +93,11 @@ function RadioGroupItem({
         >
           <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
         </m.button>
-        {label && <label htmlFor={id}>{label}</label>}
+        {label && (
+          <label htmlFor={id} className={labelClassName}>
+            {label}
+          </label>
+        )}
       </div>
     </RadioGroupPrimitive.Item>
   )

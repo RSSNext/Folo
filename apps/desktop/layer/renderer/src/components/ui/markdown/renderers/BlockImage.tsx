@@ -4,7 +4,7 @@ import { useContextSelector } from "use-context-selector"
 
 import { useWrappedElementSize } from "~/providers/wrapped-element-provider"
 
-import { Media } from "../../media"
+import { Media } from "../../media/Media"
 import { MarkdownImageRecordContext, MarkdownRenderActionContext } from "../context"
 
 export const MarkdownBlockImage = (

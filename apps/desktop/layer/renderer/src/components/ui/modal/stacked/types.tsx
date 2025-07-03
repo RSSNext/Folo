@@ -32,14 +32,12 @@ export interface ModalProps {
 
   autoFocus?: boolean
 }
-export interface ModalStackOptions {
-  wrapper?: FC
-}
 
 export interface DialogInstance {
   ask: (options: {
     title: string
     message: string
+    variant?: "ask" | "warning" | "danger"
     onConfirm?: () => void
     onCancel?: () => void
     confirmText?: string

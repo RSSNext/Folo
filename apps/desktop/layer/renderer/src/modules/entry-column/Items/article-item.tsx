@@ -1,7 +1,7 @@
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 
 import { RelativeTime } from "~/components/ui/datetime"
-import { Media } from "~/components/ui/media"
+import { Media } from "~/components/ui/media/Media"
 import { ListItem } from "~/modules/entry-column/templates/list-item-template"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"

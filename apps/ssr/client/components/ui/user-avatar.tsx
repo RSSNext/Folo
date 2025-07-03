@@ -50,7 +50,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         </AvatarFallback>
       </Avatar>
 
-      <div>{name}</div>
+      <div className="text-text truncate">{name}</div>
     </div>
   )
 }

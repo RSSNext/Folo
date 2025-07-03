@@ -1,6 +1,6 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
-import { parseHtml as parseHtmlGeneral } from "@follow/components/ui/markdown/parse-html.js"
+import { parseHtml as parseHtmlGeneral } from "@follow/utils/html"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
 import { renderToString } from "react-dom/server"
@@ -28,6 +28,19 @@ export const parseHtml = (
     ...options,
     components: {
       a: ({ node, ...props }) => {
+        // Ignore link wrapper when child is an image to ensure image preview
+        // works instead of navigating to the link URL when clicked
+        //
+        // Check if the link contains only an image as a child
+        if (
+          node.children &&
+          node.children.length === 1 &&
+          node.children[0].type === "element" &&
+          node.children[0].tagName === "img"
+        ) {
+          // Return only the image element
+          return props.children
+        }
         return createElement(MarkdownLink, { ...props } as any)
       },
 
@@ -65,7 +78,6 @@ export const parseHtml = (
         return createElement(MarkdownP, props, props.children)
       },
 
-      // @ts-expect-error
       math: Math,
       hr: ({ node, ...props }) =>
         createElement("hr", {
@@ -148,6 +160,11 @@ export const parseHtml = (
             className: tw`w-full my-0`,
           }),
         ),
+      video: ({ node, ...props }) =>
+        createElement("video", {
+          ...props,
+          controls: true,
+        }),
     },
   })
 }

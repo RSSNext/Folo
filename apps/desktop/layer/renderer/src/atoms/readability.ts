@@ -1,44 +1,11 @@
-import { getStorageNS } from "@follow/utils/ns"
 import { atom } from "jotai"
-import { atomWithStorage } from "jotai/utils"
 
 import { createAtomHooks } from "~/lib/jotai"
-
-type Readability = {
-  title?: string | null
-  content?: string | null
-  textContent?: string | null
-  length?: number | null
-  excerpt?: string | null
-  byline?: string | null
-  dir?: string | null
-  siteName?: string | null
-  lang?: string | null
-  publishedTime?: string | null
-}
 
 const mergeObjectSetter =
   <T>(setter: (prev: T) => void, getter: () => T) =>
   (value: Partial<T>) =>
     setter({ ...getter(), ...value })
-
-export const [
-  ,
-  ,
-  useReadabilityContent,
-  ,
-  getReadabilityContent,
-  __setReadabilityContent,
-  useReadabilityContentSelector,
-] = createAtomHooks(
-  atomWithStorage<Record<string, Readability>>(getStorageNS("readability-content"), {}, undefined, {
-    getOnInit: true,
-  }),
-)
-export const setReadabilityContent = mergeObjectSetter(
-  __setReadabilityContent,
-  getReadabilityContent,
-)
 
 export enum ReadabilityStatus {
   INITIAL = 1,
@@ -77,5 +44,3 @@ export const useEntryInReadabilityStatus = (entryId?: string) =>
 
 export const isInReadability = (status: ReadabilityStatus) =>
   status !== ReadabilityStatus.INITIAL && !!status
-export const useEntryReadabilityContent = (entryId: string) =>
-  useReadabilityContentSelector((map) => map[entryId], [entryId])

@@ -6,6 +6,9 @@ import { Switch as SwitchPrimitive } from "@headlessui/react"
 import type { HTMLMotionProps } from "motion/react"
 import { m as motion } from "motion/react"
 import * as React from "react"
+import { useMemo } from "react"
+
+import { Spring } from "../../constants/spring"
 
 type SwitchProps<TTag extends React.ElementType = typeof motion.button> =
   SwitchPrimitiveProps<TTag> &
@@ -17,6 +20,9 @@ type SwitchProps<TTag extends React.ElementType = typeof motion.button> =
       as?: TTag
     }
 
+const THUMB_PADDING = 3
+const THUMB_SIZE = 18
+const SWITCH_WIDTH = 40
 function Switch({
   className,
   leftIcon,
@@ -43,19 +49,28 @@ function Switch({
     [onCheckedChange, onChange],
   )
 
+  const currentAnimation = useMemo(() => {
+    return !props.checked
+      ? { left: THUMB_PADDING }
+      : { left: SWITCH_WIDTH - THUMB_PADDING - THUMB_SIZE }
+  }, [props.checked])
+
   return (
     <SwitchPrimitive
       data-slot="switch"
       checked={isChecked}
       onChange={handleChange}
+      style={{ width: SWITCH_WIDTH, padding: THUMB_PADDING }}
       className={cn(
-        "focus-visible:ring-border cursor-switch data-[checked]:bg-accent bg-fill relative flex h-6 w-10 shrink-0 items-center justify-start rounded-full p-[3px] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:justify-end",
+        "focus-visible:ring-border cursor-switch data-[checked]:bg-accent bg-fill relative flex h-6 shrink-0 items-center justify-start rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       as={as}
       whileTap="tap"
       initial={false}
-      onTapStart={() => setIsTapped(true)}
+      onTapStart={() => {
+        setIsTapped(true)
+      }}
       onTapCancel={() => setIsTapped(false)}
       onTap={() => setIsTapped(false)}
       {...props}
@@ -86,19 +101,19 @@ function Switch({
         data-slot="switch-thumb"
         whileTap="tab"
         className={cn(
-          "bg-background relative z-[1] flex items-center justify-center rounded-full text-neutral-500 shadow-lg ring-0 dark:text-neutral-400 [&_svg]:size-3",
+          "bg-background z-[1] flex items-center justify-center rounded-full text-neutral-500 shadow-lg ring-0 dark:text-neutral-400 [&_svg]:size-3",
+          "absolute",
         )}
-        layout
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        transition={Spring.presets.smooth}
         style={{
-          width: 18,
-          height: 18,
+          width: THUMB_SIZE,
+          height: THUMB_SIZE,
         }}
-        animate={
-          isTapped
-            ? { width: 21, transition: { duration: 0.1 } }
-            : { width: 18, transition: { duration: 0.1 } }
-        }
+        initial={currentAnimation}
+        animate={Object.assign(
+          isTapped ? { width: 21, transition: Spring.presets.snappy } : { width: THUMB_SIZE },
+          currentAnimation,
+        )}
       >
         {thumbIcon && typeof thumbIcon !== "string" ? thumbIcon : null}
       </motion.span>

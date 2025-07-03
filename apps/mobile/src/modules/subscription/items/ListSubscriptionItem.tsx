@@ -1,3 +1,6 @@
+import { useListById } from "@follow/store/list/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
+import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
 import { Text, View } from "react-native"
@@ -12,9 +15,6 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { useList } from "@/src/store/list/hooks"
-import { useSubscription } from "@/src/store/subscription/hooks"
-import { useListUnreadCount } from "@/src/store/unread/hooks"
 
 import { SubscriptionListItemContextMenu } from "../../context-menu/lists"
 import { selectFeed } from "../../screen/atoms"
@@ -26,9 +26,9 @@ interface ListSubscriptionItemProps extends SubscriptionItemBaseProps {}
 export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscriptionItemProps) => {
   const colorLabel = useColor("label")
 
-  const list = useList(id)
-  const subscription = useSubscription(id)
-  const unreadCount = useListUnreadCount(id)
+  const list = useListById(id)
+  const subscription = useSubscriptionById(id)
+  const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
 
   if (!list) return null

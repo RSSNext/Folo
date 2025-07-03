@@ -1,7 +1,6 @@
 import { extendConfig } from "@follow/configs/tailwindcss/web"
 import plugin from "tailwindcss/plugin"
 
-const isWebBuild = !!process.env.WEB_BUILD || !!process.env.RN_BUILD || !!process.env.VERCEL
 export default extendConfig({
   content: [
     "./layer/renderer/src/**/*.{ts,tsx}",
@@ -12,9 +11,17 @@ export default extendConfig({
     "../../packages/**/*.{ts,tsx}",
     "!../../packages/**/node_modules",
   ],
-  future: {
-    hoverOnlyWhenSupported: isWebBuild,
-  },
+
+  safelist: [
+    "line-clamp-[1]",
+    "line-clamp-[2]",
+    "line-clamp-[3]",
+    "line-clamp-[4]",
+    "line-clamp-[5]",
+    "line-clamp-[6]",
+    "line-clamp-[7]",
+    "line-clamp-[8]",
+  ],
   theme: {
     extend: {
       cursor: {
@@ -61,11 +68,21 @@ export default extendConfig({
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "gradient-x": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%",
+          },
+          "50%": {
+            backgroundPosition: "100% 50%",
+          },
+        },
       },
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "gradient-x": "gradient-x 3s linear infinite",
+        glow: "glow 1.5s ease-in-out infinite",
       },
     },
   },
@@ -83,6 +100,7 @@ export default extendConfig({
       addVariant("windows", ":where(html[data-os='Windows']) &")
     }),
     require("tailwindcss-multi"),
+    require("tailwindcss-content-visibility"),
     plugin(({ addUtilities, matchUtilities, theme }) => {
       addUtilities({
         ".safe-inset-top": {

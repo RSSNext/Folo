@@ -1,3 +1,4 @@
+import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store/user/constants"
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,7 +14,6 @@ import { StepFinished } from "../modules/onboarding/step-finished"
 import { StepInterests } from "../modules/onboarding/step-interests"
 import { StepPreferences } from "../modules/onboarding/step-preferences"
 import { StepWelcome } from "../modules/onboarding/step-welcome"
-import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "../store/user/constants"
 
 export const OnboardingScreen: NavigationControllerView = () => {
   const { t } = useTranslation("common")

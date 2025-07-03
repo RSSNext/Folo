@@ -1,3 +1,4 @@
+import { userSyncService } from "@follow/store/user/store"
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { View } from "react-native"
@@ -17,7 +18,6 @@ import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
-import { userSyncService } from "@/src/store/user/store"
 
 export const InvitationScreen: NavigationControllerView = () => {
   const [code, setCode] = useState("")

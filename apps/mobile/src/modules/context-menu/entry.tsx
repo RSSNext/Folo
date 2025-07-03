@@ -1,10 +1,16 @@
 import type { FeedViewType } from "@follow/constants"
+import { useIsEntryStarred } from "@follow/store/collection/hooks"
+import { collectionSyncService } from "@follow/store/collection/store"
+import { getEntry } from "@follow/store/entry/getter"
+import { useEntry } from "@follow/store/entry/hooks"
+import { unreadSyncService } from "@follow/store/unread/store"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Share, Text, View } from "react-native"
 
+import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
 import {
   EntryContentWebView,
   preloadWebViewEntry,
@@ -13,13 +19,8 @@ import { ContextMenu } from "@/src/components/ui/context-menu"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
-import { useIsEntryStarred } from "@/src/store/collection/hooks"
-import { collectionSyncService } from "@/src/store/collection/store"
-import { getFetchEntryPayload } from "@/src/store/entry/getter"
-import { useEntry } from "@/src/store/entry/hooks"
-import { unreadSyncService } from "@/src/store/unread/store"
 
-import { useSelectedFeed, useSelectedView } from "../screen/atoms"
+import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 
 export const EntryItemContextMenu = ({
   id,
@@ -29,14 +30,23 @@ export const EntryItemContextMenu = ({
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
-  const entry = useEntry(id)
+  const entry = useEntry(id, (state) => ({
+    read: state.read,
+    feedId: state.feedId,
+    title: state.title,
+    publishedAt: state.publishedAt,
+    url: state.url,
+  }))
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
 
   const navigation = useNavigation()
   const handlePressPreview = useCallback(() => {
     if (entry) {
-      preloadWebViewEntry(entry)
+      const fullEntry = getEntry(id)
+      if (fullEntry) {
+        preloadWebViewEntry(fullEntry)
+      }
       navigation.pushControllerView(EntryDetailScreen, {
         entryId: id,
         view: view!,
@@ -58,7 +68,7 @@ export const EntryItemContextMenu = ({
                 <Text className="text-label mt-5 p-4 text-2xl font-semibold" numberOfLines={2}>
                   {entry.title?.trim()}
                 </Text>
-                <EntryContentWebView entry={entry} />
+                <EntryContentWebView entryId={id} />
               </View>
             </PortalProvider>
           )}
@@ -69,13 +79,14 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
                 startTime: new Date(publishedAt).getTime() + 1,
                 endTime: Date.now(),
               },
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >
@@ -114,13 +125,14 @@ export const EntryItemContextMenu = ({
           onSelect={() => {
             const payload = getFetchEntryPayload(selectedFeed, selectedView)
             const { publishedAt } = entry
-            unreadSyncService.markViewAsRead({
+            unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
               time: {
                 startTime: 1,
                 endTime: new Date(publishedAt).getTime() - 1,
               },
+              excludePrivate: getHideAllReadSubscriptions(),
             })
           }}
         >
@@ -145,7 +157,6 @@ export const EntryItemContextMenu = ({
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({
-                  feedId,
                   entryId: id,
                   view,
                 })

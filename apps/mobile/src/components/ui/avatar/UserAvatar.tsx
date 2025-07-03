@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/src/utils"
+import { cn } from "@follow/utils/utils"
 import { Text, View } from "react-native"
 
 import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"
@@ -37,7 +37,7 @@ export const UserAvatar = ({
         {name ? (
           <Text
             className="text-secondary-label p-2 text-center uppercase"
-            style={{ fontSize: size }}
+            style={{ fontSize: size / 3 }}
             adjustsFontSizeToFit
           >
             {name.slice(0, 2)}

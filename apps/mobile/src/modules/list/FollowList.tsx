@@ -1,4 +1,8 @@
 import { FeedViewType } from "@follow/constants"
+import { useListById } from "@follow/store/list/hooks"
+import { listSyncServices } from "@follow/store/list/store"
+import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
+import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
@@ -23,17 +27,13 @@ import { PowerIcon } from "@/src/icons/power"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
-import { useList } from "@/src/store/list/hooks"
-import { listSyncServices } from "@/src/store/list/store"
-import { useSubscriptionByListId } from "@/src/store/subscription/hooks"
-import { subscriptionSyncService } from "@/src/store/subscription/store"
 import { accentColor } from "@/src/theme/colors"
 
 import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
-  const list = useList(id)
+  const list = useListById(id)
   const { isLoading } = useQuery({
     queryKey: ["list", id],
     queryFn: () => listSyncServices.fetchListById({ id }),
@@ -53,7 +53,7 @@ export const FollowList = (props: { id: string }) => {
 
 const formSchema = z.object({
   view: z.number(),
-  isPrivate: z.boolean().default(false),
+  isPrivate: z.boolean(),
   title: z.string().optional(),
 })
 
@@ -61,7 +61,7 @@ const Impl = (props: { id: string }) => {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const { id } = props
-  const list = useList(id)
+  const list = useListById(id)
 
   const subscription = useSubscriptionByListId(id)
   const isSubscribed = !!subscription

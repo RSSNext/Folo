@@ -6,6 +6,7 @@ import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
 import { VideoPlayer } from "~/components/ui/media/VideoPlayer"
 
 export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>) => {
+  const videoExts = ["mp4", "webm"]
   return parseMarkdownImpl(content, {
     ...options,
     components: {
@@ -13,9 +14,40 @@ export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>)
       img: ({ node, ...props }) => {
         const { src } = props
         try {
-          const path = new URL(src || "").pathname
-          const isVideo = path.endsWith(".mp4")
+          const url = new URL(src || "")
+          const path = url.pathname
+          const search = url.searchParams
+          const ratio = search.get("ratio")
+
+          const isVideo = videoExts.some((ext) => path.endsWith(ext))
           if (isVideo) {
+            if (ratio) {
+              return createElement(
+                "div",
+                {
+                  style: {
+                    width: "100%",
+                    paddingTop: `${(1 / Number(ratio)) * 100}%`,
+                    position: "relative",
+                  },
+                },
+                createElement(
+                  "div",
+                  {
+                    style: {
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                    },
+                  },
+                  createElement(VideoPlayer, {
+                    src: src as string,
+                  }),
+                ),
+              )
+            }
             return createElement(VideoPlayer, {
               src: src as string,
             })

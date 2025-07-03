@@ -3,7 +3,7 @@ import { createElement, use } from "react"
 
 import { IsInParagraphContext } from "./__internal/ctx"
 
-export const Math = ({ node }) => {
+export const Math = ({ node }: { node: any }) => {
   const annotation = node.children.at(-1)
 
   const isInParagraph = use(IsInParagraphContext)

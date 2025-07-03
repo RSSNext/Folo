@@ -16,7 +16,10 @@ export const FeedDailyModalContent = () => {
       <TabsList className="w-full">
         {tabs.map((tab: any) => (
           <TabsTrigger key={tab} value={tab}>
-            <DailyReportTitle {...(tab === DayOf.Today ? today : yesterday)} />
+            <DailyReportTitle
+              containerClassName="pb-0"
+              {...(tab === DayOf.Today ? today : yesterday)}
+            />
           </TabsTrigger>
         ))}
       </TabsList>

@@ -7,3 +7,6 @@ apps/external/postcss.config.cjs
 
 apps/mobile/android
 apps/mobile/ios
+apps/mobile/native/example
+
+generated-routes.ts

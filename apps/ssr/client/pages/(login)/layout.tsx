@@ -18,6 +18,7 @@ const UserProvider = () => {
 
   useEffect(() => {
     if (!session?.user) return
+    // @ts-expect-error FIXME
     setWhoami(session.user)
 
     setIntegrationIdentify(session.user)

@@ -1,13 +1,15 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import katexStyle from "katex/dist/katex.min.css?raw"
 import { createElement, Fragment, memo, useEffect, useMemo, useState } from "react"
+import type { JSX } from "react/jsx-runtime"
 
 import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
 import { parseHtml } from "~/lib/parse-html"
 import { useWrappedElementSize } from "~/providers/wrapped-element-provider"
 
-import type { MediaInfoRecord } from "../media"
-import { MediaContainerWidthProvider, MediaInfoRecordProvider } from "../media"
+import { MediaContainerWidthProvider } from "../media/MediaContainerWidthProvider"
+import type { MediaInfoRecord } from "../media/MediaInfoRecord"
+import { MediaInfoRecordProvider } from "../media/MediaInfoRecordProvider"
 import { MarkdownRenderContainerRefContext } from "./context"
 
 export type HTMLProps<A extends keyof JSX.IntrinsicElements = "div"> = {

@@ -1,5 +1,6 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { FeedViewType } from "@follow/constants"
+import { useIsListSubscription } from "@follow/store/subscription/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
@@ -10,8 +11,7 @@ import { useDebounceCallback } from "usehooks-ts"
 import { SafeFragment } from "~/components/common/Fragment"
 import { RelativeDay } from "~/components/ui/datetime"
 import { IconScaleTransition } from "~/components/ux/transition/icon"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { isListSubscription } from "~/store/subscription"
+import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { markAllByRoute } from "../hooks/useMarkAll"
 
@@ -39,7 +39,7 @@ const useParseDate = (date: string) =>
     }
   }, [date])
 
-const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 bg-background px-4 font-bold text-zinc-800 dark:text-neutral-400 h-7`
+const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 bg-background px-4 font-bold text-text h-7`
 export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
   if (view === FeedViewType.SocialMedia) {
     return <SocialMediaDateItem date={date} className={dateItemclassName} isSticky={isSticky} />
@@ -83,7 +83,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   const W = Wrapper ?? SafeFragment
 
   const { feedId } = useRouteParams()
-  const isList = isListSubscription(feedId)
+  const isList = useIsListSubscription(feedId)
 
   const RelativeElement = (
     <span key="b" className="inline-flex items-center">
@@ -112,7 +112,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
           onClick={() => {
             if (confirmMark) {
               clearTimeout(timerRef.current)
-              markAllByRoute({
+              markAllByRoute(getRouteParams(), {
                 startTime,
                 endTime,
               })

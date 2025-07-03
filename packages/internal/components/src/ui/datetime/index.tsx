@@ -34,6 +34,8 @@ export const RelativeTime: FC<{
 
   const timerRef = useRef<any>(null)
 
+  const { i18n } = useTranslation("common")
+
   useEffect(() => {
     const updateRelativeTime = () => {
       setRelative(formatTime(props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate))
@@ -49,7 +51,7 @@ export const RelativeTime: FC<{
     return () => {
       clearTimeout(timerRef.current)
     }
-  }, [props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate])
+  }, [props.date, displayAbsoluteTimeAfterDay, nextDateFormatTemplate, i18n.language])
   const formated = dayjs(props.date).format(nextDateFormatTemplate)
 
   const { t } = useTranslation("common")
@@ -59,7 +61,7 @@ export const RelativeTime: FC<{
   return (
     <Tooltip>
       {/* https://github.com/radix-ui/primitives/issues/2248#issuecomment-2147056904 */}
-      <TooltipTrigger onFocusCapture={stopPropagation}>
+      <TooltipTrigger tabIndex={-1} onFocusCapture={stopPropagation}>
         {relative}
         {t("space")}
         {t("words.ago")}

@@ -32,7 +32,8 @@ export const FallbackIcon = ({
   const [, , , bgAccent, bgAccentLight, bgAccentUltraLight] = colors
 
   const renderedText = useMemo(() => {
-    const isCJK = isCJKChar(title[0]!)
+    const firstChar = title.at(0)
+    const isCJK = firstChar ? isCJKChar(firstChar) : false
     return (
       <Text style={StyleSheet.flatten([styles.text, textStyle])} className={textClassName}>
         {isCJK ? title[0] : title.slice(0, 2)}

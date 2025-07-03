@@ -1,4 +1,7 @@
-import type { ActionConditionIndex } from "@follow/models/src/types"
+import type { ActionConditionIndex } from "@follow/models/types"
+import { filterFieldOptions, filterOperatorOptions } from "@follow/store/action/constant"
+import { useActionRuleCondition } from "@follow/store/action/hooks"
+import { actionActions } from "@follow/store/action/store"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
@@ -16,11 +19,7 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { views } from "@/src/constants/views"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { useActionRuleCondition } from "@/src/store/action/hooks"
-import { actionActions } from "@/src/store/action/store"
 import { accentColor } from "@/src/theme/colors"
-
-import { filterFieldOptions, filterOperatorOptions } from "../actions/constant"
 
 export const EditConditionScreen: NavigationControllerView<{
   ruleIndex: number

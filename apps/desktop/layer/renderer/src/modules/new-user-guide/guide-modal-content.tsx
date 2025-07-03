@@ -1,6 +1,7 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
@@ -14,7 +15,7 @@ import { useI18n } from "~/hooks/common"
 import confettiUrl from "~/lottie/confetti.lottie?url"
 import { settings } from "~/queries/settings"
 
-import { DiscoverImport } from "../discover/import"
+import { DiscoverImport } from "../discover/DiscoverImport"
 import { ProfileSettingForm } from "../profile/profile-setting-form"
 import { settingSyncQueue } from "../settings/helper/sync-queue"
 import { LanguageSelector } from "../settings/tabs/general"
@@ -50,7 +51,7 @@ function Intro() {
       <Logo className="mx-auto size-20" />
       <p className="mt-5 text-2xl font-bold">{t("new_user_guide.intro.title")}</p>
       <p className="text-lg">{t("new_user_guide.intro.description")}</p>
-      <LanguageSelector contentClassName="z-10" />
+      <LanguageSelector contentClassName="z-10" showDescription={false} />
     </div>
   )
 }
@@ -69,7 +70,7 @@ function Outtro() {
           <Trans
             i18nKey="new_user_guide.step.shortcuts.description2"
             components={{
-              kbd: <Kbd>H</Kbd>,
+              kbd: <Kbd>?</Kbd>,
             }}
           />
         </p>
@@ -153,10 +154,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
   }).current
 
   return (
-    <m.div
-      layout
-      className="bg-theme-background center relative flex size-full flex-col items-center justify-center overflow-scroll pb-14 sm:size-4/5 sm:rounded-xl sm:shadow-xl"
-    >
+    <div className="bg-theme-background center relative flex size-full flex-col items-center justify-center overflow-hidden pb-14 sm:size-4/5 sm:rounded-xl sm:shadow-xl">
       <div className="relative mx-auto flex max-h-full w-full justify-center">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <m.div
@@ -191,13 +189,15 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
                 )}
               </div>
             )}
-            {status === "initial" ? (
-              <Intro />
-            ) : status === "active" ? (
-              guideSteps[step - 1]!.content
-            ) : status === "complete" ? (
-              <Outtro />
-            ) : null}
+            <ScrollArea.ScrollArea viewportClassName="px-6">
+              {status === "initial" ? (
+                <Intro />
+              ) : status === "active" ? (
+                guideSteps[step - 1]!.content
+              ) : status === "complete" ? (
+                <Outtro />
+              ) : null}
+            </ScrollArea.ScrollArea>
           </m.div>
         </AnimatePresence>
       </div>
@@ -273,7 +273,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
           </Button>
         </div>
       </div>
-    </m.div>
+    </div>
   )
 }
 

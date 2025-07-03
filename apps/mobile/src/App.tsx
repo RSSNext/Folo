@@ -1,3 +1,5 @@
+import { usePrefetchActions } from "@follow/store/action/hooks"
+import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { StatusBar } from "expo-status-bar"
 import { View } from "react-native"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
@@ -6,11 +8,10 @@ import { useSheet } from "react-native-sheet-transitions"
 
 import { useBackHandler } from "./hooks/useBackHandler"
 import { useIntentHandler } from "./hooks/useIntentHandler"
+import { useMessaging, useUpdateMessagingToken } from "./hooks/useMessaging"
+import { useOnboarding } from "./hooks/useOnboarding"
+import { useUnreadCountBadge } from "./hooks/useUnreadCountBadge"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
-import { usePrefetchActions } from "./store/action/hooks"
-import { useMessaging, useUpdateMessagingToken } from "./store/messaging/hooks"
-import { useUnreadCountBadge } from "./store/unread/hooks"
-import { useOnboarding, usePrefetchSessionUser } from "./store/user/hooks"
 
 export function App({ children }: { children: React.ReactNode }) {
   useIntentHandler()

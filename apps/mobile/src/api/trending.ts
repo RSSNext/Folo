@@ -1,4 +1,4 @@
-import type { Models } from "@follow/models/src"
+import type { Models } from "@follow/models"
 import camelcaseKeys from "camelcase-keys"
 
 import { apiFetch } from "../lib/api-fetch"

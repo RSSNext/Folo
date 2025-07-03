@@ -1,75 +1,30 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { nextFrame } from "@follow/utils/dom"
 import { atom, useAtomValue } from "jotai"
 import type { DragControls } from "motion/react"
 import type { ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { use, useId, useRef, useState } from "react"
+import { use, useState } from "react"
 import { flushSync } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { useContextSelector } from "use-context-selector"
 import { useEventCallback } from "usehooks-ts"
 
-import { getUISettings } from "~/atoms/settings/ui"
 import { jotaiStore } from "~/lib/jotai"
 
 import { modalStackAtom } from "./atom"
 import { ModalEventBus } from "./bus"
-import { CurrentModalContext, CurrentModalStateContext } from "./context"
-import type { DialogInstance, ModalProps, ModalStackOptions } from "./types"
+import {
+  CurrentModalContext,
+  CurrentModalStateContext,
+  PresentModalContextInternal,
+} from "./context"
+import type { DialogInstance, ModalProps } from "./types"
 
 export const modalIdToPropsMap = {} as Record<string, ModalProps>
-export const useModalStack = (options?: ModalStackOptions) => {
-  const id = useId()
-  const currentCount = useRef(0)
-  const { wrapper } = options || {}
+export const useModalStack = () => {
+  const present = use(PresentModalContextInternal)
 
   return {
-    present: useEventCallback((props: ModalProps & { id?: string }) => {
-      const presentSync = (props: ModalProps & { id?: string }) => {
-        const fallbackModelId = `${id}-${++currentCount.current}`
-        const modalId = props.id ?? fallbackModelId
-
-        const currentStack = jotaiStore.get(modalStackAtom)
-
-        const existingModal = currentStack.find((item) => item.id === modalId)
-
-        if (existingModal) {
-          // Move to top
-          jotaiStore.set(modalStackAtom, (p) => {
-            const index = p.indexOf(existingModal)
-            return [...p.slice(0, index), ...p.slice(index + 1), existingModal]
-          })
-        } else {
-          // NOTE: The props of the Command Modal are immutable, so we'll just take the store value and inject it.
-          // There is no need to inject `overlay` props, this is rendered responsively based on ui changes.
-          const uiSettings = getUISettings()
-          const modalConfig: Partial<ModalProps> = {
-            draggable: uiSettings.modalDraggable,
-            modal: true,
-          }
-          jotaiStore.set(modalStackAtom, (p) => {
-            const modalProps: ModalProps = {
-              ...modalConfig,
-              ...props,
-
-              wrapper,
-            }
-            modalIdToPropsMap[modalId] = modalProps
-            return p.concat({
-              id: modalId,
-              ...modalProps,
-            })
-          })
-        }
-
-        return () => {
-          jotaiStore.set(modalStackAtom, (p) => p.filter((item) => item.id !== modalId))
-        }
-      }
-
-      return nextFrame(() => presentSync(props))
-    }),
-
+    present,
     ...actions,
   }
 }
@@ -171,13 +126,48 @@ export const useDialog = (): DialogInstance => {
   const { present } = useModalStack()
   const { t } = useTranslation()
   return {
+    /**
+     * Show a confirmation dialog with different visual variants
+     * @param options.variant - Visual style variant:
+     *   - "ask" (default): Standard confirmation dialog
+     *   - "warning": Warning dialog with yellow icon and yellow confirm button
+     *   - "danger": Danger dialog with red icon and red confirm button
+     */
     ask: useEventCallback((options) => {
+      const variant = options.variant || "ask"
+
+      // Variant-specific configuration
+      const variantConfig = {
+        ask: {
+          icon: null,
+          confirmVariant: "primary" as const,
+          confirmClassName: "",
+        },
+        warning: {
+          icon: <i className="i-mingcute-warning-fill size-5 text-yellow-500" />,
+          confirmVariant: "primary" as const,
+          confirmClassName: "bg-yellow-600 hover:bg-yellow-700",
+        },
+        danger: {
+          icon: <i className="i-mingcute-warning-fill size-5 text-red-500" />,
+          confirmVariant: "primary" as const,
+          confirmClassName: "bg-red-600 hover:bg-red-700",
+        },
+      }
+
+      const config = variantConfig[variant]
+
       return new Promise<boolean>((resolve) => {
         present({
-          title: options.title,
+          title: (
+            <div className="flex items-center gap-2">
+              {config.icon}
+              <span>{options.title}</span>
+            </div>
+          ),
           content: ({ dismiss }) => (
-            <div className="flex max-w-[75ch] flex-col gap-3">
-              {options.message}
+            <div className="flex max-w-prose flex-col gap-3">
+              <div className="whitespace-pre text-wrap">{options.message}</div>
 
               <div className="flex items-center justify-end gap-3">
                 <Button
@@ -191,6 +181,8 @@ export const useDialog = (): DialogInstance => {
                   {options.cancelText ?? t("words.cancel", { ns: "common" })}
                 </Button>
                 <Button
+                  variant={config.confirmVariant}
+                  buttonClassName={config.confirmClassName}
                   onClick={() => {
                     options.onConfirm?.()
                     resolve(true)

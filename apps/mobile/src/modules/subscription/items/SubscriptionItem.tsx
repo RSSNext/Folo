@@ -1,3 +1,6 @@
+import { useFeedById, usePrefetchFeed } from "@follow/store/feed/hooks"
+import { useSubscriptionById } from "@follow/store/subscription/hooks"
+import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, use } from "react"
 import { Text, View } from "react-native"
@@ -12,11 +15,8 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { WifiOffCuteReIcon } from "@/src/icons/wifi_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { closeDrawer, selectFeed } from "@/src/modules/screen/atoms"
+import { selectFeed } from "@/src/modules/screen/atoms"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
-import { useFeed, usePrefetchFeed } from "@/src/store/feed/hooks"
-import { useSubscription } from "@/src/store/subscription/hooks"
-import { useUnreadCount } from "@/src/store/unread/hooks"
 
 import { SubscriptionFeedItemContextMenu } from "../../context-menu/feeds"
 import { GroupedContext } from "../ctx"
@@ -28,9 +28,9 @@ export const SubscriptionItem = memo(
   ({ id, isFirst, isLast, className }: SubscriptionItemBaseProps) => {
     const red = useColor("red")
     const colorLabel = useColor("label")
-    const subscription = useSubscription(id)
-    const unreadCount = useUnreadCount(id)
-    const feed = useFeed(id)!
+    const subscription = useSubscriptionById(id)
+    const unreadCount = useUnreadById(id)
+    const feed = useFeedById(id)!
     const inGrouped = !!use(GroupedContext)
     const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
 
@@ -69,7 +69,7 @@ export const SubscriptionItem = memo(
                   type: "feed",
                   feedId: id,
                 })
-                closeDrawer()
+
                 navigation.pushControllerView(FeedScreen, {
                   feedId: id,
                 })

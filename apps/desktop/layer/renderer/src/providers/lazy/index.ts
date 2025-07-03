@@ -10,9 +10,9 @@ const LazyContextMenuProvider = lazy(() =>
     default: res.ContextMenuProvider,
   })),
 )
-const LazyModalStackProvider = lazy(() =>
-  import("../../components/ui/modal/stacked/provider").then((res) => ({
-    default: res.ModalStackProvider,
+const LazyPopoverProvider = lazy(() =>
+  import("./../popover-provider").then((res) => ({
+    default: res.PopoverProvider,
   })),
 )
 
@@ -52,7 +52,7 @@ export {
   LazyContextMenuProvider,
   LazyExtensionExposeProvider,
   LazyLottieRenderContainer,
-  LazyModalStackProvider,
+  LazyPopoverProvider,
   LazyPWAPrompt,
   LazyReloadPrompt,
 }
