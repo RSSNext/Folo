@@ -73,7 +73,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
         <div
           className={`rounded-xl px-3 py-2.5 backdrop-blur-sm ${
             message.role === "user"
-              ? "bg-accent/30 text-white"
+              ? "dark:bg-accent/30 bg-accent/90 text-white"
               : "text-text border border-gray-200/60 bg-gradient-to-br from-white/80 to-gray-50/90 shadow-lg shadow-black/5 dark:border-zinc-700/60 dark:from-zinc-800/80 dark:to-zinc-900/90 dark:shadow-black/20"
           }`}
         >
@@ -93,7 +93,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
             <AIMessageParts message={message} />
           </div>
           <div
-            className={`mt-2 text-xs ${message.role === "user" ? "text-right text-white/70" : "text-text-tertiary"}`}
+            className={`mt-2 text-xs ${message.role === "user" ? "text-text-secondary-dark text-right" : "text-text-tertiary"}`}
           >
             {message.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </div>
