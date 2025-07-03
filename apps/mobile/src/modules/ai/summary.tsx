@@ -31,6 +31,7 @@ import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
 import { isAndroid, isIOS } from "@/src/lib/platform"
+import { toast } from "@/src/lib/toast"
 
 export const AISummary: FC<{
   className?: string
@@ -110,7 +111,12 @@ export const AISummary: FC<{
         </View>
         {summaryTextForSheet && (
           <TouchableOpacity
-            onPress={() => setSheetOpen(true)}
+            onPress={() => {
+              Clipboard.setString(summaryTextForSheet)
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+              toast.success("Copied to clipboard")
+            }}
+            onLongPress={() => setSheetOpen(true)}
             className="bg-quaternary-system-fill rounded-full p-1.5 active:opacity-70"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
@@ -180,7 +186,7 @@ export const AISummary: FC<{
       <SelectableTextSheet
         visible={isSheetOpen}
         onClose={() => setSheetOpen(false)}
-        text={rawSummaryForCopy || summaryText}
+        text={summaryTextForSheet}
       />
     </>
   )
@@ -202,7 +208,7 @@ const SelectableTextSheet: FC<{
 
   return (
     <BottomModal visible={visible} onClose={onClose}>
-      <View className="p-4" style={{ paddingBottom: insets.bottom + 10 }}>
+      <View className="m-4 mb-0 flex flex-1" style={{ paddingBottom: insets.bottom + 10 }}>
         <View className="mb-4 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={handleCopyAll}
