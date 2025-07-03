@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { cn, nextFrame } from "@follow/utils"
 import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
@@ -52,13 +53,22 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
   ({ disabled, onSendMessage }) => {
     const { inputRef } = React.use(AIPanelRefsContext)
     const scrollAreaRef = React.useRef<HTMLDivElement>(null)
-    const { messages, status, input: _input } = React.use(AIChatContext)
+    const { messages, status } = React.use(AIChatContext)
 
     // Auto-scroll logic
     const { resetScrollState, scrollToBottom } = useAutoScroll(
       scrollAreaRef.current,
       status === "streaming",
     )
+
+    // Auto-scroll to bottom when initial messages are loaded
+    React.useEffect(() => {
+      nextFrame(() => {
+        if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+        }
+      })
+    }, [])
 
     const handleSendMessage = (message: string) => {
       if (inputRef.current) {
@@ -88,24 +98,21 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
     return (
       <>
         <div className="flex min-h-0 grow flex-col">
-          {showWelcome ? (
-            <Welcome />
-          ) : (
-            // Chat messages
-            <ScrollArea
-              ref={scrollAreaRef}
-              flex
-              viewportClassName="p-6"
-              rootClassName="min-h-[500px] flex-1"
-            >
-              <div className="flex flex-col gap-2">
-                {messages.map((message) => (
-                  <AIChatMessage key={message.id} message={message} />
-                ))}
-                {status === "submitted" && <AIChatTypingIndicator />}
-              </div>
-            </ScrollArea>
-          )}
+          {showWelcome && <Welcome />}
+
+          <ScrollArea
+            ref={scrollAreaRef}
+            flex
+            viewportClassName="p-6"
+            rootClassName={cn("min-h-[500px] flex-1", showWelcome && "hidden")}
+          >
+            <div className="flex flex-col gap-2">
+              {messages.map((message) => (
+                <AIChatMessage key={message.id} message={message} />
+              ))}
+              {status === "submitted" && <AIChatTypingIndicator />}
+            </div>
+          </ScrollArea>
 
           {/* Input area */}
           <div className="border-border pb-safe shrink-0 border-t">

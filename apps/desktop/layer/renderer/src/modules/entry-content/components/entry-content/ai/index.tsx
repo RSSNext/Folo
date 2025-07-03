@@ -10,7 +10,6 @@ import { useAIChatPinned } from "~/atoms/settings/ai"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { AIChatContext, useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
-import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 
 import { AIChatContainer } from "./AIChatContainer"
 import { AIPanelHeader } from "./AIPanelHeader"
@@ -194,25 +193,23 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
 // AI Chat Panel Component - Expanded chat panel
 const AIChatSidePanel: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-  <AIChatRoot wrapFocusable={false}>
-    <m.div
-      className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 flex w-96 flex-col border-l shadow-2xl backdrop-blur-xl"
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ type: "spring", damping: 25, stiffness: 200 }}
-    >
-      {/* Panel header */}
-      <AIPanelHeader onClose={onClose} />
+  <m.div
+    className="bg-background/95 border-border fixed inset-y-0 right-0 z-50 flex w-96 flex-col border-l shadow-2xl backdrop-blur-xl"
+    initial={{ x: "100%" }}
+    animate={{ x: 0 }}
+    exit={{ x: "100%" }}
+    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+  >
+    {/* Panel header */}
+    <AIPanelHeader onClose={onClose} />
 
-      {/* AI Chat content */}
-      <div className="flex min-h-[500px] grow flex-col">
-        <Focusable scope={HotkeyScope.AIChat} asChild>
-          <AIChat />
-        </Focusable>
-      </div>
-    </m.div>
-  </AIChatRoot>
+    {/* AI Chat content */}
+    <div className="flex min-h-[500px] grow flex-col">
+      <Focusable scope={HotkeyScope.AIChat} asChild>
+        <AIChat />
+      </Focusable>
+    </div>
+  </m.div>
 )
 
 const useCreateEntryAIContext = (entryId: string) => {
@@ -273,19 +270,17 @@ export const AIChatPanelContainer: FC<{ entryId: string; onClose: () => void }> 
 
   return (
     <EntryAIContext value={ctxStore}>
-      <AIChatRoot wrapFocusable={false}>
-        <div className="bg-background relative flex grow flex-col overflow-hidden">
-          {/* Panel header */}
-          <AIPanelHeader onClose={onClose} />
+      <div className="bg-background relative flex grow flex-col overflow-hidden">
+        {/* Panel header */}
+        <AIPanelHeader onClose={onClose} />
 
-          {/* AI Chat content */}
-          <div className="relative flex grow flex-col overflow-hidden">
-            <Focusable scope={HotkeyScope.AIChat} asChild>
-              <AIChat />
-            </Focusable>
-          </div>
+        {/* AI Chat content */}
+        <div className="relative flex grow flex-col overflow-hidden">
+          <Focusable scope={HotkeyScope.AIChat} asChild>
+            <AIChat />
+          </Focusable>
         </div>
-      </AIChatRoot>
+      </div>
     </EntryAIContext>
   )
 }

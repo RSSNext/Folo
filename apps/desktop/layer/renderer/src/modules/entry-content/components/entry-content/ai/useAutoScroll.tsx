@@ -9,9 +9,10 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
   const userScrolledUpRef = React.useRef(false)
   const lastScrollTopRef = React.useRef(0)
   const resizeObserverRef = React.useRef<ResizeObserver | null>(null)
-  // 添加程序滚动标记，避免误判用户滚动
+
+  // Add programmatic scroll flag to avoid misjudgment of user scroll.
   const isProgrammaticScrollRef = React.useRef(false)
-  // 记录滚动动画完成的 callback
+  // Record the callback of the scroll animation completion.
   const scrollAnimationCompleteRef = React.useRef<number | null>(null)
 
   const isNearBottom = React.useCallback((element: HTMLElement) => {
@@ -24,10 +25,10 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
     const targetScrollTop = viewport.scrollHeight - viewport.clientHeight
     if (targetScrollTop <= 0) return
 
-    // 标记为程序滚动
+    // Mark as programmatic scroll.
     isProgrammaticScrollRef.current = true
 
-    // 清除之前的动画完成定时器
+    // Clear the previous animation completion timer.
     if (scrollAnimationCompleteRef.current) {
       window.clearTimeout(scrollAnimationCompleteRef.current)
     }
@@ -43,15 +44,15 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
       stop: () => animation.stop(),
     }
 
-    // 动画完成后重置程序滚动标记
+    // Reset the programmatic scroll flag after the animation completes.
     animation
       .then(() => {
         scrollAnimationCompleteRef.current = window.setTimeout(() => {
           isProgrammaticScrollRef.current = false
-        }, 100) // 给一个小的延迟，确保所有相关的 scroll 事件都被正确标记
+        }, 100) // Give a small delay to ensure all related scroll events are correctly marked.
       })
       .catch(() => {
-        // 动画被中断时也要重置标记
+        // Reset the flag when the animation is interrupted.
         isProgrammaticScrollRef.current = false
       })
 
@@ -65,7 +66,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
     const handleScroll = () => {
       const currentScrollTop = viewport.scrollTop
 
-      // 如果是程序滚动，不进行用户滚动检测
+      // If it's a programmatic scroll, do not perform user scroll detection.
       if (isProgrammaticScrollRef.current) {
         lastScrollTopRef.current = currentScrollTop
         return
@@ -73,7 +74,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
 
       const scrollDelta = lastScrollTopRef.current - currentScrollTop
 
-      // If user scrolled up more than threshold, disable auto-scroll
+      // If the user has scrolled up more than the threshold, disable auto-scroll.
       if (scrollDelta > SCROLL_THRESHOLD) {
         userScrolledUpRef.current = true
       } else if (isNearBottom(viewport)) {

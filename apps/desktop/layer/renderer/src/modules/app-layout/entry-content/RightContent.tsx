@@ -14,6 +14,7 @@ import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
+import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-content/ai"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -57,35 +58,37 @@ const Grid = ({ entryId }) => {
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   return (
-    <div
-      className={clsx(
-        aiPinned && "grid grid-cols-[1fr_400px]",
-        "flex min-h-0 grow flex-col overflow-hidden",
-      )}
-    >
-      <div className="flex min-h-0 grow flex-col overflow-hidden">
-        <EntryContent
-          entryId={entryId}
-          classNames={{
-            header: shouldHeaderPaddingLeft
-              ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
-              : wideMode
-                ? "ml-12"
-                : "",
-          }}
-        />
-      </div>
-      {aiPinned && (
-        <div className="relative flex min-h-0 grow flex-col border-l">
-          <AIChatPanelContainer
+    <AIChatRoot wrapFocusable={false}>
+      <div
+        className={clsx(
+          aiPinned && "grid grid-cols-[1fr_400px]",
+          "flex min-h-0 grow flex-col overflow-hidden",
+        )}
+      >
+        <div className="flex min-h-0 grow flex-col overflow-hidden">
+          <EntryContent
             entryId={entryId}
-            onClose={() => {
-              setAIChatPinned(false)
+            classNames={{
+              header: shouldHeaderPaddingLeft
+                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
+                : wideMode
+                  ? "ml-12"
+                  : "",
             }}
           />
         </div>
-      )}
-    </div>
+        {aiPinned && (
+          <div className="relative flex min-h-0 grow flex-col border-l">
+            <AIChatPanelContainer
+              entryId={entryId}
+              onClose={() => {
+                setAIChatPinned(false)
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </AIChatRoot>
   )
 }
 
