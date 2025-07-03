@@ -42,6 +42,10 @@ export const useUserRole = () => {
   return useUserStore((state) => state.role)
 }
 
+export const useRoleEndAt = () => {
+  return useUserStore((state) => state.roleEndAt)
+}
+
 export const useUserById = (userId: string | undefined) => {
   return useUserStore((state) => (userId ? state.users[userId] : undefined))
 }

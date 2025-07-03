@@ -18,6 +18,7 @@ import { useAuthProviders } from "~/queries/users"
 
 import { LoginWithPassword, RegisterForm } from "./Form"
 import { LegalModalContent } from "./LegalModal"
+import { ReferralForm } from "./ReferralForm"
 import { TokenModalContent } from "./TokenModal"
 
 interface LoginModalContentProps {
@@ -149,6 +150,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           </div>
         </div>
       )}
+      {isRegister && <ReferralForm className="mb-4" />}
 
       {!isEmail && (
         <>

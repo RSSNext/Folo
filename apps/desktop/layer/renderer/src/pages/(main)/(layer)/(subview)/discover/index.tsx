@@ -67,7 +67,7 @@ export function Component() {
   const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const currentTabs = tabs.map((tab) => {
-    const disabled = tab.disableForTrial && role === UserRole.Trial
+    const disabled = tab.disableForTrial && (role === UserRole.Free || role === UserRole.Trial)
     return {
       ...tab,
       disabled,

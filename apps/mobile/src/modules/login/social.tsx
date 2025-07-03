@@ -8,7 +8,15 @@ import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { signIn, useAuthProviders } from "@/src/lib/auth"
 
-export function SocialLogin({ onPressEmail }: { onPressEmail: () => void }) {
+import { ReferralForm } from "./referral"
+
+export function SocialLogin({
+  onPressEmail,
+  isRegister,
+}: {
+  isRegister: boolean
+  onPressEmail: () => void
+}) {
   const { data: authProviders, isLoading } = useAuthProviders()
   const { colorScheme } = useColorScheme()
   const providers = Object.entries(authProviders || [])
@@ -87,6 +95,11 @@ export function SocialLogin({ onPressEmail }: { onPressEmail: () => void }) {
           </TouchableOpacity>
         )
       })}
+      {isRegister && (
+        <View className="border-opaque-separator border-hairline w-full rounded-xl px-6 py-4">
+          <ReferralForm />
+        </View>
+      )}
     </View>
   )
 }

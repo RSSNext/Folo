@@ -11,8 +11,11 @@ export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.invitations",
   priority,
-  disableIf: (ctx) => [ctx.role === UserRole.Trial, DisableWhy.NotActivation],
-  hideIf: (ctx, serverConfigs) => ctx.isInMASReview || !serverConfigs?.INVITATION_ENABLED,
+  disableIf: (ctx) => [
+    ctx.role === UserRole.Free || ctx.role === UserRole.Trial,
+    DisableWhy.NotActivation,
+  ],
+  hideIf: (_, serverConfigs) => !serverConfigs?.INVITATION_ENABLED,
 })
 
 export function Component() {

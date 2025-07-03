@@ -43,6 +43,7 @@ import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
 import { PrivacyScreen } from "./routes/Privacy"
+import { ReferralScreen } from "./routes/Referral"
 
 interface GroupNavigationLink {
   label: Extract<ParseKeys<"settings">, `titles.${string}`>
@@ -112,6 +113,29 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
     iconBackgroundColor: "#EC4899",
     anonymous: false,
     hideIf: (serverConfigs) => !serverConfigs?.INVITATION_ENABLED,
+  },
+]
+
+const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
+  // {
+  //   label: "titles.plan.short",
+  //   icon: PowerOutlineIcon,
+  //   onPress: ({ navigation }) => {
+  //     navigation.pushControllerView(PlanScreen)
+  //   },
+  //   iconBackgroundColor: accentColor,
+  //   anonymous: false,
+  //   hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+  // },
+  {
+    label: "titles.referral.short",
+    icon: LoveCuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(ReferralScreen)
+    },
+    iconBackgroundColor: "#EC4899",
+    anonymous: false,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
   },
 ]
 
@@ -216,7 +240,7 @@ const NavigationLinkGroup: FC<{
                 </GroupedInsetListNavigationLinkIcon>
               }
               onPress={() => {
-                if (link.trialNotAllowed && role === UserRole.Trial) {
+                if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
                   navigation.presentControllerView(InvitationScreen)
                 } else {
                   link.onPress({ navigation })
@@ -232,6 +256,7 @@ const NavigationLinkGroup: FC<{
 const navigationGroups = [
   SettingGroupNavigationLinks,
   DataGroupNavigationLinks,
+  ReferralGroupNavigationLinks,
   BetaGroupNavigationLinks,
   PrivacyGroupNavigationLinks,
   ActionGroupNavigationLinks,

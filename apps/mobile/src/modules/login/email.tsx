@@ -20,6 +20,8 @@ import { ForgetPasswordScreen } from "@/src/screens/(modal)/ForgetPasswordScreen
 import { TwoFactorAuthScreen } from "@/src/screens/(modal)/TwoFactorAuthScreen"
 import { accentColor } from "@/src/theme/colors"
 
+import { ReferralForm } from "./referral"
+
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(128),
@@ -261,6 +263,8 @@ export function EmailSignUp() {
             }}
           />
         </View>
+        <View className="border-b-opaque-separator border-b-hairline" />
+        <ReferralForm />
       </View>
       <SubmitButton
         disabled={submitMutation.isPending || !formState.isValid}

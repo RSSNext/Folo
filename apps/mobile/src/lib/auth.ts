@@ -5,6 +5,7 @@ import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
 import * as SecureStore from "expo-secure-store"
+import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
 
 import { getEnvProfile, proxyEnv } from "./proxy-env"
@@ -41,6 +42,18 @@ export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   plugins,
   // TODO: add x-app-platform, x-app-version headers
+  fetchOptions: {
+    onRequest(context) {
+      const value = Storage.getItemSync("referral-code")
+      if (value) {
+        const referralCode = JSON.parse(value)
+        if (referralCode) {
+          context.headers.set("folo-referral-code", referralCode)
+        }
+      }
+      return context
+    },
+  },
 })
 
 // @keep-sorted

@@ -20,12 +20,14 @@ type UserStore = {
   users: Record<string, UserModel>
   whoami: MeModel | null
   role: UserRole | null
+  roleEndAt: Date | null
 }
 
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
   users: {},
   whoami: null,
   role: null,
+  roleEndAt: null,
 }))
 
 const get = useUserStore.getState
@@ -68,7 +70,10 @@ class UserSyncService {
       const user = honoMorph.toUser(res.user, true)
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user.emailVerified }
-        state.role = res.role as UserRole
+        state.role = res.role
+        if (res.roleEndAt) {
+          state.roleEndAt = new Date(res.roleEndAt)
+        }
       })
       userActions.upsertMany([user])
 
@@ -173,7 +178,7 @@ class UserSyncService {
     const res = await apiClient().invitations.use.$post({ json: { code } })
     if (res.code === 0) {
       immerSet((state) => {
-        state.role = UserRole.User
+        state.role = UserRole.PrePro
       })
     }
 
@@ -236,6 +241,7 @@ class UserActions implements Hydratable {
       immerSet((state) => {
         state.whoami = null
         state.role = null
+        state.roleEndAt = null
       })
     })
     tx.persist(() => UserService.removeCurrentUser())

@@ -1,3 +1,4 @@
+import { stripeClient } from "@better-auth/stripe/client"
 import { IN_ELECTRON } from "@follow/shared"
 import type { authPlugins } from "@follow/shared/hono"
 import type { BetterAuthClientPlugin, BetterFetchOption } from "better-auth/client"
@@ -27,6 +28,7 @@ export const baseAuthPlugins = [
     },
   }),
   twoFactorClient(),
+  stripeClient({ subscription: true }),
 ] satisfies BetterAuthClientPlugin[]
 
 export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = ReturnType<
@@ -50,7 +52,19 @@ export class Auth {
     this.authClient = createAuthClient({
       baseURL: `${this.options.apiURL}/better-auth`,
       plugins: baseAuthPlugins,
-      fetchOptions: this.options.fetchOptions,
+      fetchOptions: {
+        ...this.options.fetchOptions,
+        onRequest: (context) => {
+          const referralCode = localStorage.getItem(getStorageNS("referral-code"))
+          if (referralCode) {
+            context.headers.set("folo-referral-code", referralCode)
+          }
+
+          this.options.fetchOptions?.onRequest?.(context)
+
+          return context
+        },
+      },
     })
   }
 
@@ -82,3 +96,7 @@ export class Auth {
     }
   }
 }
+
+// copy from packages/internal/utils/src/ns.ts
+const ns = "follow"
+const getStorageNS = (key: string) => `${ns}:${key}`
