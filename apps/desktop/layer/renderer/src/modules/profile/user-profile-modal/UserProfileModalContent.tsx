@@ -282,7 +282,7 @@ const UserSocialSection = ({ user }: { user: PickedUser }) => {
   return (
     <div className="border-fill bg-material-thin border-b px-6 py-4">
       <h3 className="text-text mb-3 text-sm font-medium uppercase tracking-wide">
-        {t("user_profile.about", "About")}
+        {t("user_profile.about")}
       </h3>
       {user.bio && <p className="text-text-secondary mb-3 text-sm leading-relaxed">{user.bio}</p>}
       <div className="space-y-2">
@@ -339,9 +339,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
   return (
     <>
       <div className="-mb-4 mt-4 flex items-center justify-between">
-        <h2 className="text-text text-lg font-semibold">
-          {t("user_profile.subscriptions", "Subscriptions")}
-        </h2>
+        <h2 className="text-text text-lg font-semibold">{t("user_profile.subscriptions")}</h2>
         <ActionButton
           tooltip={t("user_profile.toggle_item_style")}
           onClick={() => {
@@ -379,9 +377,7 @@ const Lists = ({ lists }: { lists: List[] }) => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-text text-lg font-semibold">
-          {t("user_profile.created_lists", "Created Lists")}
-        </h2>
+        <h2 className="text-text text-lg font-semibold">{t("user_profile.created_lists")}</h2>
       </div>
       <div className="@[500px]:grid-cols-2 @[700px]:grid-cols-3 grid grid-cols-1 gap-4">
         {lists.map((list) => (
