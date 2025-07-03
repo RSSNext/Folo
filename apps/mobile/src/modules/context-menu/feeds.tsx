@@ -17,9 +17,11 @@ import { Alert, FlatList, View } from "react-native"
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { modalPrompt } from "@/src/components/ui/modal/imperative-modal"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
+import { isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
@@ -158,7 +160,9 @@ const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => 
               // create new category
               const subscription = getSubscriptionById(id)
               if (!subscription) return
-              Alert.prompt("Create New Category", "Enter the name of the new category", (text) => {
+              const prompt = isIOS ? Alert.prompt : modalPrompt
+
+              prompt("Create New Category", "Enter the name of the new category", (text) => {
                 subscriptionSyncService.edit({
                   ...subscription,
                   category: text,
@@ -327,19 +331,25 @@ export const SubscriptionFeedCategoryContextMenu = ({
         <ContextMenu.Item
           key="EditCategory"
           onSelect={() => {
-            Alert.prompt(
+            const prompt = isIOS ? Alert.prompt : modalPrompt
+
+            const handleRenameCategory = async (newCategory: string) => {
+              if (!newCategory) return
+              await subscriptionSyncService.renameCategory({
+                lastCategory: category,
+                newCategory,
+                view: currentView,
+              })
+              toast.success("Category renamed successfully")
+            }
+            prompt(
               t("operation.rename_category"),
               t("operation.enter_new_name_for_category", {
                 category,
               }),
-              (newCategory) => {
-                if (!newCategory) return
-                subscriptionSyncService.renameCategory({
-                  lastCategory: category,
-                  newCategory,
-                  view: currentView,
-                })
-              },
+              handleRenameCategory,
+              undefined,
+              category,
             )
           }}
         >

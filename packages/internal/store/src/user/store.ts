@@ -26,7 +26,7 @@ type UserStore = {
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
   users: {},
   whoami: null,
-  role: UserRole.Free,
+  role: null,
   roleEndAt: null,
 }))
 
