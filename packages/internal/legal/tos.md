@@ -32,7 +32,7 @@ You may not exploit the Service for commercial purposes unless explicitly author
 
 ## 5. Service Fees
 
-Folo offers both free and paid features. Certain functionalities, such as advanced AI features or additional $POWER purchases, may require payment. All fees will be clearly disclosed in the application or on our website (https://app.follow.is). Fees are non-refundable unless required by applicable law.
+Folo offers both free and paid features. Certain functionalities, such as advanced AI features or additional $POWER purchases, may require payment. All fees will be clearly disclosed in the application or on our website (https://app.folo.is). Fees are non-refundable unless required by applicable law.
 
 ## 6. Content and Intellectual Property
 
@@ -82,7 +82,7 @@ To the fullest extent permitted by law, except where caused by our gross neglige
 
 ## 10. Modifications to the Terms
 
-We may modify these Terms at any time. Changes take effect upon posting to the Service. For significant changes (e.g., affecting user rights, fees, or data use), we will notify you at least 14 days in advance via email, in-app notification, or our website (https://app.follow.is). If you disagree with the changes, you may terminate your account before they take effect by contacting us or using account settings. Continued use after changes constitutes acceptance. You are responsible for periodically reviewing the Terms.
+We may modify these Terms at any time. Changes take effect upon posting to the Service. For significant changes (e.g., affecting user rights, fees, or data use), we will notify you at least 14 days in advance via email, in-app notification, or our website (https://app.folo.is). If you disagree with the changes, you may terminate your account before they take effect by contacting us or using account settings. Continued use after changes constitutes acceptance. You are responsible for periodically reviewing the Terms.
 
 ## 11. Termination
 
@@ -106,4 +106,4 @@ Folo is an open-source project, and we welcome contributions such as bug reports
 
 ## 15. Privacy and Data Use
 
-Folo takes your privacy seriously. We may collect, store, and process personal information, including usage patterns and content interactions. Our [Privacy Policy](https://app.follow.is/privacy-policy) will detail how we collect, process, and protect your data. Until available, contact follow@rss3.io for privacy inquiries. We are committed to handling your data securely and transparently in compliance with applicable laws, including Singapore’s Personal Data Protection Act.
+Folo takes your privacy seriously. We may collect, store, and process personal information, including usage patterns and content interactions. Our [Privacy Policy](https://app.folo.is/privacy-policy) will detail how we collect, process, and protect your data. Until available, contact follow@rss3.io for privacy inquiries. We are committed to handling your data securely and transparently in compliance with applicable laws, including Singapore’s Personal Data Protection Act.

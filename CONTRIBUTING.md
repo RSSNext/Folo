@@ -28,7 +28,7 @@ For a more convenient development experience, we recommend developing in the bro
 cd apps/desktop && pnpm run dev:web
 ```
 
-This will open the browser at `https://app.follow.is/__debug_proxy`, allowing you to access the online API environment for development and debugging.
+This will open the browser at `https://app.folo.is/__debug_proxy`, allowing you to access the online API environment for development and debugging.
 
 ### Develop in Electron
 
