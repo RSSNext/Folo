@@ -2,7 +2,6 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
@@ -46,14 +45,10 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
       [id]: ReadabilityStatus.WAITING,
     })
     try {
-      const data = getEntry(id)?.readabilityContent
-
-      if (!data) {
-        await entrySyncServices.fetchEntryReadabilityContent(id, async () => {
-          const res = await ipcServices?.reader.readability({ url })
-          return res?.content
-        })
-      }
+      await entrySyncServices.fetchEntryReadabilityContent(id, async () => {
+        const res = await ipcServices?.reader.readability({ url })
+        return res?.content
+      })
 
       setReadabilityStatus({
         [id]: ReadabilityStatus.SUCCESS,
