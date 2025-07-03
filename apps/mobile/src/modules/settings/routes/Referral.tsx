@@ -7,8 +7,6 @@ import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, Pressable, Share, Text, View } from "react-native"
-import { Slider } from "react-native-awesome-slider"
-import { useSharedValue } from "react-native-reanimated"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import {
@@ -29,7 +27,7 @@ import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { apiClient } from "@/src/lib/api-fetch"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
-import { accentColor, useColor } from "@/src/theme/colors"
+import { useColor } from "@/src/theme/colors"
 
 const useReferralInfoQuery = () => {
   return useQuery({
@@ -52,9 +50,7 @@ export const ReferralScreen: NavigationControllerView = () => {
 
   const secondaryLabelColor = useColor("secondaryLabel")
 
-  const progress = useSharedValue((validInvitationsAmount / requiredInvitationsAmount) * 100)
-  const min = useSharedValue(0)
-  const max = useSharedValue(100)
+  const progress = (validInvitationsAmount / requiredInvitationsAmount) * 100
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -130,18 +126,14 @@ export const ReferralScreen: NavigationControllerView = () => {
       />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell>
-          <Slider
-            progress={progress}
-            minimumValue={min}
-            maximumValue={max}
-            renderBubble={() => null}
-            thumbWidth={0}
-            disableTrackPress
-            containerStyle={{ height: 7, borderRadius: 16 }}
-            theme={{
-              minimumTrackTintColor: accentColor,
-            }}
-          />
+          <View className="bg-label h-2 w-full rounded-full">
+            <View
+              className="bg-accent h-2 rounded-full"
+              style={{
+                width: `${progress}%`,
+              }}
+            />
+          </View>
         </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 

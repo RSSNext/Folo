@@ -5,8 +5,6 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, Pressable, ScrollView, Text, View } from "react-native"
-import { Slider } from "react-native-awesome-slider"
-import { useSharedValue } from "react-native-reanimated"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import {
@@ -107,9 +105,7 @@ export const PlanScreen: NavigationControllerView = () => {
   const daysLeft = roleEndDate
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
-  const progress = useSharedValue((validInvitationsAmount / requiredInvitationsAmount) * 100)
-  const min = useSharedValue(0)
-  const max = useSharedValue(100)
+  const progress = (validInvitationsAmount / requiredInvitationsAmount) * 100
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -186,18 +182,14 @@ export const PlanScreen: NavigationControllerView = () => {
             {validInvitationsAmount} / {requiredInvitationsAmount}
           </Text>
         </View>
-        <Slider
-          progress={progress}
-          minimumValue={min}
-          maximumValue={max}
-          renderBubble={() => null}
-          thumbWidth={0}
-          disableTrackPress
-          containerStyle={{ height: 7, borderRadius: 16 }}
-          theme={{
-            minimumTrackTintColor: accentColor,
-          }}
-        />
+        <View className="bg-label h-2 w-full rounded-full">
+          <View
+            className="bg-accent h-2 rounded-full"
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+        </View>
 
         {role !== UserRole.PrePro && (
           <View className="mt-4 flex-row items-center gap-2 self-end">
