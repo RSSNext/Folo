@@ -88,6 +88,7 @@ export const entriesTable = sqliteTable("entries", {
   url: text("url"),
   content: text("content"),
   readabilityContent: text("source_content"),
+  readabilityUpdatedAt: integer("readability_updated_at", { mode: "timestamp_ms" }),
   description: text("description"),
   guid: text("guid").notNull(),
   author: text("author"),
