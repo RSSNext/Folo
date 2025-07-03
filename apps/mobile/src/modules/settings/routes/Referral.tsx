@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, Text, View } from "react-native"
+import { Linking, Pressable, Share, Text, View } from "react-native"
 import { Slider } from "react-native-awesome-slider"
 import { useSharedValue } from "react-native-reanimated"
 
@@ -16,6 +16,7 @@ import {
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
+import { ContextMenu } from "@/src/components/ui/context-menu"
 import {
   GroupedInformationCell,
   GroupedInsetActivityIndicatorCell,
@@ -35,11 +36,6 @@ const useReferralInfoQuery = () => {
     queryKey: ["referral", "info"],
     queryFn: () => apiClient.referrals.$get().then((res) => res.data),
   })
-}
-
-const handleCopyText = (text: string) => {
-  setStringAsync(text)
-  toast.success("Copied to clipboard")
 }
 
 export const ReferralScreen: NavigationControllerView = () => {
@@ -103,11 +99,30 @@ export const ReferralScreen: NavigationControllerView = () => {
 
       <GroupedInsetListSectionHeader label={t("referral.link")} />
       <GroupedInsetListCard>
-        <GroupedInsetListBaseCell>
-          <Pressable onPress={() => handleCopyText(referralLink)}>
-            <MonoText className="text-label">{referralLink}</MonoText>
-          </Pressable>
-        </GroupedInsetListBaseCell>
+        <ContextMenu.Root>
+          <ContextMenu.Trigger>
+            <GroupedInsetListBaseCell>
+              <Pressable
+                onPress={() => {
+                  Share.share({ url: referralLink })
+                }}
+              >
+                <MonoText className="text-label">{referralLink}</MonoText>
+              </Pressable>
+            </GroupedInsetListBaseCell>
+          </ContextMenu.Trigger>
+          <ContextMenu.Content>
+            <ContextMenu.Item
+              key="copy"
+              onSelect={() => {
+                setStringAsync(referralLink)
+                toast.success("Referral link copied to clipboard")
+              }}
+            >
+              <ContextMenu.ItemTitle>Copy</ContextMenu.ItemTitle>
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Root>
       </GroupedInsetListCard>
 
       <GroupedInsetListSectionHeader
