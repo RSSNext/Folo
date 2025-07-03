@@ -46,6 +46,8 @@ export const COMMAND_ID = {
     showShortcuts: "global:show-shortcuts",
     toggleCornerPlay: "global:toggle-corner-play",
     quickAdd: "global:quick-add",
+    toggleAIChat: "global:toggle-ai-chat",
+    toggleAIChatPinned: "global:toggle-ai-chat-pinned",
   },
   layout: {
     toggleSubscriptionColumn: "layout:toggle-subscription-column",

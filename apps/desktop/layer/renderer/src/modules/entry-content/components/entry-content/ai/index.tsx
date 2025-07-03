@@ -1,15 +1,20 @@
+import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMousePosition } from "@follow/components/hooks/useMouse.js"
+import { combineCleanupFunctions } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { create } from "zustand"
 
-import { useAIChatPinned } from "~/atoms/settings/ai"
-import { Focusable } from "~/components/common/Focusable"
+import { getAIChatPinned, setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
+import { Focusable, FocusablePresets } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 import { AIChatContext, useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { COMMAND_ID } from "~/modules/command/commands/id"
+import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 
 import { AIChatContainer } from "./AIChatContainer"
 import { AIPanelHeader } from "./AIPanelHeader"
@@ -17,15 +22,12 @@ import type { IEntryAIContext } from "./context"
 import { EntryAIContext, useEntryAIContextStore } from "./context"
 
 const AIChat: React.FC = () => {
-  const { append } = React.use(AIChatContext)
+  const { sendMessage } = React.use(AIChatContext)
   const handleSendMessage = React.useCallback(
     (message: string) => {
-      append({
-        role: "user",
-        content: message,
-      })
+      sendMessage({ text: message })
     },
-    [append],
+    [sendMessage],
   )
 
   const store = useEntryAIContextStore()()
@@ -250,6 +252,29 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
 
   const ctxStore = useCreateEntryAIContext(entryId)
 
+  const when = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
+  useCommandBinding({
+    commandId: COMMAND_ID.global.toggleAIChat,
+    when,
+  })
+
+  useCommandBinding({
+    commandId: COMMAND_ID.global.toggleAIChatPinned,
+    when,
+  })
+
+  useEffect(() => {
+    return combineCleanupFunctions(
+      EventBus.subscribe(COMMAND_ID.global.toggleAIChat, () => {
+        setIsExpanded((state) => !state)
+      }),
+      EventBus.subscribe(COMMAND_ID.global.toggleAIChatPinned, () => {
+        setIsExpanded((state) => !state)
+        setAIChatPinned(!getAIChatPinned())
+      }),
+    )
+  }, [])
+
   if (useAIChatPinned()) return null
 
   return (
@@ -270,17 +295,18 @@ export const AIChatPanelContainer: FC<{ entryId: string; onClose: () => void }> 
 
   return (
     <EntryAIContext value={ctxStore}>
-      <div className="bg-background relative flex grow flex-col overflow-hidden">
+      <Focusable
+        scope={HotkeyScope.AIChat}
+        className="bg-background relative flex grow flex-col overflow-hidden"
+      >
         {/* Panel header */}
         <AIPanelHeader onClose={onClose} />
 
         {/* AI Chat content */}
         <div className="relative flex grow flex-col overflow-hidden">
-          <Focusable scope={HotkeyScope.AIChat} asChild>
-            <AIChat />
-          </Focusable>
+          <AIChat />
         </div>
-      </div>
+      </Focusable>
     </EntryAIContext>
   )
 }

@@ -23,3 +23,4 @@ export const useAIChatPinned = () => useAtomValue(aiChatPinnedAtom)
 export const setAIChatPinned = (pinned: boolean) => {
   jotaiStore.set(aiChatPinnedAtom, pinned)
 }
+export const getAIChatPinned = () => jotaiStore.get(aiChatPinnedAtom)

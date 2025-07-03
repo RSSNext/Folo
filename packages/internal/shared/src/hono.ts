@@ -2,6 +2,7 @@ import * as hono_hono_base from 'hono/hono-base';
 import * as hono_types from 'hono/types';
 import * as hono_utils_http_status from 'hono/utils/http-status';
 import { HttpBindings } from '@hono/node-server';
+import * as ai from 'ai';
 import * as zod from 'zod';
 import { z } from 'zod';
 import * as better_call from 'better-call';
@@ -15,6 +16,58 @@ import { BetterAuthOptions } from 'better-auth';
 
 type Env = {
     Bindings: HttpBindings;
+};
+
+declare const tools: {
+    displayFeeds: ai.Tool<{
+        feedIds: string[];
+    }, {
+        feedList: {
+            feed: {
+                id: string;
+                url: string;
+                title: string | null;
+                description: string | null;
+                siteUrl: string | null;
+                image: string | null;
+                checkedAt: Date;
+                lastModifiedHeader: string | null;
+                etagHeader: string | null;
+                ttl: number | null;
+                errorMessage: string | null;
+                errorAt: Date | null;
+                ownerUserId: string | null;
+                language: string | null;
+                migrateTo: string | null;
+                rsshubRoute: string | null;
+                rsshubNamespace: string | null;
+                nsfw: boolean | null;
+            };
+            analytics: {
+                feedId: string;
+                updatesPerWeek: number | null;
+                subscriptionCount: number | null;
+                latestEntryPublishedAt: Date | null;
+                view: number | null;
+            } | null;
+        }[];
+    }>;
+    getFeeds: ai.Tool<{
+        select: ("id" | "image" | "description" | "title" | "url" | "siteUrl" | "checkedAt" | "lastModifiedHeader" | "etagHeader" | "ttl" | "errorMessage" | "errorAt" | "ownerUserId" | "language" | "migrateTo" | "rsshubRoute" | "rsshubNamespace" | "nsfw")[];
+        ids: string[];
+    }, {
+        feeds: Record<string, any>[];
+    }>;
+    getFeedEntries: ai.Tool<{
+        select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
+        feedId: string;
+    }, {
+        entries: Record<string, any>[];
+    }>;
+    getEntry: ai.Tool<{
+        id: string;
+        select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
+    }, Record<string, any> | null>;
 };
 
 declare const authPlugins: ({
@@ -17803,10 +17856,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
         $post: {
             input: {
                 json: {
-                    messages: {
-                        content: string;
-                        role: "user" | "assistant";
-                    }[];
+                    messages: any[];
                     context?: {
                         mainEntryId?: string | undefined;
                         referEntryIds?: string[] | undefined;
@@ -21057,4 +21107,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/data">, "/">;
 type AppType = typeof _routes;
 
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, tools, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

@@ -1,11 +1,15 @@
-import type { UseChatHelpers } from "@ai-sdk/react"
+import type { UIMessage, UseChatHelpers } from "@ai-sdk/react"
+import type { UIDataTypes } from "ai"
 import { createContext, use } from "react"
 import type { StoreApi } from "zustand"
 import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
 
 import type { AiChatContextStore } from "./store"
+import type { BizUITools } from "./types"
 
-export const AIChatContext = createContext<UseChatHelpers>(null!)
+export const AIChatContext = createContext<
+  UseChatHelpers<UIMessage<unknown, UIDataTypes, BizUITools>>
+>(null!)
 
 export type AIPanelRefs = {
   panelRef: React.RefObject<HTMLDivElement>

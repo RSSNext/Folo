@@ -1,5 +1,4 @@
-import type { UIMessage } from "@ai-sdk/ui-utils"
-import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
+import type { UIMessage } from "ai"
 import * as React from "react"
 
 import { AIMarkdownMessage } from "../../../../ai/chat/AIMarkdownMessage"
@@ -11,10 +10,7 @@ interface MessagePartsProps {
 
 export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
   if (!message.parts || message.parts.length === 0) {
-    // Fallback to content if no parts (backward compatibility)
-    if (message.content) {
-      return parseMarkdown(message.content).content
-    }
+    // In AI SDK v5, messages should always have parts
     if (message.role === "assistant") {
       return <span className="text-text-secondary italic">AI is thinking...</span>
     }
@@ -37,10 +33,11 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
             )
           }
 
-          case "tool-invocation": {
-            const { toolInvocation } = part
-
-            return <ToolInvocationComponent key={partKey} toolInvocation={toolInvocation} />
+          case "tool-displayFeeds":
+          case "tool-getFeeds":
+          case "tool-getFeedEntries":
+          case "tool-getEntry": {
+            return <ToolInvocationComponent key={partKey} part={part} />
           }
 
           // case "reasoning": {

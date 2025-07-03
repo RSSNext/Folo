@@ -1,5 +1,6 @@
-import { useChat } from "@ai-sdk/react"
+import { Chat, useChat } from "@ai-sdk/react"
 import { env } from "@follow/shared/env.desktop"
+import { DefaultChatTransport } from "ai"
 import type { FC, PropsWithChildren } from "react"
 import { useMemo, useRef } from "react"
 
@@ -21,17 +22,33 @@ interface AIChatRootProps extends PropsWithChildren {
 export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true }) => {
   const useAiContextStore = useMemo(createAIChatContextStore, [])
 
-  const context = useAiContextStore((s) => s.state)
-
   const ctx = useChat({
-    api: `${env.VITE_API_URL}/ai/chat`,
     onError: (error) => {
       console.warn(error)
     },
-    credentials: "include",
-    body: {
-      context,
-    },
+
+    chat: useMemo(
+      () =>
+        new Chat({
+          transport: new DefaultChatTransport({
+            api: `${env.VITE_API_URL}/ai/chat`,
+            credentials: "include",
+            fetch: (url, options) => {
+              try {
+                options.body = JSON.stringify({
+                  ...JSON.parse(options.body),
+                  context: useAiContextStore.getState().state,
+                })
+              } catch (error) {
+                console.error(error)
+              }
+
+              return fetch.call(null, url, options)
+            },
+          }),
+        }),
+      [useAiContextStore],
+    ),
   })
 
   const panelRef = useRef<HTMLDivElement>(null!)

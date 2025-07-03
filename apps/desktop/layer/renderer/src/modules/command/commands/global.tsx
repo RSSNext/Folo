@@ -11,6 +11,8 @@ declare module "@follow/utils/event-bus" {
   interface EventBusMap {
     "global:toggle-corner-play": void
     "global:quick-add": void
+    "global:toggle-ai-chat": void
+    "global:toggle-ai-chat-pinned": void
   }
 }
 
@@ -37,7 +39,7 @@ export const useRegisterGlobalCommands = () => {
         description: t("command.global.toggle_corner_play.description"),
       },
       run: () => {
-        EventBus.dispatch("global:toggle-corner-play")
+        EventBus.dispatch(COMMAND_ID.global.toggleCornerPlay)
       },
       category,
     },
@@ -48,7 +50,30 @@ export const useRegisterGlobalCommands = () => {
         description: t("command.global.quick_add.description"),
       },
       run: () => {
-        EventBus.dispatch("global:quick-add")
+        EventBus.dispatch(COMMAND_ID.global.quickAdd)
+      },
+      category,
+    },
+
+    {
+      id: COMMAND_ID.global.toggleAIChat,
+      label: {
+        title: t("command.global.toggle_ai_chat.title"),
+        description: t("command.global.toggle_ai_chat.description"),
+      },
+      run: () => {
+        EventBus.dispatch(COMMAND_ID.global.toggleAIChat)
+      },
+      category,
+    },
+    {
+      id: COMMAND_ID.global.toggleAIChatPinned,
+      label: {
+        title: t("command.global.toggle_ai_chat_pinned.title"),
+        description: t("command.global.toggle_ai_chat_pinned.description"),
+      },
+      run: () => {
+        EventBus.dispatch(COMMAND_ID.global.toggleAIChatPinned)
       },
       category,
     },
@@ -70,4 +95,19 @@ export type QuickAddCommand = Command<{
   fn: () => void
 }>
 
-export type GlobalCommand = ShowShortcutsCommand | ToggleCornerPlayCommand | QuickAddCommand
+export type ToggleAIChatCommand = Command<{
+  id: typeof COMMAND_ID.global.toggleAIChat
+  fn: () => void
+}>
+
+export type ToggleAIChatPinnedCommand = Command<{
+  id: typeof COMMAND_ID.global.toggleAIChatPinned
+  fn: () => void
+}>
+
+export type GlobalCommand =
+  | ShowShortcutsCommand
+  | ToggleCornerPlayCommand
+  | QuickAddCommand
+  | ToggleAIChatCommand
+  | ToggleAIChatPinnedCommand

@@ -1,12 +1,14 @@
+import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import * as React from "react"
 
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
-import { setTimelineColumnShow } from "~/atoms/sidebar"
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 
 export const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { setMessages } = React.use(AIChatContext)
+  const { setMessages, messages } = React.use(AIChatContext)
   const isAiChatPinned = useAIChatPinned()
+  const { ask } = useDialog()
   return (
     <div className="border-border flex h-[55px] shrink-0 items-center justify-between border-b px-3">
       <div className="flex items-center gap-3">
@@ -18,27 +20,32 @@ export const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="hover:bg-fill-secondary flex size-8 items-center justify-center rounded-full transition-colors"
-          onClick={() => setMessages([])}
-        >
-          <i className="i-mgc-add-cute-re size-4" />
-        </button>
+        <ActionButton
+          icon={<i className="i-mgc-add-cute-re size-4" />}
+          onClick={() => {
+            if (messages.length === 0) {
+              return
+            }
+
+            ask({
+              title: "Clear Chat",
+              message:
+                "Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.",
+              variant: "danger",
+              onConfirm: () => {
+                setMessages([])
+              },
+            })
+          }}
+        />
         {!isAiChatPinned && (
-          <button
-            type="button"
-            className="hover:bg-fill-secondary flex size-8 items-center justify-center rounded-full transition-colors"
+          <ActionButton
+            icon={<i className="i-mingcute-pin-line size-4" />}
             onClick={() => {
-              if (window.innerWidth < 1440) {
-                setTimelineColumnShow(false)
-              }
               setAIChatPinned(true)
               onClose()
             }}
-          >
-            <i className="i-mingcute-pin-line size-4" />
-          </button>
+          />
         )}
         <button
           type="button"

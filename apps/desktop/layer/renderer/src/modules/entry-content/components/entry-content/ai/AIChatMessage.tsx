@@ -1,5 +1,5 @@
-import type { UIMessage } from "@ai-sdk/ui-utils"
 import { stopPropagation } from "@follow/utils"
+import type { UIMessage } from "ai"
 import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
@@ -22,19 +22,17 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
-  const { reload } = React.use(AIChatContext)
+  const { regenerate } = React.use(AIChatContext)
   const [isHovered, setIsHovered] = React.useState(false)
 
   const handleCopy = React.useCallback(async () => {
     try {
-      // Copy the text content from parts or fallback to content
+      // Extract text content from parts array (AI SDK v5)
       const textContent =
         message.parts
           ?.filter((part) => part.type === "text")
           .map((part) => part.text)
-          .join(" ") ||
-        message.content ||
-        ""
+          .join(" ") || ""
 
       await copyToClipboard(textContent)
       toast.success("Message copied to clipboard")
@@ -44,8 +42,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
   }, [message])
 
   const handleRetry = React.useCallback(() => {
-    reload()
-  }, [reload])
+    regenerate({ messageId: message.id })
+  }, [regenerate, message.id])
 
   return (
     <m.div
@@ -92,11 +90,11 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
           >
             <AIMessageParts message={message} />
           </div>
-          <div
+          {/* <div
             className={`mt-2 text-xs ${message.role === "user" ? "text-text-secondary-dark text-right" : "text-text-tertiary"}`}
           >
             {message.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          </div>
+          </div> */}
         </div>
 
         {/* Action buttons */}

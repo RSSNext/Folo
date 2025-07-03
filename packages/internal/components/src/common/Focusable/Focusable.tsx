@@ -67,6 +67,8 @@ export const Focusable: Component<
     $container.addEventListener("focusout", focusOut)
 
     return () => {
+      $container.removeEventListener("focus", focusIn)
+      $container.removeEventListener("blur", focusOut)
       $container.removeEventListener("focusin", focusIn)
       $container.removeEventListener("focusout", focusOut)
     }
