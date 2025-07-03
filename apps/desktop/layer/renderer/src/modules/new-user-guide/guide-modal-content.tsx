@@ -111,6 +111,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
             <ProfileSettingForm
               className="w-[500px] max-w-full"
               buttonClassName="text-center !mt-8"
+              hideAvatar={true}
             />
           ),
           icon: "i-mgc-user-setting-cute-re",
