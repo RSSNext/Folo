@@ -66,7 +66,7 @@ src/
 ## Need Help?
 
 - Join our [Discord](https://discord.gg/followapp)
-- Follow us on [Twitter](https://x.com/follow_app_)
+- Follow us on [Twitter](https://x.com/folo_is)
 - Contact the mobile development team
 
 ## License
