@@ -4,7 +4,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 
 export function DownloadPage() {
   const openDownloadPage = () => {
-    window.open("https://follow.is/download", "_blank", "noopener,noreferrer")
+    window.open("https://folo.is/download", "_blank", "noopener,noreferrer")
   }
 
   return (

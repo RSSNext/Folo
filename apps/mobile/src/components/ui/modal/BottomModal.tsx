@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils/utils"
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useState } from "react"
-import { Modal, Pressable } from "react-native"
+import { KeyboardAvoidingView, Modal, Pressable, View } from "react-native"
 import Animated, {
   Easing,
   runOnJS,
@@ -10,7 +10,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-interface BottomModalProps {
+export interface BottomModalProps {
+  // ref?: Ref<{ close: () => void }>
   /**
    * Whether the modal is visible
    */
@@ -19,7 +20,7 @@ interface BottomModalProps {
   /**
    * Function to call when the modal should be closed (backdrop press or programmatically)
    */
-  onClose: () => void
+  onClose?: () => void
 
   /**
    * Content to render inside the modal
@@ -82,6 +83,19 @@ export function BottomModal({
     transform: [{ translateY: contentTranslateY.value }],
   }))
 
+  // useImperativeHandle(ref, () => ({
+  //   close: () => {
+  //     if (internalVisible) {
+  //       hideModal()
+  //     }
+  //   },
+  //   open: () => {
+  //     if (!internalVisible) {
+  //       showModal()
+  //     }
+  //   },
+  // }))
+
   const showModal = useCallback(() => {
     setInternalVisible(true)
     backdropAnim.value = withTiming(backdropOpacity, {
@@ -109,7 +123,9 @@ export function BottomModal({
       },
       () => {
         runOnJS(setInternalVisible)(false)
-        runOnJS(onClose)()
+        if (onClose) {
+          runOnJS(onClose)()
+        }
       },
     )
   }, [backdropAnim, contentTranslateY, closeDuration, onClose])
@@ -122,9 +138,12 @@ export function BottomModal({
 
   // Start animations when visibility changes
   useEffect(() => {
+    if (visible === internalVisible) {
+      return // No change, do nothing
+    }
     if (visible) {
       showModal()
-    } else if (internalVisible) {
+    } else {
       hideModal()
     }
   }, [visible, showModal, hideModal, internalVisible])
@@ -134,31 +153,36 @@ export function BottomModal({
   }
 
   return (
-    <Modal
-      visible={internalVisible}
-      transparent={true}
-      animationType="none"
-      onRequestClose={hideModal}
-      statusBarTranslucent
-      navigationBarTranslucent
-    >
-      <Animated.View className="absolute inset-0 bg-black" style={backdropStyle}>
-        <Pressable
-          className="flex-1"
-          onPress={handleBackdropPress}
-          android_ripple={{ color: "white" }}
-        />
-      </Animated.View>
-
-      <Animated.View
-        className={cn(
-          "bg-system-background mt-auto flex-1 overflow-hidden rounded-t-2xl",
-          className,
-        )}
-        style={modalContentStyle}
+    // Wrap in a View to avoid rendering issues with Modal on Android
+    <View>
+      <Modal
+        visible={internalVisible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={hideModal}
+        statusBarTranslucent
+        navigationBarTranslucent
       >
-        {children}
-      </Animated.View>
-    </Modal>
+        <KeyboardAvoidingView className="flex-1" behavior="padding">
+          <Animated.View className="absolute inset-0 bg-black" style={backdropStyle}>
+            <Pressable
+              className="flex-1"
+              onPress={handleBackdropPress}
+              android_ripple={{ color: "white" }}
+            />
+          </Animated.View>
+
+          <Animated.View
+            className={cn(
+              "bg-system-background mt-auto flex-1 overflow-hidden rounded-t-2xl",
+              className,
+            )}
+            style={modalContentStyle}
+          >
+            {children}
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </Modal>
+    </View>
   )
 }

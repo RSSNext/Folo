@@ -19,13 +19,13 @@ export type MeModel = UserModel & {
 type UserStore = {
   users: Record<string, UserModel>
   whoami: MeModel | null
-  role: UserRole
+  role: UserRole | null
 }
 
 export const useUserStore = createZustandStore<UserStore>("user")(() => ({
   users: {},
   whoami: null,
-  role: UserRole.Trial,
+  role: null,
 }))
 
 const get = useUserStore.getState
@@ -72,7 +72,7 @@ class UserSyncService {
       })
       userActions.upsertMany([user])
 
-      return res.user
+      return res
     } else {
       return null
     }
@@ -213,6 +213,13 @@ class UserActions implements Hydratable {
     })
   }
 
+  updateWhoami(data: Partial<MeModel>) {
+    immerSet((state) => {
+      if (!state.whoami) return
+      state.whoami = { ...state.whoami, ...data }
+    })
+  }
+
   async upsertMany(users: UserModel[]) {
     const tx = createTransaction()
     tx.store(() => this.upsertManyInSession(users))
@@ -228,6 +235,7 @@ class UserActions implements Hydratable {
     tx.store(() => {
       immerSet((state) => {
         state.whoami = null
+        state.role = null
       })
     })
     tx.persist(() => UserService.removeCurrentUser())

@@ -1,6 +1,6 @@
+import { useWhoami } from "@follow/store/user/hooks"
 import { lazy, Suspense } from "react"
 
-import { useWhoami } from "~/atoms/user"
 import { useAuthQuery } from "~/hooks/common/useBizQuery"
 import { settings } from "~/queries/settings"
 

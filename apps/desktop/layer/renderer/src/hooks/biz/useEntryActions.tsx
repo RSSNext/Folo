@@ -2,12 +2,13 @@ import { isMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, UserRole, views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { whoami } from "@follow/store/user/getters"
+import { useUserRole } from "@follow/store/user/hooks"
 import { doesTextContainHTML } from "@follow/utils/utils"
 import { useMemo } from "react"
 
@@ -21,7 +22,6 @@ import {
   useEntryIsInReadability,
 } from "~/atoms/readability"
 import { useShowSourceContent } from "~/atoms/source-content"
-import { useUserRole, whoami } from "~/atoms/user"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command"
@@ -45,14 +45,10 @@ export const toggleEntryReadability = async ({ id, url }: { id: string; url: str
       [id]: ReadabilityStatus.WAITING,
     })
     try {
-      const data = getEntry(id)?.readabilityContent
-
-      if (!data) {
-        await entrySyncServices.fetchEntryReadabilityContent(id, async () => {
-          const res = await ipcServices?.reader.readability({ url })
-          return res?.content
-        })
-      }
+      await entrySyncServices.fetchEntryReadabilityContent(id, async () => {
+        const res = await ipcServices?.reader.readability({ url })
+        return res?.content
+      })
 
       setReadabilityStatus({
         [id]: ReadabilityStatus.SUCCESS,

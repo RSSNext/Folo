@@ -190,7 +190,7 @@ const config: ForgeConfig = {
     new MakerSquirrel({
       name: "Folo",
       setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
-      iconUrl: "https://app.follow.is/favicon.ico",
+      iconUrl: "https://app.folo.is/favicon.ico",
     }),
     new MakerAppImage({
       config: {

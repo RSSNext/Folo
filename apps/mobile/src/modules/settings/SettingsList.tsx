@@ -1,6 +1,6 @@
 import { UserRole } from "@follow/constants"
 import type { ServerConfigs } from "@follow/models/types"
-import { useRole, useWhoami } from "@follow/store/user/hooks"
+import { useUserRole, useWhoami } from "@follow/store/user/hooks"
 import * as FileSystem from "expo-file-system"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"
@@ -198,7 +198,7 @@ const NavigationLinkGroup: FC<{
   links: GroupNavigationLink[]
 }> = ({ links }) => {
   const navigation = useNavigation()
-  const role = useRole()
+  const role = useUserRole()
   const { t } = useTranslation("settings")
 
   return (

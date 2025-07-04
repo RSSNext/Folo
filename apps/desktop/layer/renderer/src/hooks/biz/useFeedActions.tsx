@@ -12,6 +12,7 @@ import {
   useSubscriptionsByFeedIds,
 } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { whoami } from "@follow/store/user/getters"
 import { isBizId } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -21,7 +22,6 @@ import { toast } from "sonner"
 import type { FollowMenuItem, MenuItemInput } from "~/atoms/context-menu"
 import { MenuItemSeparator, MenuItemText } from "~/atoms/context-menu"
 import { useIsInMASReview } from "~/atoms/server-configs"
-import { whoami } from "~/atoms/user"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { copyToClipboard } from "~/lib/clipboard"
 import { UrlBuilder } from "~/lib/url-builder"
@@ -310,7 +310,7 @@ export const useFeedActions = ({
         disabled: isEntryList,
         click: () => {
           copyToClipboard(
-            `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
+            `https://badge.folo.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
           )
         },
       }),
