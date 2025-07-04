@@ -89,6 +89,7 @@
     "utf-8-validate": "6.0.5",
     "vite-bundle-analyzer": "0.22.3",
     "vite-plugin-mkcert": "1.17.8",
+    "vite-plugin-node-polyfills": "0.23.0",
     "vite-plugin-pwa": "1.0.0",
     "vite-tsconfig-paths": "5.1.4"
   },

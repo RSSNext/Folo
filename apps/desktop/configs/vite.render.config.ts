@@ -7,6 +7,7 @@ import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
 import { prerelease } from "semver"
 import type { UserConfig } from "vite"
+import { nodePolyfills } from "vite-plugin-node-polyfills"
 
 import { getGitHash } from "../../../scripts/lib"
 import { astPlugin } from "../plugins/vite/ast"
@@ -69,7 +70,9 @@ export const viteRenderBaseConfig = {
       // jsxImportSource: "@welldone-software/why-did-you-render", // <-----
     }),
     circularImportRefreshPlugin(),
-
+    nodePolyfills({
+      include: ["buffer"],
+    }),
     codeInspectorPlugin({
       bundler: "vite",
       hotKeys: ["altKey"],

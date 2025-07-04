@@ -20,10 +20,12 @@ export interface ChatMessage {
 interface AIChatMessageProps {
   message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>
   onEdit?: (messageId: string) => void
+  streaming?: boolean
 }
 
-export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
+export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
   const { regenerate } = React.use(AIChatContext)
+  const messageId = message.id
   const [isHovered, setIsHovered] = React.useState(false)
 
   const handleCopy = React.useCallback(async () => {
@@ -43,8 +45,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
   }, [message])
 
   const handleRetry = React.useCallback(() => {
-    regenerate({ messageId: message.id })
-  }, [regenerate, message.id])
+    regenerate({ messageId })
+  }, [regenerate, messageId])
 
   return (
     <m.div
@@ -140,7 +142,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
       </div>
     </m.div>
   )
-}
+})
 
 // Typing indicator component
 export const AIChatTypingIndicator: React.FC = () => {

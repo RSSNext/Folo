@@ -98,6 +98,9 @@ export const AIChatInput = ({
         value={value}
         onChange={handleChange}
         onKeyPress={handleKeyPress}
+        onFocus={() => {
+          setIsEmpty(!textareaRef.current?.value)
+        }}
         placeholder={placeholder}
         disabled={disabled}
         className={cn(

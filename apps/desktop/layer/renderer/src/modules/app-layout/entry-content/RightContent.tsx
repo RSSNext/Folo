@@ -69,7 +69,7 @@ const Grid = ({ entryId }) => {
   const handleAIChatPanelClose = useRef(() => setAIChatPinned(false)).current
 
   return (
-    <AIChatRoot wrapFocusable={false}>
+    <AIChatRoot wrapFocusable={false} roomId={"entry-ai"}>
       <div
         className={clsx(
           aiPinned && "grid grid-cols-[1fr_400px]",

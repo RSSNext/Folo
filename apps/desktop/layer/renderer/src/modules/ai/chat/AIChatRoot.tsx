@@ -66,33 +66,6 @@ export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true
   const inputRef = useRef<HTMLTextAreaElement>(null!)
   const refsContext = useMemo<AIPanelRefs>(() => ({ panelRef, inputRef }), [panelRef, inputRef])
 
-  // const hasScope = useGlobalFocusableHasScope(HotkeyScope.AIChat)
-  // const autoFocusOnceRef = useRef(false)
-
-  // useEffect(() => {
-  //   if (hasScope && inputRef.current && !autoFocusOnceRef.current) {
-  //     inputRef.current.focus()
-  //     autoFocusOnceRef.current = true
-  //   }
-  // }, [hasScope])
-
-  // useEffect(() => {
-  //   // When page go to background or blur, reset once Ref
-  //   const handler = () => {
-  //     if (autoFocusOnceRef.current) {
-  //       autoFocusOnceRef.current = false
-  //     }
-  //   }
-
-  //   window.addEventListener("focus", handler)
-  //   window.addEventListener("blur", handler)
-
-  //   return () => {
-  //     window.removeEventListener("focus", handler)
-  //     window.removeEventListener("blur", handler)
-  //   }
-  // }, [])
-
   const Element = (
     <AIChatContext value={ctx}>
       <AIPanelRefsContext value={refsContext}>

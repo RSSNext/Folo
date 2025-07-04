@@ -1,7 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { ActionSettings } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared/language"
-import type { UIDataTypes, UIMessage } from "ai"
+import type { UIMessage } from "ai"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
@@ -176,7 +176,7 @@ export const aiChatMessagesTable = sqliteTable(
       .integer("created_at", { mode: "timestamp_ms" })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
-    message: t.blob("message", { mode: "json" }).$type<UIMessage<unknown, UIDataTypes, any>>(),
+    message: t.text("message", { mode: "json" }).$type<UIMessage<any, any, any>>().notNull(),
   }),
-  (t) => [uniqueIndex("unq").on(t.roomId, t.id)],
+  (t) => [uniqueIndex("ai_chat_messages_unq").on(t.roomId, t.id)],
 )

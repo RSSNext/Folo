@@ -144,14 +144,14 @@ export const useDialog = (): DialogInstance => {
           confirmClassName: "",
         },
         warning: {
-          icon: <i className="i-mingcute-warning-fill size-5 text-yellow-500" />,
+          icon: <i className="i-mingcute-warning-fill text-yellow size-5" />,
           confirmVariant: "primary" as const,
-          confirmClassName: "bg-yellow-600 hover:bg-yellow-700",
+          confirmClassName: "bg-yellow-500",
         },
         danger: {
-          icon: <i className="i-mingcute-warning-fill size-5 text-red-500" />,
+          icon: <i className="i-mingcute-warning-fill text-red size-5" />,
           confirmVariant: "primary" as const,
-          confirmClassName: "bg-red-600 hover:bg-red-700",
+          confirmClassName: "bg-red-500",
         },
       }
 
