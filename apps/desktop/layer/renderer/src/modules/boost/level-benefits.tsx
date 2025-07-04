@@ -61,7 +61,7 @@ const BoostLevel = ({
   return (
     <li>
       <div className="flex flex-col">
-        <h3 className="text-theme-accent flex items-center gap-2 text-xl font-semibold">
+        <h3 className="text-accent flex items-center gap-2 text-xl font-semibold">
           <span className="grow border-t border-gray-300 dark:border-gray-700" />
           <span>Lv. {level}</span>
           <span className="grow border-t border-gray-300 dark:border-gray-700" />

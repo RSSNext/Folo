@@ -45,17 +45,17 @@ export function BehaviorGuide() {
           }}
         >
           <RadioCard
-            wrapperClassName="has-[:checked]:bg-theme-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
+            wrapperClassName="has-[:checked]:bg-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
             label={t("new_user_guide.step.behavior.unread_question.option1")}
             value="radical"
           />
           <RadioCard
-            wrapperClassName="has-[:checked]:bg-theme-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
+            wrapperClassName="has-[:checked]:bg-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
             label={t("new_user_guide.step.behavior.unread_question.option2")}
             value="balanced"
           />
           <RadioCard
-            wrapperClassName="has-[:checked]:bg-theme-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
+            wrapperClassName="has-[:checked]:bg-accent has-[:checked]:font-normal rounded-lg border p-3 transition-colors has-[:checked]:text-white"
             label={t("new_user_guide.step.behavior.unread_question.option3")}
             value="conservative"
           />
