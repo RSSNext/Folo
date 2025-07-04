@@ -1,11 +1,14 @@
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
 import { views } from "@follow/constants"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { useState } from "react"
+import { useMemo, useRef, useState } from "react"
+import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
+import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -13,10 +16,10 @@ import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
+import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
+import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-content/ai"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
-
-import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
 
 export const RightContent = () => {
   const { entryId } = useParams()
@@ -27,9 +30,6 @@ export const RightContent = () => {
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
   const wideMode = !!(settingWideMode && realEntryId)
-  const feedColumnTempShow = useTimelineColumnTempShow()
-  const feedColumnShow = useTimelineColumnShow()
-  const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   if (!showEntryContent) {
     return null
@@ -44,22 +44,72 @@ export const RightContent = () => {
             onClick={() => navigate({ entryId: null })}
           />
         )}
-        {realEntryId ? (
-          <EntryContent
-            entryId={realEntryId}
-            classNames={{
-              header: shouldHeaderPaddingLeft
-                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
-                : wideMode
-                  ? "ml-12"
-                  : "",
-            }}
-          />
-        ) : !settingWideMode ? (
-          <EntryContentPlaceholder />
-        ) : null}
+        {realEntryId ? <Grid entryId={realEntryId} /> : null}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
+  )
+}
+
+const Grid = ({ entryId }) => {
+  const settingWideMode = useRealInWideMode()
+
+  const wideMode = !!(settingWideMode && entryId)
+  const feedColumnTempShow = useTimelineColumnTempShow()
+  const feedColumnShow = useTimelineColumnShow()
+  const aiPinned = useAIChatPinned()
+  const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
+
+  const { isDragging, position, separatorProps, separatorCursor } = useResizable({
+    axis: "x",
+    min: 300,
+    max: 500,
+    initial: 400,
+    reverse: true,
+  })
+  const handleAIChatPanelClose = useRef(() => setAIChatPinned(false)).current
+
+  return (
+    <AIChatRoot wrapFocusable={false} roomId={"entry-ai"}>
+      <div
+        className={clsx(
+          aiPinned && "grid grid-cols-[1fr_400px]",
+          "flex min-h-0 grow flex-col overflow-hidden",
+        )}
+        style={{
+          gridTemplateColumns: `1fr ${position}px`,
+        }}
+      >
+        <div className="flex min-h-0 grow flex-col overflow-hidden">
+          <EntryContent
+            entryId={entryId}
+            classNames={useMemo(() => {
+              return {
+                header: shouldHeaderPaddingLeft
+                  ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
+                  : wideMode
+                    ? "ml-12"
+                    : "",
+              }
+            }, [shouldHeaderPaddingLeft, wideMode])}
+          />
+        </div>
+        {aiPinned && (
+          <div className="relative flex min-h-0 grow flex-col border-l">
+            <PanelSplitter
+              className="absolute inset-y-0 left-0"
+              isDragging={isDragging}
+              cursor={separatorCursor}
+              {...separatorProps}
+            />
+            <AIChatPanelContainer
+              className="absolute inset-0"
+              entryId={entryId}
+              onClose={handleAIChatPanelClose}
+            />
+          </div>
+        )}
+      </div>
+    </AIChatRoot>
   )
 }
 

@@ -15,6 +15,8 @@ import { FeedNotFound } from "~/components/errors/FeedNotFound"
 import { FEED_COLLECTION_LIST, HotkeyScope, ROUTE_FEED_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { AIChatInput } from "~/modules/ai/chat/AIChatInput"
+import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 import { useFeedQuery } from "~/queries/feed"
 import { useFeedHeaderTitle } from "~/store/feed/hooks"
 
@@ -169,6 +171,11 @@ function EntryColumnImpl() {
           />
         )}
       </EntryColumnWrapper>
+      {views[view]!.wideMode && (
+        <div className="sticky bottom-4 px-10">
+          <WideModeAIChatInput />
+        </div>
+      )}
     </Focusable>
   )
 }
@@ -196,6 +203,15 @@ const AddFeedHelper = () => {
   if (feedQuery.error && feedQuery.error.statusCode === 404) {
     throw new FeedNotFound()
   }
+}
+
+// Component for wide mode AI chat input with context
+const WideModeAIChatInput = () => {
+  return (
+    <AIChatRoot>
+      <AIChatInput autoShrink />
+    </AIChatRoot>
+  )
 }
 
 export const EntryColumn = memo(EntryColumnImpl)

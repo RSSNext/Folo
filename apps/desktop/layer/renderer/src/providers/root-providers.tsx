@@ -15,7 +15,6 @@ import { jotaiStore } from "~/lib/jotai"
 import { persistConfig, queryClient } from "~/lib/query-client"
 import { FollowCommandManager } from "~/modules/command/command-manager"
 
-import { FocusableGuardProvider } from "./global-focusable-provider"
 import { HotkeyProvider } from "./hotkey-provider"
 import { I18nProvider } from "./i18n-provider"
 import { InvalidateQueryProvider } from "./invalidate-query-provider"
@@ -63,7 +62,7 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                   <LazyReloadPrompt />
                   {!IN_ELECTRON && <LazyPWAPrompt />}
                 </Suspense>
-                <FocusableGuardProvider />
+                {/* <FocusableGuardProvider /> */}
               </ModalStackProvider>
             </I18nProvider>
           </HotkeyProvider>
