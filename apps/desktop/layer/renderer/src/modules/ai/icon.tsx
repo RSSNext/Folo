@@ -5,7 +5,7 @@ import aiIconUrl from "~/assets/ai.splinecode?url"
 
 const resolvedAIIconUrl = new URL(aiIconUrl, import.meta.url).href
 
-export const AIIcon = ({ className }: { className?: string }) => {
+export const AISpline = ({ className }: { className?: string }) => {
   function handleLoad(app) {
     const obj = app.findObjectByName("Mesh")
     if (!obj) return

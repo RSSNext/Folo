@@ -4,7 +4,7 @@ import { clsx, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -66,6 +66,8 @@ const Grid = ({ entryId }) => {
     initial: 400,
     reverse: true,
   })
+  const handleAIChatPanelClose = useRef(() => setAIChatPinned(false)).current
+
   return (
     <AIChatRoot wrapFocusable={false}>
       <div
@@ -80,13 +82,15 @@ const Grid = ({ entryId }) => {
         <div className="flex min-h-0 grow flex-col overflow-hidden">
           <EntryContent
             entryId={entryId}
-            classNames={{
-              header: shouldHeaderPaddingLeft
-                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
-                : wideMode
-                  ? "ml-12"
-                  : "",
-            }}
+            classNames={useMemo(() => {
+              return {
+                header: shouldHeaderPaddingLeft
+                  ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
+                  : wideMode
+                    ? "ml-12"
+                    : "",
+              }
+            }, [shouldHeaderPaddingLeft, wideMode])}
           />
         </div>
         {aiPinned && (
@@ -100,9 +104,7 @@ const Grid = ({ entryId }) => {
             <AIChatPanelContainer
               className="absolute inset-0"
               entryId={entryId}
-              onClose={() => {
-                setAIChatPinned(false)
-              }}
+              onClose={handleAIChatPanelClose}
             />
           </div>
         )}

@@ -1,4 +1,5 @@
 import { produce } from "immer"
+import { nanoid } from "nanoid"
 import { createWithEqualityFn } from "zustand/traditional"
 
 import type { AIChatContextBlock, AIChatContextInfo } from "./types"
@@ -45,8 +46,6 @@ export const createAIChatContextStore = (initialState?: Partial<AIChatContextInf
     selectedText: initialState?.selectedText,
   }
 
-  const generateId = () => Math.random().toString(36).slice(2, 15)
-
   return createWithEqualityFn<AiChatContextStore>((set, get) => ({
     state,
     blocks: defaultBlocks,
@@ -85,7 +84,7 @@ export const createAIChatContextStore = (initialState?: Partial<AIChatContextInf
 
       set(
         produce((s) => {
-          s.blocks.push({ ...block, id: generateId() })
+          s.blocks.push({ ...block, id: nanoid(8) })
         }),
       )
 
@@ -95,7 +94,7 @@ export const createAIChatContextStore = (initialState?: Partial<AIChatContextInf
 
     removeBlock: (id: string) => {
       set(
-        produce((s) => {
+        produce((s: AiChatContextStore) => {
           s.blocks = s.blocks.filter((block) => block.id !== id)
         }),
       )
@@ -106,7 +105,7 @@ export const createAIChatContextStore = (initialState?: Partial<AIChatContextInf
 
     updateBlock: (id: string, updates: Partial<AIChatContextBlock>) => {
       set(
-        produce((s) => {
+        produce((s: AiChatContextStore) => {
           s.blocks = s.blocks.map((block) => (block.id === id ? { ...block, ...updates } : block))
         }),
       )
@@ -117,7 +116,7 @@ export const createAIChatContextStore = (initialState?: Partial<AIChatContextInf
 
     clearBlocks: () => {
       set(
-        produce((s) => {
+        produce((s: AiChatContextStore) => {
           s.blocks = defaultBlocks
         }),
       )

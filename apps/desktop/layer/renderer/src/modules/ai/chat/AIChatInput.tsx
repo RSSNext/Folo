@@ -2,7 +2,7 @@ import { TextArea } from "@follow/components/ui/input/TextArea.js"
 import { cn } from "@follow/utils"
 import { use, useState } from "react"
 
-import { AIIcon } from "../icon"
+import { AISpline } from "../icon"
 import { AIPanelRefsContext } from "./__internal__/AIChatContext"
 import { AIChatShortcuts } from "./AIShortcuts"
 
@@ -34,7 +34,7 @@ export const AIChatInput = ({
     <div className="relative flex w-full flex-row gap-2">
       {!hideIcon && (
         <div className="center h-14">
-          <AIIcon />
+          <AISpline />
         </div>
       )}
       <div className="flex min-w-0 grow flex-col gap-2">

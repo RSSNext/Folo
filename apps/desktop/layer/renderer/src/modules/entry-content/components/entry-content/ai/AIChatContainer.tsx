@@ -3,8 +3,10 @@ import { cn, nextFrame } from "@follow/utils"
 import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AISpline } from "~/modules/ai/icon"
 
-import { AIChatBottom } from "./AIChatInput"
+import { AIChatBottom } from "./AIChatBottom"
+import { AIChatInput } from "./AIChatInput"
 import { AIChatMessage, AIChatTypingIndicator } from "./AIChatMessage"
 import { useAutoScroll } from "./useAutoScroll"
 
@@ -19,9 +21,7 @@ const Welcome: React.FC = () => {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="max-w-md space-y-6 text-center">
-        <div className="from-accent mx-auto flex size-16 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
-          <i className="i-mgc-ai-cute-re size-8 text-white" />
-        </div>
+        <AISpline className="mx-auto size-16" />
 
         <div>
           <h2 className="text-text mb-2 text-xl font-semibold">Welcome to {APP_NAME} AI</h2>
@@ -116,11 +116,13 @@ export const AIChatContainer: React.FC<AIChatContainerProps> = React.memo(
 
           {/* Input area */}
           <div className="border-border pb-safe shrink-0 border-t">
-            <AIChatBottom
-              onSend={handleSendMessage}
-              disabled={disabled}
-              placeholder={showWelcome ? "What are your thoughts?" : "Ask me anything..."}
-            />
+            <AIChatBottom>
+              <AIChatInput
+                onSend={handleSendMessage}
+                disabled={disabled}
+                placeholder={showWelcome ? "What are your thoughts?" : "Ask me anything..."}
+              />
+            </AIChatBottom>
           </div>
         </div>
       </>

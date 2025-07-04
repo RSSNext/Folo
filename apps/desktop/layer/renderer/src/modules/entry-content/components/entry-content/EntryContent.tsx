@@ -16,7 +16,7 @@ import { ErrorBoundary } from "@sentry/react"
 import type { JSAnimation, Variants } from "motion/react"
 import { m, useAnimationControls } from "motion/react"
 import * as React from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
@@ -57,7 +57,7 @@ const pageMotionVariants = {
   exit: { opacity: 0, y: 25, transition: { duration: 0 } },
 } satisfies Variants
 
-export const EntryContent: Component<EntryContentProps> = ({
+const EntryContentImpl: Component<EntryContentProps> = ({
   entryId,
   noMedia,
   className,
@@ -80,15 +80,11 @@ export const EntryContent: Component<EntryContentProps> = ({
   const { error, content, isPending } = useEntryContent(entryId)
 
   const view = useRouteParamsSelector((route) => route.view)
-
   const scrollerRef = useRef<HTMLDivElement | null>(null)
-
   const safeUrl = useFeedSafeUrl(entryId)
-
   const customCSS = useUISettingKey("customCSS")
 
   const isInPeekModal = useInPeekModal()
-
   const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
@@ -238,6 +234,7 @@ export const EntryContent: Component<EntryContentProps> = ({
     </>
   )
 }
+export const EntryContent = memo(EntryContentImpl)
 
 const EntryScrollArea: Component<{
   scrollerRef: React.RefObject<HTMLDivElement | null>

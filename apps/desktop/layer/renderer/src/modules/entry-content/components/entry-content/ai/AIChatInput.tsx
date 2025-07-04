@@ -5,8 +5,6 @@ import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 
-import { AIChatContextBar } from "./AIChatContextBar"
-
 interface AIChatInputProps {
   value?: string
   onChange?: (value: string) => void
@@ -18,34 +16,7 @@ interface AIChatInputProps {
 const minHeight = 120
 const maxHeight = 200
 
-export const AIChatBottom: React.FC<AIChatInputProps> = ({
-  value,
-  onChange,
-
-  onSend,
-  placeholder = "Ask me anything about your feeds, or describe a task...",
-  disabled = false,
-}) => {
-  return (
-    <div className="bg-background relative overflow-hidden">
-      {/* Context Bar */}
-      <div className="border-border border-b">
-        <AIChatContextBar />
-      </div>
-
-      {/* Input Container */}
-      <AIChatInputContainer
-        value={value}
-        onChange={onChange}
-        onSend={onSend}
-        placeholder={placeholder}
-        disabled={disabled}
-      />
-    </div>
-  )
-}
-
-const AIChatInputContainer = ({
+export const AIChatInput = ({
   value,
   onChange,
   onSend,

@@ -1,8 +1,10 @@
 import { Chat, useChat } from "@ai-sdk/react"
 import { env } from "@follow/shared/env.desktop"
+import type { UIDataTypes, UIMessage } from "ai"
 import { DefaultChatTransport } from "ai"
 import type { FC, PropsWithChildren } from "react"
 import { useMemo, useRef } from "react"
+import { toast } from "sonner"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
@@ -14,30 +16,39 @@ import {
   AIPanelRefsContext,
 } from "./__internal__/AIChatContext"
 import { createAIChatContextStore } from "./__internal__/store"
+import type { BizUIMetadata, BizUITools } from "./__internal__/types"
 
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean
+
+  roomId: string
 }
 
-export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true }) => {
+export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true, roomId }) => {
   const useAiContextStore = useMemo(createAIChatContextStore, [])
 
-  const ctx = useChat({
+  const ctx = useChat<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>({
     onError: (error) => {
-      console.warn(error)
+      toast.error(error.message)
+      console.error(error)
     },
 
     chat: useMemo(
       () =>
         new Chat({
+          id: roomId,
           transport: new DefaultChatTransport({
             api: `${env.VITE_API_URL}/ai/chat`,
             credentials: "include",
             fetch: (url, options) => {
               try {
+                const state = useAiContextStore.getState()
+                state.syncBlocksToContext()
+
                 options.body = JSON.stringify({
                   ...JSON.parse(options.body),
-                  context: useAiContextStore.getState().state,
+                  context: state.state,
+                  blocks: state.blocks,
                 })
               } catch (error) {
                 console.error(error)
@@ -47,7 +58,7 @@ export const AIChatRoot: FC<AIChatRootProps> = ({ children, wrapFocusable = true
             },
           }),
         }),
-      [useAiContextStore],
+      [useAiContextStore, roomId],
     ),
   })
 

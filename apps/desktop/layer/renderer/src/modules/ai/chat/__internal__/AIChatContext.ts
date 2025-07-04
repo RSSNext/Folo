@@ -5,10 +5,10 @@ import type { StoreApi } from "zustand"
 import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
 
 import type { AiChatContextStore } from "./store"
-import type { BizUITools } from "./types"
+import type { BizUIMetadata, BizUITools } from "./types"
 
 export const AIChatContext = createContext<
-  UseChatHelpers<UIMessage<unknown, UIDataTypes, BizUITools>>
+  UseChatHelpers<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>
 >(null!)
 
 export type AIPanelRefs = {

@@ -1,3 +1,4 @@
+import { useIsDark } from "@follow/hooks"
 import { cn } from "@follow/utils"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 
@@ -6,88 +7,91 @@ import { usePreviewMedia } from "~/components/ui/media/hooks"
 interface MermaidDiagramProps {
   code: string
   className?: string
-  delayRender?: number
+
+  shouldRender?: boolean
 }
 
-export const MermaidDiagram = memo<MermaidDiagramProps>(
-  ({ code, className, delayRender = 500 }) => {
-    const containerRef = useRef<HTMLDivElement>(null)
-    const [error, setError] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+export const MermaidDiagram = memo<MermaidDiagramProps>(({ code, className, shouldRender }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-    const [imageUrl, setImageUrl] = useState<string>("")
-    const previewMedia = usePreviewMedia()
+  const [imageUrl, setImageUrl] = useState<string>("")
+  const previewMedia = usePreviewMedia()
 
-    const handleImagePreview = useCallback(() => {
-      if (imageUrl) {
-        previewMedia([{ url: imageUrl, type: "photo" }])
-      }
-    }, [imageUrl, previewMedia])
+  const handleImagePreview = useCallback(() => {
+    if (imageUrl) {
+      previewMedia([{ url: imageUrl, type: "photo" }])
+    }
+  }, [imageUrl, previewMedia])
 
-    useEffect(() => {
-      let mounted = true
+  const isDark = useIsDark()
+  useEffect(() => {
+    if (!shouldRender) return
 
-      const renderDiagram = async () => {
-        if (!code.trim()) return
+    let mounted = true
 
-        try {
-          setIsLoading(true)
-          setError(null)
+    const renderDiagram = async () => {
+      if (!code.trim()) return
 
-          // Dynamic import to avoid loading Mermaid on the main thread
-          const mermaid = await import("mermaid").then((m) => m.default)
+      try {
+        setIsLoading(true)
+        setError(null)
 
-          // Initialize mermaid with better spacing configuration
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: "default",
-            securityLevel: "loose", // Allow HTML in diagrams
-            fontFamily: "system-ui, sans-serif",
-            flowchart: {
-              htmlLabels: true,
-              curve: "basis",
-              nodeSpacing: 50,
-              rankSpacing: 80,
-              padding: 20,
-            },
-            themeVariables: {
-              primaryColor: "#f0f0f0",
-              primaryTextColor: "#333",
-              primaryBorderColor: "#ccc",
-              lineColor: "#666",
-              background: "#fff",
-              secondaryColor: "#f9f9f9",
-              tertiaryColor: "#fafafa",
-            },
-          })
+        // Dynamic import to avoid loading Mermaid on the main thread
+        const mermaid = await import("mermaid").then((m) => m.default)
 
-          // Generate unique ID for this diagram
-          const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+        // Initialize mermaid with better spacing configuration
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: isDark ? "dark" : "default",
+          securityLevel: "loose", // Allow HTML in diagrams
+          fontFamily: "system-ui, sans-serif",
+          flowchart: {
+            htmlLabels: true,
+            curve: "basis",
+            nodeSpacing: 50,
+            rankSpacing: 80,
+            padding: 20,
+          },
+          themeVariables: {
+            primaryColor: "#f0f0f0",
+            primaryTextColor: "#333",
+            primaryBorderColor: "#ccc",
+            lineColor: "#666",
+            background: "#fff",
+            secondaryColor: "#f9f9f9",
+            tertiaryColor: "#fafafa",
+          },
+        })
 
-          if (!mounted) return
+        // Generate unique ID for this diagram
+        const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 
-          // Render the diagram
-          const { svg } = await mermaid.render(id, code)
+        if (!mounted) return
 
-          if (!mounted) return
+        // Render the diagram
+        const { svg } = await mermaid.render(id, code)
 
-          if (containerRef.current) {
-            containerRef.current.innerHTML = svg
+        if (!mounted) return
 
-            // Apply theme-aware styling to the SVG with better spacing
-            const svgElement = containerRef.current.querySelector("svg")
-            if (svgElement) {
-              svgElement.style.maxWidth = "100%"
-              svgElement.style.height = "auto"
-              svgElement.style.minHeight = "200px"
-              svgElement.setAttribute("class", "dark:invert-[0.87] dark:hue-rotate-180")
+        if (containerRef.current) {
+          containerRef.current.innerHTML = svg
 
-              // Add padding and spacing styles
-              svgElement.style.padding = "20px"
+          // Apply theme-aware styling to the SVG with better spacing
+          const svgElement = containerRef.current.querySelector("svg")
+          if (svgElement) {
+            svgElement.style.maxWidth = "100%"
+            svgElement.style.height = "auto"
+            svgElement.style.minHeight = "200px"
+            svgElement.setAttribute("class", "dark:invert-[0.87] dark:hue-rotate-180")
 
-              // Adjust node spacing through CSS
-              const style = document.createElement("style")
-              style.textContent = `
+            // Add padding and spacing styles
+            svgElement.style.padding = "20px"
+
+            // Adjust node spacing through CSS
+            const style = document.createElement("style")
+            style.textContent = `
                 .node {
                   margin: 10px !important;
                 }
@@ -102,95 +106,89 @@ export const MermaidDiagram = memo<MermaidDiagramProps>(
                   stroke-width: 1px !important;
                 }
               `
-              svgElement.append(style)
-            }
-          }
-
-          try {
-            const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
-            const url = URL.createObjectURL(blob)
-
-            if (mounted) {
-              setImageUrl(url)
-            }
-          } catch (imgErr) {
-            console.warn("Failed to convert SVG to image:", imgErr)
-          }
-
-          setIsLoading(false)
-        } catch (err) {
-          console.error("Mermaid rendering error:", err)
-          if (mounted) {
-            setError(err instanceof Error ? err.message : "Failed to render diagram")
-            setIsLoading(false)
+            svgElement.append(style)
           }
         }
+
+        try {
+          const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
+          const url = URL.createObjectURL(blob)
+
+          if (mounted) {
+            setImageUrl(url)
+          }
+        } catch (imgErr) {
+          console.warn("Failed to convert SVG to image:", imgErr)
+        }
+
+        setIsLoading(false)
+      } catch (err) {
+        console.error("Mermaid rendering error:", err)
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to render diagram")
+          setIsLoading(false)
+        }
       }
-
-      const timeoutId = setTimeout(() => {
-        renderDiagram()
-      }, delayRender)
-
-      return () => {
-        mounted = false
-        clearTimeout(timeoutId)
-      }
-    }, [code, delayRender])
-
-    if (error) {
-      return (
-        <div
-          className={`rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20 ${className}`}
-        >
-          <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-            <i className="i-mgc-warning-cute-re size-4" />
-            <span>Failed to render Mermaid diagram</span>
-          </div>
-          <details className="mt-2">
-            <summary className="cursor-pointer text-xs text-red-500 dark:text-red-400">
-              Show error details
-            </summary>
-            <pre className="mt-1 whitespace-pre-wrap text-xs text-red-600 dark:text-red-300">
-              {error}
-            </pre>
-          </details>
-        </div>
-      )
     }
+    renderDiagram()
+    return () => {
+      mounted = false
+    }
+  }, [code, isDark, shouldRender])
 
+  if (error) {
     return (
-      <div className={cn("bg-background relative my-4 overflow-auto rounded-lg border", className)}>
-        {!isLoading && !error && imageUrl && (
-          <div className="flex items-center justify-between border-b px-3 py-2">
-            <span className="text-text-secondary text-xs">Mermaid Diagram</span>
-            <button
-              type="button"
-              onClick={handleImagePreview}
-              className="hover:bg-fill-secondary flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
-              title="Preview diagram"
-            >
-              <i className="i-mgc-pic-cute-fi size-3" />
-              <span>Preview</span>
-            </button>
-          </div>
-        )}
-
-        <div className="flex justify-center p-6">
-          {isLoading && (
-            <div className="text-text-secondary flex items-center gap-2 text-sm">
-              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-              <span>Rendering diagram...</span>
-            </div>
-          )}
-          <div
-            ref={containerRef}
-            className="w-full text-center [&_svg]:mx-auto"
-            style={{ display: isLoading ? "none" : "block" }}
-          />
+      <div
+        className={`rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20 ${className}`}
+      >
+        <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+          <i className="i-mgc-warning-cute-re size-4" />
+          <span>Failed to render Mermaid diagram</span>
         </div>
+        <details className="mt-2">
+          <summary className="cursor-pointer text-xs text-red-500 dark:text-red-400">
+            Show error details
+          </summary>
+          <pre className="mt-1 whitespace-pre-wrap text-xs text-red-600 dark:text-red-300">
+            {error}
+          </pre>
+        </details>
       </div>
     )
-  },
-)
+  }
+
+  return (
+    <div className={cn("bg-background relative my-4 overflow-auto rounded-lg border", className)}>
+      {!isLoading && !error && imageUrl && (
+        <div className="flex items-center justify-between border-b px-3 py-2">
+          <span className="text-text-secondary text-xs">Mermaid Diagram</span>
+          <button
+            type="button"
+            onClick={handleImagePreview}
+            className="hover:bg-fill-secondary flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
+            title="Preview diagram"
+          >
+            <i className="i-mgc-pic-cute-fi size-3" />
+            <span>Preview</span>
+          </button>
+        </div>
+      )}
+
+      <div className="flex justify-center p-6">
+        {isLoading && (
+          <div className="text-text-secondary flex items-center gap-2 text-sm">
+            <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
+            <span>Rendering diagram...</span>
+          </div>
+        )}
+        <div
+          ref={containerRef}
+          className="w-full text-center [&_svg]:mx-auto"
+          style={{ display: isLoading ? "none" : "block" }}
+        />
+      </div>
+    </div>
+  )
+})
 
 MermaidDiagram.displayName = "MermaidDiagram"

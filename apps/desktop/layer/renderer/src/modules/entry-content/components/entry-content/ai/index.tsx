@@ -25,7 +25,12 @@ const AIChat: React.FC = () => {
   const { sendMessage } = React.use(AIChatContext)
   const handleSendMessage = React.useCallback(
     (message: string) => {
-      sendMessage({ text: message })
+      sendMessage({
+        text: message,
+        metadata: {
+          finishTime: new Date().toISOString(),
+        },
+      })
     },
     [sendMessage],
   )
@@ -291,7 +296,7 @@ export const AIChatPanelContainer: FC<{
   className?: string
   entryId: string
   onClose: () => void
-}> = ({ className, entryId, onClose }) => {
+}> = React.memo(({ className, entryId, onClose }) => {
   const ctxStore = useCreateEntryAIContext(entryId)
 
   return (
@@ -310,4 +315,4 @@ export const AIChatPanelContainer: FC<{
       </Focusable>
     </EntryAIContext>
   )
-}
+})

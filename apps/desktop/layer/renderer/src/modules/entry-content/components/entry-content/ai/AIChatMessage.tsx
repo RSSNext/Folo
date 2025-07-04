@@ -1,11 +1,12 @@
 import { stopPropagation } from "@follow/utils"
-import type { UIMessage } from "ai"
+import type { UIDataTypes, UIMessage } from "ai"
 import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
 import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import type { BizUIMetadata, BizUITools } from "~/modules/ai/chat/__internal__/types"
 
 import { AIMessageParts } from "./AIMessageParts"
 
@@ -17,7 +18,7 @@ export interface ChatMessage {
 }
 
 interface AIChatMessageProps {
-  message: UIMessage
+  message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>
   onEdit?: (messageId: string) => void
 }
 
@@ -90,11 +91,16 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
           >
             <AIMessageParts message={message} />
           </div>
-          {/* <div
-            className={`mt-2 text-xs ${message.role === "user" ? "text-text-secondary-dark text-right" : "text-text-tertiary"}`}
-          >
-            {message.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          </div> */}
+          {message.metadata?.finishTime && (
+            <div
+              className={`mt-2 text-xs ${message.role === "user" ? "text-text-secondary-dark text-right" : "text-text-tertiary"}`}
+            >
+              {new Date(message.metadata.finishTime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+          )}
         </div>
 
         {/* Action buttons */}
@@ -109,15 +115,6 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = ({ message }) => {
         >
           {message.role === "user" ? (
             <>
-              {/* <button
-                type="button"
-                onClick={handleEdit}
-                className="text-text-tertiary hover:bg-fill hover:text-text flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
-                title="Edit message"
-              >
-                <i className="i-mgc-edit-cute-re size-3" />
-                <span>Edit</span>
-              </button> */}
               <button
                 type="button"
                 onClick={handleRetry}

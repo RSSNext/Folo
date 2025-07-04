@@ -1,5 +1,5 @@
 import type { tools as honoTools } from "@follow/shared/hono"
-import type { Tool } from "ai"
+import type { Tool, UIDataTypes, UIMessage } from "ai"
 
 export interface AIChatContextBlock {
   id: string
@@ -34,3 +34,12 @@ type TransformTools<T> = {
 
 // Apply the transformation to the hono tools
 export type BizUITools = TransformTools<typeof honoTools>
+
+export type BizUIMetadata = {
+  startTime?: string
+  finishTime?: string
+  totalTokens?: number
+  duration?: number
+}
+
+export type BizUIMessage = UIMessage<BizUIMetadata, UIDataTypes, BizUITools>

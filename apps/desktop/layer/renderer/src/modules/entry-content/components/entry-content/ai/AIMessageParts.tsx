@@ -1,11 +1,12 @@
-import type { UIMessage } from "ai"
 import * as React from "react"
+
+import type { BizUIMessage } from "~/modules/ai/chat/__internal__/types"
 
 import { AIMarkdownMessage } from "../../../../ai/chat/AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 interface MessagePartsProps {
-  message: UIMessage
+  message: BizUIMessage
 }
 
 export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
@@ -17,6 +18,7 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
     return null
   }
   const isUser = message.role === "user"
+
   return (
     <>
       {message.parts.map((part, index) => {
@@ -26,6 +28,7 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
           case "text": {
             return (
               <AIMarkdownMessage
+                isProcessing={message.metadata?.totalTokens === undefined}
                 key={partKey}
                 text={part.text}
                 className={isUser ? "text-white" : "text-text"}

@@ -1,6 +1,7 @@
 import type { FeedViewType } from "@follow/constants"
 import type { ActionSettings } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared/language"
+import type { UIDataTypes, UIMessage } from "ai"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
@@ -153,3 +154,29 @@ export const imagesTable = sqliteTable("images", (t) => ({
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
 }))
+
+export const aiChatTable = sqliteTable("ai_chat", (t) => ({
+  roomId: t.text("room_id").notNull().primaryKey(),
+  title: t.text("title"),
+  createdAt: t
+    .integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+}))
+
+export const aiChatMessagesTable = sqliteTable(
+  "ai_chat_messages",
+  (t) => ({
+    roomId: t
+      .text("room_id")
+      .notNull()
+      .references(() => aiChatTable.roomId),
+    id: t.text("id").notNull().primaryKey(),
+    createdAt: t
+      .integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    message: t.blob("message", { mode: "json" }).$type<UIMessage<unknown, UIDataTypes, any>>(),
+  }),
+  (t) => [uniqueIndex("unq").on(t.roomId, t.id)],
+)
