@@ -12,7 +12,7 @@ export const PanelSplitter = (
     tooltip?: React.ReactNode
   },
 ) => {
-  const { isDragging, cursor, tooltip, ...rest } = props
+  const { isDragging, cursor, tooltip, className, ...rest } = props
 
   React.useEffect(() => {
     if (!isDragging) return
@@ -41,6 +41,7 @@ export const PanelSplitter = (
             className={cn(
               "active:!bg-accent absolute inset-0 z-[3] w-[2px] -translate-x-1/2 cursor-ew-resize bg-transparent hover:bg-gray-400 hover:dark:bg-neutral-500",
               isDragging ? "bg-accent" : "",
+              className,
             )}
           />
         </div>

@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMousePosition } from "@follow/components/hooks/useMouse.js"
-import { combineCleanupFunctions } from "@follow/utils"
+import { cn, combineCleanupFunctions } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
@@ -287,17 +287,18 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   )
 }
 
-export const AIChatPanelContainer: FC<{ entryId: string; onClose: () => void }> = ({
-  entryId,
-  onClose,
-}) => {
+export const AIChatPanelContainer: FC<{
+  className?: string
+  entryId: string
+  onClose: () => void
+}> = ({ className, entryId, onClose }) => {
   const ctxStore = useCreateEntryAIContext(entryId)
 
   return (
     <EntryAIContext value={ctxStore}>
       <Focusable
         scope={HotkeyScope.AIChat}
-        className="bg-background relative flex grow flex-col overflow-hidden"
+        className={cn("bg-background relative flex grow flex-col overflow-hidden", className)}
       >
         {/* Panel header */}
         <AIPanelHeader onClose={onClose} />

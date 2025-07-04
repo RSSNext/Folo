@@ -1,9 +1,11 @@
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
 import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useState } from "react"
+import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
@@ -57,6 +59,13 @@ const Grid = ({ entryId }) => {
   const aiPinned = useAIChatPinned()
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
+  const { isDragging, position, separatorProps, separatorCursor } = useResizable({
+    axis: "x",
+    min: 300,
+    max: 500,
+    initial: 400,
+    reverse: true,
+  })
   return (
     <AIChatRoot wrapFocusable={false}>
       <div
@@ -64,6 +73,9 @@ const Grid = ({ entryId }) => {
           aiPinned && "grid grid-cols-[1fr_400px]",
           "flex min-h-0 grow flex-col overflow-hidden",
         )}
+        style={{
+          gridTemplateColumns: `1fr ${position}px`,
+        }}
       >
         <div className="flex min-h-0 grow flex-col overflow-hidden">
           <EntryContent
@@ -79,7 +91,14 @@ const Grid = ({ entryId }) => {
         </div>
         {aiPinned && (
           <div className="relative flex min-h-0 grow flex-col border-l">
+            <PanelSplitter
+              className="absolute inset-y-0 left-0"
+              isDragging={isDragging}
+              cursor={separatorCursor}
+              {...separatorProps}
+            />
             <AIChatPanelContainer
+              className="absolute inset-0"
               entryId={entryId}
               onClose={() => {
                 setAIChatPinned(false)
