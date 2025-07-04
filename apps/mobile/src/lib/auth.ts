@@ -6,9 +6,12 @@ import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
+import * as FileSystem from "expo-file-system"
 import * as SecureStore from "expo-secure-store"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
+
+import { getDbPath } from "@/src/database"
 
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
@@ -82,7 +85,6 @@ export const {
   oneTimeToken,
   sendVerificationEmail,
   signIn,
-  signOut,
   signUp,
   twoFactor,
   unlinkAccount,
@@ -116,4 +118,21 @@ export function isAuthCodeValid(authCode: string) {
   return (
     authCode.length === 6 && !Array.from(authCode).some((c) => Number.isNaN(Number.parseInt(c)))
   )
+}
+
+export const signOut = async () => {
+  await authClient.signOut()
+  const dbPath = getDbPath()
+  await FileSystem.deleteAsync(dbPath)
+  await expo.reloadAppAsync("User sign out")
+}
+
+export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string }) => {
+  if (!TOTPCode) {
+    return
+  }
+  await authClient.deleteUserCustom({
+    TOTPCode,
+  })
+  await signOut()
 }
