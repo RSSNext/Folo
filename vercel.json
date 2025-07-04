@@ -111,6 +111,106 @@
     },
     {
       "source": "/share/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/terms",
+      "destination": "https://follow-external-ssr.vercel.app/terms",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "https://follow-external-ssr.vercel.app/privacy-policy",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/share/:path*",
       "destination": "https://follow-external-ssr-dev.vercel.app/share/:path*",
       "has": [
         {

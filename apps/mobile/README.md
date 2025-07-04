@@ -1,6 +1,6 @@
 # Folo Mobile App 📱
 
-This is the mobile client for [Folo](https://app.follow.is), built with [Expo](https://expo.dev). Folo organizes content into one timeline, keeping you updated on what matters, noise-free.
+This is the mobile client for [Folo](https://app.folo.is), built with [Expo](https://expo.dev). Folo organizes content into one timeline, keeping you updated on what matters, noise-free.
 
 ## Features
 
@@ -66,7 +66,7 @@ src/
 ## Need Help?
 
 - Join our [Discord](https://discord.gg/followapp)
-- Follow us on [Twitter](https://x.com/follow_app_)
+- Follow us on [Twitter](https://x.com/folo_is)
 - Contact the mobile development team
 
 ## License

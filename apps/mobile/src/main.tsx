@@ -1,4 +1,5 @@
 import "./global.css"
+import "./polyfill"
 
 import {
   apiClientSimpleContext,

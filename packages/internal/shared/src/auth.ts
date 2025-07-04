@@ -15,6 +15,10 @@ export const baseAuthPlugins = [
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "getAccountInfo" }>,
   },
   {
+    id: "deleteUserCustom",
+    $InferServerPlugin: {} as Extract<AuthPlugin, { id: "deleteUserCustom" }>,
+  },
+  {
     id: "oneTimeToken",
     $InferServerPlugin: {} as Extract<AuthPlugin, { id: "oneTimeToken" }>,
   },

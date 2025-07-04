@@ -61,9 +61,9 @@ async function purgeCloudflareCache() {
 
   const apiUrl = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache`
 
-  const manifestPath = await fetch(
-    `https://app.follow.is/assets/manifest.txt?t=${Date.now()}`,
-  ).then((res) => res.text())
+  const manifestPath = await fetch(`https://app.folo.is/assets/manifest.txt?t=${Date.now()}`).then(
+    (res) => res.text(),
+  )
 
   try {
     await fetch(apiUrl, {
@@ -79,7 +79,7 @@ async function purgeCloudflareCache() {
     console.info("Successfully purged Cloudflare cache")
   } catch {
     console.error("Failed to purge Cloudflare cache by tags, fallback to purge by files")
-    const allPath = manifestPath.split("\n").map((path) => `https://app.follow.is/${path}`)
+    const allPath = manifestPath.split("\n").map((path) => `https://app.folo.is/${path}`)
 
     // Function to delay execution
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

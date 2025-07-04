@@ -30,8 +30,8 @@ export const createBuildSafeHeaders =
     }
 
     if (
-      (headers.Referer && headers.Referer !== "app://follow.is") ||
-      (headers.Origin && headers.Origin !== "app://follow.is")
+      (headers.Referer && headers.Referer !== "app://folo.is") ||
+      (headers.Origin && headers.Origin !== "app://folo.is")
     ) {
       return headers
     }

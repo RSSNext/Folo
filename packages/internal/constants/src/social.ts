@@ -12,6 +12,6 @@ export const SocialMediaLinks = [
   {
     iconClassName: "i-mgc-social-x-cute-re text-[#000000] dark:text-[#ffffff]",
     label: "X",
-    url: "https://x.com/intent/follow?screen_name=follow_app_",
+    url: "https://x.com/intent/follow?screen_name=folo_is",
   },
 ]

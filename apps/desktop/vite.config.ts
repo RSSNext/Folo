@@ -37,9 +37,7 @@ const devPrint = (): PluginOption => ({
     server.printUrls = () => {
       _printUrls()
       console.info(
-        `  ${green("➜")}  ${dim("Production debug")}: ${cyan(
-          "https://app.follow.is/__debug_proxy",
-        )}`,
+        `  ${green("➜")}  ${dim("Production debug")}: ${cyan("https://app.folo.is/__debug_proxy")}`,
       )
       console.info(
         `  ${green("➜")}  ${dim("Development debug")}: ${cyan(
@@ -313,7 +311,7 @@ function checkBrowserSupport() {
       "Folo is not compatible with your browser because your browser version is too old. You can download and use the Folo app or continue using it with the latest browser.",
     )
 
-    window.location.href = "https://follow.is/download"
+    window.location.href = "https://folo.is/download"
   }
 }
 

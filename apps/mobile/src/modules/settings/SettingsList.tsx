@@ -1,7 +1,6 @@
 import { UserRole } from "@follow/constants"
 import type { ServerConfigs } from "@follow/models/types"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
-import * as FileSystem from "expo-file-system"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
@@ -14,7 +13,6 @@ import {
   GroupedInsetListNavigationLink,
   GroupedInsetListNavigationLinkIcon,
 } from "@/src/components/ui/grouped/GroupedList"
-import { getDbPath } from "@/src/database"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
@@ -180,11 +178,7 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
           text: "Sign out",
           style: "destructive",
           onPress: async () => {
-            // sign out
             await signOut()
-            const dbPath = getDbPath()
-            await FileSystem.deleteAsync(dbPath)
-            await expo.reloadAppAsync("User sign out")
           },
         },
       ])
