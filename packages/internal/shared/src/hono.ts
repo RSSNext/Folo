@@ -19498,6 +19498,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
                     excludePrivate?: boolean | undefined;
                     startTime?: number | undefined;
                     endTime?: number | undefined;
+                    insertedBefore?: number | undefined;
                 };
             };
             output: {

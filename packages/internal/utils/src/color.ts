@@ -258,3 +258,57 @@ export const shadeColor = (color: string, percent: number): string => {
 
   return `#${RR}${GG}${BB}`
 }
+export function hexToHslString(hex: string): string {
+  let raw = hex.replace(/^#/, "")
+
+  if (raw.length === 3) {
+    raw = raw
+      .split("")
+      .map((ch) => ch + ch)
+      .join("")
+  }
+  if (!/^[0-9a-f]{6}$/i.test(raw)) {
+    throw new Error(`非法 hex 颜色值: ${hex}`)
+  }
+
+  const r = Number.parseInt(raw.slice(0, 2), 16) / 255
+  const g = Number.parseInt(raw.slice(2, 4), 16) / 255
+  const b = Number.parseInt(raw.slice(4, 6), 16) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const delta = max - min
+
+  const l = (max + min) / 2
+
+  let s = 0
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1))
+  }
+
+  let h = 0
+  if (delta !== 0) {
+    switch (max) {
+      case r: {
+        h = ((g - b) / delta) % 6
+        break
+      }
+      case g: {
+        h = (b - r) / delta + 2
+        break
+      }
+      case b: {
+        h = (r - g) / delta + 4
+        break
+      }
+    }
+    h *= 60
+    if (h < 0) h += 360
+  }
+
+  const hStr = h.toFixed(1)
+  const sStr = `${Math.round(s * 100)}%`
+  const lStr = `${Math.round(l * 100)}%`
+
+  return `${hStr} ${sStr} ${lStr}`
+}

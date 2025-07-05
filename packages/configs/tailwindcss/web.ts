@@ -51,24 +51,9 @@ const twConfig = {
         background: "hsl(var(--background) / <alpha-value>)",
 
         accent: "hsl(var(--fo-a) / <alpha-value>)",
+        folo: "#FF5C00",
 
         theme: {
-          // https://uicolors.app/create
-          accent: {
-            DEFAULT: "hsl(var(--fo-a) / <alpha-value>)",
-            "50": "#fff8ed",
-            "100": "#ffeed4",
-            "200": "#ffdaa8",
-            "300": "#ffbe70",
-            "400": "#ff9737",
-            "500": "#ff760a",
-            "600": "#f05d06",
-            "700": "#c74507",
-            "800": "#9e360e",
-            "900": "#7f2f0f",
-            "950": "#451505",
-          },
-
           boxShadow: {
             "context-menu":
               "0px 0px 1px rgba(0, 0, 0, 0.4), 0px 0px 1.5px rgba(0, 0, 0, 0.3), 0px 7px 22px rgba(0, 0, 0, 0.25)",

@@ -65,6 +65,8 @@
   "actions.saveSuccess": "🎉 アクションが保存されました。",
   "actions.sidebar_title": "アクション",
   "actions.title": "アクション",
+  "appearance.accent_color.description": "アプリインターフェースのアクセントカラーを選択",
+  "appearance.accent_color.label": "アクセントカラー",
   "appearance.code_highlight_theme.description": "コードハイライトテーマを調整",
   "appearance.code_highlight_theme.label": "コードハイライトテーマ",
   "appearance.code_highlighting.title": "コードハイライト",

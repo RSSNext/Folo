@@ -68,6 +68,8 @@
   "actions.saveSuccess": "🎉 规则已保存",
   "actions.sidebar_title": "自动化",
   "actions.title": "自动化",
+  "appearance.accent_color.description": "选择应用界面的强调色",
+  "appearance.accent_color.label": "强调色",
   "appearance.code_highlight_theme.description": "调整代码高亮主题",
   "appearance.code_highlight_theme.label": "代码高亮主题",
   "appearance.code_highlighting.title": "代码高亮",

@@ -4,6 +4,8 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useIsDark, useThemeAtomValue } from "@follow/hooks"
 import { ELECTRON_BUILD, IN_ELECTRON } from "@follow/shared/constants"
+import { getAccentColorValue } from "@follow/shared/settings/constants"
+import type { AccentColor } from "@follow/shared/settings/interface"
 import { capitalizeFirstLetter, getOS } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { useForceUpdate } from "motion/react"
@@ -58,6 +60,7 @@ export const SettingAppearance = () => {
 
           // Top Level - Most Common
           AppThemeSegment,
+          AccentColorSelector,
           GlobalFontSize,
           UIFontSelector,
           ContentLineHeight,
@@ -554,6 +557,69 @@ const CustomizeToolbar = () => {
         }}
         buttonText={t("appearance.customize_toolbar.label")}
       />
+    </SettingItemGroup>
+  )
+}
+
+const ACCENT_COLORS: AccentColor[] = [
+  "orange",
+  "blue",
+  "green",
+  "purple",
+  "pink",
+  "red",
+  "yellow",
+  "gray",
+]
+
+const AccentColorSelector = () => {
+  const { t } = useTranslation("settings")
+  const accentColor = useUISettingKey("accentColor")
+
+  return (
+    <SettingItemGroup>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="shrink-0 text-sm font-medium">{t("appearance.accent_color.label")}</span>
+        <div className="flex items-center gap-3 pr-1">
+          {ACCENT_COLORS.map((color) => {
+            const isSelected = accentColor === color
+            const colorValue = getAccentColorValue(color)
+
+            return (
+              <button
+                key={color}
+                type="button"
+                className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
+                onClick={() => setUISetting("accentColor", color)}
+                style={{
+                  backgroundColor: colorValue,
+                }}
+              >
+                {/* Selection ring */}
+                {isSelected && (
+                  <div
+                    className="absolute inset-0 rounded-full ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                    style={
+                      {
+                        "--tw-ring-color": colorValue,
+                      } as React.CSSProperties
+                    }
+                  />
+                )}
+
+                {/* Checkmark for selected color */}
+                {isSelected && (
+                  <i className="i-mingcute-check-line text-sm text-white drop-shadow-sm" />
+                )}
+
+                {/* Hover effect */}
+                <div className="absolute inset-0 rounded-full bg-white opacity-0 transition-opacity duration-200 group-hover:opacity-20" />
+              </button>
+            )
+          })}
+        </div>
+      </div>
+      <SettingDescription>{t("appearance.accent_color.description")}</SettingDescription>
     </SettingItemGroup>
   )
 }

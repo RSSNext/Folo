@@ -38,6 +38,7 @@ export type UseEntriesReturn = {
   isFetchingNextPage: boolean
   hasNextPage: boolean
   error: Error | null
+  fetchedTime?: number
 }
 
 export type UseEntriesControl = Pick<
