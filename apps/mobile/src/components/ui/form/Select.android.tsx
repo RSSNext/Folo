@@ -1,7 +1,8 @@
 import { cn } from "@follow/utils/utils"
+import { FlashList } from "@shopify/flash-list"
 import { useCallback, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { CheckFilledIcon } from "@/src/icons/check_filled"
@@ -121,7 +122,7 @@ export function Select<T>({
         </TouchableOpacity>
       </View>
 
-      <FlatList
+      <FlashList
         data={options}
         renderItem={renderOption}
         keyExtractor={(item) => String(item.value)}
