@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto"
 import fs from "node:fs/promises"
-import path from "node:path"
 
 import fg from "fast-glob"
+import path from "pathe"
 
 export async function calculateMainHash(mainDir: string): Promise<string> {
   // Get all TypeScript files in the main directory recursively

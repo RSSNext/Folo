@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, readdirSync, renameSync } from "node:fs"
 import { createRequire } from "node:module"
-import { resolve } from "node:path"
 
+import { resolve } from "pathe"
 import { defineConfig } from "tsdown"
 
 export default defineConfig({

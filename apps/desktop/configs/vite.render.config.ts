@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs"
-import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
+import { dirname, resolve } from "pathe"
 import { prerelease } from "semver"
 import type { UserConfig } from "vite"
 

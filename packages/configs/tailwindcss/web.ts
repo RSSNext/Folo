@@ -1,12 +1,11 @@
 /* @moduleResolution bundler */
 import "./tw-css-plugin"
 
-import path, { resolve } from "node:path"
-
 import { getIconCollections, iconsPlugin } from "@egoist/tailwindcss-icons"
 import { cleanupSVG, importDirectorySync, isEmptyColor, parseColors, runSVGO } from "@iconify/tools"
 import { compareColors, stringToColor } from "@iconify/utils/lib/colors"
 import { merge } from "es-toolkit/compat"
+import path, { resolve } from "pathe"
 import { theme } from "tailwindcss/defaultConfig"
 import type { Config } from "tailwindcss/types/config"
 import { withUIKit } from "tailwindcss-uikit-colors/src/macos/tailwind"
