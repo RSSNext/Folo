@@ -116,6 +116,7 @@ class UnreadSyncService {
       listId?: string
       feedIdList?: string[]
       inboxId?: string
+      insertedBefore?: number
     } | null
     time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
     excludePrivate: boolean

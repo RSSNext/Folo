@@ -169,6 +169,13 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
 
   const query = useEntriesQuery(props?.active ? { ...payload, ...options } : undefined)
 
+  const [fetchedTime, setFetchedTime] = useState<number>()
+  useEffect(() => {
+    if (!query.isFetching) {
+      setFetchedTime(Date.now())
+    }
+  }, [query.isFetching])
+
   const refetch = useCallback(async () => void query.refetch(), [query])
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
   const entriesIds = useMemo(() => {
@@ -200,6 +207,7 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     isFetching: query.isFetching,
     hasNextPage: query.hasNextPage,
     error: query.isError ? query.error : null,
+    fetchedTime,
   }
 }
 
