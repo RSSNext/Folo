@@ -208,6 +208,7 @@ const ImageItem = ({
           maximumZoomScale={maxZoomScale}
           onScroll={scrollHandler}
           // style={containerStyle}
+          contentContainerClassName="flex-1 items-center justify-center"
           animatedProps={scrollViewProps}
           centerContent
         >
