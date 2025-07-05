@@ -6,7 +6,6 @@
  *
  */
 
-import { Image } from "expo-image"
 import * as React from "react"
 import { useState } from "react"
 import { ActivityIndicator, StyleSheet } from "react-native"
@@ -23,6 +22,8 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated"
 import { useSafeAreaFrame } from "react-native-safe-area-context"
+
+import { Image as ProxyImage } from "@/src/components/ui/image/Image"
 
 import type { Dimensions as ImageDimensions, ImageSource, Transform } from "../../@types"
 
@@ -196,44 +197,48 @@ const ImageItem = ({
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.ScrollView
-        // @ts-ignore Something's up with the types here
-        ref={scrollViewRef}
-        pinchGestureEnabled
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        maximumZoomScale={maxZoomScale}
-        onScroll={scrollHandler}
-        style={containerStyle}
-        animatedProps={scrollViewProps}
-        centerContent
-      >
-        {showLoader && <ActivityIndicator size="small" color="#FFF" style={styles.loading} />}
-        <Animated.View style={imageCropStyle}>
-          <Animated.View style={imageStyle}>
-            <Image
-              contentFit="contain"
-              source={{ uri: imageSrc.uri }}
-              placeholderContentFit="contain"
-              placeholder={{ uri: imageSrc.thumbUri }}
-              style={{ flex: 1, borderRadius }}
-              accessibilityLabel={imageSrc.alt}
-              accessibilityHint=""
-              enableLiveTextInteraction={showControls && !scaled}
-              accessibilityIgnoresInvertColors
-              priority="high"
-              onLoad={
-                hasLoaded
-                  ? undefined
-                  : (e) => {
-                      setHasLoaded(true)
-                      onLoad({ width: e.source.width, height: e.source.height })
-                    }
-              }
-            />
+      {/* Wrap a extra view to prevent https://github.com/software-mansion/react-native-reanimated/issues/6829 */}
+      <Animated.View style={containerStyle}>
+        <Animated.ScrollView
+          // @ts-ignore Something's up with the types here
+          ref={scrollViewRef}
+          pinchGestureEnabled
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          maximumZoomScale={maxZoomScale}
+          onScroll={scrollHandler}
+          // style={containerStyle}
+          contentContainerClassName="flex-1 items-center justify-center"
+          animatedProps={scrollViewProps}
+          centerContent
+        >
+          {showLoader && <ActivityIndicator size="small" color="#FFF" style={styles.loading} />}
+          <Animated.View style={imageCropStyle}>
+            <Animated.View style={imageStyle}>
+              <ProxyImage
+                contentFit="contain"
+                source={{ uri: imageSrc.uri }}
+                placeholderContentFit="contain"
+                placeholder={{ uri: imageSrc.thumbUri }}
+                style={{ flex: 1, borderRadius, backgroundColor: "transparent" }}
+                accessibilityLabel={imageSrc.alt}
+                accessibilityHint=""
+                enableLiveTextInteraction={showControls && !scaled}
+                accessibilityIgnoresInvertColors
+                priority="high"
+                onLoad={
+                  hasLoaded
+                    ? undefined
+                    : (e) => {
+                        setHasLoaded(true)
+                        onLoad({ width: e.source.width, height: e.source.height })
+                      }
+                }
+              />
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-      </Animated.ScrollView>
+        </Animated.ScrollView>
+      </Animated.View>
     </GestureDetector>
   )
 }
