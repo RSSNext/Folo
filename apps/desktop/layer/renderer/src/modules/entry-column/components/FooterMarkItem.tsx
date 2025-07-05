@@ -4,7 +4,6 @@ import { useRouteParams } from "~/hooks/biz/useRouteParams"
 
 import { FlatMarkAllReadButton } from "./mark-all-button"
 
-
 export const FooterMarkItem = ({
   view,
   fetchedTime,
@@ -17,7 +16,7 @@ export const FooterMarkItem = ({
         insertedBefore: fetchedTime,
       }
     : undefined
-  
+
   if (useRouteParams().isCollection) {
     return null
   } else if (view === FeedViewType.SocialMedia) {
