@@ -13,6 +13,7 @@ import { getListFeedIds } from "../list/getters"
 import { getSubscribedFeedIdAndInboxHandlesByView } from "../subscription/getter"
 import type {
   FeedIdOrInboxHandle,
+  InsertedBeforeTimeRangeFilter,
   PublishAtTimeRangeFilter,
   UnreadState,
   UnreadStoreModel,
@@ -43,7 +44,7 @@ class UnreadSyncService {
     request,
   }: {
     ids: FeedIdOrInboxHandle[]
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
     request: () => Promise<UnreadStoreModel>
   }) {
     if (!ids || ids.length === 0) return
@@ -116,7 +117,7 @@ class UnreadSyncService {
       feedIdList?: string[]
       inboxId?: string
     } | null
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
     excludePrivate: boolean
   }) {
     const request = async () => {
