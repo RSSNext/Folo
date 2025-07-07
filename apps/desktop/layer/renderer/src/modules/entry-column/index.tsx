@@ -165,7 +165,13 @@ function EntryColumnImpl() {
             fetchNextPage={fetchNextPage}
             refetch={entries.refetch}
             groupCounts={groupedCounts}
-            Footer={<FooterMarkItem view={view} fetchedTime={entries.fetchedTime} />}
+            Footer={
+              isCollection ? (
+                void 0
+              ) : (
+                <FooterMarkItem view={view} fetchedTime={entries.fetchedTime} />
+              )
+            }
           />
         )}
       </EntryColumnWrapper>

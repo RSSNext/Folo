@@ -1,7 +1,5 @@
 import { FeedViewType, views } from "@follow/constants"
 
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
-
 import { FlatMarkAllReadButton } from "./mark-all-button"
 
 export const FooterMarkItem = ({
@@ -17,9 +15,7 @@ export const FooterMarkItem = ({
       }
     : undefined
 
-  if (useRouteParams().isCollection) {
-    return null
-  } else if (view === FeedViewType.SocialMedia) {
+  if (view === FeedViewType.SocialMedia) {
     return <SocialMediaFooterMarkItem filter={filter} />
   } else if (views[view]!.gridMode) {
     return <GridFooterMarkItem filter={filter} />
