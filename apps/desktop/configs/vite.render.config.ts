@@ -37,7 +37,7 @@ export const viteRenderBaseConfig = {
     format: "es",
   },
   optimizeDeps: {
-    exclude: ["sqlocal"],
+    exclude: ["sqlocal", "wa-sqlite"],
   },
   resolve: {
     alias: {
