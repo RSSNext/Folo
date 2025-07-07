@@ -1,8 +1,7 @@
 import { use } from "react"
 
 import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
-
-import { AIChatContextBar } from "./AIChatContextBar"
+import { AIChatContextBar } from "~/modules/ai/chat/AIChatContextBar"
 
 export const AIChatBottom: React.FC<{ children: React.ReactNode }> = (props) => {
   return (

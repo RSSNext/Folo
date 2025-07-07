@@ -1,10 +1,8 @@
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
-import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
-import { useWheel } from "@use-gesture/react"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -15,36 +13,31 @@ import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-content/ai"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
+import { AIChatLayout } from "../ai/AIChatLayout"
+
 export const RightContent = () => {
   const { entryId } = useParams()
-  const { view } = useRouteParams()
   const navigate = useNavigateEntry()
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
-  const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
   const wideMode = !!(settingWideMode && realEntryId)
-
-  if (!showEntryContent) {
-    return null
-  }
 
   return (
     <AppLayoutGridContainerProvider>
-      <EntryGridContainer showEntryContent={showEntryContent} wideMode={wideMode}>
+      <EntryGridContainer wideMode={wideMode}>
         {wideMode && (
           <FixedModalCloseButton
             className="no-drag-region macos:translate-y-margin-macos-traffic-light-y absolute left-4 top-4 z-10"
             onClick={() => navigate({ entryId: null })}
           />
         )}
-        {realEntryId ? <Grid entryId={realEntryId} /> : null}
+        {realEntryId ? <Grid entryId={realEntryId} /> : <AIChatLayout entryId={realEntryId} />}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
   )
@@ -115,31 +108,12 @@ const Grid = ({ entryId }) => {
 
 const EntryGridContainer: FC<
   PropsWithChildren<{
-    showEntryContent: boolean
     wideMode: boolean
   }>
-> = ({ children, showEntryContent, wideMode }) => {
-  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>()
-
-  const navigate = useNavigateEntry()
-  useWheel(
-    ({ delta: [dex] }) => {
-      if (dex < -50) {
-        navigate({ entryId: null })
-      }
-    },
-    {
-      enabled: showEntryContent && wideMode,
-      target: containerRef!,
-      eventOptions: { capture: true },
-      axis: "x",
-    },
-  )
-
+> = ({ children, wideMode }) => {
   if (wideMode) {
     return (
       <m.div
-        ref={setContainerRef}
         // slide up
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
@@ -151,10 +125,6 @@ const EntryGridContainer: FC<
       </m.div>
     )
   } else {
-    return (
-      <div ref={setContainerRef} className="flex min-w-0 flex-1 flex-col">
-        {children}
-      </div>
-    )
+    return <div className="flex min-w-0 flex-1 flex-col">{children}</div>
   }
 }

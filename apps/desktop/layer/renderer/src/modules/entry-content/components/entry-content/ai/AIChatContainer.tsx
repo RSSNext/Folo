@@ -4,14 +4,14 @@ import * as React from "react"
 
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AIChatMessage, AIChatTypingIndicator } from "~/modules/ai/chat/AIChatMessage"
+import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
 import { AISpline } from "~/modules/ai/icon"
 
 import { AIChatBottom } from "./AIChatBottom"
 import { AIChatInput } from "./AIChatInput"
-import { AIChatMessage, AIChatTypingIndicator } from "./AIChatMessage"
-import { useAutoScroll } from "./useAutoScroll"
 
 declare const APP_NAME: string
 

@@ -24,7 +24,7 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
 import type { AIChatContextBlock } from "~/modules/ai/chat/__internal__/types"
 
-export const AIChatContextBar = () => {
+export const AIChatContextBar: Component = ({ className }) => {
   const blocks = useAIChatStore()((s) => s.blocks)
   const { addBlock } = useAIChatStore()()
 
@@ -84,7 +84,7 @@ export const AIChatContextBar = () => {
   )
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 py-3">
+    <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
       {/* Add Context Button */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

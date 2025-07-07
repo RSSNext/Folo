@@ -2,7 +2,7 @@ import * as React from "react"
 
 import type { BizUIMessage } from "~/modules/ai/chat/__internal__/types"
 
-import { AIMarkdownMessage } from "../../../../ai/chat/AIMarkdownMessage"
+import { AIMarkdownMessage } from "./AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 interface MessagePartsProps {
