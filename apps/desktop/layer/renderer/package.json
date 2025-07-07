@@ -39,6 +39,7 @@
     "@radix-ui/react-slot": "1.2.3",
     "@sentry/react": "9.35.0",
     "@shikijs/transformers": "3.7.0",
+    "@splinetool/react-spline": "4.0.0",
     "@tanstack/query-sync-storage-persister": "5.81.5",
     "@tanstack/react-query": "5.81.5",
     "@tanstack/react-query-devtools": "5.81.5",
