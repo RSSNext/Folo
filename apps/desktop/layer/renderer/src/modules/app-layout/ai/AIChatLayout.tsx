@@ -1,12 +1,13 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { Button } from "@follow/components/ui/button/index.js"
+import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils"
 import { m } from "motion/react"
 import { use, useCallback, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { Focusable } from "~/components/common/Focusable"
+import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { HotkeyScope } from "~/constants"
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatContextBar } from "~/modules/ai/chat/AIChatContextBar"
@@ -20,11 +21,25 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 
 const ChatHeader = () => {
   const settingModalPresent = useSettingModal()
-  const { setMessages } = use(AIChatContext)
+  const { setMessages, messages } = use(AIChatContext)
 
+  const { ask } = useDialog()
+
+  const { t } = useTranslation("ai")
   const handleNewChat = useCallback(() => {
-    setMessages([])
-  }, [setMessages])
+    if (messages.length === 0) {
+      return
+    }
+
+    ask({
+      title: t("clear_chat"),
+      message: t("clear_chat_message"),
+      variant: "danger",
+      onConfirm: () => {
+        setMessages([])
+      },
+    })
+  }, [setMessages, ask, messages.length, t])
 
   return (
     <div className="absolute inset-x-0 top-0 z-20 h-16">
@@ -38,46 +53,13 @@ const ChatHeader = () => {
 
       <div className="relative z-10 flex h-full items-center justify-end px-6">
         <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleNewChat}
-                buttonClassName="text-text-secondary hover:text-text hover:bg-fill size-9 p-0 transition-all duration-200 rounded-lg"
-              >
-                <i className="i-mgc-add-cute-fi text-base" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>New Chat</TooltipContent>
-          </Tooltip>
+          <ActionButton tooltip="New Chat" onClick={handleNewChat}>
+            <i className="i-mgc-add-cute-re text-base" />
+          </ActionButton>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                buttonClassName="text-text-secondary hover:text-text hover:bg-fill size-9 p-0 transition-all duration-200 rounded-lg"
-              >
-                <i className="i-mgc-time-cute-re text-base" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>History</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => settingModalPresent("ai")}
-                buttonClassName="text-text-secondary hover:text-text hover:bg-fill size-9 p-0 transition-all duration-200 rounded-lg"
-              >
-                <i className="i-mgc-user-setting-cute-re text-base" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>AI Settings</TooltipContent>
-          </Tooltip>
+          <ActionButton tooltip="AI Settings" onClick={() => settingModalPresent("ai")}>
+            <i className="i-mgc-user-setting-cute-re text-base" />
+          </ActionButton>
         </div>
       </div>
     </div>
@@ -85,16 +67,17 @@ const ChatHeader = () => {
 }
 
 const WelcomeScreen = ({ onSend }: { onSend: (message: string) => void }) => {
+  const { t } = useTranslation("ai")
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6">
       <div className="w-full max-w-2xl space-y-8 text-center">
         <div className="space-y-6">
-          <div className="mx-auto">
-            <AISpline className="!size-16 opacity-80" />
+          <div className="mx-auto size-16">
+            <AISpline />
           </div>
           <div className="space-y-2">
             <h1 className="text-text text-2xl font-semibold">{APP_NAME} AI</h1>
-            <p className="text-text-secondary text-sm">How can I help you today?</p>
+            <p className="text-text-secondary text-sm">{t("welcome_description")}</p>
           </div>
         </div>
 
@@ -157,15 +140,14 @@ const WelcomeChatInput = ({ onSend }: { onSend: (message: string) => void }) => 
   return (
     <div className="bg-background border-border relative overflow-hidden rounded-2xl border shadow-lg">
       <textarea
-        value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyPress}
         placeholder="Message AI assistant..."
-        className="scrollbar-none text-text placeholder:text-text-secondary max-h-40 min-h-14 w-full resize-none border-0 bg-transparent px-4 py-3 pr-14 text-sm outline-none"
+        className="scrollbar-none text-text placeholder:text-text-secondary max-h-40 min-h-14 w-full resize-none bg-transparent px-5 py-3.5 pr-14 text-sm !outline-none transition-all duration-200"
         rows={1}
         autoFocus
       />
-      <div className="absolute bottom-3 right-3">
+      <div className="absolute right-3 top-3">
         <Button
           size="sm"
           onClick={handleSend}
@@ -177,7 +159,7 @@ const WelcomeChatInput = ({ onSend }: { onSend: (message: string) => void }) => 
               : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md",
           )}
         >
-          <i className="i-mgc-send-cute-fi size-4 text-white" />
+          <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
         </Button>
       </div>
     </div>

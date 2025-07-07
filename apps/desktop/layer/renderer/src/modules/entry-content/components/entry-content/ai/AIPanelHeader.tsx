@@ -1,5 +1,6 @@
 import { ActionButton } from "@follow/components/ui/button/action-button.js"
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
@@ -9,6 +10,7 @@ export const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const { setMessages, messages } = React.use(AIChatContext)
   const isAiChatPinned = useAIChatPinned()
   const { ask } = useDialog()
+  const { t } = useTranslation("ai")
   return (
     <div className="border-border flex h-[55px] shrink-0 items-center justify-between border-b px-3">
       <div className="flex items-center gap-3">
@@ -28,9 +30,8 @@ export const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             }
 
             ask({
-              title: "Clear Chat",
-              message:
-                "Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.",
+              title: t("clear_chat"),
+              message: t("clear_chat_message"),
               variant: "danger",
               onConfirm: () => {
                 setMessages([])
