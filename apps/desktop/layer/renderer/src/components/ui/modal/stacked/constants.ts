@@ -1,11 +1,11 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import type { MotionProps, Target } from "motion/react"
+import type { MotionProps, TargetAndTransition } from "motion/react"
 
-const enterStyle: Target = {
+const enterStyle: TargetAndTransition = {
   scale: 1,
   opacity: 1,
 }
-const initialStyle: Target = {
+const initialStyle: TargetAndTransition = {
   scale: 0.96,
   opacity: 0,
 }

@@ -11,6 +11,7 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { HotkeyScope } from "~/constants"
+import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding, useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
@@ -54,12 +55,13 @@ export const MarkAllReadButton = ({
         if (cancel) return
         cancel = true
       }
-      const id = toast("", {
+      const routerParams = getRouteParams()
+      const id = toast.warning("", {
         description: <ConfirmMarkAllReadInfo undo={undo} />,
         duration: 3000,
         onAutoClose() {
           if (cancel) return
-          markAllByRoute()
+          markAllByRoute(routerParams)
         },
         action: {
           label: (
@@ -97,7 +99,7 @@ export const MarkAllReadButton = ({
       className={className}
       ref={ref}
       onClick={() => {
-        markAllByRoute()
+        markAllByRoute(getRouteParams())
       }}
     >
       <i className="i-mgc-check-circle-cute-re" />
@@ -114,11 +116,11 @@ const ConfirmMarkAllReadInfo = ({ undo }: { undo: () => any }) => {
   })
 
   return (
-    <div>
-      <p>{t("mark_all_read_button.confirm_mark_all_info")}</p>
-      <small className="opacity-50">
+    <div className="text-text flex flex-col">
+      <span>{t("mark_all_read_button.confirm_mark_all_info")}</span>
+      <span className="text-text-secondary">
         {t("mark_all_read_button.auto_confirm_info", { countdown })}
-      </small>
+      </span>
     </div>
   )
 }
@@ -152,7 +154,7 @@ export const FlatMarkAllReadButton: FC<
         className,
       )}
       onClick={() => {
-        markAllByRoute(filter)
+        markAllByRoute(getRouteParams(), filter)
           .then(() => setStatus("done"))
           .catch(() => setStatus("initial"))
       }}

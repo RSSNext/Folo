@@ -3,7 +3,7 @@ import { cn } from "@follow/utils/utils"
 import * as ScrollAreaBase from "@radix-ui/react-scroll-area"
 import * as React from "react"
 
-import { ScrollElementContext } from "./ctx"
+import { ScrollElementContext, ScrollElementEventsContext } from "./ctx"
 import styles from "./index.module.css"
 
 const Corner = ({
@@ -144,7 +144,7 @@ export const ScrollArea = ({
   onScroll,
   orientation = "vertical",
   asChild = false,
-
+  onUpdateMaxScroll,
   focusable = true,
 }: React.PropsWithChildren & {
   rootClassName?: string
@@ -153,6 +153,7 @@ export const ScrollArea = ({
   flex?: boolean
   mask?: boolean
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void
+  onUpdateMaxScroll?: () => void
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
   focusable?: boolean
@@ -160,22 +161,26 @@ export const ScrollArea = ({
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
 
+  const events = React.useMemo(() => ({ onUpdateMaxScroll }), [onUpdateMaxScroll])
+
   return (
     <ScrollElementContext value={viewportRef}>
-      <Root className={rootClassName}>
-        <Viewport
-          ref={setViewportRef}
-          onWheel={stopPropagation}
-          className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
-          mask={mask}
-          asChild={asChild}
-          onScroll={onScroll}
-          focusable={focusable}
-        >
-          {children}
-        </Viewport>
-        <Scrollbar orientation={orientation} className={scrollbarClassName} />
-      </Root>
+      <ScrollElementEventsContext value={events}>
+        <Root className={rootClassName}>
+          <Viewport
+            ref={setViewportRef}
+            onWheel={stopPropagation}
+            className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
+            mask={mask}
+            asChild={asChild}
+            onScroll={onScroll}
+            focusable={focusable}
+          >
+            {children}
+          </Viewport>
+          <Scrollbar orientation={orientation} className={scrollbarClassName} />
+        </Root>
+      </ScrollElementEventsContext>
     </ScrollElementContext>
   )
 }

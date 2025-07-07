@@ -1,6 +1,6 @@
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./adapters"
-import type { TrackerMapper } from "./points"
-import { CodeToTrackerName } from "./points"
+import type { TrackerMapper } from "./enums"
+import { CodeToTrackerName } from "./utils"
 
 export interface TrackerManagerConfig {
   enableBatchProcessing?: boolean
@@ -14,7 +14,7 @@ export class TrackerManager {
   private adapters = new Map<string, TrackerAdapter>()
   private config: TrackerManagerConfig
   private batchQueue: Array<{ adapter: TrackerAdapter; payload: TrackPayload }> = []
-  private batchTimer?: NodeJS.Timeout
+  private batchTimer?: ReturnType<typeof setTimeout>
 
   constructor(config: TrackerManagerConfig = {}) {
     this.config = {

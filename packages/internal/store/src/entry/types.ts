@@ -16,8 +16,8 @@ export type FetchEntriesProps = {
 }
 
 export type FetchEntriesPropsSettings = {
-  hidePrivateSubscriptionsInTimeline: boolean
-  unreadOnly: boolean
+  hidePrivateSubscriptionsInTimeline?: boolean
+  unreadOnly?: boolean
 }
 
 export type UseEntriesProps = {
@@ -38,6 +38,7 @@ export type UseEntriesReturn = {
   isFetchingNextPage: boolean
   hasNextPage: boolean
   error: Error | null
+  fetchedTime?: number
 }
 
 export type UseEntriesControl = Pick<

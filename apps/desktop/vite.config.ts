@@ -7,6 +7,7 @@ import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
 import { parseHTML } from "linkedom"
+import { tsImport } from "tsx/esm/api"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"
 import { analyzer } from "vite-bundle-analyzer"
@@ -20,9 +21,14 @@ import { localesPlugin } from "./plugins/vite/locales"
 import manifestPlugin from "./plugins/vite/manifest"
 import { createPlatformSpecificImportPlugin } from "./plugins/vite/specific-import"
 
+const routeBuilderPluginV2 = await tsImport(
+  "@follow-app/vite-plugin-route-builder",
+  import.meta.url,
+).then((m) => m.default)
+
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 const isCI = process.env.CI === "true" || process.env.CI === "1"
-const ROOT = "./layer/renderer"
+const ROOT = resolve(__dirname, "./layer/renderer")
 
 const devPrint = (): PluginOption => ({
   name: "dev-print",
@@ -31,9 +37,7 @@ const devPrint = (): PluginOption => ({
     server.printUrls = () => {
       _printUrls()
       console.info(
-        `  ${green("➜")}  ${dim("Production debug")}: ${cyan(
-          "https://app.follow.is/__debug_proxy",
-        )}`,
+        `  ${green("➜")}  ${dim("Production debug")}: ${cyan("https://app.folo.is/__debug_proxy")}`,
       )
       console.info(
         `  ${green("➜")}  ${dim("Development debug")}: ${cyan(
@@ -138,6 +142,11 @@ export default ({ mode }) => {
     plugins: [
       ...((viteRenderBaseConfig.plugins ?? []) as any),
 
+      routeBuilderPluginV2({
+        pagePattern: "src/pages/**/*.tsx",
+        outputPath: "src/generated-routes.ts",
+        enableInDev: true,
+      }),
       localesPlugin(),
       isWebBuild &&
         VitePWA({
@@ -302,7 +311,7 @@ function checkBrowserSupport() {
       "Folo is not compatible with your browser because your browser version is too old. You can download and use the Folo app or continue using it with the latest browser.",
     )
 
-    window.location.href = "https://follow.is/download"
+    window.location.href = "https://folo.is/download"
   }
 }
 

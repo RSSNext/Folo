@@ -2,16 +2,19 @@ import { useEntry } from "@follow/store/entry/hooks"
 import type { EntryModel } from "@follow/store/entry/types"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils"
+import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
 import { useAtom } from "jotai"
 import * as React from "react"
 import { useEffect } from "react"
 import { TouchableOpacity, View } from "react-native"
+import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 
+import { useLightboxControls } from "../../lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
@@ -49,6 +52,7 @@ const setReaderRenderInlineStyle = (value: boolean) => {
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
+  const { openLightbox } = useLightboxControls()
 
   const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
   const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
@@ -59,6 +63,28 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const translation = useEntryTranslation(entryId, language)
 
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
+
+  // Handle image preview events
+  useEffect(() => {
+    return EventBus.subscribe("PREVIEW_IMAGE", (event) => {
+      const { imageUrls, index } = event
+
+      runOnUI(() => {
+        "worklet"
+        runOnJS(openLightbox)({
+          images: imageUrls.map((url: string) => ({
+            uri: url,
+            dimensions: null,
+            thumbUri: url,
+            thumbDimensions: null,
+            thumbRect: null,
+            type: "image",
+          })),
+          index,
+        })
+      })()
+    })
+  }, [openLightbox])
 
   useEffect(() => {
     setNoMedia(!!noMedia)

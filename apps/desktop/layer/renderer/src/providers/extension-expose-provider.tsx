@@ -17,7 +17,7 @@ import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { oneTimeToken } from "~/lib/auth"
 import { queryClient } from "~/lib/query-client"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
-import { useSettingModal } from "~/modules/settings/modal/use-setting-modal"
+import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { handleSessionChanges } from "~/queries/auth"
 import { clearDataIfLoginOtherAccount } from "~/store/utils/clear"
 

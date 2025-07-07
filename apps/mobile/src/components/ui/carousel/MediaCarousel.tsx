@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
+import type { Ref } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import Animated, {
@@ -17,12 +18,14 @@ import { ImageContextMenu } from "../image/ImageContextMenu"
 import { VideoPlayer } from "../video/VideoPlayer"
 
 export const MediaCarousel = ({
+  ref,
   entryId,
   media,
   onPreview,
   aspectRatio,
   view,
 }: {
+  ref?: Ref<View>
   entryId: string
   media: MediaModel[]
   onPreview?: () => void
@@ -42,7 +45,7 @@ export const MediaCarousel = ({
         setContainerWidth(e.nativeEvent.layout.width)
       }}
     >
-      <View className="relative overflow-hidden rounded-md">
+      <View ref={ref} className="relative overflow-hidden rounded-md">
         <Galeria
           urls={useMemo(
             () =>

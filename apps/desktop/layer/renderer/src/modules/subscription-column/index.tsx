@@ -27,8 +27,8 @@ import { COMMAND_ID } from "../command/commands/id"
 import { useCommandBinding } from "../command/hooks/use-command-binding"
 import { getSelectedFeedIds, resetSelectedFeedIds, setSelectedFeedIds } from "./atom"
 import { useShouldFreeUpSpace } from "./hook"
+import { SubscriptionListGuard } from "./subscription-list/SubscriptionListGuard"
 import { SubscriptionColumnHeader } from "./SubscriptionColumnHeader"
-import { SubscriptionList } from "./SubscriptionList.entry"
 import { SubscriptionTabButton } from "./SubscriptionTabButton"
 
 const lethargy = new Lethargy()
@@ -156,7 +156,7 @@ export function SubscriptionColumn({
         <SwipeWrapper active={timelineId!}>
           {timelineList.map((timelineId) => (
             <section key={timelineId} className="w-feed-col h-full shrink-0 snap-center">
-              <SubscriptionList
+              <SubscriptionListGuard
                 key={timelineId}
                 view={
                   Number.parseInt(

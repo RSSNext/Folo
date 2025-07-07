@@ -14,7 +14,7 @@ import { load } from "js-yaml"
 import { x } from "tar"
 
 import { GITHUB_OWNER, GITHUB_REPO, HOTUPDATE_RENDER_ENTRY_DIR } from "~/constants/app"
-import { getMainWindow } from "~/window"
+import { WindowManager } from "~/manager/window"
 
 import { appUpdaterConfig } from "./configs"
 
@@ -180,7 +180,7 @@ export const hotUpdateRender = async (manifest: Manifest) => {
   )
   logger.info(`Hot update render success, update to ${manifest.version}`)
 
-  const mainWindow = getMainWindow()
+  const mainWindow = WindowManager.getMainWindow()
   if (!mainWindow) return false
   const caller = callWindowExpose(mainWindow)
   caller.readyToUpdate()

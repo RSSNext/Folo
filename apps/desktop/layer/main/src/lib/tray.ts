@@ -4,9 +4,9 @@ import { app, Menu, nativeImage, Tray } from "electron"
 import { isMacOS, isMAS, isWindows } from "~/env"
 import { getTrayIconPath } from "~/helper"
 import { logger, revealLogFile } from "~/logger"
+import { WindowManager } from "~/manager/window"
 import { checkForAppUpdates } from "~/updater"
 
-import { getMainWindowOrCreate } from "../window"
 import { getDockCount } from "./dock"
 import { t } from "./i18n"
 import { store } from "./store"
@@ -36,14 +36,14 @@ const getTrayContextMenu = () => {
         {
           label: t("menu.reload"),
           click: () => {
-            const mainWindow = getMainWindowOrCreate()
+            const mainWindow = WindowManager.getMainWindowOrCreate()
             mainWindow.webContents.reload()
           },
         },
         {
           label: t("menu.toggleDevTools"),
           click: () => {
-            const mainWindow = getMainWindowOrCreate()
+            const mainWindow = WindowManager.getMainWindowOrCreate()
             mainWindow.webContents.toggleDevTools()
           },
         },
@@ -98,7 +98,7 @@ export const registerAppTray = () => {
 }
 
 const showWindow = () => {
-  const mainWindow = getMainWindowOrCreate()
+  const mainWindow = WindowManager.getMainWindowOrCreate()
   if (mainWindow.isMinimized()) {
     mainWindow.restore()
   } else {

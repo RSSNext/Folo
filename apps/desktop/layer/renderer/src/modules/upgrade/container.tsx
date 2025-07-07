@@ -58,7 +58,7 @@ const AppNotificationContainer: FC = () => {
     const toaster = () => {
       toast.success("", {
         description: (
-          <div>
+          <div className="text-text font-medium">
             App is upgraded to{" "}
             <a
               href={`${repository.url}/releases/tag/v${APP_VERSION}`}

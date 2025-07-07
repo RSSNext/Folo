@@ -61,6 +61,13 @@ export const NativeWebView: React.ComponentType<
       allowsBackForwardNavigationGestures
       allowsFullscreenVideo
       injectedJavaScriptBeforeContentLoaded={atStart}
+      // setSupportMultipleWindows={false}
+      onOpenWindow={(e) => {
+        const { targetUrl } = e.nativeEvent
+        if (targetUrl) {
+          openLink(targetUrl)
+        }
+      }}
       onNavigationStateChange={onNavigationStateChange}
       onLoadEnd={onLoadEnd}
       onMessage={(e) => {
@@ -99,7 +106,13 @@ const useWebViewNavigation = ({ webViewRef }: { webViewRef: RefObject<WebView | 
   const onNavigationStateChange = useCallback(
     (newNavState: WebViewNavigation) => {
       const { url: urlStr } = newNavState
-      const url = URL.canParse(urlStr) ? new URL(urlStr) : null
+      let url = null
+      try {
+        url = new URL(urlStr)
+      } catch (error) {
+        console.warn("Invalid URL", urlStr, error)
+        return
+      }
       if (!url) return
       if (url.protocol === "file:") return
       // if (allowHosts.has(url.host)) return

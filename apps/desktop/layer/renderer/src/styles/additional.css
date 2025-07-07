@@ -51,40 +51,4 @@
   #root [data-sonner-toaster][data-y-position="top"] {
     top: calc(env(safe-area-inset-top, 0px) + 20px);
   }
-
-  #root [data-sonner-toast] {
-    --border-radius: 16px;
-  }
-
-  #root [data-button="true"][data-action="true"] {
-    @apply text-text before:bg-text-tertiary relative -mr-[16px] bg-transparent px-4 font-sans font-bold before:absolute before:inset-y-0 before:left-0 before:w-px;
-  }
-}
-
-#root [data-sonner-toast] {
-  &[data-type="success"]::before,
-  &[data-type="error"]::before,
-  &[data-type="info"]::before,
-  &[data-type="warning"]::before {
-    content: "";
-    border-radius: var(--border-radius);
-
-    @apply pointer-events-none absolute inset-0 z-[-1] !transform-none opacity-10 dark:opacity-20;
-  }
-
-  &[data-type="success"]::before {
-    background: linear-gradient(to left, #56b4d3, #348f50);
-  }
-
-  &[data-type="error"]::before {
-    background: linear-gradient(to right, #ee9ca7, #ffdde1);
-  }
-
-  &[data-type="info"]::before {
-    background: linear-gradient(to right, #64a7d5, #6dd5fa, #c5eef4);
-  }
-
-  &[data-type="warning"]::before {
-    background: linear-gradient(to right, #f2994a, #f2c94c);
-  }
 }

@@ -156,7 +156,7 @@ const SubscriptionFeedsSection = () => {
   const [analytics] = useState(() => atom<Analytics>({}))
 
   const pendingFetchIdsRef = useRef<Set<string>>(new Set())
-  const timeoutRef = useRef<NodeJS.Timeout>(void 0)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     if (timeoutRef.current) {

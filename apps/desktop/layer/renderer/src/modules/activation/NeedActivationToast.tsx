@@ -1,3 +1,4 @@
+import { toastStyles } from "@follow/components/ui/toast/styles.js"
 import { stopPropagation } from "@follow/utils/dom"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,10 +14,8 @@ export const NeedActivationToast = (props: { dimiss: () => void }) => {
       <div>{t("activation.description")}</div>
 
       <button
-        className="bg-accent shrink-0 text-white"
+        className={toastStyles.actionButton}
         type="button"
-        data-button="true"
-        data-action="true"
         onPointerDown={stopPropagation}
         onClick={useCallback(() => {
           presentActivationModal()

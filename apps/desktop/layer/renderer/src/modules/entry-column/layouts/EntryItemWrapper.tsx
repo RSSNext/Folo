@@ -7,8 +7,9 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { NavLink } from "react-router"
 import { useDebounceCallback } from "usehooks-ts"
 
 import {
@@ -23,7 +24,7 @@ import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
 import { useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
@@ -76,11 +77,20 @@ export const EntryItemWrapper: FC<
   )
 
   const navigate = useNavigateEntry()
+
+  const navigationPath = useMemo(() => {
+    if (!entry?.id) return "#"
+    return getNavigateEntryPath({
+      entryId: entry?.id,
+    })
+  }, [entry?.id])
   const handleClick = useCallback(
     (e) => {
+      e.preventDefault()
       e.stopPropagation()
 
       const shouldNavigate = getRouteParams().entryId !== entry?.id
+
       if (!shouldNavigate) return
       if (!entry?.feedId) return
       if (!asRead) {
@@ -98,7 +108,7 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate],
   )
-  const handleDoubleClick: React.MouseEventHandler<HTMLDivElement> = useCallback(
+  const handleDoubleClick: React.MouseEventHandler<HTMLAnchorElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
     [entry?.url],
   )
@@ -170,9 +180,10 @@ export const EntryItemWrapper: FC<
 
   return (
     <div data-entry-id={entry?.id} style={style}>
-      <div
+      <NavLink
+        to={navigationPath}
         className={cn(
-          "hover:bg-theme-item-hover relative duration-200",
+          "hover:bg-theme-item-hover cursor-button relative block duration-200",
           views[view as FeedViewType]?.wideMode ? "rounded-md" : "px-2",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
@@ -185,7 +196,7 @@ export const EntryItemWrapper: FC<
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
-      </div>
+      </NavLink>
     </div>
   )
 }

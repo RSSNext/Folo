@@ -22,7 +22,12 @@ export function UnreadCount({
 
   if (!unread) return null
   return showUnreadCount ? (
-    <Text className={cn("text-tertiary-label text-xs", className, textClassName)} {...rest}>
+    <Text
+      numberOfLines={1}
+      ellipsizeMode="clip"
+      className={cn("text-tertiary-label text-xs", className, textClassName)}
+      {...rest}
+    >
       {unread > max ? `${max}+` : unread}
     </Text>
   ) : (

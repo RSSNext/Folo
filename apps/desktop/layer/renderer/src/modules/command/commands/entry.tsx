@@ -6,6 +6,7 @@ import { collectionSyncService } from "@follow/store/collection/store"
 import { getEntry } from "@follow/store/entry/getter"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn, resolveUrlWithBase } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -22,7 +23,6 @@ import {
   toggleShowSourceContent,
   useSourceContentModal,
 } from "~/atoms/source-content"
-import { useUserRole } from "~/atoms/user"
 import { SharePanel } from "~/components/common/SharePanel"
 import { toggleEntryReadability } from "~/hooks/biz/useEntryActions"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -306,7 +306,7 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_actions.mark_above_as_read"),
         category,
         run: ({ publishedAt }: { publishedAt: string }) => {
-          return markAllByRoute({
+          return markAllByRoute(getRouteParams(), {
             startTime: new Date(publishedAt).getTime() + 1,
             endTime: Date.now(),
           })
@@ -337,7 +337,7 @@ export const useRegisterEntryCommands = () => {
         label: t("entry_actions.mark_below_as_read"),
         category,
         run: ({ publishedAt }: { publishedAt: string }) => {
-          return markAllByRoute({
+          return markAllByRoute(getRouteParams(), {
             startTime: 1,
             endTime: new Date(publishedAt).getTime() - 1,
           })
@@ -452,7 +452,7 @@ export type TipCommand = Command<{
 
 export type StarCommand = Command<{
   id: typeof COMMAND_ID.entry.star
-  fn: (data: { entryId: string; view?: FeedViewType }) => void
+  fn: (data: { entryId: string; view: FeedViewType }) => void
 }>
 
 export type DeleteCommand = Command<{

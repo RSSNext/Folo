@@ -14,6 +14,7 @@
   "actions.action_card.block_rules": "封鎖規則",
   "actions.action_card.custom_filters": "自訂過濾條件",
   "actions.action_card.enable_readability": "啟用可讀模式",
+  "actions.action_card.feed_options.entry_attachments_duration": "條目視頻時長",
   "actions.action_card.feed_options.entry_author": "條目作者",
   "actions.action_card.feed_options.entry_content": "條目內容",
   "actions.action_card.feed_options.entry_media_length": "條目媒體數量",

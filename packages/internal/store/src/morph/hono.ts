@@ -146,23 +146,33 @@ class Morph {
   }
 
   toCollections(
-    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post,
+    data: HonoApiClient.Entry_Post | HonoApiClient.Entry_Inbox_Post | undefined,
     view: FeedViewType,
-  ): CollectionModel[] {
-    if (!data) return [] satisfies CollectionModel[]
-    return data
-      .map((item) => {
-        if (!item.collections) {
-          return null
-        }
-        return {
-          createdAt: item.collections.createdAt,
-          entryId: item.entries.id,
-          feedId: item.feeds.id,
-          view,
-        } satisfies CollectionModel
+  ): {
+    collections: CollectionModel[]
+    entryIdsNotInCollections: string[]
+  } {
+    if (!data) return { collections: [], entryIdsNotInCollections: [] }
+
+    const collections: CollectionModel[] = []
+    const entryIdsNotInCollections: string[] = []
+    for (const item of data) {
+      if (!item.collections) {
+        entryIdsNotInCollections.push(item.entries.id)
+        continue
+      }
+      collections.push({
+        createdAt: item.collections.createdAt,
+        entryId: item.entries.id,
+        feedId: item.feeds.id,
+        view,
       })
-      .filter((i) => i !== null)
+    }
+
+    return {
+      collections,
+      entryIdsNotInCollections,
+    }
   }
 
   toEntry(data?: HonoApiClient.Entry_Get | HonoApiClient.Entry_Inbox_Get): EntryModel | null {

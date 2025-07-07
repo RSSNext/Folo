@@ -99,6 +99,7 @@ export const Component = () => {
 
 const UserHero = ({ user }: { user: User }) => {
   const subscriptions = useUserSubscriptionsQuery(user.id)
+
   const totalFeeds = Object.values(subscriptions.data || {}).reduce(
     (total, category) => total + category.length,
     0,

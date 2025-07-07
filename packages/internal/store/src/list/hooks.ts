@@ -2,6 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
 
+import type { GeneralQueryOptions } from "../types"
 import { whoami } from "../user/getters"
 import { useWhoami } from "../user/hooks"
 import { listSyncServices, useListStore } from "./store"
@@ -71,10 +72,10 @@ export const usePrefetchLists = () => {
   })
 }
 
-export const usePrefetchListById = (id: string | undefined) => {
+export const usePrefetchListById = (id: string | undefined, options?: GeneralQueryOptions) => {
   return useQuery({
+    ...options,
     queryKey: ["list", id],
     queryFn: () => listSyncServices.fetchListById({ id }),
-    enabled: !!id,
   })
 }

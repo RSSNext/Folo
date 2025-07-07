@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs"
-import path, { resolve } from "node:path"
+import path, { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { env } from "@follow/shared/env.ssr"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
@@ -8,7 +9,6 @@ import { parseHTML } from "linkedom"
 import { FetchError } from "ofetch"
 import xss from "xss"
 
-import { isDev } from "~/lib/env"
 import { NotFoundError } from "~/lib/not-found"
 import { buildSeoMetaTags } from "~/lib/seo"
 
@@ -17,10 +17,11 @@ import { injectMetaHandler, MetaError } from "../meta-handler"
 const devHandler = (app: FastifyInstance) => {
   app.get("*", async (req, reply) => {
     const url = req.originalUrl
+    const __dirname = dirname(fileURLToPath(import.meta.url))
 
     const root = resolve(__dirname, "../..")
 
-    const vite = require("../lib/dev-vite").getViteServer()
+    const vite = await import("../lib/dev-vite").then((m) => m.getViteServer())
     try {
       let template = readFileSync(path.resolve(root, vite.config.root, "index.html"), "utf-8")
       template = await vite.transformIndexHtml(url, template)
@@ -30,14 +31,15 @@ const devHandler = (app: FastifyInstance) => {
       reply.type("text/html")
       reply.send(document.toString())
     } catch (e) {
-      vite.ssrFixStacktrace(e)
+      vite.ssrFixStacktrace(e as Error)
       reply.code(500).send(e)
     }
   })
 }
 const prodHandler = (app: FastifyInstance) => {
   app.get("*", async (req, reply) => {
-    const template = require("../../.generated/index.template").default
+    // @ts-expect-error
+    const template = await import("../../.generated/index.template").then((m) => m.default)
     const { document } = parseHTML(template)
     await safeInjectMetaToTemplate(document, req, reply)
 
@@ -91,7 +93,7 @@ injectEnv({"VITE_API_URL":"${apiUrl}","VITE_EXTERNAL_API_URL":"${apiUrl}","VITE_
     )
   })
 }
-export const globalRoute = isDev ? devHandler : prodHandler
+export const globalRoute = __DEV__ ? devHandler : prodHandler
 
 async function safeInjectMetaToTemplate(
   document: Document,

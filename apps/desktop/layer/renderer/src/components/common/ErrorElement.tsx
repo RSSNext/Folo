@@ -99,7 +99,7 @@ export const FeedbackIssue = (_props: {
   <p className="mt-8">
     Still having this issue? Please give feedback in GitHub, thanks!
     <a
-      className="text-theme-accent-500 hover:text-accent ml-2 cursor-pointer duration-200"
+      className="text-accent hover:text-accent/90 ml-2 cursor-pointer duration-200"
       href={getNewIssueUrl({
         // error: error instanceof Error ? error : undefined,
         // title: `Error: ${message}`,

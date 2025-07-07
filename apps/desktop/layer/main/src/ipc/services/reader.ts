@@ -56,7 +56,7 @@ export class ReaderService extends IpcService {
     if (!window) return null
 
     try {
-      await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
+      await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3, {})
     } catch (error: unknown) {
       console.error("Failed to set voice", error)
       if (error instanceof Error) {

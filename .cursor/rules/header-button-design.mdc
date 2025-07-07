@@ -1,0 +1,135 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Header Button Design System
+
+When creating header buttons for media previews, overlays, or modal interfaces, follow this modern glass morphism design pattern:
+
+## Design Principles
+
+### 1. Glass Morphism Style
+- Use semi-transparent backgrounds: `bg-black/20` or `bg-white/10`
+- Apply backdrop blur: `backdrop-blur-md`
+- Add subtle borders: `border border-white/10` for depth
+- Include shadow layers: `shadow-lg shadow-black/25`
+
+### 2. Perfect 1:1 Circular Design
+- Always use `size-10` (40px × 40px) for consistent sizing
+- Apply `rounded-full` for perfect circular shape
+- Ensure proper centering with `flex items-center justify-center`
+
+### 3. Layered Depth Effects
+```tsx
+{/* Glass effect overlay */}
+<div className="absolute inset-0 rounded-full bg-gradient-to-t from-white/5 to-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
+
+{/* Icon container */}
+<div className="center relative z-10 flex">{children}</div>
+
+{/* Subtle inner shadow for depth */}
+<div className="absolute inset-0 rounded-full shadow-inner shadow-black/10" />
+```
+
+### 4. Interactive Animation
+- Use Framer Motion `m.button` for smooth animations
+- Scale on hover: `whileHover={{ scale: 1.1 }}`
+- Scale on tap: `whileTap={{ scale: 0.95 }}`
+- Spring transitions: `stiffness: 400, damping: 30`
+
+### 5. Opacity and Visibility
+- Start hidden: `opacity-0`
+- Show on group hover: `group-hover/left:opacity-100`
+- Use `transition-all duration-300 ease-out` for smooth reveals
+
+## Implementation Pattern
+
+```tsx
+const HeaderButton: FC<{
+  description?: string
+  onClick: () => void
+  className?: string
+  children: React.ReactNode
+}> = ({ description, onClick, className, children }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <m.button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick()
+          }}
+          className={cn(
+            // Base styles with modern glass morphism - perfect 1:1 circle
+            "pointer-events-auto relative flex size-10 items-center justify-center rounded-full",
+            "bg-black/20 text-white backdrop-blur-md",
+            // Border and shadow for depth
+            "border border-white/10 shadow-lg shadow-black/25",
+            // Opacity and transition
+            "opacity-0 transition-all duration-300 ease-out group-hover/left:opacity-100",
+            // Text size
+            "text-lg",
+            className,
+          )}
+          initial={{ scale: 1 }}
+          whileHover={{ 
+            scale: 1.1,
+            backgroundColor: "rgba(255, 255, 255, 0.15)",
+            borderColor: "rgba(255, 255, 255, 0.2)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 30,
+          }}
+        >
+          {/* Glass effect overlay */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-t from-white/5 to-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
+          
+          {/* Icon container */}
+          <div className="center relative z-10 flex">{children}</div>
+          
+          {/* Subtle inner shadow for depth */}
+          <div className="absolute inset-0 rounded-full shadow-inner shadow-black/10" />
+        </m.button>
+      </TooltipTrigger>
+      {description && (
+        <TooltipPortal>
+          <TooltipContent>{description}</TooltipContent>
+        </TooltipPortal>
+      )}
+    </Tooltip>
+  )
+}
+```
+
+## Special Variants
+
+### Close Button (Danger State)
+```tsx
+className="!bg-red-600/30 !border-red-500/20 !opacity-100 hover:!bg-red-600/50"
+```
+
+### Navigation Buttons (Carousel Controls)
+- Use smaller sizes: `size-8` for mobile, `lg:size-10` for desktop
+- Position absolutely with proper spacing: `left-2 lg:left-4`
+- Maintain same glass morphism principles
+
+## Usage Guidelines
+
+1. **Always use with tooltips** for accessibility
+2. **Include stopPropagation** on click handlers to prevent modal dismissal
+3. **Make description optional** for navigation buttons that don't need tooltips
+4. **Use consistent icon sizing**: `text-lg` for standard, `lg:text-xl` for larger variants
+5. **Apply proper z-index**: `z-[100]` for overlay buttons
+6. **Group hover patterns**: Use `group-hover/left:opacity-100` for contextual visibility
+
+## Icons
+- Always use icons from `@/icons` directory (project standard)
+- Common patterns: `i-mgc-close-cute-re`, `i-mgc-external-link-cute-re`, `i-mgc-download-2-cute-re`
+- Navigation: `i-mingcute-left-line`, `i-mingcute-right-line`
+
+This design system ensures consistent, modern, and accessible header buttons across all media preview and overlay interfaces.

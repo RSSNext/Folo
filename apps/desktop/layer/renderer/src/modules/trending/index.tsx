@@ -1,9 +1,10 @@
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { views } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
@@ -53,6 +54,7 @@ export function Trending({
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const lang = useUISettingKey("discoverLanguage")
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const [selectedView, setSelectedView] = useState<View>("all")
 
@@ -68,6 +70,12 @@ export function Trending({
       })
     },
   })
+
+  useEffect(() => {
+    if (!isLoading) {
+      onUpdateMaxScroll?.()
+    }
+  }, [isLoading])
 
   return (
     <div className={cn("mx-auto mt-4 w-full max-w-[800px] space-y-6", narrow && "max-w-[400px]")}>

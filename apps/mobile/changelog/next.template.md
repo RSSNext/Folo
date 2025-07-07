@@ -5,3 +5,7 @@
 ## Improvements
 
 ## No longer broken
+
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions

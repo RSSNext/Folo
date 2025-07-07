@@ -12,12 +12,6 @@ const groupSubscriptions = (
 ): Record<string, SubscriptionResult> => {
   const groupFolder = {} as Record<string, SubscriptionResult>
   for (const subscription of subscriptions.filter((s) => !s.isPrivate) || []) {
-    // if (!subscription.category && "feeds" in subscription) {
-    //   const { siteUrl } = subscription.feeds
-    //   if (!siteUrl) continue
-    //   const parsed = parseUrl(siteUrl)
-    //   parsed.domain && (subscription.category = capitalizeFirstLetter(parsed.domain))
-    // }
     if (!subscription.category && "feeds" in subscription) {
       subscription.category = UN_CATEGORIZED
     }
@@ -35,7 +29,8 @@ const groupSubscriptions = (
     delete groupFolder[UN_CATEGORIZED]
 
     Reflect.defineProperty(groupFolder, UN_CATEGORIZED, {
-      value: temp?.sort((a, b) => sortByAlphabet(a.title!, b.title!)) || [],
+      value:
+        temp?.sort((a, b) => (a.title && b.title ? sortByAlphabet(a.title, b.title) : 0)) || [],
       writable: true,
       configurable: true,
       enumerable: true,

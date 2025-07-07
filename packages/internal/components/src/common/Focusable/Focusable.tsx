@@ -59,6 +59,9 @@ export const Focusable: Component<
     }
     $container.addEventListener("focusin", focusIn)
     const focusOut = () => {
+      if ($container.contains(document.activeElement as Node)) {
+        return
+      }
       setGlobalFocusableScope(scope, "remove")
     }
     $container.addEventListener("focusout", focusOut)

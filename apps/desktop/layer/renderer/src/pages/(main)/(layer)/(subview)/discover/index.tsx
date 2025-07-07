@@ -1,13 +1,14 @@
 import { Divider } from "@follow/components/ui/divider/Divider.js"
+import { useScrollElementUpdate } from "@follow/components/ui/scroll-area/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@follow/components/ui/tabs/index.jsx"
 import { UserRole } from "@follow/constants"
+import { useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { createElement } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
-import { useUserRole } from "~/atoms/user"
 import { AppErrorBoundary } from "~/components/common/AppErrorBoundary"
 import { ErrorComponentType } from "~/components/errors/enum"
 import { useActivationModal } from "~/modules/activation"
@@ -63,6 +64,7 @@ export function Component() {
 
   const presentActivationModal = useActivationModal()
   const role = useUserRole()
+  const { onUpdateMaxScroll } = useScrollElementUpdate()
 
   const currentTabs = tabs.map((tab) => {
     const disabled = tab.disableForTrial && role === UserRole.Trial
@@ -105,6 +107,8 @@ export function Component() {
                     onClick={() => {
                       if (tab.disabled) {
                         presentActivationModal()
+                      } else {
+                        onUpdateMaxScroll?.()
                       }
                     }}
                   >

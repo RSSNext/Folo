@@ -45,7 +45,7 @@ const HeaderWrapper: Component = (props) => {
             "relative flex items-center",
             isCompact ? "py-2" : "py-3",
             isHeaderElevated && [
-              "border-border/50 bg-background/80 px-4 shadow-lg backdrop-blur-xl md:px-0",
+              "border-border/50 bg-background/80 px-4 shadow-sm backdrop-blur-xl md:px-0",
               "supports-[backdrop-filter]:bg-background/60",
             ],
           )}

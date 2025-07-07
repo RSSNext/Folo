@@ -6,10 +6,10 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import type { FeedOrListRespModel } from "@follow/models/types"
+import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
 import { useTranslation } from "react-i18next"
 
-import { useWhoami } from "~/atoms/user"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 

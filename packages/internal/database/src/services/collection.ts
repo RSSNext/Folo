@@ -11,8 +11,13 @@ class CollectionServiceStatic implements Resetable {
     await db.delete(collectionsTable).execute()
   }
 
-  async upsertMany(collections: CollectionSchema[]) {
+  async upsertMany(collections: CollectionSchema[], options?: { reset?: boolean }) {
     if (collections.length === 0) return
+
+    if (options?.reset) {
+      await db.delete(collectionsTable).execute()
+    }
+
     await db
       .insert(collectionsTable)
       .values(collections)
@@ -24,6 +29,11 @@ class CollectionServiceStatic implements Resetable {
 
   async delete(entryId: string) {
     await db.delete(collectionsTable).where(eq(collectionsTable.entryId, entryId))
+  }
+
+  async deleteMany(entryId: string[]) {
+    if (entryId.length === 0) return
+    await db.delete(collectionsTable).where(inArray(collectionsTable.entryId, entryId))
   }
 
   getCollectionMany(entryId: string[]) {

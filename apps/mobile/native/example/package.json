@@ -11,13 +11,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "53.0.4",
+    "expo": "53.0.12",
     "nativewind": "4.1.23",
     "react": "19.0.0",
     "react-native": "0.79.1",
     "react-native-css-interop": "0.1.22",
-    "react-native-reanimated": "3.17.4",
-    "react-native-safe-area-context": "5.3.0",
+    "react-native-reanimated": "3.18.0",
+    "react-native-safe-area-context": "5.4.1",
     "react-native-uikit-colors": "0.6.2"
   },
   "expo": {

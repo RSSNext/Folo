@@ -10,6 +10,8 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { useWhoami } from "@follow/store/user/hooks"
+import { userActions } from "@follow/store/user/store"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -18,7 +20,6 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { setWhoami, useWhoami } from "~/atoms/user"
 import { AvatarUploadModal } from "~/components/ui/crop/AvatarUploadModal"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { updateUser } from "~/lib/auth"
@@ -70,9 +71,11 @@ type ExtendedUser = ReturnType<typeof useWhoami> & {
 export const ProfileSettingForm = ({
   className,
   buttonClassName,
+  hideAvatar,
 }: {
   className?: string
   buttonClassName?: string
+  hideAvatar?: boolean
 }) => {
   const { t } = useTranslation("settings")
   const user = useWhoami() as ExtendedUser
@@ -113,7 +116,7 @@ export const ProfileSettingForm = ({
     },
     onSuccess: (_, variables) => {
       if (user && variables) {
-        setWhoami({ ...user, ...variables })
+        userActions.updateWhoami({ ...variables })
       }
       toast(t("profile.updateSuccess"), {
         duration: 3000,
@@ -174,34 +177,36 @@ export const ProfileSettingForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn("mt-4 space-y-4", className)}>
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <div className="absolute right-0 flex -translate-y-full gap-4">
-              <FormItem className="w-full">
-                <FormControl>
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={openAvatarUpload}
-                      className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
-                    >
-                      <Avatar className="size-16">
-                        <AvatarImage src={field.value} />
-                        <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
-                      </Avatar>
-                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                        <i className="i-mgc-pic-cute-fi text-xl text-white" />
-                      </div>
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </div>
-          )}
-        />
+        {!hideAvatar && (
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <div className="absolute right-0 flex -translate-y-full gap-4">
+                <FormItem className="w-full">
+                  <FormControl>
+                    <div className="flex items-center gap-4">
+                      <button
+                        type="button"
+                        onClick={openAvatarUpload}
+                        className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
+                      >
+                        <Avatar className="size-16">
+                          <AvatarImage src={field.value} />
+                          <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                        </Avatar>
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                          <i className="i-mgc-pic-cute-fi text-xl text-white" />
+                        </div>
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </div>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -235,6 +240,41 @@ export const ProfileSettingForm = ({
             </FormItem>
           )}
         />
+
+        {hideAvatar && (
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <div className="flex gap-4">
+                <FormItem className="w-full">
+                  <FormLabel className={formItemLabelClassName}>
+                    {t("profile.avatar.label")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-4">
+                      <Input {...field} />
+                      <button
+                        type="button"
+                        onClick={openAvatarUpload}
+                        className="group relative cursor-pointer transition-all duration-200 hover:opacity-80"
+                      >
+                        <Avatar className="size-8">
+                          <AvatarImage src={field.value} />
+                          <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                        </Avatar>
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                          <i className="i-mgc-pic-cute-fi text-xl text-white" />
+                        </div>
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </div>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}

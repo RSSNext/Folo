@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "electron-log": "5.4.0"
+    "electron-log": "5.4.1"
   },
   "devDependencies": {
     "@follow/configs": "workspace:*"

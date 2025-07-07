@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 
 import { SwipeMedia } from "~/components/ui/media/SwipeMedia"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
-import { EntryContent } from "~/modules/entry-content"
+import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { useImageDimensions } from "~/store/image"
 
 import { usePreviewMedia } from "../../../components/ui/media/hooks"

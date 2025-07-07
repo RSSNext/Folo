@@ -2,23 +2,20 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { set } from "es-toolkit/compat"
-import type { Plugin } from "vite"
+import type { Logger, Plugin } from "vite"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 const localesDir = path.resolve(__dirname, "../../../../locales")
 
 export function localesJsonPlugin(): Plugin {
-  let isBuild = false
+  let logger: Logger
   return {
     name: "locales-json-transform",
     enforce: "pre",
     configResolved(config) {
-      isBuild = config.command === "build"
+      logger = config.logger
     },
     async transform(code, id) {
-      if (isBuild) {
-        return null
-      }
       if (!id.includes(localesDir) || !id.endsWith(".json")) {
         return null
       }
@@ -31,7 +28,7 @@ export function localesJsonPlugin(): Plugin {
         set(obj, accessorKey, (content as any)[accessorKey])
       }
 
-      console.info("[locales-json-transform] Transformed:", id)
+      logger.info(`[locales-json-transform] Transformed: ${id}`)
       return {
         code: JSON.stringify(obj),
         map: null,

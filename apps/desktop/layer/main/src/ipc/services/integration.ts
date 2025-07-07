@@ -2,6 +2,8 @@ import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
 import path from "node:path"
 
+import slugify from "@sindresorhus/slugify"
+
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"
 
@@ -30,7 +32,9 @@ export class IntegrationService extends IpcService {
     try {
       const { url, title, content, author, publishedAt, vaultPath } = input
 
-      const fileName = `${(title || publishedAt).trim().slice(0, 20).replaceAll("/", "-")}.md`
+      const fileName = `${slugify(title || publishedAt)
+        .trim()
+        .slice(0, 20)}.md`
       const filePath = path.join(vaultPath, fileName)
       const exists = existsSync(filePath)
       if (exists) {

@@ -1,14 +1,15 @@
 import type { PostHog } from "posthog-js"
+import type PostHogReactNative from "posthog-react-native"
 
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 
 export interface PostHogAdapterConfig {
-  instance: PostHog
+  instance: PostHog | PostHogReactNative
   enabled?: boolean
 }
 
 export class PostHogAdapter implements TrackerAdapter {
-  private posthogInstance: PostHog
+  private posthogInstance: PostHog | PostHogReactNative
   private enabled: boolean
 
   constructor(config: PostHogAdapterConfig) {
@@ -24,7 +25,7 @@ export class PostHogAdapter implements TrackerAdapter {
     if (!this.isEnabled()) return
 
     try {
-      this.posthogInstance.capture(eventName, properties)
+      this.posthogInstance.capture(eventName, properties as any)
     } catch (error) {
       console.error(`[PostHog] Failed to track event "${eventName}":`, error)
     }
@@ -35,10 +36,10 @@ export class PostHogAdapter implements TrackerAdapter {
 
     try {
       this.posthogInstance.identify(payload.id, {
-        email: payload.email,
-        name: payload.name,
-        avatar: payload.image,
-        handle: payload.handle,
+        email: payload.email!,
+        name: payload.name!,
+        avatar: payload.image!,
+        handle: payload.handle!,
       })
     } catch (error) {
       console.error("[PostHog] Failed to identify user:", error)
@@ -49,7 +50,11 @@ export class PostHogAdapter implements TrackerAdapter {
     if (!this.isEnabled()) return
 
     try {
-      this.posthogInstance.setPersonProperties(properties)
+      if ("setPersonProperties" in this.posthogInstance) {
+        this.posthogInstance.setPersonProperties(properties)
+      } else {
+        ;(this.posthogInstance as PostHogReactNative).setPersonPropertiesForFlags(properties as any)
+      }
     } catch (error) {
       console.error("[PostHog] Failed to set user properties:", error)
     }

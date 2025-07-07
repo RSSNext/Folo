@@ -34,55 +34,56 @@ export const renderFeedOG = async (apiClient: ApiClient, feedId: string) => {
         <div
           style={{
             display: "flex",
-            flexGrow: 1,
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            flexShrink: 0,
-            width: "40%",
+            textAlign: "center",
+            gap: 15,
+            padding: "0 60px",
           }}
         >
           <OGAvatar base64={imageBase64} title={title!} />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexGrow: 1,
-            flexShrink: 1,
-            width: "60%",
-            flexDirection: "column",
-            overflow: "hidden",
-            textAlign: "left",
-            justifyContent: "center",
-          }}
-        >
-          <h3
+          <div
             style={{
-              color: "#000000",
-              fontSize: "3.5rem",
-              whiteSpace: "nowrap",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
+              overflow: "hidden",
             }}
           >
-            {title}
-          </h3>
-          {description && (
-            <p
+            <h3
               style={{
-                fontSize: "1.8rem",
-                height: "5.6rem",
-                overflow: "hidden",
-                lineClamp: 2,
-                color: "#000000",
+                color: "#e6edf3",
+                fontSize: "3.2rem",
+                fontWeight: 600,
+                margin: 0,
               }}
             >
-              {description}
-            </p>
-          )}
-
+              {title}
+            </h3>
+            {description && (
+              <p
+                style={{
+                  fontSize: "1.8rem",
+                  color: "#8b949e",
+                  margin: 0,
+                  maxHeight: "5.4rem",
+                  lineHeight: 1.5,
+                  overflow: "hidden",
+                }}
+              >
+                {description}
+              </p>
+            )}
+          </div>
           <p
             style={{
               fontSize: "1.5rem",
-              color: "#000000",
+              color: "#afb8c1",
               fontWeight: 500,
+              margin: 0,
+              paddingTop: 10,
             }}
           >
             {formatNumber(feed.data.subscriptionCount || 0)} followers with{" "}

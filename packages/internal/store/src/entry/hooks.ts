@@ -1,26 +1,48 @@
 import type { FeedViewType } from "@follow/constants"
-import type { Query } from "@tanstack/react-query"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 
+import { useFeedUnreadIsDirty } from "../atoms/feed"
+import { FEED_COLLECTION_LIST } from "../constants/app"
+import { queryClient } from "../context"
 import { getSubscriptionByEntryId } from "../subscription/getter"
 import { getEntry } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 
-export const getInvalidateEntriesQueryPredicate = (views: FeedViewType[]) => {
-  return (query: Query) => {
-    const { queryKey } = query
-    if (Array.isArray(queryKey) && queryKey[0] === "entries") {
-      const view = queryKey[4]
-      return views.includes(view as FeedViewType)
-    }
-    return false
-  }
+export const invalidateEntriesQuery = ({
+  views,
+  collection,
+}: {
+  views?: FeedViewType[]
+  collection?: true
+}) => {
+  return queryClient().invalidateQueries({
+    predicate: (query) => {
+      const { queryKey } = query
+      if (Array.isArray(queryKey) && queryKey[0] === "entries") {
+        const feedId = queryKey[1]
+        const view = queryKey[4]
+
+        const isCollection = queryKey[7]
+        if (views) {
+          return views.includes(view as FeedViewType)
+        }
+
+        if (collection) {
+          return isCollection === true || feedId === FEED_COLLECTION_LIST
+        }
+      }
+      return false
+    },
+  })
 }
 
+const defaultStaleTime = 10 * (60 * 1000) // 10 minutes
+
 export const useEntriesQuery = (
-  props?: Omit<FetchEntriesProps, "pageParam" | "read"> & FetchEntriesPropsSettings,
+  props?: Omit<FetchEntriesProps, "pageParam" | "read" | "excludePrivate"> &
+    FetchEntriesPropsSettings,
 ) => {
   const {
     feedId,
@@ -29,9 +51,16 @@ export const useEntriesQuery = (
     view,
     limit,
     feedIdList,
+    isCollection,
     unreadOnly,
     hidePrivateSubscriptionsInTimeline,
   } = props || {}
+
+  const fetchUnread = unreadOnly
+  const feedUnreadDirty = useFeedUnreadIsDirty((feedId as string) || "")
+
+  const isPop =
+    "history" in globalThis && "isPop" in globalThis.history && !!globalThis.history.isPop
 
   return useInfiniteQuery({
     queryKey: [
@@ -40,9 +69,10 @@ export const useEntriesQuery = (
       inboxId,
       listId,
       view,
-      unreadOnly,
       limit,
       feedIdList,
+      isCollection,
+      unreadOnly,
       hidePrivateSubscriptionsInTimeline,
     ],
     queryFn: ({ pageParam }) =>
@@ -52,11 +82,18 @@ export const useEntriesQuery = (
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
       }),
-    staleTime: 3 * 60 * 1000,
+
     getNextPageParam: (lastPage) => lastPage.data?.at(-1)?.entries.publishedAt,
     initialPageParam: undefined as undefined | string,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    // DON'T refetch when the router is pop to previous page
+    refetchOnMount: fetchUnread && feedUnreadDirty && !isPop ? "always" : false,
+
+    staleTime:
+      // Force refetch unread entries when feed is dirty
+      // HACK: disable refetch when the router is pop to previous page
+      isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
     enabled: !!props,
   })
 }
@@ -104,7 +141,7 @@ function sortEntryIdsByPublishDate(a: string, b: string) {
   return entryB.publishedAt.getTime() - entryA.publishedAt.getTime()
 }
 
-export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean) => {
+export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean | undefined) => {
   return useEntryStore(
     useCallback(
       (state) => {

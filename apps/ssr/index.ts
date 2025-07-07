@@ -1,4 +1,7 @@
+import "./global"
 import "./src/lib/load-env"
+
+import os from "node:os"
 
 import middie from "@fastify/middie"
 import { fastifyRequestContext } from "@fastify/request-context"
@@ -8,15 +11,11 @@ import Fastify from "fastify"
 import { nanoid } from "nanoid"
 import { FetchError } from "ofetch"
 
-import { isDev } from "~/lib/env"
 import { MetaError } from "~/meta-handler"
 import { staticRoute } from "~/router/static"
 
-import { defineGlobalConstants } from "./global"
 import { globalRoute } from "./src/router/global"
 import { ogRoute } from "./src/router/og"
-
-defineGlobalConstants()
 
 const isVercel = process.env.VERCEL === "1"
 
@@ -64,7 +63,7 @@ export const createApp = async () => {
     const finalHost = forwardedHost || host
 
     const upstreamEnv = finalHost?.includes("dev") ? "dev" : "prod"
-    if (!isDev) req.requestContext.set("upstreamEnv", upstreamEnv)
+    if (!__DEV__) req.requestContext.set("upstreamEnv", upstreamEnv)
     if (upstreamEnv === "prod") {
       req.requestContext.set("upstreamOrigin", env.VITE_WEB_PROD_URL || env.VITE_WEB_URL)
     } else {
@@ -74,8 +73,8 @@ export const createApp = async () => {
     done()
   })
 
-  if (isDev) {
-    const devVite = require("./src/lib/dev-vite")
+  if (__DEV__) {
+    const devVite = await import("./src/lib/dev-vite")
     await devVite.registerDevViteServer(app)
   }
 
@@ -97,11 +96,11 @@ if (!isVercel) {
 }
 
 function getIPAddress() {
-  const interfaces = require("node:os").networkInterfaces()
+  const interfaces = os.networkInterfaces()
   for (const devName in interfaces) {
     const iface = interfaces[devName]
 
-    for (const alias of iface) {
+    for (const alias of iface || []) {
       if (alias.family === "IPv4" && alias.address !== "127.0.0.1" && !alias.internal)
         return alias.address
     }

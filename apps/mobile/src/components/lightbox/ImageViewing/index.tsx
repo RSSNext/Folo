@@ -11,15 +11,7 @@
 // import * as ScreenOrientation from "expo-screen-orientation"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
-import {
-  LayoutAnimation,
-  PixelRatio,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native"
+import { LayoutAnimation, PixelRatio, ScrollView, StyleSheet, Text, View } from "react-native"
 import { SystemBars } from "react-native-edge-to-edge"
 import { Gesture } from "react-native-gesture-handler"
 import PagerView from "react-native-pager-view"
@@ -40,8 +32,6 @@ import Animated, {
 } from "react-native-reanimated"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { Download2CuteReIcon } from "@/src/icons/download_2_cute_re"
-import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import { isIOS } from "@/src/lib/platform"
 
 import type { Lightbox } from "../lightboxState"
@@ -210,6 +200,10 @@ function ImageView({
   const dismissSwipeTranslateY = useSharedValue(0)
   const isFlyingAway = useSharedValue(false)
 
+  // Get current image URI for the header buttons
+  const currentImage = images[imageIndex]
+  const currentImageUri = currentImage?.uri
+
   const containerStyle = useAnimatedStyle(() => {
     if (openProgress.get() < 1) {
       return {
@@ -349,7 +343,12 @@ function ImageView({
       </PagerView>
       <View style={styles.controls}>
         <Animated.View style={animatedHeaderStyle} renderToHardwareTextureAndroid>
-          <ImageDefaultHeader onRequestClose={onRequestClose} />
+          <ImageDefaultHeader
+            onRequestClose={onRequestClose}
+            onPressSave={onPressSave}
+            onPressShare={onPressShare}
+            currentImageUri={currentImageUri}
+          />
         </Animated.View>
         <Animated.View style={animatedFooterStyle} renderToHardwareTextureAndroid={!isAltExpanded}>
           <LightboxFooter
@@ -357,8 +356,6 @@ function ImageView({
             index={imageIndex}
             isAltExpanded={isAltExpanded}
             toggleAltExpanded={() => setAltExpanded((e) => !e)}
-            onPressSave={onPressSave}
-            onPressShare={onPressShare}
           />
         </Animated.View>
       </View>
@@ -519,25 +516,22 @@ function LightboxFooter({
   index,
   isAltExpanded,
   toggleAltExpanded,
-  onPressSave,
-  onPressShare,
 }: {
   images: ImageSource[]
   index: number
   isAltExpanded: boolean
   toggleAltExpanded: () => void
-  onPressSave: (uri: string) => void
-  onPressShare: (uri: string) => void
 }) {
   const insets = useSafeAreaInsets()
   const image = images.at(index)
   const altText = image?.alt
-  const uri = image?.uri
   const isMomentumScrolling = React.useRef(false)
-  if (!image || !uri) {
-    // If the image is not available, we don't render the footer.
+
+  // If there's no alt text, don't render the footer
+  if (!altText) {
     return null
   }
+
   return (
     <ScrollView
       style={styles.footerScrollView}
@@ -554,45 +548,25 @@ function LightboxFooter({
       }}
     >
       <View style={{ marginBottom: insets.bottom }}>
-        {altText ? (
-          <View accessibilityRole="button" style={styles.footerText}>
-            <Text
-              className="text-gray-3"
-              numberOfLines={isAltExpanded ? undefined : 3}
-              selectable
-              onPress={() => {
-                if (isMomentumScrolling.current) {
-                  return
-                }
-                LayoutAnimation.configureNext({
-                  duration: 450,
-                  update: { type: "spring", springDamping: 1 },
-                })
-                toggleAltExpanded()
-              }}
-              onLongPress={() => {}}
-            >
-              {altText}
-            </Text>
-          </View>
-        ) : null}
-        <View style={styles.footerBtns}>
-          <Pressable
-            className="rounded-3xl border border-white px-4 py-2"
-            style={styles.footerBtn}
-            onPress={() => onPressSave(uri)}
+        <View accessibilityRole="button" style={styles.footerText}>
+          <Text
+            className="text-gray-3"
+            numberOfLines={isAltExpanded ? undefined : 3}
+            selectable
+            onPress={() => {
+              if (isMomentumScrolling.current) {
+                return
+              }
+              LayoutAnimation.configureNext({
+                duration: 450,
+                update: { type: "spring", springDamping: 1 },
+              })
+              toggleAltExpanded()
+            }}
+            onLongPress={() => {}}
           >
-            <Download2CuteReIcon color="#fff" />
-            <Text className="text-xl text-white">Save</Text>
-          </Pressable>
-          <Pressable
-            className="rounded-3xl border border-white px-4 py-2"
-            style={styles.footerBtn}
-            onPress={() => onPressShare(uri)}
-          >
-            <ShareForwardCuteReIcon color="#fff" />
-            <Text className="text-xl text-white">Share</Text>
-          </Pressable>
+            {altText}
+          </Text>
         </View>
       </View>
     </ScrollView>
@@ -657,17 +631,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     paddingBottom: isIOS ? 20 : 16,
-  },
-  footerBtns: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-  },
-  footerBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "transparent",
   },
 })
 

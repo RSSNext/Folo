@@ -1,7 +1,12 @@
-import { name } from "../../package.json"
+Object.assign(globalThis, {
+  APP_NAME: "Folo",
+  ELECTRON: false,
+})
 
-export const defineGlobalConstants = () => {
+try {
+  void __DEV__
+} catch {
   Object.assign(globalThis, {
-    APP_NAME: name,
+    __DEV__: process.env.NODE_ENV === "development",
   })
 }

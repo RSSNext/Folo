@@ -1,30 +1,82 @@
 import { Header } from "@client/components/layout/header"
 import { openInFollowApp } from "@client/lib/helper"
-import { jotaiStore } from "@client/lib/store"
+import { RootProviders } from "@client/providers/root-providers"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
 import { PoweredByFooter } from "@follow/components/common/PoweredByFooter.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
 import { useSyncThemeWebApp, useTitle } from "@follow/hooks"
-import { Provider } from "jotai"
-import { m as motion } from "motion/react"
+import { m, useAnimationControls } from "motion/react"
 import { Fragment, useEffect, useState } from "react"
 
 const NotFoundContent = () => {
-  const [isVisible, setIsVisible] = useState(false)
   const [glitchText, setGlitchText] = useState("404")
   const [isGlitching, setIsGlitching] = useState(false)
+
+  // Animation controls
+  const iconControls = useAnimationControls()
+  const messageControls = useAnimationControls()
+  const titleControls = useAnimationControls()
+  const descriptionControls = useAnimationControls()
+  const buttonsControls = useAnimationControls()
+  const helpControls = useAnimationControls()
 
   useTitle("404 - Page Not Found")
   useSyncThemeWebApp()
 
   useEffect(() => {
-    setIsVisible(true)
-  }, [])
+    // Start all animations in parallel with their respective delays
+    iconControls.start({
+      scale: 1,
+      rotate: 0,
+      transition: {
+        duration: 0.8,
+        type: "spring",
+        stiffness: 100,
+        delay: 0.2,
+      },
+    })
+
+    messageControls.start({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, delay: 0.4 },
+    })
+
+    titleControls.start({
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5, delay: 0.6 },
+    })
+
+    descriptionControls.start({
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5, delay: 0.8 },
+    })
+
+    buttonsControls.start({
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5, delay: 1 },
+    })
+
+    helpControls.start({
+      opacity: 1,
+      transition: { duration: 0.5, delay: 1.2 },
+    })
+  }, [
+    iconControls,
+    messageControls,
+    titleControls,
+    descriptionControls,
+    buttonsControls,
+    helpControls,
+  ])
 
   useEffect(() => {
     if (!isGlitching) return
 
-    const glitchTexts = ["404", "40₄", "4Ø4", "４０４", "4◯4", "４○４", "4𝟘4"]
+    const glitchTexts = ["404", "40₄", "4Ø4", "404", "4◯4", "4○4", "4𝟘4"]
 
     const glitchInterval = setInterval(() => {
       const randomText = glitchTexts[Math.floor(Math.random() * glitchTexts.length)]
@@ -95,21 +147,15 @@ const NotFoundContent = () => {
           }`}
       </MemoedDangerousHTMLStyle>
       <Header />
-      <main className="relative mx-auto flex w-full max-w-[var(--container-max-width)] flex-1 flex-col items-center justify-center pt-20">
+      <main className="relative mx-auto my-8 flex w-full max-w-[var(--container-max-width)] flex-1 flex-col items-center justify-center pt-20">
         <Fragment>
           {/* 404 Icon with animations */}
-          <motion.div
+          <m.div
             className="mb-8 flex items-center justify-center"
             initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: isVisible ? 1 : 0, rotate: isVisible ? 0 : -180 }}
-            transition={{
-              duration: 0.8,
-              type: "spring",
-              stiffness: 100,
-              delay: 0.2,
-            }}
+            animate={iconControls}
           >
-            <motion.div
+            <m.div
               className="float-animation pulse-glow-animation flex size-32 cursor-pointer items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800"
               whileHover={{
                 scale: 1.1,
@@ -131,7 +177,7 @@ const NotFoundContent = () => {
                 setIsGlitching(false)
               }}
             >
-              <motion.span
+              <m.span
                 className={`select-none text-4xl font-bold text-zinc-400 dark:text-zinc-600 ${isGlitching ? "glitch-animation" : ""}`}
                 key={glitchText}
                 initial={{ opacity: 0 }}
@@ -139,51 +185,47 @@ const NotFoundContent = () => {
                 transition={{ duration: 0.1 }}
               >
                 {glitchText}
-              </motion.span>
-            </motion.div>
-          </motion.div>
+              </m.span>
+            </m.div>
+          </m.div>
           {/* Error Message with stagger animation */}
-          <motion.div
+          <m.div
             className="mb-8 flex flex-col items-center text-center"
             initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            animate={messageControls}
           >
-            <motion.h1
+            <m.h1
               className="mb-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100"
               initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              animate={titleControls}
             >
               Page Not Found
-            </motion.h1>
-            <motion.p
-              className="max-w-md text-lg text-zinc-500 dark:text-zinc-400"
+            </m.h1>
+            <m.p
+              className="max-w-md text-base text-zinc-500 dark:text-zinc-400"
               initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
+              animate={descriptionControls}
             >
               Sorry, the page you are looking for doesn't exist or has been moved. Please check the
               URL or return to the homepage to continue browsing.
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
           {/* Action Buttons with hover effects */}
-          <motion.div
+          <m.div
             className="flex flex-col items-center gap-4 sm:flex-row"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
-            transition={{ duration: 0.5, delay: 1 }}
+            animate={buttonsControls}
           >
-            <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+            <m.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={handleGoHome}
                 buttonClassName="px-6 py-2 transition-all duration-200"
               >
                 Go Home
               </Button>
-            </motion.div>
+            </m.div>
 
-            <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+            <m.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outline"
                 onClick={handleOpenInApp}
@@ -191,18 +233,13 @@ const NotFoundContent = () => {
               >
                 Open {APP_NAME}
               </Button>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
           {/* Additional Help with fade in */}
-          <motion.div
-            className="mt-12 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isVisible ? 1 : 0 }}
-            transition={{ duration: 0.5, delay: 1.2 }}
-          >
+          <m.div className="mt-12 text-center" initial={{ opacity: 0 }} animate={helpControls}>
             <p className="text-sm text-zinc-400 dark:text-zinc-500">
               If you believe this is an error, please submit a issue on{" "}
-              <motion.a
+              <m.a
                 className="text-accent transition-colors duration-200"
                 href="https://github.com/rssnext/folo/issues"
                 target="_blank"
@@ -211,13 +248,13 @@ const NotFoundContent = () => {
                 style={{ display: "inline-block" }}
               >
                 GitHub
-              </motion.a>
+              </m.a>
             </p>
-          </motion.div>
+          </m.div>
           {/* Floating particles effect */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="absolute size-1 rounded-full bg-zinc-300 opacity-30 dark:bg-zinc-600"
                 initial={{
@@ -245,8 +282,8 @@ const NotFoundContent = () => {
 
 export const NotFound = () => {
   return (
-    <Provider store={jotaiStore}>
+    <RootProviders>
       <NotFoundContent />
-    </Provider>
+    </RootProviders>
   )
 }

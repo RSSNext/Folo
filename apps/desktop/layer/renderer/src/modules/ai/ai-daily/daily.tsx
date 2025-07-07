@@ -48,8 +48,8 @@ import { defineQuery } from "~/lib/defineQuery"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { hasCommand } from "~/modules/command/hooks/use-command"
 import { StarIcon } from "~/modules/entry-column/star-icon"
-import { EntryContent } from "~/modules/entry-content"
 import { CommandDropdownMenuItem } from "~/modules/entry-content/actions/more-actions"
+import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
@@ -412,12 +412,7 @@ const EntryToastPreview = ({ entryId }: { entryId: string }) => {
       onPointerDownCapture={stopPropagation}
       variants={variants}
       onWheel={stopPropagation}
-      transition={{
-        type: "spring",
-        mass: 0.4,
-        tension: 120,
-        friction: 1.4,
-      }}
+      transition={Spring.presets.snappy}
       exit="exit"
       layout="size"
       className={cn(

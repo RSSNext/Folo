@@ -1,4 +1,5 @@
 import type { AuthClient } from "@follow/shared/auth"
+import type { QueryClient } from "@tanstack/react-query"
 
 import type { APIClient } from "./types"
 
@@ -27,5 +28,7 @@ function createSimpleContext<T>() {
 
 export const apiClientSimpleContext = createSimpleContext<APIClient>()
 export const authClientSimpleContext = createSimpleContext<AuthClient>()
+export const queryClientSimpleContext = createSimpleContext<QueryClient>()
 export const apiClient = apiClientSimpleContext.consumer
 export const authClient = authClientSimpleContext.consumer
+export const queryClient = queryClientSimpleContext.consumer

@@ -19,7 +19,7 @@ export function useLongPress({
   threshold = 500,
   ...events
 }: UseLongPressOptions) {
-  const timerRef = useRef<NodeJS.Timeout>(undefined)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const isLongPress = useRef(false)
   const startPosition = useRef<{ x: number; y: number }>(undefined)
 

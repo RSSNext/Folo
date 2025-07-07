@@ -1,5 +1,5 @@
 import { env } from "@follow/shared/env.desktop"
-import { initializeApp } from "firebase/app"
+import { getApp } from "firebase/app"
 import { getMessaging, getToken } from "firebase/messaging"
 
 import { setAppMessagingToken } from "./atoms/app"
@@ -31,7 +31,7 @@ export async function registerWebPushNotifications() {
 
     await navigator.serviceWorker.ready
 
-    const app = initializeApp(firebaseConfig)
+    const app = getApp()
     const messaging = getMessaging(app)
 
     const permission = await Notification.requestPermission()

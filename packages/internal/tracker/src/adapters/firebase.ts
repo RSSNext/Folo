@@ -1,6 +1,6 @@
 import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics"
 
-import { TrackerMapper } from "../points"
+import { TrackerMapper } from "../enums"
 import type { IdentifyPayload, TrackerAdapter, TrackPayload } from "./base"
 
 export interface FirebaseAdapterConfig {

@@ -88,6 +88,7 @@ export const entriesTable = sqliteTable("entries", {
   url: text("url"),
   content: text("content"),
   readabilityContent: text("source_content"),
+  readabilityUpdatedAt: integer("readability_updated_at", { mode: "timestamp_ms" }),
   description: text("description"),
   guid: text("guid").notNull(),
   author: text("author"),
@@ -119,7 +120,7 @@ export const collectionsTable = sqliteTable("collections", {
 export const summariesTable = sqliteTable(
   "summaries",
   {
-    entryId: text("entry_id").notNull().primaryKey(),
+    entryId: text("entry_id").notNull(),
     summary: text("summary").notNull(),
     readabilitySummary: text("readability_summary"),
     createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
@@ -131,7 +132,7 @@ export const summariesTable = sqliteTable(
 export const translationsTable = sqliteTable(
   "translations",
   (t) => ({
-    entryId: t.text("entry_id").notNull().primaryKey(),
+    entryId: t.text("entry_id").notNull(),
     language: t.text("language").$type<SupportedActionLanguage>().notNull(),
     title: t.text("title"),
     description: t.text("description"),

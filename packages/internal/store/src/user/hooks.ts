@@ -17,7 +17,7 @@ export const usePrefetchSessionUser = () => {
 
   useEffect(() => {
     if (query.data) {
-      const user = query.data
+      const { user } = query.data
       tracker.identify(user)
     }
   }, [query.data])
@@ -38,7 +38,7 @@ export const useWhoami = () => {
   return useUserStore((state) => state.whoami)
 }
 
-export const useRole = () => {
+export const useUserRole = () => {
   return useUserStore((state) => state.role)
 }
 

@@ -14,20 +14,20 @@
     "@egoist/tailwindcss-icons": "1.9.0",
     "@iconify-json/logos": "1.2.4",
     "@iconify-json/mingcute": "1.2.3",
-    "@iconify-json/simple-icons": "1.2.36",
+    "@iconify-json/simple-icons": "1.2.39",
     "@iconify/tools": "4.1.2",
     "@iconify/utils": "2.3.0",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.16",
-    "es-toolkit": "1.38.0",
+    "es-toolkit": "1.39.3",
     "tailwindcss-animate": "1.0.7",
-    "tailwindcss-motion": "1.1.0",
+    "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",
     "tailwindcss-safe-area": "0.6.0",
-    "tailwindcss-uikit-colors": "0.6.2"
+    "tailwindcss-uikit-colors": "1.0.0-alpha.1"
   },
   "devDependencies": {
-    "postcss": "8.5.3",
+    "postcss": "8.5.6",
     "postcss-js": "4.0.1",
     "workspace-root": "3.3.1"
   }

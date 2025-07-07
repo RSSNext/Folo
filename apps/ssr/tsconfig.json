@@ -33,7 +33,7 @@
     "./index.ts",
     "./api/index.ts",
     "./scripts/**/*.ts",
-    "./tsup.config.ts",
+    "tsdown.config.ts",
     "./client/**/*.ts",
     "./client/**/*.tsx",
     "vite.config.mts",

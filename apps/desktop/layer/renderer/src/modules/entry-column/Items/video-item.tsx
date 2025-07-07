@@ -24,6 +24,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { checkLanguage } from "~/lib/translate"
+import { EntryContent } from "~/modules/entry-content/components/entry-content/EntryContent"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 
@@ -45,10 +46,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
     const duration = formatDuration(seconds)
 
     const media = state.media || []
-    const videos = media.filter((a) => a.type === "video")
     const firstMedia = media[0]
 
-    return { attachments, duration, firstMedia, id, url, videos }
+    return { attachments, duration, firstMedia, id, url, media }
   })
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
@@ -70,7 +70,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
     [entry?.attachments, entry?.url],
   )
   const modalStack = useModalStack()
-  const previewMedia = usePreviewMedia()
+
+  const entryContent = useMemo(() => <EntryContent entryId={entryId} noMedia compact />, [entryId])
+  const previewMedia = usePreviewMedia(entryContent)
 
   const ref = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
@@ -118,7 +120,7 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
               overlay: true,
             })
           } else {
-            previewMedia(entry.videos)
+            previewMedia(entry.media)
           }
         }}
       >

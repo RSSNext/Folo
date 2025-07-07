@@ -14,7 +14,11 @@ import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
 import { getSubscriptionById } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
-import type { FeedIdOrInboxHandle, PublishAtTimeRangeFilter } from "../unread/types"
+import type {
+  FeedIdOrInboxHandle,
+  InsertedBeforeTimeRangeFilter,
+  PublishAtTimeRangeFilter,
+} from "../unread/types"
 import { whoami } from "../user/getters"
 import { userActions } from "../user/store"
 import { getEntry } from "./getter"
@@ -248,10 +252,12 @@ class EntryActions implements Hydratable, Resetable {
     entryId,
     content,
     readabilityContent,
+    readabilityUpdatedAt,
   }: {
     entryId: EntryId
     content?: string
     readabilityContent?: string
+    readabilityUpdatedAt?: Date
   }) {
     immerSet((draft) => {
       const entry = draft.data[entryId]
@@ -261,6 +267,7 @@ class EntryActions implements Hydratable, Resetable {
       }
       if (readabilityContent) {
         entry.readabilityContent = readabilityContent
+        entry.readabilityUpdatedAt = readabilityUpdatedAt
       }
     })
   }
@@ -269,14 +276,21 @@ class EntryActions implements Hydratable, Resetable {
     entryId,
     content,
     readabilityContent,
+    readabilityUpdatedAt = new Date(),
   }: {
     entryId: EntryId
     content?: string
     readabilityContent?: string
+    readabilityUpdatedAt?: Date
   }) {
     const tx = createTransaction()
     tx.store(() => {
-      this.updateEntryContentInSession({ entryId, content, readabilityContent })
+      this.updateEntryContentInSession({
+        entryId,
+        content,
+        readabilityContent,
+        readabilityUpdatedAt,
+      })
     })
 
     tx.persist(() => {
@@ -285,7 +299,7 @@ class EntryActions implements Hydratable, Resetable {
       }
 
       if (readabilityContent) {
-        EntryService.patch({ id: entryId, readabilityContent })
+        EntryService.patch({ id: entryId, readabilityContent, readabilityUpdatedAt })
       }
     })
 
@@ -301,7 +315,7 @@ class EntryActions implements Hydratable, Resetable {
     entryIds?: EntryId[]
     ids?: FeedIdOrInboxHandle[]
     read: boolean
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
   }) {
     const affectedEntryIds = new Set<EntryId>()
 
@@ -315,8 +329,16 @@ class EntryActions implements Hydratable, Resetable {
 
           if (
             time &&
+            "startTime" in time &&
             (+new Date(entry.publishedAt) < time.startTime ||
               +new Date(entry.publishedAt) > time.endTime)
+          ) {
+            continue
+          }
+          if (
+            time &&
+            "insertedBefore" in time &&
+            +new Date(entry.insertedAt) >= time.insertedBefore
           ) {
             continue
           }
@@ -341,8 +363,16 @@ class EntryActions implements Hydratable, Resetable {
         for (const entry of entries) {
           if (
             time &&
+            "startTime" in time &&
             (+new Date(entry.publishedAt) < time.startTime ||
               +new Date(entry.publishedAt) > time.endTime)
+          ) {
+            continue
+          }
+          if (
+            time &&
+            "insertedBefore" in time &&
+            +new Date(entry.insertedAt) >= time.insertedBefore
           ) {
             continue
           }
@@ -484,17 +514,18 @@ class EntrySyncServices {
       if (entryInDB) {
         entry.content = entryInDB.content
         entry.readabilityContent = entryInDB.readabilityContent
+        entry.readabilityUpdatedAt = entryInDB.readabilityUpdatedAt
       }
     }
 
     await entryActions.upsertMany(entries)
 
-    if (isCollection && res.data) {
-      if (view === undefined) {
-        console.error("view is required for collection")
-      }
-      const collections = honoMorph.toCollections(res.data, view ?? 0)
-      await collectionActions.upsertMany(collections)
+    if (typeof view === "number") {
+      const { collections, entryIdsNotInCollections } = honoMorph.toCollections(res.data, view)
+      await collectionActions.upsertMany(collections, {
+        reset: params.isCollection && !pageParam,
+      })
+      await collectionActions.delete(entryIdsNotInCollections)
     }
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
@@ -541,30 +572,36 @@ class EntrySyncServices {
     fallBack?: () => Promise<string | null | undefined>,
   ) {
     const entry = getEntry(entryId)
+    if (!entry?.url) return entry
+    if (
+      entry.readabilityContent &&
+      entry.readabilityUpdatedAt &&
+      entry.readabilityUpdatedAt.getTime() > Date.now() - 1000 * 60 * 60 * 24 * 3
+    ) {
+      return entry
+    }
 
-    if (entry?.url && entry?.readabilityContent === null) {
-      let readabilityContent: string | null | undefined
+    let readabilityContent: string | null | undefined
 
-      try {
-        const { data: contentByFetch } = await apiClient().entries.readability.$get({
-          query: {
-            id: entryId,
-          },
-        })
-        readabilityContent = contentByFetch?.content || null
-      } catch (error) {
-        if (fallBack) {
-          readabilityContent = await fallBack()
-        } else {
-          throw error
-        }
+    try {
+      const { data: contentByFetch } = await apiClient().entries.readability.$get({
+        query: {
+          id: entryId,
+        },
+      })
+      readabilityContent = contentByFetch?.content || null
+    } catch (error) {
+      if (fallBack) {
+        readabilityContent = await fallBack()
+      } else {
+        throw error
       }
-      if (readabilityContent && entry?.readabilityContent !== readabilityContent) {
-        await entryActions.updateEntryContent({
-          entryId,
-          readabilityContent,
-        })
-      }
+    }
+    if (readabilityContent) {
+      await entryActions.updateEntryContent({
+        entryId,
+        readabilityContent,
+      })
     }
     return entry
   }
@@ -606,6 +643,7 @@ class EntrySyncServices {
                 cookie: options.cookie,
               }
             : undefined,
+          credentials: options?.cookie ? "omit" : "include",
           body: JSON.stringify({
             ids: nextIds,
           }),

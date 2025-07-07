@@ -23,8 +23,8 @@ export const views: ViewDefinition[] = [
   {
     name: "feed_view_type.articles",
     icon: <i className="i-mgc-paper-cute-fi" />,
-    className: "text-accent",
-    peerClassName: "peer-checked:text-accent dark:peer-checked:text-accent",
+    className: "text-folo",
+    peerClassName: "peer-checked:text-folo dark:peer-checked:text-folo",
     translation: "title,description",
     view: FeedViewType.Articles,
     activeColor: "#FF5C00",

@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu.js"
 
-import { useSettingModal } from "../settings/modal/use-setting-modal"
+import { useSettingModal } from "../settings/modal/useSettingModal"
 import { availableActionMap } from "./constants"
 
 export const ThenSection = ({ index }: { index: number }) => {

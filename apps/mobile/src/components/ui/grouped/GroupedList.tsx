@@ -7,6 +7,7 @@ import type { PressableProps, ViewProps } from "react-native"
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import type { SFSymbol } from "sf-symbols-typescript"
+import { titleCase } from "title-case"
 
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteRightLine } from "@/src/icons/mingcute_right_line"
@@ -29,6 +30,7 @@ interface GroupedInsetListCardProps {
 }
 
 interface BaseCellClassNames {
+  className?: string
   leftClassName?: string
   rightClassName?: string
 }
@@ -58,7 +60,7 @@ export const GroupedInsetListCard: FC<
       {...props}
       style={[{ marginHorizontal: GROUPED_LIST_MARGIN }, props.style]}
       className={cn(
-        "bg-secondary-system-grouped-background flex overflow-hidden rounded-[10px]",
+        "bg-secondary-system-grouped-background flex flex-col overflow-hidden rounded-[10px]",
         className,
       )}
     >
@@ -146,11 +148,11 @@ export const GroupedInsetListNavigationLink: FC<
     disabled?: boolean
     postfix?: React.ReactNode
   } & BaseCellClassNames
-> = ({ label, icon, onPress, disabled, leftClassName, rightClassName, postfix }) => {
+> = ({ label, icon, onPress, disabled, className, leftClassName, rightClassName, postfix }) => {
   const rightIconColor = useColor("tertiaryLabel")
 
   return (
-    <Pressable onPress={onPress} disabled={disabled}>
+    <Pressable onPress={onPress} disabled={disabled} className={className}>
       {({ pressed }) => (
         <GroupedInsetListBaseCell
           className={cn(pressed ? "bg-system-fill" : undefined, disabled && "opacity-40")}
@@ -188,7 +190,6 @@ export const GroupedInsetListNavigationLinkIcon: FC<
     </View>
   )
 }
-
 export const GroupedInsetListCell: FC<
   {
     label: string
@@ -197,17 +198,17 @@ export const GroupedInsetListCell: FC<
     icon?: SFSymbol
     onPress?: () => void
   } & BaseCellClassNames
-> = ({ label, description, children, leftClassName, rightClassName, icon, onPress }) => {
+> = ({ label, description, children, className, leftClassName, rightClassName, icon, onPress }) => {
   return (
     <GroupedInsetListBaseCell
-      className="bg-secondary-system-grouped-background flex-1"
+      className={cn("bg-secondary-system-grouped-background flex flex-1", className)}
       as={onPress ? TouchableOpacity : undefined}
       {...(onPress ? { onPress } : {})}
     >
       <View className={cn("flex-1 gap-1", leftClassName)}>
         <View className="flex-row items-center gap-2">
           {!!icon && <SymbolView name={icon} size={20} tintColor="black" />}
-          <Text className="text-label">{label}</Text>
+          <Text className="text-label">{titleCase(label)}</Text>
         </View>
         {!!description && (
           <Text className="text-secondary-label text-sm leading-tight">{description}</Text>

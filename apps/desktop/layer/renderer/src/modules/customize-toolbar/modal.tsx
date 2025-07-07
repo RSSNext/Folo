@@ -80,7 +80,7 @@ const CustomizeToolbar = () => {
 
   return (
     <div
-      className="mx-auto w-full max-w-[800px] space-y-4"
+      className="mx-auto w-full max-w-[800px] space-y-4 overflow-hidden"
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="mb-4">

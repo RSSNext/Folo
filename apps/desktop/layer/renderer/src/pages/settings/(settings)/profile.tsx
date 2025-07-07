@@ -6,12 +6,13 @@ import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { AccountManagement } from "~/modules/profile/account-management"
 import { EmailManagement } from "~/modules/profile/email-management"
+import { useTOTPModalWrapper } from "~/modules/profile/hooks"
 import { ProfileSettingForm } from "~/modules/profile/profile-setting-form"
 import { TwoFactor } from "~/modules/profile/two-factor"
 import { UpdatePasswordForm } from "~/modules/profile/update-password-form"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
-import { signOut } from "~/queries/auth"
+import { deleteUser } from "~/queries/auth"
 
 const iconName = "i-mgc-user-setting-cute-re"
 const priority = (1000 << 3) + 10
@@ -24,6 +25,7 @@ export const loader = defineSettingPageData({
 export function Component() {
   const { present } = useModalStack()
   const isInMASReview = useIsInMASReview()
+  const preset = useTOTPModalWrapper(deleteUser, { force: true })
   return (
     <>
       <SettingsTitle />
@@ -37,7 +39,6 @@ export function Component() {
           <AccountManagement />
           <UpdatePasswordForm />
           <TwoFactor />
-          {/* TODO: Temporary fake account deletion feature */}
           {isInMASReview && (
             <div className="flex items-center justify-between">
               <Label>Delete Account</Label>
@@ -52,7 +53,12 @@ export function Component() {
                           Are you sure you want to delete your account? This action is irreversible
                           and may take up to two days to take effect.
                         </p>
-                        <Button variant="outline" onClick={signOut}>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            preset({})
+                          }}
+                        >
                           Delete
                         </Button>
                       </div>

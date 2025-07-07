@@ -11,7 +11,7 @@ export function useTriangleMenu(
     const $trigger = triggerRef.current
     const $panel = panelRef
     if (!$trigger || !$panel) return
-    let timer: NodeJS.Timeout | null = null
+    let timer: ReturnType<typeof setTimeout> | null = null
     let inStartTrack = false
     const mousePath = [] as { x: number; y: number }[]
     function handleMouseMove(event: MouseEvent) {

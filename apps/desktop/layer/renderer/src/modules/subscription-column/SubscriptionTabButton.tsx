@@ -64,7 +64,7 @@ const ViewSwitchButton: FC<{
         isActive && item.className,
         "flex h-11 w-9 shrink-0 flex-col items-center gap-1 text-[1.375rem]",
         ELECTRON ? "hover:!bg-theme-item-hover" : "",
-        isOver && "border-theme-accent-400 bg-theme-accent-400/60",
+        isOver && "border-orange-400 bg-orange-400/60",
       )}
       onClick={(e) => {
         startTransition(() => {

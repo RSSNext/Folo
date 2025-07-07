@@ -35,7 +35,6 @@ import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { createErrorToaster } from "~/lib/error-parser"
-import { invalidateEntriesQuery } from "~/queries/entries"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { useModalStack } from "../../components/ui/modal/stacked/hooks"
@@ -162,12 +161,6 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
         newView: nextView,
       })
     },
-
-    onSuccess(_data, variables) {
-      invalidateEntriesQuery({
-        views: [view, variables],
-      })
-    },
   })
 
   const [isCategoryEditing, setIsCategoryEditing] = useState(false)
@@ -280,7 +273,7 @@ function FeedCategoryImpl({ data: ids, view, categoryOpenStateData }: FeedCatego
           ref={setNodeRef}
           data-active={isActive || isContextMenuOpen}
           className={cn(
-            isOver && "border-theme-accent-400 bg-theme-accent-400/60",
+            isOver && "border-orange-400 bg-orange-400/60",
             "my-px px-2.5",
             feedColumnStyles.item,
           )}
