@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import type { AIShortcut } from "@follow/shared/settings/interface"
@@ -8,6 +9,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
+import { KeyRecorder } from "~/components/ui/keyboard-recorder"
 
 import { SettingActionItem, SettingDescription } from "../control"
 import { createSettingBuilder } from "../helper/setting-builder"
@@ -175,7 +177,7 @@ const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemPr
 
   if (isEditing) {
     return (
-      <div className="border-blue border-l-4 pl-4">
+      <div className="before:bg-accent relative pl-4 before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-full before:content-['']">
         <ShortcutEditor
           shortcut={shortcut}
           onSave={handleSave}
@@ -186,30 +188,42 @@ const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemPr
   }
 
   return (
-    <div className="border-fill group flex items-start justify-between border-b pb-4">
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center gap-2">
-          <h4 className="text-text text-sm font-medium">{shortcut.name}</h4>
-          {shortcut.hotkey && (
-            <kbd className="bg-fill-secondary text-text rounded px-1.5 py-0.5 font-mono text-xs">
-              {shortcut.hotkey}
-            </kbd>
-          )}
-          <Switch
-            checked={shortcut.enabled}
-            onCheckedChange={(enabled) => onToggle(shortcut.id, enabled)}
-          />
+    <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
+      <div className="flex items-start justify-between">
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <h4 className="text-text text-sm font-medium">{shortcut.name}</h4>
+            {shortcut.hotkey && (
+              <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
+                {shortcut.hotkey}
+              </KbdCombined>
+            )}
+          </div>
+          <p className="text-text-secondary line-clamp-2 text-xs leading-relaxed">
+            {shortcut.prompt}
+          </p>
         </div>
-        <p className="text-text-secondary line-clamp-2 text-xs">{shortcut.prompt}</p>
-      </div>
 
-      <div className="ml-4 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-          <i className="i-mgc-edit-cute-re size-4" />
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => onDelete(shortcut.id)}>
-          <i className="i-mgc-delete-2-cute-re size-4" />
-        </Button>
+        <div className="ml-4 flex items-center gap-3">
+          <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
+            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+              <i className="i-mgc-edit-cute-re size-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => onDelete(shortcut.id)}>
+              <i className="i-mgc-delete-2-cute-re size-4" />
+            </Button>
+          </div>
+
+          <div className="border-fill-tertiary flex items-center gap-2 border-l pl-3">
+            <span className="text-text-tertiary text-xs font-medium">
+              {shortcut.enabled ? "ON" : "OFF"}
+            </span>
+            <Switch
+              checked={shortcut.enabled}
+              onCheckedChange={(enabled) => onToggle(shortcut.id, enabled)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -227,6 +241,7 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
   const [prompt, setPrompt] = useState(shortcut?.prompt || "")
   const [hotkey, setHotkey] = useState(shortcut?.hotkey || "")
   const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
+  const [isRecording, setIsRecording] = useState(false)
 
   const handleSave = () => {
     if (!name.trim() || !prompt.trim()) {
@@ -243,9 +258,9 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
   }
 
   return (
-    <div className="bg-fill-secondary space-y-4 rounded-lg p-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
+    <div className="bg-material-medium space-y-4 rounded-lg p-4">
+      <div className="grid grid-cols-6 gap-4">
+        <div className="col-span-4 space-y-2">
           <Label className="text-text text-xs">{t("shortcuts.name")}</Label>
           <Input
             value={name}
@@ -253,13 +268,35 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
             placeholder={t("shortcuts.name_placeholder")}
           />
         </div>
-        <div className="space-y-2">
+        <div className="col-span-2 space-y-2">
           <Label className="text-text text-xs">{t("shortcuts.hotkey")}</Label>
-          <Input
-            value={hotkey}
-            onChange={(e) => setHotkey(e.target.value)}
-            placeholder={t("shortcuts.hotkey_placeholder")}
-          />
+          <button
+            type="button"
+            className="border-border hover:bg-material-medium flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm transition-colors focus:outline-none"
+            onClick={() => setIsRecording(!isRecording)}
+          >
+            {isRecording ? (
+              <KeyRecorder
+                onBlur={() => setIsRecording(false)}
+                onChange={(keys) => {
+                  setHotkey(Array.isArray(keys) ? keys.join("+") : "")
+                  setIsRecording(false)
+                }}
+              />
+            ) : (
+              <div className="flex w-full items-center justify-center">
+                <div className="flex items-center justify-center gap-2">
+                  {hotkey ? (
+                    <KbdCombined kbdProps={{ wrapButton: false }} joint={false}>
+                      {hotkey}
+                    </KbdCombined>
+                  ) : (
+                    <span className="text-text-tertiary text-xs">Click to record</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </button>
         </div>
       </div>
 

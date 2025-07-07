@@ -134,6 +134,16 @@ export interface IntegrationSettings {
   saveSummaryAsDescription: boolean
 }
 
+export interface AIShortcut {
+  id: string
+  name: string
+  prompt: string
+  enabled: boolean
+  icon?: string
+  hotkey?: string
+}
+
 export interface AISettings {
   personalizePrompt: string
+  shortcuts: AIShortcut[]
 }

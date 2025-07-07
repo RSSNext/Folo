@@ -141,6 +141,7 @@ export const defaultIntegrationSettings: IntegrationSettings = {
 
 export const defaultAISettings: AISettings = {
   personalizePrompt: "",
+  shortcuts: [],
 }
 
 export const defaultSettings = {
