@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import { DEV, MODE, ModeEnum } from "@follow/shared/constants"
+import path from "pathe"
 
 import { isWindows } from "../env"
 

@@ -1,6 +1,7 @@
 import { copyFileSync, readFileSync, renameSync, writeFileSync } from "node:fs"
-import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+
+import { dirname, join } from "pathe"
 
 // @ts-ignore
 const __dirname = dirname(fileURLToPath(import.meta.url))

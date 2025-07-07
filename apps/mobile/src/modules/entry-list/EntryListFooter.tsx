@@ -9,7 +9,7 @@ import { useColor } from "@/src/theme/colors"
 import { getFetchEntryPayload, useSelectedFeed, useSelectedView } from "../screen/atoms"
 import { ItemSeparator } from "./ItemSeparator"
 
-export const EntryListFooter = () => {
+export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
@@ -26,6 +26,7 @@ export const EntryListFooter = () => {
             unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
+              time: fetchedTime ? { insertedBefore: fetchedTime } : undefined,
               excludePrivate: getHideAllReadSubscriptions(),
             })
           }
@@ -42,7 +43,7 @@ export const EntryListFooter = () => {
   )
 }
 
-export const GridEntryListFooter = () => {
+export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
@@ -56,6 +57,7 @@ export const GridEntryListFooter = () => {
           unreadSyncService.markBatchAsRead({
             view: selectedView,
             filter: payload,
+            time: fetchedTime ? { insertedBefore: fetchedTime } : undefined,
             excludePrivate: getHideAllReadSubscriptions(),
           })
         }

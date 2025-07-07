@@ -45,6 +45,8 @@ export const defaultGeneralSettings: GeneralSettings = {
 }
 
 export const defaultUISettings: UISettings = {
+  accentColor: "orange",
+
   // Sidebar
   entryColWidth: 356,
   feedColWidth: 256,

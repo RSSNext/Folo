@@ -1,6 +1,5 @@
-import { resolve } from "node:path"
-
 import type { ConfigContext, ExpoConfig } from "expo/config"
+import { resolve } from "pathe"
 
 import PKG from "./package.json"
 

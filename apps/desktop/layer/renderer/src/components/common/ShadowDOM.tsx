@@ -1,5 +1,7 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import { useIsDark } from "@follow/hooks"
+import { getAccentColorValue } from "@follow/shared/settings/constants"
+import { hexToHslString } from "@follow/utils"
 import { nanoid } from "nanoid"
 import type { FC, PropsWithChildren, ReactNode } from "react"
 import { createContext, createElement, use, useLayoutEffect, useMemo, useState } from "react"
@@ -85,7 +87,11 @@ export const ShadowDOM: FC<
   const dark = useIsDark()
 
   const reduceMotion = useReduceMotion()
-  const [uiFont, usePointerCursor] = useUISettingKeys(["uiFontFamily", "usePointerCursor"])
+  const [uiFont, usePointerCursor, accentColor] = useUISettingKeys([
+    "uiFontFamily",
+    "usePointerCursor",
+    "accentColor",
+  ])
 
   return (
     // @ts-expect-error
@@ -96,8 +102,9 @@ export const ShadowDOM: FC<
             () => ({
               fontFamily: `${uiFont},"SN Pro", system-ui, sans-serif`,
               "--pointer": usePointerCursor ? "pointer" : "default",
+              "--fo-a": hexToHslString(getAccentColorValue(accentColor)),
             }),
-            [uiFont, usePointerCursor],
+            [uiFont, usePointerCursor, accentColor],
           )}
           id="shadow-html"
           data-motion-reduce={reduceMotion}
