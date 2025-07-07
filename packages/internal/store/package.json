@@ -116,9 +116,9 @@
     "@follow/shared": "workspace:*",
     "@follow/tracker": "workspace:*",
     "@follow/utils": "workspace:*",
-    "@tanstack/react-query": "5.80.10",
-    "es-toolkit": "1.39.3",
+    "@tanstack/react-query": "5.81.5",
+    "es-toolkit": "1.39.6",
     "immer": "10.1.1",
-    "zustand": "5.0.5"
+    "zustand": "5.0.6"
   }
 }
