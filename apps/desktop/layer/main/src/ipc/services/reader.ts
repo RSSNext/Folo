@@ -1,10 +1,10 @@
 import fs from "node:fs"
-import path from "node:path"
 
 import { callWindowExpose } from "@follow/shared/bridge"
 import { readability } from "@follow-app/readability"
 import { app, BrowserWindow } from "electron"
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts"
+import path from "pathe"
 import type { ModelResult } from "vscode-languagedetection"
 
 import { detectCodeStringLanguage } from "../../modules/language-detection"

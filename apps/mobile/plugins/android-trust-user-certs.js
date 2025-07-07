@@ -1,6 +1,6 @@
 const { AndroidConfig, withAndroidManifest } = require("@expo/config-plugins")
 const { Paths } = require("@expo/config-plugins/build/android")
-const path = require("node:path")
+const path = require("pathe")
 const fs = require("node:fs")
 
 const fsPromises = fs.promises

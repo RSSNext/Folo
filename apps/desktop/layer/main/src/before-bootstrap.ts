@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import { app, protocol } from "electron"
+import path from "pathe"
 
 import { initializeSentry } from "./sentry"
 

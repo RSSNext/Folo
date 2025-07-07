@@ -1,9 +1,9 @@
 import { execSync } from "node:child_process"
 import { readdirSync, readFileSync, writeFileSync } from "node:fs"
-import path, { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { intro, outro, select } from "@clack/prompts"
+import path, { dirname } from "pathe"
 import color from "picocolors"
 import * as ts from "typescript"
 

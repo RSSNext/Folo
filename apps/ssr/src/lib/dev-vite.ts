@@ -1,7 +1,7 @@
-import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import type { FastifyInstance } from "fastify"
+import { dirname, resolve } from "pathe"
 import type { ViteDevServer } from "vite"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))

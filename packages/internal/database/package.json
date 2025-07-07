@@ -41,6 +41,6 @@
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "drizzle-kit": "0.31.1"
+    "drizzle-kit": "0.31.4"
   }
 }

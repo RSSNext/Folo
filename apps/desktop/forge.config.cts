@@ -3,7 +3,6 @@ import "dotenv/config"
 import crypto from "node:crypto"
 import fs, { readdirSync } from "node:fs"
 import { cp, readdir } from "node:fs/promises"
-import path, { resolve } from "node:path"
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
 import { MakerAppX } from "@electron-forge/maker-appx"
@@ -16,6 +15,7 @@ import type { ForgeConfig } from "@electron-forge/shared-types"
 import MakerAppImage from "@pengx17/electron-forge-maker-appimage"
 import setLanguages from "electron-packager-languages"
 import yaml from "js-yaml"
+import path, { resolve } from "pathe"
 import { rimraf, rimrafSync } from "rimraf"
 
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]

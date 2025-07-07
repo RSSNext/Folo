@@ -1,6 +1,7 @@
 import fs from "node:fs"
-import path, { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+
+import path, { dirname } from "pathe"
 
 type LanguageCompletion = Record<string, number>
 

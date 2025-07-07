@@ -1,13 +1,24 @@
+import type { ReactNode } from "react"
 import { useCallback, useMemo } from "react"
 import { TouchableOpacity } from "react-native"
 
 import { GaleriaContext } from "./context"
-import type { Galeria as GaleriaInterface } from "./index.ios"
 import type { GaleriaViewProps } from "./types"
+
+type GaleriaInterface = (({
+  children,
+  urls,
+  theme,
+  ids,
+}: {
+  children: React.ReactNode
+} & Partial<Pick<GaleriaContext, "theme" | "ids" | "urls">>) => ReactNode) & {
+  Image: (props: GaleriaViewProps) => ReactNode
+}
 
 const noop = () => {}
 
-const Galeria: typeof GaleriaInterface = Object.assign(
+const Galeria: GaleriaInterface = Object.assign(
   function Galeria({
     children,
     urls,
@@ -50,6 +61,6 @@ const Galeria: typeof GaleriaInterface = Object.assign(
       )
     },
   },
-) as unknown as typeof GaleriaInterface
+)
 
 export { Galeria }

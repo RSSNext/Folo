@@ -16,14 +16,14 @@
     "test:run": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "24.0.3",
-    "es-toolkit": "1.39.3",
+    "@types/node": "24.0.10",
+    "es-toolkit": "1.39.6",
     "fast-glob": "3.3.3",
     "happy-dom": "18.0.1",
-    "react-router": "7.6.2",
-    "tsdown": "0.12.8",
+    "react-router": "7.6.3",
+    "tsdown": "0.12.9",
     "typescript": "catalog:",
-    "vite": "6.3.5",
+    "vite": "7.0.2",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.4"
   },

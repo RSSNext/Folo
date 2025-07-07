@@ -1,7 +1,8 @@
 // @ts-check
 /** @type {import("eslint").ESLint.Plugin} */
 import fs from "node:fs"
-import path from "node:path"
+
+import path from "pathe"
 
 import { cleanJsonText } from "../utils.js"
 

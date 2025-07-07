@@ -2,6 +2,8 @@
 
 ## Shiny new things
 
+- Add iframe renderer support
+
 ## Improvements
 
 ## No longer broken

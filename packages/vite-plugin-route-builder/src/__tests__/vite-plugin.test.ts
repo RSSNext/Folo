@@ -23,7 +23,7 @@ vi.mock("fast-glob", () => ({
   },
 }))
 
-vi.mock("node:path", () => ({
+vi.mock("pathe", () => ({
   resolve: vi.fn((root: string, path: string) => `${root}/${path}`),
   relative: vi.fn((from: string, to: string) => to.replace(from, "")),
   dirname: vi.fn((path: string) => path.split("/").slice(0, -1).join("/")),
