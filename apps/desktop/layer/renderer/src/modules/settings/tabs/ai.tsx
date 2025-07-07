@@ -1,15 +1,21 @@
+import { Button } from "@follow/components/ui/button/index.js"
+import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { Label } from "@follow/components/ui/label/index.jsx"
+import { Switch } from "@follow/components/ui/switch/index.jsx"
+import type { AIShortcut } from "@follow/shared/settings/interface"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
-import { SettingInput, SettingTextArea } from "../control"
-import { createSetting } from "../helper/builder"
-import { SettingSectionTitle } from "../section"
+import { SettingActionItem, SettingDescription } from "../control"
+import { createSettingBuilder } from "../helper/setting-builder"
 
-const { SettingBuilder } = createSetting(useAISettingValue, setAISetting)
+const SettingBuilder = createSettingBuilder(useAISettingValue)
 
 export const SettingAI = () => {
-  const { t } = useTranslation("settings")
+  const { t } = useTranslation("ai")
 
   return (
     <div className="mt-4">
@@ -17,49 +23,271 @@ export const SettingAI = () => {
         settings={[
           {
             type: "title",
-            value: t("ai.personalize.title"),
+            value: t("personalize.title"),
           },
-
-          PersonalizePrompt,
+          PersonalizePromptSetting,
+          {
+            type: "title",
+            value: t("shortcuts.title"),
+          },
+          AIShortcutsSection,
         ]}
       />
-      <SettingSectionTitle title={t("ai.shortcuts.title")} />
-      <AIChatShortcutCard />
     </div>
   )
 }
 
-const AIChatShortcutCard = () => {
+const PersonalizePromptSetting = () => {
+  const { t } = useTranslation("ai")
+  const aiSettings = useAISettingValue()
+  const [prompt, setPrompt] = useState(aiSettings.personalizePrompt)
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      setAISetting("personalizePrompt", prompt)
+      toast.success(t("personalize.saved"))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const hasChanges = prompt !== aiSettings.personalizePrompt
+
   return (
-    <div className="bg-material-ultra-thin group/card-root relative flex flex-col gap-4 rounded-2xl border p-4 shadow-sm md:p-6">
-      <div className="absolute right-0 top-0 opacity-0 transition-opacity duration-200 group-hover/card-root:opacity-100">
-        <button
-          className="bg-background center flex size-8 -translate-y-1/2 translate-x-1/2 rounded-full border"
-          type="button"
-          onClick={() => {
-            // TODO
-          }}
-        >
-          <i className="i-mgc-close-cute-re" />
-        </button>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
+        <TextArea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={t("personalize.prompt.placeholder")}
+          className="min-h-[80px] resize-none text-sm"
+        />
+        <SettingDescription>{t("personalize.prompt.help")}</SettingDescription>
       </div>
-      <SettingInput type="text" value={""} label="Name" onChange={() => {}} vertical />
-      <SettingTextArea value={""} label="Prompt" onChange={() => {}} vertical />
+
+      {hasChanges && (
+        <div className="flex justify-end">
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
 
-const PersonalizePrompt = () => {
-  const { t } = useTranslation("settings")
+const AIShortcutsSection = () => {
+  const { t } = useTranslation("ai")
+  const { shortcuts } = useAISettingValue()
+  const [isCreating, setIsCreating] = useState(false)
+
+  const handleAddShortcut = () => {
+    setIsCreating(true)
+  }
+
+  const handleSaveShortcut = (shortcut: Omit<AIShortcut, "id">) => {
+    const newShortcut: AIShortcut = {
+      ...shortcut,
+      id: Date.now().toString(),
+    }
+    setAISetting("shortcuts", [...shortcuts, newShortcut])
+    setIsCreating(false)
+    toast.success(t("shortcuts.added"))
+  }
+
+  const handleDeleteShortcut = (id: string) => {
+    setAISetting(
+      "shortcuts",
+      shortcuts.filter((s) => s.id !== id),
+    )
+    toast.success(t("shortcuts.deleted"))
+  }
+
+  const handleToggleShortcut = (id: string, enabled: boolean) => {
+    setAISetting(
+      "shortcuts",
+      shortcuts.map((s) => (s.id === id ? { ...s, enabled } : s)),
+    )
+  }
+
+  const handleUpdateShortcut = (id: string, updatedShortcut: Omit<AIShortcut, "id">) => {
+    setAISetting(
+      "shortcuts",
+      shortcuts.map((s) => (s.id === id ? { ...updatedShortcut, id } : s)),
+    )
+    toast.success(t("shortcuts.updated"))
+  }
 
   return (
-    <SettingInput
-      type="text"
-      className="mt-4"
-      value={""}
-      label={t("ai.personalize.prompt.label")}
-      onChange={() => {}}
-      vertical
-    />
+    <div className="space-y-4">
+      <SettingDescription>{t("shortcuts.description")}</SettingDescription>
+
+      <SettingActionItem
+        label={t("shortcuts.add")}
+        action={handleAddShortcut}
+        buttonText={t("shortcuts.add")}
+      />
+
+      {isCreating && (
+        <ShortcutEditor onSave={handleSaveShortcut} onCancel={() => setIsCreating(false)} />
+      )}
+
+      {shortcuts.length === 0 && !isCreating && (
+        <div className="py-8 text-center">
+          <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
+            <i className="i-mgc-magic-2-cute-re text-text size-6" />
+          </div>
+          <h4 className="text-text mb-1 text-sm font-medium">{t("shortcuts.empty.title")}</h4>
+          <p className="text-text-secondary text-xs">{t("shortcuts.empty.description")}</p>
+        </div>
+      )}
+
+      {shortcuts.map((shortcut) => (
+        <ShortcutItem
+          key={shortcut.id}
+          shortcut={shortcut}
+          onDelete={handleDeleteShortcut}
+          onToggle={handleToggleShortcut}
+          onUpdate={handleUpdateShortcut}
+        />
+      ))}
+    </div>
+  )
+}
+
+interface ShortcutItemProps {
+  shortcut: AIShortcut
+  onDelete: (id: string) => void
+  onToggle: (id: string, enabled: boolean) => void
+  onUpdate: (id: string, shortcut: Omit<AIShortcut, "id">) => void
+}
+
+const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemProps) => {
+  const [isEditing, setIsEditing] = useState(false)
+
+  const handleSave = (updatedShortcut: Omit<AIShortcut, "id">) => {
+    onUpdate(shortcut.id, updatedShortcut)
+    setIsEditing(false)
+  }
+
+  if (isEditing) {
+    return (
+      <div className="border-blue border-l-4 pl-4">
+        <ShortcutEditor
+          shortcut={shortcut}
+          onSave={handleSave}
+          onCancel={() => setIsEditing(false)}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-fill group flex items-start justify-between border-b pb-4">
+      <div className="flex-1 space-y-1">
+        <div className="flex items-center gap-2">
+          <h4 className="text-text text-sm font-medium">{shortcut.name}</h4>
+          {shortcut.hotkey && (
+            <kbd className="bg-fill-secondary text-text rounded px-1.5 py-0.5 font-mono text-xs">
+              {shortcut.hotkey}
+            </kbd>
+          )}
+          <Switch
+            checked={shortcut.enabled}
+            onCheckedChange={(enabled) => onToggle(shortcut.id, enabled)}
+          />
+        </div>
+        <p className="text-text-secondary line-clamp-2 text-xs">{shortcut.prompt}</p>
+      </div>
+
+      <div className="ml-4 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+          <i className="i-mgc-edit-cute-re size-4" />
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => onDelete(shortcut.id)}>
+          <i className="i-mgc-delete-2-cute-re size-4" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+interface ShortcutEditorProps {
+  shortcut?: AIShortcut
+  onSave: (shortcut: Omit<AIShortcut, "id">) => void
+  onCancel: () => void
+}
+
+const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => {
+  const { t } = useTranslation("ai")
+  const [name, setName] = useState(shortcut?.name || "")
+  const [prompt, setPrompt] = useState(shortcut?.prompt || "")
+  const [hotkey, setHotkey] = useState(shortcut?.hotkey || "")
+  const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
+
+  const handleSave = () => {
+    if (!name.trim() || !prompt.trim()) {
+      toast.error(t("shortcuts.validation.required"))
+      return
+    }
+
+    onSave({
+      name: name.trim(),
+      prompt: prompt.trim(),
+      hotkey: hotkey.trim() || undefined,
+      enabled,
+    })
+  }
+
+  return (
+    <div className="bg-fill-secondary space-y-4 rounded-lg p-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="text-text text-xs">{t("shortcuts.name")}</Label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t("shortcuts.name_placeholder")}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-text text-xs">{t("shortcuts.hotkey")}</Label>
+          <Input
+            value={hotkey}
+            onChange={(e) => setHotkey(e.target.value)}
+            placeholder={t("shortcuts.hotkey_placeholder")}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-text text-xs">{t("shortcuts.prompt")}</Label>
+        <TextArea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={t("shortcuts.prompt_placeholder")}
+          className="min-h-[60px] resize-none text-sm"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Switch checked={enabled} onCheckedChange={setEnabled} />
+          <Label className="text-text text-xs">{t("shortcuts.enabled")}</Label>
+        </div>
+
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button size="sm" onClick={handleSave}>
+            Save
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
