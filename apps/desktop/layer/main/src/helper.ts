@@ -1,7 +1,7 @@
-import path from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
 import { MODE, ModeEnum } from "@follow/shared/constants"
+import path from "pathe"
 
 import { isMacOS, isWindows } from "./env"
 
@@ -26,5 +26,5 @@ export const getTrayIconPath = () => {
 }
 
 export const filePathToAppUrl = (filePath: string) => {
-  return `app://follow.is${pathToFileURL(filePath).pathname}`
+  return `app://folo.is${pathToFileURL(filePath).pathname}`
 }

@@ -1,10 +1,10 @@
 import * as fs from "node:fs/promises"
-import * as path from "node:path"
-import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import chokidar from "chokidar"
 import fg from "fast-glob"
+import * as path from "pathe"
+import { dirname } from "pathe"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

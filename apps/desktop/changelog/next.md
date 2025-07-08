@@ -2,6 +2,8 @@
 
 ## Shiny new things
 
+- Add iframe tag support
+
 ## Improvements
 
 ## No longer broken

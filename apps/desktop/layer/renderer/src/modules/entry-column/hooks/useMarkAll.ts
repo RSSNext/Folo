@@ -4,10 +4,14 @@ import { unreadSyncService } from "@follow/store/unread/store"
 
 import { getGeneralSettings } from "~/atoms/settings/general"
 
-export interface MarkAllFilter {
-  startTime: number
-  endTime: number
-}
+export type MarkAllFilter =
+  | {
+      startTime: number
+      endTime: number
+    }
+  | {
+      insertedBefore: number
+    }
 
 export const markAllByRoute = async (
   data: {

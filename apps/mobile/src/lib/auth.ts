@@ -2,12 +2,20 @@ import { expoClient } from "@better-auth/expo/client"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
+import { createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import { createAuthClient } from "better-auth/react"
+import { nativeApplicationVersion } from "expo-application"
+import * as FileSystem from "expo-file-system"
 import * as SecureStore from "expo-secure-store"
 import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
+import DeviceInfo from "react-native-device-info"
 
+import { getDbPath } from "@/src/database"
+
+import { getClientId, getSessionId } from "./client-session"
+import { getUserAgent } from "./native/user-agent"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { queryClient } from "./query-client"
 
@@ -40,8 +48,30 @@ const plugins = [
 
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
+  fetchOptions: {
+    // Learn more: https://better-fetch.vercel.app/docs/hooks
+    onRequest: async (ctx) => {
+      const headers = createMobileAPIHeaders({
+        version: nativeApplicationVersion || "",
+        rnPlatform: {
+          OS: Platform.OS,
+          isPad: Platform.OS === "ios" && Platform.isPad,
+        },
+        installerPackageName: await DeviceInfo.getInstallerPackageName(),
+      })
+
+      Object.entries(headers).forEach(([key, value]) => {
+        ctx.headers.set(key, value)
+      })
+      ctx.headers.set("User-Agent", await getUserAgent())
+      return ctx
+    },
+    headers: {
+      "X-Client-Id": getClientId(),
+      "X-Session-Id": getSessionId(),
+    },
+  },
   plugins,
-  // TODO: add x-app-platform, x-app-version headers
   fetchOptions: {
     onRequest(context) {
       const value = Storage.getItemSync("referral-code")
@@ -68,7 +98,6 @@ export const {
   oneTimeToken,
   sendVerificationEmail,
   signIn,
-  signOut,
   signUp,
   twoFactor,
   unlinkAccount,
@@ -102,4 +131,21 @@ export function isAuthCodeValid(authCode: string) {
   return (
     authCode.length === 6 && !Array.from(authCode).some((c) => Number.isNaN(Number.parseInt(c)))
   )
+}
+
+export const signOut = async () => {
+  await authClient.signOut()
+  const dbPath = getDbPath()
+  await FileSystem.deleteAsync(dbPath)
+  await expo.reloadAppAsync("User sign out")
+}
+
+export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string }) => {
+  if (!TOTPCode) {
+    return
+  }
+  await authClient.deleteUserCustom({
+    TOTPCode,
+  })
+  await signOut()
 }

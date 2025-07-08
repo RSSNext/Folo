@@ -29,6 +29,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         handle: "innei",
         role: UserRole.Free,
         roleEndAt: new Date(),
+        deleted: false,
       }
     } else {
       return null

@@ -111,6 +111,7 @@ export function GuideModalContent({ onClose }: { onClose: () => void }) {
             <ProfileSettingForm
               className="w-[500px] max-w-full"
               buttonClassName="text-center !mt-8"
+              hideAvatar={true}
             />
           ),
           icon: "i-mgc-user-setting-cute-re",
@@ -301,7 +302,7 @@ function Step({ step, currentStep }: { step: number; currentStep: number }) {
           type: "tween",
           ease: "circOut",
         }}
-        className="bg-theme-accent/20 absolute inset-0 rounded-full"
+        className="bg-accent/20 absolute inset-0 rounded-full"
       />
 
       <m.div

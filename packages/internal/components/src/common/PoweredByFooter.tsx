@@ -18,7 +18,7 @@ const footerSections: FooterSection[] = [
   {
     title: "Product",
     links: [
-      { href: "https://follow.is", label: "Home", external: true },
+      { href: "https://folo.is", label: "Home", external: true },
       { href: "https://github.com/RSSNext/folo", label: "GitHub", external: true },
       { href: "https://github.com/RSSNext/folo/releases", label: "Download", external: true },
     ],
@@ -32,7 +32,7 @@ const footerSections: FooterSection[] = [
         label: "Discord",
         external: true,
       },
-      { href: "https://x.com/follow_app_", label: "Twitter", external: true },
+      { href: "https://x.com/folo_is", label: "Twitter", external: true },
     ],
   },
   {
@@ -59,7 +59,7 @@ const socialLinks = [
     icon: "i-simple-icons-github",
   },
   {
-    href: "https://twitter.com/follow_app_",
+    href: "https://twitter.com/folo_is",
     label: "Twitter",
     icon: "i-simple-icons-x",
   },
@@ -140,7 +140,7 @@ export const PoweredByFooter: Component = ({ className }) => (
             </p>
             <div className="flex items-center justify-center gap-4 md:justify-start">
               <a
-                href="https://app.follow.is/privacy-policy"
+                href="https://app.folo.is/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-text-secondary hover:text-text text-xs transition-colors"
@@ -148,7 +148,7 @@ export const PoweredByFooter: Component = ({ className }) => (
                 Privacy Policy
               </a>
               <a
-                href="https://app.follow.is/terms"
+                href="https://app.folo.is/terms"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-text-secondary hover:text-text text-xs transition-colors"

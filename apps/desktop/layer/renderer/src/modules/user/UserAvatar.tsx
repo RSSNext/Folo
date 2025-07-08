@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { UserRole } from "@follow/constants"
-import { usePrefetchUser, useUserRole, useWhoami } from "@follow/store/user/hooks"
+import { usePrefetchUser, useUserById, useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
@@ -37,13 +37,14 @@ export const UserAvatar = ({
   const role = useUserRole()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
-  const profile = usePrefetchUser(userId)
+  usePrefetchUser(userId)
+  const profile = useUserById(userId)
 
   if (!userId && status !== "authenticated") {
     return <LoginButton {...props} />
   }
 
-  const renderUserData = userId ? profile.data : whoami
+  const renderUserData = userId ? profile : whoami
   const randomColor = stringToHue(renderUserData?.name || "")
   return (
     <div

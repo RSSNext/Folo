@@ -37,11 +37,11 @@
     "clsx": "2.1.1",
     "dompurify": "3.2.6",
     "linkedom": "0.18.11",
-    "motion": "12.18.1",
+    "motion": "12.23.0",
     "nanoid": "5.1.5",
     "path-to-regexp": "8.2.0",
     "tailwind-merge": "3.3.1",
-    "tldts": "7.0.9",
+    "tldts": "7.0.10",
     "uniqolor": "1.1.1"
   },
   "devDependencies": {

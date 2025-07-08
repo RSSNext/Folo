@@ -1,4 +1,3 @@
-import { Image } from "expo-image"
 import * as React from "react"
 import { useState } from "react"
 import { ActivityIndicator, StyleSheet } from "react-native"
@@ -13,6 +12,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated"
+
+import { Image as ProxyImage } from "@/src/components/ui/image/Image"
 
 import type { Dimensions as ImageDimensions, ImageSource, Transform } from "../../@types"
 import type { TransformMatrix } from "../../transforms"
@@ -345,7 +346,7 @@ const ImageItem = ({
           {showLoader && <ActivityIndicator size="small" color="#FFF" style={styles.loading} />}
           <Animated.View style={imageCropStyle}>
             <Animated.View style={imageStyle}>
-              <Image
+              <ProxyImage
                 contentFit="contain"
                 source={{ uri: imageSrc.uri }}
                 placeholderContentFit="contain"
@@ -359,7 +360,7 @@ const ImageItem = ({
                         onLoad({ width: e.source.width, height: e.source.height })
                       }
                 }
-                style={{ flex: 1, borderRadius }}
+                style={{ flex: 1, borderRadius, backgroundColor: "transparent" }}
                 accessibilityHint=""
                 accessibilityIgnoresInvertColors
                 cachePolicy="memory"

@@ -27,7 +27,7 @@ export const BoostCertification = ({
       <TooltipTrigger asChild>
         <i
           className={cn(
-            "i-mgc-rocket-cute-fi cursor-button text-theme-accent-500 hover:bg-theme-accent-400 ml-1.5 shrink-0",
+            "i-mgc-rocket-cute-fi cursor-button ml-1.5 shrink-0 text-orange-500 hover:bg-orange-400",
             className,
           )}
           onClick={(e) => {
@@ -40,7 +40,7 @@ export const BoostCertification = ({
       <TooltipPortal>
         <TooltipContent className="px-2 py-1">
           <div className="flex items-center text-sm">
-            <i className="i-mgc-rocket-cute-fi text-theme-accent-500 animate-rocket mr-2 shrink-0" />
+            <i className="i-mgc-rocket-cute-fi animate-rocket mr-2 shrink-0 text-orange-500" />
             {t("boost.feed_being_boosted")}
           </div>
         </TooltipContent>

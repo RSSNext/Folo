@@ -12,6 +12,6 @@
     "build": "tsx script/build.ts"
   },
   "devDependencies": {
-    "marked": "15.0.12"
+    "marked": "16.0.0"
   }
 }

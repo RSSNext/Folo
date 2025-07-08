@@ -1,6 +1,5 @@
-import { resolve } from "node:path"
-
 import { defineConfig } from "electron-vite"
+import { resolve } from "pathe"
 
 import { getGitHash } from "../../scripts/lib"
 import rendererConfig from "./configs/vite.electron-render.config"

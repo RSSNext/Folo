@@ -1,7 +1,7 @@
-import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { set } from "es-toolkit/compat"
+import path from "pathe"
 import type { Logger, Plugin } from "vite"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))

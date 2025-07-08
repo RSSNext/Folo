@@ -1,9 +1,8 @@
 // @ts-check
-import path from "node:path"
-
 import { fixupPluginRules } from "@eslint/compat"
 import { defineConfig } from "eslint-config-hyoban"
 import reactNative from "eslint-plugin-react-native"
+import path from "pathe"
 
 import checkI18nJson from "./plugins/eslint/eslint-check-i18n-json.js"
 import noDebug from "./plugins/eslint/eslint-no-debug.js"
@@ -109,6 +108,23 @@ export default defineConfig(
       "package-json-extend/ensure-package-version": "error",
       "package-json-extend/no-duplicate-package": "error",
       "package-json/require-type": 0,
+    },
+  },
+  {
+    files: ["**/*.{js,ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "node:path",
+              message:
+                "For better cross-platform compatibility, please use 'pathe' instead of 'node:path'",
+            },
+          ],
+        },
+      ],
     },
   },
   {

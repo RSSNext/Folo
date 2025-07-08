@@ -1,8 +1,8 @@
 import fs from "node:fs"
-import path, { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { set } from "es-toolkit/compat"
+import path, { dirname } from "pathe"
 import type { Plugin } from "vite"
 
 export function localesPlugin(): Plugin {

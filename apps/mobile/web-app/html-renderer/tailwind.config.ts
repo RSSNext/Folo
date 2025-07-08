@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import { extendConfig } from "@follow/configs/tailwindcss/web"
+import path from "pathe"
 
 const rootDir = path.resolve(__dirname, "../../../..")
 

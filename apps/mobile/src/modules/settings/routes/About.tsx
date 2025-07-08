@@ -30,7 +30,7 @@ const links = [
   {
     title: "X",
     icon: SocialXCuteReIcon,
-    url: "https://x.com/intent/follow?screen_name=follow_app_",
+    url: "https://x.com/intent/follow?screen_name=folo_is",
     iconBackgroundColor: "#000000",
     iconColor: "#FFFFFF",
   },

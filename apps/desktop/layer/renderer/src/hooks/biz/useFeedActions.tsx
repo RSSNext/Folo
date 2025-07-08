@@ -310,7 +310,7 @@ export const useFeedActions = ({
         disabled: isEntryList,
         click: () => {
           copyToClipboard(
-            `https://badge.follow.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
+            `https://badge.folo.is/feed/${feedId}?color=FF5C00&labelColor=black&style=flat-square`,
           )
         },
       }),

@@ -1,8 +1,8 @@
-import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
+import { dirname, resolve } from "pathe"
 import { tsImport } from "tsx/esm/api"
 import { defineConfig } from "vite"
 
