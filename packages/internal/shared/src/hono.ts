@@ -1,20 +1,21 @@
+// @ts-nocheck
 import { HttpBindings } from "@hono/node-server";
 import * as zod738 from "zod";
 import { z } from "zod";
 import * as better_auth245 from "better-auth";
 import { BetterAuthOptions } from "better-auth";
 import * as better_auth_plugins250 from "better-auth/plugins";
-import * as better_call84 from "better-call";
-import * as drizzle_orm778 from "drizzle-orm";
+import * as better_call37 from "better-call";
+import * as drizzle_orm782 from "drizzle-orm";
 import { InferInsertModel, InferSelectModel, SQL } from "drizzle-orm";
 import * as drizzle_orm_pg_core728 from "drizzle-orm/pg-core";
 import { AnyPgColumn } from "drizzle-orm/pg-core";
-import * as zod_v487 from "zod/v4";
-import * as ai42 from "ai";
+import * as zod_v440 from "zod/v4";
+import * as ai55 from "ai";
 import * as hono_utils_http_status0 from "hono/utils/http-status";
 import * as hono_types2 from "hono/types";
 import * as hono_hono_base36 from "hono/hono-base";
-import * as zod_v4_core88 from "zod/v4/core";
+import * as zod_v4_core41 from "zod/v4/core";
 
 //#region src/types/env.d.ts
 type Env = {
@@ -856,8 +857,8 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
     };
   }[] | null | undefined;
 }>;
-declare const actionsRelations: drizzle_orm778.Relations<"actions", {
-  users: drizzle_orm778.One<"user", true>;
+declare const actionsRelations: drizzle_orm782.Relations<"actions", {
+  users: drizzle_orm782.One<"user", true>;
 }>;
 type ActionsModel = z.infer<typeof actionsOpenAPISchema>;
 type SettingsModel = Exclude<z.infer<typeof actionsItemOpenAPISchema>["result"], undefined>;
@@ -1626,10 +1627,10 @@ declare const collectionsOpenAPISchema: zod738.ZodObject<{
   feedId: string;
   entryId: string;
 }>;
-declare const collectionsRelations: drizzle_orm778.Relations<"collections", {
-  users: drizzle_orm778.One<"user", true>;
-  entries: drizzle_orm778.One<"entries", true>;
-  feeds: drizzle_orm778.One<"feeds", true>;
+declare const collectionsRelations: drizzle_orm782.Relations<"collections", {
+  users: drizzle_orm782.One<"user", true>;
+  entries: drizzle_orm782.One<"entries", true>;
+  feeds: drizzle_orm782.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/entries.d.ts
@@ -1656,18 +1657,18 @@ type ExtraModel = {
   }[];
 };
 declare const CommonEntryFields: {
-  id: drizzle_orm778.HasRuntimeDefault<drizzle_orm778.HasDefault<drizzle_orm778.IsPrimaryKey<drizzle_orm778.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
+  id: drizzle_orm782.HasRuntimeDefault<drizzle_orm782.HasDefault<drizzle_orm782.IsPrimaryKey<drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
   title: drizzle_orm_pg_core728.PgTextBuilderInitial<"title", [string, ...string[]]>;
   url: drizzle_orm_pg_core728.PgTextBuilderInitial<"url", [string, ...string[]]>;
   content: drizzle_orm_pg_core728.PgTextBuilderInitial<"content", [string, ...string[]]>;
   description: drizzle_orm_pg_core728.PgTextBuilderInitial<"description", [string, ...string[]]>;
-  guid: drizzle_orm778.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
+  guid: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
   author: drizzle_orm_pg_core728.PgTextBuilderInitial<"author", [string, ...string[]]>;
   authorUrl: drizzle_orm_pg_core728.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
   authorAvatar: drizzle_orm_pg_core728.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
-  insertedAt: drizzle_orm778.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"inserted_at">>;
-  publishedAt: drizzle_orm778.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"published_at">>;
-  media: drizzle_orm778.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"media">, MediaModel[]>;
+  insertedAt: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"inserted_at">>;
+  publishedAt: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"published_at">>;
+  media: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"media">, MediaModel[]>;
   categories: drizzle_orm_pg_core728.PgArrayBuilder<{
     name: "categories";
     dataType: "array";
@@ -1692,8 +1693,8 @@ declare const CommonEntryFields: {
     enumValues: [string, ...string[]];
     driverParam: string;
   }>;
-  attachments: drizzle_orm778.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
-  extra: drizzle_orm778.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"extra">, ExtraModel>;
+  attachments: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
+  extra: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"extra">, ExtraModel>;
   language: drizzle_orm_pg_core728.PgTextBuilderInitial<"language", [string, ...string[]]>;
 };
 declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
@@ -1919,7 +1920,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm778.Column<{
+      baseColumn: drizzle_orm782.Column<{
         name: "categories";
         tableName: "entries";
         dataType: "string";
@@ -1946,7 +1947,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm778.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
     attachments: drizzle_orm_pg_core728.PgColumn<{
@@ -2398,10 +2399,10 @@ declare const entriesOpenAPISchema: z.ZodObject<Omit<{
     }[] | null | undefined;
   } | null | undefined;
 }>;
-declare const entriesRelations: drizzle_orm778.Relations<"entries", {
-  feeds: drizzle_orm778.One<"feeds", true>;
-  collections: drizzle_orm778.Many<"collections">;
-  feedPowerTokens: drizzle_orm778.One<"feedPowerTokens", true>;
+declare const entriesRelations: drizzle_orm782.Relations<"entries", {
+  feeds: drizzle_orm782.One<"feeds", true>;
+  collections: drizzle_orm782.Many<"collections">;
+  feedPowerTokens: drizzle_orm782.One<"feedPowerTokens", true>;
 }>;
 type EntriesModel = InferInsertModel<typeof entries> & {
   attachments?: AttachmentsModel[] | null;
@@ -2441,7 +2442,7 @@ declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm778.Column<{
+      baseColumn: drizzle_orm782.Column<{
         name: "user_ids";
         tableName: "urlReads";
         dataType: "string";
@@ -2468,7 +2469,7 @@ declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm778.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
     count: drizzle_orm_pg_core728.PgColumn<{
@@ -2618,8 +2619,8 @@ declare const feedAnalyticsOpenAPISchema: zod738.ZodObject<{
   subscriptionCount: number | null;
   latestEntryPublishedAt: string | null;
 }>;
-declare const feedAnalyticsRelations: drizzle_orm778.Relations<"feed_analytics", {
-  feed: drizzle_orm778.One<"feeds", true>;
+declare const feedAnalyticsRelations: drizzle_orm782.Relations<"feed_analytics", {
+  feed: drizzle_orm782.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/feeds/feeds.d.ts
@@ -2994,12 +2995,12 @@ declare const feedsOpenAPISchema: zod738.ZodObject<{
   rsshubNamespace: string | null;
   nsfw: boolean | null;
 }>;
-declare const feedsRelations: drizzle_orm778.Relations<"feeds", {
-  subscriptions: drizzle_orm778.Many<"subscriptions">;
-  entries: drizzle_orm778.Many<"entries">;
-  owner: drizzle_orm778.One<"user", false>;
-  migrateTo: drizzle_orm778.One<"feeds", false>;
-  trendingFeeds: drizzle_orm778.Many<"trendings_feeds">;
+declare const feedsRelations: drizzle_orm782.Relations<"feeds", {
+  subscriptions: drizzle_orm782.Many<"subscriptions">;
+  entries: drizzle_orm782.Many<"entries">;
+  owner: drizzle_orm782.One<"user", false>;
+  migrateTo: drizzle_orm782.One<"feeds", false>;
+  trendingFeeds: drizzle_orm782.Many<"trendings_feeds">;
 }>;
 type FeedModel = InferInsertModel<typeof feeds>;
 //#endregion
@@ -3155,11 +3156,11 @@ declare const subscriptionsOpenAPISchema: zod738.ZodObject<{
   feedId: string;
   isPrivate: boolean;
 }>;
-declare const subscriptionsRelations: drizzle_orm778.Relations<"subscriptions", {
-  users: drizzle_orm778.One<"user", true>;
-  feeds: drizzle_orm778.One<"feeds", true>;
-  timeline: drizzle_orm778.Many<"timeline">;
-  rsshubUsage: drizzle_orm778.One<"rsshub_usage", true>;
+declare const subscriptionsRelations: drizzle_orm782.Relations<"subscriptions", {
+  users: drizzle_orm782.One<"user", true>;
+  feeds: drizzle_orm782.One<"feeds", true>;
+  timeline: drizzle_orm782.Many<"timeline">;
+  rsshubUsage: drizzle_orm782.One<"rsshub_usage", true>;
 }>;
 //#endregion
 //#region src/schema/inboxes/entries.d.ts
@@ -3386,7 +3387,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm778.Column<{
+      baseColumn: drizzle_orm782.Column<{
         name: "categories";
         tableName: "inboxes_entries";
         dataType: "string";
@@ -3413,7 +3414,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm778.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
     attachments: drizzle_orm_pg_core728.PgColumn<{
@@ -4121,8 +4122,8 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<Omit<{
   authorAvatar?: string | null | undefined;
   read?: boolean | null | undefined;
 }>;
-declare const inboxesEntriesRelations: drizzle_orm778.Relations<"inboxes_entries", {
-  inboxes: drizzle_orm778.One<"inboxes", true>;
+declare const inboxesEntriesRelations: drizzle_orm782.Relations<"inboxes_entries", {
+  inboxes: drizzle_orm782.One<"inboxes", true>;
 }>;
 type inboxesEntriesModel = InferInsertModel<typeof inboxesEntries> & {
   attachments?: AttachmentsModel[] | null;
@@ -4221,9 +4222,9 @@ declare const inboxesOpenAPISchema: z.ZodObject<{
   title: string | null;
   secret: string;
 }>;
-declare const inboxesRelations: drizzle_orm778.Relations<"inboxes", {
-  users: drizzle_orm778.One<"user", true>;
-  entries: drizzle_orm778.Many<"inboxes_entries">;
+declare const inboxesRelations: drizzle_orm782.Relations<"inboxes", {
+  users: drizzle_orm782.One<"user", true>;
+  entries: drizzle_orm782.Many<"inboxes_entries">;
 }>;
 declare const inboxHandleSchema: z.ZodString;
 //#endregion
@@ -4339,8 +4340,8 @@ declare const invitationsOpenAPISchema: zod738.ZodObject<{
   fromUserId: string;
   toUserId: string | null;
 }>;
-declare const invitationsRelations: drizzle_orm778.Relations<"invitations", {
-  users: drizzle_orm778.One<"user", false>;
+declare const invitationsRelations: drizzle_orm782.Relations<"invitations", {
+  users: drizzle_orm782.One<"user", false>;
 }>;
 //#endregion
 //#region src/schema/lists/analytics.d.ts
@@ -4395,8 +4396,8 @@ declare const listAnalyticsOpenAPISchema: zod738.ZodObject<{
   subscriptionCount: number | null;
   listId: string;
 }>;
-declare const listAnalyticsRelations: drizzle_orm778.Relations<"list_analytics", {
-  list: drizzle_orm778.One<"lists", true>;
+declare const listAnalyticsRelations: drizzle_orm782.Relations<"list_analytics", {
+  list: drizzle_orm782.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/lists/lists.d.ts
@@ -4434,7 +4435,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm778.Column<{
+      baseColumn: drizzle_orm782.Column<{
         name: "feed_ids";
         tableName: "lists";
         dataType: "string";
@@ -4461,7 +4462,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm778.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
     title: drizzle_orm_pg_core728.PgColumn<{
@@ -4657,9 +4658,9 @@ declare const listsOpenAPISchema: zod738.ZodObject<{
   feedIds: string[];
   fee: number;
 }>;
-declare const listsRelations: drizzle_orm778.Relations<"lists", {
-  owner: drizzle_orm778.One<"user", true>;
-  listsSubscriptions: drizzle_orm778.Many<"lists_subscriptions">;
+declare const listsRelations: drizzle_orm782.Relations<"lists", {
+  owner: drizzle_orm782.One<"user", true>;
+  listsSubscriptions: drizzle_orm782.Many<"lists_subscriptions">;
 }>;
 type ListModel = InferInsertModel<typeof lists>;
 //#endregion
@@ -4795,9 +4796,9 @@ declare const listsSubscriptionsOpenAPISchema: zod738.ZodObject<{
   isPrivate: boolean;
   listId: string;
 }>;
-declare const listsSubscriptionsRelations: drizzle_orm778.Relations<"lists_subscriptions", {
-  users: drizzle_orm778.One<"user", true>;
-  lists: drizzle_orm778.One<"lists", true>;
+declare const listsSubscriptionsRelations: drizzle_orm782.Relations<"lists_subscriptions", {
+  users: drizzle_orm782.One<"user", true>;
+  lists: drizzle_orm782.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/messaging.d.ts
@@ -4874,8 +4875,8 @@ declare const messagingOpenAPISchema: z.ZodObject<Omit<{
   token: string;
   channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
 }>;
-declare const messagingRelations: drizzle_orm778.Relations<"messaging", {
-  users: drizzle_orm778.One<"user", false>;
+declare const messagingRelations: drizzle_orm782.Relations<"messaging", {
+  users: drizzle_orm782.One<"user", false>;
 }>;
 declare enum MessagingType {
   NewEntry = "new-entry",
@@ -5212,8 +5213,8 @@ declare const rsshubUsageOpenAPISchema: zod738.ZodObject<{
   userId: string;
   rsshubId: string;
 }>;
-declare const rsshubUsageRelations: drizzle_orm778.Relations<"rsshub_usage", {
-  rsshub: drizzle_orm778.One<"rsshub", true>;
+declare const rsshubUsageRelations: drizzle_orm782.Relations<"rsshub_usage", {
+  rsshub: drizzle_orm782.One<"rsshub", true>;
 }>;
 //#endregion
 //#region src/schema/rsshub-analytics.d.ts
@@ -5599,7 +5600,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm778.Column<{
+      baseColumn: drizzle_orm782.Column<{
         name: "from";
         tableName: "timeline";
         dataType: "string";
@@ -5626,7 +5627,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm778.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
   };
@@ -5660,11 +5661,11 @@ declare const timelineOpenAPISchema: zod738.ZodObject<{
   entryId: string;
   read: boolean | null;
 }>;
-declare const timelineRelations: drizzle_orm778.Relations<"timeline", {
-  entries: drizzle_orm778.One<"entries", true>;
-  feeds: drizzle_orm778.One<"feeds", true>;
-  collections: drizzle_orm778.One<"collections", true>;
-  subscriptions: drizzle_orm778.One<"subscriptions", true>;
+declare const timelineRelations: drizzle_orm782.Relations<"timeline", {
+  entries: drizzle_orm782.One<"entries", true>;
+  feeds: drizzle_orm782.One<"feeds", true>;
+  collections: drizzle_orm782.One<"collections", true>;
+  subscriptions: drizzle_orm782.One<"subscriptions", true>;
 }>;
 //#endregion
 //#region src/schema/trendings/feeds.d.ts
@@ -5828,8 +5829,8 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const trendingFeedsRelations: drizzle_orm778.Relations<"trendings_feeds", {
-  feed: drizzle_orm778.One<"feeds", true>;
+declare const trendingFeedsRelations: drizzle_orm782.Relations<"trendings_feeds", {
+  feed: drizzle_orm782.One<"feeds", true>;
 }>;
 declare const trendingFeedsOpenAPISchema: zod738.ZodObject<{
   feedId: zod738.ZodString;
@@ -7200,15 +7201,15 @@ declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const usersRelations: drizzle_orm778.Relations<"user", {
-  subscriptions: drizzle_orm778.Many<"subscriptions">;
-  listsSubscriptions: drizzle_orm778.Many<"lists_subscriptions">;
-  collections: drizzle_orm778.Many<"collections">;
-  actions: drizzle_orm778.One<"actions", true>;
-  wallets: drizzle_orm778.One<"wallets", true>;
-  feeds: drizzle_orm778.Many<"feeds">;
-  inboxes: drizzle_orm778.One<"inboxes", true>;
-  messaging: drizzle_orm778.Many<"messaging">;
+declare const usersRelations: drizzle_orm782.Relations<"user", {
+  subscriptions: drizzle_orm782.Many<"subscriptions">;
+  listsSubscriptions: drizzle_orm782.Many<"lists_subscriptions">;
+  collections: drizzle_orm782.Many<"collections">;
+  actions: drizzle_orm782.One<"actions", true>;
+  wallets: drizzle_orm782.One<"wallets", true>;
+  feeds: drizzle_orm782.Many<"feeds">;
+  inboxes: drizzle_orm782.One<"inboxes", true>;
+  messaging: drizzle_orm782.Many<"messaging">;
 }>;
 //#endregion
 //#region src/schema/wallets.d.ts
@@ -7363,11 +7364,11 @@ declare const walletsOpenAPISchema: zod738.ZodObject<{
   dailyPowerToken: string;
   cashablePowerToken: string;
 }>;
-declare const walletsRelations: drizzle_orm778.Relations<"wallets", {
-  user: drizzle_orm778.One<"user", true>;
-  transactionsFrom: drizzle_orm778.Many<"transactions">;
-  transactionTo: drizzle_orm778.Many<"transactions">;
-  level: drizzle_orm778.One<"levels", false>;
+declare const walletsRelations: drizzle_orm782.Relations<"wallets", {
+  user: drizzle_orm782.One<"user", true>;
+  transactionsFrom: drizzle_orm782.Many<"transactions">;
+  transactionTo: drizzle_orm782.Many<"transactions">;
+  level: drizzle_orm782.One<"levels", false>;
 }>;
 declare const transactionType: drizzle_orm_pg_core728.PgEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
 declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
@@ -7621,12 +7622,12 @@ declare const transactionsOpenAPISchema: zod738.ZodObject<{
   tax: string;
   comment: string | null;
 }>;
-declare const transactionsRelations: drizzle_orm778.Relations<"transactions", {
-  fromUser: drizzle_orm778.One<"user", false>;
-  toUser: drizzle_orm778.One<"user", false>;
-  toFeed: drizzle_orm778.One<"feeds", false>;
-  fromWallet: drizzle_orm778.One<"wallets", false>;
-  toWallet: drizzle_orm778.One<"wallets", false>;
+declare const transactionsRelations: drizzle_orm782.Relations<"transactions", {
+  fromUser: drizzle_orm782.One<"user", false>;
+  toUser: drizzle_orm782.One<"user", false>;
+  toFeed: drizzle_orm782.One<"feeds", false>;
+  fromWallet: drizzle_orm782.One<"wallets", false>;
+  toWallet: drizzle_orm782.One<"wallets", false>;
 }>;
 declare const feedPowerTokens: drizzle_orm_pg_core728.PgTableWithColumns<{
   name: "feedPowerTokens";
@@ -7679,8 +7680,8 @@ declare const feedPowerTokensOpenAPISchema: zod738.ZodObject<{
   feedId: string;
   powerToken: string;
 }>;
-declare const feedPowerTokensRelations: drizzle_orm778.Relations<"feedPowerTokens", {
-  feed: drizzle_orm778.One<"feeds", true>;
+declare const feedPowerTokensRelations: drizzle_orm782.Relations<"feedPowerTokens", {
+  feed: drizzle_orm782.One<"feeds", true>;
 }>;
 declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
   name: "levels";
@@ -7833,9 +7834,9 @@ declare const levelsOpenAPISchema: zod738.ZodObject<{
   prevActivityPoints: number | null;
   activityPoints: number | null;
 }>;
-declare const levelsRelations: drizzle_orm778.Relations<"levels", {
-  wallet: drizzle_orm778.One<"wallets", true>;
-  user: drizzle_orm778.One<"user", true>;
+declare const levelsRelations: drizzle_orm782.Relations<"levels", {
+  wallet: drizzle_orm782.One<"wallets", true>;
+  user: drizzle_orm782.One<"user", true>;
 }>;
 declare const boosts: drizzle_orm_pg_core728.PgTableWithColumns<{
   name: "boosts";
@@ -8062,7 +8063,7 @@ interface PerformanceAnalyticsResult {
 //#endregion
 //#region src/lib/ai/tools/index.d.ts
 declare const tools: {
-  aiMemory: ai42.Tool<{
+  aiMemory: ai55.Tool<{
     userId: string;
     operation: "store_conversation" | "retrieve_context" | "update_preferences" | "get_insights" | "analyze_patterns" | "personalize_response" | "clear_memory";
     data?: {
@@ -8246,7 +8247,7 @@ declare const tools: {
     message?: undefined;
     timestamp?: undefined;
   }>;
-  displayFeeds: ai42.Tool<{
+  displayFeeds: ai55.Tool<{
     feedIds: string[];
     title?: string | undefined;
     displayType?: "list" | "grid" | "card" | undefined;
@@ -8285,7 +8286,7 @@ declare const tools: {
     showAnalytics: boolean | undefined;
     title: string | undefined;
   }>;
-  displayEntries: ai42.Tool<{
+  displayEntries: ai55.Tool<{
     entryIds: string[];
     title?: string | undefined;
     groupBy?: "date" | "feed" | "none" | undefined;
@@ -8347,7 +8348,7 @@ declare const tools: {
     title: string | undefined;
     groupBy: "date" | "feed" | "none" | undefined;
   }>;
-  displaySubscriptions: ai42.Tool<{
+  displaySubscriptions: ai55.Tool<{
     userId: string;
     title?: string | undefined;
     groupBy?: "status" | "category" | "none" | undefined;
@@ -8401,7 +8402,7 @@ declare const tools: {
     groupBy: "status" | "category" | "none" | undefined;
     filterBy: "all" | "active" | "inactive" | "recent" | undefined;
   }>;
-  displayAnalytics: ai42.Tool<{
+  displayAnalytics: ai55.Tool<{
     analyticsType: "feed" | "subscription" | "reading" | "trending" | "overview";
     userId?: string | undefined;
     title?: string | undefined;
@@ -8423,7 +8424,7 @@ declare const tools: {
     showComparison: boolean | undefined;
     title: string | undefined;
   }>;
-  displayTrending: ai42.Tool<{
+  displayTrending: ai55.Tool<{
     trendingType: "feeds" | "categories" | "topics" | "authors";
     title?: string | undefined;
     limit?: number | undefined;
@@ -8446,23 +8447,23 @@ declare const tools: {
     limit: number;
     title: string | undefined;
   }>;
-  getFeeds: ai42.Tool<{
+  getFeeds: ai55.Tool<{
     select: ("id" | "image" | "description" | "title" | "url" | "siteUrl" | "checkedAt" | "lastModifiedHeader" | "etagHeader" | "ttl" | "errorMessage" | "errorAt" | "ownerUserId" | "language" | "migrateTo" | "rsshubRoute" | "rsshubNamespace" | "nsfw")[];
     ids: string[];
   }, {
     feeds: Record<string, any>[];
   }>;
-  getFeedEntries: ai42.Tool<{
+  getFeedEntries: ai55.Tool<{
     select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
     feedId: string;
   }, {
     entries: Record<string, any>[];
   }>;
-  getEntry: ai42.Tool<{
+  getEntry: ai55.Tool<{
     id: string;
     select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
   }, Record<string, any> | null>;
-  getUserSubscriptions: ai42.Tool<{
+  getUserSubscriptions: ai55.Tool<{
     userId: string;
     view?: number | undefined;
     category?: string | undefined;
@@ -8490,7 +8491,7 @@ declare const tools: {
       privateCount: number;
     };
   }>;
-  getTrendingFeeds: ai42.Tool<{
+  getTrendingFeeds: ai55.Tool<{
     language?: string | undefined;
     limit?: number | undefined;
     timeframe?: "1d" | "3d" | "7d" | "30d" | undefined;
@@ -8526,7 +8527,7 @@ declare const tools: {
       healthyFeeds: number;
     };
   }>;
-  searchFeeds: ai42.Tool<{
+  searchFeeds: ai55.Tool<{
     query: string;
     language?: string | undefined;
     limit?: number | undefined;
@@ -8554,7 +8555,7 @@ declare const tools: {
       healthyFeeds: number;
     };
   }>;
-  getUserReadingHistory: ai42.Tool<{
+  getUserReadingHistory: ai55.Tool<{
     userId: string;
     limit?: number | undefined;
     timeframeDays?: number | undefined;
@@ -8611,7 +8612,7 @@ declare const tools: {
       readingConsistency: string;
     };
   }>;
-  getContentRecommendations: ai42.Tool<{
+  getContentRecommendations: ai55.Tool<{
     userId: string;
     limit?: number | undefined;
     excludeNsfw?: boolean | undefined;
@@ -8649,7 +8650,7 @@ declare const tools: {
       };
     };
   }>;
-  manageSubscriptions: ai42.Tool<{
+  manageSubscriptions: ai55.Tool<{
     userId: string;
     action: "analyze" | "categorize" | "cleanup" | "optimize";
     options?: {
@@ -8766,7 +8767,7 @@ declare const tools: {
     potentialSavings?: undefined;
     optimization?: undefined;
   }>;
-  manageActions: ai42.Tool<{
+  manageActions: ai55.Tool<{
     userId: string;
     operation: "examples" | "analyze" | "optimize" | "suggest" | "validate";
     context?: {
@@ -9055,7 +9056,7 @@ declare const tools: {
     usage?: undefined;
     categories?: undefined;
   }>;
-  subscriptionAnalytics: ai42.Tool<{
+  subscriptionAnalytics: ai55.Tool<{
     userId: string;
     analysisType: "overview" | "engagement" | "performance" | "trends" | "quality" | "recommendations" | "comparative";
     options?: {
@@ -9197,7 +9198,7 @@ declare const tools: {
     error: string;
     details: string;
   }>;
-  getWhoami: ai42.Tool<{
+  getWhoami: ai55.Tool<{
     userId: string;
     select?: ("id" | "name" | "email" | "emailVerified" | "image" | "handle" | "createdAt" | "updatedAt" | "twoFactorEnabled" | "isAnonymous" | "suspended" | "deleted" | "bio" | "website" | "socialLinks")[] | undefined;
   }, {
@@ -9238,7 +9239,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9274,7 +9275,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9356,7 +9357,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9367,9 +9368,9 @@ declare const authPlugins: ({
       } : void>;
       options: {
         method: "POST";
-        body: zod_v487.ZodObject<{
-          TOTPCode: zod_v487.ZodString;
-        }, zod_v4_core88.$strip>;
+        body: zod_v440.ZodObject<{
+          TOTPCode: zod_v440.ZodString;
+        }, zod_v4_core41.$strip>;
       } & {
         use: any[];
       };
@@ -9395,7 +9396,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9410,7 +9411,7 @@ declare const authPlugins: ({
       }>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -9456,7 +9457,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9522,7 +9523,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9583,7 +9584,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9650,7 +9651,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9856,7 +9857,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9938,7 +9939,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10085,7 +10086,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10166,7 +10167,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10365,7 +10366,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10506,7 +10507,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10579,7 +10580,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10657,7 +10658,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10706,7 +10707,7 @@ declare const auth: {
           token: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -10806,7 +10807,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10919,7 +10920,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10944,7 +10945,7 @@ declare const auth: {
           newEmail: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11021,7 +11022,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -11067,7 +11068,7 @@ declare const auth: {
           currentPassword: string;
           revokeOtherSessions?: boolean | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11177,7 +11178,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -11202,7 +11203,7 @@ declare const auth: {
         metadata: {
           SERVER_ONLY: true;
         };
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11349,7 +11350,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11451,7 +11452,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11493,7 +11494,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11520,7 +11521,7 @@ declare const auth: {
                     password: string;
                     issuer?: string | undefined;
                   }>;
-                  use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11597,7 +11598,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11619,7 +11620,7 @@ declare const auth: {
                   }, {
                     password: string;
                   }>;
-                  use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11690,7 +11691,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11851,7 +11852,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -11875,7 +11876,7 @@ declare const auth: {
                   }, {
                     password: string;
                   }>;
-                  use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11953,7 +11954,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12003,7 +12004,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12072,7 +12073,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12206,7 +12207,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12275,7 +12276,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12290,7 +12291,7 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -12367,7 +12368,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12443,7 +12444,7 @@ declare const auth: {
             hooks: {
               after: {
                 matcher(context: better_auth245.HookEndpointContext): boolean;
-                handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                   twoFactorRedirect: boolean;
                 } | undefined>;
               }[];
@@ -12512,7 +12513,7 @@ declare const auth: {
             hooks: {
               after: {
                 matcher(context: better_auth245.HookEndpointContext): boolean;
-                handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>;
+                handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
               }[];
             };
           } | {
@@ -12537,7 +12538,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12678,7 +12679,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12714,7 +12715,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12796,7 +12797,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12807,9 +12808,9 @@ declare const auth: {
                 } : void>;
                 options: {
                   method: "POST";
-                  body: zod_v487.ZodObject<{
-                    TOTPCode: zod_v487.ZodString;
-                  }, zod_v4_core88.$strip>;
+                  body: zod_v440.ZodObject<{
+                    TOTPCode: zod_v440.ZodString;
+                  }, zod_v4_core41.$strip>;
                 } & {
                   use: any[];
                 };
@@ -12835,7 +12836,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12850,7 +12851,7 @@ declare const auth: {
                 }>;
                 options: {
                   method: "GET";
-                  use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -12896,7 +12897,7 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call84.Middleware[];
+                  use?: better_call37.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
@@ -12958,7 +12959,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -12974,7 +12975,7 @@ declare const auth: {
       options: {
         method: "POST";
         body: zod738.ZodRecord<zod738.ZodString, zod738.ZodAny>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -13116,7 +13117,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13218,7 +13219,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13260,7 +13261,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13287,7 +13288,7 @@ declare const auth: {
                         password: string;
                         issuer?: string | undefined;
                       }>;
-                      use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13364,7 +13365,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13386,7 +13387,7 @@ declare const auth: {
                       }, {
                         password: string;
                       }>;
-                      use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13457,7 +13458,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13618,7 +13619,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13642,7 +13643,7 @@ declare const auth: {
                       }, {
                         password: string;
                       }>;
-                      use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13720,7 +13721,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13770,7 +13771,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13839,7 +13840,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13973,7 +13974,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14042,7 +14043,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14057,7 +14058,7 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -14134,7 +14135,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14210,7 +14211,7 @@ declare const auth: {
                 hooks: {
                   after: {
                     matcher(context: better_auth245.HookEndpointContext): boolean;
-                    handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                    handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                       twoFactorRedirect: boolean;
                     } | undefined>;
                   }[];
@@ -14279,7 +14280,7 @@ declare const auth: {
                 hooks: {
                   after: {
                     matcher(context: better_auth245.HookEndpointContext): boolean;
-                    handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>;
+                    handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
                   }[];
                 };
               } | {
@@ -14304,7 +14305,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14445,7 +14446,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14481,7 +14482,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14563,7 +14564,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14574,9 +14575,9 @@ declare const auth: {
                     } : void>;
                     options: {
                       method: "POST";
-                      body: zod_v487.ZodObject<{
-                        TOTPCode: zod_v487.ZodString;
-                      }, zod_v4_core88.$strip>;
+                      body: zod_v440.ZodObject<{
+                        TOTPCode: zod_v440.ZodString;
+                      }, zod_v4_core41.$strip>;
                     } & {
                       use: any[];
                     };
@@ -14602,7 +14603,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14617,7 +14618,7 @@ declare const auth: {
                     }>;
                     options: {
                       method: "GET";
-                      use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -14663,7 +14664,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call84.Middleware[];
+                      use?: better_call37.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14779,7 +14780,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -14796,7 +14797,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -14886,7 +14887,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -14904,7 +14905,7 @@ declare const auth: {
         }, {
           callbackURL: string;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -14948,7 +14949,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -14977,7 +14978,7 @@ declare const auth: {
       }>[]>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15044,7 +15045,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15066,7 +15067,7 @@ declare const auth: {
         }, {
           token: string;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15151,7 +15152,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15166,7 +15167,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15235,7 +15236,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15251,7 +15252,7 @@ declare const auth: {
       options: {
         method: "POST";
         requireHeaders: true;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15323,7 +15324,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15354,7 +15355,7 @@ declare const auth: {
           scopes?: string[] | undefined;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15426,7 +15427,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15451,7 +15452,7 @@ declare const auth: {
       }[]>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15544,7 +15545,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15571,7 +15572,7 @@ declare const auth: {
           token: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -15625,7 +15626,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15650,7 +15651,7 @@ declare const auth: {
           providerId: string;
           accountId?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15720,7 +15721,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15811,7 +15812,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15909,7 +15910,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16011,7 +16012,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16047,7 +16048,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16080,7 +16081,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16159,7 +16160,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16170,9 +16171,9 @@ declare const auth: {
       } : void>;
       options: {
         method: "POST";
-        body: zod_v487.ZodObject<{
-          TOTPCode: zod_v487.ZodString;
-        }, zod_v4_core88.$strip>;
+        body: zod_v440.ZodObject<{
+          TOTPCode: zod_v440.ZodString;
+        }, zod_v4_core41.$strip>;
       } & {
         use: any[];
       };
@@ -16195,7 +16196,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16210,7 +16211,7 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16256,7 +16257,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16319,7 +16320,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16346,7 +16347,7 @@ declare const auth: {
           password: string;
           issuer?: string | undefined;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16423,7 +16424,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16445,7 +16446,7 @@ declare const auth: {
         }, {
           password: string;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16516,7 +16517,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16677,7 +16678,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16701,7 +16702,7 @@ declare const auth: {
         }, {
           password: string;
         }>;
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16779,7 +16780,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16829,7 +16830,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16898,7 +16899,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17032,7 +17033,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17101,7 +17102,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17116,7 +17117,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -17193,7 +17194,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17284,7 +17285,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call84.Middleware[];
+        use?: better_call37.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17523,7 +17524,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17625,7 +17626,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17667,7 +17668,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17694,7 +17695,7 @@ declare const auth: {
               password: string;
               issuer?: string | undefined;
             }>;
-            use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -17771,7 +17772,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17793,7 +17794,7 @@ declare const auth: {
             }, {
               password: string;
             }>;
-            use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -17864,7 +17865,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18025,7 +18026,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18049,7 +18050,7 @@ declare const auth: {
             }, {
               password: string;
             }>;
-            use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -18127,7 +18128,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18177,7 +18178,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18246,7 +18247,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18380,7 +18381,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18449,7 +18450,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18464,7 +18465,7 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -18541,7 +18542,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18617,7 +18618,7 @@ declare const auth: {
       hooks: {
         after: {
           matcher(context: better_auth245.HookEndpointContext): boolean;
-          handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+          handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
             twoFactorRedirect: boolean;
           } | undefined>;
         }[];
@@ -18686,7 +18687,7 @@ declare const auth: {
       hooks: {
         after: {
           matcher(context: better_auth245.HookEndpointContext): boolean;
-          handler: (inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<void>;
+          handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
         }[];
       };
     } | {
@@ -18711,7 +18712,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18852,7 +18853,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18888,7 +18889,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18970,7 +18971,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18981,9 +18982,9 @@ declare const auth: {
           } : void>;
           options: {
             method: "POST";
-            body: zod_v487.ZodObject<{
-              TOTPCode: zod_v487.ZodString;
-            }, zod_v4_core88.$strip>;
+            body: zod_v440.ZodObject<{
+              TOTPCode: zod_v440.ZodString;
+            }, zod_v4_core41.$strip>;
           } & {
             use: any[];
           };
@@ -19009,7 +19010,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -19024,7 +19025,7 @@ declare const auth: {
           }>;
           options: {
             method: "GET";
-            use: ((inputContext: better_call84.MiddlewareInputContext<better_call84.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -19070,7 +19071,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call84.Middleware[];
+            use?: better_call37.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;

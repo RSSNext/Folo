@@ -5,7 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@follow/components/ui/card/index.js"
+import { entrySyncServices } from "@follow/store/entry/store"
 import dayjs from "dayjs"
+import { memo } from "react"
+
+import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
 import { FeedIcon } from "../../../feed/feed-icon"
 import type { AIDisplayEntriesTool } from "../__internal__/types"
@@ -13,6 +17,13 @@ import { ErrorState, LoadingState } from "../components/common-states"
 import { CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
 
 type EntryData = AIDisplayEntriesTool["output"]["entries"]
+type EntryItem = EntryData[number]
+
+interface EntryCardProps {
+  item: EntryItem
+  showSummary: boolean
+  showMetadata: boolean
+}
 
 const formatDisplayType = (displayType: string) => {
   const displayTypeMap = {
@@ -53,56 +64,71 @@ const EntriesGrid = ({
       className="@[600px]:grid-cols-2 @[900px]:grid-cols-3"
     >
       {data.map((item) => (
-        <Card key={item.entry.id} className="p-4">
-          <CardHeader className="h-auto px-2 py-3">
-            <div className="flex items-start gap-3">
-              <FeedIcon
-                feed={item.feed ? { ...item.feed, type: "feed" as const } : null}
-                size={32}
-                className="shrink-0"
-                noMargin
-              />
-              <div className="-mt-1 min-w-0 flex-1">
-                <CardTitle className="line-clamp-2 text-base">
-                  {item.entry.title || "Untitled Entry"}
-                </CardTitle>
-                {item.feed?.title && (
-                  <CardDescription className="mt-1 text-xs">{item.feed.title}</CardDescription>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="space-y-3 p-0 px-2 pb-3">
-            {showSummary && item.entry.description && (
-              <div className="text-text-secondary line-clamp-3 text-sm">
-                {item.entry.description}
-              </div>
-            )}
-
-            {showMetadata && (
-              <div className="space-y-2">
-                <div className="text-text-secondary text-xs">
-                  Published: {dayjs(item.entry.publishedAt).format("MMM DD, YYYY HH:mm")}
-                </div>
-                {item.entry.author && (
-                  <div className="text-text-secondary text-xs">By: {item.entry.author}</div>
-                )}
-                {item.entry.categories?.length && (
-                  <div className="flex flex-wrap gap-1">
-                    {item.entry.categories.slice(0, 3).map((category, index) => (
-                      <CategoryTag key={index} category={category} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <EntryCard
+          key={item.entry.id}
+          item={item}
+          showSummary={showSummary}
+          showMetadata={showMetadata}
+        />
       ))}
     </GridContainer>
   )
 }
+
+const EntryCard = memo(({ item, showSummary, showMetadata }: EntryCardProps) => {
+  const peekModal = usePeekModal()
+  return (
+    <Card
+      key={item.entry.id}
+      className="cursor-pointer p-4"
+      onMouseEnter={() => entrySyncServices.fetchEntryDetail(item.entry.id)}
+      onClick={() => peekModal(item.entry.id, "modal")}
+    >
+      <CardHeader className="h-auto px-2 py-3">
+        <div className="flex items-start gap-3">
+          <FeedIcon
+            feed={item.feed ? { ...item.feed, type: "feed" as const } : null}
+            size={32}
+            className="shrink-0"
+            noMargin
+          />
+          <div className="-mt-1 min-w-0 flex-1">
+            <CardTitle className="line-clamp-2 text-base">
+              {item.entry.title || "Untitled Entry"}
+            </CardTitle>
+            {item.feed?.title && (
+              <CardDescription className="mt-1 text-xs">{item.feed.title}</CardDescription>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-3 p-0 px-2 pb-3">
+        {showSummary && item.entry.description && (
+          <div className="text-text-secondary line-clamp-3 text-sm">{item.entry.description}</div>
+        )}
+
+        {showMetadata && (
+          <div className="space-y-2">
+            <div className="text-text-secondary text-xs">
+              Published: {dayjs(item.entry.publishedAt).format("MMM DD, YYYY HH:mm")}
+            </div>
+            {item.entry.author && (
+              <div className="text-text-secondary text-xs">By: {item.entry.author}</div>
+            )}
+            {item.entry.categories?.length && (
+              <div className="flex flex-wrap gap-1">
+                {item.entry.categories.slice(0, 3).map((category, index) => (
+                  <CategoryTag key={index} category={category} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+})
 
 const TimelineView = ({
   data,

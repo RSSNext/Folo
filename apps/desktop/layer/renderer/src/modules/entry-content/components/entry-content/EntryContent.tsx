@@ -11,7 +11,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { JSAnimation, Variants } from "motion/react"
 import { m, useAnimationControls } from "motion/react"
@@ -144,7 +144,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             transition={Spring.presets.bouncy}
             className="select-text"
           >
-            {!isZenMode && isInHasTimelineView && (
+            {!isZenMode && isInHasTimelineView && !isInPeekModal && (
               <>
                 <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
                   <MotionButtonBase
@@ -174,7 +174,12 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className="@[950px]:max-w-[70ch] @7xl:max-w-[80ch] relative m-auto min-w-0 max-w-[550px]"
+              className={clsx(
+                "relative m-auto min-w-0",
+                isInPeekModal
+                  ? "max-w-full"
+                  : "@[950px]:max-w-[70ch] @7xl:max-w-[80ch] max-w-[550px]",
+              )}
             >
               <EntryTitle entryId={entryId} compact={compact} />
 
@@ -230,7 +235,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
 
-      <AISmartSidebar entryId={entryId} />
+      {!isInPeekModal && <AISmartSidebar entryId={entryId} />}
     </>
   )
 }
