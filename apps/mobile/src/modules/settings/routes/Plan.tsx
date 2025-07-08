@@ -24,6 +24,7 @@ import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
 import { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { isIOS } from "@/src/lib/platform"
 import { accentColor } from "@/src/theme/colors"
 
 import { ReferralScreen } from "./Referral"
@@ -234,16 +235,19 @@ export const PlanScreen: NavigationControllerView = () => {
               <Text className="text-white">{`Invite ${serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3} friends`}</Text>
             </Pressable>
 
-            <Text className="text-label">or</Text>
-
-            <Pressable
-              className="bg-accent rounded-lg p-2"
-              onPress={() => {
-                requestPurchase({ request: { sku: "is.follow.propreview" } })
-              }}
-            >
-              <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
-            </Pressable>
+            {isIOS && (
+              <>
+                <Text className="text-label">or</Text>
+                <Pressable
+                  className="bg-accent rounded-lg p-2"
+                  onPress={() => {
+                    requestPurchase({ request: { sku: "is.follow.propreview" } })
+                  }}
+                >
+                  <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
+                </Pressable>
+              </>
+            )}
           </View>
         )}
       </View>
