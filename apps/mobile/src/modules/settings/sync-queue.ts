@@ -279,7 +279,7 @@ class SettingSyncQueue {
 
         const setter = localSettingSetterMap[tab as SettingSyncTab]
 
-        nextPayload.updated = remoteUpdatedDate
+        ;(nextPayload as any).updated = remoteUpdatedDate
 
         setter(nextPayload as any)
       }
