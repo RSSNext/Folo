@@ -575,7 +575,7 @@ const ACCENT_COLORS: AccentColor[] = [
 const AccentColorSelector = () => {
   const { t } = useTranslation("settings")
   const accentColor = useUISettingKey("accentColor")
-
+  const isDark = useIsDark()
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
@@ -592,7 +592,7 @@ const AccentColorSelector = () => {
                 className="group relative flex size-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
                 onClick={() => setUISetting("accentColor", color)}
                 style={{
-                  backgroundColor: colorValue,
+                  backgroundColor: colorValue[isDark ? "dark" : "light"],
                 }}
               >
                 {/* Selection ring */}

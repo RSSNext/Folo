@@ -2,7 +2,7 @@
 
 ## Shiny new things
 
-- Add iframe renderer support
+- Add iframe tag support
 
 ## Improvements
 

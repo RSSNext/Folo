@@ -76,6 +76,11 @@
       "require": "./src/morph/*.ts",
       "import": "./src/morph/*.ts"
     },
+    "./reset": {
+      "types": "./src/reset.ts",
+      "require": "./src/reset.ts",
+      "import": "./src/reset.ts"
+    },
     "./subscription/*": {
       "types": "./src/subscription/*.ts",
       "require": "./src/subscription/*.ts",

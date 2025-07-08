@@ -26,12 +26,7 @@ export async function migrateDB(): Promise<void> {
     await migrate(db, migrations)
   } catch (error) {
     console.error("Failed to migrate database:", error)
-    try {
-      await sqlite.closeAsync()
-    } catch {
-      /* empty */
-    }
-    await SQLite.deleteDatabaseAsync(SQLITE_DB_NAME)
+    await deleteDB()
     sqlite = SQLite.openDatabaseSync(SQLITE_DB_NAME)
     initializeDB()
     await migrate(db, migrations)
@@ -39,3 +34,11 @@ export async function migrateDB(): Promise<void> {
 }
 
 export async function exportDB() {}
+export async function deleteDB() {
+  try {
+    await sqlite.closeAsync()
+  } catch {
+    /* empty */
+  }
+  await SQLite.deleteDatabaseAsync(SQLITE_DB_NAME)
+}

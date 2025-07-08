@@ -4,6 +4,8 @@ import { RootPortal } from "@follow/components/ui/portal/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ELECTRON_BUILD } from "@follow/shared/constants"
+import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
+import { usePrefetchUnread } from "@follow/store/unread/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import { clamp, cn } from "@follow/utils/utils"
 import { useWheel } from "@use-gesture/react"
@@ -37,6 +39,9 @@ export function SubscriptionColumn({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) {
+  usePrefetchSubscription()
+  usePrefetchUnread()
+
   const carouselRef = useRef<HTMLDivElement>(null)
   const timelineList = useTimelineList()
 

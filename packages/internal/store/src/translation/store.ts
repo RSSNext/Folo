@@ -4,8 +4,8 @@ import type { SupportedActionLanguage } from "@follow/shared"
 
 import { apiClient } from "../context"
 import { getEntry } from "../entry/getter"
-import type { Hydratable } from "../internal/base"
-import { createImmerSetter, createZustandStore } from "../internal/helper"
+import type { Hydratable, Resetable } from "../internal/base"
+import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import type { EntryTranslation, TranslationFieldArray } from "./types"
 import { translationFields } from "./types"
 
@@ -14,19 +14,32 @@ type TranslationModel = Omit<TranslationSchema, "createdAt">
 interface TranslationState {
   data: Record<string, Partial<Record<SupportedActionLanguage, EntryTranslation>>>
 }
-const emptyDataSet: Record<string, EntryTranslation> = {}
+const defaultState: TranslationState = {
+  data: {},
+}
 
-export const useTranslationStore = createZustandStore<TranslationState>("translation")(() => ({
-  data: emptyDataSet,
-}))
+export const useTranslationStore = createZustandStore<TranslationState>("translation")(
+  () => defaultState,
+)
 
 const get = useTranslationStore.getState
+const set = useTranslationStore.setState
 const immerSet = createImmerSetter(useTranslationStore)
 
-class TranslationActions implements Hydratable {
+class TranslationActions implements Hydratable, Resetable {
   async hydrate() {
     const translations = await TranslationService.getTranslationToHydrate()
     translationActions.upsertManyInSession(translations)
+  }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set(defaultState)
+    })
+    tx.persist(() => TranslationService.reset())
+
+    await tx.run()
   }
 
   upsertManyInSession(translations: TranslationModel[]) {

@@ -1,8 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
 import type { Ref } from "react"
-import { useEffect, useMemo, useState } from "react"
-import { ScrollView, View } from "react-native"
+import { useEffect, useState } from "react"
+import { ScrollView, TouchableOpacity, View } from "react-native"
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -10,7 +10,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 
-import { Galeria } from "@/src/components/ui/image/galeria"
 import { EntryGridFooter } from "@/src/modules/entry-content/EntryGridFooter"
 
 import { Image } from "../image/Image"
@@ -28,7 +27,7 @@ export const MediaCarousel = ({
   ref?: Ref<View>
   entryId: string
   media: MediaModel[]
-  onPreview?: () => void
+  onPreview?: (index: number) => void
   aspectRatio: number
   view: FeedViewType
 }) => {
@@ -46,86 +45,69 @@ export const MediaCarousel = ({
       }}
     >
       <View ref={ref} className="relative overflow-hidden rounded-md">
-        <Galeria
-          urls={useMemo(
-            () =>
-              media
-                .map((m) =>
-                  m.type === "video" ? m.preview_image_url : m.type === "photo" ? m.url : undefined,
-                )
-                .filter(Boolean) as string[],
-            [media],
-          )}
+        <ScrollView
+          onScroll={(e) => {
+            setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / containerWidth))
+          }}
+          scrollEventThrottle={16}
+          scrollEnabled={hasMany}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled
+          className="flex-1"
+          // We need to fixed the height of the container to prevent the carousel from resizing
+          // See https://github.com/Shopify/flash-list/issues/797
+          style={{ height: containerHeight }}
         >
-          <ScrollView
-            onScroll={(e) => {
-              setActiveIndex(Math.round(e.nativeEvent.contentOffset.x / containerWidth))
-            }}
-            scrollEventThrottle={16}
-            scrollEnabled={hasMany}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            className="flex-1"
-            // We need to fixed the height of the container to prevent the carousel from resizing
-            // See https://github.com/Shopify/flash-list/issues/797
-            style={{ height: containerHeight }}
-          >
-            {media.map((m, index) => {
-              const imageUrl = m.type === "video" ? m.preview_image_url : m.url
-              if (!imageUrl) {
-                return null
-              }
-              const ImageItem = (
-                <Galeria.Image onPreview={onPreview} index={index}>
-                  <Image
-                    proxy={{
-                      height: 400,
-                    }}
-                    source={{ uri: imageUrl }}
-                    blurhash={m.blurhash}
-                    className="w-full"
-                    aspectRatio={aspectRatio}
-                    placeholderContentFit="cover"
-                  />
-                </Galeria.Image>
-              )
+          {media.map((m, index) => {
+            const imageUrl = m.type === "video" ? m.preview_image_url : m.url
+            if (!imageUrl) {
+              return null
+            }
+            const ImageItem = (
+              <TouchableOpacity onPress={() => onPreview?.(index)}>
+                <Image
+                  proxy={{
+                    height: 400,
+                  }}
+                  source={{ uri: imageUrl }}
+                  blurhash={m.blurhash}
+                  className="w-full"
+                  aspectRatio={aspectRatio}
+                  placeholderContentFit="cover"
+                />
+              </TouchableOpacity>
+            )
 
-              if (m.type === "photo") {
-                return (
-                  <View
-                    key={imageUrl}
-                    className="relative"
-                    style={{ width: containerWidth, height: containerHeight }}
-                  >
-                    <ImageContextMenu entryId={entryId} imageUrl={imageUrl} view={view}>
-                      {ImageItem}
-                    </ImageContextMenu>
-                  </View>
-                )
-              } else if (m.type === "video") {
-                return (
-                  <ImageContextMenu
-                    key={imageUrl}
-                    entryId={entryId}
-                    imageUrl={imageUrl}
-                    view={view}
-                  >
-                    <VideoPlayer
-                      source={m.url}
-                      height={containerHeight}
-                      width={containerWidth}
-                      placeholder={ImageItem}
-                      view={view}
-                    />
+            if (m.type === "photo") {
+              return (
+                <View
+                  key={imageUrl}
+                  className="relative"
+                  style={{ width: containerWidth, height: containerHeight }}
+                >
+                  <ImageContextMenu entryId={entryId} imageUrl={imageUrl} view={view}>
+                    {ImageItem}
                   </ImageContextMenu>
-                )
-              } else {
-                return null
-              }
-            })}
-          </ScrollView>
-        </Galeria>
+                </View>
+              )
+            } else if (m.type === "video") {
+              return (
+                <ImageContextMenu key={imageUrl} entryId={entryId} imageUrl={imageUrl} view={view}>
+                  <VideoPlayer
+                    source={m.url}
+                    height={containerHeight}
+                    width={containerWidth}
+                    placeholder={ImageItem}
+                    view={view}
+                  />
+                </ImageContextMenu>
+              )
+            } else {
+              return null
+            }
+          })}
+        </ScrollView>
 
         {/* Indicators */}
         {hasMany && (

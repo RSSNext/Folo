@@ -1,9 +1,12 @@
 import { cn } from "@follow/utils/utils"
-import { Text, View } from "react-native"
+import type { Image as ExpoImage } from "expo-image"
+import { useCallback } from "react"
+import { Text, TouchableOpacity, View } from "react-native"
+import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"
 
-import { Galeria } from "../image/galeria"
+import { useLightboxControls } from "../../lightbox/lightboxState"
 import { Image } from "../image/Image"
 
 interface UserAvatarProps {
@@ -24,6 +27,37 @@ export const UserAvatar = ({
   color,
   preview = true,
 }: UserAvatarProps) => {
+  const { openLightbox } = useLightboxControls()
+  const aviRef = useAnimatedRef<ExpoImage>()
+
+  const onPreview = useCallback(() => {
+    runOnUI(() => {
+      "worklet"
+      if (!image) {
+        return
+      }
+      const rect = measure(aviRef)
+      runOnJS(openLightbox)({
+        images: [
+          {
+            uri: image,
+            thumbUri: image,
+            thumbDimensions: null,
+            thumbRect: rect,
+            dimensions: rect
+              ? {
+                  height: rect.height,
+                  width: rect.width,
+                }
+              : null,
+            type: "image",
+          },
+        ],
+        index: 0,
+      })
+    })()
+  }, [aviRef, image, openLightbox])
+
   if (!image) {
     return (
       <View
@@ -51,6 +85,7 @@ export const UserAvatar = ({
 
   const imageContent = (
     <Image
+      ref={aviRef}
       source={{ uri: image }}
       className={cn("rounded-full", className)}
       style={{ width: size, height: size }}
@@ -62,9 +97,7 @@ export const UserAvatar = ({
   )
 
   return preview ? (
-    <Galeria urls={[image]}>
-      <Galeria.Image index={0}>{imageContent}</Galeria.Image>
-    </Galeria>
+    <TouchableOpacity onPress={onPreview}>{imageContent}</TouchableOpacity>
   ) : (
     imageContent
   )

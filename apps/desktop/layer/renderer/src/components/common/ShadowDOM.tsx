@@ -102,9 +102,9 @@ export const ShadowDOM: FC<
             () => ({
               fontFamily: `${uiFont},"SN Pro", system-ui, sans-serif`,
               "--pointer": usePointerCursor ? "pointer" : "default",
-              "--fo-a": hexToHslString(getAccentColorValue(accentColor)),
+              "--fo-a": hexToHslString(getAccentColorValue(accentColor)[dark ? "dark" : "light"]),
             }),
-            [uiFont, usePointerCursor, accentColor],
+            [uiFont, usePointerCursor, accentColor, dark],
           )}
           id="shadow-html"
           data-motion-reduce={reduceMotion}

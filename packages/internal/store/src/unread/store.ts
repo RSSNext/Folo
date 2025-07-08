@@ -186,6 +186,7 @@ class UnreadSyncService {
     if (!entry || entry.read === read || (!entry.feedId && !entry.inboxHandle)) return
 
     const id: FeedIdOrInboxHandle = entry.inboxHandle || entry.feedId || ""
+    const isInbox = !!entry.inboxHandle
 
     const tx = createTransaction()
     tx.store(() => {
@@ -200,11 +201,11 @@ class UnreadSyncService {
     tx.request(async () => {
       if (read) {
         await apiClient().reads.$post({
-          json: { entryIds: [entryId] },
+          json: { entryIds: [entryId], isInbox },
         })
       } else {
         await apiClient().reads.$delete({
-          json: { entryId },
+          json: { entryId, isInbox },
         })
       }
     })
