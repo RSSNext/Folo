@@ -74,7 +74,7 @@ export async function migrateDB() {
   } catch (error) {
     console.error("Failed to migrate database:", error)
 
-    indexedDB.deleteDatabase(IDB_NAME)
+    await deleteDB()
     await migrate(db, migrations)
   }
 }
@@ -103,4 +103,8 @@ export async function exportDB() {
   a.remove()
 
   URL.revokeObjectURL(fileUrl)
+}
+
+export async function deleteDB() {
+  indexedDB.deleteDatabase(IDB_NAME)
 }

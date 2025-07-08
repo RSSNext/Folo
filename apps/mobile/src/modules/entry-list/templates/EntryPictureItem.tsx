@@ -46,7 +46,7 @@ export function EntryPictureItem({ id }: { id: string }) {
         ref={aviRef}
         media={item.media}
         entryId={id}
-        onPreview={() => {
+        onPreview={(index) => {
           const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
@@ -73,7 +73,7 @@ export function EntryPictureItem({ id }: { id: string }) {
                   : null,
                 type: "image",
               })),
-              index: 0,
+              index,
             })
           })()
           const fullEntry = getEntry(id)
@@ -97,7 +97,7 @@ const MediaItems = ({
   ref?: Ref<View>
   media: MediaModel[]
   entryId: string
-  onPreview?: () => void
+  onPreview?: (index: number) => void
   aspectRatio?: number
 }) => {
   const firstMedia = media[0]
