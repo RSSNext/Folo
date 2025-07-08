@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { cn } from "@follow/utils"
+import { cn, nextFrame } from "@follow/utils"
 import { m } from "motion/react"
 import { use, useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -269,10 +269,22 @@ const ChatInterface = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   const roomId = "global-ai"
-  const { isLoading: isLoadingHistory } = useLoadMessages(roomId)
+  const { isLoading: isLoadingHistory } = useLoadMessages(roomId, {
+    onLoad: () => {
+      nextFrame(() => {
+        const $scrollArea = scrollAreaRef.current
+        const scrollHeight = $scrollArea?.scrollHeight
+        if (scrollHeight) {
+          $scrollArea?.scrollTo({
+            top: scrollHeight,
+          })
+        }
+      })
+    },
+  })
   useSaveMessages(roomId, { enabled: !isLoadingHistory })
 
-  const { resetScrollState } = useAutoScroll(scrollAreaRef.current, true)
+  const { resetScrollState } = useAutoScroll(scrollAreaRef.current, status === "streaming")
 
   const handleSendMessage = useCallback(
     (message: string) => {
