@@ -1,5 +1,4 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
@@ -15,7 +14,7 @@ import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { useAnimationControls } from "motion/react"
 import type { FC } from "react"
-import { Fragment, memo, useEffect, useMemo } from "react"
+import { memo, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { m } from "~/components/common/Motion"
@@ -229,104 +228,121 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
 type PickedUser = ReturnType<typeof pickUserData>
 
 const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
-  const { t } = useTranslation()
   const whoami = useWhoami()
   const follow = useFollow()
+
+  // It's a string value when it's from the store
+  if (typeof userInfo.socialLinks === "string") {
+    userInfo.socialLinks = JSON.parse(userInfo.socialLinks)
+  }
+
   return (
-    <div className="border-fill bg-material-medium border-b p-6">
-      <div className="flex items-start gap-4">
-        <Avatar className="size-20 shrink-0">
-          <AvatarImage
-            src={replaceImgUrlIfNeed(userInfo.image || undefined)}
-            className="bg-material-ultra-thick"
-          />
-          <AvatarFallback className="text-3xl uppercase">
-            {userInfo.name?.slice(0, 2)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-text text-2xl font-bold">{userInfo.name}</h1>
-          <p
-            className={cn(
-              "text-text-secondary mt-1 text-sm",
-              userInfo.handle ? "visible" : "hidden select-none",
+    <div className="from-material-medium to-material-thin border-fill relative flex h-full w-80 shrink-0 flex-col border-r bg-gradient-to-br p-8">
+      <div className="flex h-full flex-col space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Avatar className="size-16 shrink-0 shadow-lg ring-4 ring-white/10">
+              <AvatarImage
+                src={replaceImgUrlIfNeed(userInfo.image || undefined)}
+                className="bg-material-ultra-thick"
+              />
+              <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-4xl font-bold uppercase text-white">
+                {userInfo.name?.slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+
+            {whoami?.id !== userInfo.id && (
+              <Button
+                buttonClassName="absolute -bottom-1 -right-1 rounded-full size-6"
+                onClick={() => {
+                  follow({
+                    url: `rsshub://follow/profile/${userInfo.id}`,
+                    isList: false,
+                  })
+                }}
+                size="sm"
+              >
+                <i className="i-mgc-add-cute-re size-4" />
+              </Button>
             )}
-          >
-            @{userInfo.handle}
-          </p>
-          {whoami?.id !== userInfo.id && (
-            <Button
-              onClick={() => {
-                follow({
-                  url: `rsshub://follow/profile/${userInfo.id}`,
-                  isList: false,
-                })
-              }}
-              buttonClassName="mt-3"
-              size="sm"
+          </div>
+          <div>
+            <h1 className="text-text max-w-[200px] truncate text-xl font-bold tracking-tight">
+              {userInfo.name}
+            </h1>
+            <p
+              className={cn(
+                "text-text-secondary text-sm font-medium",
+                userInfo.handle ? "visible" : "hidden select-none",
+              )}
             >
-              <FollowIcon className="mr-1 size-3" />
-              {t("feed_form.follow")}
-            </Button>
+              @{userInfo.handle}
+            </p>
+          </div>
+        </div>
+
+        {userInfo.bio && (
+          <p className="text-text-secondary text-sm leading-relaxed">{userInfo.bio}</p>
+        )}
+
+        <div className="space-y-4">
+          {userInfo.website && (
+            <a
+              href={userInfo.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-material-ultra-thin/50 hover:bg-material-thin/50 group flex items-center gap-3 rounded-xl border p-3 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02]"
+            >
+              <div className="bg-accent/10 text-accent flex size-8 items-center justify-center rounded-lg">
+                <i className="i-mgc-link-cute-re text-sm" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-text text-sm font-medium">Website</p>
+                <p className="text-text-secondary truncate text-xs">
+                  {userInfo.website.replace(/^https?:\/\//, "")}
+                </p>
+              </div>
+              <i className="i-mgc-arrow-right-cute-re text-text-tertiary group-hover:text-accent size-4 transition-colors" />
+            </a>
+          )}
+
+          {userInfo.socialLinks && Object.keys(userInfo.socialLinks).length > 0 && (
+            <div className="space-y-3">
+              <p className="text-text-secondary text-xs font-medium uppercase tracking-wide">
+                Social Media
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(userInfo.socialLinks).map(([platform, id]) => {
+                  if (!id || !(platform in socialIconClassNames) || typeof id !== "string")
+                    return null
+
+                  return (
+                    <Tooltip key={platform}>
+                      <TooltipTrigger asChild>
+                        <a
+                          href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-material-ultra-thin/50 hover:bg-accent/10 group flex size-10 items-center justify-center rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                        >
+                          <i
+                            className={cn(
+                              socialIconClassNames[platform as keyof typeof socialIconClassNames],
+                              "text-text-secondary group-hover:text-accent text-base transition-colors",
+                            )}
+                          />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs font-medium">
+                        {socialCopyMap[platform as keyof typeof socialCopyMap]}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </div>
+            </div>
           )}
         </div>
-      </div>
-    </div>
-  )
-}
-
-const UserSocialSection = ({ user }: { user: PickedUser }) => {
-  const { t } = useTranslation()
-  if (!user || (!user.bio && !user.website && !user.socialLinks)) return null
-
-  return (
-    <div className="border-fill bg-material-thin border-b px-6 py-4">
-      <h3 className="text-text mb-3 text-sm font-medium uppercase tracking-wide">
-        {t("user_profile.about")}
-      </h3>
-      {user.bio && <p className="text-text-secondary mb-3 text-sm leading-relaxed">{user.bio}</p>}
-      <div className="space-y-2">
-        {user.website && (
-          <a
-            href={user.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:text-accent/80 inline-flex items-center gap-2 text-sm transition-colors"
-          >
-            <i className="i-mgc-link-cute-re text-base" />
-            <span className="truncate">{user.website.replace(/^https?:\/\//, "")}</span>
-          </a>
-        )}
-        {user.socialLinks && (
-          <div className="flex flex-wrap items-center gap-3">
-            {Object.entries(user.socialLinks).map(([platform, id]) => {
-              if (!id || !(platform in socialIconClassNames)) return null
-
-              return (
-                <Tooltip key={platform}>
-                  <TooltipTrigger asChild>
-                    <a
-                      href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-text-secondary hover:text-accent group flex items-center justify-center rounded-full transition-colors"
-                    >
-                      <i
-                        className={cn(
-                          socialIconClassNames[platform as keyof typeof socialIconClassNames],
-                          "text-lg",
-                        )}
-                      />
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-sm">
-                    {socialCopyMap[platform as keyof typeof socialCopyMap]}
-                  </TooltipContent>
-                </Tooltip>
-              )
-            })}
-          </div>
-        )}
       </div>
     </div>
   )
@@ -338,7 +354,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
 
   return (
     <>
-      <div className="-mb-4 mt-4 flex items-center justify-between">
+      <div className="-mb-4 flex items-center justify-between">
         <h2 className="text-text text-lg font-semibold">{t("user_profile.subscriptions")}</h2>
         <ActionButton
           tooltip={t("user_profile.toggle_item_style")}
@@ -391,15 +407,14 @@ const Lists = ({ lists }: { lists: List[] }) => {
 const Content = ({ userInfo }: { userInfo: PickedUser }) => {
   const lists = useUserListsQuery(userInfo.id)
   return (
-    <Fragment>
+    <div className="flex h-full">
       <UserInfo userInfo={userInfo} />
       <ScrollArea.ScrollArea
-        rootClassName="grow max-w-full w-full"
+        rootClassName="grow max-w-full w-full bg-material-ultra-thin/30 pt-10"
         viewportClassName="[&>div]:!flex [&>div]:flex-col"
       >
-        <UserSocialSection user={userInfo} />
         {!lists.isLoading && (
-          <div className="@container flex flex-col px-6 py-4">
+          <div className="@container flex flex-col space-y-4 px-8 py-6">
             {/* Lists Section */}
             {lists.data && lists.data.length > 0 && <Lists lists={lists.data} />}
             {/* Subscriptions Section */}
@@ -407,6 +422,6 @@ const Content = ({ userInfo }: { userInfo: PickedUser }) => {
           </div>
         )}
       </ScrollArea.ScrollArea>
-    </Fragment>
+    </div>
   )
 }
