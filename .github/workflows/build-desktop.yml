@@ -184,8 +184,6 @@ jobs:
       - name: Upload file (macos-arm64-dmg)
         uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: macos-arm64-dmg
           path: |
@@ -196,8 +194,6 @@ jobs:
       - name: Upload file (macos-x64-dmg)
         uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: macos-x64-dmg
           path: |
@@ -208,8 +204,6 @@ jobs:
       - name: Upload file (macos-mas-pkg)
         uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: macos-mas-pkg
           path: |
@@ -220,8 +214,6 @@ jobs:
         uses: actions/upload-artifact@v4
         id: upload-unsigned-windows-x64-exe
         if: runner.os == 'windows'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: windows-x64-exe
           path: |
@@ -248,8 +240,6 @@ jobs:
       - name: Upload file (windows-x64-exe signed)
         uses: actions/upload-artifact@v4
         if: runner.os == 'windows' && env.RELEASE == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: windows-x64-exe
           path: |
@@ -261,8 +251,6 @@ jobs:
       - name: Upload file (windows-x64-appx)
         uses: actions/upload-artifact@v4
         if: runner.os == 'windows'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: windows-x64-appx
           path: |
@@ -272,8 +260,6 @@ jobs:
       - name: Upload file (linux-x64-appimage)
         uses: actions/upload-artifact@v4
         if: runner.os == 'linux'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: linux-x64-appimage
           path: |
@@ -298,8 +284,6 @@ jobs:
       - run: npx changelogithub
         if: env.RELEASE == 'true'
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Version
         if: env.RELEASE == 'true'
