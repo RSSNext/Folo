@@ -15,7 +15,7 @@ export const EntryUser: Component<{
 }> = memo(({ userId, ref }) => {
   const user = useUserById(userId)
   const { t } = useTranslation()
-  const presentUserProfile = usePresentUserProfileModal("dialog")
+  const presentUserProfile = usePresentUserProfileModal("drawer")
   if (!user) return null
   return (
     <div className="no-drag-region relative cursor-pointer hover:!z-[99999]" ref={ref}>

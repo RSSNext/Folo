@@ -293,14 +293,14 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
                 rel="noopener noreferrer"
                 className="text-text-secondary hover:text-accent group inline-flex items-center gap-2 text-sm leading-relaxed transition-colors"
               >
-                <span>{userInfo.website}</span>
+                <span className="truncate">{userInfo.website.replace(/^https?:\/\//, "")}</span>
                 <i className="i-mgc-external-link-cute-re size-3 opacity-60 transition-opacity group-hover:opacity-100" />
               </a>
             )}
           </div>
         </div>
 
-        {userInfo.socialLinks && Object.keys(userInfo.socialLinks).length > 0 && (
+        {userInfo.socialLinks && Object.values(userInfo.socialLinks).filter(Boolean).length > 0 && (
           <div className="mt-auto space-y-3">
             <p className="text-text-secondary text-xs font-medium uppercase tracking-wide">
               Social Media
