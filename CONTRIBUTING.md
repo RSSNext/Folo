@@ -93,6 +93,20 @@ To develop in the mobile app, follow these steps:
    cp .env.example .env
    ```
 
+   Then set the required environment variables in your `.env` file:
+
+   ```sh
+   echo 'EXPO_PUBLIC_APP_CHECK_DEBUG_TOKEN="xxx"' >> .env
+   ```
+
+   Or manually edit the `.env` file to add:
+
+   ```
+   EXPO_PUBLIC_APP_CHECK_DEBUG_TOKEN="xxx"
+   ```
+
+   the value is any string.
+
 3. Build and install Folo(dev) app from source: (This step will take a while and only need to be done once)
 
    ```sh
