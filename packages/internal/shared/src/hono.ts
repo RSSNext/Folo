@@ -2,7 +2,6 @@ import * as hono_hono_base from 'hono/hono-base';
 import * as hono_types from 'hono/types';
 import * as hono_utils_http_status from 'hono/utils/http-status';
 import { HttpBindings } from '@hono/node-server';
-import * as ai from 'ai';
 import * as zod from 'zod';
 import { z } from 'zod';
 import * as zod_v4_core from 'zod/v4/core';
@@ -21,57 +20,7 @@ type Env = {
     Bindings: HttpBindings;
 };
 
-declare const tools: {
-    displayFeeds: ai.Tool<{
-        feedIds: string[];
-    }, {
-        feedList: {
-            feed: {
-                id: string;
-                url: string;
-                title: string | null;
-                description: string | null;
-                siteUrl: string | null;
-                image: string | null;
-                checkedAt: Date;
-                lastModifiedHeader: string | null;
-                etagHeader: string | null;
-                ttl: number | null;
-                errorMessage: string | null;
-                errorAt: Date | null;
-                ownerUserId: string | null;
-                language: string | null;
-                migrateTo: string | null;
-                rsshubRoute: string | null;
-                rsshubNamespace: string | null;
-                nsfw: boolean | null;
-            };
-            analytics: {
-                feedId: string;
-                updatesPerWeek: number | null;
-                subscriptionCount: number | null;
-                latestEntryPublishedAt: Date | null;
-                view: number | null;
-            } | null;
-        }[];
-    }>;
-    getFeeds: ai.Tool<{
-        select: ("id" | "image" | "description" | "title" | "url" | "siteUrl" | "checkedAt" | "lastModifiedHeader" | "etagHeader" | "ttl" | "errorMessage" | "errorAt" | "ownerUserId" | "language" | "migrateTo" | "rsshubRoute" | "rsshubNamespace" | "nsfw")[];
-        ids: string[];
-    }, {
-        feeds: Record<string, any>[];
-    }>;
-    getFeedEntries: ai.Tool<{
-        select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
-        feedId: string;
-    }, {
-        entries: Record<string, any>[];
-    }>;
-    getEntry: ai.Tool<{
-        id: string;
-        select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
-    }, Record<string, any> | null>;
-};
+declare const tools: any;
 
 declare const authPlugins: ({
     id: "customGetProviders";
@@ -9020,6 +8969,7 @@ declare const auth: {
                         image?: string | null | undefined | undefined;
                         stripeCustomerId?: string | null | undefined;
                         handle: string;
+                        deleted: boolean;
                         bio: string;
                         website: string;
                         socialLinks: string;
@@ -9079,6 +9029,7 @@ declare const auth: {
                     image?: string | null | undefined | undefined;
                     stripeCustomerId?: string | null | undefined;
                     handle: string;
+                    deleted: boolean;
                     bio: string;
                     website: string;
                     socialLinks: string;
@@ -10362,16 +10313,14 @@ declare const auth: {
                             website: {
                                 type: "string";
                             };
-<<<<<<< HEAD
+                            deleted: {
+                                type: "boolean";
+                            };
                             role: {
                                 type: "string";
                             };
                             roleEndAt: {
                                 type: "date";
-=======
-                            deleted: {
-                                type: "boolean";
->>>>>>> dev
                             };
                         };
                         changeEmail: {
@@ -12328,12 +12277,9 @@ declare const auth: {
                                             socialLinks: Record<string, string> | null;
                                             bio: string | null;
                                             website: string | null;
-<<<<<<< HEAD
                                             role: string | null;
                                             roleEndAt: Date | null;
-=======
                                             deleted: boolean | null;
->>>>>>> dev
                                         };
                                         session: {
                                             id: string;
@@ -12364,12 +12310,9 @@ declare const auth: {
                                         socialLinks: Record<string, string> | null;
                                         bio: string | null;
                                         website: string | null;
-<<<<<<< HEAD
                                         role: string | null;
                                         roleEndAt: Date | null;
-=======
                                         deleted: boolean | null;
->>>>>>> dev
                                     };
                                     session: {
                                         id: string;
@@ -12545,7 +12488,7 @@ declare const auth: {
                         id: "deleteUserCustom";
                         endpoints: {
                             deleteUserCustom: {
-                                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0: {
+                                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0: {
                                     body: {
                                         TOTPCode: string;
                                     };
@@ -12566,8 +12509,8 @@ declare const auth: {
                                     path?: string;
                                 } & {
                                     asResponse?: AsResponse_1 | undefined;
-                                    returnHeaders?: ReturnHeaders_14 | undefined;
-                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                                    returnHeaders?: ReturnHeaders_21 | undefined;
+                                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                                     headers: Headers;
                                     response: void;
                                 } : void>;
@@ -12816,16 +12759,14 @@ declare const auth: {
                                     website: {
                                         type: "string";
                                     };
-<<<<<<< HEAD
+                                    deleted: {
+                                        type: "boolean";
+                                    };
                                     role: {
                                         type: "string";
                                     };
                                     roleEndAt: {
                                         type: "date";
-=======
-                                    deleted: {
-                                        type: "boolean";
->>>>>>> dev
                                     };
                                 };
                                 changeEmail: {
@@ -14782,12 +14723,9 @@ declare const auth: {
                                                     socialLinks: Record<string, string> | null;
                                                     bio: string | null;
                                                     website: string | null;
-<<<<<<< HEAD
                                                     role: string | null;
                                                     roleEndAt: Date | null;
-=======
                                                     deleted: boolean | null;
->>>>>>> dev
                                                 };
                                                 session: {
                                                     id: string;
@@ -14818,12 +14756,9 @@ declare const auth: {
                                                 socialLinks: Record<string, string> | null;
                                                 bio: string | null;
                                                 website: string | null;
-<<<<<<< HEAD
                                                 role: string | null;
                                                 roleEndAt: Date | null;
-=======
                                                 deleted: boolean | null;
->>>>>>> dev
                                             };
                                             session: {
                                                 id: string;
@@ -18362,12 +18297,9 @@ declare const auth: {
                         socialLinks: Record<string, string> | null;
                         bio: string | null;
                         website: string | null;
-<<<<<<< HEAD
                         role: string | null;
                         roleEndAt: Date | null;
-=======
                         deleted: boolean | null;
->>>>>>> dev
                     };
                     session: {
                         id: string;
@@ -18398,12 +18330,9 @@ declare const auth: {
                     socialLinks: Record<string, string> | null;
                     bio: string | null;
                     website: string | null;
-<<<<<<< HEAD
                     role: string | null;
                     roleEndAt: Date | null;
-=======
                     deleted: boolean | null;
->>>>>>> dev
                 };
                 session: {
                     id: string;
@@ -18510,16 +18439,14 @@ declare const auth: {
                 website: {
                     type: "string";
                 };
-<<<<<<< HEAD
+                deleted: {
+                    type: "boolean";
+                };
                 role: {
                     type: "string";
                 };
                 roleEndAt: {
                     type: "date";
-=======
-                deleted: {
-                    type: "boolean";
->>>>>>> dev
                 };
             };
             changeEmail: {
@@ -20476,12 +20403,9 @@ declare const auth: {
                                 socialLinks: Record<string, string> | null;
                                 bio: string | null;
                                 website: string | null;
-<<<<<<< HEAD
                                 role: string | null;
                                 roleEndAt: Date | null;
-=======
                                 deleted: boolean | null;
->>>>>>> dev
                             };
                             session: {
                                 id: string;
@@ -20512,12 +20436,9 @@ declare const auth: {
                             socialLinks: Record<string, string> | null;
                             bio: string | null;
                             website: string | null;
-<<<<<<< HEAD
                             role: string | null;
                             roleEndAt: Date | null;
-=======
                             deleted: boolean | null;
->>>>>>> dev
                         };
                         session: {
                             id: string;
@@ -21190,14 +21111,7 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
         $post: {
             input: {
                 json: {
-<<<<<<< HEAD
-                    messages: {
-                        role: "user" | "assistant";
-                        content: string;
-                    }[];
-=======
                     messages: any[];
->>>>>>> dev
                     context?: {
                         mainEntryId?: string | undefined;
                         referEntryIds?: string[] | undefined;
@@ -24566,8 +24480,4 @@ declare const _routes: hono_hono_base.HonoBase<Env, ({
 }, "/referrals">, "/">;
 type AppType = typeof _routes;
 
-<<<<<<< HEAD
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, stripeSubscriptions, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
-=======
-export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, tools, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
->>>>>>> dev
+export { type ActionItem, type ActionsModel, type AirdropActivity, type AppType, type AttachmentsModel, type AuthSession, type AuthUser, CommonEntryFields, type ConditionItem, type DetailModel, type EntriesModel, type ExtraModel, type FeedModel, type InvitationDB, type ListModel, type MediaModel, type MessagingData, MessagingType, type SettingsModel, type UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, type inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, stripeSubscriptions, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, tools, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
