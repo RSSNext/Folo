@@ -1,5 +1,4 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { FollowIcon } from "@follow/components/icons/follow.jsx"
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { ActionButton, Button } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
@@ -229,102 +228,112 @@ export const UserProfileModalContent: FC<SubscriptionModalContentProps> = ({ use
 type PickedUser = ReturnType<typeof pickUserData>
 
 const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
-  const { t } = useTranslation()
   const whoami = useWhoami()
   const follow = useFollow()
+
+  // It's a string value when it's from the store
+  if (typeof userInfo.socialLinks === "string") {
+    userInfo.socialLinks = JSON.parse(userInfo.socialLinks)
+  }
+
   return (
-    <div className="border-fill bg-material-medium border-b p-6">
-      <div className="flex items-start gap-4">
-        <Avatar className="size-20 shrink-0">
-          <AvatarImage
-            src={replaceImgUrlIfNeed(userInfo.image || undefined)}
-            className="bg-material-ultra-thick"
-          />
-          <AvatarFallback className="text-3xl uppercase">
-            {userInfo.name?.slice(0, 2)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-text text-2xl font-bold">{userInfo.name}</h1>
-          <p
-            className={cn(
-              "text-text-secondary mt-1 text-sm",
-              userInfo.handle ? "visible" : "hidden select-none",
+    <div className="border-fill from-material-medium to-material-thin relative flex flex-col border-r bg-gradient-to-br p-8">
+      <div className="flex h-full">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Avatar className="size-16 shrink-0 shadow-lg ring-4 ring-white/10">
+                <AvatarImage
+                  src={replaceImgUrlIfNeed(userInfo.image || undefined)}
+                  className="bg-material-ultra-thick"
+                />
+                <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-4xl font-bold uppercase text-white">
+                  {userInfo.name?.slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+
+              {whoami?.id !== userInfo.id && (
+                <Button
+                  buttonClassName="absolute -bottom-1 -right-1 size-6 rounded-full"
+                  onClick={() => {
+                    follow({
+                      url: `rsshub://follow/profile/${userInfo.id}`,
+                      isList: false,
+                    })
+                  }}
+                  size="sm"
+                >
+                  <i className="i-mgc-add-cute-re size-4" />
+                </Button>
+              )}
+            </div>
+            <div className="flex-1">
+              <h1 className="text-text max-w-[200px] truncate text-xl font-bold tracking-tight">
+                {userInfo.name}
+              </h1>
+              <p
+                className={cn(
+                  "text-text-secondary text-sm font-medium",
+                  userInfo.handle ? "visible" : "hidden select-none",
+                )}
+              >
+                @{userInfo.handle}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {userInfo.bio && (
+              <p className="text-text-secondary text-sm leading-relaxed">{userInfo.bio}</p>
             )}
-          >
-            @{userInfo.handle}
-          </p>
-          {whoami?.id !== userInfo.id && (
-            <Button
-              onClick={() => {
-                follow({
-                  url: `rsshub://follow/profile/${userInfo.id}`,
-                  isList: false,
-                })
-              }}
-              buttonClassName="mt-3"
-              size="sm"
-            >
-              <FollowIcon className="mr-1 size-3" />
-              {t("feed_form.follow")}
-            </Button>
-          )}
+            {userInfo.website && (
+              <a
+                href={userInfo.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-secondary hover:text-accent group inline-flex items-center gap-2 text-sm leading-relaxed transition-colors"
+              >
+                <span className="truncate">{userInfo.website.replace(/^https?:\/\//, "")}</span>
+                <i className="i-mgc-external-link-cute-re size-3 opacity-60 transition-opacity group-hover:opacity-100" />
+              </a>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
-  )
-}
 
-const UserSocialSection = ({ user }: { user: PickedUser }) => {
-  const { t } = useTranslation()
-  if (!user || (!user.bio && !user.website && !user.socialLinks)) return null
+        {userInfo.socialLinks && Object.values(userInfo.socialLinks).filter(Boolean).length > 0 && (
+          <div className="mt-auto space-y-3">
+            <p className="text-text-secondary text-xs font-medium uppercase tracking-wide">
+              Social Media
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(userInfo.socialLinks).map(([platform, id]) => {
+                if (!id || !(platform in socialIconClassNames) || typeof id !== "string")
+                  return null
 
-  return (
-    <div className="border-fill bg-material-thin border-b px-6 py-4">
-      <h3 className="text-text mb-3 text-sm font-medium uppercase tracking-wide">
-        {t("user_profile.about")}
-      </h3>
-      {user.bio && <p className="text-text-secondary mb-3 text-sm leading-relaxed">{user.bio}</p>}
-      <div className="space-y-2">
-        {user.website && (
-          <a
-            href={user.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:text-accent/80 inline-flex items-center gap-2 text-sm transition-colors"
-          >
-            <i className="i-mgc-link-cute-re text-base" />
-            <span className="truncate">{user.website.replace(/^https?:\/\//, "")}</span>
-          </a>
-        )}
-        {user.socialLinks && (
-          <div className="flex flex-wrap items-center gap-3">
-            {Object.entries(user.socialLinks).map(([platform, id]) => {
-              if (!id || !(platform in socialIconClassNames)) return null
-
-              return (
-                <Tooltip key={platform}>
-                  <TooltipTrigger asChild>
-                    <a
-                      href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-text-secondary hover:text-accent group flex items-center justify-center rounded-full transition-colors"
-                    >
-                      <i
-                        className={cn(
-                          socialIconClassNames[platform as keyof typeof socialIconClassNames],
-                          "text-lg",
-                        )}
-                      />
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-sm">
-                    {socialCopyMap[platform as keyof typeof socialCopyMap]}
-                  </TooltipContent>
-                </Tooltip>
-              )
-            })}
+                return (
+                  <Tooltip key={platform}>
+                    <TooltipTrigger asChild>
+                      <a
+                        href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-material-ultra-thin/50 hover:bg-accent/10 group flex size-10 items-center justify-center rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                      >
+                        <i
+                          className={cn(
+                            socialIconClassNames[platform as keyof typeof socialIconClassNames],
+                            "text-text-secondary group-hover:text-accent text-base transition-colors",
+                          )}
+                        />
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-xs font-medium">
+                      {socialCopyMap[platform as keyof typeof socialCopyMap]}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -338,7 +347,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
 
   return (
     <>
-      <div className="-mb-4 mt-4 flex items-center justify-between">
+      <div className="-mb-4 flex items-center justify-between">
         <h2 className="text-text text-lg font-semibold">{t("user_profile.subscriptions")}</h2>
         <ActionButton
           tooltip={t("user_profile.toggle_item_style")}
@@ -394,12 +403,11 @@ const Content = ({ userInfo }: { userInfo: PickedUser }) => {
     <Fragment>
       <UserInfo userInfo={userInfo} />
       <ScrollArea.ScrollArea
-        rootClassName="grow max-w-full w-full"
+        rootClassName="grow max-w-full w-full bg-material-ultra-thin/30 "
         viewportClassName="[&>div]:!flex [&>div]:flex-col"
       >
-        <UserSocialSection user={userInfo} />
         {!lists.isLoading && (
-          <div className="@container flex flex-col px-6 py-4">
+          <div className="@container flex flex-col space-y-4 px-8 py-6">
             {/* Lists Section */}
             {lists.data && lists.data.length > 0 && <Lists lists={lists.data} />}
             {/* Subscriptions Section */}
