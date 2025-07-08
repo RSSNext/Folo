@@ -64,6 +64,15 @@ export const authClient = createAuthClient({
         ctx.headers.set(key, value)
       })
       ctx.headers.set("User-Agent", await getUserAgent())
+
+      const value = Storage.getItemSync("referral-code")
+      if (value) {
+        const referralCode = JSON.parse(value)
+        if (referralCode) {
+          ctx.headers.set("folo-referral-code", referralCode)
+        }
+      }
+
       return ctx
     },
     headers: {
@@ -72,18 +81,6 @@ export const authClient = createAuthClient({
     },
   },
   plugins,
-  fetchOptions: {
-    onRequest(context) {
-      const value = Storage.getItemSync("referral-code")
-      if (value) {
-        const referralCode = JSON.parse(value)
-        if (referralCode) {
-          context.headers.set("folo-referral-code", referralCode)
-        }
-      }
-      return context
-    },
-  },
 })
 
 // @keep-sorted
