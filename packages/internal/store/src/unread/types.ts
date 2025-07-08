@@ -3,6 +3,10 @@ export interface PublishAtTimeRangeFilter {
   endTime: number
 }
 
+export interface InsertedBeforeTimeRangeFilter {
+  insertedBefore: number
+}
+
 export interface UnreadUpdateOptions {
   reset?: boolean
 }

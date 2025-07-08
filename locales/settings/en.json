@@ -68,6 +68,8 @@
   "actions.saveSuccess": "🎉 Actions Saved.",
   "actions.sidebar_title": "Actions",
   "actions.title": "Actions",
+  "appearance.accent_color.description": "Choose the accent color for the app interface",
+  "appearance.accent_color.label": "Accent Color",
   "appearance.code_highlight_theme.description": "Adjust the code highlight theme.",
   "appearance.code_highlight_theme.label": "Code Highlight Theme",
   "appearance.code_highlighting.title": "Code Highlighting",

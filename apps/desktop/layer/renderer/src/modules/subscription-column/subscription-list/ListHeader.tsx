@@ -1,11 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
-import {
-  useCategoryOpenStateByView,
-  usePrefetchSubscription,
-} from "@follow/store/subscription/hooks"
+import { useCategoryOpenStateByView } from "@follow/store/subscription/hooks"
 import { subscriptionActions } from "@follow/store/subscription/store"
-import { usePrefetchUnread, useUnreadByView } from "@follow/store/unread/hooks"
+import { useUnreadByView } from "@follow/store/unread/hooks"
 import { stopPropagation } from "@follow/utils"
 import { useTranslation } from "react-i18next"
 
@@ -15,9 +12,6 @@ import { UnreadNumber } from "../UnreadNumber"
 import { SortButton } from "./SortButton"
 
 export const ListHeader = ({ view }: { view: FeedViewType }) => {
-  usePrefetchSubscription()
-  usePrefetchUnread()
-
   const { t } = useTranslation()
   const categoryOpenStateData = useCategoryOpenStateByView(view)
   const expansion = Object.values(categoryOpenStateData).every((value) => value === true)

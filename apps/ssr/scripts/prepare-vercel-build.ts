@@ -1,7 +1,8 @@
 import { mkdirSync } from "node:fs"
 import fs from "node:fs/promises"
-import path, { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+
+import path, { dirname } from "pathe"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

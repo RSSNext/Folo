@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
-import path from "node:path"
 
 import slugify from "@sindresorhus/slugify"
+import path from "pathe"
 
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"

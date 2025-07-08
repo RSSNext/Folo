@@ -19,6 +19,7 @@ export const { authClient } = auth
 export const {
   changeEmail,
   changePassword,
+  deleteUserCustom,
   forgetPassword,
   getAccountInfo,
   getProviders,

@@ -39,7 +39,17 @@ export interface GeneralSettings {
   openLinksInExternalApp: boolean
 }
 
+export type AccentColor =
+  | "orange"
+  | "blue"
+  | "green"
+  | "purple"
+  | "pink"
+  | "red"
+  | "yellow"
+  | "gray"
 export interface UISettings {
+  accentColor: AccentColor
   entryColWidth: number
   feedColWidth: number
   opaqueSidebar: boolean

@@ -1,5 +1,4 @@
-import { resolve } from "node:path"
-
+import { resolve } from "pathe"
 import { defineConfig } from "vite"
 
 import config from "./configs/vite.electron-render.config"

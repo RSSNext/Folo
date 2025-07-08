@@ -6,6 +6,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import type { MediaModel } from "@follow/shared/hono"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -21,6 +22,7 @@ import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
 
 import { m } from "~/components/common/Motion"
 import { COPY_MAP } from "~/constants"
+import { ipcServices } from "~/lib/client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 
 import { useCurrentModal } from "../modal/stacked/hooks"
@@ -202,19 +204,16 @@ const HeaderActions: FC<{
       <HeaderButton description={t(COPY_MAP.OpenInBrowser())} onClick={() => window.open(src)}>
         <i className="i-mgc-external-link-cute-re" />
       </HeaderButton>
-      <HeaderButton
-        description={t("common:words.download")}
-        onClick={() => {
-          const a = document.createElement("a")
-          a.href = src
-          a.download = src.split("/").pop()!
-          a.target = "_blank"
-          a.rel = "noreferrer"
-          a.click()
-        }}
-      >
-        <i className="i-mgc-download-2-cute-re" />
-      </HeaderButton>
+      {IN_ELECTRON && (
+        <HeaderButton
+          description={t("common:words.download")}
+          onClick={() => {
+            ipcServices?.app.download(src)
+          }}
+        >
+          <i className="i-mgc-download-2-cute-re" />
+        </HeaderButton>
+      )}
 
       <HeaderButton
         description={t("common:words.close")}

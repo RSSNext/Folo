@@ -8,6 +8,9 @@ const FollowGaleriaAccessory = requireNativeModule<{
   }) => void
 }>("FollowGaleriaAccessory")
 
+/**
+ * @deprecated Use `const { openLightbox } = useLightboxControls()` instead.
+ */
 export const showEntryGaleriaAccessory = (props: {
   author: string
   avatarUrl: string

@@ -31,7 +31,8 @@ export const EntryListContentArticle = ({
     [playingAudioUrl, entryIds],
   )
 
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime } =
+    useEntries()
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
@@ -41,8 +42,8 @@ export const EntryListContentArticle = ({
   )
 
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
-    [hasNextPage],
+    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter fetchedTime={fetchedTime} />),
+    [hasNextPage, fetchedTime],
   )
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()

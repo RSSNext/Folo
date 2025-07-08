@@ -1,4 +1,4 @@
-import { and, between, eq, inArray, or } from "drizzle-orm"
+import { and, between, eq, inArray, lt, or } from "drizzle-orm"
 
 import { db } from "../db"
 import { entriesTable } from "../schemas"
@@ -9,6 +9,10 @@ import { conflictUpdateAllExcept } from "./internal/utils"
 interface PublishAtTimeRangeFilter {
   startTime: number
   endTime: number
+}
+
+interface InsertedBeforeTimeRangeFilter {
+  insertedBefore: number
 }
 
 class EntryServiceStatic implements Resetable {
@@ -40,7 +44,7 @@ class EntryServiceStatic implements Resetable {
     entry: Partial<EntrySchema>
     entryIds?: string[]
     feedIds?: string[]
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
   }) {
     if (!entryIds && !feedIds) return
     await db
@@ -49,8 +53,11 @@ class EntryServiceStatic implements Resetable {
       .where(
         and(
           or(inArray(entriesTable.id, entryIds ?? []), inArray(entriesTable.feedId, feedIds ?? [])),
-          time
+          time && "startTime" in time
             ? between(entriesTable.publishedAt, new Date(time.startTime), new Date(time.endTime))
+            : undefined,
+          time && "insertedBefore" in time
+            ? lt(entriesTable.insertedAt, new Date(time.insertedBefore))
             : undefined,
         ),
       )

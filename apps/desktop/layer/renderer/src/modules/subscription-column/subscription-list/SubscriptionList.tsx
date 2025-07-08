@@ -150,7 +150,7 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
     <div className={cn(className, "font-medium")}>
       <ListHeader view={view} />
       <Selecto
-        className="!border-theme-accent-400 !bg-theme-accent-400/60"
+        className="!border-orange-400 !bg-orange-400/60"
         ref={selectoRef}
         rootContainer={document.body}
         dragContainer={"#feeds-area"}

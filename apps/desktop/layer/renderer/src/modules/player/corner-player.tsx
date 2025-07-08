@@ -401,7 +401,7 @@ export const PlayerProgress = () => {
           onValueCommit={(value) => AudioPlayer.seek(value[0]!)}
         >
           <Slider.Track className="relative h-1 w-full grow rounded bg-gray-200 duration-200 group-hover:bg-gray-300 dark:bg-neutral-700 group-hover:dark:bg-neutral-600">
-            <Slider.Range className="bg-theme-accent-400 dark:bg-theme-accent-700 absolute h-1 rounded" />
+            <Slider.Range className="bg-accent/80 absolute h-1 rounded" />
           </Slider.Track>
 
           {/* indicator */}

@@ -5,7 +5,7 @@ import type { AuthSession } from "@follow/shared/hono"
 import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
 
 import { apiClient, authClient } from "../context"
-import type { Hydratable } from "../internal/base"
+import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { honoMorph } from "../morph/hono"
 import type { UserProfileEditable } from "./types"
@@ -22,13 +22,16 @@ type UserStore = {
   role: UserRole | null
 }
 
-export const useUserStore = createZustandStore<UserStore>("user")(() => ({
+const defaultState: UserStore = {
   users: {},
   whoami: null,
   role: null,
-}))
+}
+
+export const useUserStore = createZustandStore<UserStore>("user")(() => defaultState)
 
 const get = useUserStore.getState
+const set = useUserStore.setState
 const immerSet = createImmerSetter(useUserStore)
 
 class UserSyncService {
@@ -197,11 +200,21 @@ class UserSyncService {
   }
 }
 
-class UserActions implements Hydratable {
+class UserActions implements Hydratable, Resetable {
   async hydrate() {
     const users = await UserService.getUserAll()
     userActions.upsertManyInSession(users)
   }
+
+  async reset() {
+    const tx = createTransaction()
+    tx.store(() => {
+      set(defaultState)
+    })
+    tx.persist(() => UserService.reset())
+    await tx.run()
+  }
+
   upsertManyInSession(users: UserModel[]) {
     immerSet((state) => {
       for (const user of users) {

@@ -1,5 +1,4 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs"
-import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import type { env as EnvType } from "@follow/shared/env.desktop"
@@ -7,6 +6,7 @@ import legacy from "@vitejs/plugin-legacy"
 import { minify as htmlMinify } from "html-minifier-terser"
 import { cyan, dim, green } from "kolorist"
 import { parseHTML } from "linkedom"
+import { resolve } from "pathe"
 import { tsImport } from "tsx/esm/api"
 import type { PluginOption, ResolvedConfig, ViteDevServer } from "vite"
 import { defineConfig, loadEnv } from "vite"

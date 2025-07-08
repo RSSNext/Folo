@@ -32,6 +32,9 @@ export const Trending = ({
         lang: discoverLanguage === "all" ? undefined : discoverLanguage,
         limit: 20,
       }).then((res) => res.data),
+    meta: {
+      persist: true,
+    },
   })
   const navigation = useNavigation()
 

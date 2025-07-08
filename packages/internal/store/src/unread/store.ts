@@ -13,6 +13,7 @@ import { getListFeedIds } from "../list/getters"
 import { getSubscribedFeedIdAndInboxHandlesByView } from "../subscription/getter"
 import type {
   FeedIdOrInboxHandle,
+  InsertedBeforeTimeRangeFilter,
   PublishAtTimeRangeFilter,
   UnreadState,
   UnreadStoreModel,
@@ -43,7 +44,7 @@ class UnreadSyncService {
     request,
   }: {
     ids: FeedIdOrInboxHandle[]
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
     request: () => Promise<UnreadStoreModel>
   }) {
     if (!ids || ids.length === 0) return
@@ -115,8 +116,9 @@ class UnreadSyncService {
       listId?: string
       feedIdList?: string[]
       inboxId?: string
+      insertedBefore?: number
     } | null
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
     excludePrivate: boolean
   }) {
     const request = async () => {
@@ -184,6 +186,7 @@ class UnreadSyncService {
     if (!entry || entry.read === read || (!entry.feedId && !entry.inboxHandle)) return
 
     const id: FeedIdOrInboxHandle = entry.inboxHandle || entry.feedId || ""
+    const isInbox = !!entry.inboxHandle
 
     const tx = createTransaction()
     tx.store(() => {
@@ -198,11 +201,11 @@ class UnreadSyncService {
     tx.request(async () => {
       if (read) {
         await apiClient().reads.$post({
-          json: { entryIds: [entryId] },
+          json: { entryIds: [entryId], isInbox },
         })
       } else {
         await apiClient().reads.$delete({
-          json: { entryId },
+          json: { entryId, isInbox },
         })
       }
     })

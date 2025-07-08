@@ -46,7 +46,7 @@ export function Component() {
       setRightView(null)
     }
   }, [setRightView, handleAddInstance, t])
-  const list = useAuthQuery(Queries.rsshub.list())
+  const list = useAuthQuery(Queries.rsshub.list(), { meta: { persist: true } })
 
   return (
     <div className="flex size-full flex-col px-6 py-8">

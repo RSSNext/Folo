@@ -123,6 +123,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     isFetching: query.isFetching,
     hasNextPage: query.hasNextPage,
     error: query.isError ? query.error : null,
+    fetchedTime,
   }
 }
 

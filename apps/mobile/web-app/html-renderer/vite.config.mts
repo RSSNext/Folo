@@ -1,6 +1,5 @@
-import path from "node:path"
-
 import react from "@vitejs/plugin-react"
+import path from "pathe"
 import { defineConfig } from "vite"
 
 import { viteRenderBaseConfig } from "../../../desktop/configs/vite.render.config"

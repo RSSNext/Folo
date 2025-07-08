@@ -45,6 +45,9 @@ export const Component = () => {
     {
       staleTime: 1000 * 60 * 60 * 24, // 1 day
       placeholderData: keepPreviousData,
+      meta: {
+        persist: true,
+      },
     },
   )
 
@@ -53,6 +56,9 @@ export const Component = () => {
   const rsshubAnalytics = useAuthQuery(Queries.discover.rsshubAnalytics({ lang }), {
     staleTime: 1000 * 60 * 60 * 24, // 1 day
     placeholderData: keepPreviousData,
+    meta: {
+      persist: true,
+    },
   })
 
   const rsshubAnalyticsData: Awaited<

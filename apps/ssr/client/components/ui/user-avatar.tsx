@@ -26,6 +26,7 @@ export const UserAvatar = ({ className }: { className?: string }) => {
         name: "Innei",
         image: "https://avatars-githubusercontent-webp.webp.se/u/41265413?v=4",
         handle: "innei",
+        deleted: false,
       }
     } else {
       return null

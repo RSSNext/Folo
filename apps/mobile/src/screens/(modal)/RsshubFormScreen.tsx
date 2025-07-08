@@ -132,7 +132,9 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
             </Text>
             {keys.length === 0 && (
               <View className="bg-secondary-system-grouped-background mx-2 mt-4 gap-4 rounded-lg p-3">
-                <Text className="text-center text-base">This feed has no parameters.</Text>
+                <Text className="text-label text-center text-base">
+                  This feed has no parameters.
+                </Text>
               </View>
             )}
             {keys.length > 0 && (

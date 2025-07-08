@@ -25,7 +25,7 @@ import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useEffect, useMemo, useRef } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -283,18 +283,35 @@ const FeedInnerForm = ({
 
   const t = useI18n()
 
-  const categories = useCategories()
+  const articlesCategory = useCategories(FeedViewType.Articles)
+  const socialCategory = useCategories(FeedViewType.SocialMedia)
+  const picturesCategory = useCategories(FeedViewType.Pictures)
+  const videosCategory = useCategories(FeedViewType.Videos)
+  const audiosCategory = useCategories(FeedViewType.Audios)
+  const notificationsCategory = useCategories(FeedViewType.Notifications)
 
-  const suggestions = useMemo(
-    () =>
-      (
-        categories?.map((i) => ({
-          name: i,
-          value: i,
-        })) || []
-      ).sort((a, b) => a.name.localeCompare(b.name)),
-    [categories],
-  )
+  const suggestions = useMemo(() => {
+    return {
+      [FeedViewType.Articles]: articlesCategory.map((item) => ({ name: item, value: item })),
+      [FeedViewType.SocialMedia]: socialCategory.map((item) => ({ name: item, value: item })),
+      [FeedViewType.Pictures]: picturesCategory.map((item) => ({ name: item, value: item })),
+      [FeedViewType.Videos]: videosCategory.map((item) => ({ name: item, value: item })),
+      [FeedViewType.Audios]: audiosCategory.map((item) => ({ name: item, value: item })),
+      [FeedViewType.Notifications]: notificationsCategory.map((item) => ({
+        name: item,
+        value: item,
+      })),
+    }
+  }, [
+    articlesCategory,
+    socialCategory,
+    picturesCategory,
+    videosCategory,
+    audiosCategory,
+    notificationsCategory,
+  ])
+
+  const viewWatch = useWatch({ control: form.control, name: "view" })
 
   const fillDefaultTitle = useCallback(() => {
     form.setValue("title", feed.title || "")
@@ -349,7 +366,7 @@ const FeedInnerForm = ({
                   <div>
                     <Autocomplete
                       maxHeight={window.innerHeight < 600 ? 120 : 240}
-                      suggestions={suggestions}
+                      suggestions={suggestions[viewWatch]}
                       {...(field as any)}
                       onSuggestionSelected={(suggestion) => {
                         if (suggestion) {

@@ -32,7 +32,7 @@ const footerSections: FooterSection[] = [
         label: "Discord",
         external: true,
       },
-      { href: "https://x.com/follow_app_", label: "Twitter", external: true },
+      { href: "https://x.com/folo_is", label: "Twitter", external: true },
     ],
   },
   {
@@ -59,7 +59,7 @@ const socialLinks = [
     icon: "i-simple-icons-github",
   },
   {
-    href: "https://twitter.com/follow_app_",
+    href: "https://twitter.com/folo_is",
     label: "Twitter",
     icon: "i-simple-icons-x",
   },

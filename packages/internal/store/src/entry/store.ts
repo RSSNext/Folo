@@ -14,7 +14,11 @@ import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
 import { getSubscriptionById } from "../subscription/getter"
 import { getDefaultCategory } from "../subscription/utils"
-import type { FeedIdOrInboxHandle, PublishAtTimeRangeFilter } from "../unread/types"
+import type {
+  FeedIdOrInboxHandle,
+  InsertedBeforeTimeRangeFilter,
+  PublishAtTimeRangeFilter,
+} from "../unread/types"
 import { whoami } from "../user/getters"
 import { userActions } from "../user/store"
 import { getEntry } from "./getter"
@@ -311,7 +315,7 @@ class EntryActions implements Hydratable, Resetable {
     entryIds?: EntryId[]
     ids?: FeedIdOrInboxHandle[]
     read: boolean
-    time?: PublishAtTimeRangeFilter
+    time?: PublishAtTimeRangeFilter | InsertedBeforeTimeRangeFilter
   }) {
     const affectedEntryIds = new Set<EntryId>()
 
@@ -325,8 +329,16 @@ class EntryActions implements Hydratable, Resetable {
 
           if (
             time &&
+            "startTime" in time &&
             (+new Date(entry.publishedAt) < time.startTime ||
               +new Date(entry.publishedAt) > time.endTime)
+          ) {
+            continue
+          }
+          if (
+            time &&
+            "insertedBefore" in time &&
+            +new Date(entry.insertedAt) >= time.insertedBefore
           ) {
             continue
           }
@@ -351,8 +363,16 @@ class EntryActions implements Hydratable, Resetable {
         for (const entry of entries) {
           if (
             time &&
+            "startTime" in time &&
             (+new Date(entry.publishedAt) < time.startTime ||
               +new Date(entry.publishedAt) > time.endTime)
+          ) {
+            continue
+          }
+          if (
+            time &&
+            "insertedBefore" in time &&
+            +new Date(entry.insertedAt) >= time.insertedBefore
           ) {
             continue
           }

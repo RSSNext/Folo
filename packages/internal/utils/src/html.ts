@@ -59,6 +59,7 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
     rehypeSchema.tagNames = [
       ...rehypeSchema.tagNames!,
       "video",
+      "iframe",
       "style",
       "figure",
       // SVG
@@ -80,6 +81,18 @@ export const parseHtml = (content: string, options?: ParseHtmlOptions) => {
         ? [...rehypeSchema.attributes!["*"]!, "style", "class"]
         : rehypeSchema.attributes!["*"]!,
       video: ["src", "poster"],
+      iframe: [
+        "src",
+        "width",
+        "height",
+        "frameborder",
+        "allowfullscreen",
+        "sandbox",
+        "loading",
+        "title",
+        "id",
+        "class",
+      ],
       source: ["src", "type"],
 
       svg: [

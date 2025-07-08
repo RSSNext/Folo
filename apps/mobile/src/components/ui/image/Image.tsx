@@ -86,11 +86,14 @@ export const Image = ({
         ...(typeof rest.placeholder === "object" && { ...rest.placeholder }),
       }}
       placeholderContentFit="cover"
-      style={{
-        aspectRatio,
-        ...(typeof rest.style === "object" && { ...rest.style }),
-        ...((isLoading || isError) && { backgroundColor }),
-      }}
+      style={[
+        {
+          aspectRatio,
+          ...(typeof rest.style === "object" && { ...rest.style }),
+          ...((isLoading || isError) && { backgroundColor }),
+        },
+        rest.style,
+      ]}
       ref={ref}
     />
   )
