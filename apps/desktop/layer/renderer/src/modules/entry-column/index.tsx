@@ -214,7 +214,7 @@ const AddFeedHelper = () => {
 // Component for wide mode AI chat input with context
 const WideModeAIChatInput = () => {
   return (
-    <AIChatRoot>
+    <AIChatRoot roomId="global-ai">
       <AIChatInput autoShrink />
     </AIChatRoot>
   )

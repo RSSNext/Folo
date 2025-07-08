@@ -1,8 +1,21 @@
+import type { ToolUIPart } from "ai"
 import * as React from "react"
 
-import type { BizUIMessage } from "~/modules/ai/chat/__internal__/types"
+import type {
+  AIDisplayAnalyticsTool,
+  AIDisplayEntriesTool,
+  AIDisplayFeedsTool,
+  AIDisplaySubscriptionsTool,
+  BizUIMessage,
+} from "~/modules/ai/chat/__internal__/types"
 
 import { AIMarkdownMessage } from "./AIMarkdownMessage"
+import {
+  AIDisplayAnalyticsPart,
+  AIDisplayEntriesPart,
+  AIDisplayFeedsPart,
+  AIDisplaySubscriptionsPart,
+} from "./displays"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 interface MessagePartsProps {
@@ -36,11 +49,19 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
             )
           }
 
-          case "tool-displayFeeds":
-          case "tool-getFeeds":
-          case "tool-getFeedEntries":
-          case "tool-getEntry": {
-            return <ToolInvocationComponent key={partKey} part={part} />
+          case "tool-displayAnalytics": {
+            return <AIDisplayAnalyticsPart key={partKey} part={part as AIDisplayAnalyticsTool} />
+          }
+          case "tool-displayEntries": {
+            return <AIDisplayEntriesPart key={partKey} part={part as AIDisplayEntriesTool} />
+          }
+          case "tool-displaySubscriptions": {
+            return (
+              <AIDisplaySubscriptionsPart key={partKey} part={part as AIDisplaySubscriptionsTool} />
+            )
+          }
+          case "tool-displayFeeds": {
+            return <AIDisplayFeedsPart key={partKey} part={part as AIDisplayFeedsTool} />
           }
 
           // case "reasoning": {
@@ -62,6 +83,9 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
           }
 
           default: {
+            if (part.type.startsWith("tool-")) {
+              return <ToolInvocationComponent key={partKey} part={part as ToolUIPart} />
+            }
             return null
           }
         }

@@ -138,7 +138,7 @@ const WelcomeChatInput = ({ onSend }: { onSend: (message: string) => void }) => 
   }, [])
 
   return (
-    <div className="bg-background border-border relative overflow-hidden rounded-2xl border shadow-lg">
+    <div className="bg-background border-border relative overflow-hidden rounded-2xl border shadow-lg shadow-zinc-100 dark:shadow-black/5">
       <textarea
         onChange={handleChange}
         onKeyDown={handleKeyPress}
@@ -219,7 +219,7 @@ const ChatInput = ({ onSend }: { onSend: (message: string) => void }) => {
     <div className="absolute inset-x-0 bottom-0">
       <div className="mx-auto max-w-4xl p-6">
         {/* Integrated Input Container with Context Bar */}
-        <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-2xl border shadow-2xl shadow-black/5 backdrop-blur-xl duration-200 focus-within:ring-2">
+        <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-2xl border shadow-2xl shadow-black/5 backdrop-blur-xl duration-200 focus-within:ring-2 dark:shadow-zinc-800">
           {/* Input Area */}
           <div className="relative z-10 flex items-end">
             <textarea

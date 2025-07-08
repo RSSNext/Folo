@@ -101,13 +101,30 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
       resizeObserverRef.current.disconnect()
     }
 
+    let previousScrollHeight = viewport.scrollHeight
+    let previousScrollTop = viewport.scrollTop
+
     const resizeObserver = new ResizeObserver(() => {
       // Only auto-scroll if user hasn't manually scrolled up
       if (!userScrolledUpRef.current) {
-        // Use a small delay to ensure content is fully rendered
-        requestAnimationFrame(() => {
-          scrollToBottom()
-        })
+        const currentScrollHeight = viewport.scrollHeight
+        const currentScrollTop = viewport.scrollTop
+
+        // Only scroll to bottom if the content height increased AND
+        // the scroll position is still at the bottom (user didn't scroll)
+        const heightIncreased = currentScrollHeight > previousScrollHeight
+        const wasAtBottom = previousScrollTop + viewport.clientHeight >= previousScrollHeight - 10
+        const stillAtBottom = currentScrollTop + viewport.clientHeight >= previousScrollHeight - 10
+
+        if (heightIncreased && (wasAtBottom || stillAtBottom)) {
+          // Use a small delay to ensure content is fully rendered
+          requestAnimationFrame(() => {
+            scrollToBottom()
+          })
+        }
+
+        previousScrollHeight = currentScrollHeight
+        previousScrollTop = currentScrollTop
       }
     })
 

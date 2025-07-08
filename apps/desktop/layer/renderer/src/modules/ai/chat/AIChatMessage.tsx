@@ -89,7 +89,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
           <div
             className={`select-text text-[0.95rem] ${
               message.role === "user" ? "text-white" : "text-text"
-            }`}
+            } flex flex-col`}
           >
             <AIMessageParts message={message} />
           </div>

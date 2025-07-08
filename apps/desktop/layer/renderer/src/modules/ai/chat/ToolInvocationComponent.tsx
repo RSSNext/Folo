@@ -13,10 +13,9 @@ interface ToolInvocationComponentProps {
 }
 
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = ({ part }) => {
-  const { state } = part
   const toolName = getToolName(part)
   return (
-    <div className="bg-material-medium border-border size-full overflow-hidden rounded-lg border text-left">
+    <div className="bg-material-medium border-border size-full min-w-0 overflow-hidden rounded-lg border text-left">
       <Accordion type="single" collapsible>
         <AccordionItem value="tool-invocation">
           <AccordionTrigger className="flex w-full cursor-pointer items-center gap-3 py-1 pl-4 pr-2 hover:no-underline">
@@ -27,13 +26,10 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = (
                 <span className="text-text-secondary">Tool Calling:</span>
                 <h4 className="text-text truncate font-medium">{toolName}</h4>
               </div>
-              {state === "input-streaming" && (
-                <p className="text-text-tertiary mt-1 text-xs">Executing tool...</p>
-              )}
             </div>
           </AccordionTrigger>
 
-          <AccordionContent className="border-t border-zinc-200/50 bg-zinc-50/50 p-4 dark:border-zinc-700/50 dark:bg-zinc-800/50">
+          <AccordionContent className="min-w-0 border-t border-zinc-200/50 bg-zinc-50/50 p-4 dark:border-zinc-700/50 dark:bg-zinc-800/50">
             <div className="space-y-3">
               {"input" in part && (
                 <div>

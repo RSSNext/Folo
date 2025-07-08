@@ -43,3 +43,10 @@ export type BizUIMetadata = {
 }
 
 export type BizUIMessage = UIMessage<BizUIMetadata, UIDataTypes, BizUITools>
+type ToolWithState<T> = T & {
+  state: "input-streaming" | "input-available" | "output-available" | "output-error"
+}
+export type AIDisplayAnalyticsTool = ToolWithState<BizUITools["displayAnalytics"]>
+export type AIDisplayFeedsTool = ToolWithState<BizUITools["displayFeeds"]>
+export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
+export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
