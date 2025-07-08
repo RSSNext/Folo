@@ -13,11 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@follow/components/ui/table/index.js"
-import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 
 import type { AIDisplayAnalyticsTool } from "../__internal__/types"
 import { ErrorState, LoadingState } from "../components/common-states"
+import { ChartPlaceholder, StatCard } from "./shared"
 
 type AnalyticsData = AIDisplayAnalyticsTool["output"]["analyticsData"]
 
@@ -31,46 +31,6 @@ const formatTimeRange = (timeRange: string) => {
   }
   return timeRangeMap[timeRange as keyof typeof timeRangeMap] || timeRange
 }
-
-const StatCard = ({
-  title,
-  value,
-  description,
-  className,
-  emoji,
-}: {
-  title: string
-  value: string | number
-  description?: string
-  className?: string
-  emoji?: string
-}) => (
-  <Card className={cn("p-4", className)}>
-    <CardHeader className="pb-2">
-      <CardTitle className="text-text-secondary flex items-center gap-2 text-sm font-medium">
-        {emoji && <span className="text-base">{emoji}</span>}
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <div className="text-text text-2xl font-bold">{value}</div>
-      {description && <CardDescription className="mt-1 text-xs">{description}</CardDescription>}
-    </CardContent>
-  </Card>
-)
-
-const ChartPlaceholder = ({ title, data }: { title: string; data: any[] }) => (
-  <Card className="p-4">
-    <CardHeader className="pb-2">
-      <CardTitle className="text-text-secondary text-sm font-medium">{title}</CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <div className="bg-material-medium text-text-tertiary flex h-32 items-center justify-center rounded-lg text-sm">
-        Chart visualization ({data.length} data points)
-      </div>
-    </CardContent>
-  </Card>
-)
 
 const FeedAnalytics = ({ data }: { data: AnalyticsData["feedData"] }) => {
   if (!data) return null

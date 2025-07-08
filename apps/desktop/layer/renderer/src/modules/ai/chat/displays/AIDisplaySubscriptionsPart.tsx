@@ -10,6 +10,7 @@ import dayjs from "dayjs"
 import { FeedIcon } from "../../../feed/feed-icon"
 import type { AIDisplaySubscriptionsTool } from "../__internal__/types"
 import { ErrorState, LoadingState } from "../components/common-states"
+import { AnalyticsMetrics, CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
 
 type SubscriptionData = AIDisplaySubscriptionsTool["output"]["subscriptions"]
 
@@ -42,31 +43,6 @@ const formatFilterBy = (filterBy: string) => {
   return filterByMap[filterBy as keyof typeof filterByMap] || filterBy
 }
 
-const StatCard = ({
-  title,
-  value,
-  description,
-  emoji,
-}: {
-  title: string
-  value: string | number
-  description?: string
-  emoji?: string
-}) => (
-  <Card className="p-4">
-    <CardHeader className="p-2 pt-0">
-      <CardTitle className="text-text-secondary flex items-center gap-2 text-sm font-medium">
-        {emoji && <span className="text-base">{emoji}</span>}
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="px-2 py-0">
-      <div className="text-text text-2xl font-bold">{value}</div>
-      {description && <CardDescription className="mt-1 text-xs">{description}</CardDescription>}
-    </CardContent>
-  </Card>
-)
-
 const SubscriptionsGrid = ({
   data,
   showAnalytics,
@@ -77,11 +53,11 @@ const SubscriptionsGrid = ({
   showCategories: boolean
 }) => {
   if (!data?.length) {
-    return <div className="text-text-secondary text-center text-sm">No subscriptions found</div>
+    return <EmptyState message="No subscriptions found" />
   }
 
   return (
-    <div className="@[600px]:grid-cols-3 grid grid-cols-2 gap-4">
+    <GridContainer columns={{ base: 2, md: 3 }} className="@[600px]:grid-cols-3">
       {data.map((sub) => (
         <Card key={`${sub.subscription?.userId}-${sub.subscription?.feedId}`} className="p-4">
           <CardHeader className="h-24 px-2 py-3">
@@ -108,9 +84,7 @@ const SubscriptionsGrid = ({
           <CardContent className="space-y-3 p-0 px-2 pb-3">
             {showCategories && sub.subscription?.category && (
               <div>
-                <span className="bg-fill-tertiary text-text-secondary rounded px-2 py-1 text-xs">
-                  {sub.subscription.category}
-                </span>
+                <CategoryTag category={sub.subscription.category} />
               </div>
             )}
             <div className="text-text-secondary text-xs">
@@ -120,25 +94,17 @@ const SubscriptionsGrid = ({
                 : "Unknown"}
             </div>
             {showAnalytics && (
-              <ul className="space-y-1 text-xs">
-                <li className="flex items-center justify-between">
-                  <span className="text-text-tertiary">Updates/Week</span>
-                  <span className="text-text font-medium">
-                    {sub.analytics?.updatesPerWeek || 0}
-                  </span>
-                </li>
-                <li className="flex items-center justify-between">
-                  <span className="text-text-tertiary">Views</span>
-                  <span className="text-text font-medium">
-                    {sub.analytics?.view || sub.subscription?.view || 0}
-                  </span>
-                </li>
-              </ul>
+              <AnalyticsMetrics
+                metrics={[
+                  { label: "Updates/Week", value: sub.analytics?.updatesPerWeek || 0 },
+                  { label: "Views", value: sub.analytics?.view || sub.subscription?.view || 0 },
+                ]}
+              />
             )}
           </CardContent>
         </Card>
       ))}
-    </div>
+    </GridContainer>
   )
 }
 
@@ -299,7 +265,7 @@ export const AIDisplaySubscriptionsPart = ({ part }: { part: AIDisplaySubscripti
       </CardHeader>
       <CardContent className="@container space-y-6">
         {/* Statistics Overview */}
-        <div className="@[600px]:grid-cols-4 grid grid-cols-2 gap-4">
+        <GridContainer columns={{ base: 2, md: 4 }} className="@[600px]:grid-cols-4">
           <StatCard title="Total Subscriptions" value={totalSubscriptions} emoji="📊" />
           <StatCard
             title="Active Feeds"
@@ -309,7 +275,7 @@ export const AIDisplaySubscriptionsPart = ({ part }: { part: AIDisplaySubscripti
           />
           {showCategories && <StatCard title="Categories" value={categoriesCount} emoji="🏷️" />}
           <StatCard title="Total Views" value={totalViews.toLocaleString()} emoji="👀" />
-        </div>
+        </GridContainer>
 
         {/* Subscriptions Display */}
         {renderSubscriptions()}

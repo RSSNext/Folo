@@ -10,6 +10,7 @@ import dayjs from "dayjs"
 import { FeedIcon } from "../../../feed/feed-icon"
 import type { AIDisplayEntriesTool } from "../__internal__/types"
 import { ErrorState, LoadingState } from "../components/common-states"
+import { CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
 
 type EntryData = AIDisplayEntriesTool["output"]["entries"]
 
@@ -33,31 +34,6 @@ const formatGroupBy = (groupBy: string) => {
   return groupByMap[groupBy as keyof typeof groupByMap] || groupBy
 }
 
-const StatCard = ({
-  title,
-  value,
-  description,
-  emoji,
-}: {
-  title: string
-  value: string | number
-  description?: string
-  emoji?: string
-}) => (
-  <Card className="p-4">
-    <CardHeader className="p-2 pt-0">
-      <CardTitle className="text-text-secondary flex items-center gap-2 text-sm font-medium">
-        {emoji && <span className="text-base">{emoji}</span>}
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="px-2 py-0">
-      <div className="text-text text-2xl font-bold">{value}</div>
-      {description && <CardDescription className="mt-1 text-xs">{description}</CardDescription>}
-    </CardContent>
-  </Card>
-)
-
 const EntriesGrid = ({
   data,
   showSummary,
@@ -68,11 +44,14 @@ const EntriesGrid = ({
   showMetadata: boolean
 }) => {
   if (!data?.length) {
-    return <div className="text-text-secondary text-center text-sm">No entries found</div>
+    return <EmptyState message="No entries found" />
   }
 
   return (
-    <div className="@[600px]:grid-cols-2 @[900px]:grid-cols-3 grid grid-cols-1 gap-4">
+    <GridContainer
+      columns={{ base: 1, md: 2, lg: 3 }}
+      className="@[600px]:grid-cols-2 @[900px]:grid-cols-3"
+    >
       {data.map((item) => (
         <Card key={item.entry.id} className="p-4">
           <CardHeader className="h-auto px-2 py-3">
@@ -112,12 +91,7 @@ const EntriesGrid = ({
                 {item.entry.categories?.length && (
                   <div className="flex flex-wrap gap-1">
                     {item.entry.categories.slice(0, 3).map((category, index) => (
-                      <span
-                        key={index}
-                        className="bg-fill-tertiary text-text-secondary rounded px-2 py-1 text-xs"
-                      >
-                        {category}
-                      </span>
+                      <CategoryTag key={index} category={category} />
                     ))}
                   </div>
                 )}
@@ -126,7 +100,7 @@ const EntriesGrid = ({
           </CardContent>
         </Card>
       ))}
-    </div>
+    </GridContainer>
   )
 }
 
@@ -140,7 +114,7 @@ const TimelineView = ({
   showMetadata: boolean
 }) => {
   if (!data?.length) {
-    return <div className="text-text-secondary text-center text-sm">No entries found</div>
+    return <EmptyState message="No entries found" />
   }
 
   return (
@@ -182,12 +156,7 @@ const TimelineView = ({
                 {showMetadata && item.entry.categories?.length && (
                   <div className="flex flex-wrap gap-1">
                     {item.entry.categories.slice(0, 5).map((category, index) => (
-                      <span
-                        key={index}
-                        className="bg-fill-tertiary text-text-secondary rounded px-2 py-1 text-xs"
-                      >
-                        {category}
-                      </span>
+                      <CategoryTag key={index} category={category} />
                     ))}
                   </div>
                 )}
@@ -360,12 +329,12 @@ export const AIDisplayEntriesPart = ({ part }: { part: AIDisplayEntriesTool }) =
       </CardHeader>
       <CardContent className="@container space-y-6">
         {/* Statistics Overview */}
-        <div className="@[600px]:grid-cols-4 grid grid-cols-2 gap-4">
+        <GridContainer columns={{ base: 2, md: 4 }} className="@[600px]:grid-cols-4">
           <StatCard title="Total Entries" value={totalEntries} emoji="📄" />
           <StatCard title="Feeds" value={feedsCount} emoji="📡" />
           <StatCard title="Authors" value={authorsCount} emoji="✍️" />
           <StatCard title="Categories" value={categoriesCount} emoji="🏷️" />
-        </div>
+        </GridContainer>
 
         {/* Entries Display */}
         {renderEntries()}
