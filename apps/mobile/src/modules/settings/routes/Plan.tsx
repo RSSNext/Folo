@@ -3,6 +3,9 @@ import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
+import type { ProductPurchase } from "expo-iap"
+import { useIAP } from "expo-iap"
+import { useEffect } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, Pressable, ScrollView, Text, View } from "react-native"
 
@@ -91,6 +94,35 @@ const useReferralInfoQuery = () => {
 }
 
 export const PlanScreen: NavigationControllerView = () => {
+  const { connected, getProducts, requestPurchase, validateReceipt } = useIAP({
+    onPurchaseSuccess: (purchase) => {
+      validatePurchase(purchase)
+    },
+    onPurchaseError: (error) => {
+      console.error("Purchase failed:", error)
+    },
+  })
+
+  useEffect(() => {
+    if (connected) {
+      getProducts(["is.follow.propreview"])
+    }
+  }, [connected])
+
+  const validatePurchase = async (purchase: ProductPurchase) => {
+    if (!purchase.transactionId) {
+      return
+    }
+    try {
+      const result = await validateReceipt(purchase.transactionId)
+      if (result.isValid) {
+        apiClient.referrals["verify-receipt"].$post({ json: { appReceipt: result.receiptData } })
+      }
+    } catch (error) {
+      console.error("Validation failed:", error)
+    }
+  }
+
   const navigation = useNavigation()
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
@@ -204,7 +236,12 @@ export const PlanScreen: NavigationControllerView = () => {
 
             <Text className="text-label">or</Text>
 
-            <Pressable className="bg-accent rounded-lg p-2">
+            <Pressable
+              className="bg-accent rounded-lg p-2"
+              onPress={() => {
+                requestPurchase({ request: { sku: "is.follow.propreview" } })
+              }}
+            >
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
             </Pressable>
           </View>
