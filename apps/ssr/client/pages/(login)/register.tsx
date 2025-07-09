@@ -1,3 +1,4 @@
+import { useServerConfigs } from "@client/atoms/server-configs"
 import { loginHandler, signUp } from "@client/lib/auth"
 import { ReferralForm } from "@client/modules/referral"
 import { useAuthProviders } from "@client/query/users"
@@ -47,6 +48,7 @@ const formSchema = z
   })
 
 function RegisterForm() {
+  const serverConfigs = useServerConfigs()
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
@@ -186,7 +188,7 @@ function RegisterForm() {
         </div>
       )}
       <Divider className="my-7" />
-      <ReferralForm className="mb-4" />
+      {serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4" />}
       {isEmail ? (
         <div className="cursor-pointer pb-2 text-center" onClick={() => setIsEmail(false)}>
           Back

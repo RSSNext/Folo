@@ -4,6 +4,7 @@ import { useColorScheme } from "nativewind"
 import { useTranslation } from "react-i18next"
 import { Text, TouchableOpacity, View } from "react-native"
 
+import { useServerConfigs } from "@/src/atoms/server-configs"
 import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { signIn, useAuthProviders } from "@/src/lib/auth"
@@ -17,6 +18,7 @@ export function SocialLogin({
   isRegister: boolean
   onPressEmail: () => void
 }) {
+  const serverConfigs = useServerConfigs()
   const { data: authProviders, isLoading } = useAuthProviders()
   const { colorScheme } = useColorScheme()
   const providers = Object.entries(authProviders || [])
@@ -95,7 +97,7 @@ export function SocialLogin({
           </TouchableOpacity>
         )
       })}
-      {isRegister && (
+      {isRegister && serverConfigs?.REFERRAL_ENABLED && (
         <View className="border-opaque-separator border-hairline w-full rounded-xl px-6 py-4">
           <ReferralForm />
         </View>

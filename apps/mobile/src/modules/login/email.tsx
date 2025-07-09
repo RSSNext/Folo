@@ -9,6 +9,7 @@ import { Alert, Text, TouchableOpacity, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 import { z } from "zod"
 
+import { useServerConfigs } from "@/src/atoms/server-configs"
 import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { signIn, signUp } from "@/src/lib/auth"
@@ -172,6 +173,7 @@ function SignupInput({
 }
 
 export function EmailSignUp() {
+  const serverConfigs = useServerConfigs()
   const { control, handleSubmit, formState } = useForm<SignupFormValue>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
@@ -263,8 +265,12 @@ export function EmailSignUp() {
             }}
           />
         </View>
-        <View className="border-b-opaque-separator border-b-hairline" />
-        <ReferralForm />
+        {serverConfigs?.REFERRAL_ENABLED && (
+          <>
+            <View className="border-b-opaque-separator border-b-hairline" />
+            <ReferralForm />
+          </>
+        )}
       </View>
       <SubmitButton
         disabled={submitMutation.isPending || !formState.isValid}

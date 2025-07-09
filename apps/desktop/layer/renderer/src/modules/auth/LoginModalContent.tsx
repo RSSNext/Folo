@@ -12,6 +12,7 @@ import { m } from "motion/react"
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { useCurrentModal, useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { loginHandler } from "~/lib/auth"
 import { useAuthProviders } from "~/queries/users"
@@ -27,6 +28,8 @@ interface LoginModalContentProps {
 }
 
 export const LoginModalContent = (props: LoginModalContentProps) => {
+  const serverConfigs = useServerConfigs()
+
   const modal = useCurrentModal()
   const { present } = useModalStack()
 
@@ -150,7 +153,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           </div>
         </div>
       )}
-      {isRegister && <ReferralForm className="mb-4" />}
+      {isRegister && serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4" />}
 
       {!isEmail && (
         <>
