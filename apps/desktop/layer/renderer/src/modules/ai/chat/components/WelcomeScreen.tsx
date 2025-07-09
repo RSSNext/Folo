@@ -77,8 +77,8 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
           {[
             "Analyze my reading patterns",
             "Summarize recent articles",
+            "What happened today",
             "Find trending topics",
-            "Organize my feeds",
           ].map((suggestion, index) => (
             <m.button
               key={suggestion}

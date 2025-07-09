@@ -1,10 +1,11 @@
-import type { GeneralSettings, UISettings } from "@follow/shared/settings/interface"
+import type { AISettings, GeneralSettings, UISettings } from "@follow/shared/settings/interface"
 import { EventBus } from "@follow/utils/event-bus"
 import { getStorageNS } from "@follow/utils/ns"
 import { isEmptyObject, sleep } from "@follow/utils/utils"
 import { omit } from "es-toolkit/compat"
 import type { PrimitiveAtom } from "jotai"
 
+import { __aiSettingAtom, aiServerSyncWhiteListKeys, getAISettings } from "~/atoms/settings/ai"
 import {
   __generalSettingAtom,
   generalServerSyncWhiteListKeys,
@@ -18,6 +19,7 @@ import { settings } from "~/queries/settings"
 type SettingMapping = {
   appearance: UISettings
   general: GeneralSettings
+  ai: AISettings
 }
 
 const omitKeys = []
@@ -25,6 +27,7 @@ const omitKeys = []
 const localSettingGetterMap = {
   appearance: () => omit(getUISettings(), uiServerSyncWhiteListKeys, omitKeys),
   general: () => omit(getGeneralSettings(), generalServerSyncWhiteListKeys, omitKeys),
+  ai: () => omit(getAISettings(), aiServerSyncWhiteListKeys, omitKeys),
 }
 
 const createInternalSetter =
@@ -37,15 +40,19 @@ const createInternalSetter =
 const localSettingSetterMap = {
   appearance: createInternalSetter(__uiSettingAtom),
   general: createInternalSetter(__generalSettingAtom),
+  ai: createInternalSetter(__aiSettingAtom),
 }
+
 const settingWhiteListMap = {
   appearance: uiServerSyncWhiteListKeys,
   general: generalServerSyncWhiteListKeys,
+  ai: aiServerSyncWhiteListKeys,
 }
 
 const bizSettingKeyToTabMapping = {
   ui: "appearance",
   general: "general",
+  ai: "ai",
 }
 
 export type SettingSyncTab = keyof SettingMapping

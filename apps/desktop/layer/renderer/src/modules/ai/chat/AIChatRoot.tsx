@@ -144,7 +144,6 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
         },
       }),
       onError: (error) => {
-        toast.error(error.message)
         console.error(error)
       },
       onFinish: handleChatFinish,

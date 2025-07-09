@@ -45,7 +45,23 @@ const PersonalizePromptSetting = () => {
   const [prompt, setPrompt] = useState(aiSettings.personalizePrompt)
   const [isSaving, setIsSaving] = useState(false)
 
+  const MAX_CHARACTERS = 500
+  const currentLength = prompt.length
+  const isOverLimit = currentLength > MAX_CHARACTERS
+  const hasChanges = prompt !== aiSettings.personalizePrompt
+
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target
+    // Allow typing but show validation error if over limit
+    setPrompt(value)
+  }
+
   const handleSave = async () => {
+    if (isOverLimit) {
+      toast.error(`Prompt must be ${MAX_CHARACTERS} characters or less`)
+      return
+    }
+
     setIsSaving(true)
     try {
       setAISetting("personalizePrompt", prompt)
@@ -55,28 +71,52 @@ const PersonalizePromptSetting = () => {
     }
   }
 
-  const hasChanges = prompt !== aiSettings.personalizePrompt
-
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
-        <TextArea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder={t("personalize.prompt.placeholder")}
-          className="min-h-[80px] resize-none text-sm"
-        />
-        <SettingDescription>{t("personalize.prompt.help")}</SettingDescription>
+        <div className="relative">
+          <TextArea
+            value={prompt}
+            onChange={handlePromptChange}
+            placeholder={t("personalize.prompt.placeholder")}
+            className={`min-h-[80px] resize-none text-sm ${
+              isOverLimit ? "border-red focus:border-red" : ""
+            }`}
+          />
+          <div
+            className={`absolute bottom-2 right-2 text-xs ${
+              isOverLimit
+                ? "text-red"
+                : currentLength > MAX_CHARACTERS * 0.8
+                  ? "text-yellow"
+                  : "text-text-tertiary"
+            }`}
+          >
+            {currentLength}/{MAX_CHARACTERS}
+          </div>
+        </div>
+        <SettingDescription>
+          {t("personalize.prompt.help")}
+          {isOverLimit && (
+            <span className="text-red mt-1 block">
+              Prompt exceeds {MAX_CHARACTERS} character limit
+            </span>
+          )}
+        </SettingDescription>
       </div>
 
-      {hasChanges && (
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      )}
+      <div className="flex h-9 justify-end">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving || !hasChanges || isOverLimit}
+          buttonClassName={`transition-opacity duration-200 ${
+            hasChanges && !isOverLimit ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
+          {isSaving ? "Saving..." : "Save"}
+        </Button>
+      </div>
     </div>
   )
 }

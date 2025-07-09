@@ -14,8 +14,9 @@ export const {
   initializeDefaultSettings: initializeDefaultAISettings,
   getSettings: getAISettings,
   useSettingValue: useAISettingValue,
-} = createSettingAtom("AI", createDefaultSettings)
-
+  settingAtom: __aiSettingAtom,
+} = createSettingAtom("ai", createDefaultSettings)
+export const aiServerSyncWhiteListKeys = []
 // Local Setting for ai
 
 const aiChatPinnedAtom = atom<boolean>(false)
