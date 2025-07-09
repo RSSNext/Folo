@@ -1,9 +1,10 @@
 import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
 import { cn } from "@follow/utils"
-import { isValidElement, memo, useMemo } from "react"
+import { createElement, isValidElement, memo, useMemo } from "react"
 
 import { ShikiHighLighter } from "~/components/ui/code-highlighter"
 import { MermaidDiagram } from "~/components/ui/diagrams"
+import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
 
 export const AIMarkdownMessage = memo(
   ({
@@ -51,6 +52,9 @@ export const AIMarkdownMessage = memo(
                   }
 
                   return <pre className="text-text-secondary">{children}</pre>
+                },
+                a: ({ node, ...props }) => {
+                  return createElement(MarkdownLink, { ...props } as any)
                 },
               },
             }).content,

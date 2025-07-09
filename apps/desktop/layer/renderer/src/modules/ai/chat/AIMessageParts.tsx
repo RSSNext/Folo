@@ -78,10 +78,6 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
           //   )
           // }
 
-          case "step-start": {
-            return <hr key={partKey} className="border-border my-2" />
-          }
-
           default: {
             if (part.type.startsWith("tool-")) {
               return <ToolInvocationComponent key={partKey} part={part as ToolUIPart} />

@@ -15,7 +15,7 @@ interface ToolInvocationComponentProps {
 export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = ({ part }) => {
   const toolName = getToolName(part)
   return (
-    <div className="bg-material-medium border-border size-full min-w-0 overflow-hidden rounded-lg border text-left">
+    <div className="bg-material-medium border-border size-full min-w-0 rounded-lg border text-left">
       <div className="w-[9999px]" />
       <Accordion type="single" collapsible>
         <AccordionItem value="tool-invocation">
