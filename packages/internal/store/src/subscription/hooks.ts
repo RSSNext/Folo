@@ -378,7 +378,9 @@ export const useCategories = (view?: FeedViewType) => {
     useCallback(
       (state) => {
         return view === undefined
-          ? Object.values(state.categories).flatMap((category) => Array.from(category))
+          ? Array.from(
+              new Set(Object.values(state.categories).flatMap((category) => Array.from(category))),
+            )
           : Array.from(state.categories[view])
       },
       [view],
