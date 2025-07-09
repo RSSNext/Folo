@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import type { ProductPurchase } from "expo-iap"
 import { useIAP } from "expo-iap"
+import { openURL } from "expo-linking"
 import { useEffect } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { Linking, Pressable, ScrollView, Text, View } from "react-native"
@@ -22,6 +23,7 @@ import { CheckLineIcon } from "@/src/icons/check_line"
 import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
 import { apiClient } from "@/src/lib/api-fetch"
+import { authClient } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isIOS } from "@/src/lib/platform"
@@ -234,20 +236,25 @@ export const PlanScreen: NavigationControllerView = () => {
             >
               <Text className="text-white">{`Invite ${serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3} friends`}</Text>
             </Pressable>
-
-            {isIOS && (
-              <>
-                <Text className="text-label">or</Text>
-                <Pressable
-                  className="bg-accent rounded-lg p-2"
-                  onPress={() => {
-                    requestPurchase({ request: { sku: "is.follow.propreview" } })
-                  }}
-                >
-                  <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
-                </Pressable>
-              </>
-            )}
+            <Text className="text-label">or</Text>
+            <Pressable
+              className="bg-accent rounded-lg p-2"
+              onPress={async () => {
+                if (isIOS) {
+                  requestPurchase({ request: { sku: "is.follow.propreview" } })
+                } else {
+                  const res = await authClient.subscription.upgrade({
+                    plan: "folo pro preview",
+                    disableRedirect: true,
+                  })
+                  if (res.data?.url) {
+                    openURL(res.data.url)
+                  }
+                }
+              }}
+            >
+              <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
+            </Pressable>
           </View>
         )}
       </View>

@@ -1,6 +1,7 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { UserRole, UserRoleName } from "@follow/constants"
+import { IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
 import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
@@ -135,12 +136,16 @@ export function SettingPlan() {
         validInvitationsAmount={validInvitationsAmount}
         requiredInvitationsAmount={requiredInvitationsAmount}
         skipPrice={skipPrice}
-        onUpgrade={() => {
-          subscription.upgrade({
+        onUpgrade={async () => {
+          const res = await subscription.upgrade({
             plan: "folo pro preview",
             successUrl: env.VITE_WEB_URL,
             cancelUrl: env.VITE_WEB_URL,
+            disableRedirect: IN_ELECTRON,
           })
+          if (IN_ELECTRON && res.data?.url) {
+            window.open(res.data.url, "_blank")
+          }
         }}
       />
     </div>
@@ -365,18 +370,22 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardPr
           isPopular={plan.isPopular || false}
           actionType={actionType}
           daysLeft={daysLeft}
-          onSelect={() => {
+          onSelect={async () => {
             if (
               !plan.isComingSoon &&
               !isCurrentPlan && // Handle plan selection logic
               plan.role === UserRole.PrePro
             ) {
               // Trigger upgrade to Pro Preview
-              subscription.upgrade({
+              const res = await subscription.upgrade({
                 plan: "folo pro preview",
                 successUrl: env.VITE_WEB_URL,
                 cancelUrl: env.VITE_WEB_URL,
+                disableRedirect: IN_ELECTRON,
               })
+              if (IN_ELECTRON && res.data?.url) {
+                window.open(res.data.url, "_blank")
+              }
             }
             // Add other plan selection logic as needed
           }}
