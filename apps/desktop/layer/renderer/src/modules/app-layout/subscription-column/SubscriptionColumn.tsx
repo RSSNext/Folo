@@ -1,7 +1,7 @@
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import type { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"

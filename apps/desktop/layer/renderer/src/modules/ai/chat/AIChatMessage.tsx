@@ -80,8 +80,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
         >
           {message.role === "assistant" && (
             <div className="mb-2 flex items-center gap-2">
-              <div className="from-orange flex size-5 items-center justify-center rounded-full bg-gradient-to-r to-red-500 shadow-sm">
-                <i className="i-mgc-ai-cute-re size-3 text-white" />
+              <div className="from-folo flex size-5 items-center justify-center rounded-full bg-gradient-to-r to-red-500 shadow-sm">
+                <i className="i-mgc-ai-cute-fi size-3 text-white" />
               </div>
               <span className="text-text-secondary text-xs font-medium">{APP_NAME} AI</span>
             </div>

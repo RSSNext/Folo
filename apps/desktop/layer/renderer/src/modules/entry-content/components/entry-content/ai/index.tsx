@@ -154,7 +154,7 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
               transition={Spring.presets.smooth}
             >
               {/* Text prompt */}
-              <m.div className="bg-background/90 border-accent/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
+              <m.div className="bg-background/90 border-folo/30 rounded-2xl border px-4 py-3 backdrop-blur-xl">
                 <div className="text-right">
                   <p className="text-text text-sm font-medium">
                     {selectedText ? "Ask AI about selection" : "Ask AI anything"}
@@ -169,14 +169,14 @@ const AIAmbientSidebar: React.FC<{ onExpand: () => void }> = ({ onExpand }) => {
 
               {/* Clickable area */}
               <m.button
-                className="border-accent/40 from-accent/20 hover:from-accent/30 rounded-full border bg-gradient-to-r to-red-500/20 px-6 py-2 backdrop-blur-xl transition-all duration-300 hover:to-red-500/30"
+                className="border-folo/40 from-folo/20 hover:from-folo/30 rounded-full border bg-gradient-to-r to-red-500/20 px-6 py-2 backdrop-blur-xl transition-all duration-300 hover:to-red-500/30"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onExpand}
               >
                 <div className="flex items-center gap-2">
                   <m.div
-                    className="from-accent size-2 rounded-full bg-gradient-to-r to-red-500"
+                    className="from-folo size-2 rounded-full bg-gradient-to-r to-red-500"
                     animate={{
                       scale: [1, 1.2, 1],
                       opacity: [0.7, 1, 0.7],
@@ -274,8 +274,9 @@ export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
         setIsExpanded((state) => !state)
       }),
       EventBus.subscribe(COMMAND_ID.global.toggleAIChatPinned, () => {
-        setIsExpanded((state) => !state)
-        setAIChatPinned(!getAIChatPinned())
+        const current = getAIChatPinned()
+        setIsExpanded(false)
+        setAIChatPinned(!current)
       }),
     )
   }, [])

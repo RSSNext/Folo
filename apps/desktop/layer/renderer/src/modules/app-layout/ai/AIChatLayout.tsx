@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { ActionButton, Button } from "@follow/components/ui/button/index.js"
+import { ActionButton } from "@follow/components/ui/button/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { cn, nextFrame } from "@follow/utils"
+import { nextFrame } from "@follow/utils"
 import { m } from "motion/react"
 import { use, useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -13,6 +13,7 @@ import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal_
 import { AIChatContextBar } from "~/modules/ai/chat/AIChatContextBar"
 import { AIChatMessage, AIChatTypingIndicator } from "~/modules/ai/chat/AIChatMessage"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
+import { AIChatSendButton } from "~/modules/ai/chat/AIChatSendButton"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
@@ -148,19 +149,7 @@ const WelcomeChatInput = ({ onSend }: { onSend: (message: string) => void }) => 
         autoFocus
       />
       <div className="absolute right-3 top-3">
-        <Button
-          size="sm"
-          onClick={handleSend}
-          disabled={isEmpty}
-          buttonClassName={cn(
-            "size-8 rounded-lg p-0 transition-all duration-200",
-            isEmpty
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md",
-          )}
-        >
-          <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
-        </Button>
+        <AIChatSendButton onClick={handleSend} disabled={isEmpty} size="sm" />
       </div>
     </div>
   )
@@ -232,25 +221,12 @@ const ChatInput = ({ onSend }: { onSend: (message: string) => void }) => {
               autoFocus
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <Button
-                size="sm"
+              <AIChatSendButton
                 onClick={isProcessing ? stop : handleSend}
                 disabled={!isProcessing && isEmpty}
-                buttonClassName={cn(
-                  "size-8 rounded-xl p-0 transition-all duration-300 active:scale-95",
-                  isProcessing
-                    ? "bg-red-500/90 hover:bg-red-500 shadow-lg shadow-red-500/25 backdrop-blur-sm"
-                    : isEmpty
-                      ? "bg-gray-200/80 cursor-not-allowed backdrop-blur-sm"
-                      : "bg-gradient-to-r from-blue-500/90 to-blue-600/90 hover:from-blue-500 hover:to-blue-600 shadow-lg shadow-blue-500/25 backdrop-blur-sm hover:shadow-blue-500/35",
-                )}
-              >
-                {isProcessing ? (
-                  <i className="i-mgc-stop-circle-cute-fi size-4 text-white" />
-                ) : (
-                  <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
-                )}
-              </Button>
+                isProcessing={isProcessing}
+                size="sm"
+              />
             </div>
           </div>
 

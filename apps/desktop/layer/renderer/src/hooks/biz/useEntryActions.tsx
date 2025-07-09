@@ -21,6 +21,7 @@ import {
   setReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
+import { useAIChatPinned } from "~/atoms/settings/ai"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -141,7 +142,18 @@ const entrySelector = (state: EntryModel) => {
     imagesLength,
   }
 }
-
+export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
+  COMMAND_ID.entry.viewSourceContent,
+  COMMAND_ID.entry.toggleAISummary,
+  COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.global.toggleAIChatPinned,
+  COMMAND_ID.settings.customizeToolbar,
+  COMMAND_ID.entry.readability,
+  COMMAND_ID.entry.exportAsPDF,
+  // Copy
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.copyLink,
+]
 export const useEntryActions = ({
   entryId,
   view,
@@ -170,6 +182,7 @@ export const useEntryActions = ({
   const isShowAISummaryOnce = useShowAISummaryOnce()
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
+  const isShowAIChatPinned = useAIChatPinned()
 
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
@@ -352,6 +365,13 @@ export const useEntryActions = ({
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
         entryId,
       }),
+
+      new EntryActionMenuItem({
+        id: COMMAND_ID.global.toggleAIChatPinned,
+        onClick: runCmdFn(COMMAND_ID.global.toggleAIChatPinned, [{ entryId }]),
+        entryId,
+        active: isShowAIChatPinned,
+      }),
       new EntryActionMenuItem({
         id: COMMAND_ID.settings.customizeToolbar,
         onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
@@ -392,6 +412,7 @@ export const useEntryActions = ({
     compact,
     isEntryInReadability,
     entry?.doesContentContainsHTMLTags,
+    isShowAIChatPinned,
   ])
 
   return actionConfigs

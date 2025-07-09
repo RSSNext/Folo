@@ -14,8 +14,8 @@ export const AIPanelHeader: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   return (
     <div className="border-border flex h-[55px] shrink-0 items-center justify-between border-b px-3">
       <div className="flex items-center gap-3">
-        <div className="from-accent flex size-8 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
-          <i className="i-mgc-ai-cute-re size-4 text-white" />
+        <div className="from-folo flex size-8 items-center justify-center rounded-full bg-gradient-to-br to-red-500">
+          <i className="i-mgc-ai-cute-fi size-4 text-white" />
         </div>
         <div>
           <h3 className="text-sm font-semibold">{APP_NAME} AI</h3>

@@ -1,9 +1,8 @@
-import { Spring } from "@follow/components/constants/spring.js"
 import { cn } from "@follow/utils"
-import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AIChatSendButton } from "~/modules/ai/chat/AIChatSendButton"
 
 interface AIChatInputProps {
   value?: string
@@ -117,45 +116,12 @@ export const AIChatInput = ({
       {/* Action buttons inside input */}
       <div className="absolute right-3 top-3 flex items-center gap-2">
         {/* Send/Stop button */}
-        <m.button
-          type="button"
+        <AIChatSendButton
           onClick={handleButtonClick}
           disabled={disabled || (!isProcessing && isEmpty)}
-          className={cn(
-            "relative flex size-8 items-center justify-center overflow-hidden rounded-lg transition-all",
-            "bg-fill disabled:opacity-80",
-            "before:from-orange before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:to-red-500",
-            "before:transition-opacity before:duration-200 hover:before:opacity-90",
-            "disabled:before:opacity-0",
-            isProcessing ? "before:opacity-0" : "before:opacity-100",
-          )}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={Spring.presets.smooth}
-        >
-          <AnimatePresence mode="popLayout">
-            <m.div
-              key={isProcessing ? "stop" : "send"}
-              className="relative z-10 flex items-center justify-center"
-              initial={{
-                scale: 0,
-              }}
-              animate={{
-                scale: 1,
-              }}
-              exit={{
-                scale: 0,
-              }}
-              transition={Spring.presets.smooth}
-            >
-              {isProcessing ? (
-                <i className="i-mgc-stop-circle-cute-fi text-text size-4" />
-              ) : (
-                <i className="i-mgc-send-plane-cute-fi size-4 text-white" />
-              )}
-            </m.div>
-          </AnimatePresence>
-        </m.button>
+          isProcessing={isProcessing}
+          size="sm"
+        />
       </div>
     </div>
   )

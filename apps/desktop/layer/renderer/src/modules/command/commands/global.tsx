@@ -20,6 +20,10 @@ const category: CommandCategory = "category.global"
 export const useRegisterGlobalCommands = () => {
   const showShortcuts = useShortcutsModal()
   const { t } = useTranslation("shortcuts")
+
+  const aiIcon = (props?: { isActive?: boolean }) => {
+    return <i className={props?.isActive ? "i-mgc-comment-cute-fi" : "i-mgc-comment-cute-re"} />
+  }
   useRegisterCommandEffect([
     {
       id: COMMAND_ID.global.showShortcuts,
@@ -27,6 +31,7 @@ export const useRegisterGlobalCommands = () => {
         title: t("command.global.show_shortcuts.title"),
         description: t("command.global.show_shortcuts.description"),
       },
+
       run: () => {
         showShortcuts()
       },
@@ -64,6 +69,7 @@ export const useRegisterGlobalCommands = () => {
       run: () => {
         EventBus.dispatch(COMMAND_ID.global.toggleAIChat)
       },
+      icon: aiIcon,
       category,
     },
     {
@@ -75,6 +81,7 @@ export const useRegisterGlobalCommands = () => {
       run: () => {
         EventBus.dispatch(COMMAND_ID.global.toggleAIChatPinned)
       },
+      icon: aiIcon,
       category,
     },
   ])
@@ -97,12 +104,12 @@ export type QuickAddCommand = Command<{
 
 export type ToggleAIChatCommand = Command<{
   id: typeof COMMAND_ID.global.toggleAIChat
-  fn: () => void
+  fn: (ctx?: { entryId?: string }) => void
 }>
 
 export type ToggleAIChatPinnedCommand = Command<{
   id: typeof COMMAND_ID.global.toggleAIChatPinned
-  fn: () => void
+  fn: (ctx?: { entryId?: string }) => void
 }>
 
 export type GlobalCommand =
