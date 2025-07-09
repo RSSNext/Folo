@@ -1,4 +1,5 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
+import { useInputComposition } from "@follow/hooks"
 import { use, useCallback, useEffect, useState } from "react"
 
 import { FocusablePresets } from "~/components/common/Focusable"
@@ -25,7 +26,6 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
       setIsEmpty(true)
     }
   }, [onSend, inputRef])
-
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -39,6 +39,9 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
     },
     [handleSend, isProcessing, stop],
   )
+  const inputProps = useInputComposition<HTMLTextAreaElement>({
+    onKeyDown: handleKeyPress,
+  })
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setIsEmpty(e.target.value.trim() === "")
@@ -46,8 +49,16 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
 
   const hasFocus = useGlobalFocusableScopeSelector(FocusablePresets.isAIChat)
   useEffect(() => {
-    const handler = () => {
-      if (hasFocus) {
+    const handler = (e: KeyboardEvent) => {
+      const codePoint = e.key.codePointAt(0)
+      if (
+        hasFocus &&
+        !(e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) &&
+        e.key.length === 1 &&
+        codePoint !== undefined &&
+        codePoint >= 32 &&
+        codePoint <= 126
+      ) {
         inputRef.current?.focus()
       }
     }
@@ -88,7 +99,7 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
             <textarea
               ref={inputRef}
               onChange={handleChange}
-              onKeyDown={handleKeyPress}
+              {...inputProps}
               placeholder="Message AI assistant..."
               className="scrollbar-none text-text placeholder:text-text-secondary max-h-40 min-h-14 w-full resize-none bg-transparent px-5 py-3.5 pr-14 text-sm !outline-none transition-all duration-200"
               rows={1}
