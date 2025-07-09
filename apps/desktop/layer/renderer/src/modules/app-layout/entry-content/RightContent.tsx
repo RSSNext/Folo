@@ -39,7 +39,11 @@ export const RightContent = () => {
             onClick={() => navigate({ entryId: null })}
           />
         )}
-        {realEntryId ? <Grid entryId={realEntryId} /> : !isWideView && <AIChatLayout />}
+        {realEntryId && !isWideView ? (
+          <Grid entryId={realEntryId} />
+        ) : (
+          !isWideView && <AIChatLayout />
+        )}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
   )
