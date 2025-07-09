@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
 import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import {
   DropdownMenu,
@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
+import { UrlBuilder } from "~/lib/url-builder"
 import { useAchievementModal } from "~/modules/achievement/hooks"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -43,6 +44,7 @@ export type ProfileButtonProps = LoginProps & {
 }
 
 export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
+  const serverConfig = useServerConfigs()
   const { status, session } = useSession()
   const { user } = session || {}
   const settingModalPresent = useSettingModal()
@@ -89,14 +91,26 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            <UserProBadge
-              role={role}
-              withText
-              className="mt-0.5 w-full justify-center"
-              onClick={() => {
-                settingModalPresent("plan")
-              }}
-            />
+            {serverConfig?.REFERRAL_ENABLED ? (
+              <UserProBadge
+                role={role}
+                withText
+                className="mt-0.5 w-full justify-center"
+                onClick={() => {
+                  settingModalPresent("plan")
+                }}
+              />
+            ) : (
+              <>
+                {!!user?.handle && (
+                  <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
+                    <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
+                      @{user.handle}
+                    </EllipsisHorizontalTextWithTooltip>
+                  </a>
+                )}
+              </>
+            )}
           </div>
         </DropdownMenuLabel>
 
