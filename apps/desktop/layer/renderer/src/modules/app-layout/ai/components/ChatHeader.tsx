@@ -36,19 +36,20 @@ export const ChatHeader = () => {
     })
   }, [ask, messages.length, t, handleNewChat])
 
+  const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
   return (
-    <div className="absolute inset-x-0 top-0 z-20 h-16">
+    <div className="absolute inset-x-0 top-0 z-20 h-12">
       <div
         className="bg-background/70 backdrop-blur-background absolute inset-0"
         style={{
-          maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          maskImage,
+          WebkitMaskImage: maskImage,
         }}
       />
 
       <div className="relative z-10 flex h-full items-center justify-between px-6">
         {/* Left side - Title */}
-        <div className="min-w-0 flex-1">
+        <div className="mr-2 min-w-0 flex-1">
           {currentTitle && <h1 className="text-text truncate font-medium">{currentTitle}</h1>}
         </div>
 
