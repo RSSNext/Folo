@@ -78,7 +78,7 @@
   "register.label": "Sign up to {{app_name}}",
   "register.login": "Sign in",
   "register.password": "Password",
-  "register.referral.days": "Sign up with referral code to get {{days}} days of Pro Preview",
+  "register.referral.days": "Sign up with this referral code to get {{days}} days of Pro Preview",
   "register.referral.description": "Sign up with referral code to get extra days of Pro Preview",
   "register.referral.invalid": "Invalid referral code",
   "register.referral.label": "Referral Code",
