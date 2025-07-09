@@ -1,5 +1,5 @@
 import { useEntry } from "@follow/store/entry/hooks"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
 import { enableShowSourceContent } from "~/atoms/source-content"
 import { enableEntryReadability } from "~/hooks/biz/useEntryActions"
@@ -18,22 +18,19 @@ export const ApplyEntryActions = ({ entryId }: { entryId: string }) => {
     }
   })
 
-  useViewSourceContentAutoToggleEffect(entry?.sourceContent)
-
   return (
-    <>{entry?.readability && <ReadabilityAutoToggleEffect id={entryId} url={entry?.url ?? ""} />}</>
+    <>
+      {entry?.sourceContent && <ViewSourceContentAutoToggleEffect id={entryId} />}
+      {entry?.readability && <ReadabilityAutoToggleEffect id={entryId} url={entry?.url ?? ""} />}
+    </>
   )
 }
 
-const useViewSourceContentAutoToggleEffect = (when: boolean | undefined) => {
-  const onceRef = useRef(false)
+const ViewSourceContentAutoToggleEffect = ({ id }: { id: string }) => {
   useEffect(() => {
-    if (!when) return
-    if (!onceRef.current) {
-      onceRef.current = true
-      enableShowSourceContent()
-    }
-  }, [when])
+    enableShowSourceContent()
+  }, [id])
+  return null
 }
 
 export const ReadabilityAutoToggleEffect = ({ url, id }: { url: string; id: string }) => {

@@ -5,17 +5,20 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
+import type { ImageSource } from "expo-image"
 import { memo, useCallback } from "react"
 import { Pressable, Text, View } from "react-native"
 import type { MeasuredDimensions } from "react-native-reanimated"
 import Animated, { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import type { LightboxImageSource } from "@/src/components/lightbox/ImageViewing/@types"
 import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"
+import { getAllSources } from "@/src/components/ui/image/utils"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
@@ -72,7 +75,7 @@ export const EntrySocialItem = memo(
     }, [entry, navigation])
 
     const onPreviewImage = useCallback(
-      (index: number, rect: MeasuredDimensions | null) => {
+      (index: number, rect: MeasuredDimensions | null, placeholder: ImageSource | undefined) => {
         "worklet"
         runOnJS(openLightbox)({
           images: (entry?.media ?? [])
@@ -89,11 +92,11 @@ export const EntrySocialItem = memo(
                   width: mediaItem.width ?? 0,
                   height: mediaItem.height ?? 0,
                 },
-                thumbUri: imageUrl ?? "",
+                thumbUri: placeholder ?? { uri: imageUrl },
                 thumbDimensions: null,
                 thumbRect: rect,
                 type: "image" as const,
-              }
+              } satisfies LightboxImageSource
             })
             .filter((i) => !!i.uri),
           index,
@@ -181,7 +184,11 @@ interface EntryMediaItemProps {
   entryId: string
   mediaItem: MediaModel
   fullWidth: boolean
-  onPreviewImage: (index: number, rect: MeasuredDimensions | null) => void
+  onPreviewImage: (
+    index: number,
+    rect: MeasuredDimensions | null,
+    placeholder: ImageSource | undefined,
+  ) => void
 }
 
 const EntryMediaItem = memo(
@@ -196,21 +203,23 @@ const EntryMediaItem = memo(
           : undefined
     if (!imageUrl) return null
 
+    const proxy = {
+      width: fullWidth ? 400 : 200,
+    }
     const ImageItem = (
       <Animated.View ref={aviRef} collapsable={false}>
         <NativePressable
           onPress={() => {
+            const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
             runOnUI(() => {
               "worklet"
               const rect = measure(aviRef)
-              onPreviewImage(index, rect)
+              onPreviewImage(index, rect, { blurhash: mediaItem.blurhash, ...placeholder })
             })()
           }}
         >
           <Image
-            proxy={{
-              width: fullWidth ? 400 : 200,
-            }}
+            proxy={proxy}
             source={{ uri: imageUrl }}
             blurhash={mediaItem.blurhash}
             className="border-secondary-system-background w-full rounded-lg border"

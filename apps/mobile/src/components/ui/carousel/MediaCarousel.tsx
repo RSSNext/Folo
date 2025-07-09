@@ -1,5 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
+import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
 import { useEffect, useState } from "react"
 import { ScrollView, TouchableOpacity, View } from "react-native"
@@ -14,6 +15,7 @@ import { EntryGridFooter } from "@/src/modules/entry-content/EntryGridFooter"
 
 import { Image } from "../image/Image"
 import { ImageContextMenu } from "../image/ImageContextMenu"
+import { getAllSources } from "../image/utils"
 import { VideoPlayer } from "../video/VideoPlayer"
 
 export const MediaCarousel = ({
@@ -27,7 +29,7 @@ export const MediaCarousel = ({
   ref?: Ref<View>
   entryId: string
   media: MediaModel[]
-  onPreview?: (index: number) => void
+  onPreview?: (index: number, placeholder: ImageSource | undefined) => void
   aspectRatio: number
   view: FeedViewType
 }) => {
@@ -64,12 +66,18 @@ export const MediaCarousel = ({
             if (!imageUrl) {
               return null
             }
+            const proxy = {
+              height: 400,
+            }
             const ImageItem = (
-              <TouchableOpacity onPress={() => onPreview?.(index)}>
+              <TouchableOpacity
+                onPress={() => {
+                  const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
+                  onPreview?.(index, { blurhash: m.blurhash, ...placeholder })
+                }}
+              >
                 <Image
-                  proxy={{
-                    height: 400,
-                  }}
+                  proxy={proxy}
                   source={{ uri: imageUrl }}
                   blurhash={m.blurhash}
                   className="w-full"
