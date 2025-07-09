@@ -27,6 +27,7 @@ import { authClient } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isIOS } from "@/src/lib/platform"
+import { proxyEnv } from "@/src/lib/proxy-env"
 import { accentColor } from "@/src/theme/colors"
 
 import { ReferralScreen } from "./Referral"
@@ -245,6 +246,8 @@ export const PlanScreen: NavigationControllerView = () => {
                 } else {
                   const res = await authClient.subscription.upgrade({
                     plan: "folo pro preview",
+                    successUrl: proxyEnv.WEB_URL,
+                    cancelUrl: proxyEnv.WEB_URL,
                     disableRedirect: true,
                   })
                   if (res.data?.url) {
