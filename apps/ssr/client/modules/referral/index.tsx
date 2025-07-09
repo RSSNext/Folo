@@ -84,9 +84,11 @@ export function ReferralForm({ className }: { className?: string }) {
               </FormControl>
               <FormDescription>
                 {days || !referral
-                  ? t("register.referral.description", {
-                      days: days || "",
-                    })
+                  ? days
+                    ? t("register.referral.days", {
+                        days,
+                      })
+                    : t("register.referral.description")
                   : t("register.referral.invalid")}
               </FormDescription>
               <FormMessage />
