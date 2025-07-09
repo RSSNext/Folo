@@ -131,10 +131,6 @@ export const registerAppMenu = () => {
         { role: "forceReload", label: t("menu.forceReload") },
         { role: "toggleDevTools", label: t("menu.toggleDevTools") },
         { type: "separator" },
-        { role: "resetZoom", label: t("menu.actualSize") },
-        { role: "zoomIn", label: t("menu.zoomIn") },
-        { role: "zoomOut", label: t("menu.zoomOut") },
-        { type: "separator" },
 
         { role: "togglefullscreen", label: t("menu.toggleFullScreen") },
       ],

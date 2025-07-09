@@ -1,6 +1,5 @@
 import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
@@ -12,7 +11,6 @@ import { Text, View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
-import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
 
 export function EntryPictureItem({ id }: { id: string }) {
@@ -76,8 +74,8 @@ export function EntryPictureItem({ id }: { id: string }) {
               index,
             })
           })()
-          const fullEntry = getEntry(id)
-          preloadWebViewEntry(fullEntry)
+          // const fullEntry = getEntry(id)
+          // preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)
         }}
       />

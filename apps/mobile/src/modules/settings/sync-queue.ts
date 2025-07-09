@@ -267,7 +267,7 @@ class SettingSyncQueue {
 
       if (!localSettingsUpdated || remoteUpdatedDate > localSettingsUpdated) {
         // Use remote and update local
-        const nextPayload = omit(
+        const nextPayload: any = omit(
           remoteSettingPayload,
           omitKeys,
           settingWhiteListMap[tab as SettingSyncTab],
@@ -281,7 +281,7 @@ class SettingSyncQueue {
 
         nextPayload.updated = remoteUpdatedDate
 
-        setter(nextPayload as any)
+        setter(nextPayload)
       }
     }
   }
