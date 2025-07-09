@@ -62,6 +62,16 @@ export const UserAvatar = ({
     })()
   }, [aviRef, image, openLightbox])
 
+  const avatarBadge =
+    role && role !== UserRole.Free && role !== UserRole.Trial ? (
+      <View
+        className="absolute bottom-0 right-0 rounded-full"
+        style={{ width: size / 3, height: size / 3 }}
+      >
+        <PowerIcon color={accentColor} width={size / 3} height={size / 3} />
+      </View>
+    ) : null
+
   if (!image) {
     return (
       <View
@@ -83,29 +93,25 @@ export const UserAvatar = ({
         ) : (
           <User4CuteFiIcon width={size} height={size} color={color} />
         )}
-        {role && role !== UserRole.Free && role !== UserRole.Trial && (
-          <View
-            className="absolute bottom-0 right-0 rounded-full"
-            style={{ width: size / 3, height: size / 3 }}
-          >
-            <PowerIcon color={accentColor} width={size / 3} height={size / 3} />
-          </View>
-        )}
+        {avatarBadge}
       </View>
     )
   }
 
   const imageContent = (
-    <Image
-      ref={aviRef}
-      source={{ uri: image }}
-      className={cn("rounded-full", className)}
-      style={{ width: size, height: size }}
-      proxy={{
-        width: size,
-        height: size,
-      }}
-    />
+    <View className="relative">
+      <Image
+        ref={aviRef}
+        source={{ uri: image }}
+        className={cn("rounded-full", className)}
+        style={{ width: size, height: size }}
+        proxy={{
+          width: size,
+          height: size,
+        }}
+      />
+      {avatarBadge}
+    </View>
   )
 
   return preview ? (
