@@ -30,7 +30,6 @@
     "@sentry/electron": "6.8.0",
     "@sindresorhus/slugify": "2.2.1",
     "builder-util-runtime": "9.3.1",
-    "cookie-es": "2.0.0",
     "electron-context-menu": "4.0.5",
     "electron-log": "5.4.1",
     "electron-squirrel-startup": "1.0.1",
@@ -45,6 +44,7 @@
     "msedge-tts": "2.0.0",
     "node-machine-id": "1.1.12",
     "ofetch": "1.4.1",
+    "pathe": "2.0.3",
     "semver": "7.7.2",
     "tar": "7.4.3",
     "vscode-languagedetection": "npm:@vscode/vscode-languagedetection@1.0.22"

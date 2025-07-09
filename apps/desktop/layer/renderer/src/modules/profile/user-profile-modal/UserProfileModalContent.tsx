@@ -237,105 +237,100 @@ const UserInfo = ({ userInfo }: { userInfo: PickedUser }) => {
   }
 
   return (
-    <div className="border-fill from-material-medium to-material-thin relative flex flex-col border-r bg-gradient-to-br p-8">
-      <div className="flex h-full">
-        <div className="flex flex-1 flex-col gap-4">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Avatar className="size-16 shrink-0 shadow-lg ring-4 ring-white/10">
-                <AvatarImage
-                  src={replaceImgUrlIfNeed(userInfo.image || undefined)}
-                  className="bg-material-ultra-thick"
-                />
-                <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-4xl font-bold uppercase text-white">
-                  {userInfo.name?.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
+    <div className="bg-material-medium relative flex flex-col p-8 pb-4">
+      <div className="flex flex-col space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Avatar className="size-14 shrink-0 shadow-lg ring-4 ring-white/10">
+              <AvatarImage
+                src={replaceImgUrlIfNeed(userInfo.image || undefined)}
+                className="bg-material-ultra-thick"
+              />
+              <AvatarFallback className="from-blue to-purple bg-gradient-to-br text-4xl font-bold uppercase text-white">
+                {userInfo.name?.slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
 
-              {whoami?.id !== userInfo.id && (
-                <Button
-                  buttonClassName="absolute -bottom-1 -right-1 size-6 rounded-full"
-                  onClick={() => {
-                    follow({
-                      url: `rsshub://follow/profile/${userInfo.id}`,
-                      isList: false,
-                    })
-                  }}
-                  size="sm"
-                >
-                  <i className="i-mgc-add-cute-re size-4" />
-                </Button>
-              )}
-            </div>
-            <div className="flex-1">
-              <h1 className="text-text max-w-[200px] truncate text-xl font-bold tracking-tight">
-                {userInfo.name}
-              </h1>
-              <p
-                className={cn(
-                  "text-text-secondary text-sm font-medium",
-                  userInfo.handle ? "visible" : "hidden select-none",
-                )}
+            {whoami?.id !== userInfo.id && (
+              <Button
+                buttonClassName="absolute -bottom-1 -right-1 size-6 rounded-full"
+                onClick={() => {
+                  follow({
+                    url: `rsshub://follow/profile/${userInfo.id}`,
+                    isList: false,
+                  })
+                }}
+                size="sm"
               >
-                @{userInfo.handle}
-              </p>
-            </div>
+                <i className="i-mgc-add-cute-re size-4" />
+              </Button>
+            )}
           </div>
-
-          <div className="space-y-2">
-            {userInfo.bio && (
-              <p className="text-text-secondary text-sm leading-relaxed">{userInfo.bio}</p>
-            )}
-            {userInfo.website && (
-              <a
-                href={userInfo.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-secondary hover:text-accent group inline-flex items-center gap-2 text-sm leading-relaxed transition-colors"
-              >
-                <span className="truncate">{userInfo.website.replace(/^https?:\/\//, "")}</span>
-                <i className="i-mgc-external-link-cute-re size-3 opacity-60 transition-opacity group-hover:opacity-100" />
-              </a>
-            )}
+          <div className="flex-1">
+            <h1 className="text-text max-w-[200px] truncate text-xl font-bold tracking-tight">
+              {userInfo.name}
+            </h1>
+            <p
+              className={cn(
+                "text-text-secondary text-sm font-medium",
+                userInfo.handle ? "visible" : "hidden select-none",
+              )}
+            >
+              @{userInfo.handle}
+            </p>
           </div>
         </div>
-
-        {userInfo.socialLinks && Object.values(userInfo.socialLinks).filter(Boolean).length > 0 && (
-          <div className="mt-auto space-y-3">
-            <p className="text-text-secondary text-xs font-medium uppercase tracking-wide">
-              Social Media
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(userInfo.socialLinks).map(([platform, id]) => {
-                if (!id || !(platform in socialIconClassNames) || typeof id !== "string")
-                  return null
-
-                return (
-                  <Tooltip key={platform}>
-                    <TooltipTrigger asChild>
-                      <a
-                        href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-material-ultra-thin/50 hover:bg-accent/10 group flex size-10 items-center justify-center rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110"
-                      >
-                        <i
-                          className={cn(
-                            socialIconClassNames[platform as keyof typeof socialIconClassNames],
-                            "text-text-secondary group-hover:text-accent text-base transition-colors",
-                          )}
-                        />
-                      </a>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-xs font-medium">
-                      {socialCopyMap[platform as keyof typeof socialCopyMap]}
-                    </TooltipContent>
-                  </Tooltip>
-                )
-              })}
-            </div>
-          </div>
+        {userInfo.bio && (
+          <p className="text-text-secondary text-sm leading-relaxed">{userInfo.bio}</p>
         )}
+
+        <div className="flex flex-wrap gap-2">
+          {userInfo.website && (
+            <a
+              href={userInfo.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-secondary hover:text-accent mr-auto inline-flex items-center gap-2 transition-colors"
+            >
+              <i className="i-mgc-link-cute-re" />
+              <span className="text-base leading-relaxed">
+                {userInfo.website.replace(/^https?:\/\//, "")}
+              </span>
+            </a>
+          )}
+          {userInfo.socialLinks &&
+            Object.values(userInfo.socialLinks).filter(Boolean).length > 0 && (
+              <>
+                {Object.entries(userInfo.socialLinks).map(([platform, id]) => {
+                  if (!id || !(platform in socialIconClassNames) || typeof id !== "string")
+                    return null
+
+                  return (
+                    <Tooltip key={platform}>
+                      <TooltipTrigger asChild>
+                        <a
+                          href={getSocialLink(platform as keyof typeof socialIconClassNames, id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:bg-theme-item-hover group flex size-10 items-center justify-center rounded-lg transition-colors"
+                        >
+                          <i
+                            className={cn(
+                              socialIconClassNames[platform as keyof typeof socialIconClassNames],
+                              "text-text-secondary text-base",
+                            )}
+                          />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs font-medium">
+                        {socialCopyMap[platform as keyof typeof socialCopyMap]}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </>
+            )}
+        </div>
       </div>
     </div>
   )

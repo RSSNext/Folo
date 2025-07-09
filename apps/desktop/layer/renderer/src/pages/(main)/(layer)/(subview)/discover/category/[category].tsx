@@ -381,7 +381,13 @@ const RouteItem = memo(
                     className="mask-squircle mask shrink-0 rounded-none"
                     size={16}
                   />
-                  <div className="min-w-0 leading-tight" onClick={() => onFeedClick(feed.id)}>
+                  <div
+                    className="min-w-0 leading-tight"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onFeedClick(feed.id)
+                    }}
+                  >
                     <EllipsisHorizontalTextWithTooltip className="truncate">
                       {getPreferredTitle(feed) || feed?.title}
                     </EllipsisHorizontalTextWithTooltip>
