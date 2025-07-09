@@ -11,6 +11,7 @@ import ReAnimated, { FadeIn, FadeOut, interpolate, useAnimatedStyle } from "reac
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
+import { useServerConfigs } from "@/src/atoms/server-configs"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { DiscordCuteFiIcon } from "@/src/icons/discord_cute_fi"
 import { FacebookCuteFiIcon } from "@/src/icons/facebook_cute_fi"
@@ -49,6 +50,7 @@ export const UserHeaderBanner = ({
   userId?: string
   showRoleBadge?: boolean
 }) => {
+  const serverConfigs = useServerConfigs()
   const bgColor = useColor("systemGroupedBackground")
   const avatarIconColor = useColor("secondaryLabel")
 
@@ -157,7 +159,7 @@ export const UserHeaderBanner = ({
           <UserAvatar
             image={user?.image}
             name={user?.name}
-            role={showRoleBadge ? role : undefined}
+            role={showRoleBadge && serverConfigs?.REFERRAL_ENABLED ? role : undefined}
             size={60}
             className={!user?.name ? "bg-system-grouped-background" : ""}
             color={avatarIconColor}
@@ -179,7 +181,7 @@ export const UserHeaderBanner = ({
             <Text className="text-text text-2xl font-bold">Folo Account</Text>
           )}
 
-          {!!role && (
+          {!!role && serverConfigs?.REFERRAL_ENABLED && (
             <View className="my-1 flex flex-row items-center gap-2">
               <PowerIcon
                 color={
