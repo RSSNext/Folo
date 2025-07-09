@@ -37,6 +37,7 @@ export const ChatInterface = () => {
       nextFrame(() => {
         const $scrollArea = scrollAreaRef.current
         const scrollHeight = $scrollArea?.scrollHeight
+
         if (scrollHeight) {
           $scrollArea?.scrollTo({
             top: scrollHeight,

@@ -253,7 +253,7 @@ export const AIDisplaySubscriptionsPart = ({ part }: { part: AIDisplaySubscripti
 
   return (
     <Card className="mb-2 w-full min-w-0">
-      <div className="w-[9999px]" />
+      <div className="w-[9999px] max-w-prose" />
       <CardHeader>
         <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
           <span className="text-lg">📋</span>
