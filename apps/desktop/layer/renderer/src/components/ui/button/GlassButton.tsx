@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
 import { cn } from "@follow/utils/utils"
+import { cva } from "class-variance-authority"
 import { m } from "motion/react"
 import type { FC, ReactNode } from "react"
 
@@ -20,15 +21,84 @@ export interface GlassButtonProps {
   hoverScale?: number
   tapScale?: number
   /**
-   * Custom colors for glass effect
-   */
-  backgroundColor?: string
-  hoverBackgroundColor?: string
-  /**
    * Size variant
    */
   size?: "sm" | "md" | "lg"
+  /**
+   * Variant for different color schemes
+   */
+  variant?: "light" | "dark" | "auto"
 }
+
+const glassButtonVariants = cva(
+  [
+    // Base styles with modern glass morphism - perfect 1:1 circle
+    "pointer-events-auto relative flex items-center justify-center rounded-full",
+    "backdrop-blur-md border shadow-lg transition-all duration-300 ease-out",
+  ],
+  {
+    variants: {
+      size: {
+        sm: "size-8 text-sm",
+        md: "size-10 text-lg",
+        lg: "size-12 text-xl",
+      },
+      variant: {
+        light: [
+          "bg-white/40 hover:bg-white/60",
+          "text-gray-700 hover:text-gray-900",
+          "border-gray-400/30 hover:border-gray-500/40",
+          "shadow-gray-400/30",
+        ],
+        dark: [
+          "bg-black/20 hover:bg-black/40",
+          "text-white",
+          "border-white/10 hover:border-white/20",
+          "shadow-black/25",
+        ],
+        auto: [
+          "bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/40",
+          "text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-white",
+          "border-gray-400/30 hover:border-gray-500/40 dark:border-white/10 dark:hover:border-white/20",
+          "shadow-gray-400/30 dark:shadow-black/25",
+        ],
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      variant: "auto",
+    },
+  },
+)
+
+const glassOverlayVariants = cva(
+  "absolute inset-0 rounded-full bg-gradient-to-t opacity-0 transition-opacity duration-300 hover:opacity-100",
+  {
+    variants: {
+      variant: {
+        light: "from-white/10 to-white/30",
+        dark: "from-white/5 to-white/20",
+        auto: "from-white/10 to-white/30 dark:from-white/5 dark:to-white/20",
+      },
+    },
+    defaultVariants: {
+      variant: "auto",
+    },
+  },
+)
+
+const glassInnerShadowVariants = cva("absolute inset-0 rounded-full shadow-inner", {
+  variants: {
+    variant: {
+      light: "shadow-gray-300/20",
+      dark: "shadow-black/10",
+      auto: "shadow-gray-300/20 dark:shadow-black/10",
+    },
+  },
+  defaultVariants: {
+    variant: "auto",
+  },
+})
 
 export const GlassButton: FC<GlassButtonProps> = ({
   description,
@@ -37,16 +107,9 @@ export const GlassButton: FC<GlassButtonProps> = ({
   children,
   hoverScale = 1.1,
   tapScale = 0.95,
-  backgroundColor = "rgba(0, 0, 0, 0.2)",
-  hoverBackgroundColor = "rgba(255, 255, 255, 0.15)",
   size = "md",
+  variant = "auto",
 }) => {
-  const sizeClasses = {
-    sm: "size-8 text-sm",
-    md: "size-10 text-lg",
-    lg: "size-12 text-xl",
-  }
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -56,38 +119,22 @@ export const GlassButton: FC<GlassButtonProps> = ({
             e.stopPropagation()
             onClick()
           }}
-          className={cn(
-            // Base styles with modern glass morphism - perfect 1:1 circle
-            "pointer-events-auto relative flex items-center justify-center rounded-full",
-            "text-white backdrop-blur-md",
-            // Border and shadow for depth
-            "border border-white/10 shadow-lg shadow-black/25",
-            // Opacity and transition
-            "transition-all duration-300 ease-out",
-            // Size classes
-            sizeClasses[size],
-            className,
-          )}
-          style={{
-            backgroundColor,
-          }}
+          className={cn(glassButtonVariants({ size, variant }), className)}
           initial={{ scale: 1 }}
           whileHover={{
             scale: hoverScale,
-            backgroundColor: hoverBackgroundColor,
-            borderColor: "rgba(255, 255, 255, 0.2)",
           }}
           whileTap={{ scale: tapScale }}
           transition={Spring.presets.snappy}
         >
           {/* Glass effect overlay */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-t from-white/5 to-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
+          <div className={glassOverlayVariants({ variant })} />
 
           {/* Icon container */}
           <div className="center relative z-10 flex">{children}</div>
 
           {/* Subtle inner shadow for depth */}
-          <div className="absolute inset-0 rounded-full shadow-inner shadow-black/10" />
+          <div className={glassInnerShadowVariants({ variant })} />
         </m.button>
       </TooltipTrigger>
       {description && (

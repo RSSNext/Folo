@@ -1,21 +1,22 @@
 // @ts-nocheck
 import { HttpBindings } from "@hono/node-server";
-import * as zod738 from "zod";
+import * as zod1339 from "zod";
 import { z } from "zod";
-import * as better_auth245 from "better-auth";
+import * as better_auth246 from "better-auth";
 import { BetterAuthOptions } from "better-auth";
-import * as better_auth_plugins250 from "better-auth/plugins";
-import * as better_call37 from "better-call";
-import * as drizzle_orm782 from "drizzle-orm";
-import { InferInsertModel, InferSelectModel, SQL } from "drizzle-orm";
-import * as drizzle_orm_pg_core728 from "drizzle-orm/pg-core";
+import * as better_auth_plugins332 from "better-auth/plugins";
+import * as better_call38 from "better-call";
+import Stripe from "stripe";
+import * as drizzle_orm_pg_core1329 from "drizzle-orm/pg-core";
 import { AnyPgColumn } from "drizzle-orm/pg-core";
-import * as zod_v440 from "zod/v4";
-import * as ai55 from "ai";
+import * as drizzle_orm1358 from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, SQL } from "drizzle-orm";
+import * as zod_v441 from "zod/v4";
+import * as ai56 from "ai";
 import * as hono_utils_http_status0 from "hono/utils/http-status";
 import * as hono_types2 from "hono/types";
-import * as hono_hono_base36 from "hono/hono-base";
-import * as zod_v4_core41 from "zod/v4/core";
+import * as hono_hono_base37 from "hono/hono-base";
+import * as zod_v4_core42 from "zod/v4/core";
 
 //#region src/types/env.d.ts
 type Env = {
@@ -44,11 +45,11 @@ interface UserPreferences {
 }
 //#endregion
 //#region src/schema/achievements.d.ts
-declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const achievements: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "achievements";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "achievements";
       dataType: "string";
@@ -65,7 +66,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "achievements";
       dataType: "string";
@@ -82,7 +83,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core728.PgColumn<{
+    type: drizzle_orm_pg_core1329.PgColumn<{
       name: "type";
       tableName: "achievements";
       dataType: "string";
@@ -99,7 +100,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    actionId: drizzle_orm_pg_core728.PgColumn<{
+    actionId: drizzle_orm_pg_core1329.PgColumn<{
       name: "action_id";
       tableName: "achievements";
       dataType: "number";
@@ -116,7 +117,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    progress: drizzle_orm_pg_core728.PgColumn<{
+    progress: drizzle_orm_pg_core1329.PgColumn<{
       name: "progress";
       tableName: "achievements";
       dataType: "number";
@@ -133,7 +134,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    progressMax: drizzle_orm_pg_core728.PgColumn<{
+    progressMax: drizzle_orm_pg_core1329.PgColumn<{
       name: "progress_max";
       tableName: "achievements";
       dataType: "number";
@@ -150,7 +151,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    done: drizzle_orm_pg_core728.PgColumn<{
+    done: drizzle_orm_pg_core1329.PgColumn<{
       name: "done";
       tableName: "achievements";
       dataType: "boolean";
@@ -167,7 +168,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    doneAt: drizzle_orm_pg_core728.PgColumn<{
+    doneAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "done_at";
       tableName: "achievements";
       dataType: "date";
@@ -184,7 +185,7 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tx: drizzle_orm_pg_core728.PgColumn<{
+    tx: drizzle_orm_pg_core1329.PgColumn<{
       name: "tx";
       tableName: "achievements";
       dataType: "string";
@@ -204,17 +205,17 @@ declare const achievements: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const achievementsOpenAPISchema: zod738.ZodObject<{
-  id: zod738.ZodString;
-  userId: zod738.ZodString;
-  type: zod738.ZodEnum<["checking", "completed", "incomplete", "audit", "received"]>;
-  actionId: zod738.ZodNumber;
-  progress: zod738.ZodNumber;
-  progressMax: zod738.ZodNumber;
-  done: zod738.ZodBoolean;
-  doneAt: zod738.ZodNullable<zod738.ZodString>;
-  tx: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const achievementsOpenAPISchema: zod1339.ZodObject<{
+  id: zod1339.ZodString;
+  userId: zod1339.ZodString;
+  type: zod1339.ZodEnum<["checking", "completed", "incomplete", "audit", "received"]>;
+  actionId: zod1339.ZodNumber;
+  progress: zod1339.ZodNumber;
+  progressMax: zod1339.ZodNumber;
+  done: zod1339.ZodBoolean;
+  doneAt: zod1339.ZodNullable<zod1339.ZodString>;
+  tx: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   id: string;
   userId: string;
   type: "checking" | "completed" | "incomplete" | "audit" | "received";
@@ -252,11 +253,11 @@ declare const conditionItemSchema: z.ZodObject<{
   operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
 }>;
 type ConditionItem = z.infer<typeof conditionItemSchema>;
-declare const actions: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const actions: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "actions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "actions";
       dataType: "string";
@@ -273,7 +274,7 @@ declare const actions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "actions";
       dataType: "date";
@@ -290,7 +291,7 @@ declare const actions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updated_at";
       tableName: "actions";
       dataType: "date";
@@ -307,7 +308,7 @@ declare const actions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rules: drizzle_orm_pg_core728.PgColumn<{
+    rules: drizzle_orm_pg_core1329.PgColumn<{
       name: "rules";
       tableName: "actions";
       dataType: "json";
@@ -857,18 +858,18 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
     };
   }[] | null | undefined;
 }>;
-declare const actionsRelations: drizzle_orm782.Relations<"actions", {
-  users: drizzle_orm782.One<"user", true>;
+declare const actionsRelations: drizzle_orm1358.Relations<"actions", {
+  users: drizzle_orm1358.One<"user", true>;
 }>;
 type ActionsModel = z.infer<typeof actionsOpenAPISchema>;
 type SettingsModel = Exclude<z.infer<typeof actionsItemOpenAPISchema>["result"], undefined>;
 //#endregion
 //#region src/schema/activities.d.ts
-declare const activities: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const activities: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "activities";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "activities";
       dataType: "string";
@@ -885,7 +886,7 @@ declare const activities: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    activeAt: drizzle_orm_pg_core728.PgColumn<{
+    activeAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "active_at";
       tableName: "activities";
       dataType: "date";
@@ -902,7 +903,7 @@ declare const activities: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    platform: drizzle_orm_pg_core728.PgColumn<{
+    platform: drizzle_orm_pg_core1329.PgColumn<{
       name: "platform";
       tableName: "activities";
       dataType: "string";
@@ -919,7 +920,7 @@ declare const activities: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    version: drizzle_orm_pg_core728.PgColumn<{
+    version: drizzle_orm_pg_core1329.PgColumn<{
       name: "version";
       tableName: "activities";
       dataType: "string";
@@ -939,12 +940,12 @@ declare const activities: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const activitiesOpenAPISchema: zod738.ZodObject<{
-  userId: zod738.ZodString;
-  activeAt: zod738.ZodString;
-  platform: zod738.ZodString;
-  version: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const activitiesOpenAPISchema: zod1339.ZodObject<{
+  userId: zod1339.ZodString;
+  activeAt: zod1339.ZodString;
+  platform: zod1339.ZodString;
+  version: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   userId: string;
   activeAt: string;
   platform: string;
@@ -1048,11 +1049,11 @@ declare const detailModelSchema: z.ZodNullable<z.ZodObject<{
 type DetailModel = z.infer<typeof detailModelSchema>;
 declare const activityEnum: readonly ["public_beta"];
 type AirdropActivity = typeof activityEnum[number];
-declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const airdrops: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "airdrops";
   schema: undefined;
   columns: {
-    activity: drizzle_orm_pg_core728.PgColumn<{
+    activity: drizzle_orm_pg_core1329.PgColumn<{
       name: "activity";
       tableName: "airdrops";
       dataType: "string";
@@ -1069,7 +1070,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "airdrops";
       dataType: "string";
@@ -1086,7 +1087,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    amount: drizzle_orm_pg_core728.PgColumn<{
+    amount: drizzle_orm_pg_core1329.PgColumn<{
       name: "amount";
       tableName: "airdrops";
       dataType: "string";
@@ -1103,7 +1104,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rank: drizzle_orm_pg_core728.PgColumn<{
+    rank: drizzle_orm_pg_core1329.PgColumn<{
       name: "rank";
       tableName: "airdrops";
       dataType: "string";
@@ -1120,7 +1121,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    detail: drizzle_orm_pg_core728.PgColumn<{
+    detail: drizzle_orm_pg_core1329.PgColumn<{
       name: "detail";
       tableName: "airdrops";
       dataType: "json";
@@ -1197,7 +1198,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
         "GitHub Community Contributions Rank": number;
       } | null;
     }>;
-    verify: drizzle_orm_pg_core728.PgColumn<{
+    verify: drizzle_orm_pg_core1329.PgColumn<{
       name: "verify";
       tableName: "airdrops";
       dataType: "string";
@@ -1214,7 +1215,7 @@ declare const airdrops: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tx: drizzle_orm_pg_core728.PgColumn<{
+    tx: drizzle_orm_pg_core1329.PgColumn<{
       name: "tx";
       tableName: "airdrops";
       dataType: "string";
@@ -1456,11 +1457,11 @@ declare const airdropsOpenAPISchema: z.ZodObject<Omit<{
 }>;
 //#endregion
 //#region src/schema/captcha.d.ts
-declare const captcha: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const captcha: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "captcha";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "captcha";
       dataType: "string";
@@ -1477,7 +1478,7 @@ declare const captcha: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    failedCount: drizzle_orm_pg_core728.PgColumn<{
+    failedCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "failed_count";
       tableName: "captcha";
       dataType: "number";
@@ -1494,7 +1495,7 @@ declare const captcha: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    passedCount: drizzle_orm_pg_core728.PgColumn<{
+    passedCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "passed_count";
       tableName: "captcha";
       dataType: "number";
@@ -1516,11 +1517,11 @@ declare const captcha: drizzle_orm_pg_core728.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/collections.d.ts
-declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const collections: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "collections";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "collections";
       dataType: "string";
@@ -1537,7 +1538,7 @@ declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "collections";
       dataType: "string";
@@ -1554,7 +1555,7 @@ declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    entryId: drizzle_orm_pg_core728.PgColumn<{
+    entryId: drizzle_orm_pg_core1329.PgColumn<{
       name: "entry_id";
       tableName: "collections";
       dataType: "string";
@@ -1571,7 +1572,7 @@ declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "collections";
       dataType: "date";
@@ -1588,7 +1589,7 @@ declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "collections";
       dataType: "number";
@@ -1608,13 +1609,13 @@ declare const collections: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const collectionsOpenAPISchema: zod738.ZodObject<{
-  userId: zod738.ZodString;
-  feedId: zod738.ZodString;
-  entryId: zod738.ZodString;
-  createdAt: zod738.ZodString;
-  view: zod738.ZodNumber;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const collectionsOpenAPISchema: zod1339.ZodObject<{
+  userId: zod1339.ZodString;
+  feedId: zod1339.ZodString;
+  entryId: zod1339.ZodString;
+  createdAt: zod1339.ZodString;
+  view: zod1339.ZodNumber;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   createdAt: string;
   userId: string;
   view: number;
@@ -1627,10 +1628,10 @@ declare const collectionsOpenAPISchema: zod738.ZodObject<{
   feedId: string;
   entryId: string;
 }>;
-declare const collectionsRelations: drizzle_orm782.Relations<"collections", {
-  users: drizzle_orm782.One<"user", true>;
-  entries: drizzle_orm782.One<"entries", true>;
-  feeds: drizzle_orm782.One<"feeds", true>;
+declare const collectionsRelations: drizzle_orm1358.Relations<"collections", {
+  users: drizzle_orm1358.One<"user", true>;
+  entries: drizzle_orm1358.One<"entries", true>;
+  feeds: drizzle_orm1358.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/entries.d.ts
@@ -1657,19 +1658,19 @@ type ExtraModel = {
   }[];
 };
 declare const CommonEntryFields: {
-  id: drizzle_orm782.HasRuntimeDefault<drizzle_orm782.HasDefault<drizzle_orm782.IsPrimaryKey<drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
-  title: drizzle_orm_pg_core728.PgTextBuilderInitial<"title", [string, ...string[]]>;
-  url: drizzle_orm_pg_core728.PgTextBuilderInitial<"url", [string, ...string[]]>;
-  content: drizzle_orm_pg_core728.PgTextBuilderInitial<"content", [string, ...string[]]>;
-  description: drizzle_orm_pg_core728.PgTextBuilderInitial<"description", [string, ...string[]]>;
-  guid: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
-  author: drizzle_orm_pg_core728.PgTextBuilderInitial<"author", [string, ...string[]]>;
-  authorUrl: drizzle_orm_pg_core728.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
-  authorAvatar: drizzle_orm_pg_core728.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
-  insertedAt: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"inserted_at">>;
-  publishedAt: drizzle_orm782.NotNull<drizzle_orm_pg_core728.PgTimestampBuilderInitial<"published_at">>;
-  media: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"media">, MediaModel[]>;
-  categories: drizzle_orm_pg_core728.PgArrayBuilder<{
+  id: drizzle_orm1358.HasRuntimeDefault<drizzle_orm1358.HasDefault<drizzle_orm1358.IsPrimaryKey<drizzle_orm1358.NotNull<drizzle_orm_pg_core1329.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
+  title: drizzle_orm_pg_core1329.PgTextBuilderInitial<"title", [string, ...string[]]>;
+  url: drizzle_orm_pg_core1329.PgTextBuilderInitial<"url", [string, ...string[]]>;
+  content: drizzle_orm_pg_core1329.PgTextBuilderInitial<"content", [string, ...string[]]>;
+  description: drizzle_orm_pg_core1329.PgTextBuilderInitial<"description", [string, ...string[]]>;
+  guid: drizzle_orm1358.NotNull<drizzle_orm_pg_core1329.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
+  author: drizzle_orm_pg_core1329.PgTextBuilderInitial<"author", [string, ...string[]]>;
+  authorUrl: drizzle_orm_pg_core1329.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
+  authorAvatar: drizzle_orm_pg_core1329.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
+  insertedAt: drizzle_orm1358.NotNull<drizzle_orm_pg_core1329.PgTimestampBuilderInitial<"inserted_at">>;
+  publishedAt: drizzle_orm1358.NotNull<drizzle_orm_pg_core1329.PgTimestampBuilderInitial<"published_at">>;
+  media: drizzle_orm1358.$Type<drizzle_orm_pg_core1329.PgJsonbBuilderInitial<"media">, MediaModel[]>;
+  categories: drizzle_orm_pg_core1329.PgArrayBuilder<{
     name: "categories";
     dataType: "array";
     columnType: "PgArray";
@@ -1693,15 +1694,15 @@ declare const CommonEntryFields: {
     enumValues: [string, ...string[]];
     driverParam: string;
   }>;
-  attachments: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
-  extra: drizzle_orm782.$Type<drizzle_orm_pg_core728.PgJsonbBuilderInitial<"extra">, ExtraModel>;
-  language: drizzle_orm_pg_core728.PgTextBuilderInitial<"language", [string, ...string[]]>;
+  attachments: drizzle_orm1358.$Type<drizzle_orm_pg_core1329.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
+  extra: drizzle_orm1358.$Type<drizzle_orm_pg_core1329.PgJsonbBuilderInitial<"extra">, ExtraModel>;
+  language: drizzle_orm_pg_core1329.PgTextBuilderInitial<"language", [string, ...string[]]>;
 };
-declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const entries: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "entries";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "entries";
       dataType: "string";
@@ -1718,7 +1719,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "entries";
       dataType: "string";
@@ -1735,7 +1736,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core728.PgColumn<{
+    url: drizzle_orm_pg_core1329.PgColumn<{
       name: "url";
       tableName: "entries";
       dataType: "string";
@@ -1752,7 +1753,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core728.PgColumn<{
+    content: drizzle_orm_pg_core1329.PgColumn<{
       name: "content";
       tableName: "entries";
       dataType: "string";
@@ -1769,7 +1770,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core728.PgColumn<{
+    description: drizzle_orm_pg_core1329.PgColumn<{
       name: "description";
       tableName: "entries";
       dataType: "string";
@@ -1786,7 +1787,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    guid: drizzle_orm_pg_core728.PgColumn<{
+    guid: drizzle_orm_pg_core1329.PgColumn<{
       name: "guid";
       tableName: "entries";
       dataType: "string";
@@ -1803,7 +1804,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    author: drizzle_orm_pg_core728.PgColumn<{
+    author: drizzle_orm_pg_core1329.PgColumn<{
       name: "author";
       tableName: "entries";
       dataType: "string";
@@ -1820,7 +1821,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorUrl: drizzle_orm_pg_core728.PgColumn<{
+    authorUrl: drizzle_orm_pg_core1329.PgColumn<{
       name: "author_url";
       tableName: "entries";
       dataType: "string";
@@ -1837,7 +1838,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorAvatar: drizzle_orm_pg_core728.PgColumn<{
+    authorAvatar: drizzle_orm_pg_core1329.PgColumn<{
       name: "author_avatar";
       tableName: "entries";
       dataType: "string";
@@ -1854,7 +1855,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core728.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "inserted_at";
       tableName: "entries";
       dataType: "date";
@@ -1871,7 +1872,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core728.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "published_at";
       tableName: "entries";
       dataType: "date";
@@ -1888,7 +1889,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    media: drizzle_orm_pg_core728.PgColumn<{
+    media: drizzle_orm_pg_core1329.PgColumn<{
       name: "media";
       tableName: "entries";
       dataType: "json";
@@ -1907,7 +1908,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: MediaModel[];
     }>;
-    categories: drizzle_orm_pg_core728.PgColumn<{
+    categories: drizzle_orm_pg_core1329.PgColumn<{
       name: "categories";
       tableName: "entries";
       dataType: "array";
@@ -1920,7 +1921,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm782.Column<{
+      baseColumn: drizzle_orm1358.Column<{
         name: "categories";
         tableName: "entries";
         dataType: "string";
@@ -1940,17 +1941,17 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core728.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1329.PgColumnBuilder<{
         name: "categories";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1358.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    attachments: drizzle_orm_pg_core728.PgColumn<{
+    attachments: drizzle_orm_pg_core1329.PgColumn<{
       name: "attachments";
       tableName: "entries";
       dataType: "json";
@@ -1969,7 +1970,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: AttachmentsModel[];
     }>;
-    extra: drizzle_orm_pg_core728.PgColumn<{
+    extra: drizzle_orm_pg_core1329.PgColumn<{
       name: "extra";
       tableName: "entries";
       dataType: "json";
@@ -1988,7 +1989,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: ExtraModel;
     }>;
-    language: drizzle_orm_pg_core728.PgColumn<{
+    language: drizzle_orm_pg_core1329.PgColumn<{
       name: "language";
       tableName: "entries";
       dataType: "string";
@@ -2005,7 +2006,7 @@ declare const entries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "entries";
       dataType: "string";
@@ -2399,20 +2400,20 @@ declare const entriesOpenAPISchema: z.ZodObject<Omit<{
     }[] | null | undefined;
   } | null | undefined;
 }>;
-declare const entriesRelations: drizzle_orm782.Relations<"entries", {
-  feeds: drizzle_orm782.One<"feeds", true>;
-  collections: drizzle_orm782.Many<"collections">;
-  feedPowerTokens: drizzle_orm782.One<"feedPowerTokens", true>;
+declare const entriesRelations: drizzle_orm1358.Relations<"entries", {
+  feeds: drizzle_orm1358.One<"feeds", true>;
+  collections: drizzle_orm1358.Many<"collections">;
+  feedPowerTokens: drizzle_orm1358.One<"feedPowerTokens", true>;
 }>;
 type EntriesModel = InferInsertModel<typeof entries> & {
   attachments?: AttachmentsModel[] | null;
   media?: MediaModel[] | null;
 };
-declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const urlReads: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "urlReads";
   schema: undefined;
   columns: {
-    url: drizzle_orm_pg_core728.PgColumn<{
+    url: drizzle_orm_pg_core1329.PgColumn<{
       name: "url";
       tableName: "urlReads";
       dataType: "string";
@@ -2429,7 +2430,7 @@ declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userIds: drizzle_orm_pg_core728.PgColumn<{
+    userIds: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_ids";
       tableName: "urlReads";
       dataType: "array";
@@ -2442,7 +2443,7 @@ declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm782.Column<{
+      baseColumn: drizzle_orm1358.Column<{
         name: "user_ids";
         tableName: "urlReads";
         dataType: "string";
@@ -2462,17 +2463,17 @@ declare const urlReads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core728.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1329.PgColumnBuilder<{
         name: "user_ids";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1358.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    count: drizzle_orm_pg_core728.PgColumn<{
+    count: drizzle_orm_pg_core1329.PgColumn<{
       name: "count";
       tableName: "urlReads";
       dataType: "number";
@@ -2508,11 +2509,11 @@ declare const urlReadsOpenAPISchema: z.ZodObject<{
 }>;
 //#endregion
 //#region src/schema/feeds/analytics.d.ts
-declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const feedAnalytics: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "feed_analytics";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "feed_analytics";
       dataType: "string";
@@ -2529,7 +2530,7 @@ declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatesPerWeek: drizzle_orm_pg_core728.PgColumn<{
+    updatesPerWeek: drizzle_orm_pg_core1329.PgColumn<{
       name: "updates_per_week";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2546,7 +2547,7 @@ declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    subscriptionCount: drizzle_orm_pg_core728.PgColumn<{
+    subscriptionCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "subscription_count";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2563,7 +2564,7 @@ declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    latestEntryPublishedAt: drizzle_orm_pg_core728.PgColumn<{
+    latestEntryPublishedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "latest_entry_published_at";
       tableName: "feed_analytics";
       dataType: "date";
@@ -2580,7 +2581,7 @@ declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2600,13 +2601,13 @@ declare const feedAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedAnalyticsOpenAPISchema: zod738.ZodObject<{
-  feedId: zod738.ZodString;
-  updatesPerWeek: zod738.ZodNullable<zod738.ZodNumber>;
-  subscriptionCount: zod738.ZodNullable<zod738.ZodNumber>;
-  latestEntryPublishedAt: zod738.ZodNullable<zod738.ZodString>;
-  view: zod738.ZodNullable<zod738.ZodNumber>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const feedAnalyticsOpenAPISchema: zod1339.ZodObject<{
+  feedId: zod1339.ZodString;
+  updatesPerWeek: zod1339.ZodNullable<zod1339.ZodNumber>;
+  subscriptionCount: zod1339.ZodNullable<zod1339.ZodNumber>;
+  latestEntryPublishedAt: zod1339.ZodNullable<zod1339.ZodString>;
+  view: zod1339.ZodNullable<zod1339.ZodNumber>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   view: number | null;
   feedId: string;
   updatesPerWeek: number | null;
@@ -2619,16 +2620,16 @@ declare const feedAnalyticsOpenAPISchema: zod738.ZodObject<{
   subscriptionCount: number | null;
   latestEntryPublishedAt: string | null;
 }>;
-declare const feedAnalyticsRelations: drizzle_orm782.Relations<"feed_analytics", {
-  feed: drizzle_orm782.One<"feeds", true>;
+declare const feedAnalyticsRelations: drizzle_orm1358.Relations<"feed_analytics", {
+  feed: drizzle_orm1358.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/feeds/feeds.d.ts
-declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const feeds: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "feeds";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "feeds";
       dataType: "string";
@@ -2645,7 +2646,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core728.PgColumn<{
+    url: drizzle_orm_pg_core1329.PgColumn<{
       name: "url";
       tableName: "feeds";
       dataType: "string";
@@ -2662,7 +2663,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "feeds";
       dataType: "string";
@@ -2679,7 +2680,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core728.PgColumn<{
+    description: drizzle_orm_pg_core1329.PgColumn<{
       name: "description";
       tableName: "feeds";
       dataType: "string";
@@ -2696,7 +2697,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    siteUrl: drizzle_orm_pg_core728.PgColumn<{
+    siteUrl: drizzle_orm_pg_core1329.PgColumn<{
       name: "site_url";
       tableName: "feeds";
       dataType: "string";
@@ -2713,7 +2714,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core728.PgColumn<{
+    image: drizzle_orm_pg_core1329.PgColumn<{
       name: "image";
       tableName: "feeds";
       dataType: "string";
@@ -2730,7 +2731,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    checkedAt: drizzle_orm_pg_core728.PgColumn<{
+    checkedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "checked_at";
       tableName: "feeds";
       dataType: "date";
@@ -2747,7 +2748,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    lastModifiedHeader: drizzle_orm_pg_core728.PgColumn<{
+    lastModifiedHeader: drizzle_orm_pg_core1329.PgColumn<{
       name: "last_modified_header";
       tableName: "feeds";
       dataType: "string";
@@ -2764,7 +2765,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    etagHeader: drizzle_orm_pg_core728.PgColumn<{
+    etagHeader: drizzle_orm_pg_core1329.PgColumn<{
       name: "etag_header";
       tableName: "feeds";
       dataType: "string";
@@ -2781,7 +2782,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ttl: drizzle_orm_pg_core728.PgColumn<{
+    ttl: drizzle_orm_pg_core1329.PgColumn<{
       name: "ttl";
       tableName: "feeds";
       dataType: "number";
@@ -2798,7 +2799,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorMessage: drizzle_orm_pg_core728.PgColumn<{
+    errorMessage: drizzle_orm_pg_core1329.PgColumn<{
       name: "error_message";
       tableName: "feeds";
       dataType: "string";
@@ -2815,7 +2816,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorAt: drizzle_orm_pg_core728.PgColumn<{
+    errorAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "error_at";
       tableName: "feeds";
       dataType: "date";
@@ -2832,7 +2833,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core728.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "owner_user_id";
       tableName: "feeds";
       dataType: "string";
@@ -2849,7 +2850,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core728.PgColumn<{
+    language: drizzle_orm_pg_core1329.PgColumn<{
       name: "language";
       tableName: "feeds";
       dataType: "string";
@@ -2866,7 +2867,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    migrateTo: drizzle_orm_pg_core728.PgColumn<{
+    migrateTo: drizzle_orm_pg_core1329.PgColumn<{
       name: "migrate_to";
       tableName: "feeds";
       dataType: "string";
@@ -2883,7 +2884,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubRoute: drizzle_orm_pg_core728.PgColumn<{
+    rsshubRoute: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_route";
       tableName: "feeds";
       dataType: "string";
@@ -2900,7 +2901,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubNamespace: drizzle_orm_pg_core728.PgColumn<{
+    rsshubNamespace: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_namespace";
       tableName: "feeds";
       dataType: "string";
@@ -2917,7 +2918,7 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    nsfw: drizzle_orm_pg_core728.PgColumn<{
+    nsfw: drizzle_orm_pg_core1329.PgColumn<{
       name: "nsfw";
       tableName: "feeds";
       dataType: "boolean";
@@ -2937,26 +2938,26 @@ declare const feeds: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedsOpenAPISchema: zod738.ZodObject<{
-  id: zod738.ZodString;
-  url: zod738.ZodString;
-  title: zod738.ZodNullable<zod738.ZodString>;
-  description: zod738.ZodNullable<zod738.ZodString>;
-  siteUrl: zod738.ZodNullable<zod738.ZodString>;
-  image: zod738.ZodNullable<zod738.ZodString>;
-  checkedAt: zod738.ZodString;
-  lastModifiedHeader: zod738.ZodNullable<zod738.ZodString>;
-  etagHeader: zod738.ZodNullable<zod738.ZodString>;
-  ttl: zod738.ZodNullable<zod738.ZodNumber>;
-  errorMessage: zod738.ZodNullable<zod738.ZodString>;
-  errorAt: zod738.ZodNullable<zod738.ZodString>;
-  ownerUserId: zod738.ZodNullable<zod738.ZodString>;
-  language: zod738.ZodNullable<zod738.ZodString>;
-  migrateTo: zod738.ZodNullable<zod738.ZodString>;
-  rsshubRoute: zod738.ZodNullable<zod738.ZodString>;
-  rsshubNamespace: zod738.ZodNullable<zod738.ZodString>;
-  nsfw: zod738.ZodNullable<zod738.ZodBoolean>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const feedsOpenAPISchema: zod1339.ZodObject<{
+  id: zod1339.ZodString;
+  url: zod1339.ZodString;
+  title: zod1339.ZodNullable<zod1339.ZodString>;
+  description: zod1339.ZodNullable<zod1339.ZodString>;
+  siteUrl: zod1339.ZodNullable<zod1339.ZodString>;
+  image: zod1339.ZodNullable<zod1339.ZodString>;
+  checkedAt: zod1339.ZodString;
+  lastModifiedHeader: zod1339.ZodNullable<zod1339.ZodString>;
+  etagHeader: zod1339.ZodNullable<zod1339.ZodString>;
+  ttl: zod1339.ZodNullable<zod1339.ZodNumber>;
+  errorMessage: zod1339.ZodNullable<zod1339.ZodString>;
+  errorAt: zod1339.ZodNullable<zod1339.ZodString>;
+  ownerUserId: zod1339.ZodNullable<zod1339.ZodString>;
+  language: zod1339.ZodNullable<zod1339.ZodString>;
+  migrateTo: zod1339.ZodNullable<zod1339.ZodString>;
+  rsshubRoute: zod1339.ZodNullable<zod1339.ZodString>;
+  rsshubNamespace: zod1339.ZodNullable<zod1339.ZodString>;
+  nsfw: zod1339.ZodNullable<zod1339.ZodBoolean>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   id: string;
   image: string | null;
   description: string | null;
@@ -2995,21 +2996,21 @@ declare const feedsOpenAPISchema: zod738.ZodObject<{
   rsshubNamespace: string | null;
   nsfw: boolean | null;
 }>;
-declare const feedsRelations: drizzle_orm782.Relations<"feeds", {
-  subscriptions: drizzle_orm782.Many<"subscriptions">;
-  entries: drizzle_orm782.Many<"entries">;
-  owner: drizzle_orm782.One<"user", false>;
-  migrateTo: drizzle_orm782.One<"feeds", false>;
-  trendingFeeds: drizzle_orm782.Many<"trendings_feeds">;
+declare const feedsRelations: drizzle_orm1358.Relations<"feeds", {
+  subscriptions: drizzle_orm1358.Many<"subscriptions">;
+  entries: drizzle_orm1358.Many<"entries">;
+  owner: drizzle_orm1358.One<"user", false>;
+  migrateTo: drizzle_orm1358.One<"feeds", false>;
+  trendingFeeds: drizzle_orm1358.Many<"trendings_feeds">;
 }>;
 type FeedModel = InferInsertModel<typeof feeds>;
 //#endregion
 //#region src/schema/feeds/subscriptions.d.ts
-declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const subscriptions: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "subscriptions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "subscriptions";
       dataType: "string";
@@ -3026,7 +3027,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "subscriptions";
       dataType: "string";
@@ -3043,7 +3044,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "subscriptions";
       dataType: "number";
@@ -3060,7 +3061,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    category: drizzle_orm_pg_core728.PgColumn<{
+    category: drizzle_orm_pg_core1329.PgColumn<{
       name: "category";
       tableName: "subscriptions";
       dataType: "string";
@@ -3077,7 +3078,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "subscriptions";
       dataType: "string";
@@ -3094,7 +3095,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "subscriptions";
       dataType: "date";
@@ -3111,7 +3112,7 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isPrivate: drizzle_orm_pg_core728.PgColumn<{
+    isPrivate: drizzle_orm_pg_core1329.PgColumn<{
       name: "is_private";
       tableName: "subscriptions";
       dataType: "boolean";
@@ -3131,15 +3132,15 @@ declare const subscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const subscriptionsOpenAPISchema: zod738.ZodObject<{
-  userId: zod738.ZodString;
-  feedId: zod738.ZodString;
-  view: zod738.ZodNumber;
-  category: zod738.ZodNullable<zod738.ZodString>;
-  title: zod738.ZodNullable<zod738.ZodString>;
-  createdAt: zod738.ZodString;
-  isPrivate: zod738.ZodBoolean;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const subscriptionsOpenAPISchema: zod1339.ZodObject<{
+  userId: zod1339.ZodString;
+  feedId: zod1339.ZodString;
+  view: zod1339.ZodNumber;
+  category: zod1339.ZodNullable<zod1339.ZodString>;
+  title: zod1339.ZodNullable<zod1339.ZodString>;
+  createdAt: zod1339.ZodString;
+  isPrivate: zod1339.ZodBoolean;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   createdAt: string;
   userId: string;
   title: string | null;
@@ -3156,19 +3157,19 @@ declare const subscriptionsOpenAPISchema: zod738.ZodObject<{
   feedId: string;
   isPrivate: boolean;
 }>;
-declare const subscriptionsRelations: drizzle_orm782.Relations<"subscriptions", {
-  users: drizzle_orm782.One<"user", true>;
-  feeds: drizzle_orm782.One<"feeds", true>;
-  timeline: drizzle_orm782.Many<"timeline">;
-  rsshubUsage: drizzle_orm782.One<"rsshub_usage", true>;
+declare const subscriptionsRelations: drizzle_orm1358.Relations<"subscriptions", {
+  users: drizzle_orm1358.One<"user", true>;
+  feeds: drizzle_orm1358.One<"feeds", true>;
+  timeline: drizzle_orm1358.Many<"timeline">;
+  rsshubUsage: drizzle_orm1358.One<"rsshub_usage", true>;
 }>;
 //#endregion
 //#region src/schema/inboxes/entries.d.ts
-declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const inboxesEntries: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "inboxes_entries";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3185,7 +3186,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3202,7 +3203,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core728.PgColumn<{
+    url: drizzle_orm_pg_core1329.PgColumn<{
       name: "url";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3219,7 +3220,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core728.PgColumn<{
+    content: drizzle_orm_pg_core1329.PgColumn<{
       name: "content";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3236,7 +3237,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core728.PgColumn<{
+    description: drizzle_orm_pg_core1329.PgColumn<{
       name: "description";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3253,7 +3254,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    guid: drizzle_orm_pg_core728.PgColumn<{
+    guid: drizzle_orm_pg_core1329.PgColumn<{
       name: "guid";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3270,7 +3271,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    author: drizzle_orm_pg_core728.PgColumn<{
+    author: drizzle_orm_pg_core1329.PgColumn<{
       name: "author";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3287,7 +3288,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorUrl: drizzle_orm_pg_core728.PgColumn<{
+    authorUrl: drizzle_orm_pg_core1329.PgColumn<{
       name: "author_url";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3304,7 +3305,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorAvatar: drizzle_orm_pg_core728.PgColumn<{
+    authorAvatar: drizzle_orm_pg_core1329.PgColumn<{
       name: "author_avatar";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3321,7 +3322,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core728.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "inserted_at";
       tableName: "inboxes_entries";
       dataType: "date";
@@ -3338,7 +3339,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core728.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "published_at";
       tableName: "inboxes_entries";
       dataType: "date";
@@ -3355,7 +3356,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    media: drizzle_orm_pg_core728.PgColumn<{
+    media: drizzle_orm_pg_core1329.PgColumn<{
       name: "media";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3374,7 +3375,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: MediaModel[];
     }>;
-    categories: drizzle_orm_pg_core728.PgColumn<{
+    categories: drizzle_orm_pg_core1329.PgColumn<{
       name: "categories";
       tableName: "inboxes_entries";
       dataType: "array";
@@ -3387,7 +3388,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm782.Column<{
+      baseColumn: drizzle_orm1358.Column<{
         name: "categories";
         tableName: "inboxes_entries";
         dataType: "string";
@@ -3407,17 +3408,17 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core728.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1329.PgColumnBuilder<{
         name: "categories";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1358.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    attachments: drizzle_orm_pg_core728.PgColumn<{
+    attachments: drizzle_orm_pg_core1329.PgColumn<{
       name: "attachments";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3436,7 +3437,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: AttachmentsModel[];
     }>;
-    extra: drizzle_orm_pg_core728.PgColumn<{
+    extra: drizzle_orm_pg_core1329.PgColumn<{
       name: "extra";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3455,7 +3456,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: ExtraModel;
     }>;
-    language: drizzle_orm_pg_core728.PgColumn<{
+    language: drizzle_orm_pg_core1329.PgColumn<{
       name: "language";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3472,7 +3473,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    inboxHandle: drizzle_orm_pg_core728.PgColumn<{
+    inboxHandle: drizzle_orm_pg_core1329.PgColumn<{
       name: "inbox_handle";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3489,7 +3490,7 @@ declare const inboxesEntries: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    read: drizzle_orm_pg_core728.PgColumn<{
+    read: drizzle_orm_pg_core1329.PgColumn<{
       name: "read";
       tableName: "inboxes_entries";
       dataType: "boolean";
@@ -4122,8 +4123,8 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<Omit<{
   authorAvatar?: string | null | undefined;
   read?: boolean | null | undefined;
 }>;
-declare const inboxesEntriesRelations: drizzle_orm782.Relations<"inboxes_entries", {
-  inboxes: drizzle_orm782.One<"inboxes", true>;
+declare const inboxesEntriesRelations: drizzle_orm1358.Relations<"inboxes_entries", {
+  inboxes: drizzle_orm1358.One<"inboxes", true>;
 }>;
 type inboxesEntriesModel = InferInsertModel<typeof inboxesEntries> & {
   attachments?: AttachmentsModel[] | null;
@@ -4131,11 +4132,11 @@ type inboxesEntriesModel = InferInsertModel<typeof inboxesEntries> & {
 };
 //#endregion
 //#region src/schema/inboxes/inboxes.d.ts
-declare const inboxes: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const inboxes: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "inboxes";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "inboxes";
       dataType: "string";
@@ -4152,7 +4153,7 @@ declare const inboxes: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    handle: drizzle_orm_pg_core728.PgColumn<{
+    handle: drizzle_orm_pg_core1329.PgColumn<{
       name: "handle";
       tableName: "inboxes";
       dataType: "string";
@@ -4169,7 +4170,7 @@ declare const inboxes: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    secret: drizzle_orm_pg_core728.PgColumn<{
+    secret: drizzle_orm_pg_core1329.PgColumn<{
       name: "secret";
       tableName: "inboxes";
       dataType: "string";
@@ -4186,7 +4187,7 @@ declare const inboxes: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "inboxes";
       dataType: "string";
@@ -4222,18 +4223,18 @@ declare const inboxesOpenAPISchema: z.ZodObject<{
   title: string | null;
   secret: string;
 }>;
-declare const inboxesRelations: drizzle_orm782.Relations<"inboxes", {
-  users: drizzle_orm782.One<"user", true>;
-  entries: drizzle_orm782.Many<"inboxes_entries">;
+declare const inboxesRelations: drizzle_orm1358.Relations<"inboxes", {
+  users: drizzle_orm1358.One<"user", true>;
+  entries: drizzle_orm1358.Many<"inboxes_entries">;
 }>;
 declare const inboxHandleSchema: z.ZodString;
 //#endregion
 //#region src/schema/invitations.d.ts
-declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const invitations: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "invitations";
   schema: undefined;
   columns: {
-    code: drizzle_orm_pg_core728.PgColumn<{
+    code: drizzle_orm_pg_core1329.PgColumn<{
       name: "code";
       tableName: "invitations";
       dataType: "string";
@@ -4241,16 +4242,16 @@ declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
       data: string;
       driverParam: string;
       notNull: true;
-      hasDefault: false;
+      hasDefault: true;
       isPrimaryKey: true;
       isAutoincrement: false;
-      hasRuntimeDefault: false;
+      hasRuntimeDefault: true;
       enumValues: [string, ...string[]];
       baseColumn: never;
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "invitations";
       dataType: "date";
@@ -4267,7 +4268,7 @@ declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    usedAt: drizzle_orm_pg_core728.PgColumn<{
+    usedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "used_at";
       tableName: "invitations";
       dataType: "date";
@@ -4284,7 +4285,7 @@ declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fromUserId: drizzle_orm_pg_core728.PgColumn<{
+    fromUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "from_user_id";
       tableName: "invitations";
       dataType: "string";
@@ -4301,7 +4302,7 @@ declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toUserId: drizzle_orm_pg_core728.PgColumn<{
+    toUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_user_id";
       tableName: "invitations";
       dataType: "string";
@@ -4321,13 +4322,13 @@ declare const invitations: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const invitationsOpenAPISchema: zod738.ZodObject<{
-  code: zod738.ZodString;
-  createdAt: zod738.ZodNullable<zod738.ZodString>;
-  usedAt: zod738.ZodNullable<zod738.ZodString>;
-  fromUserId: zod738.ZodString;
-  toUserId: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const invitationsOpenAPISchema: zod1339.ZodObject<{
+  code: zod1339.ZodString;
+  createdAt: zod1339.ZodNullable<zod1339.ZodString>;
+  usedAt: zod1339.ZodNullable<zod1339.ZodString>;
+  fromUserId: zod1339.ZodString;
+  toUserId: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   code: string;
   createdAt: string | null;
   usedAt: string | null;
@@ -4340,16 +4341,17 @@ declare const invitationsOpenAPISchema: zod738.ZodObject<{
   fromUserId: string;
   toUserId: string | null;
 }>;
-declare const invitationsRelations: drizzle_orm782.Relations<"invitations", {
-  users: drizzle_orm782.One<"user", false>;
+type InvitationDB = typeof invitations.$inferSelect;
+declare const invitationsRelations: drizzle_orm1358.Relations<"invitations", {
+  users: drizzle_orm1358.One<"user", false>;
 }>;
 //#endregion
 //#region src/schema/lists/analytics.d.ts
-declare const listAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const listAnalytics: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "list_analytics";
   schema: undefined;
   columns: {
-    listId: drizzle_orm_pg_core728.PgColumn<{
+    listId: drizzle_orm_pg_core1329.PgColumn<{
       name: "list_id";
       tableName: "list_analytics";
       dataType: "string";
@@ -4366,7 +4368,7 @@ declare const listAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    subscriptionCount: drizzle_orm_pg_core728.PgColumn<{
+    subscriptionCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "subscription_count";
       tableName: "list_analytics";
       dataType: "number";
@@ -4386,26 +4388,26 @@ declare const listAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listAnalyticsOpenAPISchema: zod738.ZodObject<{
-  listId: zod738.ZodString;
-  subscriptionCount: zod738.ZodNullable<zod738.ZodNumber>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const listAnalyticsOpenAPISchema: zod1339.ZodObject<{
+  listId: zod1339.ZodString;
+  subscriptionCount: zod1339.ZodNullable<zod1339.ZodNumber>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   subscriptionCount: number | null;
   listId: string;
 }, {
   subscriptionCount: number | null;
   listId: string;
 }>;
-declare const listAnalyticsRelations: drizzle_orm782.Relations<"list_analytics", {
-  list: drizzle_orm782.One<"lists", true>;
+declare const listAnalyticsRelations: drizzle_orm1358.Relations<"list_analytics", {
+  list: drizzle_orm1358.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/lists/lists.d.ts
-declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const lists: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "lists";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "lists";
       dataType: "string";
@@ -4422,7 +4424,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedIds: drizzle_orm_pg_core728.PgColumn<{
+    feedIds: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_ids";
       tableName: "lists";
       dataType: "array";
@@ -4435,7 +4437,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm782.Column<{
+      baseColumn: drizzle_orm1358.Column<{
         name: "feed_ids";
         tableName: "lists";
         dataType: "string";
@@ -4455,17 +4457,17 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core728.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1329.PgColumnBuilder<{
         name: "feed_ids";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1358.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "lists";
       dataType: "string";
@@ -4482,7 +4484,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core728.PgColumn<{
+    description: drizzle_orm_pg_core1329.PgColumn<{
       name: "description";
       tableName: "lists";
       dataType: "string";
@@ -4499,7 +4501,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core728.PgColumn<{
+    image: drizzle_orm_pg_core1329.PgColumn<{
       name: "image";
       tableName: "lists";
       dataType: "string";
@@ -4516,7 +4518,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "lists";
       dataType: "number";
@@ -4533,7 +4535,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fee: drizzle_orm_pg_core728.PgColumn<{
+    fee: drizzle_orm_pg_core1329.PgColumn<{
       name: "fee";
       tableName: "lists";
       dataType: "number";
@@ -4550,7 +4552,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core728.PgColumn<{
+    language: drizzle_orm_pg_core1329.PgColumn<{
       name: "language";
       tableName: "lists";
       dataType: "string";
@@ -4567,7 +4569,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core728.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "owner_user_id";
       tableName: "lists";
       dataType: "string";
@@ -4584,7 +4586,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "lists";
       dataType: "date";
@@ -4601,7 +4603,7 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updated_at";
       tableName: "lists";
       dataType: "date";
@@ -4621,19 +4623,19 @@ declare const lists: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listsOpenAPISchema: zod738.ZodObject<{
-  id: zod738.ZodString;
-  feedIds: zod738.ZodArray<zod738.ZodString, "many">;
-  title: zod738.ZodString;
-  description: zod738.ZodNullable<zod738.ZodString>;
-  image: zod738.ZodNullable<zod738.ZodString>;
-  view: zod738.ZodNumber;
-  fee: zod738.ZodNumber;
-  language: zod738.ZodNullable<zod738.ZodString>;
-  ownerUserId: zod738.ZodString;
-  createdAt: zod738.ZodNullable<zod738.ZodString>;
-  updatedAt: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const listsOpenAPISchema: zod1339.ZodObject<{
+  id: zod1339.ZodString;
+  feedIds: zod1339.ZodArray<zod1339.ZodString, "many">;
+  title: zod1339.ZodString;
+  description: zod1339.ZodNullable<zod1339.ZodString>;
+  image: zod1339.ZodNullable<zod1339.ZodString>;
+  view: zod1339.ZodNumber;
+  fee: zod1339.ZodNumber;
+  language: zod1339.ZodNullable<zod1339.ZodString>;
+  ownerUserId: zod1339.ZodString;
+  createdAt: zod1339.ZodNullable<zod1339.ZodString>;
+  updatedAt: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   id: string;
   image: string | null;
   createdAt: string | null;
@@ -4658,18 +4660,18 @@ declare const listsOpenAPISchema: zod738.ZodObject<{
   feedIds: string[];
   fee: number;
 }>;
-declare const listsRelations: drizzle_orm782.Relations<"lists", {
-  owner: drizzle_orm782.One<"user", true>;
-  listsSubscriptions: drizzle_orm782.Many<"lists_subscriptions">;
+declare const listsRelations: drizzle_orm1358.Relations<"lists", {
+  owner: drizzle_orm1358.One<"user", true>;
+  listsSubscriptions: drizzle_orm1358.Many<"lists_subscriptions">;
 }>;
 type ListModel = InferInsertModel<typeof lists>;
 //#endregion
 //#region src/schema/lists/subscriptions.d.ts
-declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const listsSubscriptions: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "lists_subscriptions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4686,7 +4688,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    listId: drizzle_orm_pg_core728.PgColumn<{
+    listId: drizzle_orm_pg_core1329.PgColumn<{
       name: "list_id";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4703,7 +4705,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "lists_subscriptions";
       dataType: "number";
@@ -4720,7 +4722,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core728.PgColumn<{
+    title: drizzle_orm_pg_core1329.PgColumn<{
       name: "title";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4737,7 +4739,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "lists_subscriptions";
       dataType: "date";
@@ -4754,7 +4756,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isPrivate: drizzle_orm_pg_core728.PgColumn<{
+    isPrivate: drizzle_orm_pg_core1329.PgColumn<{
       name: "is_private";
       tableName: "lists_subscriptions";
       dataType: "boolean";
@@ -4774,14 +4776,14 @@ declare const listsSubscriptions: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listsSubscriptionsOpenAPISchema: zod738.ZodObject<{
-  userId: zod738.ZodString;
-  listId: zod738.ZodString;
-  view: zod738.ZodNumber;
-  title: zod738.ZodNullable<zod738.ZodString>;
-  createdAt: zod738.ZodString;
-  isPrivate: zod738.ZodBoolean;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const listsSubscriptionsOpenAPISchema: zod1339.ZodObject<{
+  userId: zod1339.ZodString;
+  listId: zod1339.ZodString;
+  view: zod1339.ZodNumber;
+  title: zod1339.ZodNullable<zod1339.ZodString>;
+  createdAt: zod1339.ZodString;
+  isPrivate: zod1339.ZodBoolean;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   createdAt: string;
   userId: string;
   title: string | null;
@@ -4796,17 +4798,17 @@ declare const listsSubscriptionsOpenAPISchema: zod738.ZodObject<{
   isPrivate: boolean;
   listId: string;
 }>;
-declare const listsSubscriptionsRelations: drizzle_orm782.Relations<"lists_subscriptions", {
-  users: drizzle_orm782.One<"user", true>;
-  lists: drizzle_orm782.One<"lists", true>;
+declare const listsSubscriptionsRelations: drizzle_orm1358.Relations<"lists_subscriptions", {
+  users: drizzle_orm1358.One<"user", true>;
+  lists: drizzle_orm1358.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/messaging.d.ts
-declare const messaging: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const messaging: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "messaging";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "messaging";
       dataType: "string";
@@ -4823,7 +4825,7 @@ declare const messaging: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    token: drizzle_orm_pg_core728.PgColumn<{
+    token: drizzle_orm_pg_core1329.PgColumn<{
       name: "token";
       tableName: "messaging";
       dataType: "string";
@@ -4840,7 +4842,7 @@ declare const messaging: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    channel: drizzle_orm_pg_core728.PgColumn<{
+    channel: drizzle_orm_pg_core1329.PgColumn<{
       name: "channel";
       tableName: "messaging";
       dataType: "string";
@@ -4875,8 +4877,8 @@ declare const messagingOpenAPISchema: z.ZodObject<Omit<{
   token: string;
   channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
 }>;
-declare const messagingRelations: drizzle_orm782.Relations<"messaging", {
-  users: drizzle_orm782.One<"user", false>;
+declare const messagingRelations: drizzle_orm1358.Relations<"messaging", {
+  users: drizzle_orm1358.One<"user", false>;
 }>;
 declare enum MessagingType {
   NewEntry = "new-entry",
@@ -4891,11 +4893,11 @@ type MessagingData = {
 };
 //#endregion
 //#region src/schema/readability.d.ts
-declare const readabilities: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const readabilities: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "readabilities";
   schema: undefined;
   columns: {
-    entryId: drizzle_orm_pg_core728.PgColumn<{
+    entryId: drizzle_orm_pg_core1329.PgColumn<{
       name: "entry_id";
       tableName: "readabilities";
       dataType: "string";
@@ -4912,7 +4914,7 @@ declare const readabilities: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core728.PgColumn<{
+    content: drizzle_orm_pg_core1329.PgColumn<{
       name: "content";
       tableName: "readabilities";
       dataType: "string";
@@ -4929,7 +4931,7 @@ declare const readabilities: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updated_at";
       tableName: "readabilities";
       dataType: "date";
@@ -4951,11 +4953,11 @@ declare const readabilities: drizzle_orm_pg_core728.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/rsshub.d.ts
-declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const rsshub: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "rsshub";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "rsshub";
       dataType: "string";
@@ -4972,7 +4974,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    baseUrl: drizzle_orm_pg_core728.PgColumn<{
+    baseUrl: drizzle_orm_pg_core1329.PgColumn<{
       name: "base_url";
       tableName: "rsshub";
       dataType: "string";
@@ -4989,7 +4991,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessKey: drizzle_orm_pg_core728.PgColumn<{
+    accessKey: drizzle_orm_pg_core1329.PgColumn<{
       name: "access_key";
       tableName: "rsshub";
       dataType: "string";
@@ -5006,7 +5008,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core728.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "owner_user_id";
       tableName: "rsshub";
       dataType: "string";
@@ -5023,7 +5025,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    price: drizzle_orm_pg_core728.PgColumn<{
+    price: drizzle_orm_pg_core1329.PgColumn<{
       name: "price";
       tableName: "rsshub";
       dataType: "number";
@@ -5040,7 +5042,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core728.PgColumn<{
+    description: drizzle_orm_pg_core1329.PgColumn<{
       name: "description";
       tableName: "rsshub";
       dataType: "string";
@@ -5057,7 +5059,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userLimit: drizzle_orm_pg_core728.PgColumn<{
+    userLimit: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_limit";
       tableName: "rsshub";
       dataType: "number";
@@ -5074,7 +5076,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorMessage: drizzle_orm_pg_core728.PgColumn<{
+    errorMessage: drizzle_orm_pg_core1329.PgColumn<{
       name: "error_message";
       tableName: "rsshub";
       dataType: "string";
@@ -5091,7 +5093,7 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorAt: drizzle_orm_pg_core728.PgColumn<{
+    errorAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "error_at";
       tableName: "rsshub";
       dataType: "date";
@@ -5111,17 +5113,17 @@ declare const rsshub: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubOpenAPISchema: zod738.ZodObject<{
-  id: zod738.ZodString;
-  baseUrl: zod738.ZodString;
-  accessKey: zod738.ZodNullable<zod738.ZodString>;
-  ownerUserId: zod738.ZodString;
-  price: zod738.ZodNumber;
-  description: zod738.ZodNullable<zod738.ZodString>;
-  userLimit: zod738.ZodNullable<zod738.ZodNumber>;
-  errorMessage: zod738.ZodNullable<zod738.ZodString>;
-  errorAt: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const rsshubOpenAPISchema: zod1339.ZodObject<{
+  id: zod1339.ZodString;
+  baseUrl: zod1339.ZodString;
+  accessKey: zod1339.ZodNullable<zod1339.ZodString>;
+  ownerUserId: zod1339.ZodString;
+  price: zod1339.ZodNumber;
+  description: zod1339.ZodNullable<zod1339.ZodString>;
+  userLimit: zod1339.ZodNullable<zod1339.ZodNumber>;
+  errorMessage: zod1339.ZodNullable<zod1339.ZodString>;
+  errorAt: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   id: string;
   description: string | null;
   errorMessage: string | null;
@@ -5142,11 +5144,11 @@ declare const rsshubOpenAPISchema: zod738.ZodObject<{
   price: number;
   userLimit: number | null;
 }>;
-declare const rsshubUsage: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const rsshubUsage: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "rsshub_usage";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5163,7 +5165,7 @@ declare const rsshubUsage: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubId: drizzle_orm_pg_core728.PgColumn<{
+    rsshubId: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5180,7 +5182,7 @@ declare const rsshubUsage: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5200,11 +5202,11 @@ declare const rsshubUsage: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubUsageOpenAPISchema: zod738.ZodObject<{
-  id: zod738.ZodString;
-  rsshubId: zod738.ZodString;
-  userId: zod738.ZodString;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const rsshubUsageOpenAPISchema: zod1339.ZodObject<{
+  id: zod1339.ZodString;
+  rsshubId: zod1339.ZodString;
+  userId: zod1339.ZodString;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   id: string;
   userId: string;
   rsshubId: string;
@@ -5213,16 +5215,16 @@ declare const rsshubUsageOpenAPISchema: zod738.ZodObject<{
   userId: string;
   rsshubId: string;
 }>;
-declare const rsshubUsageRelations: drizzle_orm782.Relations<"rsshub_usage", {
-  rsshub: drizzle_orm782.One<"rsshub", true>;
+declare const rsshubUsageRelations: drizzle_orm1358.Relations<"rsshub_usage", {
+  rsshub: drizzle_orm1358.One<"rsshub", true>;
 }>;
 //#endregion
 //#region src/schema/rsshub-analytics.d.ts
-declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const rsshubAnalytics: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "rsshub_analytics";
   schema: undefined;
   columns: {
-    rsshubId: drizzle_orm_pg_core728.PgColumn<{
+    rsshubId: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_id";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5239,7 +5241,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubRoute: drizzle_orm_pg_core728.PgColumn<{
+    rsshubRoute: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_route";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5256,7 +5258,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubNamespace: drizzle_orm_pg_core728.PgColumn<{
+    rsshubNamespace: drizzle_orm_pg_core1329.PgColumn<{
       name: "rsshub_namespace";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5273,7 +5275,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    successCount: drizzle_orm_pg_core728.PgColumn<{
+    successCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "success_count";
       tableName: "rsshub_analytics";
       dataType: "number";
@@ -5290,7 +5292,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorCount: drizzle_orm_pg_core728.PgColumn<{
+    errorCount: drizzle_orm_pg_core1329.PgColumn<{
       name: "error_count";
       tableName: "rsshub_analytics";
       dataType: "number";
@@ -5307,7 +5309,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    timestamp: drizzle_orm_pg_core728.PgColumn<{
+    timestamp: drizzle_orm_pg_core1329.PgColumn<{
       name: "timestamp";
       tableName: "rsshub_analytics";
       dataType: "date";
@@ -5327,14 +5329,14 @@ declare const rsshubAnalytics: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubAnalyticsOpenAPISchema: zod738.ZodObject<{
-  rsshubId: zod738.ZodString;
-  rsshubRoute: zod738.ZodString;
-  rsshubNamespace: zod738.ZodString;
-  successCount: zod738.ZodNumber;
-  errorCount: zod738.ZodNumber;
-  timestamp: zod738.ZodString;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const rsshubAnalyticsOpenAPISchema: zod1339.ZodObject<{
+  rsshubId: zod1339.ZodString;
+  rsshubRoute: zod1339.ZodString;
+  rsshubNamespace: zod1339.ZodString;
+  successCount: zod1339.ZodNumber;
+  errorCount: zod1339.ZodNumber;
+  timestamp: zod1339.ZodString;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   rsshubRoute: string;
   rsshubNamespace: string;
   rsshubId: string;
@@ -5351,11 +5353,11 @@ declare const rsshubAnalyticsOpenAPISchema: zod738.ZodObject<{
 }>;
 //#endregion
 //#region src/schema/settings.d.ts
-declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const settings: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "settings";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "settings";
       dataType: "string";
@@ -5372,7 +5374,7 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "settings";
       dataType: "string";
@@ -5389,7 +5391,7 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tab: drizzle_orm_pg_core728.PgColumn<{
+    tab: drizzle_orm_pg_core1329.PgColumn<{
       name: "tab";
       tableName: "settings";
       dataType: "string";
@@ -5406,7 +5408,7 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    payload: drizzle_orm_pg_core728.PgColumn<{
+    payload: drizzle_orm_pg_core1329.PgColumn<{
       name: "payload";
       tableName: "settings";
       dataType: "json";
@@ -5425,7 +5427,7 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       $type: Record<string, any>;
     }>;
-    updateAt: drizzle_orm_pg_core728.PgColumn<{
+    updateAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "update_at";
       tableName: "settings";
       dataType: "date";
@@ -5442,7 +5444,7 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    version: drizzle_orm_pg_core728.PgColumn<{
+    version: drizzle_orm_pg_core1329.PgColumn<{
       name: "version";
       tableName: "settings";
       dataType: "number";
@@ -5464,11 +5466,11 @@ declare const settings: drizzle_orm_pg_core728.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/timeline.d.ts
-declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const timeline: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "timeline";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "timeline";
       dataType: "string";
@@ -5485,7 +5487,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feedId";
       tableName: "timeline";
       dataType: "string";
@@ -5502,7 +5504,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    entryId: drizzle_orm_pg_core728.PgColumn<{
+    entryId: drizzle_orm_pg_core1329.PgColumn<{
       name: "entry_id";
       tableName: "timeline";
       dataType: "string";
@@ -5519,7 +5521,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core728.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "published_at";
       tableName: "timeline";
       dataType: "date";
@@ -5536,7 +5538,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core728.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "inserted_at";
       tableName: "timeline";
       dataType: "date";
@@ -5553,7 +5555,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "timeline";
       dataType: "number";
@@ -5570,7 +5572,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    read: drizzle_orm_pg_core728.PgColumn<{
+    read: drizzle_orm_pg_core1329.PgColumn<{
       name: "read";
       tableName: "timeline";
       dataType: "boolean";
@@ -5587,7 +5589,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    from: drizzle_orm_pg_core728.PgColumn<{
+    from: drizzle_orm_pg_core1329.PgColumn<{
       name: "from";
       tableName: "timeline";
       dataType: "array";
@@ -5600,7 +5602,7 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm782.Column<{
+      baseColumn: drizzle_orm1358.Column<{
         name: "from";
         tableName: "timeline";
         dataType: "string";
@@ -5620,29 +5622,29 @@ declare const timeline: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core728.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1329.PgColumnBuilder<{
         name: "from";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm782.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1358.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
   };
   dialect: "pg";
 }>;
-declare const timelineOpenAPISchema: zod738.ZodObject<{
-  userId: zod738.ZodString;
-  feedId: zod738.ZodString;
-  entryId: zod738.ZodString;
-  publishedAt: zod738.ZodString;
-  insertedAt: zod738.ZodString;
-  view: zod738.ZodNumber;
-  read: zod738.ZodNullable<zod738.ZodBoolean>;
-  from: zod738.ZodNullable<zod738.ZodArray<zod738.ZodString, "many">>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const timelineOpenAPISchema: zod1339.ZodObject<{
+  userId: zod1339.ZodString;
+  feedId: zod1339.ZodString;
+  entryId: zod1339.ZodString;
+  publishedAt: zod1339.ZodString;
+  insertedAt: zod1339.ZodString;
+  view: zod1339.ZodNumber;
+  read: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  from: zod1339.ZodNullable<zod1339.ZodArray<zod1339.ZodString, "many">>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   userId: string;
   view: number;
   from: string[] | null;
@@ -5661,19 +5663,19 @@ declare const timelineOpenAPISchema: zod738.ZodObject<{
   entryId: string;
   read: boolean | null;
 }>;
-declare const timelineRelations: drizzle_orm782.Relations<"timeline", {
-  entries: drizzle_orm782.One<"entries", true>;
-  feeds: drizzle_orm782.One<"feeds", true>;
-  collections: drizzle_orm782.One<"collections", true>;
-  subscriptions: drizzle_orm782.One<"subscriptions", true>;
+declare const timelineRelations: drizzle_orm1358.Relations<"timeline", {
+  entries: drizzle_orm1358.One<"entries", true>;
+  feeds: drizzle_orm1358.One<"feeds", true>;
+  collections: drizzle_orm1358.One<"collections", true>;
+  subscriptions: drizzle_orm1358.One<"subscriptions", true>;
 }>;
 //#endregion
 //#region src/schema/trendings/feeds.d.ts
-declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const trendingFeeds: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "trendings_feeds";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5690,7 +5692,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rankedAt: drizzle_orm_pg_core728.PgColumn<{
+    rankedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "ranked_at";
       tableName: "trendings_feeds";
       dataType: "date";
@@ -5707,7 +5709,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score1d: drizzle_orm_pg_core728.PgColumn<{
+    score1d: drizzle_orm_pg_core1329.PgColumn<{
       name: "score_1d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5724,7 +5726,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score3d: drizzle_orm_pg_core728.PgColumn<{
+    score3d: drizzle_orm_pg_core1329.PgColumn<{
       name: "score_3d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5741,7 +5743,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score7d: drizzle_orm_pg_core728.PgColumn<{
+    score7d: drizzle_orm_pg_core1329.PgColumn<{
       name: "score_7d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5758,7 +5760,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score30d: drizzle_orm_pg_core728.PgColumn<{
+    score30d: drizzle_orm_pg_core1329.PgColumn<{
       name: "score_30d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5775,7 +5777,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core728.PgColumn<{
+    view: drizzle_orm_pg_core1329.PgColumn<{
       name: "view";
       tableName: "trendings_feeds";
       dataType: "number";
@@ -5792,7 +5794,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core728.PgColumn<{
+    language: drizzle_orm_pg_core1329.PgColumn<{
       name: "language";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5809,7 +5811,7 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    nsfw: drizzle_orm_pg_core728.PgColumn<{
+    nsfw: drizzle_orm_pg_core1329.PgColumn<{
       name: "nsfw";
       tableName: "trendings_feeds";
       dataType: "boolean";
@@ -5829,20 +5831,20 @@ declare const trendingFeeds: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const trendingFeedsRelations: drizzle_orm782.Relations<"trendings_feeds", {
-  feed: drizzle_orm782.One<"feeds", true>;
+declare const trendingFeedsRelations: drizzle_orm1358.Relations<"trendings_feeds", {
+  feed: drizzle_orm1358.One<"feeds", true>;
 }>;
-declare const trendingFeedsOpenAPISchema: zod738.ZodObject<{
-  feedId: zod738.ZodString;
-  rankedAt: zod738.ZodString;
-  score1d: zod738.ZodString;
-  score3d: zod738.ZodString;
-  score7d: zod738.ZodString;
-  score30d: zod738.ZodString;
-  view: zod738.ZodNumber;
-  language: zod738.ZodString;
-  nsfw: zod738.ZodNullable<zod738.ZodBoolean>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const trendingFeedsOpenAPISchema: zod1339.ZodObject<{
+  feedId: zod1339.ZodString;
+  rankedAt: zod1339.ZodString;
+  score1d: zod1339.ZodString;
+  score3d: zod1339.ZodString;
+  score7d: zod1339.ZodString;
+  score30d: zod1339.ZodString;
+  view: zod1339.ZodNumber;
+  language: zod1339.ZodString;
+  nsfw: zod1339.ZodNullable<zod1339.ZodBoolean>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   view: number;
   language: string;
   nsfw: boolean | null;
@@ -5870,11 +5872,11 @@ declare enum UploadType {
 }
 //#endregion
 //#region src/schema/uploads.d.ts
-declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const uploads: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "uploads";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "uploads";
       dataType: "string";
@@ -5891,7 +5893,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "uploads";
       dataType: "string";
@@ -5908,7 +5910,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core728.PgColumn<{
+    url: drizzle_orm_pg_core1329.PgColumn<{
       name: "url";
       tableName: "uploads";
       dataType: "string";
@@ -5925,7 +5927,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    md5: drizzle_orm_pg_core728.PgColumn<{
+    md5: drizzle_orm_pg_core1329.PgColumn<{
       name: "md5";
       tableName: "uploads";
       dataType: "string";
@@ -5942,7 +5944,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    mimeType: drizzle_orm_pg_core728.PgColumn<{
+    mimeType: drizzle_orm_pg_core1329.PgColumn<{
       name: "mime_type";
       tableName: "uploads";
       dataType: "string";
@@ -5959,7 +5961,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    size: drizzle_orm_pg_core728.PgColumn<{
+    size: drizzle_orm_pg_core1329.PgColumn<{
       name: "size";
       tableName: "uploads";
       dataType: "number";
@@ -5976,7 +5978,7 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core728.PgColumn<{
+    type: drizzle_orm_pg_core1329.PgColumn<{
       name: "type";
       tableName: "uploads";
       dataType: "string";
@@ -5998,11 +6000,11 @@ declare const uploads: drizzle_orm_pg_core728.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/users.d.ts
-declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const user$1: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "user";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "user";
       dataType: "string";
@@ -6019,7 +6021,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    name: drizzle_orm_pg_core728.PgColumn<{
+    name: drizzle_orm_pg_core1329.PgColumn<{
       name: "name";
       tableName: "user";
       dataType: "string";
@@ -6038,7 +6040,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    email: drizzle_orm_pg_core728.PgColumn<{
+    email: drizzle_orm_pg_core1329.PgColumn<{
       name: "email";
       tableName: "user";
       dataType: "string";
@@ -6057,7 +6059,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    emailVerified: drizzle_orm_pg_core728.PgColumn<{
+    emailVerified: drizzle_orm_pg_core1329.PgColumn<{
       name: "emailVerified";
       tableName: "user";
       dataType: "boolean";
@@ -6074,7 +6076,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core728.PgColumn<{
+    image: drizzle_orm_pg_core1329.PgColumn<{
       name: "image";
       tableName: "user";
       dataType: "string";
@@ -6093,7 +6095,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    handle: drizzle_orm_pg_core728.PgColumn<{
+    handle: drizzle_orm_pg_core1329.PgColumn<{
       name: "handle";
       tableName: "user";
       dataType: "string";
@@ -6112,7 +6114,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 36;
     }>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "user";
       dataType: "date";
@@ -6129,7 +6131,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updatedAt";
       tableName: "user";
       dataType: "date";
@@ -6146,7 +6148,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    twoFactorEnabled: drizzle_orm_pg_core728.PgColumn<{
+    twoFactorEnabled: drizzle_orm_pg_core1329.PgColumn<{
       name: "two_factor_enabled";
       tableName: "user";
       dataType: "boolean";
@@ -6163,7 +6165,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isAnonymous: drizzle_orm_pg_core728.PgColumn<{
+    isAnonymous: drizzle_orm_pg_core1329.PgColumn<{
       name: "is_anonymous";
       tableName: "user";
       dataType: "boolean";
@@ -6180,7 +6182,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    suspended: drizzle_orm_pg_core728.PgColumn<{
+    suspended: drizzle_orm_pg_core1329.PgColumn<{
       name: "suspended";
       tableName: "user";
       dataType: "boolean";
@@ -6197,7 +6199,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    deleted: drizzle_orm_pg_core728.PgColumn<{
+    deleted: drizzle_orm_pg_core1329.PgColumn<{
       name: "deleted";
       tableName: "user";
       dataType: "boolean";
@@ -6214,7 +6216,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    bio: drizzle_orm_pg_core728.PgColumn<{
+    bio: drizzle_orm_pg_core1329.PgColumn<{
       name: "bio";
       tableName: "user";
       dataType: "string";
@@ -6233,7 +6235,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    website: drizzle_orm_pg_core728.PgColumn<{
+    website: drizzle_orm_pg_core1329.PgColumn<{
       name: "website";
       tableName: "user";
       dataType: "string";
@@ -6252,7 +6254,7 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    socialLinks: drizzle_orm_pg_core728.PgColumn<{
+    socialLinks: drizzle_orm_pg_core1329.PgColumn<{
       name: "social_links";
       tableName: "user";
       dataType: "json";
@@ -6283,14 +6285,65 @@ declare const user$1: drizzle_orm_pg_core728.PgTableWithColumns<{
         youtube: string;
       };
     }>;
+    stripeCustomerId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "stripe_customer_id";
+      tableName: "user";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    role: drizzle_orm_pg_core1329.PgColumn<{
+      name: "role";
+      tableName: "user";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    roleEndAt: drizzle_orm_pg_core1329.PgColumn<{
+      name: "role_end_at";
+      tableName: "user";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
   };
   dialect: "pg";
 }>;
-declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const users: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "user";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "user";
       dataType: "string";
@@ -6307,7 +6360,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    name: drizzle_orm_pg_core728.PgColumn<{
+    name: drizzle_orm_pg_core1329.PgColumn<{
       name: "name";
       tableName: "user";
       dataType: "string";
@@ -6326,7 +6379,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    email: drizzle_orm_pg_core728.PgColumn<{
+    email: drizzle_orm_pg_core1329.PgColumn<{
       name: "email";
       tableName: "user";
       dataType: "string";
@@ -6345,7 +6398,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    emailVerified: drizzle_orm_pg_core728.PgColumn<{
+    emailVerified: drizzle_orm_pg_core1329.PgColumn<{
       name: "emailVerified";
       tableName: "user";
       dataType: "boolean";
@@ -6362,7 +6415,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core728.PgColumn<{
+    image: drizzle_orm_pg_core1329.PgColumn<{
       name: "image";
       tableName: "user";
       dataType: "string";
@@ -6381,7 +6434,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    handle: drizzle_orm_pg_core728.PgColumn<{
+    handle: drizzle_orm_pg_core1329.PgColumn<{
       name: "handle";
       tableName: "user";
       dataType: "string";
@@ -6400,7 +6453,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 36;
     }>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "user";
       dataType: "date";
@@ -6417,7 +6470,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updatedAt";
       tableName: "user";
       dataType: "date";
@@ -6434,7 +6487,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    twoFactorEnabled: drizzle_orm_pg_core728.PgColumn<{
+    twoFactorEnabled: drizzle_orm_pg_core1329.PgColumn<{
       name: "two_factor_enabled";
       tableName: "user";
       dataType: "boolean";
@@ -6451,7 +6504,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isAnonymous: drizzle_orm_pg_core728.PgColumn<{
+    isAnonymous: drizzle_orm_pg_core1329.PgColumn<{
       name: "is_anonymous";
       tableName: "user";
       dataType: "boolean";
@@ -6468,7 +6521,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    suspended: drizzle_orm_pg_core728.PgColumn<{
+    suspended: drizzle_orm_pg_core1329.PgColumn<{
       name: "suspended";
       tableName: "user";
       dataType: "boolean";
@@ -6485,7 +6538,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    deleted: drizzle_orm_pg_core728.PgColumn<{
+    deleted: drizzle_orm_pg_core1329.PgColumn<{
       name: "deleted";
       tableName: "user";
       dataType: "boolean";
@@ -6502,7 +6555,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    bio: drizzle_orm_pg_core728.PgColumn<{
+    bio: drizzle_orm_pg_core1329.PgColumn<{
       name: "bio";
       tableName: "user";
       dataType: "string";
@@ -6521,7 +6574,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    website: drizzle_orm_pg_core728.PgColumn<{
+    website: drizzle_orm_pg_core1329.PgColumn<{
       name: "website";
       tableName: "user";
       dataType: "string";
@@ -6540,7 +6593,7 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    socialLinks: drizzle_orm_pg_core728.PgColumn<{
+    socialLinks: drizzle_orm_pg_core1329.PgColumn<{
       name: "social_links";
       tableName: "user";
       dataType: "json";
@@ -6571,39 +6624,93 @@ declare const users: drizzle_orm_pg_core728.PgTableWithColumns<{
         youtube: string;
       };
     }>;
+    stripeCustomerId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "stripe_customer_id";
+      tableName: "user";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    role: drizzle_orm_pg_core1329.PgColumn<{
+      name: "role";
+      tableName: "user";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    roleEndAt: drizzle_orm_pg_core1329.PgColumn<{
+      name: "role_end_at";
+      tableName: "user";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
   };
   dialect: "pg";
 }>;
 declare function lower(handle: AnyPgColumn): SQL;
-declare const usersOpenApiSchema: zod738.ZodObject<Omit<{
-  id: zod738.ZodString;
-  name: zod738.ZodNullable<zod738.ZodString>;
-  email: zod738.ZodString;
-  emailVerified: zod738.ZodNullable<zod738.ZodBoolean>;
-  image: zod738.ZodNullable<zod738.ZodString>;
-  handle: zod738.ZodNullable<zod738.ZodString>;
-  createdAt: zod738.ZodDate;
-  updatedAt: zod738.ZodDate;
-  twoFactorEnabled: zod738.ZodNullable<zod738.ZodBoolean>;
-  isAnonymous: zod738.ZodNullable<zod738.ZodBoolean>;
-  suspended: zod738.ZodNullable<zod738.ZodBoolean>;
-  deleted: zod738.ZodNullable<zod738.ZodBoolean>;
-  bio: zod738.ZodNullable<zod738.ZodString>;
-  website: zod738.ZodNullable<zod738.ZodString>;
-  socialLinks: zod738.ZodNullable<zod738.ZodType<{
+declare const usersOpenApiSchema: zod1339.ZodObject<Omit<{
+  id: zod1339.ZodString;
+  name: zod1339.ZodNullable<zod1339.ZodString>;
+  email: zod1339.ZodString;
+  emailVerified: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  image: zod1339.ZodNullable<zod1339.ZodString>;
+  handle: zod1339.ZodNullable<zod1339.ZodString>;
+  createdAt: zod1339.ZodDate;
+  updatedAt: zod1339.ZodDate;
+  twoFactorEnabled: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  isAnonymous: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  suspended: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  deleted: zod1339.ZodNullable<zod1339.ZodBoolean>;
+  bio: zod1339.ZodNullable<zod1339.ZodString>;
+  website: zod1339.ZodNullable<zod1339.ZodString>;
+  socialLinks: zod1339.ZodNullable<zod1339.ZodType<{
     twitter: string;
     github: string;
     instagram: string;
     facebook: string;
     youtube: string;
-  }, zod738.ZodTypeDef, {
+  }, zod1339.ZodTypeDef, {
     twitter: string;
     github: string;
     instagram: string;
     facebook: string;
     youtube: string;
   }>>;
-}, "email">, "strip", zod738.ZodTypeAny, {
+  stripeCustomerId: zod1339.ZodNullable<zod1339.ZodString>;
+  role: zod1339.ZodNullable<zod1339.ZodString>;
+  roleEndAt: zod1339.ZodNullable<zod1339.ZodDate>;
+}, "email">, "strip", zod1339.ZodTypeAny, {
   id: string;
   name: string | null;
   emailVerified: boolean | null;
@@ -6624,6 +6731,9 @@ declare const usersOpenApiSchema: zod738.ZodObject<Omit<{
     facebook: string;
     youtube: string;
   } | null;
+  stripeCustomerId: string | null;
+  role: string | null;
+  roleEndAt: Date | null;
 }, {
   id: string;
   name: string | null;
@@ -6645,12 +6755,15 @@ declare const usersOpenApiSchema: zod738.ZodObject<Omit<{
     facebook: string;
     youtube: string;
   } | null;
+  stripeCustomerId: string | null;
+  role: string | null;
+  roleEndAt: Date | null;
 }>;
-declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const account: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "account";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "account";
       dataType: "string";
@@ -6667,7 +6780,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "userId";
       tableName: "account";
       dataType: "string";
@@ -6684,7 +6797,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    providerId: drizzle_orm_pg_core728.PgColumn<{
+    providerId: drizzle_orm_pg_core1329.PgColumn<{
       name: "provider";
       tableName: "account";
       dataType: "string";
@@ -6701,7 +6814,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accountId: drizzle_orm_pg_core728.PgColumn<{
+    accountId: drizzle_orm_pg_core1329.PgColumn<{
       name: "providerAccountId";
       tableName: "account";
       dataType: "string";
@@ -6718,7 +6831,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    refreshToken: drizzle_orm_pg_core728.PgColumn<{
+    refreshToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "refresh_token";
       tableName: "account";
       dataType: "string";
@@ -6735,7 +6848,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessToken: drizzle_orm_pg_core728.PgColumn<{
+    accessToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "access_token";
       tableName: "account";
       dataType: "string";
@@ -6752,7 +6865,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessTokenExpiresAt: drizzle_orm_pg_core728.PgColumn<{
+    accessTokenExpiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "expires_at";
       tableName: "account";
       dataType: "date";
@@ -6769,7 +6882,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    refreshTokenExpiresAt: drizzle_orm_pg_core728.PgColumn<{
+    refreshTokenExpiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "refreshTokenExpiresAt";
       tableName: "account";
       dataType: "date";
@@ -6786,7 +6899,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    scope: drizzle_orm_pg_core728.PgColumn<{
+    scope: drizzle_orm_pg_core1329.PgColumn<{
       name: "scope";
       tableName: "account";
       dataType: "string";
@@ -6803,7 +6916,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    idToken: drizzle_orm_pg_core728.PgColumn<{
+    idToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "id_token";
       tableName: "account";
       dataType: "string";
@@ -6820,7 +6933,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    password: drizzle_orm_pg_core728.PgColumn<{
+    password: drizzle_orm_pg_core1329.PgColumn<{
       name: "password";
       tableName: "account";
       dataType: "string";
@@ -6837,7 +6950,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "createdAt";
       tableName: "account";
       dataType: "date";
@@ -6854,7 +6967,7 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updatedAt";
       tableName: "account";
       dataType: "date";
@@ -6874,11 +6987,11 @@ declare const account: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const session: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "session";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "session";
       dataType: "string";
@@ -6895,7 +7008,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    token: drizzle_orm_pg_core728.PgColumn<{
+    token: drizzle_orm_pg_core1329.PgColumn<{
       name: "sessionToken";
       tableName: "session";
       dataType: "string";
@@ -6912,7 +7025,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "userId";
       tableName: "session";
       dataType: "string";
@@ -6929,7 +7042,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core728.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "expires";
       tableName: "session";
       dataType: "date";
@@ -6946,7 +7059,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "createdAt";
       tableName: "session";
       dataType: "date";
@@ -6963,7 +7076,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updatedAt";
       tableName: "session";
       dataType: "date";
@@ -6980,7 +7093,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ipAddress: drizzle_orm_pg_core728.PgColumn<{
+    ipAddress: drizzle_orm_pg_core1329.PgColumn<{
       name: "ipAddress";
       tableName: "session";
       dataType: "string";
@@ -6997,7 +7110,7 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userAgent: drizzle_orm_pg_core728.PgColumn<{
+    userAgent: drizzle_orm_pg_core1329.PgColumn<{
       name: "userAgent";
       tableName: "session";
       dataType: "string";
@@ -7017,11 +7130,11 @@ declare const session: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const verification: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "verificationToken";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "verificationToken";
       dataType: "string";
@@ -7038,7 +7151,7 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    identifier: drizzle_orm_pg_core728.PgColumn<{
+    identifier: drizzle_orm_pg_core1329.PgColumn<{
       name: "identifier";
       tableName: "verificationToken";
       dataType: "string";
@@ -7055,7 +7168,7 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    value: drizzle_orm_pg_core728.PgColumn<{
+    value: drizzle_orm_pg_core1329.PgColumn<{
       name: "token";
       tableName: "verificationToken";
       dataType: "string";
@@ -7072,7 +7185,7 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core728.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "expires";
       tableName: "verificationToken";
       dataType: "date";
@@ -7089,7 +7202,7 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "createdAt";
       tableName: "verificationToken";
       dataType: "date";
@@ -7106,7 +7219,7 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core728.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "updatedAt";
       tableName: "verificationToken";
       dataType: "date";
@@ -7126,11 +7239,11 @@ declare const verification: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const twoFactor: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "two_factor";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core728.PgColumn<{
+    id: drizzle_orm_pg_core1329.PgColumn<{
       name: "id";
       tableName: "two_factor";
       dataType: "string";
@@ -7147,7 +7260,7 @@ declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    secret: drizzle_orm_pg_core728.PgColumn<{
+    secret: drizzle_orm_pg_core1329.PgColumn<{
       name: "secret";
       tableName: "two_factor";
       dataType: "string";
@@ -7164,7 +7277,7 @@ declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    backupCodes: drizzle_orm_pg_core728.PgColumn<{
+    backupCodes: drizzle_orm_pg_core1329.PgColumn<{
       name: "backup_codes";
       tableName: "two_factor";
       dataType: "string";
@@ -7181,7 +7294,7 @@ declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "user_id";
       tableName: "two_factor";
       dataType: "string";
@@ -7201,23 +7314,275 @@ declare const twoFactor: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const usersRelations: drizzle_orm782.Relations<"user", {
-  subscriptions: drizzle_orm782.Many<"subscriptions">;
-  listsSubscriptions: drizzle_orm782.Many<"lists_subscriptions">;
-  collections: drizzle_orm782.Many<"collections">;
-  actions: drizzle_orm782.One<"actions", true>;
-  wallets: drizzle_orm782.One<"wallets", true>;
-  feeds: drizzle_orm782.Many<"feeds">;
-  inboxes: drizzle_orm782.One<"inboxes", true>;
-  messaging: drizzle_orm782.Many<"messaging">;
+declare const stripeSubscriptions: drizzle_orm_pg_core1329.PgTableWithColumns<{
+  name: "stripe_subscriptions";
+  schema: undefined;
+  columns: {
+    id: drizzle_orm_pg_core1329.PgColumn<{
+      name: "id";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: true;
+      isPrimaryKey: true;
+      isAutoincrement: false;
+      hasRuntimeDefault: true;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    plan: drizzle_orm_pg_core1329.PgColumn<{
+      name: "plan";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    referenceId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "reference_id";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    stripeCustomerId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "stripe_customer_id";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    stripeSubscriptionId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "stripe_subscription_id";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    status: drizzle_orm_pg_core1329.PgColumn<{
+      name: "status";
+      tableName: "stripe_subscriptions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    periodStart: drizzle_orm_pg_core1329.PgColumn<{
+      name: "period_start";
+      tableName: "stripe_subscriptions";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    periodEnd: drizzle_orm_pg_core1329.PgColumn<{
+      name: "period_end";
+      tableName: "stripe_subscriptions";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    cancelAtPeriodEnd: drizzle_orm_pg_core1329.PgColumn<{
+      name: "cancel_at_period_end";
+      tableName: "stripe_subscriptions";
+      dataType: "boolean";
+      columnType: "PgBoolean";
+      data: boolean;
+      driverParam: boolean;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    seats: drizzle_orm_pg_core1329.PgColumn<{
+      name: "seats";
+      tableName: "stripe_subscriptions";
+      dataType: "number";
+      columnType: "PgInteger";
+      data: number;
+      driverParam: string | number;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    trialStart: drizzle_orm_pg_core1329.PgColumn<{
+      name: "trial_start";
+      tableName: "stripe_subscriptions";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    trialEnd: drizzle_orm_pg_core1329.PgColumn<{
+      name: "trial_end";
+      tableName: "stripe_subscriptions";
+      dataType: "date";
+      columnType: "PgTimestamp";
+      data: Date;
+      driverParam: string;
+      notNull: false;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+  };
+  dialect: "pg";
+}>;
+declare const applePayTransactions: drizzle_orm_pg_core1329.PgTableWithColumns<{
+  name: "apple_pay_transactions";
+  schema: undefined;
+  columns: {
+    userId: drizzle_orm_pg_core1329.PgColumn<{
+      name: "userId";
+      tableName: "apple_pay_transactions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: true;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+    signedTransaction: drizzle_orm_pg_core1329.PgColumn<{
+      name: "signed_transaction";
+      tableName: "apple_pay_transactions";
+      dataType: "string";
+      columnType: "PgText";
+      data: string;
+      driverParam: string;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: false;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: [string, ...string[]];
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    }, {}, {}>;
+  };
+  dialect: "pg";
+}>;
+declare const usersRelations: drizzle_orm1358.Relations<"user", {
+  subscriptions: drizzle_orm1358.Many<"subscriptions">;
+  listsSubscriptions: drizzle_orm1358.Many<"lists_subscriptions">;
+  collections: drizzle_orm1358.Many<"collections">;
+  actions: drizzle_orm1358.One<"actions", true>;
+  wallets: drizzle_orm1358.One<"wallets", true>;
+  feeds: drizzle_orm1358.Many<"feeds">;
+  inboxes: drizzle_orm1358.One<"inboxes", true>;
+  messaging: drizzle_orm1358.Many<"messaging">;
 }>;
 //#endregion
 //#region src/schema/wallets.d.ts
-declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const wallets: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "wallets";
   schema: undefined;
   columns: {
-    addressIndex: drizzle_orm_pg_core728.PgColumn<{
+    addressIndex: drizzle_orm_pg_core1329.PgColumn<{
       name: "address_index";
       tableName: "wallets";
       dataType: "number";
@@ -7234,7 +7599,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: "always";
       generated: undefined;
     }, {}, {}>;
-    address: drizzle_orm_pg_core728.PgColumn<{
+    address: drizzle_orm_pg_core1329.PgColumn<{
       name: "address";
       tableName: "wallets";
       dataType: "string";
@@ -7251,7 +7616,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "userId";
       tableName: "wallets";
       dataType: "string";
@@ -7268,7 +7633,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "wallets";
       dataType: "date";
@@ -7285,7 +7650,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core728.PgColumn<{
+    powerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7302,7 +7667,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    dailyPowerToken: drizzle_orm_pg_core728.PgColumn<{
+    dailyPowerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "daily_power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7319,7 +7684,7 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    cashablePowerToken: drizzle_orm_pg_core728.PgColumn<{
+    cashablePowerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "cashable_power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7339,15 +7704,15 @@ declare const wallets: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const walletsOpenAPISchema: zod738.ZodObject<{
-  addressIndex: zod738.ZodNumber;
-  address: zod738.ZodNullable<zod738.ZodString>;
-  userId: zod738.ZodString;
-  createdAt: zod738.ZodString;
-  powerToken: zod738.ZodString;
-  dailyPowerToken: zod738.ZodString;
-  cashablePowerToken: zod738.ZodString;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const walletsOpenAPISchema: zod1339.ZodObject<{
+  addressIndex: zod1339.ZodNumber;
+  address: zod1339.ZodNullable<zod1339.ZodString>;
+  userId: zod1339.ZodString;
+  createdAt: zod1339.ZodString;
+  powerToken: zod1339.ZodString;
+  dailyPowerToken: zod1339.ZodString;
+  cashablePowerToken: zod1339.ZodString;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   createdAt: string;
   userId: string;
   powerToken: string;
@@ -7364,18 +7729,18 @@ declare const walletsOpenAPISchema: zod738.ZodObject<{
   dailyPowerToken: string;
   cashablePowerToken: string;
 }>;
-declare const walletsRelations: drizzle_orm782.Relations<"wallets", {
-  user: drizzle_orm782.One<"user", true>;
-  transactionsFrom: drizzle_orm782.Many<"transactions">;
-  transactionTo: drizzle_orm782.Many<"transactions">;
-  level: drizzle_orm782.One<"levels", false>;
+declare const walletsRelations: drizzle_orm1358.Relations<"wallets", {
+  user: drizzle_orm1358.One<"user", true>;
+  transactionsFrom: drizzle_orm1358.Many<"transactions">;
+  transactionTo: drizzle_orm1358.Many<"transactions">;
+  level: drizzle_orm1358.One<"levels", false>;
 }>;
-declare const transactionType: drizzle_orm_pg_core728.PgEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
-declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const transactionType: drizzle_orm_pg_core1329.PgEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
+declare const transactions: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "transactions";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core728.PgColumn<{
+    hash: drizzle_orm_pg_core1329.PgColumn<{
       name: "hash";
       tableName: "transactions";
       dataType: "string";
@@ -7392,7 +7757,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core728.PgColumn<{
+    type: drizzle_orm_pg_core1329.PgColumn<{
       name: "type";
       tableName: "transactions";
       dataType: "string";
@@ -7409,7 +7774,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fromUserId: drizzle_orm_pg_core728.PgColumn<{
+    fromUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "from_user_id";
       tableName: "transactions";
       dataType: "string";
@@ -7426,7 +7791,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toUserId: drizzle_orm_pg_core728.PgColumn<{
+    toUserId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_user_id";
       tableName: "transactions";
       dataType: "string";
@@ -7443,7 +7808,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toFeedId: drizzle_orm_pg_core728.PgColumn<{
+    toFeedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_feed_id";
       tableName: "transactions";
       dataType: "string";
@@ -7460,7 +7825,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toListId: drizzle_orm_pg_core728.PgColumn<{
+    toListId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_list_id";
       tableName: "transactions";
       dataType: "string";
@@ -7477,7 +7842,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toEntryId: drizzle_orm_pg_core728.PgColumn<{
+    toEntryId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_entry_id";
       tableName: "transactions";
       dataType: "string";
@@ -7494,7 +7859,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toRSSHubId: drizzle_orm_pg_core728.PgColumn<{
+    toRSSHubId: drizzle_orm_pg_core1329.PgColumn<{
       name: "to_rsshub_id";
       tableName: "transactions";
       dataType: "string";
@@ -7511,7 +7876,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core728.PgColumn<{
+    powerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "power_token";
       tableName: "transactions";
       dataType: "string";
@@ -7528,7 +7893,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tax: drizzle_orm_pg_core728.PgColumn<{
+    tax: drizzle_orm_pg_core1329.PgColumn<{
       name: "tax";
       tableName: "transactions";
       dataType: "string";
@@ -7545,7 +7910,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core728.PgColumn<{
+    createdAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "created_at";
       tableName: "transactions";
       dataType: "date";
@@ -7562,7 +7927,7 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    comment: drizzle_orm_pg_core728.PgColumn<{
+    comment: drizzle_orm_pg_core1329.PgColumn<{
       name: "comment";
       tableName: "transactions";
       dataType: "string";
@@ -7582,20 +7947,20 @@ declare const transactions: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const transactionsOpenAPISchema: zod738.ZodObject<{
-  hash: zod738.ZodString;
-  type: zod738.ZodEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
-  fromUserId: zod738.ZodNullable<zod738.ZodString>;
-  toUserId: zod738.ZodNullable<zod738.ZodString>;
-  toFeedId: zod738.ZodNullable<zod738.ZodString>;
-  toListId: zod738.ZodNullable<zod738.ZodString>;
-  toEntryId: zod738.ZodNullable<zod738.ZodString>;
-  toRSSHubId: zod738.ZodNullable<zod738.ZodString>;
-  powerToken: zod738.ZodString;
-  tax: zod738.ZodString;
-  createdAt: zod738.ZodString;
-  comment: zod738.ZodNullable<zod738.ZodString>;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const transactionsOpenAPISchema: zod1339.ZodObject<{
+  hash: zod1339.ZodString;
+  type: zod1339.ZodEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
+  fromUserId: zod1339.ZodNullable<zod1339.ZodString>;
+  toUserId: zod1339.ZodNullable<zod1339.ZodString>;
+  toFeedId: zod1339.ZodNullable<zod1339.ZodString>;
+  toListId: zod1339.ZodNullable<zod1339.ZodString>;
+  toEntryId: zod1339.ZodNullable<zod1339.ZodString>;
+  toRSSHubId: zod1339.ZodNullable<zod1339.ZodString>;
+  powerToken: zod1339.ZodString;
+  tax: zod1339.ZodString;
+  createdAt: zod1339.ZodString;
+  comment: zod1339.ZodNullable<zod1339.ZodString>;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   createdAt: string;
   type: "tip" | "mint" | "burn" | "withdraw" | "purchase" | "airdrop";
   hash: string;
@@ -7622,18 +7987,18 @@ declare const transactionsOpenAPISchema: zod738.ZodObject<{
   tax: string;
   comment: string | null;
 }>;
-declare const transactionsRelations: drizzle_orm782.Relations<"transactions", {
-  fromUser: drizzle_orm782.One<"user", false>;
-  toUser: drizzle_orm782.One<"user", false>;
-  toFeed: drizzle_orm782.One<"feeds", false>;
-  fromWallet: drizzle_orm782.One<"wallets", false>;
-  toWallet: drizzle_orm782.One<"wallets", false>;
+declare const transactionsRelations: drizzle_orm1358.Relations<"transactions", {
+  fromUser: drizzle_orm1358.One<"user", false>;
+  toUser: drizzle_orm1358.One<"user", false>;
+  toFeed: drizzle_orm1358.One<"feeds", false>;
+  fromWallet: drizzle_orm1358.One<"wallets", false>;
+  toWallet: drizzle_orm1358.One<"wallets", false>;
 }>;
-declare const feedPowerTokens: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const feedPowerTokens: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "feedPowerTokens";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core728.PgColumn<{
+    feedId: drizzle_orm_pg_core1329.PgColumn<{
       name: "feed_id";
       tableName: "feedPowerTokens";
       dataType: "string";
@@ -7650,7 +8015,7 @@ declare const feedPowerTokens: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core728.PgColumn<{
+    powerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "power_token";
       tableName: "feedPowerTokens";
       dataType: "string";
@@ -7670,24 +8035,24 @@ declare const feedPowerTokens: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedPowerTokensOpenAPISchema: zod738.ZodObject<{
-  feedId: zod738.ZodString;
-  powerToken: zod738.ZodString;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const feedPowerTokensOpenAPISchema: zod1339.ZodObject<{
+  feedId: zod1339.ZodString;
+  powerToken: zod1339.ZodString;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   feedId: string;
   powerToken: string;
 }, {
   feedId: string;
   powerToken: string;
 }>;
-declare const feedPowerTokensRelations: drizzle_orm782.Relations<"feedPowerTokens", {
-  feed: drizzle_orm782.One<"feeds", true>;
+declare const feedPowerTokensRelations: drizzle_orm1358.Relations<"feedPowerTokens", {
+  feed: drizzle_orm1358.One<"feeds", true>;
 }>;
-declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const levels: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "levels";
   schema: undefined;
   columns: {
-    address: drizzle_orm_pg_core728.PgColumn<{
+    address: drizzle_orm_pg_core1329.PgColumn<{
       name: "address";
       tableName: "levels";
       dataType: "string";
@@ -7704,7 +8069,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rank: drizzle_orm_pg_core728.PgColumn<{
+    rank: drizzle_orm_pg_core1329.PgColumn<{
       name: "rank";
       tableName: "levels";
       dataType: "number";
@@ -7721,7 +8086,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    level: drizzle_orm_pg_core728.PgColumn<{
+    level: drizzle_orm_pg_core1329.PgColumn<{
       name: "level";
       tableName: "levels";
       dataType: "number";
@@ -7738,7 +8103,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    prevActivityPoints: drizzle_orm_pg_core728.PgColumn<{
+    prevActivityPoints: drizzle_orm_pg_core1329.PgColumn<{
       name: "prev_activity_points";
       tableName: "levels";
       dataType: "number";
@@ -7755,7 +8120,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    activityPoints: drizzle_orm_pg_core728.PgColumn<{
+    activityPoints: drizzle_orm_pg_core1329.PgColumn<{
       name: "activity_points";
       tableName: "levels";
       dataType: "number";
@@ -7772,7 +8137,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core728.PgColumn<{
+    powerToken: drizzle_orm_pg_core1329.PgColumn<{
       name: "power_token";
       tableName: "levels";
       dataType: "string";
@@ -7789,7 +8154,7 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core728.PgColumn<{
+    userId: drizzle_orm_pg_core1329.PgColumn<{
       name: "userId";
       tableName: "levels";
       dataType: "string";
@@ -7809,15 +8174,15 @@ declare const levels: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const levelsOpenAPISchema: zod738.ZodObject<{
-  address: zod738.ZodString;
-  rank: zod738.ZodNullable<zod738.ZodNumber>;
-  level: zod738.ZodNullable<zod738.ZodNumber>;
-  prevActivityPoints: zod738.ZodNullable<zod738.ZodNumber>;
-  activityPoints: zod738.ZodNullable<zod738.ZodNumber>;
-  powerToken: zod738.ZodString;
-  userId: zod738.ZodString;
-}, zod738.UnknownKeysParam, zod738.ZodTypeAny, {
+declare const levelsOpenAPISchema: zod1339.ZodObject<{
+  address: zod1339.ZodString;
+  rank: zod1339.ZodNullable<zod1339.ZodNumber>;
+  level: zod1339.ZodNullable<zod1339.ZodNumber>;
+  prevActivityPoints: zod1339.ZodNullable<zod1339.ZodNumber>;
+  activityPoints: zod1339.ZodNullable<zod1339.ZodNumber>;
+  powerToken: zod1339.ZodString;
+  userId: zod1339.ZodString;
+}, zod1339.UnknownKeysParam, zod1339.ZodTypeAny, {
   userId: string;
   rank: number | null;
   powerToken: string;
@@ -7834,15 +8199,15 @@ declare const levelsOpenAPISchema: zod738.ZodObject<{
   prevActivityPoints: number | null;
   activityPoints: number | null;
 }>;
-declare const levelsRelations: drizzle_orm782.Relations<"levels", {
-  wallet: drizzle_orm782.One<"wallets", true>;
-  user: drizzle_orm782.One<"user", true>;
+declare const levelsRelations: drizzle_orm1358.Relations<"levels", {
+  wallet: drizzle_orm1358.One<"wallets", true>;
+  user: drizzle_orm1358.One<"user", true>;
 }>;
-declare const boosts: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const boosts: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "boosts";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core728.PgColumn<{
+    hash: drizzle_orm_pg_core1329.PgColumn<{
       name: "hash";
       tableName: "boosts";
       dataType: "string";
@@ -7859,7 +8224,7 @@ declare const boosts: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core728.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "expires_at";
       tableName: "boosts";
       dataType: "date";
@@ -7879,11 +8244,11 @@ declare const boosts: drizzle_orm_pg_core728.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubPurchase: drizzle_orm_pg_core728.PgTableWithColumns<{
+declare const rsshubPurchase: drizzle_orm_pg_core1329.PgTableWithColumns<{
   name: "rsshub_purchase";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core728.PgColumn<{
+    hash: drizzle_orm_pg_core1329.PgColumn<{
       name: "hash";
       tableName: "rsshub_purchase";
       dataType: "string";
@@ -7900,7 +8265,7 @@ declare const rsshubPurchase: drizzle_orm_pg_core728.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core728.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1329.PgColumn<{
       name: "expires_at";
       tableName: "rsshub_purchase";
       dataType: "date";
@@ -8063,7 +8428,7 @@ interface PerformanceAnalyticsResult {
 //#endregion
 //#region src/lib/ai/tools/index.d.ts
 declare const tools: {
-  aiMemory: ai55.Tool<{
+  aiMemory: ai56.Tool<{
     userId: string;
     operation: "store_conversation" | "retrieve_context" | "update_preferences" | "get_insights" | "analyze_patterns" | "personalize_response" | "clear_memory";
     data?: {
@@ -8247,7 +8612,7 @@ declare const tools: {
     message?: undefined;
     timestamp?: undefined;
   }>;
-  displayFeeds: ai55.Tool<{
+  displayFeeds: ai56.Tool<{
     feedIds: string[];
     title?: string | undefined;
     displayType?: "list" | "grid" | "card" | undefined;
@@ -8286,7 +8651,7 @@ declare const tools: {
     showAnalytics: boolean | undefined;
     title: string | undefined;
   }>;
-  displayEntries: ai55.Tool<{
+  displayEntries: ai56.Tool<{
     entryIds: string[];
     title?: string | undefined;
     groupBy?: "date" | "feed" | "none" | undefined;
@@ -8348,7 +8713,7 @@ declare const tools: {
     title: string | undefined;
     groupBy: "date" | "feed" | "none" | undefined;
   }>;
-  displaySubscriptions: ai55.Tool<{
+  displaySubscriptions: ai56.Tool<{
     userId: string;
     title?: string | undefined;
     groupBy?: "status" | "category" | "none" | undefined;
@@ -8402,7 +8767,7 @@ declare const tools: {
     groupBy: "status" | "category" | "none" | undefined;
     filterBy: "all" | "active" | "inactive" | "recent" | undefined;
   }>;
-  displayAnalytics: ai55.Tool<{
+  displayAnalytics: ai56.Tool<{
     analyticsType: "feed" | "subscription" | "reading" | "trending" | "overview";
     userId?: string | undefined;
     title?: string | undefined;
@@ -8424,7 +8789,7 @@ declare const tools: {
     showComparison: boolean | undefined;
     title: string | undefined;
   }>;
-  displayTrending: ai55.Tool<{
+  displayTrending: ai56.Tool<{
     trendingType: "feeds" | "categories" | "topics" | "authors";
     title?: string | undefined;
     limit?: number | undefined;
@@ -8447,23 +8812,23 @@ declare const tools: {
     limit: number;
     title: string | undefined;
   }>;
-  getFeeds: ai55.Tool<{
+  getFeeds: ai56.Tool<{
     select: ("id" | "image" | "description" | "title" | "url" | "siteUrl" | "checkedAt" | "lastModifiedHeader" | "etagHeader" | "ttl" | "errorMessage" | "errorAt" | "ownerUserId" | "language" | "migrateTo" | "rsshubRoute" | "rsshubNamespace" | "nsfw")[];
     ids: string[];
   }, {
     feeds: Record<string, any>[];
   }>;
-  getFeedEntries: ai55.Tool<{
+  getFeedEntries: ai56.Tool<{
     select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
     feedId: string;
   }, {
     entries: Record<string, any>[];
   }>;
-  getEntry: ai55.Tool<{
+  getEntry: ai56.Tool<{
     id: string;
     select: ("id" | "description" | "title" | "content" | "author" | "url" | "language" | "feedId" | "guid" | "media" | "categories" | "attachments" | "extra" | "authorUrl" | "authorAvatar" | "insertedAt" | "publishedAt")[];
   }, Record<string, any> | null>;
-  getUserSubscriptions: ai55.Tool<{
+  getUserSubscriptions: ai56.Tool<{
     userId: string;
     view?: number | undefined;
     category?: string | undefined;
@@ -8491,7 +8856,7 @@ declare const tools: {
       privateCount: number;
     };
   }>;
-  getTrendingFeeds: ai55.Tool<{
+  getTrendingFeeds: ai56.Tool<{
     language?: string | undefined;
     limit?: number | undefined;
     timeframe?: "1d" | "3d" | "7d" | "30d" | undefined;
@@ -8527,7 +8892,7 @@ declare const tools: {
       healthyFeeds: number;
     };
   }>;
-  searchFeeds: ai55.Tool<{
+  searchFeeds: ai56.Tool<{
     query: string;
     language?: string | undefined;
     limit?: number | undefined;
@@ -8555,7 +8920,7 @@ declare const tools: {
       healthyFeeds: number;
     };
   }>;
-  getUserReadingHistory: ai55.Tool<{
+  getUserReadingHistory: ai56.Tool<{
     userId: string;
     limit?: number | undefined;
     timeframeDays?: number | undefined;
@@ -8612,7 +8977,7 @@ declare const tools: {
       readingConsistency: string;
     };
   }>;
-  getContentRecommendations: ai55.Tool<{
+  getContentRecommendations: ai56.Tool<{
     userId: string;
     limit?: number | undefined;
     excludeNsfw?: boolean | undefined;
@@ -8650,7 +9015,7 @@ declare const tools: {
       };
     };
   }>;
-  manageSubscriptions: ai55.Tool<{
+  manageSubscriptions: ai56.Tool<{
     userId: string;
     action: "analyze" | "categorize" | "cleanup" | "optimize";
     options?: {
@@ -8767,7 +9132,7 @@ declare const tools: {
     potentialSavings?: undefined;
     optimization?: undefined;
   }>;
-  manageActions: ai55.Tool<{
+  manageActions: ai56.Tool<{
     userId: string;
     operation: "examples" | "analyze" | "optimize" | "suggest" | "validate";
     context?: {
@@ -9056,7 +9421,7 @@ declare const tools: {
     usage?: undefined;
     categories?: undefined;
   }>;
-  subscriptionAnalytics: ai55.Tool<{
+  subscriptionAnalytics: ai56.Tool<{
     userId: string;
     analysisType: "overview" | "engagement" | "performance" | "trends" | "quality" | "recommendations" | "comparative";
     options?: {
@@ -9198,7 +9563,7 @@ declare const tools: {
     error: string;
     details: string;
   }>;
-  getWhoami: ai55.Tool<{
+  getWhoami: ai56.Tool<{
     userId: string;
     select?: ("id" | "name" | "email" | "emailVerified" | "image" | "handle" | "createdAt" | "updatedAt" | "twoFactorEnabled" | "isAnonymous" | "suspended" | "deleted" | "bio" | "website" | "socialLinks")[] | undefined;
   }, {
@@ -9239,7 +9604,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9275,7 +9640,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9357,7 +9722,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9368,9 +9733,9 @@ declare const authPlugins: ({
       } : void>;
       options: {
         method: "POST";
-        body: zod_v440.ZodObject<{
-          TOTPCode: zod_v440.ZodString;
-        }, zod_v4_core41.$strip>;
+        body: zod_v441.ZodObject<{
+          TOTPCode: zod_v441.ZodString;
+        }, zod_v4_core42.$strip>;
       } & {
         use: any[];
       };
@@ -9396,7 +9761,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9411,7 +9776,7 @@ declare const authPlugins: ({
       }>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -9457,7 +9822,7 @@ declare const authPlugins: ({
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9488,9 +9853,9 @@ declare const authPlugins: ({
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          token: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          token: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           token: string;
         }, {
           token: string;
@@ -9503,10 +9868,23 @@ declare const authPlugins: ({
   };
 })[];
 //#endregion
+//#region src/common/auth/get-auth-user.d.ts
+declare enum UserRole {
+  Admin = "admin",
+  PreProTrial = "pre_pro_trial",
+  PrePro = "pre_pro",
+  Free = "free",
+  /**
+   * @deprecated use `UserRole.Free` instead
+   *
+   */
+  Trial = "trial",
+}
+//#endregion
 //#region src/lib/auth.d.ts
 declare const auth: {
   handler: (request: Request) => Promise<Response>;
-  api: better_auth245.InferAPI<{
+  api: better_auth246.InferAPI<{
     ok: {
       <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
         body?: undefined;
@@ -9523,7 +9901,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9584,7 +9962,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9651,7 +10029,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9694,19 +10072,19 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-          newUserCallbackURL: zod738.ZodOptional<zod738.ZodString>;
-          errorCallbackURL: zod738.ZodOptional<zod738.ZodString>;
-          provider: zod738.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
-          disableRedirect: zod738.ZodOptional<zod738.ZodBoolean>;
-          idToken: zod738.ZodOptional<zod738.ZodObject<{
-            token: zod738.ZodString;
-            nonce: zod738.ZodOptional<zod738.ZodString>;
-            accessToken: zod738.ZodOptional<zod738.ZodString>;
-            refreshToken: zod738.ZodOptional<zod738.ZodString>;
-            expiresAt: zod738.ZodOptional<zod738.ZodNumber>;
-          }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          newUserCallbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          errorCallbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          provider: zod1339.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
+          disableRedirect: zod1339.ZodOptional<zod1339.ZodBoolean>;
+          idToken: zod1339.ZodOptional<zod1339.ZodObject<{
+            token: zod1339.ZodString;
+            nonce: zod1339.ZodOptional<zod1339.ZodString>;
+            accessToken: zod1339.ZodOptional<zod1339.ZodString>;
+            refreshToken: zod1339.ZodOptional<zod1339.ZodString>;
+            expiresAt: zod1339.ZodOptional<zod1339.ZodNumber>;
+          }, "strip", zod1339.ZodTypeAny, {
             token: string;
             refreshToken?: string | undefined;
             accessToken?: string | undefined;
@@ -9719,10 +10097,10 @@ declare const auth: {
             expiresAt?: number | undefined;
             nonce?: string | undefined;
           }>>;
-          scopes: zod738.ZodOptional<zod738.ZodArray<zod738.ZodString, "many">>;
-          requestSignUp: zod738.ZodOptional<zod738.ZodBoolean>;
-          loginHint: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+          scopes: zod1339.ZodOptional<zod1339.ZodArray<zod1339.ZodString, "many">>;
+          requestSignUp: zod1339.ZodOptional<zod1339.ZodBoolean>;
+          loginHint: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           provider: "apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom";
           scopes?: string[] | undefined;
           loginHint?: string | undefined;
@@ -9857,7 +10235,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9868,14 +10246,14 @@ declare const auth: {
       } : void>;
       options: {
         method: ("GET" | "POST")[];
-        body: zod738.ZodOptional<zod738.ZodObject<{
-          code: zod738.ZodOptional<zod738.ZodString>;
-          error: zod738.ZodOptional<zod738.ZodString>;
-          device_id: zod738.ZodOptional<zod738.ZodString>;
-          error_description: zod738.ZodOptional<zod738.ZodString>;
-          state: zod738.ZodOptional<zod738.ZodString>;
-          user: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodOptional<zod1339.ZodObject<{
+          code: zod1339.ZodOptional<zod1339.ZodString>;
+          error: zod1339.ZodOptional<zod1339.ZodString>;
+          device_id: zod1339.ZodOptional<zod1339.ZodString>;
+          error_description: zod1339.ZodOptional<zod1339.ZodString>;
+          state: zod1339.ZodOptional<zod1339.ZodString>;
+          user: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           state?: string | undefined;
           code?: string | undefined;
           device_id?: string | undefined;
@@ -9890,14 +10268,14 @@ declare const auth: {
           user?: string | undefined;
           error_description?: string | undefined;
         }>>;
-        query: zod738.ZodOptional<zod738.ZodObject<{
-          code: zod738.ZodOptional<zod738.ZodString>;
-          error: zod738.ZodOptional<zod738.ZodString>;
-          device_id: zod738.ZodOptional<zod738.ZodString>;
-          error_description: zod738.ZodOptional<zod738.ZodString>;
-          state: zod738.ZodOptional<zod738.ZodString>;
-          user: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodOptional<zod1339.ZodObject<{
+          code: zod1339.ZodOptional<zod1339.ZodString>;
+          error: zod1339.ZodOptional<zod1339.ZodString>;
+          device_id: zod1339.ZodOptional<zod1339.ZodString>;
+          error_description: zod1339.ZodOptional<zod1339.ZodString>;
+          state: zod1339.ZodOptional<zod1339.ZodString>;
+          user: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           state?: string | undefined;
           code?: string | undefined;
           device_id?: string | undefined;
@@ -9939,7 +10317,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -9970,6 +10348,24 @@ declare const auth: {
             bio: string;
             website: string;
             socialLinks: string;
+            role: string;
+            roleEndAt: Date;
+          } & {
+            id: string;
+            name: string;
+            email: string;
+            emailVerified: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            image?: string | null | undefined | undefined;
+            stripeCustomerId?: string | null | undefined;
+            handle: string;
+            deleted: boolean;
+            bio: string;
+            website: string;
+            socialLinks: string;
+            role: string;
+            roleEndAt: Date;
           } & {
             id: string;
             name: string;
@@ -9984,6 +10380,8 @@ declare const auth: {
             bio: string;
             website: string;
             socialLinks: string;
+            role: string;
+            roleEndAt: Date;
           };
         } | null;
       } : {
@@ -10010,6 +10408,24 @@ declare const auth: {
           bio: string;
           website: string;
           socialLinks: string;
+          role: string;
+          roleEndAt: Date;
+        } & {
+          id: string;
+          name: string;
+          email: string;
+          emailVerified: boolean;
+          createdAt: Date;
+          updatedAt: Date;
+          image?: string | null | undefined | undefined;
+          stripeCustomerId?: string | null | undefined;
+          handle: string;
+          deleted: boolean;
+          bio: string;
+          website: string;
+          socialLinks: string;
+          role: string;
+          roleEndAt: Date;
         } & {
           id: string;
           name: string;
@@ -10024,14 +10440,16 @@ declare const auth: {
           bio: string;
           website: string;
           socialLinks: string;
+          role: string;
+          roleEndAt: Date;
         };
       } | null>;
       options: {
         method: "GET";
-        query: zod738.ZodOptional<zod738.ZodObject<{
-          disableCookieCache: zod738.ZodOptional<zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>>;
-          disableRefresh: zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodOptional<zod1339.ZodObject<{
+          disableCookieCache: zod1339.ZodOptional<zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>>;
+          disableRefresh: zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>;
+        }, "strip", zod1339.ZodTypeAny, {
           disableCookieCache?: boolean | undefined;
           disableRefresh?: boolean | undefined;
         }, {
@@ -10086,7 +10504,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10136,23 +10554,24 @@ declare const auth: {
           email: string;
           password: string;
           callbackURL?: string;
-        } | ({
-          name: string;
-          email: string;
-          password: string;
-          callbackURL?: string;
-        } & {} & {})) & {
+        } & ({} | ({} & {
+          stripeCustomerId?: string | null | undefined;
+        }) | ({} & {}))) & {
           handle: string;
           deleted: boolean;
           bio: string;
           website: string;
           socialLinks: string;
+          role: string;
+          roleEndAt: Date;
         } & {
           handle?: string | null | undefined;
           deleted?: boolean | null | undefined;
           bio?: string | null | undefined;
           website?: string | null | undefined;
           socialLinks?: string | null | undefined;
+          role?: string | null | undefined;
+          roleEndAt?: Date | null | undefined;
         };
       } & {
         method?: "POST" | undefined;
@@ -10167,7 +10586,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10222,7 +10641,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodRecord<zod738.ZodString, zod738.ZodAny>;
+        body: zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>;
         metadata: {
           $Infer: {
             body: ({
@@ -10230,23 +10649,24 @@ declare const auth: {
               email: string;
               password: string;
               callbackURL?: string;
-            } | ({
-              name: string;
-              email: string;
-              password: string;
-              callbackURL?: string;
-            } & {} & {})) & {
+            } & ({} | ({} & {
+              stripeCustomerId?: string | null | undefined;
+            }) | ({} & {}))) & {
               handle: string;
               deleted: boolean;
               bio: string;
               website: string;
               socialLinks: string;
+              role: string;
+              roleEndAt: Date;
             } & {
               handle?: string | null | undefined;
               deleted?: boolean | null | undefined;
               bio?: string | null | undefined;
               website?: string | null | undefined;
               socialLinks?: string | null | undefined;
+              role?: string | null | undefined;
+              roleEndAt?: Date | null | undefined;
             };
           };
           openapi: {
@@ -10366,7 +10786,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10403,12 +10823,12 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          email: zod738.ZodString;
-          password: zod738.ZodString;
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-          rememberMe: zod738.ZodOptional<zod738.ZodDefault<zod738.ZodBoolean>>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          email: zod1339.ZodString;
+          password: zod1339.ZodString;
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          rememberMe: zod1339.ZodOptional<zod1339.ZodDefault<zod1339.ZodBoolean>>;
+        }, "strip", zod1339.ZodTypeAny, {
           password: string;
           email: string;
           callbackURL?: string | undefined;
@@ -10507,7 +10927,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10522,10 +10942,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          email: zod738.ZodString;
-          redirectTo: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          email: zod1339.ZodString;
+          redirectTo: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           email: string;
           redirectTo?: string | undefined;
         }, {
@@ -10580,7 +11000,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10595,17 +11015,17 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        query: zod738.ZodOptional<zod738.ZodObject<{
-          token: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodOptional<zod1339.ZodObject<{
+          token: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           token?: string | undefined;
         }, {
           token?: string | undefined;
         }>>;
-        body: zod738.ZodObject<{
-          newPassword: zod738.ZodString;
-          token: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          newPassword: zod1339.ZodString;
+          token: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           newPassword: string;
           token?: string | undefined;
         }, {
@@ -10658,7 +11078,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10697,17 +11117,17 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        query: zod738.ZodObject<{
-          token: zod738.ZodString;
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodObject<{
+          token: zod1339.ZodString;
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           token: string;
           callbackURL?: string | undefined;
         }, {
           token: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -10807,7 +11227,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10822,10 +11242,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          email: zod738.ZodString;
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          email: zod1339.ZodString;
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           email: string;
           callbackURL?: string | undefined;
         }, {
@@ -10920,7 +11340,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -10935,17 +11355,17 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          newEmail: zod738.ZodString;
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          newEmail: zod1339.ZodString;
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           newEmail: string;
           callbackURL?: string | undefined;
         }, {
           newEmail: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11022,7 +11442,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -11055,11 +11475,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          newPassword: zod738.ZodString;
-          currentPassword: zod738.ZodString;
-          revokeOtherSessions: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          newPassword: zod1339.ZodString;
+          currentPassword: zod1339.ZodString;
+          revokeOtherSessions: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           newPassword: string;
           currentPassword: string;
           revokeOtherSessions?: boolean | undefined;
@@ -11068,7 +11488,7 @@ declare const auth: {
           currentPassword: string;
           revokeOtherSessions?: boolean | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11178,7 +11598,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -11193,9 +11613,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          newPassword: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          newPassword: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           newPassword: string;
         }, {
           newPassword: string;
@@ -11203,7 +11623,7 @@ declare const auth: {
         metadata: {
           SERVER_ONLY: true;
         };
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -11233,9 +11653,24 @@ declare const auth: {
     };
     updateUser: {
       <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
-        body: Partial<better_auth245.AdditionalUserFieldsInput<{
+        body: Partial<better_auth246.AdditionalUserFieldsInput<{
           appName: string;
-          database: (options: BetterAuthOptions) => better_auth245.Adapter;
+          database: (options: BetterAuthOptions) => better_auth246.Adapter;
+          databaseHooks: {
+            user: {
+              create: {
+                after: (newUser: {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                }, context: better_auth246.GenericEndpointContext | undefined) => Promise<void>;
+              };
+            };
+          };
           advanced: {
             database: {
               generateId: false;
@@ -11272,6 +11707,12 @@ declare const auth: {
               deleted: {
                 type: "boolean";
               };
+              role: {
+                type: "string";
+              };
+              roleEndAt: {
+                type: "date";
+              };
             };
             changeEmail: {
               enabled: true;
@@ -11279,7 +11720,7 @@ declare const auth: {
                 user,
                 url
               }: {
-                user: better_auth245.User;
+                user: better_auth246.User;
                 newEmail: string;
                 url: string;
                 token: string;
@@ -11315,7 +11756,7 @@ declare const auth: {
               user,
               url
             }: {
-              user: better_auth245.User;
+              user: better_auth246.User;
               url: string;
               token: string;
             }): Promise<void>;
@@ -11326,16 +11767,307 @@ declare const auth: {
               user,
               url
             }: {
-              user: better_auth245.User;
+              user: better_auth246.User;
               url: string;
               token: string;
             }): Promise<void>;
           };
           plugins: ({
-            id: "open-api";
+            id: "stripe";
             endpoints: {
-              generateOpenAPISchema: {
+              stripeWebhook: {
                 <AsResponse_1 extends boolean = false, ReturnHeaders_1 extends boolean = false>(inputCtx_0?: ({
+                  body?: undefined;
+                } & {
+                  method?: "POST" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_1 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_1] extends [true] ? {
+                  headers: Headers;
+                  response: {
+                    success: boolean;
+                  };
+                } : {
+                  success: boolean;
+                }>;
+                options: {
+                  method: "POST";
+                  metadata: {
+                    isAction: boolean;
+                  };
+                  cloneRequest: true;
+                } & {
+                  use: any[];
+                };
+                path: "/stripe/webhook";
+              };
+            } & {
+              readonly upgradeSubscription: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_2 extends boolean = false>(inputCtx_0: {
+                  body: {
+                    plan: string;
+                    metadata?: Record<string, any> | undefined;
+                    annual?: boolean | undefined;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                    seats?: number | undefined;
+                    successUrl?: string | undefined;
+                    cancelUrl?: string | undefined;
+                    returnUrl?: string | undefined;
+                    disableRedirect?: boolean | undefined;
+                  };
+                } & {
+                  method?: "POST" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_2 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_2] extends [true] ? {
+                  headers: Headers;
+                  response: {
+                    url: string;
+                    redirect: boolean;
+                  } | {
+                    redirect: boolean;
+                    id: string;
+                    object: "checkout.session";
+                    adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+                    after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+                    allow_promotion_codes: boolean | null;
+                    amount_subtotal: number | null;
+                    amount_total: number | null;
+                    automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+                    billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+                    cancel_url: string | null;
+                    client_reference_id: string | null;
+                    client_secret: string | null;
+                    collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+                    consent: Stripe.Checkout.Session.Consent | null;
+                    consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+                    created: number;
+                    currency: string | null;
+                    currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+                    custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+                    custom_text: Stripe.Checkout.Session.CustomText;
+                    customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+                    customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+                    customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+                    customer_email: string | null;
+                    discounts: Array<Stripe.Checkout.Session.Discount> | null;
+                    expires_at: number;
+                    invoice: string | Stripe.Invoice | null;
+                    invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+                    line_items?: Stripe.ApiList<Stripe.LineItem>;
+                    livemode: boolean;
+                    locale: Stripe.Checkout.Session.Locale | null;
+                    metadata: Stripe.Metadata | null;
+                    mode: Stripe.Checkout.Session.Mode;
+                    optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+                    payment_intent: string | Stripe.PaymentIntent | null;
+                    payment_link: string | Stripe.PaymentLink | null;
+                    payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+                    payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+                    payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+                    payment_method_types: Array<string>;
+                    payment_status: Stripe.Checkout.Session.PaymentStatus;
+                    permissions: Stripe.Checkout.Session.Permissions | null;
+                    phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+                    presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+                    recovered_from: string | null;
+                    redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+                    return_url?: string;
+                    saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+                    setup_intent: string | Stripe.SetupIntent | null;
+                    shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+                    shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+                    shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+                    status: Stripe.Checkout.Session.Status | null;
+                    submit_type: Stripe.Checkout.Session.SubmitType | null;
+                    subscription: string | Stripe.Subscription | null;
+                    success_url: string | null;
+                    tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+                    total_details: Stripe.Checkout.Session.TotalDetails | null;
+                    ui_mode: Stripe.Checkout.Session.UiMode | null;
+                    url: string | null;
+                    lastResponse: {
+                      headers: {
+                        [key: string]: string;
+                      };
+                      requestId: string;
+                      statusCode: number;
+                      apiVersion?: string;
+                      idempotencyKey?: string;
+                      stripeAccount?: string;
+                    };
+                  };
+                } : {
+                  url: string;
+                  redirect: boolean;
+                } | {
+                  redirect: boolean;
+                  id: string;
+                  object: "checkout.session";
+                  adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+                  after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+                  allow_promotion_codes: boolean | null;
+                  amount_subtotal: number | null;
+                  amount_total: number | null;
+                  automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+                  billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+                  cancel_url: string | null;
+                  client_reference_id: string | null;
+                  client_secret: string | null;
+                  collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+                  consent: Stripe.Checkout.Session.Consent | null;
+                  consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+                  created: number;
+                  currency: string | null;
+                  currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+                  custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+                  custom_text: Stripe.Checkout.Session.CustomText;
+                  customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+                  customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+                  customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+                  customer_email: string | null;
+                  discounts: Array<Stripe.Checkout.Session.Discount> | null;
+                  expires_at: number;
+                  invoice: string | Stripe.Invoice | null;
+                  invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+                  line_items?: Stripe.ApiList<Stripe.LineItem>;
+                  livemode: boolean;
+                  locale: Stripe.Checkout.Session.Locale | null;
+                  metadata: Stripe.Metadata | null;
+                  mode: Stripe.Checkout.Session.Mode;
+                  optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+                  payment_intent: string | Stripe.PaymentIntent | null;
+                  payment_link: string | Stripe.PaymentLink | null;
+                  payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+                  payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+                  payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+                  payment_method_types: Array<string>;
+                  payment_status: Stripe.Checkout.Session.PaymentStatus;
+                  permissions: Stripe.Checkout.Session.Permissions | null;
+                  phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+                  presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+                  recovered_from: string | null;
+                  redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+                  return_url?: string;
+                  saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+                  setup_intent: string | Stripe.SetupIntent | null;
+                  shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+                  shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+                  shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+                  status: Stripe.Checkout.Session.Status | null;
+                  submit_type: Stripe.Checkout.Session.SubmitType | null;
+                  subscription: string | Stripe.Subscription | null;
+                  success_url: string | null;
+                  tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+                  total_details: Stripe.Checkout.Session.TotalDetails | null;
+                  ui_mode: Stripe.Checkout.Session.UiMode | null;
+                  url: string | null;
+                  lastResponse: {
+                    headers: {
+                      [key: string]: string;
+                    };
+                    requestId: string;
+                    statusCode: number;
+                    apiVersion?: string;
+                    idempotencyKey?: string;
+                    stripeAccount?: string;
+                  };
+                }>;
+                options: {
+                  method: "POST";
+                  body: zod1339.ZodObject<{
+                    plan: zod1339.ZodString;
+                    annual: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                    referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                    subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                    metadata: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                    seats: zod1339.ZodOptional<zod1339.ZodNumber>;
+                    successUrl: zod1339.ZodDefault<zod1339.ZodString>;
+                    cancelUrl: zod1339.ZodDefault<zod1339.ZodString>;
+                    returnUrl: zod1339.ZodOptional<zod1339.ZodString>;
+                    disableRedirect: zod1339.ZodDefault<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
+                    plan: string;
+                    successUrl: string;
+                    cancelUrl: string;
+                    disableRedirect: boolean;
+                    metadata?: Record<string, any> | undefined;
+                    annual?: boolean | undefined;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                    seats?: number | undefined;
+                    returnUrl?: string | undefined;
+                  }, {
+                    plan: string;
+                    metadata?: Record<string, any> | undefined;
+                    annual?: boolean | undefined;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                    seats?: number | undefined;
+                    successUrl?: string | undefined;
+                    cancelUrl?: string | undefined;
+                    returnUrl?: string | undefined;
+                    disableRedirect?: boolean | undefined;
+                  }>;
+                  use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                    session: {
+                      session: Record<string, any> & {
+                        id: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        userId: string;
+                        expiresAt: Date;
+                        token: string;
+                        ipAddress?: string | null | undefined;
+                        userAgent?: string | null | undefined;
+                      };
+                      user: Record<string, any> & {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                      };
+                    };
+                  }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/upgrade";
+              };
+              readonly cancelSubscriptionCallback: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_3 extends boolean = false>(inputCtx_0?: ({
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -11350,12 +12082,396 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_1 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_1] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_3 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_3] extends [true] ? {
+                  headers: Headers;
+                  response: never;
+                } : never>;
+                options: {
+                  method: "GET";
+                  query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/cancel/callback";
+              };
+              readonly cancelSubscription: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_4 extends boolean = false>(inputCtx_0: {
+                  body: {
+                    returnUrl: string;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  };
+                } & {
+                  method?: "POST" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_4 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_4] extends [true] ? {
+                  headers: Headers;
+                  response: {
+                    url: string;
+                    redirect: boolean;
+                  };
+                } : {
+                  url: string;
+                  redirect: boolean;
+                }>;
+                options: {
+                  method: "POST";
+                  body: zod1339.ZodObject<{
+                    referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                    subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                    returnUrl: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
+                    returnUrl: string;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  }, {
+                    returnUrl: string;
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  }>;
+                  use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                    session: {
+                      session: Record<string, any> & {
+                        id: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        userId: string;
+                        expiresAt: Date;
+                        token: string;
+                        ipAddress?: string | null | undefined;
+                        userAgent?: string | null | undefined;
+                      };
+                      user: Record<string, any> & {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                      };
+                    };
+                  }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/cancel";
+              };
+              readonly restoreSubscription: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_5 extends boolean = false>(inputCtx_0: {
+                  body: {
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  };
+                } & {
+                  method?: "POST" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_5 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_5] extends [true] ? {
+                  headers: Headers;
+                  response: Stripe.Response<Stripe.Subscription>;
+                } : Stripe.Response<Stripe.Subscription>>;
+                options: {
+                  method: "POST";
+                  body: zod1339.ZodObject<{
+                    referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                    subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                  }, "strip", zod1339.ZodTypeAny, {
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  }, {
+                    referenceId?: string | undefined;
+                    subscriptionId?: string | undefined;
+                  }>;
+                  use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                    session: {
+                      session: Record<string, any> & {
+                        id: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        userId: string;
+                        expiresAt: Date;
+                        token: string;
+                        ipAddress?: string | null | undefined;
+                        userAgent?: string | null | undefined;
+                      };
+                      user: Record<string, any> & {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                      };
+                    };
+                  }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/restore";
+              };
+              readonly listActiveSubscriptions: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_6 extends boolean = false>(inputCtx_0?: ({
+                  body?: undefined;
+                } & {
+                  method?: "GET" | undefined;
+                } & {
+                  query?: {
+                    referenceId?: string | undefined;
+                  } | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_6 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_6] extends [true] ? {
+                  headers: Headers;
+                  response: {
+                    limits: Record<string, number> | undefined;
+                    priceId: string | undefined;
+                    id: string;
+                    plan: string;
+                    stripeCustomerId?: string;
+                    stripeSubscriptionId?: string;
+                    trialStart?: Date;
+                    trialEnd?: Date;
+                    referenceId: string;
+                    status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+                    periodStart?: Date;
+                    periodEnd?: Date;
+                    cancelAtPeriodEnd?: boolean;
+                    groupId?: string;
+                    seats?: number;
+                  }[];
+                } : {
+                  limits: Record<string, number> | undefined;
+                  priceId: string | undefined;
+                  id: string;
+                  plan: string;
+                  stripeCustomerId?: string;
+                  stripeSubscriptionId?: string;
+                  trialStart?: Date;
+                  trialEnd?: Date;
+                  referenceId: string;
+                  status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+                  periodStart?: Date;
+                  periodEnd?: Date;
+                  cancelAtPeriodEnd?: boolean;
+                  groupId?: string;
+                  seats?: number;
+                }[]>;
+                options: {
+                  method: "GET";
+                  query: zod1339.ZodOptional<zod1339.ZodObject<{
+                    referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                  }, "strip", zod1339.ZodTypeAny, {
+                    referenceId?: string | undefined;
+                  }, {
+                    referenceId?: string | undefined;
+                  }>>;
+                  use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                    session: {
+                      session: Record<string, any> & {
+                        id: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        userId: string;
+                        expiresAt: Date;
+                        token: string;
+                        ipAddress?: string | null | undefined;
+                        userAgent?: string | null | undefined;
+                      };
+                      user: Record<string, any> & {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                      };
+                    };
+                  }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/list";
+              };
+              readonly subscriptionSuccess: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_7 extends boolean = false>(inputCtx_0?: ({
+                  body?: undefined;
+                } & {
+                  method?: "GET" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_7 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_7] extends [true] ? {
+                  headers: Headers;
+                  response: better_call38.APIError;
+                } : better_call38.APIError>;
+                options: {
+                  method: "GET";
+                  query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+                } & {
+                  use: any[];
+                };
+                path: "/subscription/success";
+              };
+            };
+            init(ctx: better_auth246.AuthContext): {
+              options: {
+                databaseHooks: {
+                  user: {
+                    create: {
+                      after(user: {
+                        id: string;
+                        name: string;
+                        email: string;
+                        emailVerified: boolean;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        image?: string | null | undefined;
+                      }, ctx: better_auth246.GenericEndpointContext | undefined): Promise<void>;
+                    };
+                  };
+                };
+              };
+            };
+            schema: {
+              user: {
+                fields: {
+                  stripeCustomerId: {
+                    type: "string";
+                    required: false;
+                  };
+                };
+              };
+              subscription?: {
+                fields: {
+                  plan: {
+                    type: "string";
+                    required: true;
+                  };
+                  referenceId: {
+                    type: "string";
+                    required: true;
+                  };
+                  stripeCustomerId: {
+                    type: "string";
+                    required: false;
+                  };
+                  stripeSubscriptionId: {
+                    type: "string";
+                    required: false;
+                  };
+                  status: {
+                    type: "string";
+                    defaultValue: string;
+                  };
+                  periodStart: {
+                    type: "date";
+                    required: false;
+                  };
+                  periodEnd: {
+                    type: "date";
+                    required: false;
+                  };
+                  cancelAtPeriodEnd: {
+                    type: "boolean";
+                    required: false;
+                    defaultValue: false;
+                  };
+                  seats: {
+                    type: "number";
+                    required: false;
+                  };
+                };
+              } | undefined;
+            };
+          } | {
+            id: "open-api";
+            endpoints: {
+              generateOpenAPISchema: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_8 extends boolean = false>(inputCtx_0?: ({
+                  body?: undefined;
+                } & {
+                  method?: "GET" | undefined;
+                } & {
+                  query?: Record<string, any> | undefined;
+                } & {
+                  params?: Record<string, any>;
+                } & {
+                  request?: Request;
+                } & {
+                  headers?: HeadersInit;
+                } & {
+                  asResponse?: boolean;
+                  returnHeaders?: boolean;
+                  use?: better_call38.Middleware[];
+                  path?: string;
+                } & {
+                  asResponse?: AsResponse_1 | undefined;
+                  returnHeaders?: ReturnHeaders_8 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_8] extends [true] ? {
                   headers: Headers;
                   response: {
                     openapi: string;
@@ -11391,7 +12507,7 @@ declare const auth: {
                       name: string;
                       description: string;
                     }[];
-                    paths: Record<string, better_auth_plugins250.Path>;
+                    paths: Record<string, better_auth_plugins332.Path>;
                   };
                 } : {
                   openapi: string;
@@ -11427,7 +12543,7 @@ declare const auth: {
                     name: string;
                     description: string;
                   }[];
-                  paths: Record<string, better_auth_plugins250.Path>;
+                  paths: Record<string, better_auth_plugins332.Path>;
                 }>;
                 options: {
                   method: "GET";
@@ -11437,7 +12553,7 @@ declare const auth: {
                 path: "/open-api/generate-schema";
               };
               openAPIReference: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_2 extends boolean = false>(inputCtx_0?: ({
+                <AsResponse_1 extends boolean = false, ReturnHeaders_9 extends boolean = false>(inputCtx_0?: ({
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -11452,12 +12568,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_2 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_2] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_9 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_9] extends [true] ? {
                   headers: Headers;
                   response: Response;
                 } : Response>;
@@ -11476,7 +12592,7 @@ declare const auth: {
             id: "two-factor";
             endpoints: {
               enableTwoFactor: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_3 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_10 extends boolean = false>(inputCtx_0: {
                   body: {
                     password: string;
                     issuer?: string | undefined;
@@ -11494,12 +12610,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_3 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_3] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_10 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_10] extends [true] ? {
                   headers: Headers;
                   response: {
                     totpURI: string;
@@ -11511,17 +12627,17 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    password: zod738.ZodString;
-                    issuer: zod738.ZodOptional<zod738.ZodString>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    password: zod1339.ZodString;
+                    issuer: zod1339.ZodOptional<zod1339.ZodString>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     password: string;
                     issuer?: string | undefined;
                   }, {
                     password: string;
                     issuer?: string | undefined;
                   }>;
-                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11581,7 +12697,7 @@ declare const auth: {
                 path: "/two-factor/enable";
               };
               disableTwoFactor: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_4 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_11 extends boolean = false>(inputCtx_0: {
                   body: {
                     password: string;
                   };
@@ -11598,12 +12714,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_4 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_4] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_11 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_11] extends [true] ? {
                   headers: Headers;
                   response: {
                     status: boolean;
@@ -11613,14 +12729,14 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    password: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    password: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
                   }>;
-                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11672,7 +12788,7 @@ declare const auth: {
                 path: "/two-factor/disable";
               };
               verifyBackupCode: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_5 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_12 extends boolean = false>(inputCtx_0: {
                   body: {
                     code: string;
                     trustDevice?: boolean | undefined;
@@ -11691,12 +12807,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_5 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_5] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_12 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_12] extends [true] ? {
                   headers: Headers;
                   response: {
                     token: string | undefined;
@@ -11724,11 +12840,11 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    code: zod738.ZodString;
-                    disableSession: zod738.ZodOptional<zod738.ZodBoolean>;
-                    trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    code: zod1339.ZodString;
+                    disableSession: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                    trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                     disableSession?: boolean | undefined;
@@ -11835,7 +12951,7 @@ declare const auth: {
                 path: "/two-factor/verify-backup-code";
               };
               generateBackupCodes: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_6 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_13 extends boolean = false>(inputCtx_0: {
                   body: {
                     password: string;
                   };
@@ -11852,12 +12968,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_6 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_6] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_13 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_13] extends [true] ? {
                   headers: Headers;
                   response: {
                     status: boolean;
@@ -11869,14 +12985,14 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    password: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    password: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
                   }>;
-                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -11937,7 +13053,7 @@ declare const auth: {
                 path: "/two-factor/generate-backup-codes";
               };
               viewBackupCodes: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_7 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0: {
                   body: {
                     userId: string;
                   };
@@ -11954,12 +13070,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_7 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_7] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_14 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
                   headers: Headers;
                   response: {
                     status: boolean;
@@ -11971,9 +13087,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "GET";
-                  body: zod738.ZodObject<{
-                    userId: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    userId: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     userId: string;
                   }, {
                     userId: string;
@@ -11987,7 +13103,7 @@ declare const auth: {
                 path: "/two-factor/view-backup-codes";
               };
               sendTwoFactorOTP: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_8 extends boolean = false>(inputCtx_0?: ({
+                <AsResponse_1 extends boolean = false, ReturnHeaders_15 extends boolean = false>(inputCtx_0?: ({
                   body?: {
                     trustDevice?: boolean | undefined;
                   } | undefined;
@@ -12004,12 +13120,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_8 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_8] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_15 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_15] extends [true] ? {
                   headers: Headers;
                   response: {
                     status: boolean;
@@ -12019,9 +13135,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodOptional<zod738.ZodObject<{
-                    trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodOptional<zod1339.ZodObject<{
+                    trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     trustDevice?: boolean | undefined;
                   }, {
                     trustDevice?: boolean | undefined;
@@ -12055,7 +13171,7 @@ declare const auth: {
                 path: "/two-factor/send-otp";
               };
               verifyTwoFactorOTP: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_9 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_16 extends boolean = false>(inputCtx_0: {
                   body: {
                     code: string;
                     trustDevice?: boolean | undefined;
@@ -12073,12 +13189,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_9 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_9] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_16 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_16] extends [true] ? {
                   headers: Headers;
                   response: {
                     token: string;
@@ -12106,10 +13222,10 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    code: zod738.ZodString;
-                    trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    code: zod1339.ZodString;
+                    trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                   }, {
@@ -12190,7 +13306,7 @@ declare const auth: {
                 path: "/two-factor/verify-otp";
               };
               generateTOTP: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_10 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_17 extends boolean = false>(inputCtx_0: {
                   body: {
                     secret: string;
                   };
@@ -12207,12 +13323,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_10 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_10] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_17 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_17] extends [true] ? {
                   headers: Headers;
                   response: {
                     code: string;
@@ -12222,9 +13338,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    secret: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    secret: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     secret: string;
                   }, {
                     secret: string;
@@ -12259,7 +13375,7 @@ declare const auth: {
                 path: "/totp/generate";
               };
               getTOTPURI: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_11 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_18 extends boolean = false>(inputCtx_0: {
                   body: {
                     password: string;
                   };
@@ -12276,12 +13392,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_11 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_11] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_18 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_18] extends [true] ? {
                   headers: Headers;
                   response: {
                     totpURI: string;
@@ -12291,7 +13407,7 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -12314,9 +13430,9 @@ declare const auth: {
                       };
                     };
                   }>)[];
-                  body: zod738.ZodObject<{
-                    password: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    password: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
@@ -12350,7 +13466,7 @@ declare const auth: {
                 path: "/two-factor/get-totp-uri";
               };
               verifyTOTP: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_12 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_19 extends boolean = false>(inputCtx_0: {
                   body: {
                     code: string;
                     trustDevice?: boolean | undefined;
@@ -12368,12 +13484,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_12 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_12] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_19 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_19] extends [true] ? {
                   headers: Headers;
                   response: {
                     token: string;
@@ -12401,10 +13517,10 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    code: zod738.ZodString;
-                    trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    code: zod1339.ZodString;
+                    trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                   }, {
@@ -12440,11 +13556,11 @@ declare const auth: {
                 path: "/two-factor/verify-totp";
               };
             };
-            options: better_auth_plugins250.TwoFactorOptions | undefined;
+            options: better_auth_plugins332.TwoFactorOptions | undefined;
             hooks: {
               after: {
-                matcher(context: better_auth245.HookEndpointContext): boolean;
-                handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                matcher(context: better_auth246.HookEndpointContext): boolean;
+                handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                   twoFactorRedirect: boolean;
                 } | undefined>;
               }[];
@@ -12502,25 +13618,25 @@ declare const auth: {
             };
           } | {
             id: "expo";
-            init: (ctx: better_auth245.AuthContext) => {
+            init: (ctx: better_auth246.AuthContext) => {
               options: {
                 trustedOrigins: string[];
               };
             };
-            onRequest(request: Request, ctx: better_auth245.AuthContext): Promise<{
+            onRequest(request: Request, ctx: better_auth246.AuthContext): Promise<{
               request: Request;
             } | undefined>;
             hooks: {
               after: {
-                matcher(context: better_auth245.HookEndpointContext): boolean;
-                handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
+                matcher(context: better_auth246.HookEndpointContext): boolean;
+                handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>;
               }[];
             };
           } | {
             id: "custom-session";
             endpoints: {
               getSession: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_13 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_20 extends boolean = false>(inputCtx_0: {
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -12538,12 +13654,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_13 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_13] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_20 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_20] extends [true] ? {
                   headers: Headers;
                   response: {
                     user: {
@@ -12561,6 +13677,8 @@ declare const auth: {
                       socialLinks: Record<string, string> | null;
                       bio: string | null;
                       website: string | null;
+                      role: string | null;
+                      roleEndAt: Date | null;
                       deleted: boolean | null;
                     };
                     session: {
@@ -12573,14 +13691,8 @@ declare const auth: {
                       ipAddress?: string | null | undefined | undefined;
                       userAgent?: string | null | undefined | undefined;
                     };
-                    invitation: boolean | {
-                      code: string;
-                      createdAt: Date | null;
-                      usedAt: Date | null;
-                      fromUserId: string;
-                      toUserId: string | null;
-                    } | undefined;
-                    role: "user" | "trial";
+                    role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+                    roleEndAt: Date | null | undefined;
                   } | null;
                 } : {
                   user: {
@@ -12598,6 +13710,8 @@ declare const auth: {
                     socialLinks: Record<string, string> | null;
                     bio: string | null;
                     website: string | null;
+                    role: string | null;
+                    roleEndAt: Date | null;
                     deleted: boolean | null;
                   };
                   session: {
@@ -12610,21 +13724,15 @@ declare const auth: {
                     ipAddress?: string | null | undefined | undefined;
                     userAgent?: string | null | undefined | undefined;
                   };
-                  invitation: boolean | {
-                    code: string;
-                    createdAt: Date | null;
-                    usedAt: Date | null;
-                    fromUserId: string;
-                    toUserId: string | null;
-                  } | undefined;
-                  role: "user" | "trial";
+                  role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+                  roleEndAt: Date | null | undefined;
                 } | null>;
                 options: {
                   method: "GET";
-                  query: zod738.ZodOptional<zod738.ZodObject<{
-                    disableCookieCache: zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>;
-                    disableRefresh: zod738.ZodOptional<zod738.ZodBoolean>;
-                  }, "strip", zod738.ZodTypeAny, {
+                  query: zod1339.ZodOptional<zod1339.ZodObject<{
+                    disableCookieCache: zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>;
+                    disableRefresh: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                  }, "strip", zod1339.ZodTypeAny, {
                     disableCookieCache?: boolean | undefined;
                     disableRefresh?: boolean | undefined;
                   }, {
@@ -12664,7 +13772,7 @@ declare const auth: {
             id: "customGetProviders";
             endpoints: {
               customGetProviders: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0?: ({
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -12679,12 +13787,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_14 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_21 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                   headers: Headers;
                   response: any;
                 } : any>;
@@ -12700,7 +13808,7 @@ declare const auth: {
             id: "getAccountInfo";
             endpoints: {
               getAccountInfo: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0?: ({
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -12715,12 +13823,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_14 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_21 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                   headers: Headers;
                   response: ({
                     id: string;
@@ -12780,7 +13888,7 @@ declare const auth: {
             id: "deleteUserCustom";
             endpoints: {
               deleteUserCustom: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0: {
                   body: {
                     TOTPCode: string;
                   };
@@ -12797,20 +13905,20 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_14 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_21 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                   headers: Headers;
                   response: void;
                 } : void>;
                 options: {
                   method: "POST";
-                  body: zod_v440.ZodObject<{
-                    TOTPCode: zod_v440.ZodString;
-                  }, zod_v4_core41.$strip>;
+                  body: zod_v441.ZodObject<{
+                    TOTPCode: zod_v441.ZodString;
+                  }, zod_v4_core42.$strip>;
                 } & {
                   use: any[];
                 };
@@ -12821,7 +13929,7 @@ declare const auth: {
             id: "oneTimeToken";
             endpoints: {
               generateOneTimeToken: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0?: ({
+                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0?: ({
                   body?: undefined;
                 } & {
                   method?: "GET" | undefined;
@@ -12836,12 +13944,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_14 | undefined;
-                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_21 | undefined;
+                }) | undefined): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                   headers: Headers;
                   response: {
                     token: string;
@@ -12851,7 +13959,7 @@ declare const auth: {
                 }>;
                 options: {
                   method: "GET";
-                  use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                  use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                     session: {
                       session: Record<string, any> & {
                         id: string;
@@ -12880,7 +13988,7 @@ declare const auth: {
                 path: "/one-time-token/generate";
               };
               applyOneTimeToken: {
-                <AsResponse_1 extends boolean = false, ReturnHeaders_14 extends boolean = false>(inputCtx_0: {
+                <AsResponse_1 extends boolean = false, ReturnHeaders_21 extends boolean = false>(inputCtx_0: {
                   body: {
                     token: string;
                   };
@@ -12897,12 +14005,12 @@ declare const auth: {
                 } & {
                   asResponse?: boolean;
                   returnHeaders?: boolean;
-                  use?: better_call37.Middleware[];
+                  use?: better_call38.Middleware[];
                   path?: string;
                 } & {
                   asResponse?: AsResponse_1 | undefined;
-                  returnHeaders?: ReturnHeaders_14 | undefined;
-                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_14] extends [true] ? {
+                  returnHeaders?: ReturnHeaders_21 | undefined;
+                }): Promise<[AsResponse_1] extends [true] ? Response : [ReturnHeaders_21] extends [true] ? {
                   headers: Headers;
                   response: {
                     user: {
@@ -12928,9 +14036,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod738.ZodObject<{
-                    token: zod738.ZodString;
-                  }, "strip", zod738.ZodTypeAny, {
+                  body: zod1339.ZodObject<{
+                    token: zod1339.ZodString;
+                  }, "strip", zod1339.ZodTypeAny, {
                     token: string;
                   }, {
                     token: string;
@@ -12959,7 +14067,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -12974,8 +14082,8 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodRecord<zod738.ZodString, zod738.ZodAny>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        body: zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>;
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -13000,9 +14108,24 @@ declare const auth: {
         }>)[];
         metadata: {
           $Infer: {
-            body: Partial<better_auth245.AdditionalUserFieldsInput<{
+            body: Partial<better_auth246.AdditionalUserFieldsInput<{
               appName: string;
-              database: (options: BetterAuthOptions) => better_auth245.Adapter;
+              database: (options: BetterAuthOptions) => better_auth246.Adapter;
+              databaseHooks: {
+                user: {
+                  create: {
+                    after: (newUser: {
+                      id: string;
+                      name: string;
+                      email: string;
+                      emailVerified: boolean;
+                      createdAt: Date;
+                      updatedAt: Date;
+                      image?: string | null | undefined;
+                    }, context: better_auth246.GenericEndpointContext | undefined) => Promise<void>;
+                  };
+                };
+              };
               advanced: {
                 database: {
                   generateId: false;
@@ -13039,6 +14162,12 @@ declare const auth: {
                   deleted: {
                     type: "boolean";
                   };
+                  role: {
+                    type: "string";
+                  };
+                  roleEndAt: {
+                    type: "date";
+                  };
                 };
                 changeEmail: {
                   enabled: true;
@@ -13046,7 +14175,7 @@ declare const auth: {
                     user,
                     url
                   }: {
-                    user: better_auth245.User;
+                    user: better_auth246.User;
                     newEmail: string;
                     url: string;
                     token: string;
@@ -13082,7 +14211,7 @@ declare const auth: {
                   user,
                   url
                 }: {
-                  user: better_auth245.User;
+                  user: better_auth246.User;
                   url: string;
                   token: string;
                 }): Promise<void>;
@@ -13093,12 +14222,687 @@ declare const auth: {
                   user,
                   url
                 }: {
-                  user: better_auth245.User;
+                  user: better_auth246.User;
                   url: string;
                   token: string;
                 }): Promise<void>;
               };
               plugins: ({
+                id: "stripe";
+                endpoints: {
+                  stripeWebhook: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                      body?: undefined;
+                    } & {
+                      method?: "POST" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: {
+                        success: boolean;
+                      };
+                    } : {
+                      success: boolean;
+                    }>;
+                    options: {
+                      method: "POST";
+                      metadata: {
+                        isAction: boolean;
+                      };
+                      cloneRequest: true;
+                    } & {
+                      use: any[];
+                    };
+                    path: "/stripe/webhook";
+                  };
+                } & {
+                  readonly upgradeSubscription: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                      body: {
+                        plan: string;
+                        metadata?: Record<string, any> | undefined;
+                        annual?: boolean | undefined;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                        seats?: number | undefined;
+                        successUrl?: string | undefined;
+                        cancelUrl?: string | undefined;
+                        returnUrl?: string | undefined;
+                        disableRedirect?: boolean | undefined;
+                      };
+                    } & {
+                      method?: "POST" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: {
+                        url: string;
+                        redirect: boolean;
+                      } | {
+                        redirect: boolean;
+                        id: string;
+                        object: "checkout.session";
+                        adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+                        after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+                        allow_promotion_codes: boolean | null;
+                        amount_subtotal: number | null;
+                        amount_total: number | null;
+                        automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+                        billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+                        cancel_url: string | null;
+                        client_reference_id: string | null;
+                        client_secret: string | null;
+                        collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+                        consent: Stripe.Checkout.Session.Consent | null;
+                        consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+                        created: number;
+                        currency: string | null;
+                        currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+                        custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+                        custom_text: Stripe.Checkout.Session.CustomText;
+                        customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+                        customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+                        customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+                        customer_email: string | null;
+                        discounts: Array<Stripe.Checkout.Session.Discount> | null;
+                        expires_at: number;
+                        invoice: string | Stripe.Invoice | null;
+                        invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+                        line_items?: Stripe.ApiList<Stripe.LineItem>;
+                        livemode: boolean;
+                        locale: Stripe.Checkout.Session.Locale | null;
+                        metadata: Stripe.Metadata | null;
+                        mode: Stripe.Checkout.Session.Mode;
+                        optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+                        payment_intent: string | Stripe.PaymentIntent | null;
+                        payment_link: string | Stripe.PaymentLink | null;
+                        payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+                        payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+                        payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+                        payment_method_types: Array<string>;
+                        payment_status: Stripe.Checkout.Session.PaymentStatus;
+                        permissions: Stripe.Checkout.Session.Permissions | null;
+                        phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+                        presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+                        recovered_from: string | null;
+                        redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+                        return_url?: string;
+                        saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+                        setup_intent: string | Stripe.SetupIntent | null;
+                        shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+                        shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+                        shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+                        status: Stripe.Checkout.Session.Status | null;
+                        submit_type: Stripe.Checkout.Session.SubmitType | null;
+                        subscription: string | Stripe.Subscription | null;
+                        success_url: string | null;
+                        tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+                        total_details: Stripe.Checkout.Session.TotalDetails | null;
+                        ui_mode: Stripe.Checkout.Session.UiMode | null;
+                        url: string | null;
+                        lastResponse: {
+                          headers: {
+                            [key: string]: string;
+                          };
+                          requestId: string;
+                          statusCode: number;
+                          apiVersion?: string;
+                          idempotencyKey?: string;
+                          stripeAccount?: string;
+                        };
+                      };
+                    } : {
+                      url: string;
+                      redirect: boolean;
+                    } | {
+                      redirect: boolean;
+                      id: string;
+                      object: "checkout.session";
+                      adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+                      after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+                      allow_promotion_codes: boolean | null;
+                      amount_subtotal: number | null;
+                      amount_total: number | null;
+                      automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+                      billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+                      cancel_url: string | null;
+                      client_reference_id: string | null;
+                      client_secret: string | null;
+                      collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+                      consent: Stripe.Checkout.Session.Consent | null;
+                      consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+                      created: number;
+                      currency: string | null;
+                      currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+                      custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+                      custom_text: Stripe.Checkout.Session.CustomText;
+                      customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+                      customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+                      customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+                      customer_email: string | null;
+                      discounts: Array<Stripe.Checkout.Session.Discount> | null;
+                      expires_at: number;
+                      invoice: string | Stripe.Invoice | null;
+                      invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+                      line_items?: Stripe.ApiList<Stripe.LineItem>;
+                      livemode: boolean;
+                      locale: Stripe.Checkout.Session.Locale | null;
+                      metadata: Stripe.Metadata | null;
+                      mode: Stripe.Checkout.Session.Mode;
+                      optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+                      payment_intent: string | Stripe.PaymentIntent | null;
+                      payment_link: string | Stripe.PaymentLink | null;
+                      payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+                      payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+                      payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+                      payment_method_types: Array<string>;
+                      payment_status: Stripe.Checkout.Session.PaymentStatus;
+                      permissions: Stripe.Checkout.Session.Permissions | null;
+                      phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+                      presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+                      recovered_from: string | null;
+                      redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+                      return_url?: string;
+                      saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+                      setup_intent: string | Stripe.SetupIntent | null;
+                      shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+                      shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+                      shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+                      status: Stripe.Checkout.Session.Status | null;
+                      submit_type: Stripe.Checkout.Session.SubmitType | null;
+                      subscription: string | Stripe.Subscription | null;
+                      success_url: string | null;
+                      tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+                      total_details: Stripe.Checkout.Session.TotalDetails | null;
+                      ui_mode: Stripe.Checkout.Session.UiMode | null;
+                      url: string | null;
+                      lastResponse: {
+                        headers: {
+                          [key: string]: string;
+                        };
+                        requestId: string;
+                        statusCode: number;
+                        apiVersion?: string;
+                        idempotencyKey?: string;
+                        stripeAccount?: string;
+                      };
+                    }>;
+                    options: {
+                      method: "POST";
+                      body: zod1339.ZodObject<{
+                        plan: zod1339.ZodString;
+                        annual: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                        referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                        subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                        metadata: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                        seats: zod1339.ZodOptional<zod1339.ZodNumber>;
+                        successUrl: zod1339.ZodDefault<zod1339.ZodString>;
+                        cancelUrl: zod1339.ZodDefault<zod1339.ZodString>;
+                        returnUrl: zod1339.ZodOptional<zod1339.ZodString>;
+                        disableRedirect: zod1339.ZodDefault<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
+                        plan: string;
+                        successUrl: string;
+                        cancelUrl: string;
+                        disableRedirect: boolean;
+                        metadata?: Record<string, any> | undefined;
+                        annual?: boolean | undefined;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                        seats?: number | undefined;
+                        returnUrl?: string | undefined;
+                      }, {
+                        plan: string;
+                        metadata?: Record<string, any> | undefined;
+                        annual?: boolean | undefined;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                        seats?: number | undefined;
+                        successUrl?: string | undefined;
+                        cancelUrl?: string | undefined;
+                        returnUrl?: string | undefined;
+                        disableRedirect?: boolean | undefined;
+                      }>;
+                      use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                        session: {
+                          session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                          };
+                          user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                          };
+                        };
+                      }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/upgrade";
+                  };
+                  readonly cancelSubscriptionCallback: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                      body?: undefined;
+                    } & {
+                      method?: "GET" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: never;
+                    } : never>;
+                    options: {
+                      method: "GET";
+                      query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/cancel/callback";
+                  };
+                  readonly cancelSubscription: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                      body: {
+                        returnUrl: string;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      };
+                    } & {
+                      method?: "POST" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: {
+                        url: string;
+                        redirect: boolean;
+                      };
+                    } : {
+                      url: string;
+                      redirect: boolean;
+                    }>;
+                    options: {
+                      method: "POST";
+                      body: zod1339.ZodObject<{
+                        referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                        subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                        returnUrl: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
+                        returnUrl: string;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      }, {
+                        returnUrl: string;
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      }>;
+                      use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                        session: {
+                          session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                          };
+                          user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                          };
+                        };
+                      }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/cancel";
+                  };
+                  readonly restoreSubscription: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+                      body: {
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      };
+                    } & {
+                      method?: "POST" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: Stripe.Response<Stripe.Subscription>;
+                    } : Stripe.Response<Stripe.Subscription>>;
+                    options: {
+                      method: "POST";
+                      body: zod1339.ZodObject<{
+                        referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                        subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+                      }, "strip", zod1339.ZodTypeAny, {
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      }, {
+                        referenceId?: string | undefined;
+                        subscriptionId?: string | undefined;
+                      }>;
+                      use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                        session: {
+                          session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                          };
+                          user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                          };
+                        };
+                      }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/restore";
+                  };
+                  readonly listActiveSubscriptions: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                      body?: undefined;
+                    } & {
+                      method?: "GET" | undefined;
+                    } & {
+                      query?: {
+                        referenceId?: string | undefined;
+                      } | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: {
+                        limits: Record<string, number> | undefined;
+                        priceId: string | undefined;
+                        id: string;
+                        plan: string;
+                        stripeCustomerId?: string;
+                        stripeSubscriptionId?: string;
+                        trialStart?: Date;
+                        trialEnd?: Date;
+                        referenceId: string;
+                        status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+                        periodStart?: Date;
+                        periodEnd?: Date;
+                        cancelAtPeriodEnd?: boolean;
+                        groupId?: string;
+                        seats?: number;
+                      }[];
+                    } : {
+                      limits: Record<string, number> | undefined;
+                      priceId: string | undefined;
+                      id: string;
+                      plan: string;
+                      stripeCustomerId?: string;
+                      stripeSubscriptionId?: string;
+                      trialStart?: Date;
+                      trialEnd?: Date;
+                      referenceId: string;
+                      status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+                      periodStart?: Date;
+                      periodEnd?: Date;
+                      cancelAtPeriodEnd?: boolean;
+                      groupId?: string;
+                      seats?: number;
+                    }[]>;
+                    options: {
+                      method: "GET";
+                      query: zod1339.ZodOptional<zod1339.ZodObject<{
+                        referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+                      }, "strip", zod1339.ZodTypeAny, {
+                        referenceId?: string | undefined;
+                      }, {
+                        referenceId?: string | undefined;
+                      }>>;
+                      use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+                        session: {
+                          session: Record<string, any> & {
+                            id: string;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            userId: string;
+                            expiresAt: Date;
+                            token: string;
+                            ipAddress?: string | null | undefined;
+                            userAgent?: string | null | undefined;
+                          };
+                          user: Record<string, any> & {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                          };
+                        };
+                      }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/list";
+                  };
+                  readonly subscriptionSuccess: {
+                    <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+                      body?: undefined;
+                    } & {
+                      method?: "GET" | undefined;
+                    } & {
+                      query?: Record<string, any> | undefined;
+                    } & {
+                      params?: Record<string, any>;
+                    } & {
+                      request?: Request;
+                    } & {
+                      headers?: HeadersInit;
+                    } & {
+                      asResponse?: boolean;
+                      returnHeaders?: boolean;
+                      use?: better_call38.Middleware[];
+                      path?: string;
+                    } & {
+                      asResponse?: AsResponse | undefined;
+                      returnHeaders?: ReturnHeaders | undefined;
+                    }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+                      headers: Headers;
+                      response: better_call38.APIError;
+                    } : better_call38.APIError>;
+                    options: {
+                      method: "GET";
+                      query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+                    } & {
+                      use: any[];
+                    };
+                    path: "/subscription/success";
+                  };
+                };
+                init(ctx: better_auth246.AuthContext): {
+                  options: {
+                    databaseHooks: {
+                      user: {
+                        create: {
+                          after(user: {
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            image?: string | null | undefined;
+                          }, ctx: better_auth246.GenericEndpointContext | undefined): Promise<void>;
+                        };
+                      };
+                    };
+                  };
+                };
+                schema: {
+                  user: {
+                    fields: {
+                      stripeCustomerId: {
+                        type: "string";
+                        required: false;
+                      };
+                    };
+                  };
+                  subscription?: {
+                    fields: {
+                      plan: {
+                        type: "string";
+                        required: true;
+                      };
+                      referenceId: {
+                        type: "string";
+                        required: true;
+                      };
+                      stripeCustomerId: {
+                        type: "string";
+                        required: false;
+                      };
+                      stripeSubscriptionId: {
+                        type: "string";
+                        required: false;
+                      };
+                      status: {
+                        type: "string";
+                        defaultValue: string;
+                      };
+                      periodStart: {
+                        type: "date";
+                        required: false;
+                      };
+                      periodEnd: {
+                        type: "date";
+                        required: false;
+                      };
+                      cancelAtPeriodEnd: {
+                        type: "boolean";
+                        required: false;
+                        defaultValue: false;
+                      };
+                      seats: {
+                        type: "number";
+                        required: false;
+                      };
+                    };
+                  } | undefined;
+                };
+              } | {
                 id: "open-api";
                 endpoints: {
                   generateOpenAPISchema: {
@@ -13117,7 +14921,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13158,7 +14962,7 @@ declare const auth: {
                           name: string;
                           description: string;
                         }[];
-                        paths: Record<string, better_auth_plugins250.Path>;
+                        paths: Record<string, better_auth_plugins332.Path>;
                       };
                     } : {
                       openapi: string;
@@ -13194,7 +14998,7 @@ declare const auth: {
                         name: string;
                         description: string;
                       }[];
-                      paths: Record<string, better_auth_plugins250.Path>;
+                      paths: Record<string, better_auth_plugins332.Path>;
                     }>;
                     options: {
                       method: "GET";
@@ -13219,7 +15023,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13261,7 +15065,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13278,17 +15082,17 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        password: zod738.ZodString;
-                        issuer: zod738.ZodOptional<zod738.ZodString>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        password: zod1339.ZodString;
+                        issuer: zod1339.ZodOptional<zod1339.ZodString>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         password: string;
                         issuer?: string | undefined;
                       }, {
                         password: string;
                         issuer?: string | undefined;
                       }>;
-                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13365,7 +15169,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13380,14 +15184,14 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        password: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        password: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
                       }>;
-                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13458,7 +15262,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13491,11 +15295,11 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        code: zod738.ZodString;
-                        disableSession: zod738.ZodOptional<zod738.ZodBoolean>;
-                        trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        code: zod1339.ZodString;
+                        disableSession: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                        trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                         disableSession?: boolean | undefined;
@@ -13619,7 +15423,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13636,14 +15440,14 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        password: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        password: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
                       }>;
-                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -13721,7 +15525,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13738,9 +15542,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "GET";
-                      body: zod738.ZodObject<{
-                        userId: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        userId: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         userId: string;
                       }, {
                         userId: string;
@@ -13771,7 +15575,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13786,9 +15590,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodOptional<zod738.ZodObject<{
-                        trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodOptional<zod1339.ZodObject<{
+                        trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         trustDevice?: boolean | undefined;
                       }, {
                         trustDevice?: boolean | undefined;
@@ -13840,7 +15644,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13873,10 +15677,10 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        code: zod738.ZodString;
-                        trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        code: zod1339.ZodString;
+                        trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                       }, {
@@ -13974,7 +15778,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -13989,9 +15793,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        secret: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        secret: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         secret: string;
                       }, {
                         secret: string;
@@ -14043,7 +15847,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14058,7 +15862,7 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -14081,9 +15885,9 @@ declare const auth: {
                           };
                         };
                       }>)[];
-                      body: zod738.ZodObject<{
-                        password: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        password: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
@@ -14135,7 +15939,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14168,10 +15972,10 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        code: zod738.ZodString;
-                        trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        code: zod1339.ZodString;
+                        trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                       }, {
@@ -14207,11 +16011,11 @@ declare const auth: {
                     path: "/two-factor/verify-totp";
                   };
                 };
-                options: better_auth_plugins250.TwoFactorOptions | undefined;
+                options: better_auth_plugins332.TwoFactorOptions | undefined;
                 hooks: {
                   after: {
-                    matcher(context: better_auth245.HookEndpointContext): boolean;
-                    handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                    matcher(context: better_auth246.HookEndpointContext): boolean;
+                    handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                       twoFactorRedirect: boolean;
                     } | undefined>;
                   }[];
@@ -14269,18 +16073,18 @@ declare const auth: {
                 };
               } | {
                 id: "expo";
-                init: (ctx: better_auth245.AuthContext) => {
+                init: (ctx: better_auth246.AuthContext) => {
                   options: {
                     trustedOrigins: string[];
                   };
                 };
-                onRequest(request: Request, ctx: better_auth245.AuthContext): Promise<{
+                onRequest(request: Request, ctx: better_auth246.AuthContext): Promise<{
                   request: Request;
                 } | undefined>;
                 hooks: {
                   after: {
-                    matcher(context: better_auth245.HookEndpointContext): boolean;
-                    handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
+                    matcher(context: better_auth246.HookEndpointContext): boolean;
+                    handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>;
                   }[];
                 };
               } | {
@@ -14305,7 +16109,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14328,6 +16132,8 @@ declare const auth: {
                           socialLinks: Record<string, string> | null;
                           bio: string | null;
                           website: string | null;
+                          role: string | null;
+                          roleEndAt: Date | null;
                           deleted: boolean | null;
                         };
                         session: {
@@ -14340,14 +16146,8 @@ declare const auth: {
                           ipAddress?: string | null | undefined | undefined;
                           userAgent?: string | null | undefined | undefined;
                         };
-                        invitation: boolean | {
-                          code: string;
-                          createdAt: Date | null;
-                          usedAt: Date | null;
-                          fromUserId: string;
-                          toUserId: string | null;
-                        } | undefined;
-                        role: "user" | "trial";
+                        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+                        roleEndAt: Date | null | undefined;
                       } | null;
                     } : {
                       user: {
@@ -14365,6 +16165,8 @@ declare const auth: {
                         socialLinks: Record<string, string> | null;
                         bio: string | null;
                         website: string | null;
+                        role: string | null;
+                        roleEndAt: Date | null;
                         deleted: boolean | null;
                       };
                       session: {
@@ -14377,21 +16179,15 @@ declare const auth: {
                         ipAddress?: string | null | undefined | undefined;
                         userAgent?: string | null | undefined | undefined;
                       };
-                      invitation: boolean | {
-                        code: string;
-                        createdAt: Date | null;
-                        usedAt: Date | null;
-                        fromUserId: string;
-                        toUserId: string | null;
-                      } | undefined;
-                      role: "user" | "trial";
+                      role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+                      roleEndAt: Date | null | undefined;
                     } | null>;
                     options: {
                       method: "GET";
-                      query: zod738.ZodOptional<zod738.ZodObject<{
-                        disableCookieCache: zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>;
-                        disableRefresh: zod738.ZodOptional<zod738.ZodBoolean>;
-                      }, "strip", zod738.ZodTypeAny, {
+                      query: zod1339.ZodOptional<zod1339.ZodObject<{
+                        disableCookieCache: zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>;
+                        disableRefresh: zod1339.ZodOptional<zod1339.ZodBoolean>;
+                      }, "strip", zod1339.ZodTypeAny, {
                         disableCookieCache?: boolean | undefined;
                         disableRefresh?: boolean | undefined;
                       }, {
@@ -14446,7 +16242,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14482,7 +16278,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14564,7 +16360,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14575,9 +16371,9 @@ declare const auth: {
                     } : void>;
                     options: {
                       method: "POST";
-                      body: zod_v440.ZodObject<{
-                        TOTPCode: zod_v440.ZodString;
-                      }, zod_v4_core41.$strip>;
+                      body: zod_v441.ZodObject<{
+                        TOTPCode: zod_v441.ZodString;
+                      }, zod_v4_core42.$strip>;
                     } & {
                       use: any[];
                     };
@@ -14603,7 +16399,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14618,7 +16414,7 @@ declare const auth: {
                     }>;
                     options: {
                       method: "GET";
-                      use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+                      use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
                         session: {
                           session: Record<string, any> & {
                             id: string;
@@ -14664,7 +16460,7 @@ declare const auth: {
                     } & {
                       asResponse?: boolean;
                       returnHeaders?: boolean;
-                      use?: better_call37.Middleware[];
+                      use?: better_call38.Middleware[];
                       path?: string;
                     } & {
                       asResponse?: AsResponse | undefined;
@@ -14695,9 +16491,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod738.ZodObject<{
-                        token: zod738.ZodString;
-                      }, "strip", zod738.ZodTypeAny, {
+                      body: zod1339.ZodObject<{
+                        token: zod1339.ZodString;
+                      }, "strip", zod1339.ZodTypeAny, {
                         token: string;
                       }, {
                         token: string;
@@ -14780,7 +16576,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -14797,7 +16593,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -14820,11 +16616,11 @@ declare const auth: {
             };
           };
         }>)[];
-        body: zod738.ZodObject<{
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-          password: zod738.ZodOptional<zod738.ZodString>;
-          token: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          password: zod1339.ZodOptional<zod1339.ZodString>;
+          token: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           password?: string | undefined;
           token?: string | undefined;
           callbackURL?: string | undefined;
@@ -14887,7 +16683,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -14898,14 +16694,14 @@ declare const auth: {
       } : never>;
       options: {
         method: "GET";
-        query: zod738.ZodObject<{
-          callbackURL: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodObject<{
+          callbackURL: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           callbackURL: string;
         }, {
           callbackURL: string;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -14949,14 +16745,14 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
         returnHeaders?: ReturnHeaders | undefined;
       }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
         headers: Headers;
-        response: better_auth245.Prettify<{
+        response: better_auth246.Prettify<{
           id: string;
           createdAt: Date;
           updatedAt: Date;
@@ -14966,7 +16762,7 @@ declare const auth: {
           ipAddress?: string | null | undefined | undefined;
           userAgent?: string | null | undefined | undefined;
         }>[];
-      } : better_auth245.Prettify<{
+      } : better_auth246.Prettify<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -14978,7 +16774,7 @@ declare const auth: {
       }>[]>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15045,7 +16841,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15060,14 +16856,14 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          token: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          token: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           token: string;
         }, {
           token: string;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15152,7 +16948,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15167,7 +16963,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15236,7 +17032,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15252,7 +17048,7 @@ declare const auth: {
       options: {
         method: "POST";
         requireHeaders: true;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15324,7 +17120,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15342,11 +17138,11 @@ declare const auth: {
       options: {
         method: "POST";
         requireHeaders: true;
-        body: zod738.ZodObject<{
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-          provider: zod738.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
-          scopes: zod738.ZodOptional<zod738.ZodArray<zod738.ZodString, "many">>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+          provider: zod1339.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
+          scopes: zod1339.ZodOptional<zod1339.ZodArray<zod1339.ZodString, "many">>;
+        }, "strip", zod1339.ZodTypeAny, {
           provider: "apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom";
           scopes?: string[] | undefined;
           callbackURL?: string | undefined;
@@ -15355,7 +17151,7 @@ declare const auth: {
           scopes?: string[] | undefined;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15427,7 +17223,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15452,7 +17248,7 @@ declare const auth: {
       }[]>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15545,7 +17341,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15562,17 +17358,17 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        query: zod738.ZodObject<{
-          token: zod738.ZodString;
-          callbackURL: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodObject<{
+          token: zod1339.ZodString;
+          callbackURL: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           token: string;
           callbackURL?: string | undefined;
         }, {
           token: string;
           callbackURL?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>)[];
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
         metadata: {
           openapi: {
             description: string;
@@ -15626,7 +17422,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15641,17 +17437,17 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          providerId: zod738.ZodString;
-          accountId: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          providerId: zod1339.ZodString;
+          accountId: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
         }, {
           providerId: string;
           accountId?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -15721,22 +17517,22 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
         returnHeaders?: ReturnHeaders | undefined;
       }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
         headers: Headers;
-        response: better_auth245.OAuth2Tokens;
-      } : better_auth245.OAuth2Tokens>;
+        response: better_auth246.OAuth2Tokens;
+      } : better_auth246.OAuth2Tokens>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          providerId: zod738.ZodString;
-          accountId: zod738.ZodOptional<zod738.ZodString>;
-          userId: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          providerId: zod1339.ZodString;
+          accountId: zod1339.ZodOptional<zod1339.ZodString>;
+          userId: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
           userId?: string | undefined;
@@ -15812,7 +17608,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15833,11 +17629,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          providerId: zod738.ZodString;
-          accountId: zod738.ZodOptional<zod738.ZodString>;
-          userId: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          providerId: zod1339.ZodString;
+          accountId: zod1339.ZodOptional<zod1339.ZodString>;
+          userId: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
           userId?: string | undefined;
@@ -15910,7 +17706,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -15951,7 +17747,7 @@ declare const auth: {
             name: string;
             description: string;
           }[];
-          paths: Record<string, better_auth_plugins250.Path>;
+          paths: Record<string, better_auth_plugins332.Path>;
         };
       } : {
         openapi: string;
@@ -15987,7 +17783,7 @@ declare const auth: {
           name: string;
           description: string;
         }[];
-        paths: Record<string, better_auth_plugins250.Path>;
+        paths: Record<string, better_auth_plugins332.Path>;
       }>;
       options: {
         method: "GET";
@@ -16012,7 +17808,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16048,7 +17844,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16081,7 +17877,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16160,7 +17956,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16171,9 +17967,9 @@ declare const auth: {
       } : void>;
       options: {
         method: "POST";
-        body: zod_v440.ZodObject<{
-          TOTPCode: zod_v440.ZodString;
-        }, zod_v4_core41.$strip>;
+        body: zod_v441.ZodObject<{
+          TOTPCode: zod_v441.ZodString;
+        }, zod_v4_core42.$strip>;
       } & {
         use: any[];
       };
@@ -16196,7 +17992,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16211,7 +18007,7 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16257,7 +18053,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16288,9 +18084,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          token: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          token: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           token: string;
         }, {
           token: string;
@@ -16299,6 +18095,608 @@ declare const auth: {
         use: any[];
       };
       path: "/one-time-token/apply";
+    };
+  } & {
+    stripeWebhook: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+        body?: undefined;
+      } & {
+        method?: "POST" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: {
+          success: boolean;
+        };
+      } : {
+        success: boolean;
+      }>;
+      options: {
+        method: "POST";
+        metadata: {
+          isAction: boolean;
+        };
+        cloneRequest: true;
+      } & {
+        use: any[];
+      };
+      path: "/stripe/webhook";
+    };
+  } & {
+    readonly upgradeSubscription: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+        body: {
+          plan: string;
+          metadata?: Record<string, any> | undefined;
+          annual?: boolean | undefined;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+          seats?: number | undefined;
+          successUrl?: string | undefined;
+          cancelUrl?: string | undefined;
+          returnUrl?: string | undefined;
+          disableRedirect?: boolean | undefined;
+        };
+      } & {
+        method?: "POST" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: {
+          url: string;
+          redirect: boolean;
+        } | {
+          redirect: boolean;
+          id: string;
+          object: "checkout.session";
+          adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+          after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+          allow_promotion_codes: boolean | null;
+          amount_subtotal: number | null;
+          amount_total: number | null;
+          automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+          billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+          cancel_url: string | null;
+          client_reference_id: string | null;
+          client_secret: string | null;
+          collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+          consent: Stripe.Checkout.Session.Consent | null;
+          consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+          created: number;
+          currency: string | null;
+          currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+          custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+          custom_text: Stripe.Checkout.Session.CustomText;
+          customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+          customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+          customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+          customer_email: string | null;
+          discounts: Array<Stripe.Checkout.Session.Discount> | null;
+          expires_at: number;
+          invoice: string | Stripe.Invoice | null;
+          invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+          line_items?: Stripe.ApiList<Stripe.LineItem>;
+          livemode: boolean;
+          locale: Stripe.Checkout.Session.Locale | null;
+          metadata: Stripe.Metadata | null;
+          mode: Stripe.Checkout.Session.Mode;
+          optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+          payment_intent: string | Stripe.PaymentIntent | null;
+          payment_link: string | Stripe.PaymentLink | null;
+          payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+          payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+          payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+          payment_method_types: Array<string>;
+          payment_status: Stripe.Checkout.Session.PaymentStatus;
+          permissions: Stripe.Checkout.Session.Permissions | null;
+          phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+          presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+          recovered_from: string | null;
+          redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+          return_url?: string;
+          saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+          setup_intent: string | Stripe.SetupIntent | null;
+          shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+          shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+          shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+          status: Stripe.Checkout.Session.Status | null;
+          submit_type: Stripe.Checkout.Session.SubmitType | null;
+          subscription: string | Stripe.Subscription | null;
+          success_url: string | null;
+          tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+          total_details: Stripe.Checkout.Session.TotalDetails | null;
+          ui_mode: Stripe.Checkout.Session.UiMode | null;
+          url: string | null;
+          lastResponse: {
+            headers: {
+              [key: string]: string;
+            };
+            requestId: string;
+            statusCode: number;
+            apiVersion?: string;
+            idempotencyKey?: string;
+            stripeAccount?: string;
+          };
+        };
+      } : {
+        url: string;
+        redirect: boolean;
+      } | {
+        redirect: boolean;
+        id: string;
+        object: "checkout.session";
+        adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+        after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+        allow_promotion_codes: boolean | null;
+        amount_subtotal: number | null;
+        amount_total: number | null;
+        automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+        billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+        cancel_url: string | null;
+        client_reference_id: string | null;
+        client_secret: string | null;
+        collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+        consent: Stripe.Checkout.Session.Consent | null;
+        consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+        created: number;
+        currency: string | null;
+        currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+        custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+        custom_text: Stripe.Checkout.Session.CustomText;
+        customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+        customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+        customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+        customer_email: string | null;
+        discounts: Array<Stripe.Checkout.Session.Discount> | null;
+        expires_at: number;
+        invoice: string | Stripe.Invoice | null;
+        invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+        line_items?: Stripe.ApiList<Stripe.LineItem>;
+        livemode: boolean;
+        locale: Stripe.Checkout.Session.Locale | null;
+        metadata: Stripe.Metadata | null;
+        mode: Stripe.Checkout.Session.Mode;
+        optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+        payment_intent: string | Stripe.PaymentIntent | null;
+        payment_link: string | Stripe.PaymentLink | null;
+        payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+        payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+        payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+        payment_method_types: Array<string>;
+        payment_status: Stripe.Checkout.Session.PaymentStatus;
+        permissions: Stripe.Checkout.Session.Permissions | null;
+        phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+        presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+        recovered_from: string | null;
+        redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+        return_url?: string;
+        saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+        setup_intent: string | Stripe.SetupIntent | null;
+        shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+        shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+        shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+        status: Stripe.Checkout.Session.Status | null;
+        submit_type: Stripe.Checkout.Session.SubmitType | null;
+        subscription: string | Stripe.Subscription | null;
+        success_url: string | null;
+        tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+        total_details: Stripe.Checkout.Session.TotalDetails | null;
+        ui_mode: Stripe.Checkout.Session.UiMode | null;
+        url: string | null;
+        lastResponse: {
+          headers: {
+            [key: string]: string;
+          };
+          requestId: string;
+          statusCode: number;
+          apiVersion?: string;
+          idempotencyKey?: string;
+          stripeAccount?: string;
+        };
+      }>;
+      options: {
+        method: "POST";
+        body: zod1339.ZodObject<{
+          plan: zod1339.ZodString;
+          annual: zod1339.ZodOptional<zod1339.ZodBoolean>;
+          referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+          subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+          metadata: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+          seats: zod1339.ZodOptional<zod1339.ZodNumber>;
+          successUrl: zod1339.ZodDefault<zod1339.ZodString>;
+          cancelUrl: zod1339.ZodDefault<zod1339.ZodString>;
+          returnUrl: zod1339.ZodOptional<zod1339.ZodString>;
+          disableRedirect: zod1339.ZodDefault<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
+          plan: string;
+          successUrl: string;
+          cancelUrl: string;
+          disableRedirect: boolean;
+          metadata?: Record<string, any> | undefined;
+          annual?: boolean | undefined;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+          seats?: number | undefined;
+          returnUrl?: string | undefined;
+        }, {
+          plan: string;
+          metadata?: Record<string, any> | undefined;
+          annual?: boolean | undefined;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+          seats?: number | undefined;
+          successUrl?: string | undefined;
+          cancelUrl?: string | undefined;
+          returnUrl?: string | undefined;
+          disableRedirect?: boolean | undefined;
+        }>;
+        use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+          session: {
+            session: Record<string, any> & {
+              id: string;
+              createdAt: Date;
+              updatedAt: Date;
+              userId: string;
+              expiresAt: Date;
+              token: string;
+              ipAddress?: string | null | undefined;
+              userAgent?: string | null | undefined;
+            };
+            user: Record<string, any> & {
+              id: string;
+              name: string;
+              email: string;
+              emailVerified: boolean;
+              createdAt: Date;
+              updatedAt: Date;
+              image?: string | null | undefined;
+            };
+          };
+        }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/upgrade";
+    };
+    readonly cancelSubscriptionCallback: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+        body?: undefined;
+      } & {
+        method?: "GET" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: never;
+      } : never>;
+      options: {
+        method: "GET";
+        query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/cancel/callback";
+    };
+    readonly cancelSubscription: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+        body: {
+          returnUrl: string;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        };
+      } & {
+        method?: "POST" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: {
+          url: string;
+          redirect: boolean;
+        };
+      } : {
+        url: string;
+        redirect: boolean;
+      }>;
+      options: {
+        method: "POST";
+        body: zod1339.ZodObject<{
+          referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+          subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+          returnUrl: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
+          returnUrl: string;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        }, {
+          returnUrl: string;
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        }>;
+        use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+          session: {
+            session: Record<string, any> & {
+              id: string;
+              createdAt: Date;
+              updatedAt: Date;
+              userId: string;
+              expiresAt: Date;
+              token: string;
+              ipAddress?: string | null | undefined;
+              userAgent?: string | null | undefined;
+            };
+            user: Record<string, any> & {
+              id: string;
+              name: string;
+              email: string;
+              emailVerified: boolean;
+              createdAt: Date;
+              updatedAt: Date;
+              image?: string | null | undefined;
+            };
+          };
+        }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/cancel";
+    };
+    readonly restoreSubscription: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+        body: {
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        };
+      } & {
+        method?: "POST" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: Stripe.Response<Stripe.Subscription>;
+      } : Stripe.Response<Stripe.Subscription>>;
+      options: {
+        method: "POST";
+        body: zod1339.ZodObject<{
+          referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+          subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        }, {
+          referenceId?: string | undefined;
+          subscriptionId?: string | undefined;
+        }>;
+        use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+          session: {
+            session: Record<string, any> & {
+              id: string;
+              createdAt: Date;
+              updatedAt: Date;
+              userId: string;
+              expiresAt: Date;
+              token: string;
+              ipAddress?: string | null | undefined;
+              userAgent?: string | null | undefined;
+            };
+            user: Record<string, any> & {
+              id: string;
+              name: string;
+              email: string;
+              emailVerified: boolean;
+              createdAt: Date;
+              updatedAt: Date;
+              image?: string | null | undefined;
+            };
+          };
+        }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/restore";
+    };
+    readonly listActiveSubscriptions: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+        body?: undefined;
+      } & {
+        method?: "GET" | undefined;
+      } & {
+        query?: {
+          referenceId?: string | undefined;
+        } | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: {
+          limits: Record<string, number> | undefined;
+          priceId: string | undefined;
+          id: string;
+          plan: string;
+          stripeCustomerId?: string;
+          stripeSubscriptionId?: string;
+          trialStart?: Date;
+          trialEnd?: Date;
+          referenceId: string;
+          status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+          periodStart?: Date;
+          periodEnd?: Date;
+          cancelAtPeriodEnd?: boolean;
+          groupId?: string;
+          seats?: number;
+        }[];
+      } : {
+        limits: Record<string, number> | undefined;
+        priceId: string | undefined;
+        id: string;
+        plan: string;
+        stripeCustomerId?: string;
+        stripeSubscriptionId?: string;
+        trialStart?: Date;
+        trialEnd?: Date;
+        referenceId: string;
+        status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+        periodStart?: Date;
+        periodEnd?: Date;
+        cancelAtPeriodEnd?: boolean;
+        groupId?: string;
+        seats?: number;
+      }[]>;
+      options: {
+        method: "GET";
+        query: zod1339.ZodOptional<zod1339.ZodObject<{
+          referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
+          referenceId?: string | undefined;
+        }, {
+          referenceId?: string | undefined;
+        }>>;
+        use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+          session: {
+            session: Record<string, any> & {
+              id: string;
+              createdAt: Date;
+              updatedAt: Date;
+              userId: string;
+              expiresAt: Date;
+              token: string;
+              ipAddress?: string | null | undefined;
+              userAgent?: string | null | undefined;
+            };
+            user: Record<string, any> & {
+              id: string;
+              name: string;
+              email: string;
+              emailVerified: boolean;
+              createdAt: Date;
+              updatedAt: Date;
+              image?: string | null | undefined;
+            };
+          };
+        }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/list";
+    };
+    readonly subscriptionSuccess: {
+      <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+        body?: undefined;
+      } & {
+        method?: "GET" | undefined;
+      } & {
+        query?: Record<string, any> | undefined;
+      } & {
+        params?: Record<string, any>;
+      } & {
+        request?: Request;
+      } & {
+        headers?: HeadersInit;
+      } & {
+        asResponse?: boolean;
+        returnHeaders?: boolean;
+        use?: better_call38.Middleware[];
+        path?: string;
+      } & {
+        asResponse?: AsResponse | undefined;
+        returnHeaders?: ReturnHeaders | undefined;
+      }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+        headers: Headers;
+        response: better_call38.APIError;
+      } : better_call38.APIError>;
+      options: {
+        method: "GET";
+        query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+      } & {
+        use: any[];
+      };
+      path: "/subscription/success";
     };
   } & {
     enableTwoFactor: {
@@ -16320,7 +18718,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16337,17 +18735,17 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          password: zod738.ZodString;
-          issuer: zod738.ZodOptional<zod738.ZodString>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          password: zod1339.ZodString;
+          issuer: zod1339.ZodOptional<zod1339.ZodString>;
+        }, "strip", zod1339.ZodTypeAny, {
           password: string;
           issuer?: string | undefined;
         }, {
           password: string;
           issuer?: string | undefined;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16424,7 +18822,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16439,14 +18837,14 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          password: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          password: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           password: string;
         }, {
           password: string;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16517,7 +18915,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16550,11 +18948,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          code: zod738.ZodString;
-          disableSession: zod738.ZodOptional<zod738.ZodBoolean>;
-          trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          code: zod1339.ZodString;
+          disableSession: zod1339.ZodOptional<zod1339.ZodBoolean>;
+          trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
           disableSession?: boolean | undefined;
@@ -16678,7 +19076,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16695,14 +19093,14 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          password: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          password: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           password: string;
         }, {
           password: string;
         }>;
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -16780,7 +19178,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16797,9 +19195,9 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        body: zod738.ZodObject<{
-          userId: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          userId: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           userId: string;
         }, {
           userId: string;
@@ -16830,7 +19228,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16845,9 +19243,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodOptional<zod738.ZodObject<{
-          trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodOptional<zod1339.ZodObject<{
+          trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           trustDevice?: boolean | undefined;
         }, {
           trustDevice?: boolean | undefined;
@@ -16899,7 +19297,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -16932,10 +19330,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          code: zod738.ZodString;
-          trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          code: zod1339.ZodString;
+          trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
         }, {
@@ -17033,7 +19431,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17048,9 +19446,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          secret: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          secret: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           secret: string;
         }, {
           secret: string;
@@ -17102,7 +19500,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17117,7 +19515,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+        use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
               id: string;
@@ -17140,9 +19538,9 @@ declare const auth: {
             };
           };
         }>)[];
-        body: zod738.ZodObject<{
-          password: zod738.ZodString;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          password: zod1339.ZodString;
+        }, "strip", zod1339.ZodTypeAny, {
           password: string;
         }, {
           password: string;
@@ -17194,7 +19592,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17227,10 +19625,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod738.ZodObject<{
-          code: zod738.ZodString;
-          trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        body: zod1339.ZodObject<{
+          code: zod1339.ZodString;
+          trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
         }, {
@@ -17285,7 +19683,7 @@ declare const auth: {
       } & {
         asResponse?: boolean;
         returnHeaders?: boolean;
-        use?: better_call37.Middleware[];
+        use?: better_call38.Middleware[];
         path?: string;
       } & {
         asResponse?: AsResponse | undefined;
@@ -17308,6 +19706,8 @@ declare const auth: {
             socialLinks: Record<string, string> | null;
             bio: string | null;
             website: string | null;
+            role: string | null;
+            roleEndAt: Date | null;
             deleted: boolean | null;
           };
           session: {
@@ -17320,14 +19720,8 @@ declare const auth: {
             ipAddress?: string | null | undefined | undefined;
             userAgent?: string | null | undefined | undefined;
           };
-          invitation: boolean | {
-            code: string;
-            createdAt: Date | null;
-            usedAt: Date | null;
-            fromUserId: string;
-            toUserId: string | null;
-          } | undefined;
-          role: "user" | "trial";
+          role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+          roleEndAt: Date | null | undefined;
         } | null;
       } : {
         user: {
@@ -17345,6 +19739,8 @@ declare const auth: {
           socialLinks: Record<string, string> | null;
           bio: string | null;
           website: string | null;
+          role: string | null;
+          roleEndAt: Date | null;
           deleted: boolean | null;
         };
         session: {
@@ -17357,21 +19753,15 @@ declare const auth: {
           ipAddress?: string | null | undefined | undefined;
           userAgent?: string | null | undefined | undefined;
         };
-        invitation: boolean | {
-          code: string;
-          createdAt: Date | null;
-          usedAt: Date | null;
-          fromUserId: string;
-          toUserId: string | null;
-        } | undefined;
-        role: "user" | "trial";
+        role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+        roleEndAt: Date | null | undefined;
       } | null>;
       options: {
         method: "GET";
-        query: zod738.ZodOptional<zod738.ZodObject<{
-          disableCookieCache: zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>;
-          disableRefresh: zod738.ZodOptional<zod738.ZodBoolean>;
-        }, "strip", zod738.ZodTypeAny, {
+        query: zod1339.ZodOptional<zod1339.ZodObject<{
+          disableCookieCache: zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>;
+          disableRefresh: zod1339.ZodOptional<zod1339.ZodBoolean>;
+        }, "strip", zod1339.ZodTypeAny, {
           disableCookieCache?: boolean | undefined;
           disableRefresh?: boolean | undefined;
         }, {
@@ -17409,7 +19799,22 @@ declare const auth: {
   }>;
   options: {
     appName: string;
-    database: (options: BetterAuthOptions) => better_auth245.Adapter;
+    database: (options: BetterAuthOptions) => better_auth246.Adapter;
+    databaseHooks: {
+      user: {
+        create: {
+          after: (newUser: {
+            id: string;
+            name: string;
+            email: string;
+            emailVerified: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            image?: string | null | undefined;
+          }, context: better_auth246.GenericEndpointContext | undefined) => Promise<void>;
+        };
+      };
+    };
     advanced: {
       database: {
         generateId: false;
@@ -17446,6 +19851,12 @@ declare const auth: {
         deleted: {
           type: "boolean";
         };
+        role: {
+          type: "string";
+        };
+        roleEndAt: {
+          type: "date";
+        };
       };
       changeEmail: {
         enabled: true;
@@ -17453,7 +19864,7 @@ declare const auth: {
           user,
           url
         }: {
-          user: better_auth245.User;
+          user: better_auth246.User;
           newEmail: string;
           url: string;
           token: string;
@@ -17489,7 +19900,7 @@ declare const auth: {
         user,
         url
       }: {
-        user: better_auth245.User;
+        user: better_auth246.User;
         url: string;
         token: string;
       }): Promise<void>;
@@ -17500,12 +19911,687 @@ declare const auth: {
         user,
         url
       }: {
-        user: better_auth245.User;
+        user: better_auth246.User;
         url: string;
         token: string;
       }): Promise<void>;
     };
     plugins: ({
+      id: "stripe";
+      endpoints: {
+        stripeWebhook: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+            body?: undefined;
+          } & {
+            method?: "POST" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: {
+              success: boolean;
+            };
+          } : {
+            success: boolean;
+          }>;
+          options: {
+            method: "POST";
+            metadata: {
+              isAction: boolean;
+            };
+            cloneRequest: true;
+          } & {
+            use: any[];
+          };
+          path: "/stripe/webhook";
+        };
+      } & {
+        readonly upgradeSubscription: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+            body: {
+              plan: string;
+              metadata?: Record<string, any> | undefined;
+              annual?: boolean | undefined;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+              seats?: number | undefined;
+              successUrl?: string | undefined;
+              cancelUrl?: string | undefined;
+              returnUrl?: string | undefined;
+              disableRedirect?: boolean | undefined;
+            };
+          } & {
+            method?: "POST" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: {
+              url: string;
+              redirect: boolean;
+            } | {
+              redirect: boolean;
+              id: string;
+              object: "checkout.session";
+              adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+              after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+              allow_promotion_codes: boolean | null;
+              amount_subtotal: number | null;
+              amount_total: number | null;
+              automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+              billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+              cancel_url: string | null;
+              client_reference_id: string | null;
+              client_secret: string | null;
+              collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+              consent: Stripe.Checkout.Session.Consent | null;
+              consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+              created: number;
+              currency: string | null;
+              currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+              custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+              custom_text: Stripe.Checkout.Session.CustomText;
+              customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+              customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+              customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+              customer_email: string | null;
+              discounts: Array<Stripe.Checkout.Session.Discount> | null;
+              expires_at: number;
+              invoice: string | Stripe.Invoice | null;
+              invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+              line_items?: Stripe.ApiList<Stripe.LineItem>;
+              livemode: boolean;
+              locale: Stripe.Checkout.Session.Locale | null;
+              metadata: Stripe.Metadata | null;
+              mode: Stripe.Checkout.Session.Mode;
+              optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+              payment_intent: string | Stripe.PaymentIntent | null;
+              payment_link: string | Stripe.PaymentLink | null;
+              payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+              payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+              payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+              payment_method_types: Array<string>;
+              payment_status: Stripe.Checkout.Session.PaymentStatus;
+              permissions: Stripe.Checkout.Session.Permissions | null;
+              phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+              presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+              recovered_from: string | null;
+              redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+              return_url?: string;
+              saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+              setup_intent: string | Stripe.SetupIntent | null;
+              shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+              shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+              shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+              status: Stripe.Checkout.Session.Status | null;
+              submit_type: Stripe.Checkout.Session.SubmitType | null;
+              subscription: string | Stripe.Subscription | null;
+              success_url: string | null;
+              tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+              total_details: Stripe.Checkout.Session.TotalDetails | null;
+              ui_mode: Stripe.Checkout.Session.UiMode | null;
+              url: string | null;
+              lastResponse: {
+                headers: {
+                  [key: string]: string;
+                };
+                requestId: string;
+                statusCode: number;
+                apiVersion?: string;
+                idempotencyKey?: string;
+                stripeAccount?: string;
+              };
+            };
+          } : {
+            url: string;
+            redirect: boolean;
+          } | {
+            redirect: boolean;
+            id: string;
+            object: "checkout.session";
+            adaptive_pricing: Stripe.Checkout.Session.AdaptivePricing | null;
+            after_expiration: Stripe.Checkout.Session.AfterExpiration | null;
+            allow_promotion_codes: boolean | null;
+            amount_subtotal: number | null;
+            amount_total: number | null;
+            automatic_tax: Stripe.Checkout.Session.AutomaticTax;
+            billing_address_collection: Stripe.Checkout.Session.BillingAddressCollection | null;
+            cancel_url: string | null;
+            client_reference_id: string | null;
+            client_secret: string | null;
+            collected_information: Stripe.Checkout.Session.CollectedInformation | null;
+            consent: Stripe.Checkout.Session.Consent | null;
+            consent_collection: Stripe.Checkout.Session.ConsentCollection | null;
+            created: number;
+            currency: string | null;
+            currency_conversion: Stripe.Checkout.Session.CurrencyConversion | null;
+            custom_fields: Array<Stripe.Checkout.Session.CustomField>;
+            custom_text: Stripe.Checkout.Session.CustomText;
+            customer: string | Stripe.Customer | Stripe.DeletedCustomer | null;
+            customer_creation: Stripe.Checkout.Session.CustomerCreation | null;
+            customer_details: Stripe.Checkout.Session.CustomerDetails | null;
+            customer_email: string | null;
+            discounts: Array<Stripe.Checkout.Session.Discount> | null;
+            expires_at: number;
+            invoice: string | Stripe.Invoice | null;
+            invoice_creation: Stripe.Checkout.Session.InvoiceCreation | null;
+            line_items?: Stripe.ApiList<Stripe.LineItem>;
+            livemode: boolean;
+            locale: Stripe.Checkout.Session.Locale | null;
+            metadata: Stripe.Metadata | null;
+            mode: Stripe.Checkout.Session.Mode;
+            optional_items?: Array<Stripe.Checkout.Session.OptionalItem> | null;
+            payment_intent: string | Stripe.PaymentIntent | null;
+            payment_link: string | Stripe.PaymentLink | null;
+            payment_method_collection: Stripe.Checkout.Session.PaymentMethodCollection | null;
+            payment_method_configuration_details: Stripe.Checkout.Session.PaymentMethodConfigurationDetails | null;
+            payment_method_options: Stripe.Checkout.Session.PaymentMethodOptions | null;
+            payment_method_types: Array<string>;
+            payment_status: Stripe.Checkout.Session.PaymentStatus;
+            permissions: Stripe.Checkout.Session.Permissions | null;
+            phone_number_collection?: Stripe.Checkout.Session.PhoneNumberCollection;
+            presentment_details?: Stripe.Checkout.Session.PresentmentDetails;
+            recovered_from: string | null;
+            redirect_on_completion?: Stripe.Checkout.Session.RedirectOnCompletion;
+            return_url?: string;
+            saved_payment_method_options: Stripe.Checkout.Session.SavedPaymentMethodOptions | null;
+            setup_intent: string | Stripe.SetupIntent | null;
+            shipping_address_collection: Stripe.Checkout.Session.ShippingAddressCollection | null;
+            shipping_cost: Stripe.Checkout.Session.ShippingCost | null;
+            shipping_options: Array<Stripe.Checkout.Session.ShippingOption>;
+            status: Stripe.Checkout.Session.Status | null;
+            submit_type: Stripe.Checkout.Session.SubmitType | null;
+            subscription: string | Stripe.Subscription | null;
+            success_url: string | null;
+            tax_id_collection?: Stripe.Checkout.Session.TaxIdCollection;
+            total_details: Stripe.Checkout.Session.TotalDetails | null;
+            ui_mode: Stripe.Checkout.Session.UiMode | null;
+            url: string | null;
+            lastResponse: {
+              headers: {
+                [key: string]: string;
+              };
+              requestId: string;
+              statusCode: number;
+              apiVersion?: string;
+              idempotencyKey?: string;
+              stripeAccount?: string;
+            };
+          }>;
+          options: {
+            method: "POST";
+            body: zod1339.ZodObject<{
+              plan: zod1339.ZodString;
+              annual: zod1339.ZodOptional<zod1339.ZodBoolean>;
+              referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+              subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+              metadata: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+              seats: zod1339.ZodOptional<zod1339.ZodNumber>;
+              successUrl: zod1339.ZodDefault<zod1339.ZodString>;
+              cancelUrl: zod1339.ZodDefault<zod1339.ZodString>;
+              returnUrl: zod1339.ZodOptional<zod1339.ZodString>;
+              disableRedirect: zod1339.ZodDefault<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
+              plan: string;
+              successUrl: string;
+              cancelUrl: string;
+              disableRedirect: boolean;
+              metadata?: Record<string, any> | undefined;
+              annual?: boolean | undefined;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+              seats?: number | undefined;
+              returnUrl?: string | undefined;
+            }, {
+              plan: string;
+              metadata?: Record<string, any> | undefined;
+              annual?: boolean | undefined;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+              seats?: number | undefined;
+              successUrl?: string | undefined;
+              cancelUrl?: string | undefined;
+              returnUrl?: string | undefined;
+              disableRedirect?: boolean | undefined;
+            }>;
+            use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+              session: {
+                session: Record<string, any> & {
+                  id: string;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  userId: string;
+                  expiresAt: Date;
+                  token: string;
+                  ipAddress?: string | null | undefined;
+                  userAgent?: string | null | undefined;
+                };
+                user: Record<string, any> & {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                };
+              };
+            }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/upgrade";
+        };
+        readonly cancelSubscriptionCallback: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+            body?: undefined;
+          } & {
+            method?: "GET" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: never;
+          } : never>;
+          options: {
+            method: "GET";
+            query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/cancel/callback";
+        };
+        readonly cancelSubscription: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+            body: {
+              returnUrl: string;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            };
+          } & {
+            method?: "POST" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: {
+              url: string;
+              redirect: boolean;
+            };
+          } : {
+            url: string;
+            redirect: boolean;
+          }>;
+          options: {
+            method: "POST";
+            body: zod1339.ZodObject<{
+              referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+              subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+              returnUrl: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
+              returnUrl: string;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            }, {
+              returnUrl: string;
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            }>;
+            use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+              session: {
+                session: Record<string, any> & {
+                  id: string;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  userId: string;
+                  expiresAt: Date;
+                  token: string;
+                  ipAddress?: string | null | undefined;
+                  userAgent?: string | null | undefined;
+                };
+                user: Record<string, any> & {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                };
+              };
+            }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/cancel";
+        };
+        readonly restoreSubscription: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0: {
+            body: {
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            };
+          } & {
+            method?: "POST" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: Stripe.Response<Stripe.Subscription>;
+          } : Stripe.Response<Stripe.Subscription>>;
+          options: {
+            method: "POST";
+            body: zod1339.ZodObject<{
+              referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+              subscriptionId: zod1339.ZodOptional<zod1339.ZodString>;
+            }, "strip", zod1339.ZodTypeAny, {
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            }, {
+              referenceId?: string | undefined;
+              subscriptionId?: string | undefined;
+            }>;
+            use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+              session: {
+                session: Record<string, any> & {
+                  id: string;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  userId: string;
+                  expiresAt: Date;
+                  token: string;
+                  ipAddress?: string | null | undefined;
+                  userAgent?: string | null | undefined;
+                };
+                user: Record<string, any> & {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                };
+              };
+            }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/restore";
+        };
+        readonly listActiveSubscriptions: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+            body?: undefined;
+          } & {
+            method?: "GET" | undefined;
+          } & {
+            query?: {
+              referenceId?: string | undefined;
+            } | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: {
+              limits: Record<string, number> | undefined;
+              priceId: string | undefined;
+              id: string;
+              plan: string;
+              stripeCustomerId?: string;
+              stripeSubscriptionId?: string;
+              trialStart?: Date;
+              trialEnd?: Date;
+              referenceId: string;
+              status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+              periodStart?: Date;
+              periodEnd?: Date;
+              cancelAtPeriodEnd?: boolean;
+              groupId?: string;
+              seats?: number;
+            }[];
+          } : {
+            limits: Record<string, number> | undefined;
+            priceId: string | undefined;
+            id: string;
+            plan: string;
+            stripeCustomerId?: string;
+            stripeSubscriptionId?: string;
+            trialStart?: Date;
+            trialEnd?: Date;
+            referenceId: string;
+            status: "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "paused" | "trialing" | "unpaid";
+            periodStart?: Date;
+            periodEnd?: Date;
+            cancelAtPeriodEnd?: boolean;
+            groupId?: string;
+            seats?: number;
+          }[]>;
+          options: {
+            method: "GET";
+            query: zod1339.ZodOptional<zod1339.ZodObject<{
+              referenceId: zod1339.ZodOptional<zod1339.ZodString>;
+            }, "strip", zod1339.ZodTypeAny, {
+              referenceId?: string | undefined;
+            }, {
+              referenceId?: string | undefined;
+            }>>;
+            use: (((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
+              session: {
+                session: Record<string, any> & {
+                  id: string;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  userId: string;
+                  expiresAt: Date;
+                  token: string;
+                  ipAddress?: string | null | undefined;
+                  userAgent?: string | null | undefined;
+                };
+                user: Record<string, any> & {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                };
+              };
+            }>) | ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>))[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/list";
+        };
+        readonly subscriptionSuccess: {
+          <AsResponse extends boolean = false, ReturnHeaders extends boolean = false>(inputCtx_0?: ({
+            body?: undefined;
+          } & {
+            method?: "GET" | undefined;
+          } & {
+            query?: Record<string, any> | undefined;
+          } & {
+            params?: Record<string, any>;
+          } & {
+            request?: Request;
+          } & {
+            headers?: HeadersInit;
+          } & {
+            asResponse?: boolean;
+            returnHeaders?: boolean;
+            use?: better_call38.Middleware[];
+            path?: string;
+          } & {
+            asResponse?: AsResponse | undefined;
+            returnHeaders?: ReturnHeaders | undefined;
+          }) | undefined): Promise<[AsResponse] extends [true] ? Response : [ReturnHeaders] extends [true] ? {
+            headers: Headers;
+            response: better_call38.APIError;
+          } : better_call38.APIError>;
+          options: {
+            method: "GET";
+            query: zod1339.ZodOptional<zod1339.ZodRecord<zod1339.ZodString, zod1339.ZodAny>>;
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>)[];
+          } & {
+            use: any[];
+          };
+          path: "/subscription/success";
+        };
+      };
+      init(ctx: better_auth246.AuthContext): {
+        options: {
+          databaseHooks: {
+            user: {
+              create: {
+                after(user: {
+                  id: string;
+                  name: string;
+                  email: string;
+                  emailVerified: boolean;
+                  createdAt: Date;
+                  updatedAt: Date;
+                  image?: string | null | undefined;
+                }, ctx: better_auth246.GenericEndpointContext | undefined): Promise<void>;
+              };
+            };
+          };
+        };
+      };
+      schema: {
+        user: {
+          fields: {
+            stripeCustomerId: {
+              type: "string";
+              required: false;
+            };
+          };
+        };
+        subscription?: {
+          fields: {
+            plan: {
+              type: "string";
+              required: true;
+            };
+            referenceId: {
+              type: "string";
+              required: true;
+            };
+            stripeCustomerId: {
+              type: "string";
+              required: false;
+            };
+            stripeSubscriptionId: {
+              type: "string";
+              required: false;
+            };
+            status: {
+              type: "string";
+              defaultValue: string;
+            };
+            periodStart: {
+              type: "date";
+              required: false;
+            };
+            periodEnd: {
+              type: "date";
+              required: false;
+            };
+            cancelAtPeriodEnd: {
+              type: "boolean";
+              required: false;
+              defaultValue: false;
+            };
+            seats: {
+              type: "number";
+              required: false;
+            };
+          };
+        } | undefined;
+      };
+    } | {
       id: "open-api";
       endpoints: {
         generateOpenAPISchema: {
@@ -17524,7 +20610,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17565,7 +20651,7 @@ declare const auth: {
                 name: string;
                 description: string;
               }[];
-              paths: Record<string, better_auth_plugins250.Path>;
+              paths: Record<string, better_auth_plugins332.Path>;
             };
           } : {
             openapi: string;
@@ -17601,7 +20687,7 @@ declare const auth: {
               name: string;
               description: string;
             }[];
-            paths: Record<string, better_auth_plugins250.Path>;
+            paths: Record<string, better_auth_plugins332.Path>;
           }>;
           options: {
             method: "GET";
@@ -17626,7 +20712,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17668,7 +20754,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17685,17 +20771,17 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              password: zod738.ZodString;
-              issuer: zod738.ZodOptional<zod738.ZodString>;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              password: zod1339.ZodString;
+              issuer: zod1339.ZodOptional<zod1339.ZodString>;
+            }, "strip", zod1339.ZodTypeAny, {
               password: string;
               issuer?: string | undefined;
             }, {
               password: string;
               issuer?: string | undefined;
             }>;
-            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -17772,7 +20858,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17787,14 +20873,14 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              password: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              password: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               password: string;
             }, {
               password: string;
             }>;
-            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -17865,7 +20951,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -17898,11 +20984,11 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              code: zod738.ZodString;
-              disableSession: zod738.ZodOptional<zod738.ZodBoolean>;
-              trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              code: zod1339.ZodString;
+              disableSession: zod1339.ZodOptional<zod1339.ZodBoolean>;
+              trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
               disableSession?: boolean | undefined;
@@ -18026,7 +21112,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18043,14 +21129,14 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              password: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              password: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               password: string;
             }, {
               password: string;
             }>;
-            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -18128,7 +21214,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18145,9 +21231,9 @@ declare const auth: {
           }>;
           options: {
             method: "GET";
-            body: zod738.ZodObject<{
-              userId: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              userId: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               userId: string;
             }, {
               userId: string;
@@ -18178,7 +21264,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18193,9 +21279,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodOptional<zod738.ZodObject<{
-              trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodOptional<zod1339.ZodObject<{
+              trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
               trustDevice?: boolean | undefined;
             }, {
               trustDevice?: boolean | undefined;
@@ -18247,7 +21333,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18280,10 +21366,10 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              code: zod738.ZodString;
-              trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              code: zod1339.ZodString;
+              trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
             }, {
@@ -18381,7 +21467,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18396,9 +21482,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              secret: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              secret: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               secret: string;
             }, {
               secret: string;
@@ -18450,7 +21536,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18465,7 +21551,7 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -18488,9 +21574,9 @@ declare const auth: {
                 };
               };
             }>)[];
-            body: zod738.ZodObject<{
-              password: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              password: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               password: string;
             }, {
               password: string;
@@ -18542,7 +21628,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18575,10 +21661,10 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              code: zod738.ZodString;
-              trustDevice: zod738.ZodOptional<zod738.ZodBoolean>;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              code: zod1339.ZodString;
+              trustDevice: zod1339.ZodOptional<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
             }, {
@@ -18614,11 +21700,11 @@ declare const auth: {
           path: "/two-factor/verify-totp";
         };
       };
-      options: better_auth_plugins250.TwoFactorOptions | undefined;
+      options: better_auth_plugins332.TwoFactorOptions | undefined;
       hooks: {
         after: {
-          matcher(context: better_auth245.HookEndpointContext): boolean;
-          handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+          matcher(context: better_auth246.HookEndpointContext): boolean;
+          handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
             twoFactorRedirect: boolean;
           } | undefined>;
         }[];
@@ -18676,18 +21762,18 @@ declare const auth: {
       };
     } | {
       id: "expo";
-      init: (ctx: better_auth245.AuthContext) => {
+      init: (ctx: better_auth246.AuthContext) => {
         options: {
           trustedOrigins: string[];
         };
       };
-      onRequest(request: Request, ctx: better_auth245.AuthContext): Promise<{
+      onRequest(request: Request, ctx: better_auth246.AuthContext): Promise<{
         request: Request;
       } | undefined>;
       hooks: {
         after: {
-          matcher(context: better_auth245.HookEndpointContext): boolean;
-          handler: (inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<void>;
+          matcher(context: better_auth246.HookEndpointContext): boolean;
+          handler: (inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<void>;
         }[];
       };
     } | {
@@ -18712,7 +21798,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18735,6 +21821,8 @@ declare const auth: {
                 socialLinks: Record<string, string> | null;
                 bio: string | null;
                 website: string | null;
+                role: string | null;
+                roleEndAt: Date | null;
                 deleted: boolean | null;
               };
               session: {
@@ -18747,14 +21835,8 @@ declare const auth: {
                 ipAddress?: string | null | undefined | undefined;
                 userAgent?: string | null | undefined | undefined;
               };
-              invitation: boolean | {
-                code: string;
-                createdAt: Date | null;
-                usedAt: Date | null;
-                fromUserId: string;
-                toUserId: string | null;
-              } | undefined;
-              role: "user" | "trial";
+              role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+              roleEndAt: Date | null | undefined;
             } | null;
           } : {
             user: {
@@ -18772,6 +21854,8 @@ declare const auth: {
               socialLinks: Record<string, string> | null;
               bio: string | null;
               website: string | null;
+              role: string | null;
+              roleEndAt: Date | null;
               deleted: boolean | null;
             };
             session: {
@@ -18784,21 +21868,15 @@ declare const auth: {
               ipAddress?: string | null | undefined | undefined;
               userAgent?: string | null | undefined | undefined;
             };
-            invitation: boolean | {
-              code: string;
-              createdAt: Date | null;
-              usedAt: Date | null;
-              fromUserId: string;
-              toUserId: string | null;
-            } | undefined;
-            role: "user" | "trial";
+            role: UserRole.PreProTrial | UserRole.PrePro | UserRole.Free | UserRole.Trial;
+            roleEndAt: Date | null | undefined;
           } | null>;
           options: {
             method: "GET";
-            query: zod738.ZodOptional<zod738.ZodObject<{
-              disableCookieCache: zod738.ZodOptional<zod738.ZodUnion<[zod738.ZodBoolean, zod738.ZodEffects<zod738.ZodString, boolean, string>]>>;
-              disableRefresh: zod738.ZodOptional<zod738.ZodBoolean>;
-            }, "strip", zod738.ZodTypeAny, {
+            query: zod1339.ZodOptional<zod1339.ZodObject<{
+              disableCookieCache: zod1339.ZodOptional<zod1339.ZodUnion<[zod1339.ZodBoolean, zod1339.ZodEffects<zod1339.ZodString, boolean, string>]>>;
+              disableRefresh: zod1339.ZodOptional<zod1339.ZodBoolean>;
+            }, "strip", zod1339.ZodTypeAny, {
               disableCookieCache?: boolean | undefined;
               disableRefresh?: boolean | undefined;
             }, {
@@ -18853,7 +21931,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18889,7 +21967,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18971,7 +22049,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -18982,9 +22060,9 @@ declare const auth: {
           } : void>;
           options: {
             method: "POST";
-            body: zod_v440.ZodObject<{
-              TOTPCode: zod_v440.ZodString;
-            }, zod_v4_core41.$strip>;
+            body: zod_v441.ZodObject<{
+              TOTPCode: zod_v441.ZodString;
+            }, zod_v4_core42.$strip>;
           } & {
             use: any[];
           };
@@ -19010,7 +22088,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -19025,7 +22103,7 @@ declare const auth: {
           }>;
           options: {
             method: "GET";
-            use: ((inputContext: better_call37.MiddlewareInputContext<better_call37.MiddlewareOptions>) => Promise<{
+            use: ((inputContext: better_call38.MiddlewareInputContext<better_call38.MiddlewareOptions>) => Promise<{
               session: {
                 session: Record<string, any> & {
                   id: string;
@@ -19071,7 +22149,7 @@ declare const auth: {
           } & {
             asResponse?: boolean;
             returnHeaders?: boolean;
-            use?: better_call37.Middleware[];
+            use?: better_call38.Middleware[];
             path?: string;
           } & {
             asResponse?: AsResponse | undefined;
@@ -19102,9 +22180,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod738.ZodObject<{
-              token: zod738.ZodString;
-            }, "strip", zod738.ZodTypeAny, {
+            body: zod1339.ZodObject<{
+              token: zod1339.ZodString;
+            }, "strip", zod1339.ZodTypeAny, {
               token: string;
             }, {
               token: string;
@@ -19117,7 +22195,7 @@ declare const auth: {
       };
     })[];
   };
-  $context: Promise<better_auth245.AuthContext>;
+  $context: Promise<better_auth246.AuthContext>;
   $Infer: {
     Session: {
       session: {
@@ -19143,6 +22221,9 @@ declare const auth: {
         bio: string;
         website: string;
         socialLinks: string;
+        role: string;
+        roleEndAt: Date;
+        stripeCustomerId?: string | null | undefined;
         twoFactorEnabled: boolean | null | undefined;
       };
     };
@@ -19195,7 +22276,7 @@ type AuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
 type AuthUser = NonNullable<AuthSession>["user"];
 //#endregion
 //#region src/bootstrap.d.ts
-declare const _routes: hono_hono_base36.HonoBase<Env, ({
+declare const _routes: hono_hono_base37.HonoBase<Env, ({
   "/better-auth/*": {
     $get: {
       input: {};
@@ -20095,8 +23176,8 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
           feedId?: string | undefined;
           read?: boolean | undefined;
           listId?: string | undefined;
-          limit?: number | undefined;
           feedIdList?: string[] | undefined;
+          limit?: number | undefined;
           publishedAfter?: string | undefined;
           publishedBefore?: string | undefined;
           collected?: boolean | undefined;
@@ -20547,13 +23628,6 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
             }[] | null | undefined;
           };
           readCount: number;
-          analytics?: {
-            view: number | null;
-            feedId: string;
-            updatesPerWeek: number | null;
-            subscriptionCount: number | null;
-            latestEntryPublishedAt: string | null;
-          } | undefined;
           subscription?: {
             createdAt: string;
             userId: string;
@@ -20562,6 +23636,13 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
             category: string | null;
             feedId: string;
             isPrivate: boolean;
+          } | undefined;
+          analytics?: {
+            view: number | null;
+            feedId: string;
+            updatesPerWeek: number | null;
+            subscriptionCount: number | null;
+            latestEntryPublishedAt: string | null;
           } | undefined;
         };
       };
@@ -20722,6 +23803,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
             facebook: string;
             youtube: string;
           } | null;
+          stripeCustomerId: string | null;
+          role: string | null;
+          roleEndAt: string | null;
         };
       };
       outputFormat: "json";
@@ -20760,6 +23844,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
               facebook: string;
               youtube: string;
             } | null;
+            stripeCustomerId: string | null;
+            role: string | null;
+            roleEndAt: string | null;
           };
         };
       };
@@ -20973,6 +24060,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
                 facebook: string;
                 youtube: string;
               } | null;
+              stripeCustomerId: string | null;
+              role: string | null;
+              roleEndAt: string | null;
             }[];
           };
         } | {
@@ -21400,6 +24490,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
               facebook: string;
               youtube: string;
             } | null;
+            stripeCustomerId: string | null;
+            role: string | null;
+            roleEndAt: string | null;
           } | null | undefined;
           toUser?: {
             id: string;
@@ -21422,6 +24515,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
               facebook: string;
               youtube: string;
             } | null;
+            stripeCustomerId: string | null;
+            role: string | null;
+            roleEndAt: string | null;
           } | null | undefined;
           toFeed?: {
             id: string;
@@ -21585,6 +24681,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
               facebook: string;
               youtube: string;
             } | null;
+            stripeCustomerId: string | null;
+            role: string | null;
+            roleEndAt: string | null;
           };
           userId: string;
           rank: number | null;
@@ -21758,16 +24857,16 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
           };
           readCount: number;
           feedCount: number;
-          analytics?: {
-            subscriptionCount: number | null;
-            listId: string;
-          } | undefined;
           subscription?: {
             createdAt: string;
             userId: string;
             title: string | null;
             view: number;
             isPrivate: boolean;
+            listId: string;
+          } | undefined;
+          analytics?: {
+            subscriptionCount: number | null;
             listId: string;
           } | undefined;
         };
@@ -22348,28 +25447,32 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
       output: {
         code: 0;
         data: {
-          MAX_SUBSCRIPTIONS: number;
-          MAX_LISTS: number;
-          MAX_ACTIONS: number;
-          MAX_WEBHOOKS_PER_ACTION: number;
-          MAX_INBOXES: number;
-          IMPORTING_TITLE: string;
-          DAILY_POWER_PERCENTAGES: number[];
-          LEVEL_PERCENTAGES: number[];
+          ANNOUNCEMENT: string;
           DAILY_CLAIM_AMOUNT: {
             trial: number;
             normal: number;
           };
-          TAX_POINT: string;
+          DAILY_POWER_PERCENTAGES: number[];
+          DAILY_POWER_SUPPLY: number;
+          IMPORTING_TITLE: string;
+          INVITATION_ENABLED: boolean;
           INVITATION_INTERVAL_DAYS: number;
           INVITATION_PRICE: number;
-          INVITATION_ENABLED: boolean;
-          DAILY_POWER_SUPPLY: number;
           IS_RSS3_TESTNET: boolean;
-          PRODUCT_HUNT_VOTE_URL: string;
-          ANNOUNCEMENT: string;
+          LEVEL_PERCENTAGES: number[];
+          MAX_ACTIONS: number;
+          MAX_INBOXES: number;
+          MAX_LISTS: number;
+          MAX_SUBSCRIPTIONS: number;
           MAX_TRIAL_USER_FEED_SUBSCRIPTION: number;
           MAX_TRIAL_USER_LIST_SUBSCRIPTION: number;
+          MAX_WEBHOOKS_PER_ACTION: number;
+          PRODUCT_HUNT_VOTE_URL: string;
+          REFERRAL_ENABLED: boolean;
+          REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR: number;
+          REFERRAL_REQUIRED_INVITATIONS: number;
+          REFERRAL_RULE_LINK: string;
+          TAX_POINT: string;
           MAS_IN_REVIEW_VERSION?: string | undefined;
         };
       };
@@ -22433,6 +25536,9 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
             facebook: string;
             youtube: string;
           } | null;
+          stripeCustomerId: string | null;
+          role: string | null;
+          roleEndAt: string | null;
         }[];
       };
       outputFormat: "json";
@@ -22754,7 +25860,65 @@ declare const _routes: hono_hono_base36.HonoBase<Env, ({
       status: hono_utils_http_status0.StatusCode;
     };
   };
-}, "/data">, "/">;
+}, "/data"> | hono_types2.MergeSchemaPath<{
+  "/": {
+    $get: {
+      input: {};
+      output: {
+        code: 0;
+        data: {
+          invitations: {
+            code: string;
+            user: {
+              id: string;
+              name: string | null;
+              image: string | null;
+            } | null;
+            createdAt: string | null;
+            usedAt: string | null;
+            toUserId: string | null;
+          }[];
+          referralCycleDays: number;
+        };
+      };
+      outputFormat: "json";
+      status: 200;
+    };
+  };
+} & {
+  "/days": {
+    $get: {
+      input: {
+        query: {
+          code: string;
+        };
+      };
+      output: {
+        code: 0;
+        data: {
+          referralCycleDays: number;
+        };
+      };
+      outputFormat: "json";
+      status: 200;
+    };
+  };
+} & {
+  "/verify-receipt": {
+    $post: {
+      input: {
+        json: {
+          appReceipt: string;
+        };
+      };
+      output: {
+        code: 0;
+      };
+      outputFormat: "json";
+      status: 200;
+    };
+  };
+}, "/referrals">, "/">;
 type AppType = typeof _routes;
 //#endregion
-export { ActionItem, ActionsModel, AirdropActivity, AppType, AttachmentsModel, AuthSession, AuthUser, CommonEntryFields, ConditionItem, DetailModel, EntriesModel, ExtraModel, FeedModel, ListModel, MediaModel, MessagingData, MessagingType, SettingsModel, UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, tools, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user$1 as user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };
+export { ActionItem, ActionsModel, AirdropActivity, AppType, AttachmentsModel, AuthSession, AuthUser, CommonEntryFields, ConditionItem, DetailModel, EntriesModel, ExtraModel, FeedModel, InvitationDB, ListModel, MediaModel, MessagingData, MessagingType, SettingsModel, UrlReadsModel, account, achievements, achievementsOpenAPISchema, actions, actionsItemOpenAPISchema, actionsOpenAPISchema, actionsRelations, activities, activitiesOpenAPISchema, activityEnum, airdrops, airdropsOpenAPISchema, applePayTransactions, attachmentsZodSchema, authPlugins, boosts, captcha, collections, collectionsOpenAPISchema, collectionsRelations, detailModelSchema, entries, entriesOpenAPISchema, entriesRelations, extraZodSchema, feedAnalytics, feedAnalyticsOpenAPISchema, feedAnalyticsRelations, feedPowerTokens, feedPowerTokensOpenAPISchema, feedPowerTokensRelations, feeds, feedsOpenAPISchema, feedsRelations, inboxHandleSchema, inboxes, inboxesEntries, inboxesEntriesInsertOpenAPISchema, inboxesEntriesModel, inboxesEntriesOpenAPISchema, inboxesEntriesRelations, inboxesOpenAPISchema, inboxesRelations, invitations, invitationsOpenAPISchema, invitationsRelations, languageSchema, levels, levelsOpenAPISchema, levelsRelations, listAnalytics, listAnalyticsOpenAPISchema, listAnalyticsRelations, lists, listsOpenAPISchema, listsRelations, listsSubscriptions, listsSubscriptionsOpenAPISchema, listsSubscriptionsRelations, lower, mediaZodSchema, messaging, messagingOpenAPISchema, messagingRelations, readabilities, rsshub, rsshubAnalytics, rsshubAnalyticsOpenAPISchema, rsshubOpenAPISchema, rsshubPurchase, rsshubUsage, rsshubUsageOpenAPISchema, rsshubUsageRelations, session, settings, stripeSubscriptions, subscriptions, subscriptionsOpenAPISchema, subscriptionsRelations, timeline, timelineOpenAPISchema, timelineRelations, tools, transactionType, transactions, transactionsOpenAPISchema, transactionsRelations, trendingFeeds, trendingFeedsOpenAPISchema, trendingFeedsRelations, twoFactor, uploads, urlReads, urlReadsOpenAPISchema, user$1 as user, users, usersOpenApiSchema, usersRelations, verification, wallets, walletsOpenAPISchema, walletsRelations };

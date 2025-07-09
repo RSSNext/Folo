@@ -1,10 +1,10 @@
-import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
+import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
-import { useParams } from "react-router"
 
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
@@ -13,6 +13,7 @@ import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-content/ai"
@@ -21,13 +22,14 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
 import { AIChatLayout } from "../ai/AIChatLayout"
 
 export const RightContent = () => {
-  const { entryId } = useParams()
+  const { entryId, view } = useRouteParams()
   const navigate = useNavigateEntry()
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
   const wideMode = !!(settingWideMode && realEntryId)
 
+  const isWideView = views[view]?.wideMode
   return (
     <AppLayoutGridContainerProvider>
       <EntryGridContainer wideMode={wideMode}>
@@ -37,7 +39,7 @@ export const RightContent = () => {
             onClick={() => navigate({ entryId: null })}
           />
         )}
-        {realEntryId ? <Grid entryId={realEntryId} /> : <AIChatLayout />}
+        {realEntryId ? <Grid entryId={realEntryId} /> : !isWideView && <AIChatLayout />}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
   )
@@ -111,6 +113,10 @@ const EntryGridContainer: FC<
     wideMode: boolean
   }>
 > = ({ children, wideMode }) => {
+  if (!children) return null
+  if (Array.isArray(children) && children.filter(Boolean).length === 0) {
+    return null
+  }
   if (wideMode) {
     return (
       <m.div

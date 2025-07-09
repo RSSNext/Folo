@@ -198,6 +198,7 @@ const HeaderActions: FC<{
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3">
       <GlassButton
+        variant="dark"
         className={GLASS_BUTTON_CLASS}
         description={t(COPY_MAP.OpenInBrowser())}
         onClick={() => window.open(src)}
@@ -206,6 +207,7 @@ const HeaderActions: FC<{
       </GlassButton>
       {IN_ELECTRON && (
         <GlassButton
+          variant="dark"
           className={GLASS_BUTTON_CLASS}
           description={t("common:words.download")}
           onClick={() => {
@@ -217,6 +219,7 @@ const HeaderActions: FC<{
       )}
 
       <GlassButton
+        variant="dark"
         description={t("common:words.close")}
         className={cn(
           GLASS_BUTTON_CLASS,
