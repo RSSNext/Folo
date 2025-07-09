@@ -1,6 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { nextFrame } from "@follow/utils"
-import { useMutation } from "@tanstack/react-query"
 import { use, useCallback, useEffect, useRef, useState } from "react"
 
 import {
@@ -14,47 +13,19 @@ import { WelcomeScreen } from "~/modules/ai/chat/components/WelcomeScreen"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
-import { generateChatTitle } from "~/modules/ai/chat/utils/titleGeneration"
 
 export const ChatInterface = () => {
   const { messages, status, sendMessage } = use(AIChatContext)
 
   const currentRoomId = useCurrentRoomId()
-  const { handleFirstMessage, handleTitleGenerated } = useAIChatSessionMethods()
+  const { handleFirstMessage } = useAIChatSessionMethods()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [hasHandledFirstMessage, setHasHandledFirstMessage] = useState(false)
-  const [hasGeneratedTitle, setHasGeneratedTitle] = useState(false)
-
-  const titleMutation = useMutation({
-    mutationFn: generateChatTitle,
-    onSuccess: (title) => {
-      if (title && handleTitleGenerated) {
-        handleTitleGenerated(title)
-        setHasGeneratedTitle(true)
-      }
-    },
-    onError: (error) => {
-      console.error("Failed to generate title:", error)
-    },
-  })
 
   // Reset handlers when roomId changes
   useEffect(() => {
     setHasHandledFirstMessage(false)
-    setHasGeneratedTitle(false)
   }, [currentRoomId])
-
-  // Trigger title generation when conditions are met
-  const checkAndGenerateTitle = useCallback(() => {
-    if (
-      messages.length >= 4 &&
-      !hasGeneratedTitle &&
-      status !== "streaming" &&
-      !titleMutation.isPending
-    ) {
-      titleMutation.mutate(messages)
-    }
-  }, [hasGeneratedTitle, status, titleMutation, messages])
 
   const { isLoading: isLoadingHistory } = useLoadMessages(currentRoomId || "", {
     onLoad: () => {
@@ -97,11 +68,7 @@ export const ChatInterface = () => {
     if (status === "submitted") {
       resetScrollState()
     }
-    // Trigger title generation when streaming ends
-    if (status === "ready") {
-      checkAndGenerateTitle()
-    }
-  }, [status, resetScrollState, checkAndGenerateTitle])
+  }, [status, resetScrollState])
 
   const hasMessages = messages.length > 0
 

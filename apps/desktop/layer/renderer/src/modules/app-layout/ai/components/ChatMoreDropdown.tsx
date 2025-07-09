@@ -60,9 +60,8 @@ export const ChatMoreDropdown = () => {
         await AIPersistService.deleteSession(roomId)
         toast.success(t("delete_chat_success"))
 
-        // If deleting current session, reload to create new chat
         if (roomId === currentRoomId) {
-          // TODO
+          handleNewChat()
         }
 
         loadHistory()
@@ -73,7 +72,7 @@ export const ChatMoreDropdown = () => {
         setDeletingRoomId(null)
       }
     },
-    [sessions, ask, t, currentRoomId, loadHistory],
+    [sessions, ask, t, currentRoomId, loadHistory, handleNewChat],
   )
 
   const handleExport = useCallback(() => {
@@ -131,13 +130,13 @@ export const ChatMoreDropdown = () => {
                       </p>
                     </div>
                     <div className="relative flex min-w-0 items-center">
-                      <span className="text-text-secondary shrink-0 text-xs">
+                      <span className="text-text-secondary ml-2 shrink-0 text-xs">
                         <RelativeDay date={session.createdAt} />
                       </span>
                       <button
                         type="button"
                         onClick={(e) => handleDeleteSession(session.roomId, e)}
-                        className="hover:text-red bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:opacity-100"
+                        className="hover:text-red bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-hover:opacity-100"
                         disabled={deletingRoomId === session.roomId}
                       >
                         {deletingRoomId === session.roomId ? (

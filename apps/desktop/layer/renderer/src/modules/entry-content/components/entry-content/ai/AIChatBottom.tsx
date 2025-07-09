@@ -13,14 +13,6 @@ export const AIChatBottom: React.FC<{ children: React.ReactNode }> = (props) => 
         <AIChatContextBar />
       </div>
 
-      {/* Input Container */}
-      {/* <AIChatInputContainer
-        value={value}
-        onChange={onChange}
-        onSend={onSend}
-        placeholder={placeholder}
-        disabled={disabled}
-      /> */}
       {props.children}
     </div>
   )

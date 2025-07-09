@@ -6,6 +6,7 @@ import { useSetAtom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useMemo, useRef } from "react"
 import { toast } from "sonner"
+import { useEventCallback } from "usehooks-ts"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
@@ -28,20 +29,17 @@ import {
 } from "./atoms/session"
 import { useChatHistory } from "./hooks/useChatHistory"
 import { AIPersistService } from "./services/index"
+import { generateChatTitle } from "./utils/titleGeneration"
 
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean
   roomId?: string
-  onTitleGenerated?: (title: string) => void
-  onFirstMessage?: () => void
 }
 
 export const AIChatRoot: FC<AIChatRootProps> = ({
   children,
   wrapFocusable = true,
   roomId: externalRoomId,
-  onTitleGenerated,
-  onFirstMessage,
 }) => {
   const currentRoomId = useCurrentRoomId()
   const sessionPersisted = useSessionPersisted()
@@ -68,13 +66,12 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
         try {
           await AIPersistService.updateSessionTitle(currentRoomId, title)
           setCurrentTitle(title)
-          onTitleGenerated?.(title)
         } catch (error) {
           console.error("Failed to update session title:", error)
         }
       }
     },
-    [currentRoomId, onTitleGenerated, setCurrentTitle],
+    [currentRoomId, setCurrentTitle],
   )
 
   const handleFirstMessage = useCallback(async () => {
@@ -86,9 +83,41 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
         console.error("Failed to persist session:", error)
       }
     }
-    onFirstMessage?.()
-  }, [sessionPersisted, currentRoomId, onFirstMessage, setSessionPersisted])
+  }, [sessionPersisted, currentRoomId, setSessionPersisted])
 
+  // Handle AI response completion - this is where we generate title
+  const handleChatFinish = useEventCallback(
+    async (options: { message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools> }) => {
+      const { message } = options
+
+      // Only trigger title generation for assistant messages (AI responses)
+      if (message.role !== "assistant") return
+
+      // Get current messages to check if this is the first AI response
+
+      const allMessages = chatInstance.messages
+
+      // Check if we have exactly 2 messages (1 user + 1 assistant = first exchange)
+      // Or if we have 2+ messages and this is the first assistant message
+      const assistantMessages = allMessages.filter((m) => m.role === "assistant")
+      const isFirstAIResponse = assistantMessages.length === 1
+
+      if (isFirstAIResponse && allMessages.length >= 2) {
+        try {
+          // Generate title using the first user message and first AI response
+          const firstExchange = allMessages.slice(0, 2)
+
+          const title = await generateChatTitle(firstExchange)
+
+          if (title) {
+            await handleTitleGenerated(title)
+          }
+        } catch (error) {
+          console.error("Failed to generate chat title:", error)
+        }
+      }
+    },
+  )
   const chatInstance = useMemo(() => {
     return new Chat<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>({
       // FIXME: this id can't modify after init, so used a fixed id
@@ -97,9 +126,8 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
         api: `${env.VITE_API_URL}/ai/chat`,
         credentials: "include",
         fetch: (url: string | Request | URL, options?: RequestInit) => {
+          if (!options?.body) return fetch(url, options)
           try {
-            if (!options?.body) return fetch(url, options)
-
             const state = useAiContextStore.getState()
             state.syncBlocksToContext()
 
@@ -115,14 +143,15 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
           return fetch(url, options)
         },
       }),
+      onError: (error) => {
+        toast.error(error.message)
+        console.error(error)
+      },
+      onFinish: handleChatFinish,
     })
-  }, [useAiContextStore])
+  }, [useAiContextStore, handleChatFinish])
 
   const ctx = useChat<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>({
-    onError: (error) => {
-      toast.error(error.message)
-      console.error(error)
-    },
     chat: chatInstance,
   })
 
