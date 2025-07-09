@@ -4,6 +4,7 @@ import { usePrefetchUser, useUserById, useUserRole, useWhoami } from "@follow/st
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"
@@ -30,6 +31,8 @@ export const UserAvatar = ({
   enableModal?: boolean
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
+  const serverConfig = useServerConfigs()
+
   const { status } = useSession({
     enabled: !userId,
   })
@@ -79,13 +82,16 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
-      {userId === whoami?.id && role !== UserRole.Free && role !== UserRole.Trial && (
-        <UserProBadge
-          className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
-          iconClassName="size-full"
-          role={role}
-        />
-      )}
+      {serverConfig?.REFERRAL_ENABLED &&
+        !userId &&
+        role !== UserRole.Free &&
+        role !== UserRole.Trial && (
+          <UserProBadge
+            className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
+            iconClassName="size-full"
+            role={role}
+          />
+        )}
       {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}
     </div>
   )
