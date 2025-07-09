@@ -30,3 +30,21 @@ export const useAIChatStore = () => {
   }
   return store
 }
+
+// Session methods context for managing chat session actions
+export interface AIChatSessionMethods {
+  handleTitleGenerated: (title: string) => Promise<void>
+  handleFirstMessage: () => Promise<void>
+  handleNewChat: () => void
+  handleSwitchRoom: (roomId: string) => Promise<void>
+}
+
+export const AIChatSessionMethodsContext = createContext<AIChatSessionMethods>(null!)
+
+export const useAIChatSessionMethods = () => {
+  const context = use(AIChatSessionMethodsContext)
+  if (!context && import.meta.env.DEV) {
+    throw new Error("useAIChatSessionMethods must be used within a AIChatSessionMethodsContext")
+  }
+  return context
+}

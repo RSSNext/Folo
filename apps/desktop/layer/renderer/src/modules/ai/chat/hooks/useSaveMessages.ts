@@ -22,6 +22,11 @@ export const useSaveMessages = (
       return
     }
 
+    // Skip persistence for empty chats
+    if (messages.length === 0) {
+      return
+    }
+
     AIPersistService.replaceAllMessages(roomId, messages)
   }, [roomId, messages, options.enabled, isStreaming])
 }

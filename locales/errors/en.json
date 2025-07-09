@@ -67,5 +67,6 @@
   "13007": "This RSSHub instance is unavailable currently",
   "14000": "Invalid file",
   "14001": "File too large",
-  "14002": "Upload failed"
+  "14002": "Upload failed",
+  "15000": "AI token limit exceeded. Please try again later."
 }
