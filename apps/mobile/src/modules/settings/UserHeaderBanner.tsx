@@ -179,7 +179,7 @@ export const UserHeaderBanner = ({
             <Text className="text-text text-2xl font-bold">Folo Account</Text>
           )}
 
-          {role && (
+          {!!role && (
             <View className="my-1 flex flex-row items-center gap-2">
               <PowerIcon
                 color={
