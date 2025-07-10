@@ -1,9 +1,7 @@
 import Spline from "@splinetool/react-spline"
 import { useCallback, useRef } from "react"
 
-import aiIconUrl from "~/assets/ai.splinecode?url"
-
-const resolvedAIIconUrl = new URL(aiIconUrl, import.meta.url).href
+const resolvedAIIconUrl = "https://cdn.follow.is/ai.splinecode"
 
 export const AISplineLoader = () => {
   const containerRef = useRef<HTMLDivElement>(null)
