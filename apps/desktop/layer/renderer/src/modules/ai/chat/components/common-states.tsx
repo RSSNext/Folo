@@ -36,16 +36,18 @@ export const ErrorState = ({
   title = "Error",
   error = "An error occurred. Please try again.",
   maxWidth = "max-w-4xl",
-}: ErrorStateProps) => (
-  <Card className={`border-red mx-auto mb-2 w-full ${maxWidth}`}>
-    <CardHeader className="py-4">
-      <CardTitle className="text-red flex items-center gap-2 text-xl font-semibold">
-        <span className="text-lg">⚠️</span>
-        <span>{title}</span>
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="text-text-secondary text-sm">{error}</div>
-    </CardContent>
-  </Card>
-)
+}: ErrorStateProps) => {
+  return (
+    <Card className={`border-red mx-auto mb-2 w-full ${maxWidth}`}>
+      <CardHeader className="py-4">
+        <CardTitle className="text-red flex items-center gap-2 text-xl font-semibold">
+          <span className="text-lg">⚠️</span>
+          <span>{title}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-text-secondary text-sm">{error}</div>
+      </CardContent>
+    </Card>
+  )
+}

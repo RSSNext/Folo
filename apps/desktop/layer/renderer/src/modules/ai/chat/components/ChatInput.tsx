@@ -8,6 +8,8 @@ import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal_
 import { AIChatContextBar } from "~/modules/ai/chat/AIChatContextBar"
 import { AIChatSendButton } from "~/modules/ai/chat/AIChatSendButton"
 
+import { CollapsibleError } from "./CollapsibleError"
+
 interface ChatInputProps {
   onSend: (message: string) => void
 }
@@ -112,26 +114,8 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
   return (
     <div className="absolute inset-x-0 bottom-0">
       <div className="mx-auto max-w-4xl p-6">
-        {/* Error Display - Floating glass morphism style */}
-        {error && (
-          <div className="animate-in slide-in-from-bottom-2 fade-in-0 mb-3 duration-300">
-            <div className="bg-red/10 border-red/20 shadow-red/5 dark:shadow-red/10 relative overflow-hidden rounded-xl border shadow-lg backdrop-blur-2xl">
-              {/* Glass effect overlay */}
-              <div className="from-red/5 absolute inset-0 bg-gradient-to-r to-transparent" />
-
-              {/* Content */}
-              <div className="relative z-10 flex items-start gap-3 p-4">
-                <div className="bg-red/20 flex size-8 flex-shrink-0 items-center justify-center rounded-full">
-                  <i className="i-mgc-alert-cute-fi text-red size-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-red text-sm font-medium">Error occurred</div>
-                  <div className="text-red/80 mt-1 text-xs leading-relaxed">{error.message}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Error Display */}
+        {error && <CollapsibleError error={error} />}
 
         {/* Integrated Input Container with Context Bar */}
         <div className="bg-background/60 focus-within:ring-accent/20 focus-within:border-accent/80 border-border/80 relative overflow-hidden rounded-2xl border shadow-2xl shadow-black/5 backdrop-blur-xl duration-200 focus-within:ring-2 dark:shadow-zinc-800">
