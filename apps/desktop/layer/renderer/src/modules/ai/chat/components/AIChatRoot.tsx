@@ -2,7 +2,6 @@ import { Chat, useChat } from "@ai-sdk/react"
 import { env } from "@follow/shared/env.desktop"
 import type { UIDataTypes, UIMessage } from "ai"
 import { DefaultChatTransport } from "ai"
-import { useSetAtom } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useMemo, useRef } from "react"
 import { toast } from "sonner"
@@ -21,11 +20,11 @@ import {
 import { createAIChatContextStore } from "../__internal__/store"
 import type { BizUIMetadata, BizUITools } from "../__internal__/types"
 import {
-  currentRoomIdAtom,
-  currentTitleAtom,
-  sessionPersistedAtom,
   useCurrentRoomId,
   useSessionPersisted,
+  useSetCurrentRoomId,
+  useSetCurrentTitle,
+  useSetSessionPersisted,
 } from "../atoms/session"
 import { useChatHistory } from "../hooks/useChatHistory"
 import { AIPersistService } from "../services"
@@ -43,9 +42,9 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
 }) => {
   const currentRoomId = useCurrentRoomId()
   const sessionPersisted = useSessionPersisted()
-  const setCurrentRoomId = useSetAtom(currentRoomIdAtom)
-  const setCurrentTitle = useSetAtom(currentTitleAtom)
-  const setSessionPersisted = useSetAtom(sessionPersistedAtom)
+  const setCurrentRoomId = useSetCurrentRoomId()
+  const setCurrentTitle = useSetCurrentTitle()
+  const setSessionPersisted = useSetSessionPersisted()
 
   const { createNewSession } = useChatHistory()
   const useAiContextStore = useMemo(createAIChatContextStore, [])

@@ -25,6 +25,7 @@ export const ChatInterface = () => {
   const { messages, status, sendMessage } = use(AIChatContext)
 
   const currentRoomId = useCurrentRoomId()
+
   const { handleFirstMessage } = useAIChatSessionMethods()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [hasHandledFirstMessage, setHasHandledFirstMessage] = useState(false)

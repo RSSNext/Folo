@@ -1,35 +1,33 @@
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { atom } from "jotai"
 import { useCallback } from "react"
 
-// Session state atoms
-export const currentRoomIdAtom = atom<string | null>(null)
-export const currentTitleAtom = atom<string | undefined>()
-export const sessionPersistedAtom = atom<boolean>(false)
+import { createAtomHooks } from "~/lib/jotai"
 
-// Hooks for accessing session state
-export const useCurrentRoomId = () => useAtomValue(currentRoomIdAtom)
-export const useCurrentTitle = () => useAtomValue(currentTitleAtom)
-export const useSessionPersisted = () => useAtomValue(sessionPersistedAtom)
+// Session state atoms with hooks
+export const [, , useCurrentRoomId, useSetCurrentRoomId, , setCurrentRoomId] = createAtomHooks(
+  atom<string | null>(null),
+)
 
-// Hooks for updating session state
-export const useSetCurrentRoomId = () => useSetAtom(currentRoomIdAtom)
-export const useSetCurrentTitle = () => useSetAtom(currentTitleAtom)
-export const useSetSessionPersisted = () => useSetAtom(sessionPersistedAtom)
+export const [, , useCurrentTitle, useSetCurrentTitle, , setCurrentTitle] =
+  createAtomHooks(atom<string | undefined>())
+
+export const [, , useSessionPersisted, useSetSessionPersisted, , setSessionPersisted] =
+  createAtomHooks(atom<boolean>(false))
 
 // Combined hook for all session state
 export const useSessionState = () => {
   return {
-    currentRoomId: useAtomValue(currentRoomIdAtom),
-    currentTitle: useAtomValue(currentTitleAtom),
-    sessionPersisted: useAtomValue(sessionPersistedAtom),
+    currentRoomId: useCurrentRoomId(),
+    currentTitle: useCurrentTitle(),
+    sessionPersisted: useSessionPersisted(),
   }
 }
 
 // Hook for session state setters
 export const useSessionSetters = () => {
-  const setCurrentRoomId = useSetAtom(currentRoomIdAtom)
-  const setCurrentTitle = useSetAtom(currentTitleAtom)
-  const setSessionPersisted = useSetAtom(sessionPersistedAtom)
+  const setCurrentRoomIdAtom = useSetCurrentRoomId()
+  const setCurrentTitleAtom = useSetCurrentTitle()
+  const setSessionPersistedAtom = useSetSessionPersisted()
 
   return useCallback(
     (updates: {
@@ -37,10 +35,10 @@ export const useSessionSetters = () => {
       currentTitle?: string | undefined
       sessionPersisted?: boolean
     }) => {
-      if (updates.currentRoomId !== undefined) setCurrentRoomId(updates.currentRoomId)
-      if (updates.currentTitle !== undefined) setCurrentTitle(updates.currentTitle)
-      if (updates.sessionPersisted !== undefined) setSessionPersisted(updates.sessionPersisted)
+      if (updates.currentRoomId !== undefined) setCurrentRoomIdAtom(updates.currentRoomId)
+      if (updates.currentTitle !== undefined) setCurrentTitleAtom(updates.currentTitle)
+      if (updates.sessionPersisted !== undefined) setSessionPersistedAtom(updates.sessionPersisted)
     },
-    [setCurrentRoomId, setCurrentTitle, setSessionPersisted],
+    [setCurrentRoomIdAtom, setCurrentTitleAtom, setSessionPersistedAtom],
   )
 }

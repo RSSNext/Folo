@@ -50,7 +50,13 @@ export const ChatHeader = () => {
       <div className="relative z-10 flex h-full items-center justify-between px-6">
         {/* Left side - Title */}
         <div className="mr-2 min-w-0 flex-1">
-          {currentTitle && <h1 className="text-text truncate font-medium">{currentTitle}</h1>}
+          {currentTitle && (
+            <h1 key={currentTitle} className="text-text truncate font-medium">
+              <span className="animate-mask-left-to-right [--animation-duration:1s]">
+                {currentTitle}
+              </span>
+            </h1>
+          )}
         </div>
 
         {/* Right side - Actions */}

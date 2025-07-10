@@ -371,7 +371,7 @@
 
 @layer utilities {
   .animate-mask-left-to-right {
-    animation: mask-left-to-right 0.5s ease-in-out forwards;
+    animation: mask-left-to-right var(--animation-duration, 0.5s) ease-in-out forwards;
   }
   @keyframes mask-left-to-right {
     0% {
