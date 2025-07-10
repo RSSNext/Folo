@@ -1,4 +1,3 @@
-import { cn } from "@follow/utils/utils"
 import Spline from "@splinetool/react-spline"
 import { useCallback, useRef } from "react"
 
@@ -6,7 +5,7 @@ import aiIconUrl from "~/assets/ai.splinecode?url"
 
 const resolvedAIIconUrl = new URL(aiIconUrl, import.meta.url).href
 
-export const AISpline = ({ className }: { className?: string }) => {
+export const AISplineLoader = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const headRef = useRef<any>(null)
   const bodyRef = useRef<any>(null)
@@ -137,7 +136,7 @@ export const AISpline = ({ className }: { className?: string }) => {
   )
 
   return (
-    <div ref={containerRef} className={cn("!size-16", className)}>
+    <div ref={containerRef} className={"!size-16"}>
       <Spline scene={resolvedAIIconUrl} onLoad={handleLoad} className="size-full" />
     </div>
   )

@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ChatInput } from "~/modules/ai/chat/components/ChatInput"
-import { AISpline } from "~/modules/ai/icon"
+
+import { AISpline } from "../../AISpline"
 
 interface WelcomeScreenProps {
   onSend: (message: string) => void

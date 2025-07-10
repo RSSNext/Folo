@@ -3,6 +3,7 @@ import { cn, nextFrame } from "@follow/utils"
 import * as React from "react"
 
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { AISpline } from "~/modules/ai/AISpline"
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import {
   AIChatMessage,
@@ -11,7 +12,6 @@ import {
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
-import { AISpline } from "~/modules/ai/icon"
 
 import { AIChatBottom } from "./AIChatBottom"
 import { AIChatInput } from "./AIChatInput"
@@ -78,7 +78,7 @@ const Welcome: React.FC = () => {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="max-w-md space-y-6 text-center">
-        <AISpline className="mx-auto size-16" />
+        <AISpline />
 
         <div>
           <h2 className="text-text mb-2 text-xl font-semibold">Welcome to {APP_NAME} AI</h2>
