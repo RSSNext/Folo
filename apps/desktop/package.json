@@ -84,7 +84,6 @@
     "unplugin-ast": "0.15.0",
     "vite-bundle-analyzer": "1.0.0",
     "vite-plugin-mkcert": "1.17.8",
-    "vite-plugin-pwa": "1.0.1",
     "vite-tsconfig-paths": "5.1.4"
   },
   "productName": "Folo",

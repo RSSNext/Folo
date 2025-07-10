@@ -4,7 +4,7 @@ import { createAtomHooks } from "~/lib/jotai"
 
 export type UpdaterStatus = "ready"
 export type UpdaterStatusAtom = {
-  type: "app" | "renderer" | "pwa"
+  type: "app" | "renderer"
   status: UpdaterStatus
   finishUpdate?: () => void
 } | null
