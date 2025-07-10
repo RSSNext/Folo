@@ -2,6 +2,7 @@ import { m } from "motion/react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useAISettingValue } from "~/atoms/settings/ai"
 import { AIChatSendButton } from "~/modules/ai/chat/AIChatSendButton"
 import { AISpline } from "~/modules/ai/icon"
 
@@ -56,6 +57,11 @@ const WelcomeChatInput = ({ onSend }: { onSend: (message: string) => void }) => 
 
 export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
   const { t } = useTranslation("ai")
+  const aiSettings = useAISettingValue()
+
+  const hasCustomPrompt = aiSettings.personalizePrompt?.trim()
+  const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6">
       <div className="w-full max-w-2xl space-y-8 text-center">
@@ -66,6 +72,14 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
           <div className="space-y-2">
             <h1 className="text-text text-2xl font-semibold">{APP_NAME} AI</h1>
             <p className="text-text-secondary text-sm">{t("welcome_description")}</p>
+            {hasCustomPrompt && (
+              <div className="bg-material-medium border-border rounded-lg border p-3 text-left">
+                <div className="text-text-secondary mb-1 text-xs font-medium">Personal Prompt:</div>
+                <p className="text-text-secondary text-xs leading-relaxed">
+                  {aiSettings.personalizePrompt}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -74,23 +88,42 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
-          {[
-            "Analyze my reading patterns",
-            "Summarize recent articles",
-            "What happened today",
-            "Find trending topics",
-          ].map((suggestion, index) => (
+          {/* Custom shortcuts first */}
+          {enabledShortcuts.slice(0, 6).map((shortcut, index) => (
             <m.button
-              key={suggestion}
+              key={shortcut.id}
               className="bg-material-medium hover:bg-material-thick border-border text-text-secondary hover:text-text rounded-full border px-4 py-2 text-xs transition-colors"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              onClick={() => onSend(suggestion)}
+              onClick={() => onSend(shortcut.prompt)}
+              title={shortcut.hotkey ? `${shortcut.name} (${shortcut.hotkey})` : shortcut.name}
             >
-              {suggestion}
+              {shortcut.name}
             </m.button>
           ))}
+
+          {/* Default suggestions if no custom shortcuts or to fill remaining space */}
+          {enabledShortcuts.length < 4 &&
+            [
+              "Analyze my reading patterns",
+              "Summarize recent articles",
+              "What happened today",
+              "Find trending topics",
+            ]
+              .slice(0, 4 - enabledShortcuts.length)
+              .map((suggestion, index) => (
+                <m.button
+                  key={suggestion}
+                  className="bg-material-medium hover:bg-material-thick border-border text-text-secondary hover:text-text rounded-full border px-4 py-2 text-xs transition-colors"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: (enabledShortcuts.length + index) * 0.1 }}
+                  onClick={() => onSend(suggestion)}
+                >
+                  {suggestion}
+                </m.button>
+              ))}
         </div>
       </div>
     </div>

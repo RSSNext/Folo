@@ -2,6 +2,7 @@ import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focus
 import { useInputComposition } from "@follow/hooks"
 import { use, useCallback, useEffect, useState } from "react"
 
+import { useAISettingValue } from "~/atoms/settings/ai"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatContextBar } from "~/modules/ai/chat/AIChatContextBar"
@@ -15,6 +16,7 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
   const { inputRef } = use(AIPanelRefsContext)
   const { status, stop, error } = use(AIChatContext)
   const [isEmpty, setIsEmpty] = useState(true)
+  const aiSettings = useAISettingValue()
 
   const isProcessing = status === "submitted" || status === "streaming"
 
@@ -48,8 +50,47 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
   }, [])
 
   const hasFocus = useGlobalFocusableScopeSelector(FocusablePresets.isAIChat)
+
+  // Helper function to normalize hotkey for comparison
+  const normalizeHotkey = (hotkey: string) => {
+    return hotkey.toLowerCase().replaceAll(/\s+/g, "")
+  }
+
+  // Helper function to create hotkey string from event
+  const createHotkeyFromEvent = (e: KeyboardEvent) => {
+    const parts: string[] = []
+    if (e.ctrlKey) parts.push("ctrl")
+    if (e.metaKey) parts.push("cmd")
+    if (e.altKey) parts.push("alt")
+    if (e.shiftKey) parts.push("shift")
+    if (e.key.length === 1) {
+      parts.push(e.key.toLowerCase())
+    } else {
+      parts.push(e.key.toLowerCase())
+    }
+    return parts.join("+")
+  }
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // Check for shortcuts first
+      if (hasFocus && aiSettings.shortcuts?.length > 0) {
+        const eventHotkey = createHotkeyFromEvent(e)
+        const matchedShortcut = aiSettings.shortcuts.find(
+          (shortcut) =>
+            shortcut.enabled &&
+            shortcut.hotkey &&
+            normalizeHotkey(shortcut.hotkey) === normalizeHotkey(eventHotkey),
+        )
+
+        if (matchedShortcut) {
+          e.preventDefault()
+          onSend(matchedShortcut.prompt)
+          return
+        }
+      }
+
+      // Original auto-focus logic
       const codePoint = e.key.codePointAt(0)
       if (
         hasFocus &&
@@ -66,7 +107,7 @@ export const ChatInput = ({ onSend }: ChatInputProps) => {
     return () => {
       window.removeEventListener("keydown", handler)
     }
-  }, [hasFocus, inputRef])
+  }, [hasFocus, inputRef, aiSettings.shortcuts, onSend])
 
   return (
     <div className="absolute inset-x-0 bottom-0">
