@@ -7,7 +7,7 @@ import { stopPropagation } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
 import Fuse from "fuse.js"
 import type { FC } from "react"
-import { useMemo, useState } from "react"
+import { memo, useMemo, useState } from "react"
 import { useDebounceCallback } from "usehooks-ts"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
@@ -25,137 +25,137 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
 import type { AIChatContextBlock } from "~/modules/ai/chat/__internal__/types"
 
-export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = ({
-  className,
-  onSendShortcut,
-}) => {
-  const blocks = useAIChatStore()((s) => s.blocks)
-  const { addBlock } = useAIChatStore()()
-  const { shortcuts } = useAISettingValue()
+export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
+  ({ className, onSendShortcut }) => {
+    const blocks = useAIChatStore()((s) => s.blocks)
+    const { addBlock } = useAIChatStore()()
+    const { shortcuts } = useAISettingValue()
 
-  // Filter enabled shortcuts
-  const enabledShortcuts = useMemo(
-    () => shortcuts.filter((shortcut) => shortcut.enabled),
-    [shortcuts],
-  )
+    // Filter enabled shortcuts
+    const enabledShortcuts = useMemo(
+      () => shortcuts.filter((shortcut) => shortcut.enabled),
+      [shortcuts],
+    )
 
-  const contextMenuContent = (
-    <DropdownMenuContent align="start">
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <i className="i-mgc-paper-cute-fi mr-1.5 size-4" />
-          Current Feed Entries
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent>
-          <CurrentFeedEntriesPickerList
-            onSelect={(entryId) =>
-              addBlock({
-                type: "referEntry",
-                value: entryId,
-              })
-            }
-          />
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-      <DropdownMenuSeparator />
+    const contextMenuContent = (
+      <DropdownMenuContent align="start">
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <i className="i-mgc-paper-cute-fi mr-1.5 size-4" />
+            Current Feed Entries
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <CurrentFeedEntriesPickerList
+              onSelect={(entryId) =>
+                addBlock({
+                  type: "referEntry",
+                  value: entryId,
+                })
+              }
+            />
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
 
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <i className="i-mgc-paper-cute-fi mr-1.5 size-4" />
-          Reference Entry
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent>
-          <RecentEntriesPickerList
-            onSelect={(entryId) =>
-              addBlock({
-                type: "referEntry",
-                value: entryId,
-              })
-            }
-          />
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <i className="i-mgc-rss-cute-fi mr-1.5 size-4" />
-          Reference Feed
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent>
-          <FeedPickerList
-            onSelect={(feedId) =>
-              addBlock({
-                type: "referFeed",
-                value: feedId,
-              })
-            }
-          />
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-    </DropdownMenuContent>
-  )
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <i className="i-mgc-paper-cute-fi mr-1.5 size-4" />
+            Reference Entry
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <RecentEntriesPickerList
+              onSelect={(entryId) =>
+                addBlock({
+                  type: "referEntry",
+                  value: entryId,
+                })
+              }
+            />
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <i className="i-mgc-rss-cute-fi mr-1.5 size-4" />
+            Reference Feed
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <FeedPickerList
+              onSelect={(feedId) =>
+                addBlock({
+                  type: "referFeed",
+                  value: feedId,
+                })
+              }
+            />
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+      </DropdownMenuContent>
+    )
 
-  const shortcutsMenuContent = (
-    <DropdownMenuContent align="start">
-      {enabledShortcuts.length === 0 ? (
-        <div className="text-text-tertiary p-3 text-center text-xs">No shortcuts configured</div>
-      ) : (
-        enabledShortcuts.map((shortcut) => (
-          <DropdownMenuItem
-            key={shortcut.id}
-            onClick={() => onSendShortcut?.(shortcut.prompt)}
-            className="text-xs"
-            shortcut={shortcut.hotkey}
-          >
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-2">
-                <i className="i-mgc-magic-2-cute-re size-3.5" />
-                <span className="truncate">{shortcut.name}</span>
+    const shortcutsMenuContent = (
+      <DropdownMenuContent align="start">
+        {enabledShortcuts.length === 0 ? (
+          <div className="text-text-tertiary p-3 text-center text-xs">No shortcuts configured</div>
+        ) : (
+          enabledShortcuts.map((shortcut) => (
+            <DropdownMenuItem
+              key={shortcut.id}
+              onClick={() => onSendShortcut?.(shortcut.prompt)}
+              className="text-xs"
+              shortcut={shortcut.hotkey}
+            >
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <i className="i-mgc-magic-2-cute-re size-3.5" />
+                  <span className="truncate">{shortcut.name}</span>
+                </div>
               </div>
-            </div>
-          </DropdownMenuItem>
-        ))
-      )}
-    </DropdownMenuContent>
-  )
+            </DropdownMenuItem>
+          ))
+        )}
+      </DropdownMenuContent>
+    )
 
-  return (
-    <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
-      {/* Add Context Button */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-          >
-            <i className="i-mgc-add-cute-re size-3.5" />
-          </button>
-        </DropdownMenuTrigger>
-        {contextMenuContent}
-      </DropdownMenu>
-
-      {/* AI Shortcuts Button */}
-      {enabledShortcuts.length > 0 && (
+    return (
+      <div className={cn("flex flex-wrap items-center gap-2 px-4 py-3", className)}>
+        {/* Add Context Button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
               className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
-              title="AI Shortcuts"
             >
-              <i className="i-mgc-magic-2-cute-re size-3.5" />
+              <i className="i-mgc-add-cute-re size-3.5" />
             </button>
           </DropdownMenuTrigger>
-          {shortcutsMenuContent}
+          {contextMenuContent}
         </DropdownMenu>
-      )}
 
-      {/* Context Blocks */}
-      {blocks.map((block) => (
-        <ContextBlock key={block.id} block={block} />
-      ))}
-    </div>
-  )
-}
+        {/* AI Shortcuts Button */}
+        {enabledShortcuts.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+                title="AI Shortcuts"
+              >
+                <i className="i-mgc-magic-2-cute-re size-3.5" />
+              </button>
+            </DropdownMenuTrigger>
+            {shortcutsMenuContent}
+          </DropdownMenu>
+        )}
+
+        {/* Context Blocks */}
+        {blocks.map((block) => (
+          <ContextBlock key={block.id} block={block} />
+        ))}
+      </div>
+    )
+  },
+)
+AIChatContextBar.displayName = "AIChatContextBar"
 
 // Generic Picker Component
 interface PickerItem {

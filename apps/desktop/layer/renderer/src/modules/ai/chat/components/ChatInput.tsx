@@ -2,7 +2,7 @@ import { useInputComposition } from "@follow/hooks"
 import { cn } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
-import { use, useCallback, useState } from "react"
+import { memo, use, useCallback, useState } from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatContextBar } from "~/modules/ai/chat/components/AIChatContextBar"
@@ -32,7 +32,7 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
   onSend: (message: string) => void
 }
 
-export const ChatInput = ({ onSend, variant }: ChatInputProps) => {
+export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
   const { inputRef } = use(AIPanelRefsContext)
   const { status, stop, error } = use(AIChatContext)
   const [isEmpty, setIsEmpty] = useState(true)
@@ -106,4 +106,6 @@ export const ChatInput = ({ onSend, variant }: ChatInputProps) => {
       </div>
     </div>
   )
-}
+})
+
+ChatInput.displayName = "ChatInput"

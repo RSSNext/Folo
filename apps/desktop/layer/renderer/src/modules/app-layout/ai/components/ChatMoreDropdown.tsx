@@ -106,7 +106,7 @@ export const ChatMoreDropdown = () => {
             <i className="i-mgc-history-cute-re size-4" />
             <span>Chat History</span>
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-72 p-2">
+          <DropdownMenuSubContent className="max-h-96 w-72 overflow-y-auto p-2">
             {loading ? (
               <div className="flex items-center justify-center py-8">
                 <i className="i-mgc-loading-3-cute-re text-text-secondary size-5 animate-spin" />
@@ -136,7 +136,7 @@ export const ChatMoreDropdown = () => {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteSession(session.roomId, e)}
-                        className="hover:text-red bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-hover:opacity-100"
+                        className="group-data-[highlighted]:text-red bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:opacity-100"
                         disabled={deletingRoomId === session.roomId}
                       >
                         {deletingRoomId === session.roomId ? (

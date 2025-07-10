@@ -22,7 +22,7 @@ interface MessagePartsProps {
   message: BizUIMessage
 }
 
-export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
+export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message }) => {
   if (!message.parts || message.parts.length === 0) {
     // In AI SDK v5, messages should always have parts
     if (message.role === "assistant") {
@@ -88,4 +88,6 @@ export const AIMessageParts: React.FC<MessagePartsProps> = ({ message }) => {
       })}
     </>
   )
-}
+})
+
+AIMessageParts.displayName = "AIMessageParts"
