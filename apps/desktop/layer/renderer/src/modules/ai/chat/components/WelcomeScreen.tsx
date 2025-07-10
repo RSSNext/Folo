@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { ChatInput } from "~/modules/ai/chat/components/ChatInput"
+import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { AISpline } from "../../AISpline"
 
@@ -13,6 +14,7 @@ interface WelcomeScreenProps {
 export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
   const { t } = useTranslation("ai")
   const aiSettings = useAISettingValue()
+  const settingModalPresent = useSettingModal()
 
   const hasCustomPrompt = aiSettings.personalizePrompt?.trim()
   const enabledShortcuts = aiSettings.shortcuts?.filter((shortcut) => shortcut.enabled) || []
@@ -29,7 +31,19 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
             <p className="text-text-secondary text-sm">{t("welcome_description")}</p>
             {hasCustomPrompt && (
               <div className="bg-material-medium border-border mx-auto mt-2 w-full max-w-2xl rounded-lg border p-3 text-left">
-                <div className="text-text-secondary mb-1 text-xs font-medium">Personal Prompt:</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-text-secondary mb-1 text-xs font-medium">
+                    Personal Prompt:
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => settingModalPresent("ai")}
+                    className="text-text-tertiary hover:text-text-secondary flex size-5 items-center justify-center rounded transition-colors"
+                    title="Edit in Settings"
+                  >
+                    <i className="i-mgc-edit-cute-re size-3.5" />
+                  </button>
+                </div>
                 <p className="text-text-secondary text-xs leading-relaxed">
                   {aiSettings.personalizePrompt}
                 </p>
