@@ -1,5 +1,5 @@
 import { useInputComposition } from "@follow/hooks"
-import { cn } from "@follow/utils"
+import { cn, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
 import { memo, use, useCallback, useState } from "react"
@@ -78,6 +78,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
         {/* Input Area */}
         <div className="relative z-10 flex items-end">
           <textarea
+            onContextMenu={stopPropagation}
             ref={inputRef}
             onChange={handleChange}
             {...inputProps}

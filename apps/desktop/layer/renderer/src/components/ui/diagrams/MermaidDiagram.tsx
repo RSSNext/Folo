@@ -175,7 +175,6 @@ export const MermaidDiagram = memo<MermaidDiagramProps>(({ code, className, shou
       <div className="flex justify-center p-6">
         {isLoading && (
           <div className="text-text-secondary flex items-center gap-2 text-sm">
-            <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
             <span>Rendering diagram...</span>
           </div>
         )}
