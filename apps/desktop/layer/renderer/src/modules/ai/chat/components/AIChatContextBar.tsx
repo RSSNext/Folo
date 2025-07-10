@@ -40,7 +40,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
   )
 
   const contextMenuContent = (
-    <DropdownMenuContent>
+    <DropdownMenuContent align="start">
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <i className="i-mgc-paper-cute-fi mr-1.5 size-4" />
@@ -95,7 +95,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
   )
 
   const shortcutsMenuContent = (
-    <DropdownMenuContent>
+    <DropdownMenuContent align="start">
       {enabledShortcuts.length === 0 ? (
         <div className="text-text-tertiary p-3 text-center text-xs">No shortcuts configured</div>
       ) : (
@@ -104,15 +104,13 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
             key={shortcut.id}
             onClick={() => onSendShortcut?.(shortcut.prompt)}
             className="text-xs"
+            shortcut={shortcut.hotkey}
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-magic-2-cute-re size-3.5" />
                 <span className="truncate">{shortcut.name}</span>
               </div>
-              {shortcut.hotkey && (
-                <span className="text-text-tertiary text-xs opacity-60">{shortcut.hotkey}</span>
-              )}
             </div>
           </DropdownMenuItem>
         ))

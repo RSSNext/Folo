@@ -154,9 +154,12 @@ const DropdownMenuItem = ({
     {/* Justify Fill */}
     {!!icon && <span className="ml-1.5 size-4" />}
     {!!shortcut && (
-      <Kbd wrapButton={false} className="ml-auto">
-        {shortcut}
-      </Kbd>
+      <>
+        <span className="ml-4" />
+        <Kbd wrapButton={false} className="ml-auto">
+          {shortcut}
+        </Kbd>
+      </>
     )}
   </DropdownMenuPrimitive.Item>
 )
