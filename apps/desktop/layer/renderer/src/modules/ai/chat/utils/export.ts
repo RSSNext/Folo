@@ -41,11 +41,11 @@ export const exportChatToMarkdown = (
       markdown += `${textContent}\n\n`
 
       // Add tool invocations if any
-      const toolParts = message.parts?.filter((part) => part.type === "tool-call")
+      const toolParts = message.parts?.filter((part) => part.type.startsWith("tool-"))
       if (toolParts && toolParts.length > 0) {
         markdown += `\n### 🔧 Tools Used:\n`
         toolParts.forEach((tool) => {
-          markdown += `- **${tool.name}**\n`
+          markdown += `- **${tool.type}**\n`
         })
         markdown += "\n"
       }

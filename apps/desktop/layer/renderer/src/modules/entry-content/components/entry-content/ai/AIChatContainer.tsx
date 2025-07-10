@@ -4,7 +4,10 @@ import * as React from "react"
 
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
-import { AIChatMessage, AIChatTypingIndicator } from "~/modules/ai/chat/AIChatMessage"
+import {
+  AIChatMessage,
+  AIChatTypingIndicator,
+} from "~/modules/ai/chat/components/message/AIChatMessage"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"

@@ -7,9 +7,10 @@ import {
 } from "@follow/components/ui/card/index.js"
 import dayjs from "dayjs"
 
-import { FeedIcon } from "../../../feed/feed-icon"
-import type { AIDisplayFeedsTool } from "../__internal__/types"
-import { ErrorState, LoadingState } from "../components/common-states"
+import { FeedIcon } from "~/modules/feed/feed-icon"
+
+import type { AIDisplayFeedsTool } from "../../__internal__/types"
+import { ErrorState, LoadingState } from "../common-states"
 import { AnalyticsMetrics, EmptyState, GridContainer, StatCard } from "./shared"
 
 type FeedData = AIDisplayFeedsTool["output"]["feeds"]

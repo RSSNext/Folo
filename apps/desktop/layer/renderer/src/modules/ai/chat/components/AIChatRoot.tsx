@@ -11,25 +11,25 @@ import { useEventCallback } from "usehooks-ts"
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
-import type { AIChatSessionMethods, AIPanelRefs } from "./__internal__/AIChatContext"
+import type { AIChatSessionMethods, AIPanelRefs } from "../__internal__/AIChatContext"
 import {
   AIChatContext,
   AIChatContextStoreContext,
   AIChatSessionMethodsContext,
   AIPanelRefsContext,
-} from "./__internal__/AIChatContext"
-import { createAIChatContextStore } from "./__internal__/store"
-import type { BizUIMetadata, BizUITools } from "./__internal__/types"
+} from "../__internal__/AIChatContext"
+import { createAIChatContextStore } from "../__internal__/store"
+import type { BizUIMetadata, BizUITools } from "../__internal__/types"
 import {
   currentRoomIdAtom,
   currentTitleAtom,
   sessionPersistedAtom,
   useCurrentRoomId,
   useSessionPersisted,
-} from "./atoms/session"
-import { useChatHistory } from "./hooks/useChatHistory"
-import { AIPersistService } from "./services/index"
-import { generateChatTitle } from "./utils/titleGeneration"
+} from "../atoms/session"
+import { useChatHistory } from "../hooks/useChatHistory"
+import { AIPersistService } from "../services"
+import { generateChatTitle } from "../utils/titleGeneration"
 
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean

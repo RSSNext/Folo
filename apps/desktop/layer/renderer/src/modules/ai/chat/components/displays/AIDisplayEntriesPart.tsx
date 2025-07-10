@@ -10,10 +10,10 @@ import dayjs from "dayjs"
 import { memo } from "react"
 
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
+import { FeedIcon } from "~/modules/feed/feed-icon"
 
-import { FeedIcon } from "../../../feed/feed-icon"
-import type { AIDisplayEntriesTool } from "../__internal__/types"
-import { ErrorState, LoadingState } from "../components/common-states"
+import type { AIDisplayEntriesTool } from "../../__internal__/types"
+import { ErrorState, LoadingState } from "../common-states"
 import { CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
 
 type EntryData = AIDisplayEntriesTool["output"]["entries"]

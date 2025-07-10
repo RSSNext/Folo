@@ -9,14 +9,14 @@ import type {
   BizUIMessage,
 } from "~/modules/ai/chat/__internal__/types"
 
-import { AIMarkdownMessage } from "./AIMarkdownMessage"
 import {
   AIDisplayAnalyticsPart,
   AIDisplayEntriesPart,
   AIDisplayFeedsPart,
   AIDisplaySubscriptionsPart,
-} from "./displays"
-import { ToolInvocationComponent } from "./ToolInvocationComponent"
+} from "../displays"
+import { ToolInvocationComponent } from "../ToolInvocationComponent"
+import { AIMarkdownMessage } from "./AIMarkdownMessage"
 
 interface MessagePartsProps {
   message: BizUIMessage

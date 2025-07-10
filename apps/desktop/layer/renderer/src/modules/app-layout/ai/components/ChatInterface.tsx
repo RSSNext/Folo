@@ -2,14 +2,18 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { nextFrame } from "@follow/utils"
 import { springScrollTo } from "@follow/utils/scroller"
 import { use, useCallback, useEffect, useRef, useState } from "react"
+import { useEventCallback } from "usehooks-ts"
 
 import {
   AIChatContext,
   useAIChatSessionMethods,
 } from "~/modules/ai/chat/__internal__/AIChatContext"
-import { AIChatMessage, AIChatTypingIndicator } from "~/modules/ai/chat/AIChatMessage"
 import { useCurrentRoomId } from "~/modules/ai/chat/atoms/session"
 import { ChatInput } from "~/modules/ai/chat/components/ChatInput"
+import {
+  AIChatMessage,
+  AIChatTypingIndicator,
+} from "~/modules/ai/chat/components/message/AIChatMessage"
 import { WelcomeScreen } from "~/modules/ai/chat/components/WelcomeScreen"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
@@ -78,25 +82,22 @@ export const ChatInterface = () => {
     springScrollTo(scrollElement.scrollHeight, scrollElement)
   }, [])
 
-  const handleSendMessage = useCallback(
-    (message: string) => {
-      resetScrollState()
+  const handleSendMessage = useEventCallback((message: string) => {
+    resetScrollState()
 
-      // Handle first message persistence
-      if (messages.length === 0 && !hasHandledFirstMessage) {
-        handleFirstMessage()
-        setHasHandledFirstMessage(true)
-      }
+    // Handle first message persistence
+    if (messages.length === 0 && !hasHandledFirstMessage) {
+      handleFirstMessage()
+      setHasHandledFirstMessage(true)
+    }
 
-      sendMessage({
-        text: message,
-        metadata: {
-          finishTime: new Date().toISOString(),
-        },
-      })
-    },
-    [sendMessage, resetScrollState, messages.length, hasHandledFirstMessage, handleFirstMessage],
-  )
+    sendMessage({
+      text: message,
+      metadata: {
+        finishTime: new Date().toISOString(),
+      },
+    })
+  })
 
   useEffect(() => {
     if (status === "submitted") {
@@ -153,7 +154,11 @@ export const ChatInterface = () => {
         </div>
       )}
 
-      {hasMessages && <ChatInput onSend={handleSendMessage} />}
+      {hasMessages && (
+        <div className="absolute inset-x-0 bottom-0 mx-auto max-w-4xl p-6">
+          <ChatInput onSend={handleSendMessage} />
+        </div>
+      )}
     </div>
   )
 }

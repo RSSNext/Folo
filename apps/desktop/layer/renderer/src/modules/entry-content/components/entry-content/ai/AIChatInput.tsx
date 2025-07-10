@@ -2,7 +2,7 @@ import { cn } from "@follow/utils"
 import * as React from "react"
 
 import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
-import { AIChatSendButton } from "~/modules/ai/chat/AIChatSendButton"
+import { AIChatSendButton } from "~/modules/ai/chat/components/AIChatSendButton"
 
 interface AIChatInputProps {
   value?: string

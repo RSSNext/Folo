@@ -1,6 +1,6 @@
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
-import { AIChatRoot } from "~/modules/ai/chat/AIChatRoot"
+import { AIChatRoot } from "~/modules/ai/chat/components/AIChatRoot"
 
 import { ChatHeader } from "./components/ChatHeader"
 import { ChatInterface } from "./components/ChatInterface"
