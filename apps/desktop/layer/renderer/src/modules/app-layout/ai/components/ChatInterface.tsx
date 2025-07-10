@@ -1,5 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
-import { nextFrame } from "@follow/utils"
+import { cn, nextFrame } from "@follow/utils"
 import { springScrollTo } from "@follow/utils/scroller"
 import { use, useCallback, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
@@ -22,7 +22,7 @@ import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
 const SCROLL_BOTTOM_THRESHOLD = 50
 
 export const ChatInterface = () => {
-  const { messages, status, sendMessage } = use(AIChatContext)
+  const { messages, status, sendMessage, error } = use(AIChatContext)
 
   const currentRoomId = useCurrentRoomId()
 
@@ -116,7 +116,11 @@ export const ChatInterface = () => {
         {!hasMessages && !isLoadingHistory ? (
           <WelcomeScreen onSend={handleSendMessage} />
         ) : (
-          <ScrollArea ref={scrollAreaRef} rootClassName="flex-1" viewportClassName="pt-12 pb-32">
+          <ScrollArea
+            ref={scrollAreaRef}
+            rootClassName="flex-1"
+            viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
+          >
             {isLoadingHistory ? (
               <div className="flex min-h-96 items-center justify-center">
                 <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />

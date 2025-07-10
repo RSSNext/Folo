@@ -1,4 +1,3 @@
-import { useIsDark } from "@follow/hooks"
 import { cn } from "@follow/utils"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 
@@ -25,7 +24,6 @@ export const MermaidDiagram = memo<MermaidDiagramProps>(({ code, className, shou
     }
   }, [imageUrl, previewMedia])
 
-  const isDark = useIsDark()
   useEffect(() => {
     if (!shouldRender) return
 
@@ -44,7 +42,7 @@ export const MermaidDiagram = memo<MermaidDiagramProps>(({ code, className, shou
         // Initialize mermaid with better spacing configuration
         mermaid.initialize({
           startOnLoad: false,
-          theme: isDark ? "dark" : "default",
+          theme: "default",
           securityLevel: "loose", // Allow HTML in diagrams
           fontFamily: "system-ui, sans-serif",
           flowchart: {
@@ -134,7 +132,7 @@ export const MermaidDiagram = memo<MermaidDiagramProps>(({ code, className, shou
     return () => {
       mounted = false
     }
-  }, [code, isDark, shouldRender])
+  }, [code, shouldRender])
 
   if (error) {
     return (
