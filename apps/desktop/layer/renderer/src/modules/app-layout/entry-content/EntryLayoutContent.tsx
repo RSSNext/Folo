@@ -5,7 +5,9 @@ import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
+import { useParams } from "react-router"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
@@ -20,8 +22,53 @@ import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-c
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 import { AIChatLayout } from "../ai/AIChatLayout"
+import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
 
-export const RightContent = () => {
+const EntryLayoutContentLegacy = () => {
+  const { entryId } = useParams()
+  const { view } = useRouteParams()
+  const navigate = useNavigateEntry()
+
+  const settingWideMode = useRealInWideMode()
+  const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
+  const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
+  const wideMode = !!(settingWideMode && realEntryId)
+  const feedColumnTempShow = useTimelineColumnTempShow()
+  const feedColumnShow = useTimelineColumnShow()
+  const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
+
+  if (!showEntryContent) {
+    return null
+  }
+
+  return (
+    <AppLayoutGridContainerProvider>
+      <EntryGridContainer wideMode={wideMode}>
+        {wideMode && (
+          <FixedModalCloseButton
+            className="no-drag-region macos:translate-y-margin-macos-traffic-light-y absolute left-4 top-4 z-10"
+            onClick={() => navigate({ entryId: null })}
+          />
+        )}
+        {realEntryId ? (
+          <EntryContent
+            entryId={realEntryId}
+            classNames={{
+              header: shouldHeaderPaddingLeft
+                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
+                : wideMode
+                  ? "ml-12"
+                  : "",
+            }}
+          />
+        ) : !settingWideMode ? (
+          <EntryContentPlaceholder />
+        ) : null}
+      </EntryGridContainer>
+    </AppLayoutGridContainerProvider>
+  )
+}
+const EntryLayoutContentWithAI = () => {
   const { entryId, view } = useRouteParams()
   const navigate = useNavigateEntry()
 
@@ -49,6 +96,13 @@ export const RightContent = () => {
   )
 }
 
+export const EntryLayoutContent = () => {
+  const serverConfigs = useServerConfigs()
+  if (serverConfigs?.AI_CHAT_ENABLED) {
+    return <EntryLayoutContentWithAI />
+  }
+  return <EntryLayoutContentLegacy />
+}
 const Grid = ({ entryId }) => {
   const settingWideMode = useRealInWideMode()
 

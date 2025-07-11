@@ -66,6 +66,7 @@ const SummaryDetailContent = () => {
           onClick={() => setOpenedSummary(null)}
           size="sm"
           className="opacity-100"
+          variant="flat"
         >
           <i className="i-mgc-close-cute-re" />
         </GlassButton>

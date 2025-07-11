@@ -1,1 +1,1 @@
-export { RightContent as RightContentLayout } from "./RightContent"
+export { EntryLayoutContent as RightContentLayout } from "./EntryLayoutContent"

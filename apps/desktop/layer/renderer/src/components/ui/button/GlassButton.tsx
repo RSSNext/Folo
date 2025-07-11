@@ -49,8 +49,8 @@ const glassButtonVariants = cva(
       },
       theme: {
         light: ["text-gray-700 hover:text-gray-900"],
-        dark: ["text-white"],
-        auto: ["text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-white"],
+        dark: ["text-white hover:text-white"],
+        auto: ["text-text hover:text-text-vibrant"],
       },
       variant: {
         glass: ["backdrop-blur-md border shadow-lg"],
@@ -63,17 +63,17 @@ const glassButtonVariants = cva(
         variant: "glass",
         theme: "light",
         className: [
-          "bg-white/40 hover:bg-white/60",
-          "border-gray-400/30 hover:border-gray-500/40",
-          "shadow-gray-400/30",
+          "bg-material-thin hover:bg-material-medium",
+          "border-gray/30 hover:border-gray/40",
+          "shadow-gray/30",
         ],
       },
       {
         variant: "glass",
         theme: "dark",
         className: [
-          "bg-black/20 hover:bg-black/40",
-          "border-white/10 hover:border-white/20",
+          "bg-material-ultra-thin hover:bg-material-thin",
+          "border-gray/10 hover:border-gray/20",
           "shadow-black/25",
         ],
       },
@@ -81,28 +81,31 @@ const glassButtonVariants = cva(
         variant: "glass",
         theme: "auto",
         className: [
-          "bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/40",
-          "border-gray-400/30 hover:border-gray-500/40 dark:border-white/10 dark:hover:border-white/20",
-          "shadow-gray-400/30 dark:shadow-black/25",
+          "bg-material-thin hover:bg-material-medium",
+          "border-gray/30 hover:border-gray/40",
+          "shadow-gray/30",
         ],
       },
       // Flat variant themes
       {
         variant: "flat",
         theme: "light",
-        className: ["bg-gray-100 hover:bg-gray-200", "border-gray-300 hover:border-gray-400"],
+        className: ["bg-white/80 hover:bg-white/90", "border-gray/20 hover:border-gray/30"],
       },
       {
         variant: "flat",
         theme: "dark",
-        className: ["bg-gray-800 hover:bg-gray-700", "border-gray-700 hover:border-gray-600"],
+        className: [
+          "bg-fill-secondary hover:bg-fill-tertiary",
+          "border-gray/20 hover:border-gray/30",
+        ],
       },
       {
         variant: "flat",
         theme: "auto",
         className: [
-          "bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
-          "border-gray-300 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-600",
+          "bg-white/80 hover:bg-white/90 dark:bg-fill-secondary dark:hover:bg-fill-tertiary",
+          "border-gray/20 hover:border-gray/30",
         ],
       },
     ],
@@ -119,9 +122,9 @@ const glassOverlayVariants = cva(
   {
     variants: {
       theme: {
-        light: "from-white/10 to-white/30",
-        dark: "from-white/5 to-white/20",
-        auto: "from-white/10 to-white/30 dark:from-white/5 dark:to-white/20",
+        light: "from-material-opaque/10 to-material-opaque/30",
+        dark: "from-material-opaque/5 to-material-opaque/20",
+        auto: "from-material-opaque/10 to-material-opaque/30",
       },
     },
     defaultVariants: {
@@ -133,9 +136,9 @@ const glassOverlayVariants = cva(
 const glassInnerShadowVariants = cva("absolute inset-0 rounded-full shadow-inner", {
   variants: {
     theme: {
-      light: "shadow-gray-300/20",
+      light: "shadow-gray/20",
       dark: "shadow-black/10",
-      auto: "shadow-gray-300/20 dark:shadow-black/10",
+      auto: "shadow-gray/20 dark:shadow-black/10",
     },
   },
   defaultVariants: {
