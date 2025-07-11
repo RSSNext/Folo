@@ -400,11 +400,12 @@ export const useEntryActions = ({
     view,
     isInCollection,
     entry?.url,
-    entry?.publishedAt,
-    entry?.hasContent,
-    entry?.read,
-    entry?.readability,
     entry?.imagesLength,
+    entry?.publishedAt,
+    entry?.read,
+    entry?.hasContent,
+    entry?.readability,
+    entry?.doesContentContainsHTMLTags,
     isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
@@ -413,8 +414,8 @@ export const useEntryActions = ({
     isShowAITranslationOnce,
     compact,
     isEntryInReadability,
-    entry?.doesContentContainsHTMLTags,
     isShowAIChatPinned,
+    aiEnabled,
   ])
 
   return actionConfigs
