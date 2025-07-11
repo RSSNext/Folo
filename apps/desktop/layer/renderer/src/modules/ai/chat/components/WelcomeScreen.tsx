@@ -10,6 +10,12 @@ import { AISpline } from "../../AISpline"
 interface WelcomeScreenProps {
   onSend: (message: string) => void
 }
+const DEFAULT_SHORTCUTS = [
+  "Generate today daily report",
+  "Analyze my reading patterns",
+  "Summarize recent articles",
+  "What happened today",
+]
 
 export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
   const { t } = useTranslation("ai")
@@ -74,20 +80,18 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
 
           {/* Default suggestions if no custom shortcuts or to fill remaining space */}
           {enabledShortcuts.length < 4 &&
-            ["Analyze my reading patterns", "Summarize recent articles", "What happened today"]
-              .slice(0, 4 - enabledShortcuts.length)
-              .map((suggestion, index) => (
-                <m.button
-                  key={suggestion}
-                  className="bg-material-medium hover:bg-material-thick border-border text-text-secondary hover:text-text whitespace-nowrap rounded-full border px-4 py-2 text-xs transition-colors"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: (enabledShortcuts.length + index) * 0.1 }}
-                  onClick={() => onSend(suggestion)}
-                >
-                  {suggestion}
-                </m.button>
-              ))}
+            DEFAULT_SHORTCUTS.slice(0, 4 - enabledShortcuts.length).map((suggestion, index) => (
+              <m.button
+                key={suggestion}
+                className="bg-material-medium hover:bg-material-thick border-border text-text-secondary hover:text-text whitespace-nowrap rounded-full border px-4 py-2 text-xs transition-colors"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: (enabledShortcuts.length + index) * 0.1 }}
+                onClick={() => onSend(suggestion)}
+              >
+                {suggestion}
+              </m.button>
+            ))}
         </div>
       </div>
     </div>
