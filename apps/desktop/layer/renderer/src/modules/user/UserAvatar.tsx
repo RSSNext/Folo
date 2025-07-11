@@ -1,14 +1,17 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
-import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
+import { UserRole } from "@follow/constants"
+import { usePrefetchUser, useUserById, useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { getColorScheme, stringToHue } from "@follow/utils/color"
 import { cn } from "@follow/utils/utils"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
 import { usePresentUserProfileModal } from "~/modules/profile/hooks"
 import { useSession } from "~/queries/auth"
 
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
+import { UserProBadge } from "./UserProBadge"
 
 export const UserAvatar = ({
   ref,
@@ -28,10 +31,13 @@ export const UserAvatar = ({
   enableModal?: boolean
 } & LoginProps &
   React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement | null> }) => {
+  const serverConfig = useServerConfigs()
+
   const { status } = useSession({
     enabled: !userId,
   })
   const whoami = useWhoami()
+  const role = useUserRole()
   const presentUserProfile = usePresentUserProfileModal("drawer")
 
   usePrefetchUser(userId)
@@ -55,7 +61,7 @@ export const UserAvatar = ({
       }}
       {...props}
       className={cn(
-        "text-text-secondary flex h-20 items-center justify-center gap-2 px-5 py-2 font-medium",
+        "text-text-secondary relative flex h-20 items-center justify-center gap-2 px-5 py-2 font-medium",
         className,
       )}
     >
@@ -76,6 +82,16 @@ export const UserAvatar = ({
           {renderUserData?.name?.[0]}
         </AvatarFallback>
       </Avatar>
+      {serverConfig?.REFERRAL_ENABLED &&
+        !userId &&
+        role !== UserRole.Free &&
+        role !== UserRole.Trial && (
+          <UserProBadge
+            className="absolute bottom-0 right-0 -mb-[6%] -mr-[6%] size-2/5 max-h-5 max-w-5"
+            iconClassName="size-full"
+            role={role}
+          />
+        )}
       {!hideName && <div>{renderUserData?.name || renderUserData?.handle}</div>}
     </div>
   )

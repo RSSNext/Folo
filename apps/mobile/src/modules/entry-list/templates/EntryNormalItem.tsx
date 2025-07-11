@@ -9,21 +9,17 @@ import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
 import type { ImageErrorEventData } from "react-native"
-import { StyleSheet, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
 import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
-import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
 import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"
-import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
-import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
-import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
-import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
+import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
 import { getAttachmentState, player } from "@/src/lib/player"
@@ -275,25 +271,7 @@ const ThumbnailImage = ({
       {imageError && <FeedIcon feed={feed} size={96} />}
 
       {(video || audio) && (
-        <NativePressable
-          className="absolute inset-0 flex items-center justify-center"
-          onPress={handlePressPlay}
-        >
-          <View className="overflow-hidden rounded-full p-2">
-            <ThemedBlurView
-              style={StyleSheet.absoluteFillObject}
-              intensity={30}
-              experimentalBlurMethod="none"
-            />
-            {isPlaying ? (
-              <PauseCuteFiIcon color="white" width={24} height={24} />
-            ) : isLoading ? (
-              <PlatformActivityIndicator />
-            ) : (
-              <PlayCuteFiIcon color="white" width={24} height={24} />
-            )}
-          </View>
-        </NativePressable>
+        <PlayerAction isPlaying={isPlaying} isLoading={isLoading} onPress={handlePressPlay} />
       )}
     </View>
   )

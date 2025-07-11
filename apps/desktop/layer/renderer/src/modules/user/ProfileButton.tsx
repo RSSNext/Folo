@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
 import rsshubLogoUrl from "~/assets/rsshub-icon.png?url"
-import { useIsInMASReview } from "~/atoms/server-configs"
+import { useIsInMASReview, useServerConfigs } from "~/atoms/server-configs"
 import { useIsZenMode, useSetZenMode } from "~/atoms/settings/ui"
 import {
   DropdownMenu,
@@ -35,6 +35,7 @@ import { useCommandShortcuts } from "../command/hooks/use-command-binding"
 import type { LoginProps } from "./LoginButton"
 import { LoginButton } from "./LoginButton"
 import { UserAvatar } from "./UserAvatar"
+import { UserProBadge } from "./UserProBadge"
 
 const rsshubLogo = new URL(rsshubLogoUrl, import.meta.url).href
 
@@ -43,6 +44,7 @@ export type ProfileButtonProps = LoginProps & {
 }
 
 export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
+  const serverConfig = useServerConfigs()
   const { status, session } = useSession()
   const { user } = session || {}
   const settingModalPresent = useSettingModal()
@@ -89,12 +91,25 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
             <EllipsisHorizontalTextWithTooltip className="mx-auto max-w-[20ch] truncate text-lg">
               {user?.name}
             </EllipsisHorizontalTextWithTooltip>
-            {!!user?.handle && (
-              <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
-                <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
-                  @{user.handle}
-                </EllipsisHorizontalTextWithTooltip>
-              </a>
+            {serverConfig?.REFERRAL_ENABLED ? (
+              <UserProBadge
+                role={role}
+                withText
+                className="mt-0.5 w-full justify-center"
+                onClick={() => {
+                  settingModalPresent("plan")
+                }}
+              />
+            ) : (
+              <>
+                {!!user?.handle && (
+                  <a href={UrlBuilder.profile(user.handle)} target="_blank" className="block">
+                    <EllipsisHorizontalTextWithTooltip className="mt-0.5 truncate text-xs font-medium text-zinc-500">
+                      @{user.handle}
+                    </EllipsisHorizontalTextWithTooltip>
+                  </a>
+                )}
+              </>
             )}
           </div>
         </DropdownMenuLabel>
@@ -114,7 +129,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
         <DropdownMenuItem
           className="pl-3"
           onClick={() => {
-            if (role !== UserRole.Trial) {
+            if (role !== UserRole.Trial && role !== UserRole.Free) {
               presentAchievement()
             } else {
               presentActivationModal()

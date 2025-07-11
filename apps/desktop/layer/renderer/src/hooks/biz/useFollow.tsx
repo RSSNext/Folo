@@ -28,7 +28,7 @@ const useCanFollowMoreInboxAndNotify = () => {
   const serverConfigs = useServerConfigs()
 
   return useEventCallback((type: "list" | "feed") => {
-    if (role === UserRole.Trial) {
+    if (role === UserRole.Free || role === UserRole.Trial) {
       const LIMIT =
         (type !== "list"
           ? serverConfigs?.MAX_TRIAL_USER_FEED_SUBSCRIPTION

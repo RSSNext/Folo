@@ -1,5 +1,4 @@
 import { Item } from "@client/components/items"
-import { MainContainer } from "@client/components/layout/main"
 import { FeedCertification } from "@client/components/ui/feed-certification"
 import { FeedIcon } from "@client/components/ui/feed-icon"
 import { openInFollowApp } from "@client/lib/helper"
@@ -90,139 +89,137 @@ export function Component() {
   }
 
   return (
-    <MainContainer className="bg-background min-h-screen">
-      <Fragment>
-        {/* Hero Section */}
-        <div>
-          <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:px-8 sm:py-20">
-            {/* List Icon */}
-            <div className="mb-6">
-              <div className="relative mx-auto inline-block">
-                <FeedIcon
-                  fallback
-                  feed={list.data.list}
-                  className="mask-squircle mask border-border border"
-                  size={80}
-                  noMargin
-                />
-              </div>
+    <Fragment>
+      {/* Hero Section */}
+      <div>
+        <div className="mx-auto max-w-4xl px-6 py-8 text-center sm:px-8 sm:py-12">
+          {/* List Icon */}
+          <div className="mb-6">
+            <div className="relative mx-auto inline-block">
+              <FeedIcon
+                fallback
+                feed={list.data.list}
+                className="mask-squircle mask border-border border"
+                size={80}
+                noMargin
+              />
+            </div>
+          </div>
+
+          {/* List Info */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
+              {list.data.list.title}
+            </h1>
+
+            {/* Owner */}
+            <div className="flex justify-center">
+              <a
+                href={`/share/users/${list.data.list.owner?.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+              >
+                <span className="text-sm">{t("feed.madeby")}</span>
+                <Avatar className="border-border/60 size-6 border">
+                  <AvatarImage src={list.data.list.owner?.image || undefined} />
+                  <AvatarFallback className="text-xs">
+                    {list.data.list.owner?.name?.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">{list.data.list.owner?.name}</span>
+              </a>
             </div>
 
-            {/* List Info */}
-            <div className="space-y-4">
-              <h1 className="text-3xl font-semibold text-zinc-900 sm:text-4xl dark:text-zinc-100">
-                {list.data.list.title}
-              </h1>
+            {list.data.list.description && (
+              <p className="mx-auto max-w-2xl text-balance text-zinc-600 dark:text-zinc-400">
+                {list.data.list.description}
+              </p>
+            )}
 
-              {/* Owner */}
-              <div className="flex justify-center">
-                <a
-                  href={`/share/users/${list.data.list.owner?.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-2 text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
-                >
-                  <span className="text-sm">{t("feed.madeby")}</span>
-                  <Avatar className="border-border/60 size-6 border">
-                    <AvatarImage src={list.data.list.owner?.image || undefined} />
-                    <AvatarFallback className="text-xs">
-                      {list.data.list.owner?.name?.slice(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium">{list.data.list.owner?.name}</span>
-                </a>
-              </div>
+            {/* Stats */}
+            <div className="!mt-8 flex justify-center">
+              <div className="divide-material-ultra-thick flex items-center divide-x">
+                <div className="px-4 text-center">
+                  <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                    {list.data.feedCount || 0}
+                  </div>
+                  <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {(list.data.list.feedIds?.length || 0) > 1 ? "Feeds" : "Feed"}
+                  </div>
+                </div>
 
-              {list.data.list.description && (
-                <p className="mx-auto max-w-2xl text-balance text-zinc-600 dark:text-zinc-400">
-                  {list.data.list.description}
-                </p>
-              )}
-
-              {/* Stats */}
-              <div className="!mt-8 flex justify-center">
-                <div className="divide-material-ultra-thick flex items-center divide-x">
+                {!!list.data?.subscriptionCount && (
                   <div className="px-4 text-center">
                     <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                      {list.data.feedCount || 0}
+                      {formatNumber(list.data.subscriptionCount)}
                     </div>
                     <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                      {(list.data.list.feedIds?.length || 0) > 1 ? "Feeds" : "Feed"}
+                      {t("feed.follower", { count: list.data.subscriptionCount })}
                     </div>
                   </div>
-
-                  {!!list.data?.subscriptionCount && (
-                    <div className="px-4 text-center">
-                      <div className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                        {formatNumber(list.data.subscriptionCount)}
-                      </div>
-                      <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                        {t("feed.follower", { count: list.data.subscriptionCount })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Follow Button */}
-              <div className="!mt-8">
-                <Button
-                  variant={isSubscribed ? "outline" : "primary"}
-                  size="lg"
-                  onClick={handleOpenInFollowApp}
-                >
-                  <FollowIcon className="mr-2 size-4" />
-                  {isSubscribed
-                    ? t("feed.actions.followed")
-                    : t("feed.actions.open", { which: APP_NAME })}
-                </Button>
+                )}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Feeds Section */}
-        <div className="mx-auto max-w-6xl px-6 pb-8 sm:px-8">
-          <div className="border-border/40 mb-6 border-b pb-3">
-            <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">
-              Feeds in this List
-            </h2>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
-            {listData.feedIds?.slice(0, SIZE).map((feedId) => (
-              <FeedRow feed={feedMap[feedId]!} key={feedId} />
-            ))}
-          </div>
-
-          {"feedCount" in list.data && list.data.feedCount > SIZE && (
-            <div className="mt-6 text-center">
-              <button
-                type="button"
+            {/* Follow Button */}
+            <div className="!mt-8">
+              <Button
+                variant={isSubscribed ? "outline" : "primary"}
+                size="lg"
                 onClick={handleOpenInFollowApp}
-                className="hover:text-accent text-sm text-zinc-500 transition-colors dark:text-zinc-400"
               >
-                {t("feed.follow_to_view_all", {
-                  count: list.data.feedCount || 0,
-                })}
-              </button>
+                <FollowIcon className="mr-2 size-4" />
+                {isSubscribed
+                  ? t("feed.actions.followed")
+                  : t("feed.actions.open", { which: APP_NAME })}
+              </Button>
             </div>
-          )}
+          </div>
+        </div>
+      </div>
+
+      {/* Feeds Section */}
+      <div className="mx-auto max-w-6xl px-6 pb-8 sm:px-8">
+        <div className="border-border/40 mb-6 border-b pb-3">
+          <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">
+            Feeds in this List
+          </h2>
         </div>
 
-        {/* Entries Preview */}
-        {!!list.data.entries?.length && (
-          <div className="mx-auto max-w-6xl px-6 pb-16 sm:px-8">
-            <div className="border-border/40 mb-6 border-b pb-3">
-              <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Recent Posts</h2>
-            </div>
+        <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-2">
+          {listData.feedIds?.slice(0, SIZE).map((feedId) => (
+            <FeedRow feed={feedMap[feedId]!} key={feedId} />
+          ))}
+        </div>
 
-            <div className={cn("w-full", "flex flex-col gap-2")}>
-              <Item entries={list.data.entries} view={list.data.list.view} />
-            </div>
+        {"feedCount" in list.data && list.data.feedCount > SIZE && (
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={handleOpenInFollowApp}
+              className="hover:text-accent text-sm text-zinc-500 transition-colors dark:text-zinc-400"
+            >
+              {t("feed.follow_to_view_all", {
+                count: list.data.feedCount || 0,
+              })}
+            </button>
           </div>
         )}
-      </Fragment>
-    </MainContainer>
+      </div>
+
+      {/* Entries Preview */}
+      {!!list.data.entries?.length && (
+        <div className="mx-auto max-w-6xl px-6 pb-16 sm:px-8">
+          <div className="border-border/40 mb-6 border-b pb-3">
+            <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100">Recent Posts</h2>
+          </div>
+
+          <div className={cn("w-full", "flex flex-col gap-2")}>
+            <Item entries={list.data.entries} view={list.data.list.view} />
+          </div>
+        </div>
+      )}
+    </Fragment>
   )
 }

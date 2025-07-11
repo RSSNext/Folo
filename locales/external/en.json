@@ -41,7 +41,7 @@
   "login.confirm_password.label": "Confirm Password",
   "login.continueWith": "Continue with {{provider}}",
   "login.email": "Email",
-  "login.enter_token": "If you aren't redirected automatically, copy the token below and paste it in the \"Enter authorization token to continue\" form on the Desktop App (v0.5.0+).",
+  "login.enter_token": "If you've installed the client but aren't redirected, copy the token below and paste it in the \"Enter authorization token to continue\" form on the client (v0.5.0+).",
   "login.errors.unknown": "Errors Unknown",
   "login.forget_password.description": "Enter the email address associated with your account and we'll send you an email about how to reset your password.",
   "login.forget_password.email_invalid": "Invalid email",
@@ -54,6 +54,7 @@
   "login.logInWithEmail": "Sign in with email",
   "login.new_password.label": "New Password",
   "login.no_account": "Don't have an account? <strong>Sign up</strong>",
+  "login.no_client": "No client detected, you can <weblink>continue using the Web App</weblink>.",
   "login.openApp": "Open App",
   "login.or": "Or",
   "login.password": "Password",
@@ -78,6 +79,10 @@
   "register.label": "Sign up to {{app_name}}",
   "register.login": "Sign in",
   "register.password": "Password",
+  "register.referral.days": "Sign up with this referral code to get {{days}} days of Pro Preview",
+  "register.referral.description": "Sign up with referral code to get extra days of Pro Preview",
+  "register.referral.invalid": "Invalid referral code",
+  "register.referral.label": "Referral Code",
   "register.submit": "Create account",
   "words.email": "Email"
 }
