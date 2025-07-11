@@ -45,7 +45,7 @@ export const SubscriptionColumnHeader = memo(() => {
       {normalStyle && (
         <LogoContextMenu>
           <div
-            className="font-default relative flex items-center gap-1 text-lg font-semibold"
+            className="relative flex items-center gap-1 text-lg font-semibold"
             onClick={(e) => {
               e.stopPropagation()
               navigateBackHome()

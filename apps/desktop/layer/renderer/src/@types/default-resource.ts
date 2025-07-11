@@ -1,4 +1,5 @@
 // DONT EDIT THIS FILE MANUALLY
+import ai_en from "@locales/ai/en.json"
 import en from "@locales/app/en.json"
 import common_en from "@locales/common/en.json"
 import common_ja from "@locales/common/ja.json"
@@ -29,6 +30,7 @@ export const defaultResources = {
     settings: settings_en,
     shortcuts: shortcuts_en,
     errors: errors_en,
+    ai: ai_en,
   },
   "zh-CN": {
     lang: lang_zhCN,

@@ -1,6 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
 
-import { ShortcutSetting } from "~/modules/command/shortcuts/SettingShortcuts"
+import { ShortcutSetting } from "~/modules/settings/tabs/shortcut"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
 

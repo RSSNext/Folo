@@ -12,8 +12,6 @@ import {
   useRealInWideMode,
   useUISettingKey,
 } from "~/atoms/settings/ui"
-import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { EntryColumn } from "~/modules/entry-column"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
@@ -48,7 +46,7 @@ export function CenterColumnLayout() {
   })
 
   return (
-    <Focusable scope={HotkeyScope.Home} ref={containerRef} className="relative flex min-w-0 grow">
+    <div ref={containerRef} className="relative flex min-w-0 grow">
       <div
         className={cn("h-full shrink-0", inWideMode ? "flex-1" : "border-r", "will-change-[width]")}
         data-hide-in-print
@@ -72,6 +70,6 @@ export function CenterColumnLayout() {
         />
       )}
       <Outlet />
-    </Focusable>
+    </div>
   )
 }

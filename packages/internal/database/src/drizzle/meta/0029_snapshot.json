@@ -1,9 +1,96 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f4b38bd8-188d-4b33-8092-c2a67dbf88f2",
+  "id": "11dab821-4739-44db-818a-ef81702fd2b5",
   "prevId": "0b3abda0-88d8-44a7-ac77-0e16056b5845",
   "tables": {
+    "ai_chat_messages": {
+      "name": "ai_chat_messages",
+      "columns": {
+        "room_id": {
+          "name": "room_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch() * 1000)"
+        },
+        "message": {
+          "name": "message",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "ai_chat_messages_unq": {
+          "name": "ai_chat_messages_unq",
+          "columns": ["room_id", "id"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "ai_chat_messages_room_id_ai_chat_room_id_fk": {
+          "name": "ai_chat_messages_room_id_ai_chat_room_id_fk",
+          "tableFrom": "ai_chat_messages",
+          "tableTo": "ai_chat",
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["room_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "ai_chat": {
+      "name": "ai_chat",
+      "columns": {
+        "room_id": {
+          "name": "room_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch() * 1000)"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "collections": {
       "name": "collections",
       "columns": {
@@ -76,13 +163,6 @@
         "source_content": {
           "name": "source_content",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "readability_updated_at": {
-          "name": "readability_updated_at",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

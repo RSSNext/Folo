@@ -57,7 +57,6 @@ function AccordionItem({ className, children, ...props }: AccordionItemProps) {
 }
 
 type AccordionTriggerProps = React.ComponentProps<typeof AccordionPrimitive.Trigger> & {
-  transition?: Transition
   chevron?: boolean
 }
 
@@ -65,7 +64,6 @@ function AccordionTrigger({
   ref,
   className,
   children,
-  transition = Spring.presets.snappy,
   chevron = true,
   ...props
 }: AccordionTriggerProps) {
@@ -111,14 +109,17 @@ function AccordionTrigger({
         {children}
 
         {chevron && (
-          <m.div
+          <div
             data-slot="accordion-trigger-chevron"
-            animate={{ rotate: isOpen ? 90 : 0 }}
-            transition={transition}
-            className="ml-auto"
+            className="ml-auto flex items-center justify-center"
           >
-            <i className="i-mgc-right-cute-re size-4 shrink-0" />
-          </m.div>
+            <i
+              className={cn(
+                "i-mgc-right-cute-re size-4 shrink-0 transition-transform duration-200",
+                isOpen ? "rotate-90" : "",
+              )}
+            />
+          </div>
         )}
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>

@@ -24,4 +24,5 @@ export const FocusablePresets = {
   },
   isTimeline: (v) => v.has(HotkeyScope.Timeline) && !v.has(HotkeyScope.EntryRender),
   isEntryRender: (v) => v.has(HotkeyScope.EntryRender),
+  isAIChat: (v) => v.has(HotkeyScope.AIChat),
 } satisfies Record<string, (v: Set<string>) => boolean>

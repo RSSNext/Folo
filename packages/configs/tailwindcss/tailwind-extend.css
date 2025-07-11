@@ -366,6 +366,21 @@
   }
 }
 
+@layer utilities {
+  .animate-mask-left-to-right {
+    animation: mask-left-to-right var(--animation-duration, 0.5s) ease-in-out forwards;
+  }
+  @keyframes mask-left-to-right {
+    0% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 150% 0 / 400% no-repeat;
+      opacity: 0.2;
+    }
+    100% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 0 / 400% no-repeat;
+      opacity: 1;
+    }
+  }
+}
 @layer components {
   .mask-b {
     mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 20px), rgba(255, 255, 255, 0) 100%);

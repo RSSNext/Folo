@@ -42,7 +42,6 @@ const twConfig = {
     extend: {
       fontFamily: {
         theme: "var(--fo-font-family)",
-        default: "SN pro, sans-serif, system-ui",
       },
 
       colors: {

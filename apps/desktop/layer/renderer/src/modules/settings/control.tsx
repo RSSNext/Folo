@@ -1,6 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
-import { Input } from "@follow/components/ui/input/index.js"
+import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
@@ -63,10 +63,41 @@ export const SettingInput: Component<{
         className,
       )}
     >
-      <Label className={cn("shrink-0", labelClassName)} htmlFor={id}>
+      <Label
+        className={cn("shrink-0 text-sm font-medium leading-none", labelClassName)}
+        htmlFor={id}
+      >
         {titleCase(label)}
       </Label>
       <Input type={type} id={id} value={value} onChange={onChange} className="text-xs" />
+    </div>
+  )
+}
+
+export const SettingTextArea: Component<{
+  label: string
+  value: string
+  onChange: ChangeEventHandler<HTMLTextAreaElement>
+  vertical?: boolean
+  labelClassName?: string
+}> = ({ value, label, onChange, labelClassName, className, vertical }) => {
+  const id = useId()
+
+  return (
+    <div
+      className={cn(
+        "mb-1 flex",
+        vertical ? "mb-2 flex-col gap-3" : "flex-row items-center justify-between gap-12",
+        className,
+      )}
+    >
+      <Label
+        className={cn("shrink-0 text-sm font-medium leading-none", labelClassName)}
+        htmlFor={id}
+      >
+        {titleCase(label)}
+      </Label>
+      <TextArea id={id} value={value} onChange={onChange} className="text-xs" />
     </div>
   )
 }

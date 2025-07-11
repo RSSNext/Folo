@@ -7,9 +7,9 @@ function isNodeWithinCircularImports(
   nodeChain: any[],
   currentChain: any[] = [node],
   traversedModules = new Set<any>(),
-): boolean {
+): string[] | null {
   if (traversedModules.has(node)) {
-    return false
+    return null
   }
   traversedModules.add(node)
 
@@ -24,8 +24,7 @@ function isNodeWithinCircularImports(
         ...nodeChain.slice(importerIndex, -1).reverse(),
       ].map((m) => path.relative(process.cwd(), m.file))
 
-      console.warn(yellow(`Circular imports detected: \n${importChain.join("\n↳  ")}`))
-      return true
+      return importChain
     }
 
     if (!currentChain.includes(importer)) {
@@ -38,7 +37,7 @@ function isNodeWithinCircularImports(
       if (result) return result
     }
   }
-  return false
+  return null
 }
 
 export const circularImportRefreshPlugin = (): Plugin => ({
@@ -52,15 +51,30 @@ export const circularImportRefreshPlugin = (): Plugin => ({
     const mod = server.moduleGraph.getModuleById(file)
 
     // Check for circular imports
-    if (mod && isNodeWithinCircularImports(mod, [mod])) {
-      console.error(
-        red(
-          `Circular dependency detected in ${file} involving store files. Performing full page refresh.`,
-        ),
-      )
+    if (mod) {
+      const circularPaths = isNodeWithinCircularImports(mod, [mod])
+      if (circularPaths) {
+        console.warn(yellow(`Circular imports detected: \n${circularPaths.join("\n↳  ")}`))
 
-      server.ws.send({ type: "full-reload" })
-      return []
+        // Check if any path in the circular dependency contains 'store/'
+        const hasStoreFile = circularPaths.some((path) => path.includes("store/"))
+
+        if (hasStoreFile) {
+          console.error(
+            red(
+              `Circular dependency detected in ${file} involving store files. Performing full page refresh.`,
+            ),
+          )
+          server.ws.send({ type: "full-reload" })
+          return []
+        } else {
+          console.warn(
+            yellow(
+              `Circular dependency detected. HMR might not work correctly, if page has some un-expected behavior please refresh the page manually.`,
+            ),
+          )
+        }
+      }
     }
 
     if (file.startsWith(path.resolve(process.cwd(), "src/store")) && file.endsWith(".ts")) {

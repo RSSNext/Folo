@@ -5,6 +5,7 @@ import { createElement, Suspense, useCallback } from "react"
 
 import { getErrorFallback } from "../errors"
 import type { ErrorComponentType } from "../errors/enum"
+import PageErrorFallback from "../errors/PageError"
 
 export interface AppErrorBoundaryProps extends PropsWithChildren {
   height?: number | string
@@ -38,19 +39,15 @@ type ErrorFallbackProps = Parameters<FallbackRender>["0"]
 export type AppErrorFallbackProps = ErrorFallbackProps & {}
 const AppErrorBoundaryItem: FC<AppErrorBoundaryProps> = ({ errorType, children }) => {
   const fallbackRender = useCallback(
-    (fallbackProps: ErrorFallbackProps) => (
-      <Suspense>{createElement(getErrorFallback(errorType), fallbackProps)}</Suspense>
-    ),
+    (fallbackProps: ErrorFallbackProps) => {
+      const errorElement = getErrorFallback(errorType)
+      if (!errorElement) {
+        return <PageErrorFallback {...fallbackProps} />
+      }
+      return <Suspense>{createElement(getErrorFallback(errorType), fallbackProps)}</Suspense>
+    },
     [errorType],
   )
 
-  const onError = useCallback((error: unknown, componentStack?: string) => {
-    console.error("Uncaught error:", error, componentStack)
-  }, [])
-
-  return (
-    <ErrorBoundary fallback={fallbackRender} onError={onError}>
-      {children}
-    </ErrorBoundary>
-  )
+  return <ErrorBoundary fallback={fallbackRender}>{children}</ErrorBoundary>
 }

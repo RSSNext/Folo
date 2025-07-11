@@ -22,7 +22,7 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
-import { useEntryActions } from "~/hooks/biz/useEntryActions"
+import { HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU, useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -137,17 +137,7 @@ export const EntryItemWrapper: FC<
             if (item instanceof MenuItemSeparator) {
               return true
             }
-            return ![
-              COMMAND_ID.entry.viewSourceContent,
-              COMMAND_ID.entry.toggleAISummary,
-              COMMAND_ID.entry.toggleAITranslation,
-              COMMAND_ID.settings.customizeToolbar,
-              COMMAND_ID.entry.readability,
-              COMMAND_ID.entry.exportAsPDF,
-              // Copy
-              COMMAND_ID.entry.copyTitle,
-              COMMAND_ID.entry.copyLink,
-            ].includes(item.id as any)
+            return !HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU.includes(item.id as any)
           }),
           MENU_ITEM_SEPARATOR,
           ...feedItems.filter((item) => {

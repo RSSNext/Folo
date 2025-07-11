@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
+import type { ResponsiveSelectItem } from "@follow/components/ui/select/responsive.js"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { nextFrame } from "@follow/utils/dom"
@@ -17,7 +18,7 @@ import { SettingDescription } from "../control"
 import { SettingItemGroup } from "../section"
 
 const FALLBACK_FONT = "Default (UI Font)"
-const DEFAULT_FONT = "SN Pro"
+const DEFAULT_FONT = "system-ui"
 const CUSTOM_FONT = "Custom"
 const useFontDataElectron = () => {
   const { t } = useTranslation("settings")
@@ -29,7 +30,7 @@ const useFontDataElectron = () => {
   return (
     [
       { label: t("appearance.content_font.default"), value: "inherit" },
-      { label: t("appearance.font.system"), value: "system-ui" },
+      { label: t("appearance.font.system"), value: DEFAULT_FONT },
     ] as { label: string; value: string }[]
   ).concat(
     (data || []).map((font) => ({
@@ -43,9 +44,10 @@ const useFontDataWeb = () => {
   const { t } = useTranslation("settings")
   return [
     { label: t("appearance.content_font.default"), value: "inherit" },
-    { label: t("appearance.font.system"), value: "system-ui" },
+    { label: t("appearance.font.system"), value: DEFAULT_FONT },
     ...[
       // English
+      "SN Pro",
       "SF Pro",
       "Segoe UI",
       "Helvetica",
@@ -127,6 +129,16 @@ export const UIFontSelector = () => {
     [data, uiFont],
   )
 
+  const renderItemOrValue = useCallback(
+    (item: ResponsiveSelectItem) => {
+      if (item.value === DEFAULT_FONT) {
+        return <span>{t("appearance.global_font.default")}</span>
+      }
+      return <span>{item.value}</span>
+    },
+    [t],
+  )
+
   return (
     <SettingItemGroup>
       <div className="mt-4 flex items-center justify-between">
@@ -144,6 +156,8 @@ export const UIFontSelector = () => {
           }}
           size="sm"
           triggerClassName="w-48"
+          renderValue={renderItemOrValue}
+          renderItem={renderItemOrValue}
           items={[
             isCustomFont && { label: uiFont, value: uiFont },
             { label: DEFAULT_FONT, value: DEFAULT_FONT },

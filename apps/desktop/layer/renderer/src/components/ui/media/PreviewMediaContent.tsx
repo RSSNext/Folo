@@ -1,11 +1,5 @@
 import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
-} from "@follow/components/ui/tooltip/index.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import type { MediaModel } from "@follow/shared/hono"
 import { stopPropagation } from "@follow/utils/dom"
@@ -21,6 +15,7 @@ import type { ReactZoomPanPinchRef, ReactZoomPanPinchState } from "react-zoom-pa
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
 
 import { m } from "~/components/common/Motion"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { COPY_MAP } from "~/constants"
 import { ipcServices } from "~/lib/client"
 import { replaceImgUrlIfNeed } from "~/lib/img-proxy"
@@ -193,6 +188,7 @@ const Wrapper: FC<{
   )
 }
 
+const GLASS_BUTTON_CLASS = tw`group-hover/left:opacity-100 opacity-0`
 const HeaderActions: FC<{
   src: string
 }> = ({ src }) => {
@@ -201,89 +197,42 @@ const HeaderActions: FC<{
   const { dismiss } = useCurrentModal()
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-[100] flex h-16 items-center justify-end gap-2 px-3">
-      <HeaderButton description={t(COPY_MAP.OpenInBrowser())} onClick={() => window.open(src)}>
+      <GlassButton
+        theme="dark"
+        className={GLASS_BUTTON_CLASS}
+        description={t(COPY_MAP.OpenInBrowser())}
+        onClick={() => window.open(src)}
+      >
         <i className="i-mgc-external-link-cute-re" />
-      </HeaderButton>
+      </GlassButton>
       {IN_ELECTRON && (
-        <HeaderButton
+        <GlassButton
+          theme="dark"
+          className={GLASS_BUTTON_CLASS}
           description={t("common:words.download")}
           onClick={() => {
             ipcServices?.app.download(src)
           }}
         >
           <i className="i-mgc-download-2-cute-re" />
-        </HeaderButton>
+        </GlassButton>
       )}
 
-      <HeaderButton
+      <GlassButton
+        theme="dark"
         description={t("common:words.close")}
-        className="ml-3 !border-red-500/20 !bg-red-600/30 !opacity-100 hover:!bg-red-600/50"
+        className={cn(
+          GLASS_BUTTON_CLASS,
+          "ml-3 !border-red-500/20 !bg-red-600/30 !opacity-100 hover:!bg-red-600/50",
+        )}
         onClick={dismiss}
       >
         <i className="i-mgc-close-cute-re" />
-      </HeaderButton>
+      </GlassButton>
     </div>
   )
 }
 
-const HeaderButton: FC<{
-  description?: string
-  onClick: () => void
-  className?: string
-  children: React.ReactNode
-}> = ({ description, onClick, className, children }) => {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <m.button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onClick()
-          }}
-          className={cn(
-            // Base styles with modern glass morphism - perfect 1:1 circle
-            "pointer-events-auto relative flex size-10 items-center justify-center rounded-full",
-            "bg-black/20 text-white backdrop-blur-md",
-            // Border and shadow for depth
-            "border border-white/10 shadow-lg shadow-black/25",
-            // Opacity and transition
-            "opacity-0 transition-all duration-300 ease-out group-hover/left:opacity-100",
-            // Text size
-            "text-lg",
-            className,
-          )}
-          initial={{ scale: 1 }}
-          whileHover={{
-            scale: 1.1,
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-            borderColor: "rgba(255, 255, 255, 0.2)",
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 30,
-          }}
-        >
-          {/* Glass effect overlay */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-t from-white/5 to-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
-
-          {/* Icon container */}
-          <div className="center relative z-10 flex">{children}</div>
-
-          {/* Subtle inner shadow for depth */}
-          <div className="absolute inset-0 rounded-full shadow-inner shadow-black/10" />
-        </m.button>
-      </TooltipTrigger>
-      {description && (
-        <TooltipPortal>
-          <TooltipContent>{description}</TooltipContent>
-        </TooltipPortal>
-      )}
-    </Tooltip>
-  )
-}
 export interface PreviewMediaProps extends MediaModel {
   fallbackUrl?: string
 }
@@ -396,25 +345,25 @@ export const PreviewMediaContent: FC<{
           </div>
 
           {currentSlideIndex > 0 && (
-            <HeaderButton
+            <GlassButton
               className={`absolute left-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:left-4 lg:size-10`}
               onClick={() => {
                 emblaApi?.scrollPrev()
               }}
             >
               <i className={`i-mingcute-left-line text-lg lg:text-xl`} />
-            </HeaderButton>
+            </GlassButton>
           )}
 
           {currentSlideIndex < media.length - 1 && (
-            <HeaderButton
+            <GlassButton
               className={`absolute right-2 top-1/2 z-[100] flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 hover:bg-black/40 group-hover:opacity-100 lg:right-4 lg:size-10`}
               onClick={() => {
                 emblaApi?.scrollNext()
               }}
             >
               <i className={`i-mingcute-right-line text-lg lg:text-xl`} />
-            </HeaderButton>
+            </GlassButton>
           )}
         </div>,
         children,
