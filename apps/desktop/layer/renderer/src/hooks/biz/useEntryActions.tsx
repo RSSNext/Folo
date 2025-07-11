@@ -21,6 +21,7 @@ import {
   setReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
+import { useServerConfigs } from "~/atoms/server-configs"
 import { useAIChatPinned } from "~/atoms/settings/ai"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
@@ -183,7 +184,7 @@ export const useEntryActions = ({
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
   const isShowAIChatPinned = useAIChatPinned()
-
+  const aiEnabled = useServerConfigs()?.AI_CHAT_ENABLED
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
 
@@ -371,6 +372,7 @@ export const useEntryActions = ({
         onClick: runCmdFn(COMMAND_ID.global.toggleAIChatPinned, [{ entryId }]),
         entryId,
         active: isShowAIChatPinned,
+        hide: !aiEnabled,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.settings.customizeToolbar,

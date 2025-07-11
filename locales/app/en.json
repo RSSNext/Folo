@@ -160,6 +160,7 @@
   "entry_actions.unstarred": "Unstarred.",
   "entry_actions.view_source_content": "View Source Content",
   "entry_actions.view_source_content_description": "Try to read this article's content in the style of the source website",
+  "entry_actions.warn_info_ai_chat_pinned_tip": "This feature is currently in gray testing, and only a small number of users have access permissions.",
   "entry_actions.warn_info_for_desktop": "This feature is only available in the desktop app",
   "entry_column.filtered_content_tip": "You have filtered content hidden.",
   "entry_column.filtered_content_tip_2": "In addition to the entries shown above, there is also filtered content.",

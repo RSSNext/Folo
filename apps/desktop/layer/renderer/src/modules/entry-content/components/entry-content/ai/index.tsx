@@ -255,6 +255,11 @@ const useCreateEntryAIContext = (entryId: string) => {
 export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const hasAi = React.use(AIChatContext)
+  if (!hasAi) {
+    throw Promise.reject("ai not enabled")
+  }
+
   const ctxStore = useCreateEntryAIContext(entryId)
 
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isNotFloatingLayerScope)
