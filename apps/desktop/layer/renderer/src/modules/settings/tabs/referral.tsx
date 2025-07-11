@@ -1,4 +1,3 @@
-import { Card } from "@follow/components/ui/card/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Progress } from "@follow/components/ui/progress/index.js"
 import {
@@ -36,7 +35,7 @@ export function SettingReferral() {
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const user = useWhoami()
   const role = useUserRole()
-  const referralLink = `${env.VITE_WEB_URL}/register?referral=${user?.handle || user?.id}`
+  const referralLink = `Here's the link to register for Folo, the reader I mentioned! Use it to enjoy a 45-day trial of Pro features:\n\n${env.VITE_WEB_URL}/register?referral=${user?.handle || user?.id}`
   const presentUserProfile = usePresentUserProfileModal("drawer")
   return (
     <section className="mt-4">
@@ -56,14 +55,14 @@ export function SettingReferral() {
       </div>
       <Divider className="my-6" />
       <p className="my-2 font-semibold">{t("referral.link")}</p>
-      <Card className="flex items-center gap-2 px-3 py-1.5">
-        <span>{referralLink}</span>
+      <div className="from-accent/5 border-accent flex rounded-xl border bg-gradient-to-b to-transparent p-4">
+        <pre className="whitespace-pre-wrap text-sm">{referralLink}</pre>
         <CopyButton variant="outline" value={referralLink} />
-      </Card>
+      </div>
       {role !== UserRole.PrePro && (
         <div className="mt-4 space-y-2">
           <p className="font-semibold">
-            Referral Progress for the Free {UserRoleName[UserRole.PrePro]}:
+            Referral Progress for the {UserRoleName[UserRole.PrePro]}:
           </p>
           <div className="flex items-center gap-4">
             <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />

@@ -2,12 +2,18 @@ import { tracker } from "@follow/tracker"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 
-import { apiClient } from "../context"
+import { apiClient, queryClient } from "../context"
 import type { GeneralQueryOptions } from "../types"
 import { isNewUserQueryKey } from "./constants"
 import { userSyncService, useUserStore } from "./store"
 
 export const whoamiQueryKey = ["user", "whoami"]
+
+export const invalidateUserSession = () => {
+  queryClient().invalidateQueries({
+    queryKey: whoamiQueryKey,
+  })
+}
 
 export const usePrefetchSessionUser = () => {
   const query = useQuery({

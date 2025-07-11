@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 
-import { ActivationModalContent } from "./ActivationModalContent"
+import { UpgradePlanModalContent } from "./UpgradePlanModalContent"
 
 export const useActivationModal = () => {
   const { present } = useModalStack()
@@ -11,8 +11,8 @@ export const useActivationModal = () => {
   return useCallback(
     () =>
       present({
-        title: t("activation.title"),
-        content: ActivationModalContent,
+        title: t("activation.plan.title"),
+        content: UpgradePlanModalContent,
         id: "activation",
         autoFocus: false,
       }),

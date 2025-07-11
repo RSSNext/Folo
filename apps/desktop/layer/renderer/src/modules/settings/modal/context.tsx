@@ -1,3 +1,7 @@
-import { createContextState } from "foxact/context-state"
+import { atom } from "jotai"
 
-export const [SettingTabProvider, useSettingTab, useSetSettingTab] = createContextState("")
+import { createAtomHooks } from "~/lib/jotai"
+
+export const [, , useSettingTab, useSetSettingTab, getSettingTab, setSettingTab] = createAtomHooks(
+  atom(""),
+)

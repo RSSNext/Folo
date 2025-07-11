@@ -11,7 +11,7 @@ import { SettingsTitle } from "~/modules/settings/title"
 
 import { getSettingPages } from "../settings-glob"
 import type { SettingPageConfig } from "../utils"
-import { SettingTabProvider, useSettingTab } from "./context"
+import { useSettingTab } from "./context"
 import { SettingModalLayout } from "./layout"
 
 export const SettingModalContent: FC<{
@@ -19,13 +19,11 @@ export const SettingModalContent: FC<{
 }> = ({ initialTab }) => {
   const pages = getSettingPages()
   return (
-    <SettingTabProvider>
-      <SettingModalLayout
-        initialTab={initialTab ? (initialTab in pages ? initialTab : undefined) : undefined}
-      >
-        <Content />
-      </SettingModalLayout>
-    </SettingTabProvider>
+    <SettingModalLayout
+      initialTab={initialTab ? (initialTab in pages ? initialTab : undefined) : undefined}
+    >
+      <Content />
+    </SettingModalLayout>
   )
 }
 

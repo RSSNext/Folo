@@ -29,7 +29,6 @@ import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
-import { InvitationScreen } from "@/src/screens/(modal)/InvitationScreen"
 import { accentColor } from "@/src/theme/colors"
 
 import { AboutScreen } from "./routes/About"
@@ -238,7 +237,7 @@ const NavigationLinkGroup: FC<{
               }
               onPress={() => {
                 if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
-                  navigation.presentControllerView(InvitationScreen)
+                  navigation.presentControllerView(PlanScreen)
                 } else {
                   link.onPress({ navigation })
                 }

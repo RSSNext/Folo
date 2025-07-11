@@ -8,7 +8,7 @@ import { FetchError, ofetch } from "ofetch"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
-import { InvitationScreen } from "../screens/(modal)/InvitationScreen"
+import { PlanScreen } from "../modules/settings/routes/Plan"
 import { getCookie } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
@@ -67,7 +67,7 @@ export const apiFetch = ofetch.create({
         console.error(`Request ${request as string} failed with status ${response.status}`, json)
 
         if (json.code.toString().startsWith("11")) {
-          Navigation.rootNavigation.presentControllerView(InvitationScreen)
+          Navigation.rootNavigation.presentControllerView(PlanScreen)
         }
       } catch {
         console.error(`Request ${request as string} failed with status ${response.status}`, error)

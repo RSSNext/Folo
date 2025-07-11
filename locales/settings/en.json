@@ -471,7 +471,7 @@
   "profile.two_factor.no_password": "You need to <Link>set</Link> a password before enabling 2FA.",
   "profile.updateSuccess": "Profile updated.",
   "profile.update_password_success": "Password updated.",
-  "referral.description": "Share Folo with your friends! For every friend who signs up and activates their account, your Pro Preview will be extended. Friends you invite will also get {{day}} days of Pro Preview! <Link>Learn more</Link>.",
+  "referral.description": "Share Folo with a friend! Extend your Pro Preview and future benefits, and your friends can also get a 45-day trial period. <Link>Learn more</Link>.",
   "referral.invited_friend_status.pending": "Pending validation",
   "referral.invited_friend_status.valid": "Valid",
   "referral.link": "Your Invite Link:",

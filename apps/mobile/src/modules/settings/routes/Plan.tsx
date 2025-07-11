@@ -1,14 +1,14 @@
 import { UserRole, UserRoleName } from "@follow/constants"
 import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import type { ProductPurchase } from "expo-iap"
 import { useIAP } from "expo-iap"
 import { openURL } from "expo-linking"
 import { useEffect } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, ScrollView, Text, View } from "react-native"
+import { Linking, Pressable, Text, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import {
@@ -142,6 +142,25 @@ export const PlanScreen: NavigationControllerView = () => {
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
   const progress = (validInvitationsAmount / requiredInvitationsAmount) * 100
+
+  const upgradePlanMutation = useMutation({
+    mutationFn: async () => {
+      if (isIOS) {
+        await requestPurchase({ request: { sku: "is.follow.propreview" } })
+      } else {
+        const res = await authClient.subscription.upgrade({
+          plan: "folo pro preview",
+          successUrl: "folo://refresh",
+          cancelUrl: proxyEnv.WEB_URL,
+          disableRedirect: true,
+        })
+        if (res.data?.url) {
+          openURL(res.data.url)
+        }
+      }
+    },
+  })
+
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -181,19 +200,25 @@ export const PlanScreen: NavigationControllerView = () => {
         </GroupedInsetListCard>
       </View>
 
-      <ScrollView horizontal className="m-4 py-4">
-        {PLAN_CONFIGS.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            currentUserRole={role || null}
-            daysLeft={daysLeft}
-            isCurrentPlan={
-              role === plan.role || (plan.role === UserRole.PrePro && role === UserRole.PreProTrial)
-            }
-          />
-        ))}
-      </ScrollView>
+      <View className="gap-4 p-4">
+        {PLAN_CONFIGS.map((plan) => {
+          const isProPreview = plan.id === "pro-preview"
+          return (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              currentUserRole={role || null}
+              daysLeft={isProPreview ? daysLeft : null}
+              onUpgrade={isProPreview ? () => upgradePlanMutation.mutate() : undefined}
+              disabled={isProPreview && upgradePlanMutation.isPending}
+              isCurrentPlan={
+                role === plan.role ||
+                (plan.role === UserRole.PrePro && role === UserRole.PreProTrial)
+              }
+            />
+          )
+        })}
+      </View>
 
       <View className="bg-secondary-system-grouped-background mx-4 rounded-lg p-4">
         <View className="mb-4 flex-row items-center gap-2">
@@ -218,7 +243,7 @@ export const PlanScreen: NavigationControllerView = () => {
             {validInvitationsAmount} / {requiredInvitationsAmount}
           </Text>
         </View>
-        <View className="bg-label h-2 w-full rounded-full">
+        <View className="bg-system-grouped-background h-2 w-full rounded-full">
           <View
             className="bg-accent h-2 rounded-full"
             style={{
@@ -239,21 +264,10 @@ export const PlanScreen: NavigationControllerView = () => {
             </Pressable>
             <Text className="text-label">or</Text>
             <Pressable
-              className="bg-accent rounded-lg p-2"
-              onPress={async () => {
-                if (isIOS) {
-                  requestPurchase({ request: { sku: "is.follow.propreview" } })
-                } else {
-                  const res = await authClient.subscription.upgrade({
-                    plan: "folo pro preview",
-                    successUrl: proxyEnv.WEB_URL,
-                    cancelUrl: proxyEnv.WEB_URL,
-                    disableRedirect: true,
-                  })
-                  if (res.data?.url) {
-                    openURL(res.data.url)
-                  }
-                }
+              className="bg-accent rounded-lg p-2 disabled:opacity-50"
+              disabled={upgradePlanMutation.isPending}
+              onPress={() => {
+                upgradePlanMutation.mutate()
               }}
             >
               <Text className="text-white">{`Pay $${serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1}`}</Text>
@@ -270,19 +284,23 @@ interface PlanCardProps {
   currentUserRole: UserRole | null
   isCurrentPlan: boolean
   daysLeft: number | null
+  onUpgrade?: () => void
+  disabled?: boolean
 }
 
-function PlanCard({ plan, isCurrentPlan, daysLeft }: PlanCardProps) {
+function PlanCard({ plan, isCurrentPlan, daysLeft, onUpgrade, disabled }: PlanCardProps) {
   return (
     <View
       className={cn(
-        "bg-secondary-system-grouped-background mr-4 min-w-[160px] rounded-lg p-4 shadow-md",
+        "bg-secondary-system-grouped-background min-w-[160px] rounded-lg p-4 shadow-md",
         isCurrentPlan && "border-accent border-2",
         plan.isComingSoon && "opacity-75",
       )}
     >
-      <Text className="text-label text-lg font-bold">{plan.title}</Text>
-      <Text className="text-label mb-4 text-lg font-bold">{plan.price}</Text>
+      <View className="mb-4 flex-row items-center justify-between">
+        <Text className="text-label text-lg font-bold">{plan.title}</Text>
+        <Text className="text-label text-lg font-bold">{plan.price}</Text>
+      </View>
 
       {plan.features.map((feature, index) => (
         <View key={index} className="mb-2 flex-row items-center gap-2">
@@ -294,14 +312,24 @@ function PlanCard({ plan, isCurrentPlan, daysLeft }: PlanCardProps) {
       ))}
 
       {plan.isComingSoon ? (
-        <Text className="text-label border-opaque-separator mt-2 rounded-lg border p-2 text-center text-sm text-gray-500">
+        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
           Coming soon
         </Text>
       ) : isCurrentPlan && daysLeft !== null ? (
-        <Text className="text-label border-opaque-separator mt-2 rounded-lg border p-2 text-center text-sm text-gray-500">
+        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
           {`In Trial (${daysLeft} days left)`}
         </Text>
-      ) : null}
+      ) : isCurrentPlan ? (
+        <Text className="text-label/40 border-opaque-separator/40 mt-2 rounded-lg border p-2 text-center text-sm">
+          Current Plan
+        </Text>
+      ) : (
+        <Pressable className={cn(disabled && "opacity-50")} onPress={onUpgrade} disabled={disabled}>
+          <Text className="text-label border-opaque-separator mt-2 rounded-lg border p-2 text-center text-sm">
+            Upgrade
+          </Text>
+        </Pressable>
+      )}
     </View>
   )
 }

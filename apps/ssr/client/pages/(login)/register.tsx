@@ -104,7 +104,7 @@ function RegisterForm() {
 
   return (
     <div className="relative min-w-80">
-      <h1 className="mb-6 text-center text-2xl">
+      <h1 className="mb-8 text-center text-3xl">
         {t("login.signUpTo")} <b>{` ${APP_NAME}`}</b>
       </h1>
       {isEmail ? (
@@ -149,6 +149,7 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
+            {serverConfigs?.REFERRAL_ENABLED && <ReferralForm align="left" />}
             <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
             <Button
               isLoading={isSubmitting}
@@ -185,10 +186,10 @@ function RegisterForm() {
               <span>{t("login.continueWith", { provider: provider.name })}</span>
             </MotionButtonBase>
           ))}
+          {serverConfigs?.REFERRAL_ENABLED && <ReferralForm />}
         </div>
       )}
       <Divider className="my-7" />
-      {serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4" />}
       {isEmail ? (
         <div className="cursor-pointer pb-2 text-center" onClick={() => setIsEmail(false)}>
           Back

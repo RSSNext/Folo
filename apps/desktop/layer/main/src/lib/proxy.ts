@@ -82,9 +82,10 @@ export const updateProxy = () => {
 
   // https://github.com/nodejs/undici/issues/2224
   // Error occurred in handler for 'setProxyConfig': InvalidArgumentError: Invalid URL protocol: the URL must start with `http:` or `https:`.
-  if (new URL(proxyUri).protocol === "socks:") {
+  const { protocol } = new URL(proxyUri)
+  if (protocol !== "http:" && protocol !== "https:") {
     // undici doesn't support socks proxy
-    logger.warn("undici doesn't support socks proxy")
+    logger.warn("undici only supports http and https proxy, skipping undici proxy setup")
     return
   }
   // Currently, Session.setProxy is not working for native fetch, which is used by readability.

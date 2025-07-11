@@ -126,7 +126,7 @@ export const ReferralScreen: NavigationControllerView = () => {
       />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell>
-          <View className="bg-label h-2 w-full rounded-full">
+          <View className="bg-system-grouped-background h-2 w-full rounded-full">
             <View
               className="bg-accent h-2 rounded-full"
               style={{

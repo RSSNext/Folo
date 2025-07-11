@@ -136,6 +136,9 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
                 </MotionButtonBase>
               ))}
 
+          {isRegister && serverConfigs?.REFERRAL_ENABLED && (
+            <ReferralForm className="mb-4 w-full" />
+          )}
           <div className="text-text-secondary -mb-1.5 mt-1 text-center text-xs leading-4">
             <a onClick={() => handleOpenToken()} className="hover:underline">
               {t("login.enter_token")}
@@ -153,7 +156,6 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
           </div>
         </div>
       )}
-      {isRegister && serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4" />}
 
       {!isEmail && (
         <>

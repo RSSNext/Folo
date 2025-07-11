@@ -50,7 +50,7 @@ export const UserProvider = () => {
         action: {
           label: "More",
           onClick: () => {
-            settingModalPresent("referral")
+            settingModalPresent("plan")
             localStorage.setItem(itemKey, "true")
           },
         },

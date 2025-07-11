@@ -1,3 +1,4 @@
+import { invalidateUserSession } from "@follow/store/user/hooks"
 import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
@@ -25,12 +26,17 @@ export function useIntentHandler() {
         return
       }
 
-      navigation.presentControllerView(FollowScreen, {
-        id: searchParams.id ?? undefined,
-        type: (searchParams.type as "url" | "feed" | "list") ?? undefined,
-        url: searchParams.url ?? undefined,
-        view: searchParams.view ?? undefined,
-      })
+      if (searchParams === "refresh") {
+        invalidateUserSession()
+        return
+      } else {
+        navigation.presentControllerView(FollowScreen, {
+          id: searchParams.id ?? undefined,
+          type: (searchParams.type as "url" | "feed" | "list") ?? undefined,
+          url: searchParams.url ?? undefined,
+          view: searchParams.view ?? undefined,
+        })
+      }
     }
   }, [incomingUrl, navigation])
 }
@@ -42,12 +48,15 @@ export function useIntentHandler() {
 // follow://feed?id=60580187699502080&view=1
 const extractParamsFromDeepLink = (
   incomingUrl: string | null,
-): { id: string | null; type: string | null; url?: string | null; view?: string | null } | null => {
+):
+  | { id: string | null; type: string | null; url?: string | null; view?: string | null }
+  | "refresh"
+  | null => {
   if (!incomingUrl) return null
 
   try {
     const url = new URL(incomingUrl)
-    if (url.protocol !== "follow:") return null
+    if (url.protocol !== "follow:" && url.protocol !== "folo:") return null
 
     switch (url.hostname) {
       case "add": {
@@ -81,6 +90,9 @@ const extractParamsFromDeepLink = (
           url: searchParams.get("url"),
           view: searchParams.get("view"),
         }
+      }
+      case "refresh": {
+        return "refresh"
       }
       default: {
         return null

@@ -39,7 +39,13 @@ async function getReferralCycleDays(code: string) {
   return apiClient.referrals.days.$get({ query: { code } })
 }
 
-export function ReferralForm({ className }: { className?: string }) {
+export function ReferralForm({
+  className,
+  align = "center",
+}: {
+  className?: string
+  align?: "left" | "center"
+}) {
   const { t } = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,15 +78,19 @@ export function ReferralForm({ className }: { className?: string }) {
 
   return (
     <Form {...form}>
-      <form className={cn(className)}>
+      <form className={cn(align === "left" ? "text-left" : "text-center", className)}>
         <FormField
           control={form.control}
           name="referral"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("register.referral.label")}</FormLabel>
+              <FormLabel className="font-normal">{t("register.referral.label")}</FormLabel>
               <FormControl>
-                <Input type="text" {...field} />
+                <Input
+                  type="text"
+                  className={cn(align === "left" ? "text-left" : "text-center")}
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
                 {days || !referral
