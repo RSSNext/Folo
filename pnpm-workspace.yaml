@@ -33,6 +33,7 @@ patchedDependencies:
   "@mozilla/readability@0.6.0": "patches/@mozilla__readability@0.6.0.patch"
   "daisyui@4.12.24": "patches/daisyui@4.12.24.patch"
   jsonpointer: "patches/jsonpointer.patch"
+  workbox-precaching: "patches/workbox-precaching.patch"
   "@pengx17/electron-forge-maker-appimage": "patches/@pengx17__electron-forge-maker-appimage.patch"
   "@microflash/remark-callout-directives": "patches/@microflash__remark-callout-directives.patch"
   react-native-track-player: "patches/react-native-track-player.patch"

@@ -25,6 +25,8 @@ import {
   LazyExternalJumpInProvider,
   LazyLottieRenderContainer,
   LazyPopoverProvider,
+  LazyPWAPrompt,
+  LazyReloadPrompt,
 } from "./lazy/index"
 import { ServerConfigsProvider } from "./server-configs-provider"
 import { SettingSync } from "./setting-sync"
@@ -58,6 +60,8 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                   <LazyPopoverProvider />
                   <LazyLottieRenderContainer />
                   <LazyExternalJumpInProvider />
+                  <LazyReloadPrompt />
+                  {!IN_ELECTRON && <LazyPWAPrompt />}
                 </Suspense>
                 <FocusableGuardProvider />
               </ModalStackProvider>

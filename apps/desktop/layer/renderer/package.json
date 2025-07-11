@@ -7,6 +7,7 @@
     "build:web": "cd ../.. && pnpm build:web",
     "dev": "cd ../.. && pnpm dev:web",
     "dev:ssl": "cd ../.. && SSL=true pnpm dev:web",
+    "generate-pwa-assets": "pwa-assets-generator public/icon.svg",
     "test": "vitest --typecheck",
     "typecheck": "tsc --noEmit"
   },
@@ -79,6 +80,7 @@
     "react-hotkeys-hook": "5.1.0",
     "react-i18next": "15.6.0",
     "react-intersection-observer": "9.16.0",
+    "react-ios-pwa-prompt": "2.0.6",
     "react-qr-code": "2.0.18",
     "react-resizable-layout": "npm:@innei/react-resizable-layout@0.7.3-fork.1",
     "react-router": "7.6.3",
@@ -107,6 +109,7 @@
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
     "@types/node": "24.0.10",
+    "@vite-pwa/assets-generator": "1.0.0",
     "fake-indexeddb": "6.0.1",
     "happy-dom": "18.0.1",
     "react-scan": "0.4.3",

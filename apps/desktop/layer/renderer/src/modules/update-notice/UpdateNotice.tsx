@@ -28,6 +28,10 @@ export const UpdateNotice = () => {
         ipcServices?.app.rendererUpdateReload()
         break
       }
+      case "pwa": {
+        status.finishUpdate?.()
+        break
+      }
     }
     setUpdaterStatus(null)
   }).current

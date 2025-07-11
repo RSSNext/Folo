@@ -73,7 +73,7 @@ export class TrackerPoints {
     this.track(TrackerMapper.PlayerOpenDuration, props)
   }
 
-  updateRestart(props: { type: "app" | "renderer" }) {
+  updateRestart(props: { type: "app" | "renderer" | "pwa" }) {
     this.track(TrackerMapper.UpdateRestart, props)
   }
 
