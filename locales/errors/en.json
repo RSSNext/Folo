@@ -68,5 +68,6 @@
   "14000": "Invalid file",
   "14001": "File too large",
   "14002": "Upload failed",
-  "15000": "AI token limit exceeded. Please try again later."
+  "15000": "AI token limit exceeded. Please try again later.",
+  "15001": "You are not allowed to access AI chat"
 }

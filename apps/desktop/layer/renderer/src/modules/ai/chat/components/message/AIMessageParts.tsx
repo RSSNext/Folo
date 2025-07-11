@@ -1,4 +1,5 @@
 import type { ToolUIPart } from "ai"
+import { m } from "motion/react"
 import * as React from "react"
 
 import type {
@@ -21,12 +22,50 @@ import { AIMarkdownMessage } from "./AIMarkdownMessage"
 interface MessagePartsProps {
   message: BizUIMessage
 }
+const ThinkingIndicator: React.FC = () => {
+  const text = "Thinking..."
+  const [displayedText, setDisplayedText] = React.useState("")
+  const [currentIndex, setCurrentIndex] = React.useState(0)
 
+  React.useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayedText(text.slice(0, currentIndex + 1))
+        setCurrentIndex(currentIndex + 1)
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [currentIndex, text])
+
+  return (
+    <div className="flex items-center justify-center py-4">
+      <m.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-text-secondary flex items-center gap-1"
+      >
+        <span className="text-sm font-medium">{displayedText}</span>
+        <m.span
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="text-accent text-sm"
+        >
+          |
+        </m.span>
+      </m.div>
+    </div>
+  )
+}
 export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message }) => {
   if (!message.parts || message.parts.length === 0) {
     // In AI SDK v5, messages should always have parts
     if (message.role === "assistant") {
-      return <span className="text-text-secondary italic">AI is thinking...</span>
+      return <ThinkingIndicator />
     }
     return null
   }
