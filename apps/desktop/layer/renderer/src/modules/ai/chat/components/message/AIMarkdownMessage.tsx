@@ -1,10 +1,12 @@
+import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import { parseMarkdown } from "@follow/components/utils/parse-markdown.js"
-import { cn } from "@follow/utils"
+import { cn, isBizId } from "@follow/utils"
 import { createElement, isValidElement, memo, useMemo } from "react"
 
 import { ShikiHighLighter } from "~/components/ui/code-highlighter"
 import { MermaidDiagram } from "~/components/ui/diagrams"
 import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
+import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
 export const AIMarkdownMessage = memo(
   ({
@@ -54,7 +56,7 @@ export const AIMarkdownMessage = memo(
                   return <pre className="text-text-secondary">{children}</pre>
                 },
                 a: ({ node, ...props }) => {
-                  return createElement(MarkdownLink, { ...props } as any)
+                  return createElement(RelatedEntryLink, { ...props } as any)
                 },
               },
             }).content,
@@ -64,3 +66,25 @@ export const AIMarkdownMessage = memo(
     )
   },
 )
+
+const RelatedEntryLink = (props: LinkProps) => {
+  const { href, children } = props
+  const entryId = isBizId(href) ? href : null
+
+  const peekModal = usePeekModal()
+  if (!entryId) {
+    return <MarkdownLink {...props} />
+  }
+  return (
+    <button
+      type="button"
+      className="follow-link--underline text-text cursor-pointer font-semibold no-underline"
+      onClick={() => {
+        peekModal(entryId, "modal")
+      }}
+    >
+      {children}
+      <i className="i-mgc-arrow-right-up-cute-re size-[0.9em] translate-y-[2px] opacity-70" />
+    </button>
+  )
+}

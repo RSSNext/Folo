@@ -1,15 +1,15 @@
 // @ts-nocheck
 import { HttpBindings } from "@hono/node-server";
-import * as zod1064 from "zod";
+import * as zod1184 from "zod";
 import { z } from "zod";
 import * as better_auth243 from "better-auth";
 import { BetterAuthOptions } from "better-auth";
 import * as better_auth_plugins329 from "better-auth/plugins";
 import * as better_call82 from "better-call";
 import Stripe from "stripe";
-import * as drizzle_orm_pg_core1054 from "drizzle-orm/pg-core";
+import * as drizzle_orm_pg_core1174 from "drizzle-orm/pg-core";
 import { AnyPgColumn } from "drizzle-orm/pg-core";
-import * as drizzle_orm1052 from "drizzle-orm";
+import * as drizzle_orm1203 from "drizzle-orm";
 import { InferInsertModel, InferSelectModel, SQL } from "drizzle-orm";
 import * as zod_v485 from "zod/v4";
 import * as ai38 from "ai";
@@ -24,11 +24,11 @@ type Env = {
 };
 //#endregion
 //#region src/schema/achievements.d.ts
-declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const achievements: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "achievements";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "achievements";
       dataType: "string";
@@ -45,7 +45,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "achievements";
       dataType: "string";
@@ -62,7 +62,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core1054.PgColumn<{
+    type: drizzle_orm_pg_core1174.PgColumn<{
       name: "type";
       tableName: "achievements";
       dataType: "string";
@@ -79,7 +79,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    actionId: drizzle_orm_pg_core1054.PgColumn<{
+    actionId: drizzle_orm_pg_core1174.PgColumn<{
       name: "action_id";
       tableName: "achievements";
       dataType: "number";
@@ -96,7 +96,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    progress: drizzle_orm_pg_core1054.PgColumn<{
+    progress: drizzle_orm_pg_core1174.PgColumn<{
       name: "progress";
       tableName: "achievements";
       dataType: "number";
@@ -113,7 +113,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    progressMax: drizzle_orm_pg_core1054.PgColumn<{
+    progressMax: drizzle_orm_pg_core1174.PgColumn<{
       name: "progress_max";
       tableName: "achievements";
       dataType: "number";
@@ -130,7 +130,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    done: drizzle_orm_pg_core1054.PgColumn<{
+    done: drizzle_orm_pg_core1174.PgColumn<{
       name: "done";
       tableName: "achievements";
       dataType: "boolean";
@@ -147,7 +147,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    doneAt: drizzle_orm_pg_core1054.PgColumn<{
+    doneAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "done_at";
       tableName: "achievements";
       dataType: "date";
@@ -164,7 +164,7 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tx: drizzle_orm_pg_core1054.PgColumn<{
+    tx: drizzle_orm_pg_core1174.PgColumn<{
       name: "tx";
       tableName: "achievements";
       dataType: "string";
@@ -184,17 +184,17 @@ declare const achievements: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const achievementsOpenAPISchema: zod1064.ZodObject<{
-  id: zod1064.ZodString;
-  userId: zod1064.ZodString;
-  type: zod1064.ZodEnum<["checking", "completed", "incomplete", "audit", "received"]>;
-  actionId: zod1064.ZodNumber;
-  progress: zod1064.ZodNumber;
-  progressMax: zod1064.ZodNumber;
-  done: zod1064.ZodBoolean;
-  doneAt: zod1064.ZodNullable<zod1064.ZodString>;
-  tx: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const achievementsOpenAPISchema: zod1184.ZodObject<{
+  id: zod1184.ZodString;
+  userId: zod1184.ZodString;
+  type: zod1184.ZodEnum<["checking", "completed", "incomplete", "audit", "received"]>;
+  actionId: zod1184.ZodNumber;
+  progress: zod1184.ZodNumber;
+  progressMax: zod1184.ZodNumber;
+  done: zod1184.ZodBoolean;
+  doneAt: zod1184.ZodNullable<zod1184.ZodString>;
+  tx: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   id: string;
   userId: string;
   type: "checking" | "completed" | "incomplete" | "audit" | "received";
@@ -232,11 +232,11 @@ declare const conditionItemSchema: z.ZodObject<{
   operator: "contains" | "not_contains" | "eq" | "not_eq" | "gt" | "lt" | "regex";
 }>;
 type ConditionItem = z.infer<typeof conditionItemSchema>;
-declare const actions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const actions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "actions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "actions";
       dataType: "string";
@@ -253,7 +253,7 @@ declare const actions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "actions";
       dataType: "date";
@@ -270,7 +270,7 @@ declare const actions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updated_at";
       tableName: "actions";
       dataType: "date";
@@ -287,7 +287,7 @@ declare const actions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rules: drizzle_orm_pg_core1054.PgColumn<{
+    rules: drizzle_orm_pg_core1174.PgColumn<{
       name: "rules";
       tableName: "actions";
       dataType: "json";
@@ -837,18 +837,18 @@ declare const actionsOpenAPISchema: z.ZodObject<Omit<{
     };
   }[] | null | undefined;
 }>;
-declare const actionsRelations: drizzle_orm1052.Relations<"actions", {
-  users: drizzle_orm1052.One<"user", true>;
+declare const actionsRelations: drizzle_orm1203.Relations<"actions", {
+  users: drizzle_orm1203.One<"user", true>;
 }>;
 type ActionsModel = z.infer<typeof actionsOpenAPISchema>;
 type SettingsModel = Exclude<z.infer<typeof actionsItemOpenAPISchema>["result"], undefined>;
 //#endregion
 //#region src/schema/activities.d.ts
-declare const activities: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const activities: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "activities";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "activities";
       dataType: "string";
@@ -865,7 +865,7 @@ declare const activities: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    activeAt: drizzle_orm_pg_core1054.PgColumn<{
+    activeAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "active_at";
       tableName: "activities";
       dataType: "date";
@@ -882,7 +882,7 @@ declare const activities: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    platform: drizzle_orm_pg_core1054.PgColumn<{
+    platform: drizzle_orm_pg_core1174.PgColumn<{
       name: "platform";
       tableName: "activities";
       dataType: "string";
@@ -899,7 +899,7 @@ declare const activities: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    version: drizzle_orm_pg_core1054.PgColumn<{
+    version: drizzle_orm_pg_core1174.PgColumn<{
       name: "version";
       tableName: "activities";
       dataType: "string";
@@ -919,12 +919,12 @@ declare const activities: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const activitiesOpenAPISchema: zod1064.ZodObject<{
-  userId: zod1064.ZodString;
-  activeAt: zod1064.ZodString;
-  platform: zod1064.ZodString;
-  version: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const activitiesOpenAPISchema: zod1184.ZodObject<{
+  userId: zod1184.ZodString;
+  activeAt: zod1184.ZodString;
+  platform: zod1184.ZodString;
+  version: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   userId: string;
   activeAt: string;
   platform: string;
@@ -1028,11 +1028,11 @@ declare const detailModelSchema: z.ZodNullable<z.ZodObject<{
 type DetailModel = z.infer<typeof detailModelSchema>;
 declare const activityEnum: readonly ["public_beta"];
 type AirdropActivity = typeof activityEnum[number];
-declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const airdrops: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "airdrops";
   schema: undefined;
   columns: {
-    activity: drizzle_orm_pg_core1054.PgColumn<{
+    activity: drizzle_orm_pg_core1174.PgColumn<{
       name: "activity";
       tableName: "airdrops";
       dataType: "string";
@@ -1049,7 +1049,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "airdrops";
       dataType: "string";
@@ -1066,7 +1066,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    amount: drizzle_orm_pg_core1054.PgColumn<{
+    amount: drizzle_orm_pg_core1174.PgColumn<{
       name: "amount";
       tableName: "airdrops";
       dataType: "string";
@@ -1083,7 +1083,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rank: drizzle_orm_pg_core1054.PgColumn<{
+    rank: drizzle_orm_pg_core1174.PgColumn<{
       name: "rank";
       tableName: "airdrops";
       dataType: "string";
@@ -1100,7 +1100,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    detail: drizzle_orm_pg_core1054.PgColumn<{
+    detail: drizzle_orm_pg_core1174.PgColumn<{
       name: "detail";
       tableName: "airdrops";
       dataType: "json";
@@ -1177,7 +1177,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
         "GitHub Community Contributions Rank": number;
       } | null;
     }>;
-    verify: drizzle_orm_pg_core1054.PgColumn<{
+    verify: drizzle_orm_pg_core1174.PgColumn<{
       name: "verify";
       tableName: "airdrops";
       dataType: "string";
@@ -1194,7 +1194,7 @@ declare const airdrops: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tx: drizzle_orm_pg_core1054.PgColumn<{
+    tx: drizzle_orm_pg_core1174.PgColumn<{
       name: "tx";
       tableName: "airdrops";
       dataType: "string";
@@ -1436,11 +1436,11 @@ declare const airdropsOpenAPISchema: z.ZodObject<Omit<{
 }>;
 //#endregion
 //#region src/schema/captcha.d.ts
-declare const captcha: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const captcha: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "captcha";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "captcha";
       dataType: "string";
@@ -1457,7 +1457,7 @@ declare const captcha: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    failedCount: drizzle_orm_pg_core1054.PgColumn<{
+    failedCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "failed_count";
       tableName: "captcha";
       dataType: "number";
@@ -1474,7 +1474,7 @@ declare const captcha: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    passedCount: drizzle_orm_pg_core1054.PgColumn<{
+    passedCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "passed_count";
       tableName: "captcha";
       dataType: "number";
@@ -1496,11 +1496,11 @@ declare const captcha: drizzle_orm_pg_core1054.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/collections.d.ts
-declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const collections: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "collections";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "collections";
       dataType: "string";
@@ -1517,7 +1517,7 @@ declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "collections";
       dataType: "string";
@@ -1534,7 +1534,7 @@ declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    entryId: drizzle_orm_pg_core1054.PgColumn<{
+    entryId: drizzle_orm_pg_core1174.PgColumn<{
       name: "entry_id";
       tableName: "collections";
       dataType: "string";
@@ -1551,7 +1551,7 @@ declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "collections";
       dataType: "date";
@@ -1568,7 +1568,7 @@ declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "collections";
       dataType: "number";
@@ -1588,13 +1588,13 @@ declare const collections: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const collectionsOpenAPISchema: zod1064.ZodObject<{
-  userId: zod1064.ZodString;
-  feedId: zod1064.ZodString;
-  entryId: zod1064.ZodString;
-  createdAt: zod1064.ZodString;
-  view: zod1064.ZodNumber;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const collectionsOpenAPISchema: zod1184.ZodObject<{
+  userId: zod1184.ZodString;
+  feedId: zod1184.ZodString;
+  entryId: zod1184.ZodString;
+  createdAt: zod1184.ZodString;
+  view: zod1184.ZodNumber;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   createdAt: string;
   userId: string;
   view: number;
@@ -1607,10 +1607,10 @@ declare const collectionsOpenAPISchema: zod1064.ZodObject<{
   feedId: string;
   entryId: string;
 }>;
-declare const collectionsRelations: drizzle_orm1052.Relations<"collections", {
-  users: drizzle_orm1052.One<"user", true>;
-  entries: drizzle_orm1052.One<"entries", true>;
-  feeds: drizzle_orm1052.One<"feeds", true>;
+declare const collectionsRelations: drizzle_orm1203.Relations<"collections", {
+  users: drizzle_orm1203.One<"user", true>;
+  entries: drizzle_orm1203.One<"entries", true>;
+  feeds: drizzle_orm1203.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/entries.d.ts
@@ -1637,19 +1637,19 @@ type ExtraModel = {
   }[];
 };
 declare const CommonEntryFields: {
-  id: drizzle_orm1052.HasRuntimeDefault<drizzle_orm1052.HasDefault<drizzle_orm1052.IsPrimaryKey<drizzle_orm1052.NotNull<drizzle_orm_pg_core1054.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
-  title: drizzle_orm_pg_core1054.PgTextBuilderInitial<"title", [string, ...string[]]>;
-  url: drizzle_orm_pg_core1054.PgTextBuilderInitial<"url", [string, ...string[]]>;
-  content: drizzle_orm_pg_core1054.PgTextBuilderInitial<"content", [string, ...string[]]>;
-  description: drizzle_orm_pg_core1054.PgTextBuilderInitial<"description", [string, ...string[]]>;
-  guid: drizzle_orm1052.NotNull<drizzle_orm_pg_core1054.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
-  author: drizzle_orm_pg_core1054.PgTextBuilderInitial<"author", [string, ...string[]]>;
-  authorUrl: drizzle_orm_pg_core1054.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
-  authorAvatar: drizzle_orm_pg_core1054.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
-  insertedAt: drizzle_orm1052.NotNull<drizzle_orm_pg_core1054.PgTimestampBuilderInitial<"inserted_at">>;
-  publishedAt: drizzle_orm1052.NotNull<drizzle_orm_pg_core1054.PgTimestampBuilderInitial<"published_at">>;
-  media: drizzle_orm1052.$Type<drizzle_orm_pg_core1054.PgJsonbBuilderInitial<"media">, MediaModel[]>;
-  categories: drizzle_orm_pg_core1054.PgArrayBuilder<{
+  id: drizzle_orm1203.HasRuntimeDefault<drizzle_orm1203.HasDefault<drizzle_orm1203.IsPrimaryKey<drizzle_orm1203.NotNull<drizzle_orm_pg_core1174.PgTextBuilderInitial<"id", [string, ...string[]]>>>>>;
+  title: drizzle_orm_pg_core1174.PgTextBuilderInitial<"title", [string, ...string[]]>;
+  url: drizzle_orm_pg_core1174.PgTextBuilderInitial<"url", [string, ...string[]]>;
+  content: drizzle_orm_pg_core1174.PgTextBuilderInitial<"content", [string, ...string[]]>;
+  description: drizzle_orm_pg_core1174.PgTextBuilderInitial<"description", [string, ...string[]]>;
+  guid: drizzle_orm1203.NotNull<drizzle_orm_pg_core1174.PgTextBuilderInitial<"guid", [string, ...string[]]>>;
+  author: drizzle_orm_pg_core1174.PgTextBuilderInitial<"author", [string, ...string[]]>;
+  authorUrl: drizzle_orm_pg_core1174.PgTextBuilderInitial<"author_url", [string, ...string[]]>;
+  authorAvatar: drizzle_orm_pg_core1174.PgTextBuilderInitial<"author_avatar", [string, ...string[]]>;
+  insertedAt: drizzle_orm1203.NotNull<drizzle_orm_pg_core1174.PgTimestampBuilderInitial<"inserted_at">>;
+  publishedAt: drizzle_orm1203.NotNull<drizzle_orm_pg_core1174.PgTimestampBuilderInitial<"published_at">>;
+  media: drizzle_orm1203.$Type<drizzle_orm_pg_core1174.PgJsonbBuilderInitial<"media">, MediaModel[]>;
+  categories: drizzle_orm_pg_core1174.PgArrayBuilder<{
     name: "categories";
     dataType: "array";
     columnType: "PgArray";
@@ -1673,15 +1673,15 @@ declare const CommonEntryFields: {
     enumValues: [string, ...string[]];
     driverParam: string;
   }>;
-  attachments: drizzle_orm1052.$Type<drizzle_orm_pg_core1054.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
-  extra: drizzle_orm1052.$Type<drizzle_orm_pg_core1054.PgJsonbBuilderInitial<"extra">, ExtraModel>;
-  language: drizzle_orm_pg_core1054.PgTextBuilderInitial<"language", [string, ...string[]]>;
+  attachments: drizzle_orm1203.$Type<drizzle_orm_pg_core1174.PgJsonbBuilderInitial<"attachments">, AttachmentsModel[]>;
+  extra: drizzle_orm1203.$Type<drizzle_orm_pg_core1174.PgJsonbBuilderInitial<"extra">, ExtraModel>;
+  language: drizzle_orm_pg_core1174.PgTextBuilderInitial<"language", [string, ...string[]]>;
 };
-declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const entries: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "entries";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "entries";
       dataType: "string";
@@ -1698,7 +1698,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "entries";
       dataType: "string";
@@ -1715,7 +1715,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core1054.PgColumn<{
+    url: drizzle_orm_pg_core1174.PgColumn<{
       name: "url";
       tableName: "entries";
       dataType: "string";
@@ -1732,7 +1732,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core1054.PgColumn<{
+    content: drizzle_orm_pg_core1174.PgColumn<{
       name: "content";
       tableName: "entries";
       dataType: "string";
@@ -1749,7 +1749,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core1054.PgColumn<{
+    description: drizzle_orm_pg_core1174.PgColumn<{
       name: "description";
       tableName: "entries";
       dataType: "string";
@@ -1766,7 +1766,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    guid: drizzle_orm_pg_core1054.PgColumn<{
+    guid: drizzle_orm_pg_core1174.PgColumn<{
       name: "guid";
       tableName: "entries";
       dataType: "string";
@@ -1783,7 +1783,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    author: drizzle_orm_pg_core1054.PgColumn<{
+    author: drizzle_orm_pg_core1174.PgColumn<{
       name: "author";
       tableName: "entries";
       dataType: "string";
@@ -1800,7 +1800,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorUrl: drizzle_orm_pg_core1054.PgColumn<{
+    authorUrl: drizzle_orm_pg_core1174.PgColumn<{
       name: "author_url";
       tableName: "entries";
       dataType: "string";
@@ -1817,7 +1817,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorAvatar: drizzle_orm_pg_core1054.PgColumn<{
+    authorAvatar: drizzle_orm_pg_core1174.PgColumn<{
       name: "author_avatar";
       tableName: "entries";
       dataType: "string";
@@ -1834,7 +1834,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core1054.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "inserted_at";
       tableName: "entries";
       dataType: "date";
@@ -1851,7 +1851,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core1054.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "published_at";
       tableName: "entries";
       dataType: "date";
@@ -1868,7 +1868,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    media: drizzle_orm_pg_core1054.PgColumn<{
+    media: drizzle_orm_pg_core1174.PgColumn<{
       name: "media";
       tableName: "entries";
       dataType: "json";
@@ -1887,7 +1887,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: MediaModel[];
     }>;
-    categories: drizzle_orm_pg_core1054.PgColumn<{
+    categories: drizzle_orm_pg_core1174.PgColumn<{
       name: "categories";
       tableName: "entries";
       dataType: "array";
@@ -1900,7 +1900,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm1052.Column<{
+      baseColumn: drizzle_orm1203.Column<{
         name: "categories";
         tableName: "entries";
         dataType: "string";
@@ -1920,17 +1920,17 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core1054.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1174.PgColumnBuilder<{
         name: "categories";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm1052.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1203.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    attachments: drizzle_orm_pg_core1054.PgColumn<{
+    attachments: drizzle_orm_pg_core1174.PgColumn<{
       name: "attachments";
       tableName: "entries";
       dataType: "json";
@@ -1949,7 +1949,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: AttachmentsModel[];
     }>;
-    extra: drizzle_orm_pg_core1054.PgColumn<{
+    extra: drizzle_orm_pg_core1174.PgColumn<{
       name: "extra";
       tableName: "entries";
       dataType: "json";
@@ -1968,7 +1968,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: ExtraModel;
     }>;
-    language: drizzle_orm_pg_core1054.PgColumn<{
+    language: drizzle_orm_pg_core1174.PgColumn<{
       name: "language";
       tableName: "entries";
       dataType: "string";
@@ -1985,7 +1985,7 @@ declare const entries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "entries";
       dataType: "string";
@@ -2379,20 +2379,20 @@ declare const entriesOpenAPISchema: z.ZodObject<Omit<{
     }[] | null | undefined;
   } | null | undefined;
 }>;
-declare const entriesRelations: drizzle_orm1052.Relations<"entries", {
-  feeds: drizzle_orm1052.One<"feeds", true>;
-  collections: drizzle_orm1052.Many<"collections">;
-  feedPowerTokens: drizzle_orm1052.One<"feedPowerTokens", true>;
+declare const entriesRelations: drizzle_orm1203.Relations<"entries", {
+  feeds: drizzle_orm1203.One<"feeds", true>;
+  collections: drizzle_orm1203.Many<"collections">;
+  feedPowerTokens: drizzle_orm1203.One<"feedPowerTokens", true>;
 }>;
 type EntriesModel = InferInsertModel<typeof entries> & {
   attachments?: AttachmentsModel[] | null;
   media?: MediaModel[] | null;
 };
-declare const urlReads: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const urlReads: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "urlReads";
   schema: undefined;
   columns: {
-    url: drizzle_orm_pg_core1054.PgColumn<{
+    url: drizzle_orm_pg_core1174.PgColumn<{
       name: "url";
       tableName: "urlReads";
       dataType: "string";
@@ -2409,7 +2409,7 @@ declare const urlReads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userIds: drizzle_orm_pg_core1054.PgColumn<{
+    userIds: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_ids";
       tableName: "urlReads";
       dataType: "array";
@@ -2422,7 +2422,7 @@ declare const urlReads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm1052.Column<{
+      baseColumn: drizzle_orm1203.Column<{
         name: "user_ids";
         tableName: "urlReads";
         dataType: "string";
@@ -2442,17 +2442,17 @@ declare const urlReads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core1054.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1174.PgColumnBuilder<{
         name: "user_ids";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm1052.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1203.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    count: drizzle_orm_pg_core1054.PgColumn<{
+    count: drizzle_orm_pg_core1174.PgColumn<{
       name: "count";
       tableName: "urlReads";
       dataType: "number";
@@ -2488,11 +2488,11 @@ declare const urlReadsOpenAPISchema: z.ZodObject<{
 }>;
 //#endregion
 //#region src/schema/feeds/analytics.d.ts
-declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const feedAnalytics: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "feed_analytics";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "feed_analytics";
       dataType: "string";
@@ -2509,7 +2509,7 @@ declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatesPerWeek: drizzle_orm_pg_core1054.PgColumn<{
+    updatesPerWeek: drizzle_orm_pg_core1174.PgColumn<{
       name: "updates_per_week";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2526,7 +2526,7 @@ declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    subscriptionCount: drizzle_orm_pg_core1054.PgColumn<{
+    subscriptionCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "subscription_count";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2543,7 +2543,7 @@ declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    latestEntryPublishedAt: drizzle_orm_pg_core1054.PgColumn<{
+    latestEntryPublishedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "latest_entry_published_at";
       tableName: "feed_analytics";
       dataType: "date";
@@ -2560,7 +2560,7 @@ declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "feed_analytics";
       dataType: "number";
@@ -2580,13 +2580,13 @@ declare const feedAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedAnalyticsOpenAPISchema: zod1064.ZodObject<{
-  feedId: zod1064.ZodString;
-  updatesPerWeek: zod1064.ZodNullable<zod1064.ZodNumber>;
-  subscriptionCount: zod1064.ZodNullable<zod1064.ZodNumber>;
-  latestEntryPublishedAt: zod1064.ZodNullable<zod1064.ZodString>;
-  view: zod1064.ZodNullable<zod1064.ZodNumber>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const feedAnalyticsOpenAPISchema: zod1184.ZodObject<{
+  feedId: zod1184.ZodString;
+  updatesPerWeek: zod1184.ZodNullable<zod1184.ZodNumber>;
+  subscriptionCount: zod1184.ZodNullable<zod1184.ZodNumber>;
+  latestEntryPublishedAt: zod1184.ZodNullable<zod1184.ZodString>;
+  view: zod1184.ZodNullable<zod1184.ZodNumber>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   view: number | null;
   feedId: string;
   updatesPerWeek: number | null;
@@ -2599,16 +2599,16 @@ declare const feedAnalyticsOpenAPISchema: zod1064.ZodObject<{
   subscriptionCount: number | null;
   latestEntryPublishedAt: string | null;
 }>;
-declare const feedAnalyticsRelations: drizzle_orm1052.Relations<"feed_analytics", {
-  feed: drizzle_orm1052.One<"feeds", true>;
+declare const feedAnalyticsRelations: drizzle_orm1203.Relations<"feed_analytics", {
+  feed: drizzle_orm1203.One<"feeds", true>;
 }>;
 //#endregion
 //#region src/schema/feeds/feeds.d.ts
-declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const feeds: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "feeds";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "feeds";
       dataType: "string";
@@ -2625,7 +2625,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core1054.PgColumn<{
+    url: drizzle_orm_pg_core1174.PgColumn<{
       name: "url";
       tableName: "feeds";
       dataType: "string";
@@ -2642,7 +2642,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "feeds";
       dataType: "string";
@@ -2659,7 +2659,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core1054.PgColumn<{
+    description: drizzle_orm_pg_core1174.PgColumn<{
       name: "description";
       tableName: "feeds";
       dataType: "string";
@@ -2676,7 +2676,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    siteUrl: drizzle_orm_pg_core1054.PgColumn<{
+    siteUrl: drizzle_orm_pg_core1174.PgColumn<{
       name: "site_url";
       tableName: "feeds";
       dataType: "string";
@@ -2693,7 +2693,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core1054.PgColumn<{
+    image: drizzle_orm_pg_core1174.PgColumn<{
       name: "image";
       tableName: "feeds";
       dataType: "string";
@@ -2710,7 +2710,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    checkedAt: drizzle_orm_pg_core1054.PgColumn<{
+    checkedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "checked_at";
       tableName: "feeds";
       dataType: "date";
@@ -2727,7 +2727,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    lastModifiedHeader: drizzle_orm_pg_core1054.PgColumn<{
+    lastModifiedHeader: drizzle_orm_pg_core1174.PgColumn<{
       name: "last_modified_header";
       tableName: "feeds";
       dataType: "string";
@@ -2744,7 +2744,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    etagHeader: drizzle_orm_pg_core1054.PgColumn<{
+    etagHeader: drizzle_orm_pg_core1174.PgColumn<{
       name: "etag_header";
       tableName: "feeds";
       dataType: "string";
@@ -2761,7 +2761,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ttl: drizzle_orm_pg_core1054.PgColumn<{
+    ttl: drizzle_orm_pg_core1174.PgColumn<{
       name: "ttl";
       tableName: "feeds";
       dataType: "number";
@@ -2778,7 +2778,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorMessage: drizzle_orm_pg_core1054.PgColumn<{
+    errorMessage: drizzle_orm_pg_core1174.PgColumn<{
       name: "error_message";
       tableName: "feeds";
       dataType: "string";
@@ -2795,7 +2795,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorAt: drizzle_orm_pg_core1054.PgColumn<{
+    errorAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "error_at";
       tableName: "feeds";
       dataType: "date";
@@ -2812,7 +2812,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core1054.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "owner_user_id";
       tableName: "feeds";
       dataType: "string";
@@ -2829,7 +2829,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core1054.PgColumn<{
+    language: drizzle_orm_pg_core1174.PgColumn<{
       name: "language";
       tableName: "feeds";
       dataType: "string";
@@ -2846,7 +2846,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    migrateTo: drizzle_orm_pg_core1054.PgColumn<{
+    migrateTo: drizzle_orm_pg_core1174.PgColumn<{
       name: "migrate_to";
       tableName: "feeds";
       dataType: "string";
@@ -2863,7 +2863,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubRoute: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubRoute: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_route";
       tableName: "feeds";
       dataType: "string";
@@ -2880,7 +2880,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubNamespace: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubNamespace: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_namespace";
       tableName: "feeds";
       dataType: "string";
@@ -2897,7 +2897,7 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    nsfw: drizzle_orm_pg_core1054.PgColumn<{
+    nsfw: drizzle_orm_pg_core1174.PgColumn<{
       name: "nsfw";
       tableName: "feeds";
       dataType: "boolean";
@@ -2917,26 +2917,26 @@ declare const feeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedsOpenAPISchema: zod1064.ZodObject<{
-  id: zod1064.ZodString;
-  url: zod1064.ZodString;
-  title: zod1064.ZodNullable<zod1064.ZodString>;
-  description: zod1064.ZodNullable<zod1064.ZodString>;
-  siteUrl: zod1064.ZodNullable<zod1064.ZodString>;
-  image: zod1064.ZodNullable<zod1064.ZodString>;
-  checkedAt: zod1064.ZodString;
-  lastModifiedHeader: zod1064.ZodNullable<zod1064.ZodString>;
-  etagHeader: zod1064.ZodNullable<zod1064.ZodString>;
-  ttl: zod1064.ZodNullable<zod1064.ZodNumber>;
-  errorMessage: zod1064.ZodNullable<zod1064.ZodString>;
-  errorAt: zod1064.ZodNullable<zod1064.ZodString>;
-  ownerUserId: zod1064.ZodNullable<zod1064.ZodString>;
-  language: zod1064.ZodNullable<zod1064.ZodString>;
-  migrateTo: zod1064.ZodNullable<zod1064.ZodString>;
-  rsshubRoute: zod1064.ZodNullable<zod1064.ZodString>;
-  rsshubNamespace: zod1064.ZodNullable<zod1064.ZodString>;
-  nsfw: zod1064.ZodNullable<zod1064.ZodBoolean>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const feedsOpenAPISchema: zod1184.ZodObject<{
+  id: zod1184.ZodString;
+  url: zod1184.ZodString;
+  title: zod1184.ZodNullable<zod1184.ZodString>;
+  description: zod1184.ZodNullable<zod1184.ZodString>;
+  siteUrl: zod1184.ZodNullable<zod1184.ZodString>;
+  image: zod1184.ZodNullable<zod1184.ZodString>;
+  checkedAt: zod1184.ZodString;
+  lastModifiedHeader: zod1184.ZodNullable<zod1184.ZodString>;
+  etagHeader: zod1184.ZodNullable<zod1184.ZodString>;
+  ttl: zod1184.ZodNullable<zod1184.ZodNumber>;
+  errorMessage: zod1184.ZodNullable<zod1184.ZodString>;
+  errorAt: zod1184.ZodNullable<zod1184.ZodString>;
+  ownerUserId: zod1184.ZodNullable<zod1184.ZodString>;
+  language: zod1184.ZodNullable<zod1184.ZodString>;
+  migrateTo: zod1184.ZodNullable<zod1184.ZodString>;
+  rsshubRoute: zod1184.ZodNullable<zod1184.ZodString>;
+  rsshubNamespace: zod1184.ZodNullable<zod1184.ZodString>;
+  nsfw: zod1184.ZodNullable<zod1184.ZodBoolean>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   id: string;
   image: string | null;
   description: string | null;
@@ -2975,21 +2975,21 @@ declare const feedsOpenAPISchema: zod1064.ZodObject<{
   rsshubNamespace: string | null;
   nsfw: boolean | null;
 }>;
-declare const feedsRelations: drizzle_orm1052.Relations<"feeds", {
-  subscriptions: drizzle_orm1052.Many<"subscriptions">;
-  entries: drizzle_orm1052.Many<"entries">;
-  owner: drizzle_orm1052.One<"user", false>;
-  migrateTo: drizzle_orm1052.One<"feeds", false>;
-  trendingFeeds: drizzle_orm1052.Many<"trendings_feeds">;
+declare const feedsRelations: drizzle_orm1203.Relations<"feeds", {
+  subscriptions: drizzle_orm1203.Many<"subscriptions">;
+  entries: drizzle_orm1203.Many<"entries">;
+  owner: drizzle_orm1203.One<"user", false>;
+  migrateTo: drizzle_orm1203.One<"feeds", false>;
+  trendingFeeds: drizzle_orm1203.Many<"trendings_feeds">;
 }>;
 type FeedModel = InferInsertModel<typeof feeds>;
 //#endregion
 //#region src/schema/feeds/subscriptions.d.ts
-declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const subscriptions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "subscriptions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "subscriptions";
       dataType: "string";
@@ -3006,7 +3006,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "subscriptions";
       dataType: "string";
@@ -3023,7 +3023,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "subscriptions";
       dataType: "number";
@@ -3040,7 +3040,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    category: drizzle_orm_pg_core1054.PgColumn<{
+    category: drizzle_orm_pg_core1174.PgColumn<{
       name: "category";
       tableName: "subscriptions";
       dataType: "string";
@@ -3057,7 +3057,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "subscriptions";
       dataType: "string";
@@ -3074,7 +3074,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "subscriptions";
       dataType: "date";
@@ -3091,7 +3091,7 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isPrivate: drizzle_orm_pg_core1054.PgColumn<{
+    isPrivate: drizzle_orm_pg_core1174.PgColumn<{
       name: "is_private";
       tableName: "subscriptions";
       dataType: "boolean";
@@ -3111,15 +3111,15 @@ declare const subscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const subscriptionsOpenAPISchema: zod1064.ZodObject<{
-  userId: zod1064.ZodString;
-  feedId: zod1064.ZodString;
-  view: zod1064.ZodNumber;
-  category: zod1064.ZodNullable<zod1064.ZodString>;
-  title: zod1064.ZodNullable<zod1064.ZodString>;
-  createdAt: zod1064.ZodString;
-  isPrivate: zod1064.ZodBoolean;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const subscriptionsOpenAPISchema: zod1184.ZodObject<{
+  userId: zod1184.ZodString;
+  feedId: zod1184.ZodString;
+  view: zod1184.ZodNumber;
+  category: zod1184.ZodNullable<zod1184.ZodString>;
+  title: zod1184.ZodNullable<zod1184.ZodString>;
+  createdAt: zod1184.ZodString;
+  isPrivate: zod1184.ZodBoolean;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   createdAt: string;
   userId: string;
   title: string | null;
@@ -3136,19 +3136,19 @@ declare const subscriptionsOpenAPISchema: zod1064.ZodObject<{
   feedId: string;
   isPrivate: boolean;
 }>;
-declare const subscriptionsRelations: drizzle_orm1052.Relations<"subscriptions", {
-  users: drizzle_orm1052.One<"user", true>;
-  feeds: drizzle_orm1052.One<"feeds", true>;
-  timeline: drizzle_orm1052.Many<"timeline">;
-  rsshubUsage: drizzle_orm1052.One<"rsshub_usage", true>;
+declare const subscriptionsRelations: drizzle_orm1203.Relations<"subscriptions", {
+  users: drizzle_orm1203.One<"user", true>;
+  feeds: drizzle_orm1203.One<"feeds", true>;
+  timeline: drizzle_orm1203.Many<"timeline">;
+  rsshubUsage: drizzle_orm1203.One<"rsshub_usage", true>;
 }>;
 //#endregion
 //#region src/schema/inboxes/entries.d.ts
-declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const inboxesEntries: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "inboxes_entries";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3165,7 +3165,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3182,7 +3182,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core1054.PgColumn<{
+    url: drizzle_orm_pg_core1174.PgColumn<{
       name: "url";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3199,7 +3199,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core1054.PgColumn<{
+    content: drizzle_orm_pg_core1174.PgColumn<{
       name: "content";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3216,7 +3216,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core1054.PgColumn<{
+    description: drizzle_orm_pg_core1174.PgColumn<{
       name: "description";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3233,7 +3233,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    guid: drizzle_orm_pg_core1054.PgColumn<{
+    guid: drizzle_orm_pg_core1174.PgColumn<{
       name: "guid";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3250,7 +3250,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    author: drizzle_orm_pg_core1054.PgColumn<{
+    author: drizzle_orm_pg_core1174.PgColumn<{
       name: "author";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3267,7 +3267,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorUrl: drizzle_orm_pg_core1054.PgColumn<{
+    authorUrl: drizzle_orm_pg_core1174.PgColumn<{
       name: "author_url";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3284,7 +3284,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    authorAvatar: drizzle_orm_pg_core1054.PgColumn<{
+    authorAvatar: drizzle_orm_pg_core1174.PgColumn<{
       name: "author_avatar";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3301,7 +3301,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core1054.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "inserted_at";
       tableName: "inboxes_entries";
       dataType: "date";
@@ -3318,7 +3318,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core1054.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "published_at";
       tableName: "inboxes_entries";
       dataType: "date";
@@ -3335,7 +3335,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    media: drizzle_orm_pg_core1054.PgColumn<{
+    media: drizzle_orm_pg_core1174.PgColumn<{
       name: "media";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3354,7 +3354,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: MediaModel[];
     }>;
-    categories: drizzle_orm_pg_core1054.PgColumn<{
+    categories: drizzle_orm_pg_core1174.PgColumn<{
       name: "categories";
       tableName: "inboxes_entries";
       dataType: "array";
@@ -3367,7 +3367,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm1052.Column<{
+      baseColumn: drizzle_orm1203.Column<{
         name: "categories";
         tableName: "inboxes_entries";
         dataType: "string";
@@ -3387,17 +3387,17 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core1054.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1174.PgColumnBuilder<{
         name: "categories";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm1052.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1203.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    attachments: drizzle_orm_pg_core1054.PgColumn<{
+    attachments: drizzle_orm_pg_core1174.PgColumn<{
       name: "attachments";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3416,7 +3416,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: AttachmentsModel[];
     }>;
-    extra: drizzle_orm_pg_core1054.PgColumn<{
+    extra: drizzle_orm_pg_core1174.PgColumn<{
       name: "extra";
       tableName: "inboxes_entries";
       dataType: "json";
@@ -3435,7 +3435,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: ExtraModel;
     }>;
-    language: drizzle_orm_pg_core1054.PgColumn<{
+    language: drizzle_orm_pg_core1174.PgColumn<{
       name: "language";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3452,7 +3452,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    inboxHandle: drizzle_orm_pg_core1054.PgColumn<{
+    inboxHandle: drizzle_orm_pg_core1174.PgColumn<{
       name: "inbox_handle";
       tableName: "inboxes_entries";
       dataType: "string";
@@ -3469,7 +3469,7 @@ declare const inboxesEntries: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    read: drizzle_orm_pg_core1054.PgColumn<{
+    read: drizzle_orm_pg_core1174.PgColumn<{
       name: "read";
       tableName: "inboxes_entries";
       dataType: "boolean";
@@ -4102,8 +4102,8 @@ declare const inboxesEntriesInsertOpenAPISchema: z.ZodObject<Omit<{
   authorAvatar?: string | null | undefined;
   read?: boolean | null | undefined;
 }>;
-declare const inboxesEntriesRelations: drizzle_orm1052.Relations<"inboxes_entries", {
-  inboxes: drizzle_orm1052.One<"inboxes", true>;
+declare const inboxesEntriesRelations: drizzle_orm1203.Relations<"inboxes_entries", {
+  inboxes: drizzle_orm1203.One<"inboxes", true>;
 }>;
 type inboxesEntriesModel = InferInsertModel<typeof inboxesEntries> & {
   attachments?: AttachmentsModel[] | null;
@@ -4111,11 +4111,11 @@ type inboxesEntriesModel = InferInsertModel<typeof inboxesEntries> & {
 };
 //#endregion
 //#region src/schema/inboxes/inboxes.d.ts
-declare const inboxes: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const inboxes: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "inboxes";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "inboxes";
       dataType: "string";
@@ -4132,7 +4132,7 @@ declare const inboxes: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    handle: drizzle_orm_pg_core1054.PgColumn<{
+    handle: drizzle_orm_pg_core1174.PgColumn<{
       name: "handle";
       tableName: "inboxes";
       dataType: "string";
@@ -4149,7 +4149,7 @@ declare const inboxes: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    secret: drizzle_orm_pg_core1054.PgColumn<{
+    secret: drizzle_orm_pg_core1174.PgColumn<{
       name: "secret";
       tableName: "inboxes";
       dataType: "string";
@@ -4166,7 +4166,7 @@ declare const inboxes: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "inboxes";
       dataType: "string";
@@ -4202,18 +4202,18 @@ declare const inboxesOpenAPISchema: z.ZodObject<{
   title: string | null;
   secret: string;
 }>;
-declare const inboxesRelations: drizzle_orm1052.Relations<"inboxes", {
-  users: drizzle_orm1052.One<"user", true>;
-  entries: drizzle_orm1052.Many<"inboxes_entries">;
+declare const inboxesRelations: drizzle_orm1203.Relations<"inboxes", {
+  users: drizzle_orm1203.One<"user", true>;
+  entries: drizzle_orm1203.Many<"inboxes_entries">;
 }>;
 declare const inboxHandleSchema: z.ZodString;
 //#endregion
 //#region src/schema/invitations.d.ts
-declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const invitations: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "invitations";
   schema: undefined;
   columns: {
-    code: drizzle_orm_pg_core1054.PgColumn<{
+    code: drizzle_orm_pg_core1174.PgColumn<{
       name: "code";
       tableName: "invitations";
       dataType: "string";
@@ -4230,7 +4230,7 @@ declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "invitations";
       dataType: "date";
@@ -4247,7 +4247,7 @@ declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    usedAt: drizzle_orm_pg_core1054.PgColumn<{
+    usedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "used_at";
       tableName: "invitations";
       dataType: "date";
@@ -4264,7 +4264,7 @@ declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fromUserId: drizzle_orm_pg_core1054.PgColumn<{
+    fromUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "from_user_id";
       tableName: "invitations";
       dataType: "string";
@@ -4281,7 +4281,7 @@ declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toUserId: drizzle_orm_pg_core1054.PgColumn<{
+    toUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_user_id";
       tableName: "invitations";
       dataType: "string";
@@ -4301,13 +4301,13 @@ declare const invitations: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const invitationsOpenAPISchema: zod1064.ZodObject<{
-  code: zod1064.ZodString;
-  createdAt: zod1064.ZodNullable<zod1064.ZodString>;
-  usedAt: zod1064.ZodNullable<zod1064.ZodString>;
-  fromUserId: zod1064.ZodString;
-  toUserId: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const invitationsOpenAPISchema: zod1184.ZodObject<{
+  code: zod1184.ZodString;
+  createdAt: zod1184.ZodNullable<zod1184.ZodString>;
+  usedAt: zod1184.ZodNullable<zod1184.ZodString>;
+  fromUserId: zod1184.ZodString;
+  toUserId: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   code: string;
   createdAt: string | null;
   usedAt: string | null;
@@ -4321,16 +4321,16 @@ declare const invitationsOpenAPISchema: zod1064.ZodObject<{
   toUserId: string | null;
 }>;
 type InvitationDB = typeof invitations.$inferSelect;
-declare const invitationsRelations: drizzle_orm1052.Relations<"invitations", {
-  users: drizzle_orm1052.One<"user", false>;
+declare const invitationsRelations: drizzle_orm1203.Relations<"invitations", {
+  users: drizzle_orm1203.One<"user", false>;
 }>;
 //#endregion
 //#region src/schema/lists/analytics.d.ts
-declare const listAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const listAnalytics: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "list_analytics";
   schema: undefined;
   columns: {
-    listId: drizzle_orm_pg_core1054.PgColumn<{
+    listId: drizzle_orm_pg_core1174.PgColumn<{
       name: "list_id";
       tableName: "list_analytics";
       dataType: "string";
@@ -4347,7 +4347,7 @@ declare const listAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    subscriptionCount: drizzle_orm_pg_core1054.PgColumn<{
+    subscriptionCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "subscription_count";
       tableName: "list_analytics";
       dataType: "number";
@@ -4367,26 +4367,26 @@ declare const listAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listAnalyticsOpenAPISchema: zod1064.ZodObject<{
-  listId: zod1064.ZodString;
-  subscriptionCount: zod1064.ZodNullable<zod1064.ZodNumber>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const listAnalyticsOpenAPISchema: zod1184.ZodObject<{
+  listId: zod1184.ZodString;
+  subscriptionCount: zod1184.ZodNullable<zod1184.ZodNumber>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   subscriptionCount: number | null;
   listId: string;
 }, {
   subscriptionCount: number | null;
   listId: string;
 }>;
-declare const listAnalyticsRelations: drizzle_orm1052.Relations<"list_analytics", {
-  list: drizzle_orm1052.One<"lists", true>;
+declare const listAnalyticsRelations: drizzle_orm1203.Relations<"list_analytics", {
+  list: drizzle_orm1203.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/lists/lists.d.ts
-declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const lists: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "lists";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "lists";
       dataType: "string";
@@ -4403,7 +4403,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedIds: drizzle_orm_pg_core1054.PgColumn<{
+    feedIds: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_ids";
       tableName: "lists";
       dataType: "array";
@@ -4416,7 +4416,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm1052.Column<{
+      baseColumn: drizzle_orm1203.Column<{
         name: "feed_ids";
         tableName: "lists";
         dataType: "string";
@@ -4436,17 +4436,17 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core1054.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1174.PgColumnBuilder<{
         name: "feed_ids";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm1052.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1203.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "lists";
       dataType: "string";
@@ -4463,7 +4463,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core1054.PgColumn<{
+    description: drizzle_orm_pg_core1174.PgColumn<{
       name: "description";
       tableName: "lists";
       dataType: "string";
@@ -4480,7 +4480,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core1054.PgColumn<{
+    image: drizzle_orm_pg_core1174.PgColumn<{
       name: "image";
       tableName: "lists";
       dataType: "string";
@@ -4497,7 +4497,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "lists";
       dataType: "number";
@@ -4514,7 +4514,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fee: drizzle_orm_pg_core1054.PgColumn<{
+    fee: drizzle_orm_pg_core1174.PgColumn<{
       name: "fee";
       tableName: "lists";
       dataType: "number";
@@ -4531,7 +4531,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core1054.PgColumn<{
+    language: drizzle_orm_pg_core1174.PgColumn<{
       name: "language";
       tableName: "lists";
       dataType: "string";
@@ -4548,7 +4548,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core1054.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "owner_user_id";
       tableName: "lists";
       dataType: "string";
@@ -4565,7 +4565,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "lists";
       dataType: "date";
@@ -4582,7 +4582,7 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updated_at";
       tableName: "lists";
       dataType: "date";
@@ -4602,19 +4602,19 @@ declare const lists: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listsOpenAPISchema: zod1064.ZodObject<{
-  id: zod1064.ZodString;
-  feedIds: zod1064.ZodArray<zod1064.ZodString, "many">;
-  title: zod1064.ZodString;
-  description: zod1064.ZodNullable<zod1064.ZodString>;
-  image: zod1064.ZodNullable<zod1064.ZodString>;
-  view: zod1064.ZodNumber;
-  fee: zod1064.ZodNumber;
-  language: zod1064.ZodNullable<zod1064.ZodString>;
-  ownerUserId: zod1064.ZodString;
-  createdAt: zod1064.ZodNullable<zod1064.ZodString>;
-  updatedAt: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const listsOpenAPISchema: zod1184.ZodObject<{
+  id: zod1184.ZodString;
+  feedIds: zod1184.ZodArray<zod1184.ZodString, "many">;
+  title: zod1184.ZodString;
+  description: zod1184.ZodNullable<zod1184.ZodString>;
+  image: zod1184.ZodNullable<zod1184.ZodString>;
+  view: zod1184.ZodNumber;
+  fee: zod1184.ZodNumber;
+  language: zod1184.ZodNullable<zod1184.ZodString>;
+  ownerUserId: zod1184.ZodString;
+  createdAt: zod1184.ZodNullable<zod1184.ZodString>;
+  updatedAt: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   id: string;
   image: string | null;
   createdAt: string | null;
@@ -4639,18 +4639,18 @@ declare const listsOpenAPISchema: zod1064.ZodObject<{
   feedIds: string[];
   fee: number;
 }>;
-declare const listsRelations: drizzle_orm1052.Relations<"lists", {
-  owner: drizzle_orm1052.One<"user", true>;
-  listsSubscriptions: drizzle_orm1052.Many<"lists_subscriptions">;
+declare const listsRelations: drizzle_orm1203.Relations<"lists", {
+  owner: drizzle_orm1203.One<"user", true>;
+  listsSubscriptions: drizzle_orm1203.Many<"lists_subscriptions">;
 }>;
 type ListModel = InferInsertModel<typeof lists>;
 //#endregion
 //#region src/schema/lists/subscriptions.d.ts
-declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const listsSubscriptions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "lists_subscriptions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4667,7 +4667,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    listId: drizzle_orm_pg_core1054.PgColumn<{
+    listId: drizzle_orm_pg_core1174.PgColumn<{
       name: "list_id";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4684,7 +4684,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "lists_subscriptions";
       dataType: "number";
@@ -4701,7 +4701,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    title: drizzle_orm_pg_core1054.PgColumn<{
+    title: drizzle_orm_pg_core1174.PgColumn<{
       name: "title";
       tableName: "lists_subscriptions";
       dataType: "string";
@@ -4718,7 +4718,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "lists_subscriptions";
       dataType: "date";
@@ -4735,7 +4735,7 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isPrivate: drizzle_orm_pg_core1054.PgColumn<{
+    isPrivate: drizzle_orm_pg_core1174.PgColumn<{
       name: "is_private";
       tableName: "lists_subscriptions";
       dataType: "boolean";
@@ -4755,14 +4755,14 @@ declare const listsSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const listsSubscriptionsOpenAPISchema: zod1064.ZodObject<{
-  userId: zod1064.ZodString;
-  listId: zod1064.ZodString;
-  view: zod1064.ZodNumber;
-  title: zod1064.ZodNullable<zod1064.ZodString>;
-  createdAt: zod1064.ZodString;
-  isPrivate: zod1064.ZodBoolean;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const listsSubscriptionsOpenAPISchema: zod1184.ZodObject<{
+  userId: zod1184.ZodString;
+  listId: zod1184.ZodString;
+  view: zod1184.ZodNumber;
+  title: zod1184.ZodNullable<zod1184.ZodString>;
+  createdAt: zod1184.ZodString;
+  isPrivate: zod1184.ZodBoolean;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   createdAt: string;
   userId: string;
   title: string | null;
@@ -4777,17 +4777,17 @@ declare const listsSubscriptionsOpenAPISchema: zod1064.ZodObject<{
   isPrivate: boolean;
   listId: string;
 }>;
-declare const listsSubscriptionsRelations: drizzle_orm1052.Relations<"lists_subscriptions", {
-  users: drizzle_orm1052.One<"user", true>;
-  lists: drizzle_orm1052.One<"lists", true>;
+declare const listsSubscriptionsRelations: drizzle_orm1203.Relations<"lists_subscriptions", {
+  users: drizzle_orm1203.One<"user", true>;
+  lists: drizzle_orm1203.One<"lists", true>;
 }>;
 //#endregion
 //#region src/schema/messaging.d.ts
-declare const messaging: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const messaging: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "messaging";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "messaging";
       dataType: "string";
@@ -4804,7 +4804,7 @@ declare const messaging: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    token: drizzle_orm_pg_core1054.PgColumn<{
+    token: drizzle_orm_pg_core1174.PgColumn<{
       name: "token";
       tableName: "messaging";
       dataType: "string";
@@ -4821,7 +4821,7 @@ declare const messaging: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    channel: drizzle_orm_pg_core1054.PgColumn<{
+    channel: drizzle_orm_pg_core1174.PgColumn<{
       name: "channel";
       tableName: "messaging";
       dataType: "string";
@@ -4856,8 +4856,8 @@ declare const messagingOpenAPISchema: z.ZodObject<Omit<{
   token: string;
   channel: "macos" | "windows" | "linux" | "ios" | "android" | "web" | "desktop";
 }>;
-declare const messagingRelations: drizzle_orm1052.Relations<"messaging", {
-  users: drizzle_orm1052.One<"user", false>;
+declare const messagingRelations: drizzle_orm1203.Relations<"messaging", {
+  users: drizzle_orm1203.One<"user", false>;
 }>;
 declare enum MessagingType {
   NewEntry = "new-entry",
@@ -4872,11 +4872,11 @@ type MessagingData = {
 };
 //#endregion
 //#region src/schema/readability.d.ts
-declare const readabilities: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const readabilities: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "readabilities";
   schema: undefined;
   columns: {
-    entryId: drizzle_orm_pg_core1054.PgColumn<{
+    entryId: drizzle_orm_pg_core1174.PgColumn<{
       name: "entry_id";
       tableName: "readabilities";
       dataType: "string";
@@ -4893,7 +4893,7 @@ declare const readabilities: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    content: drizzle_orm_pg_core1054.PgColumn<{
+    content: drizzle_orm_pg_core1174.PgColumn<{
       name: "content";
       tableName: "readabilities";
       dataType: "string";
@@ -4910,7 +4910,7 @@ declare const readabilities: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updated_at";
       tableName: "readabilities";
       dataType: "date";
@@ -4932,11 +4932,11 @@ declare const readabilities: drizzle_orm_pg_core1054.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/rsshub.d.ts
-declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const rsshub: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "rsshub";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "rsshub";
       dataType: "string";
@@ -4953,7 +4953,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    baseUrl: drizzle_orm_pg_core1054.PgColumn<{
+    baseUrl: drizzle_orm_pg_core1174.PgColumn<{
       name: "base_url";
       tableName: "rsshub";
       dataType: "string";
@@ -4970,7 +4970,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessKey: drizzle_orm_pg_core1054.PgColumn<{
+    accessKey: drizzle_orm_pg_core1174.PgColumn<{
       name: "access_key";
       tableName: "rsshub";
       dataType: "string";
@@ -4987,7 +4987,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ownerUserId: drizzle_orm_pg_core1054.PgColumn<{
+    ownerUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "owner_user_id";
       tableName: "rsshub";
       dataType: "string";
@@ -5004,7 +5004,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    price: drizzle_orm_pg_core1054.PgColumn<{
+    price: drizzle_orm_pg_core1174.PgColumn<{
       name: "price";
       tableName: "rsshub";
       dataType: "number";
@@ -5021,7 +5021,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    description: drizzle_orm_pg_core1054.PgColumn<{
+    description: drizzle_orm_pg_core1174.PgColumn<{
       name: "description";
       tableName: "rsshub";
       dataType: "string";
@@ -5038,7 +5038,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userLimit: drizzle_orm_pg_core1054.PgColumn<{
+    userLimit: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_limit";
       tableName: "rsshub";
       dataType: "number";
@@ -5055,7 +5055,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorMessage: drizzle_orm_pg_core1054.PgColumn<{
+    errorMessage: drizzle_orm_pg_core1174.PgColumn<{
       name: "error_message";
       tableName: "rsshub";
       dataType: "string";
@@ -5072,7 +5072,7 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorAt: drizzle_orm_pg_core1054.PgColumn<{
+    errorAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "error_at";
       tableName: "rsshub";
       dataType: "date";
@@ -5092,17 +5092,17 @@ declare const rsshub: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubOpenAPISchema: zod1064.ZodObject<{
-  id: zod1064.ZodString;
-  baseUrl: zod1064.ZodString;
-  accessKey: zod1064.ZodNullable<zod1064.ZodString>;
-  ownerUserId: zod1064.ZodString;
-  price: zod1064.ZodNumber;
-  description: zod1064.ZodNullable<zod1064.ZodString>;
-  userLimit: zod1064.ZodNullable<zod1064.ZodNumber>;
-  errorMessage: zod1064.ZodNullable<zod1064.ZodString>;
-  errorAt: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const rsshubOpenAPISchema: zod1184.ZodObject<{
+  id: zod1184.ZodString;
+  baseUrl: zod1184.ZodString;
+  accessKey: zod1184.ZodNullable<zod1184.ZodString>;
+  ownerUserId: zod1184.ZodString;
+  price: zod1184.ZodNumber;
+  description: zod1184.ZodNullable<zod1184.ZodString>;
+  userLimit: zod1184.ZodNullable<zod1184.ZodNumber>;
+  errorMessage: zod1184.ZodNullable<zod1184.ZodString>;
+  errorAt: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   id: string;
   description: string | null;
   errorMessage: string | null;
@@ -5123,11 +5123,11 @@ declare const rsshubOpenAPISchema: zod1064.ZodObject<{
   price: number;
   userLimit: number | null;
 }>;
-declare const rsshubUsage: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const rsshubUsage: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "rsshub_usage";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5144,7 +5144,7 @@ declare const rsshubUsage: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubId: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubId: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5161,7 +5161,7 @@ declare const rsshubUsage: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "rsshub_usage";
       dataType: "string";
@@ -5181,11 +5181,11 @@ declare const rsshubUsage: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubUsageOpenAPISchema: zod1064.ZodObject<{
-  id: zod1064.ZodString;
-  rsshubId: zod1064.ZodString;
-  userId: zod1064.ZodString;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const rsshubUsageOpenAPISchema: zod1184.ZodObject<{
+  id: zod1184.ZodString;
+  rsshubId: zod1184.ZodString;
+  userId: zod1184.ZodString;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   id: string;
   userId: string;
   rsshubId: string;
@@ -5194,16 +5194,16 @@ declare const rsshubUsageOpenAPISchema: zod1064.ZodObject<{
   userId: string;
   rsshubId: string;
 }>;
-declare const rsshubUsageRelations: drizzle_orm1052.Relations<"rsshub_usage", {
-  rsshub: drizzle_orm1052.One<"rsshub", true>;
+declare const rsshubUsageRelations: drizzle_orm1203.Relations<"rsshub_usage", {
+  rsshub: drizzle_orm1203.One<"rsshub", true>;
 }>;
 //#endregion
 //#region src/schema/rsshub-analytics.d.ts
-declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const rsshubAnalytics: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "rsshub_analytics";
   schema: undefined;
   columns: {
-    rsshubId: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubId: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_id";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5220,7 +5220,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubRoute: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubRoute: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_route";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5237,7 +5237,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rsshubNamespace: drizzle_orm_pg_core1054.PgColumn<{
+    rsshubNamespace: drizzle_orm_pg_core1174.PgColumn<{
       name: "rsshub_namespace";
       tableName: "rsshub_analytics";
       dataType: "string";
@@ -5254,7 +5254,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    successCount: drizzle_orm_pg_core1054.PgColumn<{
+    successCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "success_count";
       tableName: "rsshub_analytics";
       dataType: "number";
@@ -5271,7 +5271,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    errorCount: drizzle_orm_pg_core1054.PgColumn<{
+    errorCount: drizzle_orm_pg_core1174.PgColumn<{
       name: "error_count";
       tableName: "rsshub_analytics";
       dataType: "number";
@@ -5288,7 +5288,7 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    timestamp: drizzle_orm_pg_core1054.PgColumn<{
+    timestamp: drizzle_orm_pg_core1174.PgColumn<{
       name: "timestamp";
       tableName: "rsshub_analytics";
       dataType: "date";
@@ -5308,14 +5308,14 @@ declare const rsshubAnalytics: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubAnalyticsOpenAPISchema: zod1064.ZodObject<{
-  rsshubId: zod1064.ZodString;
-  rsshubRoute: zod1064.ZodString;
-  rsshubNamespace: zod1064.ZodString;
-  successCount: zod1064.ZodNumber;
-  errorCount: zod1064.ZodNumber;
-  timestamp: zod1064.ZodString;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const rsshubAnalyticsOpenAPISchema: zod1184.ZodObject<{
+  rsshubId: zod1184.ZodString;
+  rsshubRoute: zod1184.ZodString;
+  rsshubNamespace: zod1184.ZodString;
+  successCount: zod1184.ZodNumber;
+  errorCount: zod1184.ZodNumber;
+  timestamp: zod1184.ZodString;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   rsshubRoute: string;
   rsshubNamespace: string;
   rsshubId: string;
@@ -5332,11 +5332,11 @@ declare const rsshubAnalyticsOpenAPISchema: zod1064.ZodObject<{
 }>;
 //#endregion
 //#region src/schema/settings.d.ts
-declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const settings: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "settings";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "settings";
       dataType: "string";
@@ -5353,7 +5353,7 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "settings";
       dataType: "string";
@@ -5370,7 +5370,7 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tab: drizzle_orm_pg_core1054.PgColumn<{
+    tab: drizzle_orm_pg_core1174.PgColumn<{
       name: "tab";
       tableName: "settings";
       dataType: "string";
@@ -5387,7 +5387,7 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    payload: drizzle_orm_pg_core1054.PgColumn<{
+    payload: drizzle_orm_pg_core1174.PgColumn<{
       name: "payload";
       tableName: "settings";
       dataType: "json";
@@ -5406,7 +5406,7 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       $type: Record<string, any>;
     }>;
-    updateAt: drizzle_orm_pg_core1054.PgColumn<{
+    updateAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "update_at";
       tableName: "settings";
       dataType: "date";
@@ -5423,7 +5423,7 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    version: drizzle_orm_pg_core1054.PgColumn<{
+    version: drizzle_orm_pg_core1174.PgColumn<{
       name: "version";
       tableName: "settings";
       dataType: "number";
@@ -5445,11 +5445,11 @@ declare const settings: drizzle_orm_pg_core1054.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/timeline.d.ts
-declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const timeline: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "timeline";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "timeline";
       dataType: "string";
@@ -5466,7 +5466,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feedId";
       tableName: "timeline";
       dataType: "string";
@@ -5483,7 +5483,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    entryId: drizzle_orm_pg_core1054.PgColumn<{
+    entryId: drizzle_orm_pg_core1174.PgColumn<{
       name: "entry_id";
       tableName: "timeline";
       dataType: "string";
@@ -5500,7 +5500,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    publishedAt: drizzle_orm_pg_core1054.PgColumn<{
+    publishedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "published_at";
       tableName: "timeline";
       dataType: "date";
@@ -5517,7 +5517,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    insertedAt: drizzle_orm_pg_core1054.PgColumn<{
+    insertedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "inserted_at";
       tableName: "timeline";
       dataType: "date";
@@ -5534,7 +5534,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "timeline";
       dataType: "number";
@@ -5551,7 +5551,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    read: drizzle_orm_pg_core1054.PgColumn<{
+    read: drizzle_orm_pg_core1174.PgColumn<{
       name: "read";
       tableName: "timeline";
       dataType: "boolean";
@@ -5568,7 +5568,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    from: drizzle_orm_pg_core1054.PgColumn<{
+    from: drizzle_orm_pg_core1174.PgColumn<{
       name: "from";
       tableName: "timeline";
       dataType: "array";
@@ -5581,7 +5581,7 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       isAutoincrement: false;
       hasRuntimeDefault: false;
       enumValues: [string, ...string[]];
-      baseColumn: drizzle_orm1052.Column<{
+      baseColumn: drizzle_orm1203.Column<{
         name: "from";
         tableName: "timeline";
         dataType: "string";
@@ -5601,29 +5601,29 @@ declare const timeline: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {
-      baseBuilder: drizzle_orm_pg_core1054.PgColumnBuilder<{
+      baseBuilder: drizzle_orm_pg_core1174.PgColumnBuilder<{
         name: "from";
         dataType: "string";
         columnType: "PgText";
         data: string;
         enumValues: [string, ...string[]];
         driverParam: string;
-      }, {}, {}, drizzle_orm1052.ColumnBuilderExtraConfig>;
+      }, {}, {}, drizzle_orm1203.ColumnBuilderExtraConfig>;
       size: undefined;
     }>;
   };
   dialect: "pg";
 }>;
-declare const timelineOpenAPISchema: zod1064.ZodObject<{
-  userId: zod1064.ZodString;
-  feedId: zod1064.ZodString;
-  entryId: zod1064.ZodString;
-  publishedAt: zod1064.ZodString;
-  insertedAt: zod1064.ZodString;
-  view: zod1064.ZodNumber;
-  read: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  from: zod1064.ZodNullable<zod1064.ZodArray<zod1064.ZodString, "many">>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const timelineOpenAPISchema: zod1184.ZodObject<{
+  userId: zod1184.ZodString;
+  feedId: zod1184.ZodString;
+  entryId: zod1184.ZodString;
+  publishedAt: zod1184.ZodString;
+  insertedAt: zod1184.ZodString;
+  view: zod1184.ZodNumber;
+  read: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  from: zod1184.ZodNullable<zod1184.ZodArray<zod1184.ZodString, "many">>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   userId: string;
   view: number;
   from: string[] | null;
@@ -5642,19 +5642,19 @@ declare const timelineOpenAPISchema: zod1064.ZodObject<{
   entryId: string;
   read: boolean | null;
 }>;
-declare const timelineRelations: drizzle_orm1052.Relations<"timeline", {
-  entries: drizzle_orm1052.One<"entries", true>;
-  feeds: drizzle_orm1052.One<"feeds", true>;
-  collections: drizzle_orm1052.One<"collections", true>;
-  subscriptions: drizzle_orm1052.One<"subscriptions", true>;
+declare const timelineRelations: drizzle_orm1203.Relations<"timeline", {
+  entries: drizzle_orm1203.One<"entries", true>;
+  feeds: drizzle_orm1203.One<"feeds", true>;
+  collections: drizzle_orm1203.One<"collections", true>;
+  subscriptions: drizzle_orm1203.One<"subscriptions", true>;
 }>;
 //#endregion
 //#region src/schema/trendings/feeds.d.ts
-declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const trendingFeeds: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "trendings_feeds";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5671,7 +5671,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rankedAt: drizzle_orm_pg_core1054.PgColumn<{
+    rankedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "ranked_at";
       tableName: "trendings_feeds";
       dataType: "date";
@@ -5688,7 +5688,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score1d: drizzle_orm_pg_core1054.PgColumn<{
+    score1d: drizzle_orm_pg_core1174.PgColumn<{
       name: "score_1d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5705,7 +5705,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score3d: drizzle_orm_pg_core1054.PgColumn<{
+    score3d: drizzle_orm_pg_core1174.PgColumn<{
       name: "score_3d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5722,7 +5722,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score7d: drizzle_orm_pg_core1054.PgColumn<{
+    score7d: drizzle_orm_pg_core1174.PgColumn<{
       name: "score_7d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5739,7 +5739,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    score30d: drizzle_orm_pg_core1054.PgColumn<{
+    score30d: drizzle_orm_pg_core1174.PgColumn<{
       name: "score_30d";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5756,7 +5756,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    view: drizzle_orm_pg_core1054.PgColumn<{
+    view: drizzle_orm_pg_core1174.PgColumn<{
       name: "view";
       tableName: "trendings_feeds";
       dataType: "number";
@@ -5773,7 +5773,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    language: drizzle_orm_pg_core1054.PgColumn<{
+    language: drizzle_orm_pg_core1174.PgColumn<{
       name: "language";
       tableName: "trendings_feeds";
       dataType: "string";
@@ -5790,7 +5790,7 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    nsfw: drizzle_orm_pg_core1054.PgColumn<{
+    nsfw: drizzle_orm_pg_core1174.PgColumn<{
       name: "nsfw";
       tableName: "trendings_feeds";
       dataType: "boolean";
@@ -5810,20 +5810,20 @@ declare const trendingFeeds: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const trendingFeedsRelations: drizzle_orm1052.Relations<"trendings_feeds", {
-  feed: drizzle_orm1052.One<"feeds", true>;
+declare const trendingFeedsRelations: drizzle_orm1203.Relations<"trendings_feeds", {
+  feed: drizzle_orm1203.One<"feeds", true>;
 }>;
-declare const trendingFeedsOpenAPISchema: zod1064.ZodObject<{
-  feedId: zod1064.ZodString;
-  rankedAt: zod1064.ZodString;
-  score1d: zod1064.ZodString;
-  score3d: zod1064.ZodString;
-  score7d: zod1064.ZodString;
-  score30d: zod1064.ZodString;
-  view: zod1064.ZodNumber;
-  language: zod1064.ZodString;
-  nsfw: zod1064.ZodNullable<zod1064.ZodBoolean>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const trendingFeedsOpenAPISchema: zod1184.ZodObject<{
+  feedId: zod1184.ZodString;
+  rankedAt: zod1184.ZodString;
+  score1d: zod1184.ZodString;
+  score3d: zod1184.ZodString;
+  score7d: zod1184.ZodString;
+  score30d: zod1184.ZodString;
+  view: zod1184.ZodNumber;
+  language: zod1184.ZodString;
+  nsfw: zod1184.ZodNullable<zod1184.ZodBoolean>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   view: number;
   language: string;
   nsfw: boolean | null;
@@ -5851,11 +5851,11 @@ declare enum UploadType {
 }
 //#endregion
 //#region src/schema/uploads.d.ts
-declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const uploads: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "uploads";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "uploads";
       dataType: "string";
@@ -5872,7 +5872,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "uploads";
       dataType: "string";
@@ -5889,7 +5889,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    url: drizzle_orm_pg_core1054.PgColumn<{
+    url: drizzle_orm_pg_core1174.PgColumn<{
       name: "url";
       tableName: "uploads";
       dataType: "string";
@@ -5906,7 +5906,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    md5: drizzle_orm_pg_core1054.PgColumn<{
+    md5: drizzle_orm_pg_core1174.PgColumn<{
       name: "md5";
       tableName: "uploads";
       dataType: "string";
@@ -5923,7 +5923,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    mimeType: drizzle_orm_pg_core1054.PgColumn<{
+    mimeType: drizzle_orm_pg_core1174.PgColumn<{
       name: "mime_type";
       tableName: "uploads";
       dataType: "string";
@@ -5940,7 +5940,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    size: drizzle_orm_pg_core1054.PgColumn<{
+    size: drizzle_orm_pg_core1174.PgColumn<{
       name: "size";
       tableName: "uploads";
       dataType: "number";
@@ -5957,7 +5957,7 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core1054.PgColumn<{
+    type: drizzle_orm_pg_core1174.PgColumn<{
       name: "type";
       tableName: "uploads";
       dataType: "string";
@@ -5979,11 +5979,11 @@ declare const uploads: drizzle_orm_pg_core1054.PgTableWithColumns<{
 }>;
 //#endregion
 //#region src/schema/users.d.ts
-declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const user$1: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "user";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "user";
       dataType: "string";
@@ -6000,7 +6000,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    name: drizzle_orm_pg_core1054.PgColumn<{
+    name: drizzle_orm_pg_core1174.PgColumn<{
       name: "name";
       tableName: "user";
       dataType: "string";
@@ -6019,7 +6019,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    email: drizzle_orm_pg_core1054.PgColumn<{
+    email: drizzle_orm_pg_core1174.PgColumn<{
       name: "email";
       tableName: "user";
       dataType: "string";
@@ -6038,7 +6038,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    emailVerified: drizzle_orm_pg_core1054.PgColumn<{
+    emailVerified: drizzle_orm_pg_core1174.PgColumn<{
       name: "emailVerified";
       tableName: "user";
       dataType: "boolean";
@@ -6055,7 +6055,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core1054.PgColumn<{
+    image: drizzle_orm_pg_core1174.PgColumn<{
       name: "image";
       tableName: "user";
       dataType: "string";
@@ -6074,7 +6074,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    handle: drizzle_orm_pg_core1054.PgColumn<{
+    handle: drizzle_orm_pg_core1174.PgColumn<{
       name: "handle";
       tableName: "user";
       dataType: "string";
@@ -6093,7 +6093,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 36;
     }>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "user";
       dataType: "date";
@@ -6110,7 +6110,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updatedAt";
       tableName: "user";
       dataType: "date";
@@ -6127,7 +6127,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    twoFactorEnabled: drizzle_orm_pg_core1054.PgColumn<{
+    twoFactorEnabled: drizzle_orm_pg_core1174.PgColumn<{
       name: "two_factor_enabled";
       tableName: "user";
       dataType: "boolean";
@@ -6144,7 +6144,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isAnonymous: drizzle_orm_pg_core1054.PgColumn<{
+    isAnonymous: drizzle_orm_pg_core1174.PgColumn<{
       name: "is_anonymous";
       tableName: "user";
       dataType: "boolean";
@@ -6161,7 +6161,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    suspended: drizzle_orm_pg_core1054.PgColumn<{
+    suspended: drizzle_orm_pg_core1174.PgColumn<{
       name: "suspended";
       tableName: "user";
       dataType: "boolean";
@@ -6178,7 +6178,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    deleted: drizzle_orm_pg_core1054.PgColumn<{
+    deleted: drizzle_orm_pg_core1174.PgColumn<{
       name: "deleted";
       tableName: "user";
       dataType: "boolean";
@@ -6195,7 +6195,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    bio: drizzle_orm_pg_core1054.PgColumn<{
+    bio: drizzle_orm_pg_core1174.PgColumn<{
       name: "bio";
       tableName: "user";
       dataType: "string";
@@ -6214,7 +6214,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    website: drizzle_orm_pg_core1054.PgColumn<{
+    website: drizzle_orm_pg_core1174.PgColumn<{
       name: "website";
       tableName: "user";
       dataType: "string";
@@ -6233,7 +6233,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    socialLinks: drizzle_orm_pg_core1054.PgColumn<{
+    socialLinks: drizzle_orm_pg_core1174.PgColumn<{
       name: "social_links";
       tableName: "user";
       dataType: "json";
@@ -6264,7 +6264,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
         youtube: string;
       };
     }>;
-    stripeCustomerId: drizzle_orm_pg_core1054.PgColumn<{
+    stripeCustomerId: drizzle_orm_pg_core1174.PgColumn<{
       name: "stripe_customer_id";
       tableName: "user";
       dataType: "string";
@@ -6281,7 +6281,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    role: drizzle_orm_pg_core1054.PgColumn<{
+    role: drizzle_orm_pg_core1174.PgColumn<{
       name: "role";
       tableName: "user";
       dataType: "string";
@@ -6298,7 +6298,7 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    roleEndAt: drizzle_orm_pg_core1054.PgColumn<{
+    roleEndAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "role_end_at";
       tableName: "user";
       dataType: "date";
@@ -6318,11 +6318,11 @@ declare const user$1: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const users: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "user";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "user";
       dataType: "string";
@@ -6339,7 +6339,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    name: drizzle_orm_pg_core1054.PgColumn<{
+    name: drizzle_orm_pg_core1174.PgColumn<{
       name: "name";
       tableName: "user";
       dataType: "string";
@@ -6358,7 +6358,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    email: drizzle_orm_pg_core1054.PgColumn<{
+    email: drizzle_orm_pg_core1174.PgColumn<{
       name: "email";
       tableName: "user";
       dataType: "string";
@@ -6377,7 +6377,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 64;
     }>;
-    emailVerified: drizzle_orm_pg_core1054.PgColumn<{
+    emailVerified: drizzle_orm_pg_core1174.PgColumn<{
       name: "emailVerified";
       tableName: "user";
       dataType: "boolean";
@@ -6394,7 +6394,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    image: drizzle_orm_pg_core1054.PgColumn<{
+    image: drizzle_orm_pg_core1174.PgColumn<{
       name: "image";
       tableName: "user";
       dataType: "string";
@@ -6413,7 +6413,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    handle: drizzle_orm_pg_core1054.PgColumn<{
+    handle: drizzle_orm_pg_core1174.PgColumn<{
       name: "handle";
       tableName: "user";
       dataType: "string";
@@ -6432,7 +6432,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 36;
     }>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "user";
       dataType: "date";
@@ -6449,7 +6449,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updatedAt";
       tableName: "user";
       dataType: "date";
@@ -6466,7 +6466,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    twoFactorEnabled: drizzle_orm_pg_core1054.PgColumn<{
+    twoFactorEnabled: drizzle_orm_pg_core1174.PgColumn<{
       name: "two_factor_enabled";
       tableName: "user";
       dataType: "boolean";
@@ -6483,7 +6483,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    isAnonymous: drizzle_orm_pg_core1054.PgColumn<{
+    isAnonymous: drizzle_orm_pg_core1174.PgColumn<{
       name: "is_anonymous";
       tableName: "user";
       dataType: "boolean";
@@ -6500,7 +6500,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    suspended: drizzle_orm_pg_core1054.PgColumn<{
+    suspended: drizzle_orm_pg_core1174.PgColumn<{
       name: "suspended";
       tableName: "user";
       dataType: "boolean";
@@ -6517,7 +6517,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    deleted: drizzle_orm_pg_core1054.PgColumn<{
+    deleted: drizzle_orm_pg_core1174.PgColumn<{
       name: "deleted";
       tableName: "user";
       dataType: "boolean";
@@ -6534,7 +6534,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    bio: drizzle_orm_pg_core1054.PgColumn<{
+    bio: drizzle_orm_pg_core1174.PgColumn<{
       name: "bio";
       tableName: "user";
       dataType: "string";
@@ -6553,7 +6553,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    website: drizzle_orm_pg_core1054.PgColumn<{
+    website: drizzle_orm_pg_core1174.PgColumn<{
       name: "website";
       tableName: "user";
       dataType: "string";
@@ -6572,7 +6572,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
     }, {}, {
       length: 256;
     }>;
-    socialLinks: drizzle_orm_pg_core1054.PgColumn<{
+    socialLinks: drizzle_orm_pg_core1174.PgColumn<{
       name: "social_links";
       tableName: "user";
       dataType: "json";
@@ -6603,7 +6603,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
         youtube: string;
       };
     }>;
-    stripeCustomerId: drizzle_orm_pg_core1054.PgColumn<{
+    stripeCustomerId: drizzle_orm_pg_core1174.PgColumn<{
       name: "stripe_customer_id";
       tableName: "user";
       dataType: "string";
@@ -6620,7 +6620,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    role: drizzle_orm_pg_core1054.PgColumn<{
+    role: drizzle_orm_pg_core1174.PgColumn<{
       name: "role";
       tableName: "user";
       dataType: "string";
@@ -6637,7 +6637,7 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    roleEndAt: drizzle_orm_pg_core1054.PgColumn<{
+    roleEndAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "role_end_at";
       tableName: "user";
       dataType: "date";
@@ -6658,38 +6658,38 @@ declare const users: drizzle_orm_pg_core1054.PgTableWithColumns<{
   dialect: "pg";
 }>;
 declare function lower(handle: AnyPgColumn): SQL;
-declare const usersOpenApiSchema: zod1064.ZodObject<Omit<{
-  id: zod1064.ZodString;
-  name: zod1064.ZodNullable<zod1064.ZodString>;
-  email: zod1064.ZodString;
-  emailVerified: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  image: zod1064.ZodNullable<zod1064.ZodString>;
-  handle: zod1064.ZodNullable<zod1064.ZodString>;
-  createdAt: zod1064.ZodDate;
-  updatedAt: zod1064.ZodDate;
-  twoFactorEnabled: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  isAnonymous: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  suspended: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  deleted: zod1064.ZodNullable<zod1064.ZodBoolean>;
-  bio: zod1064.ZodNullable<zod1064.ZodString>;
-  website: zod1064.ZodNullable<zod1064.ZodString>;
-  socialLinks: zod1064.ZodNullable<zod1064.ZodType<{
+declare const usersOpenApiSchema: zod1184.ZodObject<Omit<{
+  id: zod1184.ZodString;
+  name: zod1184.ZodNullable<zod1184.ZodString>;
+  email: zod1184.ZodString;
+  emailVerified: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  image: zod1184.ZodNullable<zod1184.ZodString>;
+  handle: zod1184.ZodNullable<zod1184.ZodString>;
+  createdAt: zod1184.ZodDate;
+  updatedAt: zod1184.ZodDate;
+  twoFactorEnabled: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  isAnonymous: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  suspended: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  deleted: zod1184.ZodNullable<zod1184.ZodBoolean>;
+  bio: zod1184.ZodNullable<zod1184.ZodString>;
+  website: zod1184.ZodNullable<zod1184.ZodString>;
+  socialLinks: zod1184.ZodNullable<zod1184.ZodType<{
     twitter: string;
     github: string;
     instagram: string;
     facebook: string;
     youtube: string;
-  }, zod1064.ZodTypeDef, {
+  }, zod1184.ZodTypeDef, {
     twitter: string;
     github: string;
     instagram: string;
     facebook: string;
     youtube: string;
   }>>;
-  stripeCustomerId: zod1064.ZodNullable<zod1064.ZodString>;
-  role: zod1064.ZodNullable<zod1064.ZodString>;
-  roleEndAt: zod1064.ZodNullable<zod1064.ZodDate>;
-}, "email">, "strip", zod1064.ZodTypeAny, {
+  stripeCustomerId: zod1184.ZodNullable<zod1184.ZodString>;
+  role: zod1184.ZodNullable<zod1184.ZodString>;
+  roleEndAt: zod1184.ZodNullable<zod1184.ZodDate>;
+}, "email">, "strip", zod1184.ZodTypeAny, {
   id: string;
   name: string | null;
   emailVerified: boolean | null;
@@ -6738,11 +6738,11 @@ declare const usersOpenApiSchema: zod1064.ZodObject<Omit<{
   role: string | null;
   roleEndAt: Date | null;
 }>;
-declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const account: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "account";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "account";
       dataType: "string";
@@ -6759,7 +6759,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "userId";
       tableName: "account";
       dataType: "string";
@@ -6776,7 +6776,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    providerId: drizzle_orm_pg_core1054.PgColumn<{
+    providerId: drizzle_orm_pg_core1174.PgColumn<{
       name: "provider";
       tableName: "account";
       dataType: "string";
@@ -6793,7 +6793,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accountId: drizzle_orm_pg_core1054.PgColumn<{
+    accountId: drizzle_orm_pg_core1174.PgColumn<{
       name: "providerAccountId";
       tableName: "account";
       dataType: "string";
@@ -6810,7 +6810,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    refreshToken: drizzle_orm_pg_core1054.PgColumn<{
+    refreshToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "refresh_token";
       tableName: "account";
       dataType: "string";
@@ -6827,7 +6827,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessToken: drizzle_orm_pg_core1054.PgColumn<{
+    accessToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "access_token";
       tableName: "account";
       dataType: "string";
@@ -6844,7 +6844,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    accessTokenExpiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    accessTokenExpiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "expires_at";
       tableName: "account";
       dataType: "date";
@@ -6861,7 +6861,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    refreshTokenExpiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    refreshTokenExpiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "refreshTokenExpiresAt";
       tableName: "account";
       dataType: "date";
@@ -6878,7 +6878,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    scope: drizzle_orm_pg_core1054.PgColumn<{
+    scope: drizzle_orm_pg_core1174.PgColumn<{
       name: "scope";
       tableName: "account";
       dataType: "string";
@@ -6895,7 +6895,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    idToken: drizzle_orm_pg_core1054.PgColumn<{
+    idToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "id_token";
       tableName: "account";
       dataType: "string";
@@ -6912,7 +6912,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    password: drizzle_orm_pg_core1054.PgColumn<{
+    password: drizzle_orm_pg_core1174.PgColumn<{
       name: "password";
       tableName: "account";
       dataType: "string";
@@ -6929,7 +6929,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "createdAt";
       tableName: "account";
       dataType: "date";
@@ -6946,7 +6946,7 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updatedAt";
       tableName: "account";
       dataType: "date";
@@ -6966,11 +6966,11 @@ declare const account: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const session: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "session";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "session";
       dataType: "string";
@@ -6987,7 +6987,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    token: drizzle_orm_pg_core1054.PgColumn<{
+    token: drizzle_orm_pg_core1174.PgColumn<{
       name: "sessionToken";
       tableName: "session";
       dataType: "string";
@@ -7004,7 +7004,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "userId";
       tableName: "session";
       dataType: "string";
@@ -7021,7 +7021,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "expires";
       tableName: "session";
       dataType: "date";
@@ -7038,7 +7038,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "createdAt";
       tableName: "session";
       dataType: "date";
@@ -7055,7 +7055,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updatedAt";
       tableName: "session";
       dataType: "date";
@@ -7072,7 +7072,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    ipAddress: drizzle_orm_pg_core1054.PgColumn<{
+    ipAddress: drizzle_orm_pg_core1174.PgColumn<{
       name: "ipAddress";
       tableName: "session";
       dataType: "string";
@@ -7089,7 +7089,7 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userAgent: drizzle_orm_pg_core1054.PgColumn<{
+    userAgent: drizzle_orm_pg_core1174.PgColumn<{
       name: "userAgent";
       tableName: "session";
       dataType: "string";
@@ -7109,11 +7109,11 @@ declare const session: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const verification: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "verificationToken";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "verificationToken";
       dataType: "string";
@@ -7130,7 +7130,7 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    identifier: drizzle_orm_pg_core1054.PgColumn<{
+    identifier: drizzle_orm_pg_core1174.PgColumn<{
       name: "identifier";
       tableName: "verificationToken";
       dataType: "string";
@@ -7147,7 +7147,7 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    value: drizzle_orm_pg_core1054.PgColumn<{
+    value: drizzle_orm_pg_core1174.PgColumn<{
       name: "token";
       tableName: "verificationToken";
       dataType: "string";
@@ -7164,7 +7164,7 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "expires";
       tableName: "verificationToken";
       dataType: "date";
@@ -7181,7 +7181,7 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "createdAt";
       tableName: "verificationToken";
       dataType: "date";
@@ -7198,7 +7198,7 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    updatedAt: drizzle_orm_pg_core1054.PgColumn<{
+    updatedAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "updatedAt";
       tableName: "verificationToken";
       dataType: "date";
@@ -7218,11 +7218,11 @@ declare const verification: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const twoFactor: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const twoFactor: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "two_factor";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "two_factor";
       dataType: "string";
@@ -7239,7 +7239,7 @@ declare const twoFactor: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    secret: drizzle_orm_pg_core1054.PgColumn<{
+    secret: drizzle_orm_pg_core1174.PgColumn<{
       name: "secret";
       tableName: "two_factor";
       dataType: "string";
@@ -7256,7 +7256,7 @@ declare const twoFactor: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    backupCodes: drizzle_orm_pg_core1054.PgColumn<{
+    backupCodes: drizzle_orm_pg_core1174.PgColumn<{
       name: "backup_codes";
       tableName: "two_factor";
       dataType: "string";
@@ -7273,7 +7273,7 @@ declare const twoFactor: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "user_id";
       tableName: "two_factor";
       dataType: "string";
@@ -7293,11 +7293,11 @@ declare const twoFactor: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const stripeSubscriptions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "stripe_subscriptions";
   schema: undefined;
   columns: {
-    id: drizzle_orm_pg_core1054.PgColumn<{
+    id: drizzle_orm_pg_core1174.PgColumn<{
       name: "id";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7314,7 +7314,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    plan: drizzle_orm_pg_core1054.PgColumn<{
+    plan: drizzle_orm_pg_core1174.PgColumn<{
       name: "plan";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7331,7 +7331,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    referenceId: drizzle_orm_pg_core1054.PgColumn<{
+    referenceId: drizzle_orm_pg_core1174.PgColumn<{
       name: "reference_id";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7348,7 +7348,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    stripeCustomerId: drizzle_orm_pg_core1054.PgColumn<{
+    stripeCustomerId: drizzle_orm_pg_core1174.PgColumn<{
       name: "stripe_customer_id";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7365,7 +7365,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    stripeSubscriptionId: drizzle_orm_pg_core1054.PgColumn<{
+    stripeSubscriptionId: drizzle_orm_pg_core1174.PgColumn<{
       name: "stripe_subscription_id";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7382,7 +7382,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    status: drizzle_orm_pg_core1054.PgColumn<{
+    status: drizzle_orm_pg_core1174.PgColumn<{
       name: "status";
       tableName: "stripe_subscriptions";
       dataType: "string";
@@ -7399,7 +7399,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    periodStart: drizzle_orm_pg_core1054.PgColumn<{
+    periodStart: drizzle_orm_pg_core1174.PgColumn<{
       name: "period_start";
       tableName: "stripe_subscriptions";
       dataType: "date";
@@ -7416,7 +7416,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    periodEnd: drizzle_orm_pg_core1054.PgColumn<{
+    periodEnd: drizzle_orm_pg_core1174.PgColumn<{
       name: "period_end";
       tableName: "stripe_subscriptions";
       dataType: "date";
@@ -7433,7 +7433,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    cancelAtPeriodEnd: drizzle_orm_pg_core1054.PgColumn<{
+    cancelAtPeriodEnd: drizzle_orm_pg_core1174.PgColumn<{
       name: "cancel_at_period_end";
       tableName: "stripe_subscriptions";
       dataType: "boolean";
@@ -7450,7 +7450,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    seats: drizzle_orm_pg_core1054.PgColumn<{
+    seats: drizzle_orm_pg_core1174.PgColumn<{
       name: "seats";
       tableName: "stripe_subscriptions";
       dataType: "number";
@@ -7467,7 +7467,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    trialStart: drizzle_orm_pg_core1054.PgColumn<{
+    trialStart: drizzle_orm_pg_core1174.PgColumn<{
       name: "trial_start";
       tableName: "stripe_subscriptions";
       dataType: "date";
@@ -7484,7 +7484,7 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    trialEnd: drizzle_orm_pg_core1054.PgColumn<{
+    trialEnd: drizzle_orm_pg_core1174.PgColumn<{
       name: "trial_end";
       tableName: "stripe_subscriptions";
       dataType: "date";
@@ -7504,11 +7504,11 @@ declare const stripeSubscriptions: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const applePayTransactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const applePayTransactions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "apple_pay_transactions";
   schema: undefined;
   columns: {
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "userId";
       tableName: "apple_pay_transactions";
       dataType: "string";
@@ -7525,7 +7525,7 @@ declare const applePayTransactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    signedTransaction: drizzle_orm_pg_core1054.PgColumn<{
+    signedTransaction: drizzle_orm_pg_core1174.PgColumn<{
       name: "signed_transaction";
       tableName: "apple_pay_transactions";
       dataType: "string";
@@ -7545,23 +7545,23 @@ declare const applePayTransactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const usersRelations: drizzle_orm1052.Relations<"user", {
-  subscriptions: drizzle_orm1052.Many<"subscriptions">;
-  listsSubscriptions: drizzle_orm1052.Many<"lists_subscriptions">;
-  collections: drizzle_orm1052.Many<"collections">;
-  actions: drizzle_orm1052.One<"actions", true>;
-  wallets: drizzle_orm1052.One<"wallets", true>;
-  feeds: drizzle_orm1052.Many<"feeds">;
-  inboxes: drizzle_orm1052.One<"inboxes", true>;
-  messaging: drizzle_orm1052.Many<"messaging">;
+declare const usersRelations: drizzle_orm1203.Relations<"user", {
+  subscriptions: drizzle_orm1203.Many<"subscriptions">;
+  listsSubscriptions: drizzle_orm1203.Many<"lists_subscriptions">;
+  collections: drizzle_orm1203.Many<"collections">;
+  actions: drizzle_orm1203.One<"actions", true>;
+  wallets: drizzle_orm1203.One<"wallets", true>;
+  feeds: drizzle_orm1203.Many<"feeds">;
+  inboxes: drizzle_orm1203.One<"inboxes", true>;
+  messaging: drizzle_orm1203.Many<"messaging">;
 }>;
 //#endregion
 //#region src/schema/wallets.d.ts
-declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const wallets: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "wallets";
   schema: undefined;
   columns: {
-    addressIndex: drizzle_orm_pg_core1054.PgColumn<{
+    addressIndex: drizzle_orm_pg_core1174.PgColumn<{
       name: "address_index";
       tableName: "wallets";
       dataType: "number";
@@ -7578,7 +7578,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: "always";
       generated: undefined;
     }, {}, {}>;
-    address: drizzle_orm_pg_core1054.PgColumn<{
+    address: drizzle_orm_pg_core1174.PgColumn<{
       name: "address";
       tableName: "wallets";
       dataType: "string";
@@ -7595,7 +7595,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "userId";
       tableName: "wallets";
       dataType: "string";
@@ -7612,7 +7612,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "wallets";
       dataType: "date";
@@ -7629,7 +7629,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core1054.PgColumn<{
+    powerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7646,7 +7646,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    dailyPowerToken: drizzle_orm_pg_core1054.PgColumn<{
+    dailyPowerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "daily_power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7663,7 +7663,7 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    cashablePowerToken: drizzle_orm_pg_core1054.PgColumn<{
+    cashablePowerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "cashable_power_token";
       tableName: "wallets";
       dataType: "string";
@@ -7683,15 +7683,15 @@ declare const wallets: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const walletsOpenAPISchema: zod1064.ZodObject<{
-  addressIndex: zod1064.ZodNumber;
-  address: zod1064.ZodNullable<zod1064.ZodString>;
-  userId: zod1064.ZodString;
-  createdAt: zod1064.ZodString;
-  powerToken: zod1064.ZodString;
-  dailyPowerToken: zod1064.ZodString;
-  cashablePowerToken: zod1064.ZodString;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const walletsOpenAPISchema: zod1184.ZodObject<{
+  addressIndex: zod1184.ZodNumber;
+  address: zod1184.ZodNullable<zod1184.ZodString>;
+  userId: zod1184.ZodString;
+  createdAt: zod1184.ZodString;
+  powerToken: zod1184.ZodString;
+  dailyPowerToken: zod1184.ZodString;
+  cashablePowerToken: zod1184.ZodString;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   createdAt: string;
   userId: string;
   powerToken: string;
@@ -7708,18 +7708,18 @@ declare const walletsOpenAPISchema: zod1064.ZodObject<{
   dailyPowerToken: string;
   cashablePowerToken: string;
 }>;
-declare const walletsRelations: drizzle_orm1052.Relations<"wallets", {
-  user: drizzle_orm1052.One<"user", true>;
-  transactionsFrom: drizzle_orm1052.Many<"transactions">;
-  transactionTo: drizzle_orm1052.Many<"transactions">;
-  level: drizzle_orm1052.One<"levels", false>;
+declare const walletsRelations: drizzle_orm1203.Relations<"wallets", {
+  user: drizzle_orm1203.One<"user", true>;
+  transactionsFrom: drizzle_orm1203.Many<"transactions">;
+  transactionTo: drizzle_orm1203.Many<"transactions">;
+  level: drizzle_orm1203.One<"levels", false>;
 }>;
-declare const transactionType: drizzle_orm_pg_core1054.PgEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
-declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const transactionType: drizzle_orm_pg_core1174.PgEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
+declare const transactions: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "transactions";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core1054.PgColumn<{
+    hash: drizzle_orm_pg_core1174.PgColumn<{
       name: "hash";
       tableName: "transactions";
       dataType: "string";
@@ -7736,7 +7736,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    type: drizzle_orm_pg_core1054.PgColumn<{
+    type: drizzle_orm_pg_core1174.PgColumn<{
       name: "type";
       tableName: "transactions";
       dataType: "string";
@@ -7753,7 +7753,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    fromUserId: drizzle_orm_pg_core1054.PgColumn<{
+    fromUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "from_user_id";
       tableName: "transactions";
       dataType: "string";
@@ -7770,7 +7770,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toUserId: drizzle_orm_pg_core1054.PgColumn<{
+    toUserId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_user_id";
       tableName: "transactions";
       dataType: "string";
@@ -7787,7 +7787,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toFeedId: drizzle_orm_pg_core1054.PgColumn<{
+    toFeedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_feed_id";
       tableName: "transactions";
       dataType: "string";
@@ -7804,7 +7804,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toListId: drizzle_orm_pg_core1054.PgColumn<{
+    toListId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_list_id";
       tableName: "transactions";
       dataType: "string";
@@ -7821,7 +7821,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toEntryId: drizzle_orm_pg_core1054.PgColumn<{
+    toEntryId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_entry_id";
       tableName: "transactions";
       dataType: "string";
@@ -7838,7 +7838,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    toRSSHubId: drizzle_orm_pg_core1054.PgColumn<{
+    toRSSHubId: drizzle_orm_pg_core1174.PgColumn<{
       name: "to_rsshub_id";
       tableName: "transactions";
       dataType: "string";
@@ -7855,7 +7855,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core1054.PgColumn<{
+    powerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "power_token";
       tableName: "transactions";
       dataType: "string";
@@ -7872,7 +7872,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    tax: drizzle_orm_pg_core1054.PgColumn<{
+    tax: drizzle_orm_pg_core1174.PgColumn<{
       name: "tax";
       tableName: "transactions";
       dataType: "string";
@@ -7889,7 +7889,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    createdAt: drizzle_orm_pg_core1054.PgColumn<{
+    createdAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "created_at";
       tableName: "transactions";
       dataType: "date";
@@ -7906,7 +7906,7 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    comment: drizzle_orm_pg_core1054.PgColumn<{
+    comment: drizzle_orm_pg_core1174.PgColumn<{
       name: "comment";
       tableName: "transactions";
       dataType: "string";
@@ -7926,20 +7926,20 @@ declare const transactions: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const transactionsOpenAPISchema: zod1064.ZodObject<{
-  hash: zod1064.ZodString;
-  type: zod1064.ZodEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
-  fromUserId: zod1064.ZodNullable<zod1064.ZodString>;
-  toUserId: zod1064.ZodNullable<zod1064.ZodString>;
-  toFeedId: zod1064.ZodNullable<zod1064.ZodString>;
-  toListId: zod1064.ZodNullable<zod1064.ZodString>;
-  toEntryId: zod1064.ZodNullable<zod1064.ZodString>;
-  toRSSHubId: zod1064.ZodNullable<zod1064.ZodString>;
-  powerToken: zod1064.ZodString;
-  tax: zod1064.ZodString;
-  createdAt: zod1064.ZodString;
-  comment: zod1064.ZodNullable<zod1064.ZodString>;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const transactionsOpenAPISchema: zod1184.ZodObject<{
+  hash: zod1184.ZodString;
+  type: zod1184.ZodEnum<["tip", "mint", "burn", "withdraw", "purchase", "airdrop"]>;
+  fromUserId: zod1184.ZodNullable<zod1184.ZodString>;
+  toUserId: zod1184.ZodNullable<zod1184.ZodString>;
+  toFeedId: zod1184.ZodNullable<zod1184.ZodString>;
+  toListId: zod1184.ZodNullable<zod1184.ZodString>;
+  toEntryId: zod1184.ZodNullable<zod1184.ZodString>;
+  toRSSHubId: zod1184.ZodNullable<zod1184.ZodString>;
+  powerToken: zod1184.ZodString;
+  tax: zod1184.ZodString;
+  createdAt: zod1184.ZodString;
+  comment: zod1184.ZodNullable<zod1184.ZodString>;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   createdAt: string;
   type: "tip" | "mint" | "burn" | "withdraw" | "purchase" | "airdrop";
   hash: string;
@@ -7966,18 +7966,18 @@ declare const transactionsOpenAPISchema: zod1064.ZodObject<{
   tax: string;
   comment: string | null;
 }>;
-declare const transactionsRelations: drizzle_orm1052.Relations<"transactions", {
-  fromUser: drizzle_orm1052.One<"user", false>;
-  toUser: drizzle_orm1052.One<"user", false>;
-  toFeed: drizzle_orm1052.One<"feeds", false>;
-  fromWallet: drizzle_orm1052.One<"wallets", false>;
-  toWallet: drizzle_orm1052.One<"wallets", false>;
+declare const transactionsRelations: drizzle_orm1203.Relations<"transactions", {
+  fromUser: drizzle_orm1203.One<"user", false>;
+  toUser: drizzle_orm1203.One<"user", false>;
+  toFeed: drizzle_orm1203.One<"feeds", false>;
+  fromWallet: drizzle_orm1203.One<"wallets", false>;
+  toWallet: drizzle_orm1203.One<"wallets", false>;
 }>;
-declare const feedPowerTokens: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const feedPowerTokens: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "feedPowerTokens";
   schema: undefined;
   columns: {
-    feedId: drizzle_orm_pg_core1054.PgColumn<{
+    feedId: drizzle_orm_pg_core1174.PgColumn<{
       name: "feed_id";
       tableName: "feedPowerTokens";
       dataType: "string";
@@ -7994,7 +7994,7 @@ declare const feedPowerTokens: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core1054.PgColumn<{
+    powerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "power_token";
       tableName: "feedPowerTokens";
       dataType: "string";
@@ -8014,24 +8014,24 @@ declare const feedPowerTokens: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const feedPowerTokensOpenAPISchema: zod1064.ZodObject<{
-  feedId: zod1064.ZodString;
-  powerToken: zod1064.ZodString;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const feedPowerTokensOpenAPISchema: zod1184.ZodObject<{
+  feedId: zod1184.ZodString;
+  powerToken: zod1184.ZodString;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   feedId: string;
   powerToken: string;
 }, {
   feedId: string;
   powerToken: string;
 }>;
-declare const feedPowerTokensRelations: drizzle_orm1052.Relations<"feedPowerTokens", {
-  feed: drizzle_orm1052.One<"feeds", true>;
+declare const feedPowerTokensRelations: drizzle_orm1203.Relations<"feedPowerTokens", {
+  feed: drizzle_orm1203.One<"feeds", true>;
 }>;
-declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const levels: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "levels";
   schema: undefined;
   columns: {
-    address: drizzle_orm_pg_core1054.PgColumn<{
+    address: drizzle_orm_pg_core1174.PgColumn<{
       name: "address";
       tableName: "levels";
       dataType: "string";
@@ -8048,7 +8048,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    rank: drizzle_orm_pg_core1054.PgColumn<{
+    rank: drizzle_orm_pg_core1174.PgColumn<{
       name: "rank";
       tableName: "levels";
       dataType: "number";
@@ -8065,7 +8065,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    level: drizzle_orm_pg_core1054.PgColumn<{
+    level: drizzle_orm_pg_core1174.PgColumn<{
       name: "level";
       tableName: "levels";
       dataType: "number";
@@ -8082,7 +8082,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    prevActivityPoints: drizzle_orm_pg_core1054.PgColumn<{
+    prevActivityPoints: drizzle_orm_pg_core1174.PgColumn<{
       name: "prev_activity_points";
       tableName: "levels";
       dataType: "number";
@@ -8099,7 +8099,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    activityPoints: drizzle_orm_pg_core1054.PgColumn<{
+    activityPoints: drizzle_orm_pg_core1174.PgColumn<{
       name: "activity_points";
       tableName: "levels";
       dataType: "number";
@@ -8116,7 +8116,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    powerToken: drizzle_orm_pg_core1054.PgColumn<{
+    powerToken: drizzle_orm_pg_core1174.PgColumn<{
       name: "power_token";
       tableName: "levels";
       dataType: "string";
@@ -8133,7 +8133,7 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    userId: drizzle_orm_pg_core1054.PgColumn<{
+    userId: drizzle_orm_pg_core1174.PgColumn<{
       name: "userId";
       tableName: "levels";
       dataType: "string";
@@ -8153,15 +8153,15 @@ declare const levels: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const levelsOpenAPISchema: zod1064.ZodObject<{
-  address: zod1064.ZodString;
-  rank: zod1064.ZodNullable<zod1064.ZodNumber>;
-  level: zod1064.ZodNullable<zod1064.ZodNumber>;
-  prevActivityPoints: zod1064.ZodNullable<zod1064.ZodNumber>;
-  activityPoints: zod1064.ZodNullable<zod1064.ZodNumber>;
-  powerToken: zod1064.ZodString;
-  userId: zod1064.ZodString;
-}, zod1064.UnknownKeysParam, zod1064.ZodTypeAny, {
+declare const levelsOpenAPISchema: zod1184.ZodObject<{
+  address: zod1184.ZodString;
+  rank: zod1184.ZodNullable<zod1184.ZodNumber>;
+  level: zod1184.ZodNullable<zod1184.ZodNumber>;
+  prevActivityPoints: zod1184.ZodNullable<zod1184.ZodNumber>;
+  activityPoints: zod1184.ZodNullable<zod1184.ZodNumber>;
+  powerToken: zod1184.ZodString;
+  userId: zod1184.ZodString;
+}, zod1184.UnknownKeysParam, zod1184.ZodTypeAny, {
   userId: string;
   rank: number | null;
   powerToken: string;
@@ -8178,15 +8178,15 @@ declare const levelsOpenAPISchema: zod1064.ZodObject<{
   prevActivityPoints: number | null;
   activityPoints: number | null;
 }>;
-declare const levelsRelations: drizzle_orm1052.Relations<"levels", {
-  wallet: drizzle_orm1052.One<"wallets", true>;
-  user: drizzle_orm1052.One<"user", true>;
+declare const levelsRelations: drizzle_orm1203.Relations<"levels", {
+  wallet: drizzle_orm1203.One<"wallets", true>;
+  user: drizzle_orm1203.One<"user", true>;
 }>;
-declare const boosts: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const boosts: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "boosts";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core1054.PgColumn<{
+    hash: drizzle_orm_pg_core1174.PgColumn<{
       name: "hash";
       tableName: "boosts";
       dataType: "string";
@@ -8203,7 +8203,7 @@ declare const boosts: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "expires_at";
       tableName: "boosts";
       dataType: "date";
@@ -8223,11 +8223,11 @@ declare const boosts: drizzle_orm_pg_core1054.PgTableWithColumns<{
   };
   dialect: "pg";
 }>;
-declare const rsshubPurchase: drizzle_orm_pg_core1054.PgTableWithColumns<{
+declare const rsshubPurchase: drizzle_orm_pg_core1174.PgTableWithColumns<{
   name: "rsshub_purchase";
   schema: undefined;
   columns: {
-    hash: drizzle_orm_pg_core1054.PgColumn<{
+    hash: drizzle_orm_pg_core1174.PgColumn<{
       name: "hash";
       tableName: "rsshub_purchase";
       dataType: "string";
@@ -8244,7 +8244,7 @@ declare const rsshubPurchase: drizzle_orm_pg_core1054.PgTableWithColumns<{
       identity: undefined;
       generated: undefined;
     }, {}, {}>;
-    expiresAt: drizzle_orm_pg_core1054.PgColumn<{
+    expiresAt: drizzle_orm_pg_core1174.PgColumn<{
       name: "expires_at";
       tableName: "rsshub_purchase";
       dataType: "date";
@@ -9680,9 +9680,9 @@ declare const authPlugins: ({
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          token: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          token: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           token: string;
         }, {
           token: string;
@@ -9899,19 +9899,19 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          newUserCallbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          errorCallbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          provider: zod1064.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
-          disableRedirect: zod1064.ZodOptional<zod1064.ZodBoolean>;
-          idToken: zod1064.ZodOptional<zod1064.ZodObject<{
-            token: zod1064.ZodString;
-            nonce: zod1064.ZodOptional<zod1064.ZodString>;
-            accessToken: zod1064.ZodOptional<zod1064.ZodString>;
-            refreshToken: zod1064.ZodOptional<zod1064.ZodString>;
-            expiresAt: zod1064.ZodOptional<zod1064.ZodNumber>;
-          }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          newUserCallbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          errorCallbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          provider: zod1184.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
+          disableRedirect: zod1184.ZodOptional<zod1184.ZodBoolean>;
+          idToken: zod1184.ZodOptional<zod1184.ZodObject<{
+            token: zod1184.ZodString;
+            nonce: zod1184.ZodOptional<zod1184.ZodString>;
+            accessToken: zod1184.ZodOptional<zod1184.ZodString>;
+            refreshToken: zod1184.ZodOptional<zod1184.ZodString>;
+            expiresAt: zod1184.ZodOptional<zod1184.ZodNumber>;
+          }, "strip", zod1184.ZodTypeAny, {
             token: string;
             refreshToken?: string | undefined;
             accessToken?: string | undefined;
@@ -9924,10 +9924,10 @@ declare const auth: {
             expiresAt?: number | undefined;
             nonce?: string | undefined;
           }>>;
-          scopes: zod1064.ZodOptional<zod1064.ZodArray<zod1064.ZodString, "many">>;
-          requestSignUp: zod1064.ZodOptional<zod1064.ZodBoolean>;
-          loginHint: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+          scopes: zod1184.ZodOptional<zod1184.ZodArray<zod1184.ZodString, "many">>;
+          requestSignUp: zod1184.ZodOptional<zod1184.ZodBoolean>;
+          loginHint: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           provider: "apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom";
           scopes?: string[] | undefined;
           loginHint?: string | undefined;
@@ -10073,14 +10073,14 @@ declare const auth: {
       } : void>;
       options: {
         method: ("GET" | "POST")[];
-        body: zod1064.ZodOptional<zod1064.ZodObject<{
-          code: zod1064.ZodOptional<zod1064.ZodString>;
-          error: zod1064.ZodOptional<zod1064.ZodString>;
-          device_id: zod1064.ZodOptional<zod1064.ZodString>;
-          error_description: zod1064.ZodOptional<zod1064.ZodString>;
-          state: zod1064.ZodOptional<zod1064.ZodString>;
-          user: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodOptional<zod1184.ZodObject<{
+          code: zod1184.ZodOptional<zod1184.ZodString>;
+          error: zod1184.ZodOptional<zod1184.ZodString>;
+          device_id: zod1184.ZodOptional<zod1184.ZodString>;
+          error_description: zod1184.ZodOptional<zod1184.ZodString>;
+          state: zod1184.ZodOptional<zod1184.ZodString>;
+          user: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           state?: string | undefined;
           code?: string | undefined;
           device_id?: string | undefined;
@@ -10095,14 +10095,14 @@ declare const auth: {
           user?: string | undefined;
           error_description?: string | undefined;
         }>>;
-        query: zod1064.ZodOptional<zod1064.ZodObject<{
-          code: zod1064.ZodOptional<zod1064.ZodString>;
-          error: zod1064.ZodOptional<zod1064.ZodString>;
-          device_id: zod1064.ZodOptional<zod1064.ZodString>;
-          error_description: zod1064.ZodOptional<zod1064.ZodString>;
-          state: zod1064.ZodOptional<zod1064.ZodString>;
-          user: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodOptional<zod1184.ZodObject<{
+          code: zod1184.ZodOptional<zod1184.ZodString>;
+          error: zod1184.ZodOptional<zod1184.ZodString>;
+          device_id: zod1184.ZodOptional<zod1184.ZodString>;
+          error_description: zod1184.ZodOptional<zod1184.ZodString>;
+          state: zod1184.ZodOptional<zod1184.ZodString>;
+          user: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           state?: string | undefined;
           code?: string | undefined;
           device_id?: string | undefined;
@@ -10273,10 +10273,10 @@ declare const auth: {
       } | null>;
       options: {
         method: "GET";
-        query: zod1064.ZodOptional<zod1064.ZodObject<{
-          disableCookieCache: zod1064.ZodOptional<zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>>;
-          disableRefresh: zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodOptional<zod1184.ZodObject<{
+          disableCookieCache: zod1184.ZodOptional<zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>>;
+          disableRefresh: zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>;
+        }, "strip", zod1184.ZodTypeAny, {
           disableCookieCache?: boolean | undefined;
           disableRefresh?: boolean | undefined;
         }, {
@@ -10468,7 +10468,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>;
+        body: zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>;
         metadata: {
           $Infer: {
             body: ({
@@ -10650,12 +10650,12 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          email: zod1064.ZodString;
-          password: zod1064.ZodString;
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          rememberMe: zod1064.ZodOptional<zod1064.ZodDefault<zod1064.ZodBoolean>>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          email: zod1184.ZodString;
+          password: zod1184.ZodString;
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          rememberMe: zod1184.ZodOptional<zod1184.ZodDefault<zod1184.ZodBoolean>>;
+        }, "strip", zod1184.ZodTypeAny, {
           password: string;
           email: string;
           callbackURL?: string | undefined;
@@ -10769,10 +10769,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          email: zod1064.ZodString;
-          redirectTo: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          email: zod1184.ZodString;
+          redirectTo: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           email: string;
           redirectTo?: string | undefined;
         }, {
@@ -10842,17 +10842,17 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        query: zod1064.ZodOptional<zod1064.ZodObject<{
-          token: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodOptional<zod1184.ZodObject<{
+          token: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           token?: string | undefined;
         }, {
           token?: string | undefined;
         }>>;
-        body: zod1064.ZodObject<{
-          newPassword: zod1064.ZodString;
-          token: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          newPassword: zod1184.ZodString;
+          token: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           newPassword: string;
           token?: string | undefined;
         }, {
@@ -10944,10 +10944,10 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        query: zod1064.ZodObject<{
-          token: zod1064.ZodString;
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodObject<{
+          token: zod1184.ZodString;
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           token: string;
           callbackURL?: string | undefined;
         }, {
@@ -11069,10 +11069,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          email: zod1064.ZodString;
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          email: zod1184.ZodString;
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           email: string;
           callbackURL?: string | undefined;
         }, {
@@ -11182,10 +11182,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          newEmail: zod1064.ZodString;
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          newEmail: zod1184.ZodString;
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           newEmail: string;
           callbackURL?: string | undefined;
         }, {
@@ -11302,11 +11302,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          newPassword: zod1064.ZodString;
-          currentPassword: zod1064.ZodString;
-          revokeOtherSessions: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          newPassword: zod1184.ZodString;
+          currentPassword: zod1184.ZodString;
+          revokeOtherSessions: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           newPassword: string;
           currentPassword: string;
           revokeOtherSessions?: boolean | undefined;
@@ -11440,9 +11440,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          newPassword: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          newPassword: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           newPassword: string;
         }, {
           newPassword: string;
@@ -11831,18 +11831,18 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    plan: zod1064.ZodString;
-                    annual: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                    referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                    subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                    metadata: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
-                    seats: zod1064.ZodOptional<zod1064.ZodNumber>;
-                    successUrl: zod1064.ZodDefault<zod1064.ZodString>;
-                    cancelUrl: zod1064.ZodDefault<zod1064.ZodString>;
-                    returnUrl: zod1064.ZodOptional<zod1064.ZodString>;
-                    disableRedirect: zod1064.ZodDefault<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    plan: zod1184.ZodString;
+                    annual: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                    referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                    subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                    metadata: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
+                    seats: zod1184.ZodOptional<zod1184.ZodNumber>;
+                    successUrl: zod1184.ZodDefault<zod1184.ZodString>;
+                    cancelUrl: zod1184.ZodDefault<zod1184.ZodString>;
+                    returnUrl: zod1184.ZodOptional<zod1184.ZodString>;
+                    disableRedirect: zod1184.ZodDefault<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     plan: string;
                     successUrl: string;
                     cancelUrl: string;
@@ -11920,7 +11920,7 @@ declare const auth: {
                 } : never>;
                 options: {
                   method: "GET";
-                  query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+                  query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
                   use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
                 } & {
                   use: any[];
@@ -11964,11 +11964,11 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                    subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                    returnUrl: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                    subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                    returnUrl: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     returnUrl: string;
                     referenceId?: string | undefined;
                     subscriptionId?: string | undefined;
@@ -12035,10 +12035,10 @@ declare const auth: {
                 } : Stripe.Response<Stripe.Subscription>>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                    subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                    subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     referenceId?: string | undefined;
                     subscriptionId?: string | undefined;
                   }, {
@@ -12134,9 +12134,9 @@ declare const auth: {
                 }[]>;
                 options: {
                   method: "GET";
-                  query: zod1064.ZodOptional<zod1064.ZodObject<{
-                    referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  query: zod1184.ZodOptional<zod1184.ZodObject<{
+                    referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     referenceId?: string | undefined;
                   }, {
                     referenceId?: string | undefined;
@@ -12196,7 +12196,7 @@ declare const auth: {
                 } : better_call82.APIError>;
                 options: {
                   method: "GET";
-                  query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+                  query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
                   use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
                 } & {
                   use: any[];
@@ -12454,10 +12454,10 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    password: zod1064.ZodString;
-                    issuer: zod1064.ZodOptional<zod1064.ZodString>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    password: zod1184.ZodString;
+                    issuer: zod1184.ZodOptional<zod1184.ZodString>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     password: string;
                     issuer?: string | undefined;
                   }, {
@@ -12556,9 +12556,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    password: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    password: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
@@ -12667,11 +12667,11 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    code: zod1064.ZodString;
-                    disableSession: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                    trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    code: zod1184.ZodString;
+                    disableSession: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                    trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                     disableSession?: boolean | undefined;
@@ -12812,9 +12812,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    password: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    password: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
@@ -12914,9 +12914,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "GET";
-                  body: zod1064.ZodObject<{
-                    userId: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    userId: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     userId: string;
                   }, {
                     userId: string;
@@ -12962,9 +12962,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodOptional<zod1064.ZodObject<{
-                    trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodOptional<zod1184.ZodObject<{
+                    trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     trustDevice?: boolean | undefined;
                   }, {
                     trustDevice?: boolean | undefined;
@@ -13049,10 +13049,10 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    code: zod1064.ZodString;
-                    trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    code: zod1184.ZodString;
+                    trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                   }, {
@@ -13165,9 +13165,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    secret: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    secret: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     secret: string;
                   }, {
                     secret: string;
@@ -13257,9 +13257,9 @@ declare const auth: {
                       };
                     };
                   }>)[];
-                  body: zod1064.ZodObject<{
-                    password: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    password: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     password: string;
                   }, {
                     password: string;
@@ -13344,10 +13344,10 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    code: zod1064.ZodString;
-                    trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    code: zod1184.ZodString;
+                    trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     code: string;
                     trustDevice?: boolean | undefined;
                   }, {
@@ -13556,10 +13556,10 @@ declare const auth: {
                 } | null>;
                 options: {
                   method: "GET";
-                  query: zod1064.ZodOptional<zod1064.ZodObject<{
-                    disableCookieCache: zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>;
-                    disableRefresh: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  query: zod1184.ZodOptional<zod1184.ZodObject<{
+                    disableCookieCache: zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>;
+                    disableRefresh: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                  }, "strip", zod1184.ZodTypeAny, {
                     disableCookieCache?: boolean | undefined;
                     disableRefresh?: boolean | undefined;
                   }, {
@@ -13863,9 +13863,9 @@ declare const auth: {
                 }>;
                 options: {
                   method: "POST";
-                  body: zod1064.ZodObject<{
-                    token: zod1064.ZodString;
-                  }, "strip", zod1064.ZodTypeAny, {
+                  body: zod1184.ZodObject<{
+                    token: zod1184.ZodString;
+                  }, "strip", zod1184.ZodTypeAny, {
                     token: string;
                   }, {
                     token: string;
@@ -13909,7 +13909,7 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>;
+        body: zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>;
         use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<{
           session: {
             session: Record<string, any> & {
@@ -14286,18 +14286,18 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        plan: zod1064.ZodString;
-                        annual: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                        referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                        subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                        metadata: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
-                        seats: zod1064.ZodOptional<zod1064.ZodNumber>;
-                        successUrl: zod1064.ZodDefault<zod1064.ZodString>;
-                        cancelUrl: zod1064.ZodDefault<zod1064.ZodString>;
-                        returnUrl: zod1064.ZodOptional<zod1064.ZodString>;
-                        disableRedirect: zod1064.ZodDefault<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        plan: zod1184.ZodString;
+                        annual: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                        referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                        subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                        metadata: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
+                        seats: zod1184.ZodOptional<zod1184.ZodNumber>;
+                        successUrl: zod1184.ZodDefault<zod1184.ZodString>;
+                        cancelUrl: zod1184.ZodDefault<zod1184.ZodString>;
+                        returnUrl: zod1184.ZodOptional<zod1184.ZodString>;
+                        disableRedirect: zod1184.ZodDefault<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         plan: string;
                         successUrl: string;
                         cancelUrl: string;
@@ -14375,7 +14375,7 @@ declare const auth: {
                     } : never>;
                     options: {
                       method: "GET";
-                      query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+                      query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
                       use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
                     } & {
                       use: any[];
@@ -14419,11 +14419,11 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                        subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                        returnUrl: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                        subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                        returnUrl: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         returnUrl: string;
                         referenceId?: string | undefined;
                         subscriptionId?: string | undefined;
@@ -14490,10 +14490,10 @@ declare const auth: {
                     } : Stripe.Response<Stripe.Subscription>>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                        subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                        subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         referenceId?: string | undefined;
                         subscriptionId?: string | undefined;
                       }, {
@@ -14589,9 +14589,9 @@ declare const auth: {
                     }[]>;
                     options: {
                       method: "GET";
-                      query: zod1064.ZodOptional<zod1064.ZodObject<{
-                        referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      query: zod1184.ZodOptional<zod1184.ZodObject<{
+                        referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         referenceId?: string | undefined;
                       }, {
                         referenceId?: string | undefined;
@@ -14651,7 +14651,7 @@ declare const auth: {
                     } : better_call82.APIError>;
                     options: {
                       method: "GET";
-                      query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+                      query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
                       use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
                     } & {
                       use: any[];
@@ -14909,10 +14909,10 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        password: zod1064.ZodString;
-                        issuer: zod1064.ZodOptional<zod1064.ZodString>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        password: zod1184.ZodString;
+                        issuer: zod1184.ZodOptional<zod1184.ZodString>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         password: string;
                         issuer?: string | undefined;
                       }, {
@@ -15011,9 +15011,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        password: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        password: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
@@ -15122,11 +15122,11 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        code: zod1064.ZodString;
-                        disableSession: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                        trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        code: zod1184.ZodString;
+                        disableSession: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                        trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                         disableSession?: boolean | undefined;
@@ -15267,9 +15267,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        password: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        password: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
@@ -15369,9 +15369,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "GET";
-                      body: zod1064.ZodObject<{
-                        userId: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        userId: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         userId: string;
                       }, {
                         userId: string;
@@ -15417,9 +15417,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodOptional<zod1064.ZodObject<{
-                        trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodOptional<zod1184.ZodObject<{
+                        trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         trustDevice?: boolean | undefined;
                       }, {
                         trustDevice?: boolean | undefined;
@@ -15504,10 +15504,10 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        code: zod1064.ZodString;
-                        trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        code: zod1184.ZodString;
+                        trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                       }, {
@@ -15620,9 +15620,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        secret: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        secret: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         secret: string;
                       }, {
                         secret: string;
@@ -15712,9 +15712,9 @@ declare const auth: {
                           };
                         };
                       }>)[];
-                      body: zod1064.ZodObject<{
-                        password: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        password: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         password: string;
                       }, {
                         password: string;
@@ -15799,10 +15799,10 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        code: zod1064.ZodString;
-                        trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        code: zod1184.ZodString;
+                        trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         code: string;
                         trustDevice?: boolean | undefined;
                       }, {
@@ -16011,10 +16011,10 @@ declare const auth: {
                     } | null>;
                     options: {
                       method: "GET";
-                      query: zod1064.ZodOptional<zod1064.ZodObject<{
-                        disableCookieCache: zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>;
-                        disableRefresh: zod1064.ZodOptional<zod1064.ZodBoolean>;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      query: zod1184.ZodOptional<zod1184.ZodObject<{
+                        disableCookieCache: zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>;
+                        disableRefresh: zod1184.ZodOptional<zod1184.ZodBoolean>;
+                      }, "strip", zod1184.ZodTypeAny, {
                         disableCookieCache?: boolean | undefined;
                         disableRefresh?: boolean | undefined;
                       }, {
@@ -16318,9 +16318,9 @@ declare const auth: {
                     }>;
                     options: {
                       method: "POST";
-                      body: zod1064.ZodObject<{
-                        token: zod1064.ZodString;
-                      }, "strip", zod1064.ZodTypeAny, {
+                      body: zod1184.ZodObject<{
+                        token: zod1184.ZodString;
+                      }, "strip", zod1184.ZodTypeAny, {
                         token: string;
                       }, {
                         token: string;
@@ -16443,11 +16443,11 @@ declare const auth: {
             };
           };
         }>)[];
-        body: zod1064.ZodObject<{
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          password: zod1064.ZodOptional<zod1064.ZodString>;
-          token: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          password: zod1184.ZodOptional<zod1184.ZodString>;
+          token: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           password?: string | undefined;
           token?: string | undefined;
           callbackURL?: string | undefined;
@@ -16521,9 +16521,9 @@ declare const auth: {
       } : never>;
       options: {
         method: "GET";
-        query: zod1064.ZodObject<{
-          callbackURL: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodObject<{
+          callbackURL: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           callbackURL: string;
         }, {
           callbackURL: string;
@@ -16683,9 +16683,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          token: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          token: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           token: string;
         }, {
           token: string;
@@ -16965,11 +16965,11 @@ declare const auth: {
       options: {
         method: "POST";
         requireHeaders: true;
-        body: zod1064.ZodObject<{
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-          provider: zod1064.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
-          scopes: zod1064.ZodOptional<zod1064.ZodArray<zod1064.ZodString, "many">>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+          provider: zod1184.ZodEnum<["github", ...("apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom")[]]>;
+          scopes: zod1184.ZodOptional<zod1184.ZodArray<zod1184.ZodString, "many">>;
+        }, "strip", zod1184.ZodTypeAny, {
           provider: "apple" | "discord" | "facebook" | "github" | "google" | "microsoft" | "spotify" | "twitch" | "twitter" | "dropbox" | "linkedin" | "gitlab" | "tiktok" | "reddit" | "roblox" | "vk" | "kick" | "zoom";
           scopes?: string[] | undefined;
           callbackURL?: string | undefined;
@@ -17185,10 +17185,10 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        query: zod1064.ZodObject<{
-          token: zod1064.ZodString;
-          callbackURL: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodObject<{
+          token: zod1184.ZodString;
+          callbackURL: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           token: string;
           callbackURL?: string | undefined;
         }, {
@@ -17264,10 +17264,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          providerId: zod1064.ZodString;
-          accountId: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          providerId: zod1184.ZodString;
+          accountId: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
         }, {
@@ -17355,11 +17355,11 @@ declare const auth: {
       } : better_auth243.OAuth2Tokens>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          providerId: zod1064.ZodString;
-          accountId: zod1064.ZodOptional<zod1064.ZodString>;
-          userId: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          providerId: zod1184.ZodString;
+          accountId: zod1184.ZodOptional<zod1184.ZodString>;
+          userId: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
           userId?: string | undefined;
@@ -17456,11 +17456,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          providerId: zod1064.ZodString;
-          accountId: zod1064.ZodOptional<zod1064.ZodString>;
-          userId: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          providerId: zod1184.ZodString;
+          accountId: zod1184.ZodOptional<zod1184.ZodString>;
+          userId: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           providerId: string;
           accountId?: string | undefined;
           userId?: string | undefined;
@@ -17911,9 +17911,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          token: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          token: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           token: string;
         }, {
           token: string;
@@ -18153,18 +18153,18 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          plan: zod1064.ZodString;
-          annual: zod1064.ZodOptional<zod1064.ZodBoolean>;
-          referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-          subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-          metadata: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
-          seats: zod1064.ZodOptional<zod1064.ZodNumber>;
-          successUrl: zod1064.ZodDefault<zod1064.ZodString>;
-          cancelUrl: zod1064.ZodDefault<zod1064.ZodString>;
-          returnUrl: zod1064.ZodOptional<zod1064.ZodString>;
-          disableRedirect: zod1064.ZodDefault<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          plan: zod1184.ZodString;
+          annual: zod1184.ZodOptional<zod1184.ZodBoolean>;
+          referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+          subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+          metadata: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
+          seats: zod1184.ZodOptional<zod1184.ZodNumber>;
+          successUrl: zod1184.ZodDefault<zod1184.ZodString>;
+          cancelUrl: zod1184.ZodDefault<zod1184.ZodString>;
+          returnUrl: zod1184.ZodOptional<zod1184.ZodString>;
+          disableRedirect: zod1184.ZodDefault<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           plan: string;
           successUrl: string;
           cancelUrl: string;
@@ -18242,7 +18242,7 @@ declare const auth: {
       } : never>;
       options: {
         method: "GET";
-        query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+        query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
         use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
       } & {
         use: any[];
@@ -18286,11 +18286,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-          subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-          returnUrl: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+          subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+          returnUrl: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           returnUrl: string;
           referenceId?: string | undefined;
           subscriptionId?: string | undefined;
@@ -18357,10 +18357,10 @@ declare const auth: {
       } : Stripe.Response<Stripe.Subscription>>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-          subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+          subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           referenceId?: string | undefined;
           subscriptionId?: string | undefined;
         }, {
@@ -18456,9 +18456,9 @@ declare const auth: {
       }[]>;
       options: {
         method: "GET";
-        query: zod1064.ZodOptional<zod1064.ZodObject<{
-          referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodOptional<zod1184.ZodObject<{
+          referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           referenceId?: string | undefined;
         }, {
           referenceId?: string | undefined;
@@ -18518,7 +18518,7 @@ declare const auth: {
       } : better_call82.APIError>;
       options: {
         method: "GET";
-        query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+        query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
         use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
       } & {
         use: any[];
@@ -18562,10 +18562,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          password: zod1064.ZodString;
-          issuer: zod1064.ZodOptional<zod1064.ZodString>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          password: zod1184.ZodString;
+          issuer: zod1184.ZodOptional<zod1184.ZodString>;
+        }, "strip", zod1184.ZodTypeAny, {
           password: string;
           issuer?: string | undefined;
         }, {
@@ -18664,9 +18664,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          password: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          password: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           password: string;
         }, {
           password: string;
@@ -18775,11 +18775,11 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          code: zod1064.ZodString;
-          disableSession: zod1064.ZodOptional<zod1064.ZodBoolean>;
-          trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          code: zod1184.ZodString;
+          disableSession: zod1184.ZodOptional<zod1184.ZodBoolean>;
+          trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
           disableSession?: boolean | undefined;
@@ -18920,9 +18920,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          password: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          password: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           password: string;
         }, {
           password: string;
@@ -19022,9 +19022,9 @@ declare const auth: {
       }>;
       options: {
         method: "GET";
-        body: zod1064.ZodObject<{
-          userId: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          userId: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           userId: string;
         }, {
           userId: string;
@@ -19070,9 +19070,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodOptional<zod1064.ZodObject<{
-          trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodOptional<zod1184.ZodObject<{
+          trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           trustDevice?: boolean | undefined;
         }, {
           trustDevice?: boolean | undefined;
@@ -19157,10 +19157,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          code: zod1064.ZodString;
-          trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          code: zod1184.ZodString;
+          trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
         }, {
@@ -19273,9 +19273,9 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          secret: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          secret: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           secret: string;
         }, {
           secret: string;
@@ -19365,9 +19365,9 @@ declare const auth: {
             };
           };
         }>)[];
-        body: zod1064.ZodObject<{
-          password: zod1064.ZodString;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          password: zod1184.ZodString;
+        }, "strip", zod1184.ZodTypeAny, {
           password: string;
         }, {
           password: string;
@@ -19452,10 +19452,10 @@ declare const auth: {
       }>;
       options: {
         method: "POST";
-        body: zod1064.ZodObject<{
-          code: zod1064.ZodString;
-          trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        body: zod1184.ZodObject<{
+          code: zod1184.ZodString;
+          trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           code: string;
           trustDevice?: boolean | undefined;
         }, {
@@ -19585,10 +19585,10 @@ declare const auth: {
       } | null>;
       options: {
         method: "GET";
-        query: zod1064.ZodOptional<zod1064.ZodObject<{
-          disableCookieCache: zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>;
-          disableRefresh: zod1064.ZodOptional<zod1064.ZodBoolean>;
-        }, "strip", zod1064.ZodTypeAny, {
+        query: zod1184.ZodOptional<zod1184.ZodObject<{
+          disableCookieCache: zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>;
+          disableRefresh: zod1184.ZodOptional<zod1184.ZodBoolean>;
+        }, "strip", zod1184.ZodTypeAny, {
           disableCookieCache?: boolean | undefined;
           disableRefresh?: boolean | undefined;
         }, {
@@ -19975,18 +19975,18 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              plan: zod1064.ZodString;
-              annual: zod1064.ZodOptional<zod1064.ZodBoolean>;
-              referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-              subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-              metadata: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
-              seats: zod1064.ZodOptional<zod1064.ZodNumber>;
-              successUrl: zod1064.ZodDefault<zod1064.ZodString>;
-              cancelUrl: zod1064.ZodDefault<zod1064.ZodString>;
-              returnUrl: zod1064.ZodOptional<zod1064.ZodString>;
-              disableRedirect: zod1064.ZodDefault<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              plan: zod1184.ZodString;
+              annual: zod1184.ZodOptional<zod1184.ZodBoolean>;
+              referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+              subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+              metadata: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
+              seats: zod1184.ZodOptional<zod1184.ZodNumber>;
+              successUrl: zod1184.ZodDefault<zod1184.ZodString>;
+              cancelUrl: zod1184.ZodDefault<zod1184.ZodString>;
+              returnUrl: zod1184.ZodOptional<zod1184.ZodString>;
+              disableRedirect: zod1184.ZodDefault<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               plan: string;
               successUrl: string;
               cancelUrl: string;
@@ -20064,7 +20064,7 @@ declare const auth: {
           } : never>;
           options: {
             method: "GET";
-            query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+            query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
             use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
           } & {
             use: any[];
@@ -20108,11 +20108,11 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-              subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-              returnUrl: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+              subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+              returnUrl: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               returnUrl: string;
               referenceId?: string | undefined;
               subscriptionId?: string | undefined;
@@ -20179,10 +20179,10 @@ declare const auth: {
           } : Stripe.Response<Stripe.Subscription>>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-              subscriptionId: zod1064.ZodOptional<zod1064.ZodString>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+              subscriptionId: zod1184.ZodOptional<zod1184.ZodString>;
+            }, "strip", zod1184.ZodTypeAny, {
               referenceId?: string | undefined;
               subscriptionId?: string | undefined;
             }, {
@@ -20278,9 +20278,9 @@ declare const auth: {
           }[]>;
           options: {
             method: "GET";
-            query: zod1064.ZodOptional<zod1064.ZodObject<{
-              referenceId: zod1064.ZodOptional<zod1064.ZodString>;
-            }, "strip", zod1064.ZodTypeAny, {
+            query: zod1184.ZodOptional<zod1184.ZodObject<{
+              referenceId: zod1184.ZodOptional<zod1184.ZodString>;
+            }, "strip", zod1184.ZodTypeAny, {
               referenceId?: string | undefined;
             }, {
               referenceId?: string | undefined;
@@ -20340,7 +20340,7 @@ declare const auth: {
           } : better_call82.APIError>;
           options: {
             method: "GET";
-            query: zod1064.ZodOptional<zod1064.ZodRecord<zod1064.ZodString, zod1064.ZodAny>>;
+            query: zod1184.ZodOptional<zod1184.ZodRecord<zod1184.ZodString, zod1184.ZodAny>>;
             use: ((inputContext: better_call82.MiddlewareInputContext<better_call82.MiddlewareOptions>) => Promise<void>)[];
           } & {
             use: any[];
@@ -20598,10 +20598,10 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              password: zod1064.ZodString;
-              issuer: zod1064.ZodOptional<zod1064.ZodString>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              password: zod1184.ZodString;
+              issuer: zod1184.ZodOptional<zod1184.ZodString>;
+            }, "strip", zod1184.ZodTypeAny, {
               password: string;
               issuer?: string | undefined;
             }, {
@@ -20700,9 +20700,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              password: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              password: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               password: string;
             }, {
               password: string;
@@ -20811,11 +20811,11 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              code: zod1064.ZodString;
-              disableSession: zod1064.ZodOptional<zod1064.ZodBoolean>;
-              trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              code: zod1184.ZodString;
+              disableSession: zod1184.ZodOptional<zod1184.ZodBoolean>;
+              trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
               disableSession?: boolean | undefined;
@@ -20956,9 +20956,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              password: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              password: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               password: string;
             }, {
               password: string;
@@ -21058,9 +21058,9 @@ declare const auth: {
           }>;
           options: {
             method: "GET";
-            body: zod1064.ZodObject<{
-              userId: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              userId: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               userId: string;
             }, {
               userId: string;
@@ -21106,9 +21106,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodOptional<zod1064.ZodObject<{
-              trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodOptional<zod1184.ZodObject<{
+              trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               trustDevice?: boolean | undefined;
             }, {
               trustDevice?: boolean | undefined;
@@ -21193,10 +21193,10 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              code: zod1064.ZodString;
-              trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              code: zod1184.ZodString;
+              trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
             }, {
@@ -21309,9 +21309,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              secret: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              secret: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               secret: string;
             }, {
               secret: string;
@@ -21401,9 +21401,9 @@ declare const auth: {
                 };
               };
             }>)[];
-            body: zod1064.ZodObject<{
-              password: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              password: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               password: string;
             }, {
               password: string;
@@ -21488,10 +21488,10 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              code: zod1064.ZodString;
-              trustDevice: zod1064.ZodOptional<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              code: zod1184.ZodString;
+              trustDevice: zod1184.ZodOptional<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               code: string;
               trustDevice?: boolean | undefined;
             }, {
@@ -21700,10 +21700,10 @@ declare const auth: {
           } | null>;
           options: {
             method: "GET";
-            query: zod1064.ZodOptional<zod1064.ZodObject<{
-              disableCookieCache: zod1064.ZodOptional<zod1064.ZodUnion<[zod1064.ZodBoolean, zod1064.ZodEffects<zod1064.ZodString, boolean, string>]>>;
-              disableRefresh: zod1064.ZodOptional<zod1064.ZodBoolean>;
-            }, "strip", zod1064.ZodTypeAny, {
+            query: zod1184.ZodOptional<zod1184.ZodObject<{
+              disableCookieCache: zod1184.ZodOptional<zod1184.ZodUnion<[zod1184.ZodBoolean, zod1184.ZodEffects<zod1184.ZodString, boolean, string>]>>;
+              disableRefresh: zod1184.ZodOptional<zod1184.ZodBoolean>;
+            }, "strip", zod1184.ZodTypeAny, {
               disableCookieCache?: boolean | undefined;
               disableRefresh?: boolean | undefined;
             }, {
@@ -22007,9 +22007,9 @@ declare const auth: {
           }>;
           options: {
             method: "POST";
-            body: zod1064.ZodObject<{
-              token: zod1064.ZodString;
-            }, "strip", zod1064.ZodTypeAny, {
+            body: zod1184.ZodObject<{
+              token: zod1184.ZodString;
+            }, "strip", zod1184.ZodTypeAny, {
               token: string;
             }, {
               token: string;
