@@ -54,6 +54,7 @@ export const PeekModal = (
               onClick={action.onClick}
               description={action.label}
               size="md"
+              variant="flat"
             >
               {action.icon}
             </GlassButton>
@@ -67,6 +68,7 @@ export const PeekModal = (
               }}
               description={t("words.expand")}
               size="md"
+              variant="flat"
             >
               <i className="i-mgc-fullscreen-2-cute-re text-lg" />
             </GlassButton>

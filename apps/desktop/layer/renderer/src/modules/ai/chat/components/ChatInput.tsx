@@ -19,7 +19,7 @@ const chatInputVariants = cva(
     variants: {
       variant: {
         default: "shadow-2xl shadow-black/5 dark:shadow-zinc-800",
-        minimal: "shadow-lg shadow-zinc-100 dark:shadow-black/5",
+        minimal: "shadow shadow-zinc-100 dark:shadow-black/5",
       },
     },
     defaultVariants: {

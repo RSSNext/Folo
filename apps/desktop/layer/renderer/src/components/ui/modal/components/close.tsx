@@ -17,6 +17,7 @@ export const FixedModalCloseButton: Component<{
       )}
       description={t("words.close")}
       size="md"
+      variant="flat"
     >
       <i className="i-mgc-close-cute-re text-lg" />
     </GlassButton>
