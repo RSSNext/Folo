@@ -1,4 +1,6 @@
+import { useServerConfigs } from "@client/atoms/server-configs"
 import { loginHandler, signUp } from "@client/lib/auth"
+import { ReferralForm } from "@client/modules/referral"
 import { useAuthProviders } from "@client/query/users"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button, MotionButtonBase } from "@follow/components/ui/button/index.jsx"
@@ -46,6 +48,7 @@ const formSchema = z
   })
 
 function RegisterForm() {
+  const serverConfigs = useServerConfigs()
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
@@ -101,7 +104,7 @@ function RegisterForm() {
 
   return (
     <div className="relative min-w-80">
-      <h1 className="mb-6 text-center text-2xl">
+      <h1 className="mb-8 text-center text-3xl">
         {t("login.signUpTo")} <b>{` ${APP_NAME}`}</b>
       </h1>
       {isEmail ? (
@@ -146,6 +149,7 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
+            {serverConfigs?.REFERRAL_ENABLED && <ReferralForm align="left" />}
             <HCaptcha ref={captchaRef} sitekey={env.VITE_HCAPTCHA_SITE_KEY} size="invisible" />
             <Button
               isLoading={isSubmitting}
@@ -182,6 +186,7 @@ function RegisterForm() {
               <span>{t("login.continueWith", { provider: provider.name })}</span>
             </MotionButtonBase>
           ))}
+          {serverConfigs?.REFERRAL_ENABLED && <ReferralForm />}
         </div>
       )}
       <Divider className="my-7" />

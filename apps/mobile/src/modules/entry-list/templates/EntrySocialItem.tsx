@@ -1,19 +1,24 @@
 import { FeedViewType } from "@follow/constants"
+import type { MediaModel } from "@follow/database/schemas/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
+import type { ImageSource } from "expo-image"
 import { memo, useCallback } from "react"
 import { Pressable, Text, View } from "react-native"
-import { runOnJS, runOnUI } from "react-native-reanimated"
+import type { MeasuredDimensions } from "react-native-reanimated"
+import Animated, { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import type { LightboxImageSource } from "@/src/components/lightbox/ImageViewing/@types"
 import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"
+import { getAllSources } from "@/src/components/ui/image/utils"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
@@ -70,35 +75,32 @@ export const EntrySocialItem = memo(
     }, [entry, navigation])
 
     const onPreviewImage = useCallback(
-      (index: number) => {
-        runOnUI(() => {
-          "worklet"
-          // const rect = measureHandle(aviHandle)
-          runOnJS(openLightbox)({
-            images: (entry?.media ?? [])
-              .map((mediaItem) => {
-                const imageUrl =
-                  mediaItem.type === "video"
-                    ? mediaItem.preview_image_url
-                    : mediaItem.type === "photo"
-                      ? mediaItem.url
-                      : undefined
-                return {
-                  uri: imageUrl ?? "",
-                  dimensions: {
-                    width: mediaItem.width ?? 0,
-                    height: mediaItem.height ?? 0,
-                  },
-                  thumbUri: imageUrl ?? "",
-                  thumbDimensions: null,
-                  thumbRect: null,
-                  type: "image" as const,
-                }
-              })
-              .filter((i) => !!i.uri),
-            index,
-          })
-        })()
+      (index: number, rect: MeasuredDimensions | null, placeholder: ImageSource | undefined) => {
+        "worklet"
+        runOnJS(openLightbox)({
+          images: (entry?.media ?? [])
+            .map((mediaItem) => {
+              const imageUrl =
+                mediaItem.type === "video"
+                  ? mediaItem.preview_image_url
+                  : mediaItem.type === "photo"
+                    ? mediaItem.url
+                    : undefined
+              return {
+                uri: imageUrl ?? "",
+                dimensions: {
+                  width: mediaItem.width ?? 0,
+                  height: mediaItem.height ?? 0,
+                },
+                thumbUri: placeholder ?? { uri: imageUrl },
+                thumbDimensions: null,
+                thumbRect: rect,
+                type: "image" as const,
+              } satisfies LightboxImageSource
+            })
+            .filter((i) => !!i.uri),
+          index,
+        })
       },
       [entry?.media, openLightbox],
     )
@@ -156,62 +158,16 @@ export const EntrySocialItem = memo(
           {media && media.length > 0 && (
             <View className="ml-10 flex flex-row flex-wrap justify-between">
               <>
-                {media.map((mediaItem, index) => {
-                  const imageUrl =
-                    mediaItem.type === "video"
-                      ? mediaItem.preview_image_url
-                      : mediaItem.type === "photo"
-                        ? mediaItem.url
-                        : undefined
-                  const fullWidth = index === media.length - 1 && media.length % 2 === 1
-                  if (!imageUrl) return null
-
-                  const ImageItem = (
-                    <NativePressable
-                      onPress={() => {
-                        onPreviewImage(index)
-                      }}
-                    >
-                      <Image
-                        proxy={{
-                          width: fullWidth ? 400 : 200,
-                        }}
-                        source={{ uri: imageUrl }}
-                        blurhash={mediaItem.blurhash}
-                        className="border-secondary-system-background w-full rounded-lg border"
-                        aspectRatio={
-                          fullWidth && mediaItem.width && mediaItem.height
-                            ? mediaItem.width / mediaItem.height
-                            : 1
-                        }
-                      />
-                    </NativePressable>
-                  )
-
-                  if (mediaItem.type === "video") {
-                    return (
-                      <View key={`${entryId}-${mediaItem.url}`} className="w-full">
-                        <VideoPlayer
-                          source={{
-                            uri: mediaItem.url,
-                          }}
-                          height={mediaItem.height}
-                          width={mediaItem.width}
-                          placeholder={ImageItem}
-                          view={FeedViewType.SocialMedia}
-                        />
-                      </View>
-                    )
-                  }
-                  return (
-                    <Pressable
-                      key={`${entryId}-${imageUrl}`}
-                      className={fullWidth ? "w-full" : "w-1/2 p-0.5"}
-                    >
-                      {ImageItem}
-                    </Pressable>
-                  )
-                })}
+                {media.map((mediaItem, index) => (
+                  <EntryMediaItem
+                    key={`${entryId}-${mediaItem.url}`}
+                    index={index}
+                    mediaItem={mediaItem}
+                    fullWidth={index === media.length - 1 && media.length % 2 === 1}
+                    entryId={entryId}
+                    onPreviewImage={onPreviewImage}
+                  />
+                ))}
               </>
             </View>
           )}
@@ -222,3 +178,78 @@ export const EntrySocialItem = memo(
 )
 
 EntrySocialItem.displayName = "EntrySocialItem"
+
+interface EntryMediaItemProps {
+  index: number
+  entryId: string
+  mediaItem: MediaModel
+  fullWidth: boolean
+  onPreviewImage: (
+    index: number,
+    rect: MeasuredDimensions | null,
+    placeholder: ImageSource | undefined,
+  ) => void
+}
+
+const EntryMediaItem = memo(
+  ({ mediaItem, index, fullWidth, entryId, onPreviewImage }: EntryMediaItemProps) => {
+    const aviRef = useAnimatedRef<View>()
+
+    const imageUrl =
+      mediaItem.type === "video"
+        ? mediaItem.preview_image_url
+        : mediaItem.type === "photo"
+          ? mediaItem.url
+          : undefined
+    if (!imageUrl) return null
+
+    const proxy = {
+      width: fullWidth ? 400 : 200,
+    }
+    const ImageItem = (
+      <Animated.View ref={aviRef} collapsable={false}>
+        <NativePressable
+          onPress={() => {
+            const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
+            runOnUI(() => {
+              "worklet"
+              const rect = measure(aviRef)
+              onPreviewImage(index, rect, { blurhash: mediaItem.blurhash, ...placeholder })
+            })()
+          }}
+        >
+          <Image
+            proxy={proxy}
+            source={{ uri: imageUrl }}
+            blurhash={mediaItem.blurhash}
+            className="border-secondary-system-background w-full rounded-lg border"
+            aspectRatio={
+              fullWidth && mediaItem.width && mediaItem.height
+                ? mediaItem.width / mediaItem.height
+                : 1
+            }
+          />
+        </NativePressable>
+      </Animated.View>
+    )
+
+    if (mediaItem.type === "video") {
+      return (
+        <View key={`${entryId}-${mediaItem.url}`} className="w-full">
+          <VideoPlayer
+            source={{
+              uri: mediaItem.url,
+            }}
+            height={mediaItem.height}
+            width={mediaItem.width}
+            placeholder={ImageItem}
+            view={FeedViewType.SocialMedia}
+          />
+        </View>
+      )
+    }
+    return <Pressable className={fullWidth ? "w-full" : "w-1/2 p-0.5"}>{ImageItem}</Pressable>
+  },
+)
+
+EntryMediaItem.displayName = "EntryMediaItem"

@@ -15,7 +15,7 @@ import Animated, {
 
 import { Image as ProxyImage } from "@/src/components/ui/image/Image"
 
-import type { Dimensions as ImageDimensions, ImageSource, Transform } from "../../@types"
+import type { Dimensions as ImageDimensions, LightboxImageSource, Transform } from "../../@types"
 import type { TransformMatrix } from "../../transforms"
 import {
   applyRounding,
@@ -32,7 +32,7 @@ const MAX_ORIGINAL_IMAGE_ZOOM = 2
 const initialTransform = createTransform()
 
 type Props = {
-  imageSrc: ImageSource
+  imageSrc: LightboxImageSource
   onRequestClose: () => void
   onTap: () => void
   onZoom: (isZoomed: boolean) => void
@@ -350,7 +350,7 @@ const ImageItem = ({
                 contentFit="contain"
                 source={{ uri: imageSrc.uri }}
                 placeholderContentFit="contain"
-                placeholder={{ uri: imageSrc.thumbUri }}
+                placeholder={imageSrc.thumbUri}
                 accessibilityLabel={imageSrc.alt}
                 onLoad={
                   hasLoaded
@@ -360,7 +360,7 @@ const ImageItem = ({
                         onLoad({ width: e.source.width, height: e.source.height })
                       }
                 }
-                style={{ flex: 1, borderRadius, backgroundColor: "transparent" }}
+                style={{ flex: 1, borderRadius, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
                 accessibilityHint=""
                 accessibilityIgnoresInvertColors
                 cachePolicy="memory"

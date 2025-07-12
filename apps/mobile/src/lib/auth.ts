@@ -8,6 +8,7 @@ import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
 import * as FileSystem from "expo-file-system"
 import * as SecureStore from "expo-secure-store"
+import Storage from "expo-sqlite/kv-store"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
@@ -48,6 +49,7 @@ const plugins = [
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   fetchOptions: {
+    cache: "no-store",
     // Learn more: https://better-fetch.vercel.app/docs/hooks
     onRequest: async (ctx) => {
       const headers = createMobileAPIHeaders({
@@ -63,6 +65,15 @@ export const authClient = createAuthClient({
         ctx.headers.set(key, value)
       })
       ctx.headers.set("User-Agent", await getUserAgent())
+
+      const value = Storage.getItemSync("referral-code")
+      if (value) {
+        const referralCode = JSON.parse(value)
+        if (referralCode) {
+          ctx.headers.set("folo-referral-code", referralCode)
+        }
+      }
+
       return ctx
     },
     headers: {

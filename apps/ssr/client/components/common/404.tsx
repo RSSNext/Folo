@@ -1,8 +1,6 @@
-import { Header } from "@client/components/layout/header"
 import { openInFollowApp } from "@client/lib/helper"
 import { RootProviders } from "@client/providers/root-providers"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
-import { PoweredByFooter } from "@follow/components/common/PoweredByFooter.jsx"
 import { Button } from "@follow/components/ui/button/index.jsx"
 import { useSyncThemeWebApp, useTitle } from "@follow/hooks"
 import { m, useAnimationControls } from "motion/react"
@@ -101,10 +99,7 @@ const NotFoundContent = () => {
   return (
     <div className="flex h-full flex-col">
       <MemoedDangerousHTMLStyle>
-        {`:root {
-          --container-max-width: 1024px;
-          }
-
+        {`
           @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -146,8 +141,7 @@ const NotFoundContent = () => {
             animation: glitch 0.1s linear infinite;
           }`}
       </MemoedDangerousHTMLStyle>
-      <Header />
-      <main className="relative mx-auto my-8 flex w-full max-w-[var(--container-max-width)] flex-1 flex-col items-center justify-center pt-20">
+      <div className="my-8 flex flex-col items-center justify-center pt-20">
         <Fragment>
           {/* 404 Icon with animations */}
           <m.div
@@ -274,8 +268,7 @@ const NotFoundContent = () => {
             ))}
           </div>{" "}
         </Fragment>
-      </main>
-      <PoweredByFooter />
+      </div>
     </div>
   )
 }

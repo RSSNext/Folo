@@ -38,7 +38,7 @@ export const getAllSources = (
   },
 ) => {
   if (!isImageSourceWithUri(source)) {
-    return [undefined, undefined]
+    return [undefined, undefined] as const
   }
 
   // Now TypeScript knows source has a uri property
@@ -67,7 +67,7 @@ export const getAllSources = (
     }
   })()
 
-  return [safeSource, proxiesSafeSource]
+  return [safeSource, proxiesSafeSource] as const
 }
 
 const getImageData = async (imageUrl: string) => {

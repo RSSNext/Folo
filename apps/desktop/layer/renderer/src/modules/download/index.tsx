@@ -35,7 +35,7 @@ export function DownloadPage() {
           <Logo className="size-12" />
           <Folo className="text-text w-12" />
         </div>
-        <p className="text-text-secondary text-base">Next-Gen Information Browser</p>
+        <p className="text-text-secondary text-base">Follow everything in one place</p>
       </div>
 
       {/* Main Content */}

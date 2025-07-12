@@ -18,6 +18,8 @@ import i18nCompleteness from "../plugins/vite/utils/i18n-completeness"
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const pkg = JSON.parse(readFileSync(resolve(pkgDir, "./package.json"), "utf8"))
 const isCI = process.env.CI === "true" || process.env.CI === "1"
+const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
+const isStaging = mode === "staging"
 
 const getChangelogFileContent = () => {
   const { version: pkgVersion } = pkg
@@ -92,14 +94,16 @@ export const viteRenderBaseConfig = {
         electron: false,
       },
       sourcemaps: {
-        filesToDeleteAfterUpload: [
-          "out/web/assets/*.js.map",
-          "out/web/vendor/*.js.map",
-          "out/rn-web/assets/*.js.map",
-          "out/rn-web/vendor/*.js.map",
-          "dist/renderer/assets/*.js.map",
-          "dist/renderer/vendor/*.css.map",
-        ],
+        filesToDeleteAfterUpload: isStaging
+          ? []
+          : [
+              "out/web/assets/*.js.map",
+              "out/web/vendor/*.js.map",
+              "out/rn-web/assets/*.js.map",
+              "out/rn-web/vendor/*.js.map",
+              "dist/renderer/assets/*.js.map",
+              "dist/renderer/vendor/*.css.map",
+            ],
       },
     }),
 

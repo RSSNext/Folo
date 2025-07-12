@@ -6,7 +6,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
-import type { FC, PropsWithChildren } from "react"
+import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
@@ -85,7 +85,7 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
   const handleClick = useCallback(
-    (e) => {
+    (e: TouchEvent<HTMLAnchorElement> | MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -108,7 +108,7 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate],
   )
-  const handleDoubleClick: React.MouseEventHandler<HTMLAnchorElement> = useCallback(
+  const handleDoubleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
     [entry?.url],
   )

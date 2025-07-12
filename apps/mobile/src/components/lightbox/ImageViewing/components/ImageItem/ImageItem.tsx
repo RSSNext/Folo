@@ -8,12 +8,12 @@ import type { SharedValue } from "react-native-reanimated"
 import type {
   Dimensions,
   Dimensions as ImageDimensions,
-  ImageSource,
+  LightboxImageSource,
   Transform,
 } from "../../@types"
 
 type Props = {
-  imageSrc: ImageSource
+  imageSrc: LightboxImageSource
   onRequestClose: () => void
   onTap: () => void
   onZoom: (scaled: boolean) => void

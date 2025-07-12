@@ -20,6 +20,7 @@ export const apiFetch = ofetch.create({
   baseURL: env.VITE_API_URL,
   credentials: "include",
   retry: false,
+  cache: "no-store",
   onRequest: ({ options }) => {
     const header = new Headers(options.headers)
 

@@ -32,35 +32,56 @@ export const quitAndInstall = () => {
 let downloading = false
 let checkingUpdate = false
 
-const upgradeRenderIfNeeded = async () => {
+const checkRenderUpdateAvailable = async () => {
   const [state, manifest] = await canUpdateRender()
-  if (state === CanUpdateRenderState.NO_NEEDED) {
-    return true
-  }
   if (state === CanUpdateRenderState.NEEDED && manifest) {
-    await hotUpdateRender(manifest)
     return true
   }
   return false
 }
-export const checkForAppUpdates = async () => {
+
+const upgradeRenderIfNeeded = async () => {
+  const [state, manifest] = await canUpdateRender()
+  if (state === CanUpdateRenderState.NO_NEEDED) {
+    return { upgraded: false }
+  }
+  if (state === CanUpdateRenderState.NEEDED && manifest) {
+    await hotUpdateRender(manifest)
+    return { upgraded: true }
+  }
+  return { upgraded: false }
+}
+export const checkForAppUpdates = async (): Promise<{ hasUpdate: boolean; error?: string }> => {
   if (disabled || checkingUpdate) {
-    return
+    return { hasUpdate: false }
   }
 
   checkingUpdate = true
   try {
+    let hasUpdate = false
+
     if (appUpdaterConfig.enableRenderHotUpdate) {
-      const isRenderUpgraded = await upgradeRenderIfNeeded()
-      if (isRenderUpgraded) {
-        return
+      const hasRenderUpdate = await checkRenderUpdateAvailable()
+      if (hasRenderUpdate) {
+        hasUpdate = true
+
+        // Auto upgrade renderer
+        upgradeRenderIfNeeded()
       }
     }
+
+    // Check for core app updates
     if (appUpdaterConfig.enableCoreUpdate) {
-      return autoUpdater.checkForUpdates()
+      const result = await autoUpdater.checkForUpdates()
+      if (result !== null && result.updateInfo !== null) {
+        hasUpdate = true
+      }
     }
+
+    return { hasUpdate }
   } catch (e) {
     logger.error("Error checking for updates", e)
+    return { hasUpdate: false, error: e instanceof Error ? e.message : "Unknown error" }
   } finally {
     checkingUpdate = false
   }
@@ -119,8 +140,8 @@ export const registerUpdater = async () => {
     // Determine whether the app should be updated in full or only the renderer layer based on the version number.
     // https://www.notion.so/rss3/Follow-Hotfix-Electron-Renderer-layer-RFC-fe2444b9ac194c2cb38f9fa0bb1ef3c1?pvs=4#12e35ea049b480f1b268f1e605d86a62
     if (appUpdaterConfig.enableRenderHotUpdate) {
-      const isRenderUpgraded = await upgradeRenderIfNeeded()
-      if (isRenderUpgraded) {
+      const renderResult = await upgradeRenderIfNeeded()
+      if (renderResult.upgraded) {
         return
       }
     }

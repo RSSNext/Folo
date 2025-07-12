@@ -9,6 +9,7 @@ import PKG from "../../../desktop/package.json"
 const apiFetch = ofetch.create({
   credentials: "include",
   retry: false,
+  cache: "no-store",
   onRequest: ({ options }) => {
     const header = new Headers(options.headers)
 

@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { oneTimeToken } from "~/lib/auth"
@@ -29,13 +30,26 @@ export const TokenModalContent = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    const urlObj = new URL(values.token)
-    const token = urlObj.searchParams.get("token")
-    if (token) {
+    try {
+      const inputToken = values.token.trim()
+      let token = inputToken
+      if (URL.canParse(inputToken)) {
+        // If the input is a valid URL, extract the token from the URL
+        const urlObj = new URL(inputToken)
+        if (urlObj.searchParams.has("token")) {
+          token = urlObj.searchParams.get("token") || ""
+        }
+      } else if (inputToken.startsWith("auth?token=")) {
+        token = inputToken.slice("auth?token=".length)
+      }
       await oneTimeToken.apply({ token })
       handleSessionChanges()
+    } catch (e) {
+      console.error("Failed to apply one-time token:", e)
+      toast.error("Failed to apply one-time token")
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   return (

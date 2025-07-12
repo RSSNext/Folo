@@ -32,6 +32,7 @@ export const {
   signIn,
   signOut,
   signUp,
+  subscription,
   twoFactor,
   unlinkAccount,
   updateUser,

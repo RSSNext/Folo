@@ -77,11 +77,6 @@ export const initializeApp = async () => {
 
   apm("hydrateSettings", hydrateSettings)
 
-  apm("setting sync", () => {
-    settingSyncQueue.init()
-    settingSyncQueue.syncLocal()
-  })
-
   // should after hydrateSettings
   const { dataPersist: enabledDataPersist } = getGeneralSettings()
 
@@ -97,6 +92,11 @@ export const initializeApp = async () => {
       })
     })
   }
+
+  apm("setting sync", () => {
+    settingSyncQueue.init()
+    settingSyncQueue.syncLocal()
+  })
 
   await apm("initAnalytics", initAnalytics)
 

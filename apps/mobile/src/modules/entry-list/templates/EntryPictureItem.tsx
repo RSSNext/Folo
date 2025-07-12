@@ -1,18 +1,17 @@
 import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
+import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
-import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
 
 export function EntryPictureItem({ id }: { id: string }) {
@@ -46,7 +45,7 @@ export function EntryPictureItem({ id }: { id: string }) {
         ref={aviRef}
         media={item.media}
         entryId={id}
-        onPreview={(index) => {
+        onPreview={(index, placeholder) => {
           const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
@@ -62,7 +61,7 @@ export function EntryPictureItem({ id }: { id: string }) {
             runOnJS(openLightbox)({
               images: (item.media ?? []).map((media) => ({
                 uri: media.url,
-                thumbUri: media.url,
+                thumbUri: placeholder ?? { uri: media.url },
                 thumbDimensions: null,
                 thumbRect: rect,
                 dimensions: rect
@@ -76,8 +75,8 @@ export function EntryPictureItem({ id }: { id: string }) {
               index,
             })
           })()
-          const fullEntry = getEntry(id)
-          preloadWebViewEntry(fullEntry)
+          // const fullEntry = getEntry(id)
+          // preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)
         }}
       />
@@ -97,7 +96,7 @@ const MediaItems = ({
   ref?: Ref<View>
   media: MediaModel[]
   entryId: string
-  onPreview?: (index: number) => void
+  onPreview?: (index: number, placeholder: ImageSource | undefined) => void
   aspectRatio?: number
 }) => {
   const firstMedia = media[0]

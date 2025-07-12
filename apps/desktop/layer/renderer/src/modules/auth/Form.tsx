@@ -19,11 +19,13 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { useServerConfigs } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
 import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
+import { ReferralForm } from "./ReferralForm"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -190,6 +192,8 @@ export function RegisterForm({
     mode: "all",
   })
 
+  const serverConfigs = useServerConfigs()
+
   const captchaRef = useRef<HCaptcha>(null)
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
@@ -256,6 +260,7 @@ export function RegisterForm({
               </FormItem>
             )}
           />
+          {serverConfigs?.REFERRAL_ENABLED && <ReferralForm className="mb-4 w-full" align="left" />}
           {!import.meta.env.DEV && (
             <HCaptcha sitekey={env.VITE_HCAPTCHA_SITE_KEY} ref={captchaRef} size="invisible" />
           )}

@@ -25,13 +25,13 @@ import { useSafeAreaFrame } from "react-native-safe-area-context"
 
 import { Image as ProxyImage } from "@/src/components/ui/image/Image"
 
-import type { Dimensions as ImageDimensions, ImageSource, Transform } from "../../@types"
+import type { Dimensions as ImageDimensions, LightboxImageSource, Transform } from "../../@types"
 
 const MAX_ORIGINAL_IMAGE_ZOOM = 2
 const MIN_SCREEN_ZOOM = 2
 
 type Props = {
-  imageSrc: ImageSource
+  imageSrc: LightboxImageSource
   onRequestClose: () => void
   onTap: () => void
   onZoom: (scaled: boolean) => void
@@ -219,8 +219,8 @@ const ImageItem = ({
                 contentFit="contain"
                 source={{ uri: imageSrc.uri }}
                 placeholderContentFit="contain"
-                placeholder={{ uri: imageSrc.thumbUri }}
-                style={{ flex: 1, borderRadius, backgroundColor: "transparent" }}
+                placeholder={imageSrc.thumbUri}
+                style={{ flex: 1, borderRadius, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
                 accessibilityLabel={imageSrc.alt}
                 accessibilityHint=""
                 enableLiveTextInteraction={showControls && !scaled}

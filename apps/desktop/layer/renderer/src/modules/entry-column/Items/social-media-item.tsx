@@ -76,10 +76,8 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const handleMouseLeave = useMemo(() => {
     return (e: React.MouseEvent) => {
       // If the mouse is over the action bar, don't hide the action bar
-      const relatedTarget = e.relatedTarget as Element
-      const currentTarget = e.currentTarget as Element
-
-      if (relatedTarget && currentTarget.contains(relatedTarget)) {
+      const { relatedTarget, currentTarget } = e
+      if (relatedTarget && relatedTarget instanceof Node && currentTarget.contains(relatedTarget)) {
         return
       }
       setShowAction(false)

@@ -1,6 +1,6 @@
 import type { AuthSession } from "@follow/shared/hono"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
-import { userActions, userSyncService } from "@follow/store/user/store"
+import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
 import { clearStorage } from "@follow/utils/ns"
 import type { FetchError } from "ofetch"
@@ -82,7 +82,6 @@ export const signOut = async () => {
   // Clear query cache
   localStorage.removeItem(QUERY_PERSIST_KEY)
 
-  userActions.removeCurrentUser()
   // clear local store data
   await clearLocalPersistStoreData()
 

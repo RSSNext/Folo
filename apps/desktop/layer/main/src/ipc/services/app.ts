@@ -44,8 +44,8 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  checkForUpdates(): void {
-    checkForAppUpdates()
+  async checkForUpdates(): Promise<{ hasUpdate: boolean; error?: string }> {
+    return checkForAppUpdates()
   }
 
   @IpcMethod()

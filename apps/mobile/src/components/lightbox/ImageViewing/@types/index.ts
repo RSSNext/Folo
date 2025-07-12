@@ -6,6 +6,7 @@
  *
  */
 
+import type { ImageProps } from "expo-image"
 import type { TransformsStyle } from "react-native"
 import type { MeasuredDimensions } from "react-native-reanimated"
 
@@ -19,10 +20,10 @@ export type Position = {
   y: number
 }
 
-export type ImageSource = {
+export type LightboxImageSource = {
   uri: string
   dimensions: Dimensions | null
-  thumbUri: string
+  thumbUri: ImageProps["placeholder"]
   thumbDimensions: Dimensions | null
   thumbRect: MeasuredDimensions | null
   alt?: string
