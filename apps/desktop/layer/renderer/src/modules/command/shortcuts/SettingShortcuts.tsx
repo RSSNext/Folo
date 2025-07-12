@@ -326,19 +326,13 @@ const KeyRecorder: FC<{
   )
 }
 
+// Icon from Famicons by Family - https://github.com/familyjs/famicons/blob/main/LICENSE
 function FamiconsArrowUndoCircle(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 512 512"
-      {...props}
-    >
-      {/* Icon from Famicons by Family - https://github.com/familyjs/famicons/blob/main/LICENSE */}
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>
       <path
         fill="currentColor"
-        d="M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208s208-93.13 208-208S370.87 48 256 48m97.67 281.1c-24.07-25.21-51.51-38.68-108.58-38.68v37.32a8.32 8.32 0 0 1-14.05 6L146.58 254a8.2 8.2 0 0 1 0-11.94L231 162.29a8.32 8.32 0 0 1 14.05 6v37.32c88.73 0 117.42 55.64 122.87 117.09c.73 7.72-8.85 12.05-14.25 6.4"
+        d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0m5.635 16.217c-1.389-1.454-2.972-2.231-6.264-2.231v2.153a.48.48 0 0 1-.811.346l-4.873-4.6a.473.473 0 0 1 0-.69l4.87-4.601a.48.48 0 0 1 .811.346v2.153c5.12 0 6.775 3.21 7.089 6.755.042.445-.51.695-.822.37"
       />
     </svg>
   )

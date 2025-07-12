@@ -107,16 +107,12 @@ export const SettingIntegration = () => {
           }),
           defineSettingItem("instapaperUsername", {
             label: t("integration.instapaper.username.label"),
-            componentProps: {
-              labelClassName: "w-[150px]",
-            },
+            vertical: true,
           }),
           defineSettingItem("instapaperPassword", {
             label: t("integration.instapaper.password.label"),
+            vertical: true,
             type: "password",
-            componentProps: {
-              labelClassName: "w-[150px]",
-            },
           }),
 
           {
