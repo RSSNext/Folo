@@ -15,7 +15,7 @@ export function EntryAttachments({ entryId }: { entryId: string }) {
     return null
   }
   return (
-    <div>
+    <div className="flex gap-2">
       {attachments
         .filter(
           (attachment) => attachment.mime_type && SUPPORTED_MIME_TYPES.has(attachment.mime_type),

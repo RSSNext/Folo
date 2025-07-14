@@ -123,7 +123,7 @@ ${content}
 
     const existingSID = store.get("qbittorrentSID")
     if (existingSID) {
-      const errorMessage = await this.checkAuth(context, { host })
+      const errorMessage = await this.checkQBittorrentAuth(context, { host })
       if (!errorMessage) {
         return
       }
@@ -151,8 +151,7 @@ ${content}
     return
   }
 
-  @IpcMethod()
-  async checkAuth(context: IpcContext, input: CheckQBittorrentAuthInput) {
+  async checkQBittorrentAuth(context: IpcContext, input: CheckQBittorrentAuthInput) {
     const { host } = input
     const sid = store.get("qbittorrentSID")
     if (!sid) {
