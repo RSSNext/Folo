@@ -122,6 +122,8 @@
   "appearance.hide_extra_badge.label": "Hide Special Badge",
   "appearance.hide_recent_reader.description": "Hide the Recent Reader in the Entry Header.",
   "appearance.hide_recent_reader.label": "Hide Recent Reader",
+  "appearance.hide_view_count.description": "Hide the View Count in Entry.",
+  "appearance.hide_view_count.label": "Hide View Count",
   "appearance.interface_window.title": "Interface & Window",
   "appearance.misc": "Misc",
   "appearance.modal_overlay.description": "Show Modal Overlay",
