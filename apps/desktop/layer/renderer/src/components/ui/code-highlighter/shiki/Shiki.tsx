@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
@@ -203,7 +204,7 @@ const ShikiCode: FC<
         )}
         <CopyButton variant="outline" value={code} className={showCopy ? "" : "invisible"} />
       </div>
-      <div dangerouslySetInnerHTML={{ __html: rendered }} data-language={language} />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rendered) }} data-language={language} />
     </div>
   )
 }
