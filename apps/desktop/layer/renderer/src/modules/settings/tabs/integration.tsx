@@ -274,6 +274,34 @@ export const SettingIntegration = () => {
             type: "password",
           }),
 
+          {
+            type: "title",
+            value: (
+              <span className="flex items-center gap-2 font-bold">
+                <i className="i-simple-icons-qbittorrent" />
+                {t("integration.qbittorrent.title")}
+              </span>
+            ),
+          },
+          defineSettingItem("enableQBittorrent", {
+            label: t("integration.qbittorrent.enable.label"),
+            description: t("integration.qbittorrent.enable.description"),
+          }),
+          defineSettingItem("qbittorrentHost", {
+            label: t("integration.qbittorrent.host.label"),
+            vertical: true,
+            description: t("integration.qbittorrent.host.description"),
+          }),
+          defineSettingItem("qbittorrentUsername", {
+            label: t("integration.qbittorrent.username.label"),
+            vertical: true,
+          }),
+          defineSettingItem("qbittorrentPassword", {
+            label: t("integration.qbittorrent.password.label"),
+            vertical: true,
+            type: "password",
+          }),
+
           BottomTip,
         ]}
       />

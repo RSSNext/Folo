@@ -27,6 +27,7 @@ export const COMMAND_ID = {
     saveToReadeck: "integration:save-to-readeck",
     saveToCubox: "integration:save-to-cubox",
     saveToZotero: "integration:save-to-zotero",
+    saveToQBittorrent: "integration:save-to-qbittorrent",
   },
   list: {
     edit: "list:edit",

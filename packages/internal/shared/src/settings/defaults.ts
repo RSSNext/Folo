@@ -136,6 +136,12 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   zoteroUserID: "",
   zoteroToken: "",
 
+  // qbittorrent
+  enableQBittorrent: false,
+  qbittorrentHost: "",
+  qbittorrentUsername: "",
+  qbittorrentPassword: "",
+
   saveSummaryAsDescription: false,
 }
 

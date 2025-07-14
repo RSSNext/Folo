@@ -124,6 +124,7 @@ const entrySelector = (state: EntryModel) => {
   const { summary, translation, readability } = state.settings || {}
 
   const media = state.media || []
+  const attachments = state.attachments || []
   const images = media.filter((a) => a.type === "photo")
   const imagesLength = images.length
 
@@ -139,6 +140,7 @@ const entrySelector = (state: EntryModel) => {
     hasContent,
     doesContentContainsHTMLTags,
     imagesLength,
+    hasBitTorrent: attachments.some((a) => a.mime_type === "application/x-bittorrent"),
   }
 }
 
@@ -220,6 +222,12 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.integration.saveToZotero,
         onClick: runCmdFn(COMMAND_ID.integration.saveToZotero, [{ entryId }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToQBittorrent,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToQBittorrent, [{ entryId }]),
+        hide: !IN_ELECTRON || !entry.hasBitTorrent,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -370,6 +378,14 @@ export const useEntryActions = ({
     hasEntry,
     runCmdFn,
     entryId,
+    entry?.hasBitTorrent,
+    entry?.url,
+    entry?.imagesLength,
+    entry?.publishedAt,
+    entry?.read,
+    entry?.hasContent,
+    entry?.readability,
+    entry?.doesContentContainsHTMLTags,
     feed?.id,
     feed?.ownerUserId,
     feed?.siteUrl,
@@ -377,12 +393,6 @@ export const useEntryActions = ({
     shortcuts,
     view,
     isInCollection,
-    entry?.url,
-    entry?.publishedAt,
-    entry?.hasContent,
-    entry?.read,
-    entry?.readability,
-    entry?.imagesLength,
     isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
@@ -391,7 +401,6 @@ export const useEntryActions = ({
     isShowAITranslationOnce,
     compact,
     isEntryInReadability,
-    entry?.doesContentContainsHTMLTags,
   ])
 
   return actionConfigs

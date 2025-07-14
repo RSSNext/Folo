@@ -9,6 +9,7 @@ type StoreData = {
   cacheSizeLimit?: number | null
   minimizeToTray?: boolean | null
   proxy?: string | null
+  qbittorrentSID?: string | null
   user?: string | null
   windowState?: {
     height: number

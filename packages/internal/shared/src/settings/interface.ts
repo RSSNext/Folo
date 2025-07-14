@@ -131,5 +131,11 @@ export interface IntegrationSettings {
   zoteroUserID: string
   zoteroToken: string
 
+  // qbittorrent
+  enableQBittorrent: boolean
+  qbittorrentHost: string
+  qbittorrentUsername: string
+  qbittorrentPassword: string
+
   saveSummaryAsDescription: boolean
 }
