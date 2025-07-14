@@ -32,7 +32,6 @@ export const AppearanceScreen = () => {
   const colorScheme = useColorScheme()
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const hideRecentReader = useUISettingKey("hideRecentReader")
-  const hideViewCount = useUISettingKey("hideViewCount")
 
   return (
     <SafeNavigationScrollView
@@ -143,19 +142,6 @@ export const AppearanceScreen = () => {
             value={hideRecentReader}
             onValueChange={(val) => {
               setUISetting("hideRecentReader", val)
-            }}
-          />
-        </GroupedInsetListCell>
-
-        <GroupedInsetListCell
-          label={t("appearance.hide_view_count.label")}
-          description={t("appearance.hide_view_count.description")}
-        >
-          <Switch
-            size="sm"
-            value={hideViewCount}
-            onValueChange={(val) => {
-              setUISetting("hideViewCount", val)
             }}
           />
         </GroupedInsetListCell>

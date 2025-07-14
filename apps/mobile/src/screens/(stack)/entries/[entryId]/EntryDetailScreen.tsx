@@ -183,7 +183,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   const secondaryLabelColor = useColor("secondaryLabel")
 
   const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount
-  const hideViewCount = useUISettingKey("hideViewCount")
+  const hideRecentReader = useUISettingKey("hideRecentReader")
 
   if (!entry) return null
 
@@ -206,7 +206,7 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
           className="text-secondary-label text-sm leading-tight"
         />
       </View>
-      {hideViewCount && (
+      {!hideRecentReader && (
         <View className="flex flex-row items-center gap-1">
           <Text className="text-secondary-label text-sm leading-tight">{readCount}</Text>
         </View>

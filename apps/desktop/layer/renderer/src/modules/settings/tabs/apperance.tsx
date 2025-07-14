@@ -145,10 +145,6 @@ export const SettingAppearance = () => {
             label: t("appearance.hide_recent_reader.label"),
             description: t("appearance.hide_recent_reader.description"),
           }),
-          defineItem("hideViewCount", {
-            label: t("appearance.hide_view_count.label"),
-            description: t("appearance.hide_view_count.description"),
-          }),
           defineItem("readerRenderInlineStyle", {
             label: t("appearance.reader_render_inline_style.label"),
             description: t("appearance.reader_render_inline_style.description"),

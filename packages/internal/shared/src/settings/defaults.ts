@@ -79,7 +79,6 @@ export const defaultUISettings: UISettings = {
   codeHighlightThemeDark: "github-dark",
   guessCodeLanguage: true,
   hideRecentReader: false,
-  hideViewCount: false,
   customCSS: "",
 
   // View

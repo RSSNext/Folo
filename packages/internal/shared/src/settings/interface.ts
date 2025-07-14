@@ -70,7 +70,6 @@ export interface UISettings {
   codeHighlightThemeDark: string
   guessCodeLanguage: boolean
   hideRecentReader: boolean
-  hideViewCount: boolean
   customCSS: string
 
   // view
