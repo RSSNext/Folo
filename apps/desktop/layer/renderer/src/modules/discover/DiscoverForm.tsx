@@ -17,9 +17,10 @@ import { useMutation } from "@tanstack/react-query"
 import { produce } from "immer"
 import { atom, useAtomValue, useStore } from "jotai"
 import type { ChangeEvent } from "react"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { useSearchParams } from "react-router"
 import { z } from "zod"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -84,15 +85,32 @@ const info: Record<
 }
 
 type DiscoverSearchData = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"]
+
+const discoverSearchDataAtom = atom<Record<string, DiscoverSearchData>>()
+
 export function DiscoverForm({ type = "search" }: { type?: string }) {
   const { prefix, default: defaultValue } = info[type]!
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const keywordFromSearch = searchParams.get("keyword") || ""
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      keyword: defaultValue || "",
+      keyword: defaultValue || keywordFromSearch || "",
       target: "feeds",
     },
   })
+  const { watch, trigger } = form
+  // validate default value from search params
+  useEffect(() => {
+    if (!keywordFromSearch) {
+      return
+    }
+    trigger("keyword")
+  }, [trigger])
+
+  const target = watch("target")
+  const atomKey = keywordFromSearch + target
   const { t } = useTranslation()
   const isInMASReview = useIsInMASReview()
 
@@ -109,14 +127,16 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
         data = data.filter((item) => !item.list?.fee)
       }
 
-      jotaiStore.set(discoverSearchDataAtom, data)
+      jotaiStore.set(discoverSearchDataAtom, (prev) => ({
+        ...prev,
+        [atomKey]: data,
+      }))
 
       return data
     },
   })
-  const discoverSearchDataAtom = useState(() => atom<DiscoverSearchData>())[0]
 
-  const discoverSearchData = useAtomValue(discoverSearchDataAtom)
+  const discoverSearchData = useAtomValue(discoverSearchDataAtom)?.[atomKey] || []
 
   const { present, dismissAll } = useModalStack()
 
@@ -133,23 +153,44 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
 
   const handleKeywordChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      const syncKeyword = (keyword: string) => {
+        setSearchParams(
+          (prev) => {
+            const newParams = new URLSearchParams(prev)
+            if (keyword) {
+              newParams.set("keyword", keyword)
+            } else {
+              newParams.delete("keyword")
+            }
+            return newParams
+          },
+          {
+            replace: true,
+          },
+        )
+      }
+
       const trimmedKeyword = event.target.value.trimStart()
       if (!prefix) {
         form.setValue("keyword", trimmedKeyword, { shouldValidate: true })
+        syncKeyword(trimmedKeyword)
         return
       }
       const isValidPrefix = prefix.find((p) => trimmedKeyword.startsWith(p))
       if (!isValidPrefix) {
         form.setValue("keyword", prefix[0]!)
+        syncKeyword(prefix[0]!)
         return
       }
       if (trimmedKeyword.startsWith(`${isValidPrefix}${isValidPrefix}`)) {
         form.setValue("keyword", trimmedKeyword.slice(isValidPrefix.length))
+        syncKeyword(trimmedKeyword.slice(isValidPrefix.length))
         return
       }
       form.setValue("keyword", trimmedKeyword)
+      syncKeyword(trimmedKeyword)
     },
-    [form, prefix],
+    [form, prefix, setSearchParams],
   )
 
   const handleSuccess = useCallback(
@@ -159,7 +200,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       jotaiStore.set(
         discoverSearchDataAtom,
         produce(currentData, (draft) => {
-          const sub = draft.find((i) => {
+          const sub = (draft[atomKey] || []).find((i) => {
             if (item.feed) {
               return i.feed?.id === item.feed.id
             }
@@ -183,7 +224,7 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
       jotaiStore.set(
         discoverSearchDataAtom,
         produce(currentData, (draft) => {
-          const sub = draft.find(
+          const sub = (draft[atomKey] || []).find(
             (i) => i.feed?.id === item.feed?.id || i.list?.id === item.list?.id,
           )
           if (!sub) return
@@ -287,34 +328,41 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
           </div>
         </form>
       </Form>
-      {mutation.isSuccess && (
-        <div className="mt-8 w-full max-w-lg">
-          <div className="mb-4 flex items-center gap-2 text-sm text-zinc-500">
-            {t("discover.search.results", { count: mutation.data?.length || 0 })}
 
-            {mutation.data?.length > 0 && (
+      <div className="mt-8 w-full max-w-lg">
+        {(mutation.isSuccess || !!discoverSearchData?.length) && (
+          <div className="mb-4 flex items-center gap-2 text-sm text-zinc-500">
+            {t("discover.search.results", { count: discoverSearchData?.length || 0 })}
+
+            {discoverSearchData && discoverSearchData.length > 0 && (
               <MotionButtonBase
                 className="hover:text-accent cursor-button flex items-center justify-between gap-2"
                 type="button"
-                onClick={mutation.reset}
+                onClick={() => {
+                  jotaiStore.set(discoverSearchDataAtom, {
+                    ...jotaiStore.get(discoverSearchDataAtom),
+                    [atomKey]: [],
+                  })
+                  mutation.reset()
+                }}
               >
                 <i className="i-mgc-close-cute-re" />
               </MotionButtonBase>
             )}
           </div>
-          <div className="space-y-4 text-sm">
-            {discoverSearchData?.map((item) => (
-              <DiscoverFeedCard
-                key={item.feed?.id || item.list?.id}
-                item={item}
-                onSuccess={handleSuccess}
-                onUnSubscribed={handleUnSubscribed}
-                className="last:border-b-0"
-              />
-            ))}
-          </div>
+        )}
+        <div className="space-y-4 text-sm">
+          {discoverSearchData?.map((item) => (
+            <DiscoverFeedCard
+              key={item.feed?.id || item.list?.id}
+              item={item}
+              onSuccess={handleSuccess}
+              onUnSubscribed={handleUnSubscribed}
+              className="last:border-b-0"
+            />
+          ))}
         </div>
-      )}
+      </div>
     </>
   )
 }

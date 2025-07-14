@@ -5,7 +5,9 @@ import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { checkLanguage } from "@/src/lib/translation"
+import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -22,7 +24,7 @@ export const EntryListContentSocial = ({
 }: { entryIds: string[] | null; active?: boolean } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries()
   const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
@@ -53,6 +55,20 @@ export const EntryListContentSocial = ({
     translation,
     checkLanguage,
   })
+
+  const headerHeight = useHeaderHeight()
+  const tabBarHeight = useBottomTabBarHeight()
+
+  // Show loading skeleton when entries are not ready and no data yet
+  if (!isReady && (!entryIds || entryIds.length === 0)) {
+    return (
+      <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <EntryItemSkeleton key={index} />
+        ))}
+      </View>
+    )
+  }
 
   return (
     <TimelineSelectorList

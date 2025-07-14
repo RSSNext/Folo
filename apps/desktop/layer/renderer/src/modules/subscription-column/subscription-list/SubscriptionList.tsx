@@ -5,6 +5,7 @@ import {
   useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/hooks.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
+import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import { useInboxList } from "@follow/store/inbox/hooks"
 import { useListById } from "@follow/store/list/hooks"
@@ -45,7 +46,7 @@ import { ListHeader } from "./ListHeader"
 import { StarredItem } from "./StarredItem"
 import type { SubscriptionProps } from "./SubscriptionListGuard"
 
-const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
+const SubscriptionImpl = ({ ref, className, view, isSubscriptionLoading }: SubscriptionProps) => {
   const autoGroup = useGeneralSettingKey("autoGroup")
   const feedsData = useFeedsGroupedData(view, autoGroup)
   const listSubIds = useSubscriptionListIds(view)
@@ -293,6 +294,8 @@ const SubscriptionImpl = ({ ref, className, view }: SubscriptionProps) => {
                 data={feedsData}
                 categoryOpenStateData={categoryOpenStateData}
               />
+            ) : isSubscriptionLoading ? (
+              <SubscriptionListSkeleton />
             ) : (
               <EmptyFeedList />
             )}
@@ -411,3 +414,14 @@ const useRegisterCommand = () => {
     )
   }, [focusableContainerRef, focusActions, getCurrentActiveSubscriptionElement])
 }
+
+const SubscriptionListSkeleton = () => (
+  <div className="px-3">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <div key={index} className="flex h-8 items-center justify-between">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="size-4" />
+      </div>
+    ))}
+  </div>
+)

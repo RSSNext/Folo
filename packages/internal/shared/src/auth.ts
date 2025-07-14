@@ -40,7 +40,6 @@ export type AuthClient<ExtraPlugins extends BetterAuthClientPlugin[] = []> = Ret
     plugins: [...typeof baseAuthPlugins, ...ExtraPlugins]
   }>
 >
-
 export type LoginRuntime = "browser" | "app"
 
 export class Auth {
@@ -58,6 +57,7 @@ export class Auth {
       plugins: baseAuthPlugins,
       fetchOptions: {
         ...this.options.fetchOptions,
+        cache: "no-store",
         onRequest: (context) => {
           const referralCode = localStorage.getItem(getStorageNS("referral-code"))
           if (referralCode) {

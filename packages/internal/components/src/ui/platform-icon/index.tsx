@@ -40,6 +40,7 @@ export const PlatformIcon: FC<{
       style={{
         ...style,
         maskImage: "var(--svg)",
+        display: "block",
       }}
     />
   )

@@ -39,7 +39,7 @@ export function SubscriptionColumn({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) {
-  usePrefetchSubscription()
+  const { isLoading: isSubscriptionLoading } = usePrefetchSubscription()
   usePrefetchUnread()
 
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -169,6 +169,7 @@ export function SubscriptionColumn({
                     10,
                   ) as FeedViewType
                 }
+                isSubscriptionLoading={isSubscriptionLoading}
               />
             </section>
           ))}

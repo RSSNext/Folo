@@ -8,7 +8,7 @@ import * as Sharing from "expo-sharing"
 import { useCallback } from "react"
 import { Image } from "react-native"
 
-import { isNative } from "@/src/lib/platform"
+import { isAndroid, isNative } from "@/src/lib/platform"
 import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 
@@ -38,6 +38,7 @@ export const getAllSources = (
   },
 ) => {
   if (!isImageSourceWithUri(source)) {
+    console.warn("Invalid image source", source)
     return [undefined, undefined] as const
   }
 
@@ -45,6 +46,8 @@ export const getAllSources = (
   source.uri = source.uri.replace("http://", "https://")
 
   const safeSource: ImageProps["source"] = {
+    width: proxy?.width,
+    height: proxy?.height,
     ...source,
     headers: {
       ...buildSafeHeaders({ url: source.uri }),
@@ -58,20 +61,32 @@ export const getAllSources = (
     }
 
     return {
+      width: proxy?.width,
+      height: proxy?.height,
       ...safeSource,
       uri: getImageProxyUrl({
         url: source.uri,
         width: proxy?.width ? proxy?.width * 3 : undefined,
         height: proxy?.height ? proxy?.height * 3 : undefined,
       }),
-    }
+    } satisfies ImageProps["source"]
   })()
 
   return [safeSource, proxiesSafeSource] as const
 }
 
 const getImageData = async (imageUrl: string) => {
-  const size = await Image.getSize(imageUrl)
+  let size = await Image.getSize(imageUrl)
+
+  // Workaround for Android where the size returned by Image.getSize is not accurate for remote images
+  // Learn more https://github.com/facebook/react-native/issues/33498
+  if (isAndroid) {
+    size = {
+      width: size.width * 10,
+      height: size.height * 10,
+    }
+  }
+
   const croppedImage = await ImageEditor.cropImage(imageUrl, {
     offset: {
       x: 0,
@@ -157,7 +172,7 @@ export function useSaveImageToMediaLibrary() {
         try {
           await saveImageToMediaLibrary({ uri })
           toast.success("Image saved to library")
-        } catch (e: any) {
+        } catch (e) {
           toast.error(`Failed to save image: ${String(e)}`)
         }
       }

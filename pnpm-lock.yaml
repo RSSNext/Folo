@@ -39,9 +39,6 @@ patchedDependencies:
   electron-context-menu@4.0.5:
     hash: 15ed04a0d246eb9e701f47314b91328c64a8a7374914ad58b4053a3f84075fab
     path: patches/electron-context-menu@4.0.5.patch
-  expo-image:
-    hash: 2b9c83844cf8c4240bda8315b7bbe20908929272eca362f1b7f52728071ae446
-    path: patches/expo-image.patch
   hono:
     hash: 5c74c2d2afaa5880c13d75458dd26c84da568851691b1fb6de6d877c29936d05
     path: patches/hono.patch
@@ -344,9 +341,6 @@ importers:
       '@sentry/electron':
         specifier: 6.8.0
         version: 6.8.0(patch_hash=a5a19cbba4427bc1e6f675a47170c6e03adc0fcec259258bfa07288185b5a979)
-      '@sindresorhus/slugify':
-        specifier: 2.2.1
-        version: 2.2.1
       builder-util-runtime:
         specifier: 9.3.1
         version: 9.3.1
@@ -905,8 +899,8 @@ importers:
         specifier: 2.5.0
         version: 2.5.0(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       expo-image:
-        specifier: 2.3.0
-        version: 2.3.0(patch_hash=2b9c83844cf8c4240bda8315b7bbe20908929272eca362f1b7f52728071ae446)(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-web@0.20.0(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
+        specifier: 2.3.2
+        version: 2.3.2(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-web@0.20.0(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       expo-image-manipulator:
         specifier: 13.1.7
         version: 13.1.7(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))
@@ -1616,7 +1610,7 @@ importers:
         specifier: npm:@hyoban/sqlocal@0.14.1-fork.4
         version: '@hyoban/sqlocal@0.14.1-fork.4(bufferutil@4.0.9)(drizzle-orm@0.44.2(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2))(kysely@0.28.2)'
       wa-sqlite:
-        specifier: github:rhashimoto/wa-sqlite#v1.0.8
+        specifier: git+https://github.com/rhashimoto/wa-sqlite.git#v1.0.8
         version: https://codeload.github.com/rhashimoto/wa-sqlite/tar.gz/03c00ed67cd934bd664ae310234bba317928f851
     devDependencies:
       '@follow/configs':
@@ -6114,14 +6108,6 @@ packages:
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
 
-  '@sindresorhus/slugify@2.2.1':
-    resolution: {integrity: sha512-MkngSCRZ8JdSOCHRaYd+D01XhvU3Hjy6MGl06zhOk614hp9EOAp5gIkBeQg7wtmxpitU6eAL4kdiRMcJa2dlrw==}
-    engines: {node: '>=12'}
-
-  '@sindresorhus/transliterate@1.6.0':
-    resolution: {integrity: sha512-doH1gimEu3A46VX6aVxpHTeHrytJAG6HgdxntYnCFiIFHEM/ZGpG8KiZGBChchjQmG0XFIBL552kBTjVcMZXwQ==}
-    engines: {node: '>=12'}
-
   '@sinonjs/commons@3.0.1':
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
 
@@ -9670,8 +9656,8 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-image@2.3.0:
-    resolution: {integrity: sha512-muL8OSbgCskQJsyqenKPNULWXwRm5BY2ruS6WMo/EzFyI3iXI/0mXgb2J/NXUa8xCEYxSyoGkGZFyCBvGY1ofA==}
+  expo-image@2.3.2:
+    resolution: {integrity: sha512-TOp7UR1mzeCxzs3c/6MV2Wy7jBfJpKq8aVC06gkLfxHsCVMeGqCXc+6GMrGIVrjG938LEub4dwnrE0OuSE2Qwg==}
     peerDependencies:
       expo: '*'
       react: 19.0.0
@@ -21543,15 +21529,6 @@ snapshots:
 
   '@sindresorhus/is@4.6.0': {}
 
-  '@sindresorhus/slugify@2.2.1':
-    dependencies:
-      '@sindresorhus/transliterate': 1.6.0
-      escape-string-regexp: 5.0.0
-
-  '@sindresorhus/transliterate@1.6.0':
-    dependencies:
-      escape-string-regexp: 5.0.0
-
   '@sinonjs/commons@3.0.1':
     dependencies:
       type-detect: 4.0.8
@@ -25873,7 +25850,7 @@ snapshots:
       expo: 53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       expo-image-loader: 5.1.0(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))
 
-  expo-image@2.3.0(patch_hash=2b9c83844cf8c4240bda8315b7bbe20908929272eca362f1b7f52728071ae446)(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-web@0.20.0(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0):
+  expo-image@2.3.2(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native-web@0.20.0(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0):
     dependencies:
       expo: 53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0)
       react: 19.0.0

@@ -2,7 +2,6 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
 
-import { useIsInMASReview } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { AccountManagement } from "~/modules/profile/account-management"
 import { EmailManagement } from "~/modules/profile/email-management"
@@ -24,7 +23,6 @@ export const loader = defineSettingPageData({
 
 export function Component() {
   const { present } = useModalStack()
-  const isInMASReview = useIsInMASReview()
   const preset = useTOTPModalWrapper(deleteUser, { force: true })
   return (
     <>
@@ -39,37 +37,35 @@ export function Component() {
           <AccountManagement />
           <UpdatePasswordForm />
           <TwoFactor />
-          {isInMASReview && (
-            <div className="flex items-center justify-between">
-              <Label>Delete Account</Label>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  present({
-                    title: "Delete Account",
-                    content: () => (
-                      <div className="max-w-96">
-                        <p className="mb-4 text-sm text-zinc-500">
-                          Are you sure you want to delete your account? This action is irreversible
-                          and may take up to two days to take effect.
-                        </p>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            preset({})
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    ),
-                  })
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          )}
+          <div className="flex items-center justify-between">
+            <Label>Delete Account</Label>
+            <Button
+              variant="outline"
+              onClick={() => {
+                present({
+                  title: "Delete Account",
+                  content: () => (
+                    <div className="max-w-96">
+                      <p className="mb-4 text-sm text-zinc-500">
+                        Are you sure you want to delete your account? This action is irreversible
+                        and may take up to two days to take effect.
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          preset({})
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  ),
+                })
+              }}
+            >
+              Delete
+            </Button>
+          </div>
         </div>
       </section>
     </>

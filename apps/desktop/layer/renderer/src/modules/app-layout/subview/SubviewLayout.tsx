@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
 import { NavigationType, Outlet, useLocation, useNavigate, useNavigationType } from "react-router"
+import { parseQuery } from "ufo"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
@@ -57,6 +58,8 @@ function SubviewLayoutInner() {
     return () => resizeObserver.disconnect()
   }, [scrollRef, updateMaxScroll])
 
+  const discoverType = parseQuery(location.search).type
+
   useEffect(() => {
     // Scroll to top search bar when re-navigating to Discover page while already on it
     if (
@@ -75,7 +78,7 @@ function SubviewLayoutInner() {
     ) {
       springScrollTo(0, scrollRef)
     }
-  }, [location, navigationType, scrollRef])
+  }, [location.pathname, discoverType, scrollRef])
 
   useEffect(() => {
     const $scroll = scrollRef

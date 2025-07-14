@@ -88,6 +88,7 @@ export function Component() {
             setSearch(
               (search) => {
                 search.set("type", val)
+                search.delete("keyword")
                 return new URLSearchParams(search)
               },
               { replace: true },

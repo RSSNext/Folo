@@ -1,6 +1,6 @@
 {
   "name": "@follow/mobile",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {
@@ -67,7 +67,7 @@
     "expo-file-system": "18.1.10",
     "expo-haptics": "14.1.4",
     "expo-iap": "2.5.0",
-    "expo-image": "2.3.0",
+    "expo-image": "2.3.2",
     "expo-image-manipulator": "13.1.7",
     "expo-image-picker": "~16.1.4",
     "expo-linear-gradient": "14.1.5",

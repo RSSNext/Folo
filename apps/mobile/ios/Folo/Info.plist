@@ -32,7 +32,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.2.2</string>
+    <string>0.2.3</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -53,7 +53,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>110</string>
+    <string>112</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSApplicationCategoryType</key>

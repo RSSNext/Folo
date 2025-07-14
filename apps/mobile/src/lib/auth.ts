@@ -49,6 +49,7 @@ const plugins = [
 export const authClient = createAuthClient({
   baseURL: `${proxyEnv.API_URL}/better-auth`,
   fetchOptions: {
+    cache: "no-store",
     // Learn more: https://better-fetch.vercel.app/docs/hooks
     onRequest: async (ctx) => {
       const headers = createMobileAPIHeaders({

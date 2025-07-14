@@ -332,7 +332,10 @@ export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
   const remoteQuery = useRemoteEntries({ viewId, active })
   const localQuery = useLocalEntries({ viewId, active })
   const query = remoteQuery.isReady ? remoteQuery : localQuery
-  return query
+  return {
+    ...query,
+    isReady: remoteQuery.isReady,
+  }
 }
 
 export const useSelectedFeedTitle = () => {

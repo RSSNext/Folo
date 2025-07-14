@@ -65,6 +65,8 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
   const navigateEntry = useNavigateEntry()
 
+  const hideRecentReader = useUISettingKey("hideRecentReader")
+
   if (!entry) return null
 
   return compact ? (
@@ -132,7 +134,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 (entryHistory?.readCount ?? 0) +
                 (entryHistory?.userIds?.every((id) => id !== user?.id) ? 1 : 0)
 
-              return readCount > 0 ? (
+              return readCount > 0 && !hideRecentReader ? (
                 <div className="flex items-center gap-1.5">
                   <i className="i-mgc-eye-2-cute-re text-base" />
                   <span className="text-xs tabular-nums">{readCount.toLocaleString()}</span>

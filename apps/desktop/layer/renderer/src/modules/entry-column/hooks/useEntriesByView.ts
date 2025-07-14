@@ -328,6 +328,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     }, [query]),
     entriesIds: entryIds,
     groupedCounts,
+    isFetching: remoteQuery.isFetching,
+    isFetchingNextPage: remoteQuery.isFetchingNextPage,
+    isLoading: remoteQuery.isLoading,
   }
 }
 
