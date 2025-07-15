@@ -35,6 +35,16 @@
   </p>
 </div>
 
+<!-- Keep these links. Translations will automatically update with the README. -->
+[Deutsch](https://readme-i18n.com/RSSNext/Folo?lang=de) | 
+[Español](https://readme-i18n.com/RSSNext/Folo?lang=es) | 
+[français](https://readme-i18n.com/RSSNext/Folo?lang=fr) | 
+[日本語](https://readme-i18n.com/RSSNext/Folo?lang=ja) | 
+[한국어](https://readme-i18n.com/RSSNext/Folo?lang=ko) | 
+[Português](https://readme-i18n.com/RSSNext/Folo?lang=pt) | 
+[Русский](https://readme-i18n.com/RSSNext/Folo?lang=ru) | 
+[中文](https://readme-i18n.com/RSSNext/Folo?lang=zh)
+
 As they say, your thoughts are what you read—and we’ve been consuming noisy feeds for too long! Folo organizes content into one timeline, keeping you updated on what matters, noise-free. Share lists, explore collections, and enjoy distraction-free browsing.
 
 ## 👋🏻 Getting Started & Join Our Community
