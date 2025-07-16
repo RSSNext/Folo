@@ -1,7 +1,12 @@
 import type { AttachmentsModel } from "@follow/database/schemas/types"
 import { atom, useAtom } from "jotai"
 import { useCallback, useEffect } from "react"
-import TrackPlayer, { State, useActiveTrack, usePlaybackState } from "react-native-track-player"
+import TrackPlayer, {
+  State,
+  useActiveTrack,
+  useIsPlaying,
+  usePlaybackState,
+} from "react-native-track-player"
 
 import { PlayerRegistered } from "../initialize/player"
 import { toast } from "./toast"
@@ -23,6 +28,26 @@ export function getAttachmentState(playingUrl?: string, attachment?: Attachments
   const isPlaying = attachment.url === playingUrl
   const isLoading = playingUrl === `${attachment.url}${LOADING_SUFFIX}`
   return isPlaying ? "playing" : isLoading ? "loading" : null
+}
+
+/**
+ * Learn more https://rntp.dev/docs/guides/play-button
+ */
+export function usePlayButtonState(audioUrl?: string): "play" | "pause" | "loading" {
+  const playState = useIsPlaying()
+  const activeTrack = useActiveTrack()
+  const playingUrl = activeTrack?.url
+
+  const isCurrentTrack = !audioUrl || playingUrl === audioUrl
+  if (!playingUrl || !isCurrentTrack) {
+    // If no track is playing or the current track is not the one we are checking, return 'play'
+    return "play"
+  }
+
+  if (playState.bufferingDuringPlay === true) {
+    return "loading"
+  }
+  return playState.playing ? "pause" : "play"
 }
 
 class Player {

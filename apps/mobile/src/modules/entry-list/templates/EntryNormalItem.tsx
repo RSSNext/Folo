@@ -10,7 +10,6 @@ import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
 import type { ImageErrorEventData } from "react-native"
 import { Text, View } from "react-native"
-import { useIsPlaying } from "react-native-track-player"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
@@ -23,7 +22,8 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
-import { getAttachmentState, player, usePlayingUrl } from "@/src/lib/player"
+import { player, usePlayButtonState } from "@/src/lib/player"
+import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -181,10 +181,8 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   const blurhash = mediaModel?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
-  const playingAudioUrl = usePlayingUrl()
-  const playState = useIsPlaying()
-  const audioState = getAttachmentState(playingAudioUrl ?? undefined, audio)
-  const isPlaying = audioState === "playing"
+  const audioState = usePlayButtonState(audio?.url)
+  const isPlaying = audioState === "pause"
   const isLoading = audioState === "loading"
 
   const video = mediaModel?.type === "video" ? mediaModel : null
@@ -211,24 +209,18 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       player.pause()
       return
     }
-    player.play({
-      url: audio.url,
-      title: entry?.title,
-      artist: feed?.title,
-      artwork: image,
-    })
-  }, [
-    audio,
-    entry?.title,
-    feed?.title,
-    image,
-    isLoading,
-    isPlaying,
-    playState,
-    playingAudioUrl,
-    video,
-    videoPlayer,
-  ])
+    try {
+      player.play({
+        url: audio.url,
+        title: entry?.title,
+        artist: feed?.title,
+        artwork: image,
+      })
+    } catch (error) {
+      console.error("Error playing audio:", error)
+      toast.error("Failed to play audio")
+    }
+  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
 
   const [imageError, setImageError] = useState(audio && !image)
   const handleImageError = useCallback(() => {
