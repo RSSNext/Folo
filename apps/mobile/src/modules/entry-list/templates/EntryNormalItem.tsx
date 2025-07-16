@@ -212,8 +212,7 @@ const ThumbnailImage = ({
       return
     }
     if (!audio) return
-    if (isLoading) return
-    if (isPlaying) {
+    if (isLoading || isPlaying) {
       player.pause()
       return
     }
