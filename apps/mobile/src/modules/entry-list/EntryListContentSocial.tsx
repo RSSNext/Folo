@@ -25,7 +25,7 @@ export const EntryListContentSocial = ({
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries()
-  const extraData: EntryExtraData = useMemo(() => ({ playingAudioUrl: null, entryIds }), [entryIds])
+  const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
   useImperativeHandle(forwardRef, () => ref.current!)

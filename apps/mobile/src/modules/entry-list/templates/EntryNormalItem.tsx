@@ -154,9 +154,7 @@ export const EntryNormalItem = memo(
               />
             )}
           </View>
-          {view !== FeedViewType.Notifications && (
-            <ThumbnailImage entryId={entryId} playingAudioUrl={extraData.playingAudioUrl} />
-          )}
+          {view !== FeedViewType.Notifications && <ThumbnailImage entryId={entryId} />}
         </ItemPressable>
       </EntryItemContextMenu>
     )
@@ -165,13 +163,7 @@ export const EntryNormalItem = memo(
 
 EntryNormalItem.displayName = "EntryNormalItem"
 
-const ThumbnailImage = ({
-  playingAudioUrl: _,
-  entryId,
-}: {
-  playingAudioUrl: string | null
-  entryId: string
-}) => {
+const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     media: state.media,
@@ -219,7 +211,6 @@ const ThumbnailImage = ({
       player.pause()
       return
     }
-    console.log("Playing audio", playState, audio.url, playingAudioUrl)
     player.play({
       url: audio.url,
       title: entry?.title,
