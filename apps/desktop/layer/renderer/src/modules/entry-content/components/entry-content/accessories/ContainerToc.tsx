@@ -3,11 +3,14 @@ import { CircleProgress } from "@follow/components/icons/Progress.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
+import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
 
+import { useServerConfigs } from "~/atoms/server-configs"
+import { useAIChatPinned } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useWrappedElement, useWrappedElementSize } from "~/providers/wrapped-element-provider"
@@ -46,8 +49,9 @@ const useReadPercent = () => {
 const BackTopIndicator: Component = memo(({ className }) => {
   const [readPercent] = useReadPercent()
   const scrollElement = useScrollViewElement()
+  const aiEnabled = useServerConfigs()?.AI_CHAT_ENABLED
 
-  if (readPercent === 0) return
+  const isAiPanelOpen = useAIChatPinned()
 
   return (
     <span
@@ -61,6 +65,19 @@ const BackTopIndicator: Component = memo(({ className }) => {
         <span>{readPercent}%</span>
         <br />
       </div>
+      {aiEnabled && !isAiPanelOpen && (
+        <MotionButtonBase
+          onClick={() => {
+            EventBus.dispatch("global:toggle-ai-chat-pinned")
+          }}
+          className={cn(
+            "mt-1 flex flex-nowrap items-center gap-2 text-sm opacity-50 transition-all duration-500 hover:opacity-100",
+          )}
+        >
+          <i className="i-mgc-ai-cute-re" />
+          <span>Ask AI</span>
+        </MotionButtonBase>
+      )}
       <MotionButtonBase
         onClick={() => {
           springScrollTo(0, scrollElement!)
@@ -96,7 +113,6 @@ export const ContainerToc = memo(
                 "@[700px]:-translate-x-12 @[800px]:-translate-x-4 @[900px]:translate-x-0 @[900px]:items-start",
               )}
             />
-
             <BackTopIndicator
               className={
                 "@[700px]:-translate-x-4 @[800px]:-translate-x-8 @[900px]:translate-x-0 @[900px]:items-start"
