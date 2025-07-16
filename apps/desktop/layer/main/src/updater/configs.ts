@@ -1,4 +1,4 @@
-import { DEV, MODE, ModeEnum } from "@follow/shared/constants"
+import { DEV, MICROSOFT_STORE_BUILD, MODE, ModeEnum } from "@follow/shared/constants"
 import path from "pathe"
 
 import { isWindows } from "../env"
@@ -8,7 +8,7 @@ export const appUpdaterConfig = {
   enableRenderHotUpdate: !DEV && MODE !== ModeEnum.staging,
   enableCoreUpdate:
     !process.mas &&
-    !process.windowsStore &&
+    !MICROSOFT_STORE_BUILD &&
     // Disable core update if platfrom is windows and application is't executing from default installion path.
     // If the process is not executed from the default installation path,
     // it is usually managed through a package manager like Scoop.

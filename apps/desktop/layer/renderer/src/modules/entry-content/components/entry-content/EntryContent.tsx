@@ -36,6 +36,7 @@ import { AISummary } from "../../AISummary"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { EntryHeader } from "../entry-header"
+import { EntryAttachments } from "../EntryAttachments"
 import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
@@ -228,6 +229,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 </div>
               )}
 
+              <EntryAttachments entryId={entryId} />
               <SupportCreator entryId={entryId} />
             </article>
           </m.div>

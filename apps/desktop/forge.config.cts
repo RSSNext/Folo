@@ -18,6 +18,8 @@ import { rimraf, rimrafSync } from "rimraf"
 
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
 const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
+const isMicrosoftStore =
+  process.argv.find((arg) => arg.startsWith("--ms"))?.split("=")[1] === "true"
 
 const isStaging = mode === "staging"
 
@@ -185,11 +187,6 @@ const config: ForgeConfig = {
       },
       ["darwin", "mas"],
     ),
-    new MakerSquirrel({
-      name: "Folo",
-      setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
-      iconUrl: "https://app.folo.is/favicon.ico",
-    }),
     new MakerAppImage({
       config: {
         icons: [
@@ -207,17 +204,29 @@ const config: ForgeConfig = {
       },
       ["mas"],
     ),
-    new MakerAppX({
-      publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
-      packageDisplayName: "Folo - Follow everything in one place",
-      devCert: "build/dev.pfx",
-      assets: "static/appx",
-      // @ts-ignore
-      publisherDisplayName: "Natural Selection Labs",
-      identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
-      packageBackgroundColor: "#FF5C00",
-      protocol: "folo",
-    }),
+    // Only include AppX maker for Microsoft Store builds
+    ...(isMicrosoftStore
+      ? [
+          new MakerAppX({
+            publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
+            packageDisplayName: "Folo - Follow everything in one place",
+            devCert: "build/dev.pfx",
+            assets: "static/appx",
+            manifest: "build/appxmanifest.xml",
+            // @ts-ignore
+            publisherDisplayName: "Natural Selection Labs",
+            identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
+            packageBackgroundColor: "#FF5C00",
+            protocol: "folo",
+          }),
+        ]
+      : [
+          new MakerSquirrel({
+            name: "Folo",
+            setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
+            iconUrl: "https://app.folo.is/favicon.ico",
+          }),
+        ]),
   ],
   plugins: [
     // Fuses are used to enable/disable various Electron functionality

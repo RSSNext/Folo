@@ -1,3 +1,5 @@
+import { createElement } from "react"
+
 import type {
   Command,
   CommandOptions,
@@ -15,7 +17,10 @@ export function createCommand<
   return {
     id: options.id,
     run: options.run,
-    icon: options.icon,
+    icon:
+      typeof options.icon === "string"
+        ? createElement("i", { className: options.icon })
+        : options.icon,
     category: options.category ?? "category.global",
     get label() {
       let { label } = options

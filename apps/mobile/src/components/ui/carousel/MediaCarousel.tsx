@@ -3,7 +3,7 @@ import type { MediaModel } from "@follow/database/schemas/types"
 import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
 import { useEffect, useState } from "react"
-import { ScrollView, TouchableOpacity, View } from "react-native"
+import { ScrollView, View } from "react-native"
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -16,6 +16,7 @@ import { EntryGridFooter } from "@/src/modules/entry-content/EntryGridFooter"
 import { Image } from "../image/Image"
 import { ImageContextMenu } from "../image/ImageContextMenu"
 import { getAllSources } from "../image/utils"
+import { NativePressable } from "../pressable/NativePressable"
 import { VideoPlayer } from "../video/VideoPlayer"
 
 export const MediaCarousel = ({
@@ -70,7 +71,7 @@ export const MediaCarousel = ({
               height: 400,
             }
             const ImageItem = (
-              <TouchableOpacity
+              <NativePressable
                 onPress={() => {
                   const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
                   onPreview?.(index, { blurhash: m.blurhash, ...placeholder })
@@ -84,7 +85,7 @@ export const MediaCarousel = ({
                   aspectRatio={aspectRatio}
                   placeholderContentFit="cover"
                 />
-              </TouchableOpacity>
+              </NativePressable>
             )
 
             if (m.type === "photo") {

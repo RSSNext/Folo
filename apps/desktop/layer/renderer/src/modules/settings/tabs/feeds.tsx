@@ -21,23 +21,17 @@ import {
 } from "@follow/components/ui/tooltip/index.js"
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
 import { views } from "@follow/constants"
-import type { ExtractBizResponse } from "@follow/models"
 import { getFeedById } from "@follow/store/feed/getter"
-import { useFeedById } from "@follow/store/feed/hooks"
+import { useFeedById, usePrefetchFeedAnalytics } from "@follow/store/feed/hooks"
 import { getSubscriptionByFeedId } from "@follow/store/subscription/getter"
 import {
   useAllFeedSubscriptionIds,
   useSubscriptionByFeedId,
 } from "@follow/store/subscription/hooks"
-import { jotaiStore } from "@follow/utils/jotai"
 import { clsx, formatNumber, sortByAlphabet } from "@follow/utils/utils"
-import { useSingleton } from "foxact/use-singleton"
-import type { PrimitiveAtom } from "jotai"
-import { atom, useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC } from "react"
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useIsInMASReview } from "~/atoms/server-configs"
@@ -51,15 +45,13 @@ import {
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useAuthQuery } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
 import { UrlBuilder } from "~/lib/url-builder"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { useConfirmUnsubscribeSubscriptionModal } from "~/modules/modal/hooks/useConfirmUnsubscribeSubscriptionModal"
 import { Balance } from "~/modules/wallet/balance"
 import { Queries } from "~/queries"
 
-type Analytics = ExtractBizResponse<typeof apiClient.feeds.analytics.$post>["data"]["analytics"]
-type SortField = "name" | "view" | "date"
+type SortField = "name" | "view" | "date" | "subscriptionCount" | "updatesPerWeek"
 type SortDirection = "asc" | "desc"
 
 export const SettingFeeds = () => {
@@ -72,7 +64,7 @@ export const SettingFeeds = () => {
   )
 }
 
-const GRID_COLS_CLASSNAME = tw`grid-cols-[30px_auto_150px_150px_100px]`
+const GRID_COLS_CLASSNAME = tw`grid-cols-[30px_auto_100px_150px_60px_60px]`
 
 const SubscriptionFeedsSection = () => {
   const { t } = useTranslation("settings")
@@ -152,59 +144,7 @@ const SubscriptionFeedsSection = () => {
     }
   }, [scrollContainerElement])
 
-  const isFetchedSetRef = useSingleton(() => new Set())
-  const [analytics] = useState(() => atom<Analytics>({}))
-
-  const pendingFetchIdsRef = useRef<Set<string>>(new Set())
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
-
-  useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    visibleableFeedIds.forEach((id) => {
-      if (!isFetchedSetRef.current.has(id)) {
-        pendingFetchIdsRef.current.add(id)
-      }
-    })
-
-    timeoutRef.current = setTimeout(() => {
-      const fetchedIds = Array.from(pendingFetchIdsRef.current)
-      if (fetchedIds.length > 0) {
-        fetchedIds.forEach((id) => {
-          isFetchedSetRef.current.add(id)
-        })
-
-        // Clear pending batch
-        pendingFetchIdsRef.current.clear()
-
-        apiClient.feeds.analytics
-          .$post({
-            json: {
-              id: fetchedIds,
-            },
-          })
-          .then((res) => {
-            jotaiStore.set(analytics, {
-              ...jotaiStore.get(analytics),
-              ...res.data.analytics,
-            })
-          })
-          .catch((_error) => {
-            fetchedIds.forEach((id) => {
-              isFetchedSetRef.current.delete(id)
-            })
-          })
-      }
-    }, 200)
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [analytics, isFetchedSetRef, visibleableFeedIds])
+  usePrefetchFeedAnalytics(Array.from(visibleableFeedIds))
 
   return (
     <section className="relative mt-4">
@@ -252,7 +192,26 @@ const SubscriptionFeedsSection = () => {
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
             </button>
-            <div className="text-center">Analytics</div>
+            <button
+              className="hover:text-text text-nowrap text-center transition-colors"
+              onClick={() => handleSort("subscriptionCount")}
+              type="button"
+            >
+              Followers
+              {sortField === "subscriptionCount" && (
+                <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+              )}
+            </button>
+            <button
+              className="hover:text-text text-nowrap text-center transition-colors"
+              onClick={() => handleSort("updatesPerWeek")}
+              type="button"
+            >
+              Updates
+              {sortField === "updatesPerWeek" && (
+                <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+              )}
+            </button>
           </div>
 
           {/* Feed List */}
@@ -261,7 +220,6 @@ const SubscriptionFeedsSection = () => {
             sortField={sortField}
             sortDirection={sortDirection}
             selectedFeeds={selectedFeeds}
-            analyticsAtom={analytics}
             onSelect={handleSelectFeed}
           />
 
@@ -326,12 +284,11 @@ const SubscriptionFeedsSection = () => {
 
 const SortedFeedsList: FC<{
   feeds: string[]
-  analyticsAtom: PrimitiveAtom<Analytics>
   sortField: SortField
   sortDirection: SortDirection
   selectedFeeds: Set<string>
   onSelect: (feedId: string, checked: boolean) => void
-}> = ({ feeds, sortField, sortDirection, selectedFeeds, onSelect, analyticsAtom }) => {
+}> = ({ feeds, sortField, sortDirection, selectedFeeds, onSelect }) => {
   const sortedFeedIds = useMemo(() => {
     switch (sortField) {
       case "date": {
@@ -372,6 +329,32 @@ const SortedFeedsList: FC<{
             : sortByAlphabet(bCompareTitle, aCompareTitle)
         })
       }
+      case "updatesPerWeek": {
+        return feeds.sort((a, b) => {
+          const aSubscription = getSubscriptionByFeedId(a)
+          const bSubscription = getSubscriptionByFeedId(b)
+          if (!aSubscription || !bSubscription) return 0
+          const aFeed = getFeedById(a)
+          const bFeed = getFeedById(b)
+          if (!aFeed || !bFeed) return 0
+          return sortDirection === "asc"
+            ? (aFeed.updatesPerWeek || 0) - (bFeed.updatesPerWeek || 0)
+            : (bFeed.updatesPerWeek || 0) - (aFeed.updatesPerWeek || 0)
+        })
+      }
+      case "subscriptionCount": {
+        return feeds.sort((a, b) => {
+          const aSubscription = getSubscriptionByFeedId(a)
+          const bSubscription = getSubscriptionByFeedId(b)
+          if (!aSubscription || !bSubscription) return 0
+          const aFeed = getFeedById(a)
+          const bFeed = getFeedById(b)
+          if (!aFeed || !bFeed) return 0
+          return sortDirection === "asc"
+            ? (aFeed.subscriptionCount || 0) - (bFeed.subscriptionCount || 0)
+            : (bFeed.subscriptionCount || 0) - (aFeed.subscriptionCount || 0)
+        })
+      }
     }
   }, [feeds, sortDirection, sortField])
 
@@ -381,7 +364,6 @@ const SortedFeedsList: FC<{
       key={feedId}
       selected={selectedFeeds.has(feedId)}
       onSelect={onSelect}
-      analyticsAtom={analyticsAtom}
     />
   ))
 }
@@ -419,16 +401,11 @@ const FeedListItem = memo(
     id,
     selected,
     onSelect,
-    analyticsAtom,
   }: {
     id: string
     selected: boolean
     onSelect: (feedId: string, checked: boolean) => void
-    analyticsAtom: PrimitiveAtom<Analytics>
   }) => {
-    const analytics = useAtomValue(
-      useMemo(() => selectAtom(analyticsAtom, (a) => a[id]), [analyticsAtom, id]),
-    )
     const subscription = useSubscriptionByFeedId(id)
     const feed = useFeedById(id)
     const isCustomizeName = subscription?.title && feed?.title !== subscription?.title
@@ -490,43 +467,45 @@ const FeedListItem = memo(
           </div>
         )}
         <div className="text-center text-xs">
-          {analytics ? (
-            <div className="flex flex-col gap-1">
-              <div className="grid grid-cols-2 gap-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-text-secondary flex items-center gap-1">
-                      <i className="i-mgc-user-3-cute-re" />
-                      <span className="tabular-nums">
-                        {formatNumber(analytics.subscriptionCount || 0)}
-                      </span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent>Subscription Count</TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-text-secondary flex items-center gap-1">
-                      <i className="i-mgc-safety-certificate-cute-re" />
-                      <span className="tabular-nums">
-                        {Math.round(analytics.updatesPerWeek || 0) || "0"}
-                        {"/w"}
-                      </span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent>Updates Per Week</TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </div>
-              {analytics.latestEntryPublishedAt && (
+          {feed?.subscriptionCount ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-text-secondary flex items-center justify-center gap-1">
+                  <i className="i-mgc-user-3-cute-re" />
+                  <span className="tabular-nums">{formatNumber(feed.subscriptionCount)}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>Subscription Count</TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          ) : (
+            <div className="text-text-secondary">--</div>
+          )}
+        </div>
+        <div className="text-center text-xs">
+          {feed?.updatesPerWeek ? (
+            <div className="flex justify-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="text-text-secondary flex items-center justify-center gap-1">
+                    <i className="i-mgc-safety-certificate-cute-re" />
+                    <span className="tabular-nums">
+                      {Math.round(feed.updatesPerWeek)}
+                      {"/w"}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>Updates Per Week</TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
+              {feed.latestEntryPublishedAt && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="text-text-secondary">
                       <i className="i-mgc-calendar-time-add-cute-re" />
-                      <RelativeDay date={new Date(analytics.latestEntryPublishedAt)} />
+                      <RelativeDay date={new Date(feed.latestEntryPublishedAt)} />
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>Latest Entry Published</TooltipContent>

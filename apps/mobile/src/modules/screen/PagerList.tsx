@@ -2,7 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
-import { useEffect, useId, useMemo, useRef } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet, View } from "react-native"
 import type {
@@ -17,6 +17,10 @@ import { selectTimeline, useSelectedFeed, useTimelineSelectorDragProgress } from
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"
 
 const AnimatedPagerView = Animated.createAnimatedComponent(PagerView)
+
+const handlePageSelected = () => {
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+}
 
 export function PagerList({
   renderItem,
@@ -47,6 +51,13 @@ export function PagerList({
     })
   }, [activeViews, pagerRef, rid])
 
+  const onPageSelectedJS = useCallback(
+    (view: FeedViewType) => {
+      selectTimeline({ type: "view", viewId: view }, rid)
+    },
+    [rid],
+  )
+
   const handlePageScroll = usePagerHandlers(
     {
       onPageScroll(e: PagerViewOnPageScrollEventData) {
@@ -54,22 +65,9 @@ export function PagerList({
         const { position, offset } = e
         dragProgress.set(offset + position)
       },
-      onPageScrollStateChanged(e: PageScrollStateChangedNativeEventData) {
-        "worklet"
-        const { pageScrollState } = e
-        if (pageScrollState === "dragging") {
-          // setDragging(true)
-        } else if (pageScrollState === "idle") {
-          // setDragging(false)
-        }
-
-        if (pageScrollState === "settling") {
-          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light)
-        }
-      },
       onPageSelected(e: PagerViewOnPageSelectedEventData) {
         "worklet"
-        runOnJS(selectTimeline)({ type: "view", viewId: activeViews[e.position]! }, rid)
+        runOnJS(onPageSelectedJS)(activeViews[e.position]!)
       },
     },
     [],
@@ -85,6 +83,7 @@ export function PagerList({
       offscreenPageLimit={1}
       overdrag
       onPageScroll={handlePageScroll}
+      onPageSelected={handlePageSelected}
       orientation="horizontal"
     >
       {useMemo(
@@ -116,7 +115,7 @@ export function PagerList({
 function usePagerHandlers(
   handlers: {
     onPageScroll: (e: PagerViewOnPageScrollEventData) => void
-    onPageScrollStateChanged: (e: PageScrollStateChangedNativeEventData) => void
+    onPageScrollStateChanged?: (e: PageScrollStateChangedNativeEventData) => void
     onPageSelected?: (e: PagerViewOnPageSelectedEventData) => void
   },
   dependencies: unknown[],
@@ -130,7 +129,7 @@ function usePagerHandlers(
       if (event.eventName.endsWith("onPageScroll")) {
         onPageScroll(event as any as PagerViewOnPageScrollEventData)
       } else if (event.eventName.endsWith("onPageScrollStateChanged")) {
-        onPageScrollStateChanged(event as any as PageScrollStateChangedNativeEventData)
+        onPageScrollStateChanged?.(event as any as PageScrollStateChangedNativeEventData)
       } else if (event.eventName.endsWith("onPageSelected")) {
         onPageSelected?.(event as any as PagerViewOnPageSelectedEventData)
       }

@@ -1,5 +1,6 @@
 import type {
   ActionConditionIndex,
+  ActionFilter,
   ActionFilterItem,
   ActionId,
   ActionModel,
@@ -27,7 +28,18 @@ class ActionSyncService {
     const res = await apiClient().actions.$get()
     if (res.data) {
       actionActions.updateRules(
-        (res.data.rules ?? []).map((rule, index) => ({ ...rule, index })) as any,
+        (res.data.rules ?? []).map((rule, index) => {
+          const { condition } = rule
+          // fix old data
+          const finalCondition =
+            condition.length === 0 || Array.isArray(condition[0]) ? condition : [condition]
+
+          return {
+            ...rule,
+            condition: finalCondition as ActionFilter,
+            index,
+          }
+        }),
       )
 
       actionActions.setDirty(false)

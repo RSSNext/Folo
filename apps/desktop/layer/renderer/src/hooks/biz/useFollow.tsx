@@ -8,9 +8,11 @@ import {
 import { useUserRole } from "@follow/store/user/hooks"
 import { t } from "i18next"
 import { useCallback } from "react"
+import { useNavigate } from "react-router"
 import { withoutTrailingSlash, withTrailingSlash } from "ufo"
 import { useEventCallback } from "usehooks-ts"
 
+import { previewBackPath } from "~/atoms/preview"
 import { useServerConfigs } from "~/atoms/server-configs"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { CustomSafeError } from "~/errors/CustomSafeError"
@@ -67,6 +69,7 @@ export interface FollowOptions {
 export const useFollow = () => {
   const { present } = useModalStack()
   const canFollowMoreInboxAndNotify = useCanFollowMoreInboxAndNotify()
+  const navigate = useNavigate()
 
   return useCallback(
     (options?: FollowOptions) => {
@@ -92,6 +95,9 @@ export const useFollow = () => {
         content: ({ dismiss }) => {
           const onSuccess = () => {
             options?.onSuccess?.()
+            // If it's a preview, navigate to the back path
+            const backPath = previewBackPath()
+            backPath && navigate(backPath)
             dismiss()
           }
           return options?.isList ? (

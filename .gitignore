@@ -24,3 +24,5 @@ tsconfig.tsbuildinfo
 buildServer.json
 
 **/**/generated-routes.ts
+
+apps/desktop/build/appxmanifest.xml

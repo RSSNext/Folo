@@ -35,7 +35,9 @@ export const EmptyFeedList = memo(({ onClick }: { onClick?: (e: React.MouseEvent
           onClick={handleClick}
         >
           <i className="i-mgc-arrow-right-up-cute-re text-3xl" />
-          <span className="text-balance text-sm">{t("sidebar.already_on_discover_page")}</span>
+          <span className="text-balance text-center text-sm">
+            {t("sidebar.already_on_discover_page")}
+          </span>
         </div>
       ) : (
         <div

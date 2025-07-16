@@ -40,6 +40,7 @@ export const useRegisterIntegrationCommands = () => {
   useRegisterReadeckCommands()
   useRegisterCuboxCommands()
   useRegisterZoteroCommands()
+  useRegisterQBittorrentCommands()
 }
 
 const category: CommandCategory = "category.integration"
@@ -700,6 +701,86 @@ const buildMemoRequestBody = (entry: EntryModel, selectedText: string) => {
   }
 }
 
+function extractQBittorrentUrls(entry: EntryModel) {
+  const attachments = entry.attachments?.filter(
+    (attachment) => attachment.mime_type === "application/x-bittorrent" && attachment.url,
+  )
+
+  if (!attachments || attachments.length === 0) {
+    return
+  }
+
+  return attachments.map((attachment) => attachment.url)
+}
+
+const useRegisterQBittorrentCommands = () => {
+  const { t } = useTranslation()
+
+  const enableQBittorrent = useIntegrationSettingKey("enableQBittorrent")
+  const qbittorrentHost = useIntegrationSettingKey("qbittorrentHost")
+  const qbittorrentUsername = useIntegrationSettingKey("qbittorrentUsername")
+  const qbittorrentPassword = useIntegrationSettingKey("qbittorrentPassword")
+  const qbittorrentAvailable =
+    enableQBittorrent && !!qbittorrentHost && !!qbittorrentUsername && !!qbittorrentPassword
+
+  useRegisterCommandEffect(
+    !qbittorrentAvailable
+      ? []
+      : defineFollowCommand({
+          id: COMMAND_ID.integration.saveToQBittorrent,
+          label: t("entry_actions.save_to_qbittorrent"),
+          icon: "i-simple-icons-qbittorrent",
+          category,
+          run: async ({ entryId }) => {
+            const entry = getEntry(entryId)
+            if (!entry) {
+              toast.error("Failed to save to qBittorrent: entry is not available")
+              return
+            }
+            try {
+              tracker.integration({
+                type: "qbittorrent",
+                event: "save",
+              })
+
+              const urls = extractQBittorrentUrls(entry)
+              if (!urls) {
+                toast.error(t("entry_actions.no_bittorrent_urls_found"))
+                return
+              }
+
+              let errorMessage = await ipcServices?.integration.loginToQBittorrent({
+                host: qbittorrentHost,
+                username: qbittorrentUsername,
+                password: qbittorrentPassword,
+              })
+
+              if (errorMessage) {
+                toast.error(`${t("entry_actions.failed_to_login_to_qbittorrent")}: ${errorMessage}`)
+                return
+              }
+
+              errorMessage = await ipcServices?.integration.addMagnet({
+                host: qbittorrentHost,
+                urls,
+              })
+              if (errorMessage) {
+                toast.error(`${t("entry_actions.failed_to_save_to_qbittorrent")}: ${errorMessage}`)
+              } else {
+                toast.success(t("entry_actions.saved_to_qbittorrent"))
+              }
+            } catch (error) {
+              const errorObj = error as Error
+              toast.error(
+                `${t("entry_actions.failed_to_save_to_qbittorrent")}: ${errorObj.message || ""}`,
+              )
+              return
+            }
+          },
+        }),
+  )
+}
+
 export type SaveToEagleCommand = Command<{
   id: typeof COMMAND_ID.integration.saveToEagle
   fn: (payload: { entryId: string }) => void
@@ -740,6 +821,11 @@ export type SaveToZoteroCommand = Command<{
   fn: (payload: { entryId: string }) => void
 }>
 
+export type SaveToQBittorrentCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToQBittorrent
+  fn: (payload: { entryId: string }) => void
+}>
+
 export type IntegrationCommand =
   | SaveToEagleCommand
   | SaveToReadwiseCommand
@@ -749,3 +835,4 @@ export type IntegrationCommand =
   | SaveToReadeckCommand
   | SaveToCuboxCommand
   | SaveToZoteroCommand
+  | SaveToQBittorrentCommand

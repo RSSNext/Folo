@@ -19,5 +19,5 @@ export const getDefaultCategory = (subscription?: SubscriptionModel) => {
   const siteUrl = getFeedById(feedId)?.siteUrl
   if (!siteUrl) return null
   const parsed = parseUrl(siteUrl)
-  return parsed?.domain ? capitalizeFirstLetter(parsed.domain) : null
+  return parsed?.domain ? capitalizeFirstLetter(parsed.domain) : siteUrl
 }

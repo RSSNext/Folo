@@ -65,3 +65,11 @@ export const usePrefetchFeedByUrl = (url: string, options?: GeneralQueryOptions)
     queryFn: () => feedSyncServices.fetchFeedByUrl({ url }),
   })
 }
+
+export const usePrefetchFeedAnalytics = (id: string | string[], options?: GeneralQueryOptions) => {
+  return useQuery({
+    ...options,
+    queryKey: ["feed", "analytics", id],
+    queryFn: () => feedSyncServices.fetchAnalytics(id),
+  })
+}

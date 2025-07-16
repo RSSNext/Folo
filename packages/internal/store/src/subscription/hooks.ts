@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react"
 import { getFeedById } from "../feed/getter"
 import { getInboxList } from "../inbox/getters"
 import { getListById, getListFeedIds } from "../list/getters"
-import { getUnreadById } from "../unread/getters"
+import { getUnreadById, getUnreadByListId } from "../unread/getters"
 import { getSubscriptionByCategory, getSubscriptionById } from "./getter"
 import { folderFeedsByFeedIdSelector } from "./selectors"
 import { subscriptionSyncService, useSubscriptionStore } from "./store"
@@ -359,7 +359,7 @@ export const useSortedListSubscription = ({
     useCallback(() => {
       return ids
         .concat()
-        .filter((id) => !hideAllReadSubscriptions || getUnreadById(id) > 0)
+        .filter((id) => !hideAllReadSubscriptions || getUnreadByListId(id) > 0)
         .sort((a, b) => {
           const leftList = getListById(a)
           const rightList = getListById(b)

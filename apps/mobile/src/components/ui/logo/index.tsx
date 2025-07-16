@@ -7,7 +7,6 @@ import { accentColor } from "@/src/theme/colors"
 export const Logo: React.FC<{ color?: string } & SvgProps> = ({ color = accentColor, ...rest }) => {
   return (
     <Svg viewBox="0 0 24 24" {...rest}>
-      <title>Folo</title>
       <Path
         fill={color}
         d="M5.382 0h13.236A5.37 5.37 0 0 1 24 5.383v13.235A5.37 5.37 0 0 1 18.618 24H5.382A5.37 5.37 0 0 1 0 18.618V5.383A5.37 5.37 0 0 1 5.382.001Z"

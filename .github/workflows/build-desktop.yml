@@ -32,6 +32,7 @@ env:
   VITE_OPENPANEL_CLIENT_ID: ${{ vars.VITE_OPENPANEL_CLIENT_ID }}
   VITE_OPENPANEL_API_URL: ${{ vars.VITE_OPENPANEL_API_URL }}
   VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
@@ -137,14 +138,11 @@ jobs:
       - name: Build - Vite
         working-directory: apps/desktop
         run: pnpm build:electron-vite ${{ env.PROD == 'false' && '--mode staging' || '' }}
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
       - name: Build - Windows and Linux
-        if: runner.os != 'macOS'
+        if: runner.os == 'Linux' || (runner.os == 'Windows' && github.event.inputs.store != 'true')
         working-directory: apps/desktop
         run: pnpm build:electron-forge ${{ env.PROD == 'false' && '--mode=staging' || '' }}
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Build - macOS
         if: runner.os == 'macOS' && github.event.inputs.store != 'true'
@@ -174,12 +172,15 @@ jobs:
         working-directory: apps/desktop
         run: pnpm build:electron-forge:mas
 
+      - name: Build - Microsoft Store
+        if: runner.os == 'Windows' && github.event.inputs.store == 'true'
+        working-directory: apps/desktop
+        run: pnpm build:electron-forge:ms
+
       - name: Build - Renderer
         if: runner.os == 'Linux'
         working-directory: apps/desktop
         run: pnpm build:render
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload file (macos-arm64-dmg)
         uses: actions/upload-artifact@v4

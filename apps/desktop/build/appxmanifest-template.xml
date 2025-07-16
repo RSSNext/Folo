@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+  <Identity Name="{identityName}"
+    ProcessorArchitecture="x64"
+    Publisher="{publisherName}"
+    Version="{packageVersion}" />
+  <Properties>
+    <DisplayName>{packageDisplayName}</DisplayName>
+    <PublisherDisplayName>{publisherDisplayName}</PublisherDisplayName>
+    <Description>No description entered</Description>
+    <Logo>assets\SampleAppx.50x50.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-us" />
+    <Resource Language="zh-cn" />
+    <Resource Language="zh-tw" />
+    <Resource Language="ja" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14316.0" MaxVersionTested="10.0.14316.0" />
+  </Dependencies>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust"/>
+  </Capabilities>
+  <Applications>
+    <Application Id="{packageName}" Executable="{packageExecutable}" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+       BackgroundColor="{packageBackgroundColor}"
+       DisplayName="{packageDisplayName}"
+       Square150x150Logo="assets\SampleAppx.150x150.png"
+       Square44x44Logo="assets\SampleAppx.44x44.png"
+       Description="{packageDescription}">
+        <uap:DefaultTile Wide310x150Logo="assets\SampleAppx.310x150.png" />
+      </uap:VisualElements>
+      <Extensions>{protocol}
+      </Extensions>
+    </Application>
+  </Applications>
+</Package>

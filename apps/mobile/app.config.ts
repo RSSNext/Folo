@@ -13,6 +13,7 @@ const iconPathMap = {
 const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap.production
 
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
+const splashIconPath = resolve(__dirname, "./assets/splash-icon.png")
 
 const isDev = process.env.NODE_ENV === "development"
 
@@ -86,12 +87,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-splash-screen",
         {
-          backgroundColor: "#ffffff",
-          dark: {
-            backgroundColor: "#000000",
-          },
           android: {
-            image: iconPath,
+            image: splashIconPath,
             imageWidth: 200,
           },
         },

@@ -3,6 +3,8 @@ import fsp from "node:fs/promises"
 
 import path from "pathe"
 
+import { store } from "~/lib/store"
+
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"
 
@@ -26,6 +28,22 @@ interface SaveToEagleInput {
   url: string
   mediaUrls: string[]
 }
+
+interface LoginToQBittorrentInput {
+  host: string
+  username: string
+  password: string
+}
+
+interface CheckQBittorrentAuthInput {
+  host: string
+}
+
+interface AddMagnetInput {
+  host: string
+  urls: string[]
+}
+
 export class IntegrationService extends IpcService {
   constructor() {
     super("integration")
@@ -97,5 +115,84 @@ ${content}
     } catch {
       return null
     }
+  }
+
+  @IpcMethod()
+  async loginToQBittorrent(context: IpcContext, input: LoginToQBittorrentInput) {
+    const { host, username, password } = input
+
+    const existingSID = store.get("qbittorrentSID")
+    if (existingSID) {
+      const errorMessage = await this.checkQBittorrentAuth(context, { host })
+      if (!errorMessage) {
+        return
+      }
+    }
+
+    const res = await fetch(`${host}/api/v2/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+    })
+
+    if (!res.ok) {
+      return `Failed to log in to qBittorrent: ${await res.text()}`
+    }
+
+    const cookies = res.headers.get("set-cookie") || ""
+    const match = cookies.match(/SID=([^;]+)/)
+    if (!match || !match[1]) {
+      return "Failed to get SID from qBittorrent"
+    }
+
+    store.set("qbittorrentSID", match[1])
+    return
+  }
+
+  async checkQBittorrentAuth(context: IpcContext, input: CheckQBittorrentAuthInput) {
+    const { host } = input
+    const sid = store.get("qbittorrentSID")
+    if (!sid) {
+      return "Not logged in to qBittorrent"
+    }
+    const res = await fetch(`${host}/api/v2/auth/check`, {
+      method: "GET",
+      headers: {
+        Cookie: `SID=${sid}`,
+      },
+      credentials: "omit",
+    })
+
+    if (!res.ok) {
+      return await res.text()
+    }
+  }
+
+  @IpcMethod()
+  async addMagnet(context: IpcContext, input: AddMagnetInput) {
+    const { host, urls } = input
+    const sid = store.get("qbittorrentSID")
+    if (!sid) {
+      return "Not logged in to qBittorrent"
+    }
+    const res = await fetch(`${host}/api/v2/torrents/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Cookie: `SID=${sid}`,
+      },
+      credentials: "omit",
+      body: `urls=${encodeURIComponent(urls.join("\n"))}`,
+    })
+
+    if (!res.ok) {
+      const text = await res.text()
+      return `Failed to add magnet links: ${text}`
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`Added magnet links to qBittorrent: ${urls.join(", ")}`)
   }
 }

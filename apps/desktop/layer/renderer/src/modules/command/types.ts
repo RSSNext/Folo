@@ -45,7 +45,7 @@ export interface CommandOptions<
     | (() => string)
     | { title: string; description?: string }
     | (() => { title: string; description?: string })
-  icon?: ReactNode | ((props?: { isActive?: boolean }) => ReactNode)
+  icon?: string | ReactNode | ((props?: { isActive?: boolean }) => ReactNode)
   category?: CommandCategory
   run: T["fn"]
 

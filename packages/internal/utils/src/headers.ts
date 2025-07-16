@@ -1,4 +1,4 @@
-import { DEV, WEB_BUILD } from "@follow/shared/constants"
+import { DEV, MICROSOFT_STORE_BUILD, WEB_BUILD } from "@follow/shared/constants"
 
 import { imageRefererMatches } from "./img-proxy"
 
@@ -81,7 +81,7 @@ export const createDesktopAPIHeaders = ({ version }: { version: string }) => {
         break
       }
       case "win32": {
-        if (process.windowsStore) {
+        if (MICROSOFT_STORE_BUILD) {
           platform = DesktopPlatform.DesktopWindowsMS
         } else {
           platform = DesktopPlatform.DesktopWindowsEXE

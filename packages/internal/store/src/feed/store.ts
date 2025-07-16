@@ -1,5 +1,5 @@
 import type { FeedSchema } from "@follow/database/schemas/types"
-import { FeedService } from "@follow/database/services/feed"
+import { FEED_EXTRA_DATA_KEYS, FeedService } from "@follow/database/services/feed"
 import { isBizId } from "@follow/utils"
 
 import { apiClient } from "../context"
@@ -32,15 +32,23 @@ class FeedActions implements Hydratable, Resetable {
   upsertManyInSession(feeds: FeedSchema[]) {
     immerSet((draft) => {
       for (const feed of feeds) {
+        const data = Object.fromEntries(
+          FEED_EXTRA_DATA_KEYS.filter((key) => (draft.feeds[feed.id] || {})[key]).map((key) => [
+            key,
+            draft.feeds[feed.id]?.[key],
+          ]),
+        )
+
         draft.feeds[feed.id] = {
           ...feed,
+          ...data,
           type: "feed",
         }
       }
     })
   }
 
-  upsertMany(feeds: FeedSchema[]) {
+  async upsertMany(feeds: FeedSchema[]) {
     if (feeds.length === 0) return
 
     const tx = createTransaction()
@@ -52,15 +60,26 @@ class FeedActions implements Hydratable, Resetable {
       await FeedService.upsertMany(feeds.filter((feed) => !("nonce" in feed)))
     })
 
-    tx.run()
+    await tx.run()
   }
 
-  patch(feedId: string, patch: Partial<FeedSchema>) {
+  patchInSession(feedId: string, patch: Partial<FeedSchema>) {
     immerSet((state) => {
       const feed = state.feeds[feedId]
       if (!feed) return
       Object.assign(feed, patch)
     })
+  }
+
+  async patch(feedId: string, patch: Partial<FeedSchema>) {
+    const tx = createTransaction()
+    tx.store(() => {
+      this.patchInSession(feedId, patch)
+    })
+    tx.persist(() => {
+      return FeedService.patch(feedId, patch)
+    })
+    await tx.run()
   }
 
   async reset() {
@@ -146,7 +165,7 @@ class FeedSyncServices {
 
     const tx = createTransaction()
     tx.store(() => {
-      feedActions.patch(feedId, {
+      feedActions.patchInSession(feedId, {
         ownerUserId: whoami()?.id || null,
       })
     })
@@ -166,12 +185,36 @@ class FeedSyncServices {
     })
 
     tx.rollback(() => {
-      feedActions.patch(feedId, {
+      feedActions.patchInSession(feedId, {
         ownerUserId: curFeed.ownerUserId,
       })
     })
 
     await tx.run()
+  }
+
+  async fetchAnalytics(feedId: string | string[]) {
+    const feedIds = Array.isArray(feedId) ? feedId : [feedId]
+    const res = await apiClient().feeds.analytics.$post({
+      json: {
+        id: feedIds,
+      },
+    })
+
+    const { analytics } = res.data
+
+    for (const id of feedIds) {
+      const feedAnalytics = analytics[id]
+      if (feedAnalytics) {
+        await feedActions.patch(id, {
+          subscriptionCount: feedAnalytics.subscriptionCount,
+          updatesPerWeek: feedAnalytics.updatesPerWeek,
+          latestEntryPublishedAt: feedAnalytics.latestEntryPublishedAt,
+        })
+      }
+    }
+
+    return analytics
   }
 }
 export const feedSyncServices = new FeedSyncServices()

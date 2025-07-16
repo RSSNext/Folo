@@ -31,6 +31,8 @@ import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 
+import { useRouteParams } from "./useRouteParams"
+
 export const enableEntryReadability = async ({ id, url }: { id: string; url: string }) => {
   const status = getReadabilityStatus()[id]
   const isTurnOn = status !== ReadabilityStatus.INITIAL && !!status
@@ -126,6 +128,7 @@ const entrySelector = (state: EntryModel) => {
   const { summary, translation, readability } = state.settings || {}
 
   const media = state.media || []
+  const attachments = state.attachments || []
   const images = media.filter((a) => a.type === "photo")
   const imagesLength = images.length
 
@@ -141,6 +144,7 @@ const entrySelector = (state: EntryModel) => {
     hasContent,
     doesContentContainsHTMLTags,
     imagesLength,
+    hasBitTorrent: attachments.some((a) => a.mime_type === "application/x-bittorrent"),
   }
 }
 export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
@@ -165,6 +169,7 @@ export const useEntryActions = ({
   compact?: boolean
 }) => {
   const entry = useEntry(entryId, entrySelector)
+  const { isCollection } = useRouteParams()
   const isInCollection = useIsEntryStarred(entryId)
   const isEntryInReadability = useEntryIsInReadability(entryId)
 
@@ -234,6 +239,12 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.integration.saveToZotero,
         onClick: runCmdFn(COMMAND_ID.integration.saveToZotero, [{ entryId }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToQBittorrent,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToQBittorrent, [{ entryId }]),
+        hide: !IN_ELECTRON || !entry.hasBitTorrent,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -326,13 +337,13 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         active: !!entry.read,
         shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
@@ -340,7 +351,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
@@ -392,13 +403,7 @@ export const useEntryActions = ({
     hasEntry,
     runCmdFn,
     entryId,
-    feed?.id,
-    feed?.ownerUserId,
-    feed?.siteUrl,
-    isInbox,
-    shortcuts,
-    view,
-    isInCollection,
+    entry?.hasBitTorrent,
     entry?.url,
     entry?.imagesLength,
     entry?.publishedAt,
@@ -406,6 +411,14 @@ export const useEntryActions = ({
     entry?.hasContent,
     entry?.readability,
     entry?.doesContentContainsHTMLTags,
+    feed?.id,
+    feed?.ownerUserId,
+    feed?.siteUrl,
+    isInbox,
+    shortcuts,
+    view,
+    isCollection,
+    isInCollection,
     isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
