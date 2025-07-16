@@ -10,6 +10,7 @@ import { useVideoPlayer, VideoView } from "expo-video"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
 import type { ImageErrorEventData } from "react-native"
 import { Text, View } from "react-native"
+import { useIsPlaying } from "react-native-track-player"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
@@ -22,7 +23,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
-import { getAttachmentState, player } from "@/src/lib/player"
+import { getAttachmentState, player, usePlayingUrl } from "@/src/lib/player"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -165,7 +166,7 @@ export const EntryNormalItem = memo(
 EntryNormalItem.displayName = "EntryNormalItem"
 
 const ThumbnailImage = ({
-  playingAudioUrl,
+  playingAudioUrl: _,
   entryId,
 }: {
   playingAudioUrl: string | null
@@ -188,6 +189,8 @@ const ThumbnailImage = ({
   const blurhash = mediaModel?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
+  const playingAudioUrl = usePlayingUrl()
+  const playState = useIsPlaying()
   const audioState = getAttachmentState(playingAudioUrl ?? undefined, audio)
   const isPlaying = audioState === "playing"
   const isLoading = audioState === "loading"
@@ -216,13 +219,25 @@ const ThumbnailImage = ({
       player.pause()
       return
     }
+    console.log("Playing audio", playState, audio.url, playingAudioUrl)
     player.play({
       url: audio.url,
       title: entry?.title,
       artist: feed?.title,
       artwork: image,
     })
-  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
+  }, [
+    audio,
+    entry?.title,
+    feed?.title,
+    image,
+    isLoading,
+    isPlaying,
+    playState,
+    playingAudioUrl,
+    video,
+    videoPlayer,
+  ])
 
   const [imageError, setImageError] = useState(audio && !image)
   const handleImageError = useCallback(() => {
@@ -275,7 +290,10 @@ const ThumbnailImage = ({
       {imageError && <FeedIcon feed={feed} size={96} />}
 
       {(video || audio) && (
-        <PlayerAction isPlaying={isPlaying} isLoading={isLoading} onPress={handlePressPlay} />
+        <PlayerAction
+          state={isPlaying ? "pause" : isLoading ? "loading" : "play"}
+          onPress={handlePressPlay}
+        />
       )}
     </View>
   )

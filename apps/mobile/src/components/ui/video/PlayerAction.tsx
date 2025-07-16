@@ -10,8 +10,7 @@ import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
 import { NativePressable } from "../pressable/NativePressable"
 
 interface PlayerActionProps {
-  isPlaying: boolean
-  isLoading?: boolean
+  state: "play" | "pause" | "loading"
   onPress: () => void
   className?: string
   iconSize?: number
@@ -19,8 +18,7 @@ interface PlayerActionProps {
 }
 
 export function PlayerAction({
-  isPlaying,
-  isLoading = false,
+  state,
   onPress,
   className = "",
   iconSize = 24,
@@ -41,13 +39,9 @@ export function PlayerAction({
           intensity={30}
           experimentalBlurMethod="none"
         />
-        {isPlaying ? (
-          <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        ) : isLoading ? (
-          <PlatformActivityIndicator />
-        ) : (
-          <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        )}
+        {state === "play" && <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />}
+        {state === "pause" && <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />}
+        {state === "loading" && <PlatformActivityIndicator />}
       </View>
     </NativePressable>
   )
