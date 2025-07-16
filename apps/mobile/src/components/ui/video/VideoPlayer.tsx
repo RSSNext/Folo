@@ -73,7 +73,7 @@ export function VideoPlayer({
       {status !== "readyToPlay" && <View className="absolute inset-0">{placeholder}</View>}
       <PlayerAction
         iconSize={32}
-        state={status === "readyToPlay" ? "play" : "loading"}
+        mediaState={status === "readyToPlay" ? "paused" : "loading"}
         onPress={handlePressPlay}
       />
     </View>

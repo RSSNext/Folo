@@ -22,7 +22,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
-import { player, usePlayButtonState } from "@/src/lib/player"
+import { player, useAudioPlayState } from "@/src/lib/player"
 import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
@@ -181,9 +181,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   const blurhash = mediaModel?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
-  const audioState = usePlayButtonState(audio?.url)
-  const isPlaying = audioState === "pause"
-  const isLoading = audioState === "loading"
+  const audioState = useAudioPlayState(audio?.url)
 
   const video = mediaModel?.type === "video" ? mediaModel : null
   const videoViewRef = useRef<null | VideoView>(null)
@@ -205,7 +203,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       return
     }
     if (!audio) return
-    if (isLoading || isPlaying) {
+    if (audioState !== "paused") {
       player.pause()
       return
     }
@@ -220,7 +218,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       console.error("Error playing audio:", error)
       toast.error("Failed to play audio")
     }
-  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
+  }, [audio, audioState, entry?.title, feed?.title, image, video, videoPlayer])
 
   const [imageError, setImageError] = useState(audio && !image)
   const handleImageError = useCallback(() => {
@@ -272,12 +270,7 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
       {/* Show feed icon if no image but audio is present */}
       {imageError && <FeedIcon feed={feed} size={96} />}
 
-      {(video || audio) && (
-        <PlayerAction
-          state={isPlaying ? "pause" : isLoading ? "loading" : "play"}
-          onPress={handlePressPlay}
-        />
-      )}
+      {(video || audio) && <PlayerAction mediaState={audioState} onPress={handlePressPlay} />}
     </View>
   )
 }

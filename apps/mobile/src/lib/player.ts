@@ -1,53 +1,30 @@
-import type { AttachmentsModel } from "@follow/database/schemas/types"
 import { atom, useAtom } from "jotai"
 import { useCallback, useEffect } from "react"
-import TrackPlayer, {
-  State,
-  useActiveTrack,
-  useIsPlaying,
-  usePlaybackState,
-} from "react-native-track-player"
+import TrackPlayer, { useActiveTrack, useIsPlaying } from "react-native-track-player"
 
 import { PlayerRegistered } from "../initialize/player"
 import { toast } from "./toast"
 
-const LOADING_SUFFIX = "_loading"
-
-export function usePlayingUrl() {
-  const activeTrack = useActiveTrack()
-  const playerState = usePlaybackState()
-  const isPlaying = !!activeTrack?.url && playerState.state === State.Playing
-  const isLoading = playerState.state === State.Buffering || playerState.state === State.Loading
-  return isPlaying ? activeTrack?.url : isLoading ? `${activeTrack?.url}${LOADING_SUFFIX}` : null
-}
-
-export function getAttachmentState(playingUrl?: string, attachment?: AttachmentsModel) {
-  if (!playingUrl || !attachment || !attachment.mime_type?.startsWith("audio/")) {
-    return null
-  }
-  const isPlaying = attachment.url === playingUrl
-  const isLoading = playingUrl === `${attachment.url}${LOADING_SUFFIX}`
-  return isPlaying ? "playing" : isLoading ? "loading" : null
-}
+export type SimpleMediaState = "playing" | "paused" | "loading"
 
 /**
  * Learn more https://rntp.dev/docs/guides/play-button
  */
-export function usePlayButtonState(audioUrl?: string): "play" | "pause" | "loading" {
+export function useAudioPlayState(audioUrl?: string): SimpleMediaState {
   const playState = useIsPlaying()
   const activeTrack = useActiveTrack()
   const playingUrl = activeTrack?.url
 
   const isCurrentTrack = !audioUrl || playingUrl === audioUrl
   if (!playingUrl || !isCurrentTrack) {
-    // If no track is playing or the current track is not the one we are checking, return 'play'
-    return "play"
+    // By default the audio should be in "paused" state
+    return "paused"
   }
 
   if (playState.bufferingDuringPlay === true) {
     return "loading"
   }
-  return playState.playing ? "pause" : "play"
+  return playState.playing ? "playing" : "paused"
 }
 
 class Player {
