@@ -1,6 +1,6 @@
 import { db } from "@follow/database/db"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, eq, sql } from "drizzle-orm"
+import { asc, eq, inArray, sql } from "drizzle-orm"
 
 import type { BizUIMessage } from "../__internal__/types"
 
@@ -41,23 +41,24 @@ class AIPersistServiceStatic {
   }
 
   async getChatSessions(limit = 20) {
-    const chats = await db
-      .select({
-        roomId: aiChatTable.roomId,
-        title: aiChatTable.title,
-        createdAt: aiChatTable.createdAt,
-      })
-      .from(aiChatTable)
-      .orderBy(sql`${aiChatTable.createdAt} DESC`)
-      .limit(limit)
+    const chats = await db.query.aiChatTable.findMany({
+      columns: {
+        roomId: true,
+        title: true,
+        createdAt: true,
+      },
+      orderBy: (t, { desc }) => desc(t.createdAt),
+      limit,
+    })
 
     const result = await Promise.all(
       chats.map(async (chat) => {
-        const messageCount = await db
-          .select({ count: sql<number>`count(*)`.as("count") })
-          .from(aiChatMessagesTable)
-          .where(eq(aiChatMessagesTable.roomId, chat.roomId))
-          .then((res) => res[0]?.count || 0)
+        // Use raw SQL count query
+        const messageCountResult = await db.values<[number]>(
+          sql`SELECT COUNT(*) FROM ${aiChatMessagesTable} WHERE ${aiChatMessagesTable.roomId} = ${chat.roomId}`,
+        )
+
+        const messageCount = messageCountResult[0]?.[0] || 0
 
         return {
           roomId: chat.roomId,
@@ -82,21 +83,21 @@ class AIPersistServiceStatic {
   }
 
   async cleanupEmptySessions() {
-    // Find sessions with no messages
-    const emptySessions = await db
-      .select({ roomId: aiChatTable.roomId })
-      .from(aiChatTable)
-      .leftJoin(aiChatMessagesTable, eq(aiChatTable.roomId, aiChatMessagesTable.roomId))
-      .groupBy(aiChatTable.roomId)
-      .having(sql`count(${aiChatMessagesTable.id}) = 0`)
+    // Use raw SQL to find empty sessions
+    const emptySessions = await db.values<[string]>(
+      sql`
+        SELECT ${aiChatTable.roomId}
+        FROM ${aiChatTable}
+        LEFT JOIN ${aiChatMessagesTable} ON ${aiChatTable.roomId} = ${aiChatMessagesTable.roomId}
+        GROUP BY ${aiChatTable.roomId}
+        HAVING COUNT(${aiChatMessagesTable.id}) = 0
+      `,
+    )
 
     // Delete empty sessions
     if (emptySessions.length > 0) {
-      await db
-        .delete(aiChatTable)
-        .where(
-          sql`${aiChatTable.roomId} IN (${emptySessions.map((s) => `'${s.roomId}'`).join(",")})`,
-        )
+      const roomIdsToDelete = emptySessions.map((row) => row[0])
+      await db.delete(aiChatTable).where(inArray(aiChatTable.roomId, roomIdsToDelete))
     }
   }
 }

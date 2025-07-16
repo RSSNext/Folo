@@ -5,6 +5,7 @@ import AST from "unplugin-ast/vite"
 
 // Custom transformer for tw function that compresses template strings
 const TwTransformer: Transformer<any> = {
+  // @ts-ignore
   onNode: (node) => isTaggedFunctionCallOf(node, ["tw"]),
   transform(node) {
     if (node.type === "TaggedTemplateExpression") {
