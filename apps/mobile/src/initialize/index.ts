@@ -35,7 +35,12 @@ export const initializeApp = async () => {
   dataHydratedTime = Date.now() - dataHydratedTime
   await apm("hydrateQueryClient", hydrateQueryClient)
   await apm("initializeAppCheck", initializeAppCheck)
-  await apm("initializePlayer", initializePlayer)
+  requestIdleCallback(
+    () => {
+      apm("initializePlayer", initializePlayer)
+    },
+    { timeout: 5000 }, // Max delay of 5 seconds
+  )
 
   apm("setting sync", () => {
     settingSyncQueue.init()

@@ -3,6 +3,9 @@ import { atom, useAtom } from "jotai"
 import { useCallback, useEffect } from "react"
 import TrackPlayer, { State, useActiveTrack, usePlaybackState } from "react-native-track-player"
 
+import { PlayerRegistered } from "../initialize/player"
+import { toast } from "./toast"
+
 const LOADING_SUFFIX = "_loading"
 
 export function usePlayingUrl() {
@@ -29,6 +32,9 @@ class Player {
     artist?: string | null
     artwork?: string | null
   }) {
+    if (!PlayerRegistered) {
+      toast.error("Player is not registered. Please wait for the app to initialize.")
+    }
     if (newTrack) {
       const activeTrack = await TrackPlayer.getActiveTrack()
       if (activeTrack?.url !== newTrack.url) {
