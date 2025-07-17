@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType, views } from "@follow/constants"
+import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
@@ -28,7 +28,7 @@ import {
 } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
-import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -191,8 +191,7 @@ export const EntryItemWrapper: FC<
     <div data-entry-id={entry?.id} style={style}>
       <div
         className={cn(
-          "hover:bg-theme-item-hover cursor-button relative block duration-200",
-          views[view as FeedViewType]?.wideMode ? "rounded-md" : "px-2",
+          "hover:bg-theme-item-hover cursor-button relative block rounded-md duration-200",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
         )}
@@ -215,6 +214,7 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
     entryId,
     view: FeedViewType.SocialMedia,
   })
+  const { view } = useRouteParams()
 
   if (entryActions.length === 0) return null
 
@@ -228,8 +228,8 @@ const ActionBar = ({ entryId }: { entryId: string }) => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center gap-1">
-        <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
-        <MoreActions entryId={entryId} view={FeedViewType.SocialMedia} />
+        <EntryHeaderActions entryId={entryId} view={view} compact />
+        <MoreActions entryId={entryId} view={view} compact />
       </div>
     </m.div>
   )

@@ -83,10 +83,10 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   return (
     <div
       className={cn(
-        "relative flex py-4 first:mt-6",
+        "relative flex py-4",
         "group",
         !asRead &&
-          "before:bg-accent before:absolute before:left-1 before:top-8 before:block before:size-2 before:rounded-full md:before:-left-2 lg:before:left-2",
+          "before:bg-accent before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full",
       )}
     >
       <FeedIcon fallback feed={feed} entry={entry.iconEntry} size={32} className="mt-1" />

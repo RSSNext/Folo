@@ -16,7 +16,15 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { hasCommand, useCommand } from "~/modules/command/hooks/use-command"
 import type { FollowCommandId } from "~/modules/command/types"
 
-export const MoreActions = ({ entryId, view }: { entryId: string; view: FeedViewType }) => {
+export const MoreActions = ({
+  entryId,
+  view,
+  compact,
+}: {
+  entryId: string
+  view: FeedViewType
+  compact?: boolean
+}) => {
   const { moreAction } = useSortedEntryActions({ entryId, view })
 
   const actionConfigs = useMemo(
@@ -47,7 +55,10 @@ export const MoreActions = ({ entryId, view }: { entryId: string; view: FeedView
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ActionButton icon={<i className="i-mgc-more-1-cute-re" />} />
+        <ActionButton
+          icon={<i className="i-mgc-more-1-cute-re" />}
+          size={compact ? "sm" : "base"}
+        />
       </DropdownMenuTrigger>
       <RootPortal>
         <DropdownMenuContent>

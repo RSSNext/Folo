@@ -47,7 +47,7 @@ const actionButtonStyleVariant = {
   size: {
     lg: tw`text-xl size-10`,
     base: tw`text-xl size-8`,
-    sm: tw`text-sm size-6`,
+    sm: tw`text-lg size-7`,
   },
 }
 

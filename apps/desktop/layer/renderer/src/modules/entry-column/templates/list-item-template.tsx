@@ -145,15 +145,15 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex pl-3 pr-2",
+        "cursor-menu group relative mb-4 flex py-4",
         !isRead &&
-          "before:bg-accent before:absolute before:-left-0.5 before:top-[1.4375rem] before:block before:size-2 before:rounded-full",
+          "before:bg-accent before:absolute before:-left-3 before:top-6 before:block before:size-2 before:rounded-full",
         settingWideMode ? "py-3" : "py-4",
       )}
     >
-      <FeedIcon feed={related} fallback entry={entry?.iconEntry} />
+      <FeedIcon feed={related} fallback entry={entry?.iconEntry} size={24} />
       <div
-        className={cn("-mt-0.5 flex-1 text-sm leading-tight", lineClamp.global)}
+        className={cn("-mt-0.5 ml-1 flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
           maxWidth: `calc(100% - ${savedWidth}px)`,
         }}
