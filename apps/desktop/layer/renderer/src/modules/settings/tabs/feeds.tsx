@@ -177,7 +177,7 @@ const SubscriptionFeedsSection = () => {
               className="hover:text-text ml-4 text-left transition-colors"
               onClick={() => handleSort("view")}
             >
-              View
+              {t("feeds.tableHeaders.view")}
               {sortField === "view" && (
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
@@ -187,7 +187,7 @@ const SubscriptionFeedsSection = () => {
               onClick={() => handleSort("date")}
               type="button"
             >
-              Subscribed Date
+              {t("feeds.tableHeaders.date")}
               {sortField === "date" && (
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
@@ -197,7 +197,7 @@ const SubscriptionFeedsSection = () => {
               onClick={() => handleSort("subscriptionCount")}
               type="button"
             >
-              Followers
+              {t("feeds.tableHeaders.followers")}
               {sortField === "subscriptionCount" && (
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
@@ -207,7 +207,7 @@ const SubscriptionFeedsSection = () => {
               onClick={() => handleSort("updatesPerWeek")}
               type="button"
             >
-              Updates
+              {t("feeds.tableHeaders.updatesPerWeek")}
               {sortField === "updatesPerWeek" && (
                 <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
               )}
@@ -235,13 +235,13 @@ const SubscriptionFeedsSection = () => {
                   className="sticky bottom-16 mt-4 flex justify-center"
                 >
                   <div className="text-text-secondary bg-material-opaque rounded-md px-4 py-2 text-sm">
-                    {selectedFeeds.size} item(s) selected
+                    {t("feeds.tableSelected.item", { count: selectedFeeds.size })}
                     <button
                       className="text-accent cursor-button ml-3 text-xs"
                       type="button"
                       onClick={() => setSelectedFeeds(new Set())}
                     >
-                      Clear
+                      {t("feeds.tableSelected.clear")}
                     </button>
                   </div>
                 </m.div>
@@ -256,7 +256,7 @@ const SubscriptionFeedsSection = () => {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <MotionButtonBase className="text-accent text-xs" type="button">
-                          Move to View
+                          {t("feeds.tableSelected.moveToView.action")}
                         </MotionButtonBase>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent side="top">
@@ -269,7 +269,7 @@ const SubscriptionFeedsSection = () => {
                       type="button"
                       onClick={handleBatchUnsubscribe}
                     >
-                      Unsubscribe
+                      {t("feeds.tableSelected.unsubscribe")}
                     </MotionButtonBase>
                   </div>
                 </m.div>
@@ -369,6 +369,7 @@ const SortedFeedsList: FC<{
 }
 
 const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => {
+  const { t } = useTranslation("settings")
   const { t: tCommon } = useTranslation("common")
   const { mutate: batchUpdateSubscription } = useBatchUpdateSubscription()
   const { ask } = useDialog()
@@ -379,8 +380,8 @@ const ViewSelector: FC<{ selectedFeeds: Set<string> }> = ({ selectedFeeds }) => 
         icon={view.icon}
         onClick={() => {
           ask({
-            title: "Confirm",
-            message: `Are you sure you want to move these feeds to ${tCommon(view.name)}?`,
+            title: t("feeds.tableSelected.moveToView.confirmTitle"),
+            message: t("feeds.tableSelected.moveToView.confirm", { view: tCommon(view.name) }),
             onConfirm: () => {
               batchUpdateSubscription({
                 feedIdList: Array.from(selectedFeeds),
