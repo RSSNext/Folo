@@ -68,7 +68,7 @@ const EntryLayoutContentLegacy = () => {
     </AppLayoutGridContainerProvider>
   )
 }
-const EntryLayoutContentWithAI = () => {
+export const EntryLayoutContentWithAI = () => {
   const { entryId, view } = useRouteParams()
   const navigate = useNavigateEntry()
 
