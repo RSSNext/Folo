@@ -50,7 +50,7 @@ export const EntryListHeader: FC<{
 
   const isInCollectionList = feedId === FEED_COLLECTION_LIST
 
-  const isButtonHided = isInCollectionList || !headerTitle
+  const showButtons = isInCollectionList || !headerTitle
 
   const titleInfo = !!headerTitle && (
     <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
@@ -85,7 +85,7 @@ export const EntryListHeader: FC<{
           <div
             className={cn(
               "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
-              (isInCollectionList || !headerTitle) && "pointer-events-none opacity-0",
+              showButtons && "pointer-events-none opacity-0",
 
               "translate-x-[6px]",
             )}
@@ -100,13 +100,13 @@ export const EntryListHeader: FC<{
 
             <AppendTaildingDivider>
               {!views[view]!.wideMode && (
-                <WideModeButton className={isButtonHided ? "pointer-events-none" : void 0} />
+                <WideModeButton className={showButtons ? "pointer-events-none" : void 0} />
               )}
               {view === FeedViewType.SocialMedia && (
-                <DailyReportButton className={isButtonHided ? "pointer-events-none" : void 0} />
+                <DailyReportButton className={showButtons ? "pointer-events-none" : void 0} />
               )}
               {view === FeedViewType.Pictures && (
-                <SwitchToMasonryButton className={isButtonHided ? "pointer-events-none" : void 0} />
+                <SwitchToMasonryButton className={showButtons ? "pointer-events-none" : void 0} />
               )}
             </AppendTaildingDivider>
 
@@ -119,7 +119,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refreshFeed()
                   }}
-                  className={isButtonHided ? "pointer-events-none" : void 0}
+                  className={showButtons ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon isRefreshing={isPending} />
                 </ActionButton>
@@ -133,7 +133,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refetch()
                   }}
-                  className={isButtonHided ? "pointer-events-none" : void 0}
+                  className={showButtons ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon
                     className={cn(hasUpdate && "text-accent")}
@@ -149,7 +149,7 @@ export const EntryListHeader: FC<{
               }
               shortcut={commandShortcuts[COMMAND_ID.timeline.unreadOnly]}
               onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
-              className={isButtonHided ? "pointer-events-none" : void 0}
+              className={showButtons ? "pointer-events-none" : void 0}
             >
               {unreadOnly ? (
                 <i className="i-mgc-round-cute-fi" />
@@ -157,10 +157,7 @@ export const EntryListHeader: FC<{
                 <i className="i-mgc-round-cute-re" />
               )}
             </ActionButton>
-            <MarkAllReadButton
-              shortcut
-              className={isButtonHided ? "pointer-events-none" : void 0}
-            />
+            <MarkAllReadButton shortcut className={showButtons ? "pointer-events-none" : void 0} />
           </div>
         )}
       </div>
