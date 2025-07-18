@@ -1,4 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
+import { FeedViewType } from "@follow/constants"
 import { useIsListSubscription } from "@follow/store/subscription/hooks"
 import { stopPropagation } from "@follow/utils/dom"
 import { cn } from "@follow/utils/utils"
@@ -24,6 +25,7 @@ interface DateItemInnerProps {
 }
 
 type DateItemProps = Pick<DateItemInnerProps, "isSticky"> & {
+  view: FeedViewType
   date: string
   className?: string
 }
@@ -38,9 +40,25 @@ const useParseDate = (date: string) =>
   }, [date])
 
 const dateItemclassName = tw`relative flex items-center text-sm lg:text-base gap-1 px-4 font-bold text-text h-7`
-export const DateItem = memo(({ date, isSticky }: DateItemProps) => {
-  return <SocialMediaDateItem date={date} className={dateItemclassName} isSticky={isSticky} />
+export const DateItem = memo(({ date, view, isSticky }: DateItemProps) => {
+  if (view === FeedViewType.SocialMedia) {
+    return <SocialMediaDateItem date={date} className={dateItemclassName} isSticky={isSticky} />
+  }
+  return <UniversalDateItem date={date} className={dateItemclassName} isSticky={isSticky} />
 })
+const UniversalDateItem = ({ date, className, isSticky }: Omit<DateItemProps, "view">) => {
+  const { startOfDay, endOfDay, dateObj } = useParseDate(date)
+
+  return (
+    <DateItemInner
+      className={className}
+      date={dateObj}
+      startTime={startOfDay}
+      endTime={endOfDay}
+      isSticky={isSticky}
+    />
+  )
+}
 
 const DateItemInner: FC<DateItemInnerProps> = ({
   date,

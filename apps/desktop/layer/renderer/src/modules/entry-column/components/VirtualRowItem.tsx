@@ -31,13 +31,13 @@ const EntryHeadDateItem: FC<{
   })
 
   const routeParams = useRouteParams()
-  const { feedId } = routeParams
+  const { feedId, view } = routeParams
   const isList = useIsListSubscription(feedId)
 
   if (!entry) return null
   const date = new Date(isList ? entry.insertedAt : entry.publishedAt).toDateString()
 
-  return <DateItem isSticky={isSticky} date={date} />
+  return <DateItem isSticky={isSticky} date={date} view={view} />
 }
 
 export const VirtualRowItem: FC<VirtualRowItemProps> = memo(

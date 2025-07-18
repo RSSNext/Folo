@@ -21,7 +21,6 @@ import {
   setReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
-import { useServerConfigs } from "~/atoms/server-configs"
 import { useAIChatPinned } from "~/atoms/settings/ai"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
@@ -31,6 +30,7 @@ import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
 
+import { useFeature } from "./useFeature"
 import { useRouteParams } from "./useRouteParams"
 
 export const enableEntryReadability = async ({ id, url }: { id: string; url: string }) => {
@@ -189,7 +189,7 @@ export const useEntryActions = ({
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
   const isShowAIChatPinned = useAIChatPinned()
-  const aiEnabled = useServerConfigs()?.AI_CHAT_ENABLED
+  const aiEnabled = useFeature("ai")
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
 

@@ -145,9 +145,9 @@ export function ListItem({
   return (
     <div
       className={cn(
-        "cursor-menu group relative flex pl-3 pr-2",
+        "cursor-menu group relative flex",
         !isRead &&
-          "before:bg-accent before:absolute before:-left-0.5 before:top-[1.4375rem] before:block before:size-2 before:rounded-full",
+          "before:bg-accent before:absolute before:-left-3 before:top-[1.4375rem] before:block before:size-2 before:rounded-full",
         settingWideMode ? "py-3" : "py-4",
       )}
     >

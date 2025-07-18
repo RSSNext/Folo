@@ -3,7 +3,7 @@ import type { FC } from "react"
 
 import { useServerConfigs } from "~/atoms/server-configs"
 
-const featureConfigMap: Record<string, keyof ServerConfigs> = {
+export const featureConfigMap: Record<string, keyof ServerConfigs> = {
   ai: "AI_CHAT_ENABLED",
 }
 

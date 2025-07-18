@@ -1,7 +1,7 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
-import { FeedViewType } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { EventBus } from "@follow/utils/event-bus"
@@ -28,6 +28,7 @@ import {
   useEntryActions,
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -205,12 +206,16 @@ export const EntryItemWrapper: FC<
     },
   })
 
+  const aiEnabled = useFeature("ai")
+  const isWide = views[view as FeedViewType]?.wideMode || aiEnabled
+
   return (
     <div data-entry-id={entry?.id} style={style}>
       <NavLink
         to={navigationPath}
         className={cn(
-          "hover:bg-theme-item-hover cursor-button relative block rounded-md duration-200",
+          "hover:bg-theme-item-hover cursor-button relative block duration-200",
+          isWide ? "rounded-md" : "",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
         )}
@@ -222,7 +227,7 @@ export const EntryItemWrapper: FC<
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
-        <AnimatePresence>{showAction && <ActionBar entryId={entryId} />}</AnimatePresence>
+        <AnimatePresence>{showAction && isWide && <ActionBar entryId={entryId} />}</AnimatePresence>
       </NavLink>
     </div>
   )

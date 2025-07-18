@@ -9,10 +9,10 @@ import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { useAIChatPinned } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useWrappedElement, useWrappedElementSize } from "~/providers/wrapped-element-provider"
 
 const useReadPercent = () => {
@@ -49,7 +49,7 @@ const useReadPercent = () => {
 const BackTopIndicator: Component = memo(({ className }) => {
   const [readPercent] = useReadPercent()
   const scrollElement = useScrollViewElement()
-  const aiEnabled = useServerConfigs()?.AI_CHAT_ENABLED
+  const aiEnabled = useFeature("ai")
 
   const isAiPanelOpen = useAIChatPinned()
 
