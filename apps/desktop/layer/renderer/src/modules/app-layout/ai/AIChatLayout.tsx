@@ -5,12 +5,13 @@ import { AIChatRoot } from "~/modules/ai/chat/components/AIChatRoot"
 import { ChatHeader } from "./components/ChatHeader"
 import { ChatInterface } from "./components/ChatInterface"
 
-export const AIChatLayout = () => {
+export const AIChatLayout = ({ style }: { style?: React.CSSProperties }) => {
   return (
     <AIChatRoot wrapFocusable={false}>
       <Focusable
         scope={HotkeyScope.AIChat}
-        className="bg-background relative flex size-full flex-col overflow-hidden"
+        className="bg-background relative flex h-full flex-col overflow-hidden"
+        style={style}
       >
         <ChatHeader />
         <ChatInterface />

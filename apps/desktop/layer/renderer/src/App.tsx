@@ -62,19 +62,15 @@ const AppLayer = () => {
 }
 
 const AppSkeleton = () => {
-  const entryColWidth = useUISettingKey("entryColWidth")
   const feedColWidth = useUISettingKey("feedColWidth")
   return (
     <div className="flex size-full">
       <div
-        className="h-full shrink-0"
+        className="bg-sidebar h-full shrink-0"
         style={{
           width: `${feedColWidth}px`,
         }}
       />
-      <div className="bg-theme-background relative size-full grow">
-        <div className="bg-border absolute inset-y-0 w-px" style={{ left: entryColWidth }} />
-      </div>
     </div>
   )
 }

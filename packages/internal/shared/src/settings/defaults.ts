@@ -49,6 +49,7 @@ export const defaultUISettings: UISettings = {
 
   // Sidebar
   entryColWidth: 356,
+  aiColWidth: 384,
   feedColWidth: 256,
   hideExtraBadge: false,
 

@@ -51,6 +51,7 @@ export type AccentColor =
 export interface UISettings {
   accentColor: AccentColor
   entryColWidth: number
+  aiColWidth: number
   feedColWidth: number
   opaqueSidebar: boolean
   sidebarShowUnreadCount: boolean

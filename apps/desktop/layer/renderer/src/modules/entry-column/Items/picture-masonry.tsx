@@ -124,13 +124,14 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
       return ret
     }) as { entryId: string; cache?: object }[]
 
-    if (props.hasNextPage) {
-      for (let i = 0; i < 10; i++) {
-        result.push({
-          entryId: `placeholder${i}`,
-        })
-      }
-    }
+    // Disable placeholders in waterfall to prevent layout redraws on last page
+    // if (props.hasNextPage) {
+    //   for (let i = 0; i < 10; i++) {
+    //     result.push({
+    //       entryId: `placeholder${i}`,
+    //     })
+    //   }
+    // }
 
     return result
   }, [cacheMap, data, props.hasNextPage])

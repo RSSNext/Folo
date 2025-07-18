@@ -1,9 +1,6 @@
-import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
 import { PassviseFragment } from "@follow/components/common/Fragment.js"
-import { Spring } from "@follow/components/constants/spring.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
-import { FeedViewType } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -11,28 +8,24 @@ import { getImageProxyUrl } from "@follow/utils/img-proxy"
 import { LRUCache } from "@follow/utils/lru-cache"
 import { cn } from "@follow/utils/utils"
 import { atom } from "jotai"
-import { AnimatePresence, m } from "motion/react"
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { FocusablePresets } from "~/components/common/Focusable"
 import { RelativeTime } from "~/components/ui/datetime"
 import { HTML } from "~/components/ui/markdown/HTML"
 import { usePreviewMedia } from "~/components/ui/media/hooks"
 import { Media } from "~/components/ui/media/Media"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
-import { useSortedEntryActions } from "~/hooks/biz/useEntryActions"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
 import { jotaiStore } from "~/lib/jotai"
 import { parseSocialMedia } from "~/lib/parsers"
-import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
-import { MoreActions } from "~/modules/entry-content/actions/more-actions"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 
 import { StarIcon } from "../star-icon"
+import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, EntryListItemFC } from "../types"
 
 const socialMediaContentWidthAtom = atom(0)
@@ -68,32 +61,6 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
   const feed = useFeedById(entry?.feedId)
 
   const ref = useRef<HTMLDivElement>(null)
-  const [showAction, setShowAction] = useState(false)
-
-  const handleMouseEnter = useMemo(() => {
-    return () => setShowAction(true)
-  }, [])
-  const handleMouseLeave = useMemo(() => {
-    return (e: React.MouseEvent) => {
-      // If the mouse is over the action bar, don't hide the action bar
-      const { relatedTarget, currentTarget } = e
-      if (relatedTarget && relatedTarget instanceof Node && currentTarget.contains(relatedTarget)) {
-        return
-      }
-      setShowAction(false)
-    }
-  }, [])
-
-  const isDropdownMenuOpen = useGlobalFocusableScopeSelector(
-    FocusablePresets.isNotFloatingLayerScope,
-  )
-
-  useEffect(() => {
-    // Hide the action bar when dropdown menu is open and click outside
-    if (isDropdownMenuOpen) {
-      setShowAction(false)
-    }
-  }, [isDropdownMenuOpen])
 
   useLayoutEffect(() => {
     if (ref.current) {
@@ -115,13 +82,11 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative flex px-5 py-4 first:mt-6 lg:px-8",
+        "relative flex py-4",
         "group",
         !asRead &&
-          "before:bg-accent before:absolute before:left-1 before:top-8 before:block before:size-2 before:rounded-full md:before:-left-2 lg:before:left-2",
+          "before:bg-accent before:absolute before:-left-3 before:top-8 before:block before:size-2 before:rounded-full",
       )}
     >
       <FeedIcon fallback feed={feed} entry={entry.iconEntry} size={32} className="mt-1" />
@@ -168,37 +133,11 @@ export const SocialMediaItem: EntryListItemFC = ({ entryId, translation }) => {
         </div>
         <SocialMediaGallery entryId={entryId} />
       </div>
-
-      <AnimatePresence>{showAction && <ActionBar entryId={entryId} />}</AnimatePresence>
     </div>
   )
 }
 
-SocialMediaItem.wrapperClassName = tw`w-[645px] max-w-full m-auto`
-
-const ActionBar = ({ entryId }: { entryId: string }) => {
-  const { mainAction: entryActions } = useSortedEntryActions({
-    entryId,
-    view: FeedViewType.SocialMedia,
-  })
-
-  if (entryActions.length === 0) return null
-
-  return (
-    <m.div
-      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
-      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
-      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
-      transition={Spring.presets.smooth}
-      className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
-    >
-      <div className="flex items-center gap-1">
-        <EntryHeaderActions entryId={entryId} view={FeedViewType.SocialMedia} />
-        <MoreActions entryId={entryId} view={FeedViewType.SocialMedia} />
-      </div>
-    </m.div>
-  )
-}
+SocialMediaItem.wrapperClassName = readableContentMaxWidth
 
 export function SocialMediaItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (

@@ -146,6 +146,7 @@ export const ScrollArea = ({
   asChild = false,
   onUpdateMaxScroll,
   focusable = true,
+  stopWheelPropagation = true,
 }: React.PropsWithChildren & {
   rootClassName?: string
   viewportClassName?: string
@@ -157,6 +158,7 @@ export const ScrollArea = ({
   orientation?: "vertical" | "horizontal"
   asChild?: boolean
   focusable?: boolean
+  stopWheelPropagation?: boolean
 } & { ref?: React.Ref<HTMLDivElement | null> }) => {
   const [viewportRef, setViewportRef] = React.useState<HTMLDivElement | null>(null)
   React.useImperativeHandle(ref, () => viewportRef as HTMLDivElement)
@@ -169,7 +171,7 @@ export const ScrollArea = ({
         <Root className={rootClassName}>
           <Viewport
             ref={setViewportRef}
-            onWheel={stopPropagation}
+            onWheel={stopWheelPropagation ? stopPropagation : undefined}
             className={cn(flex ? "[&>div]:!flex [&>div]:!flex-col" : "", viewportClassName)}
             mask={mask}
             asChild={asChild}
