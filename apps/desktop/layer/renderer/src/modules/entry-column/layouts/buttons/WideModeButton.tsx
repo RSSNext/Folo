@@ -8,7 +8,7 @@ import { setUISetting, useIsZenMode, useRealInWideMode, useSetZenMode } from "~/
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 
-export const WideModeButton = () => {
+export const WideModeButton = ({ className }: { className?: string }) => {
   const isWideMode = useRealInWideMode()
   const isZenMode = useIsZenMode()
   const { t } = useTranslation()
@@ -35,6 +35,7 @@ export const WideModeButton = () => {
             ? t("entry_list_header.switch_to_widemode")
             : t("entry_list_header.switch_to_normalmode")
       }
+      className={className}
     >
       {isZenMode ? (
         <MdiMeditation />

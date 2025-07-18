@@ -50,6 +50,8 @@ export const EntryListHeader: FC<{
 
   const isInCollectionList = feedId === FEED_COLLECTION_LIST
 
+  const isButtonHided = isInCollectionList || !headerTitle
+
   const titleInfo = !!headerTitle && (
     <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
       <EllipsisHorizontalTextWithTooltip className="inline-block !w-auto max-w-full">
@@ -97,9 +99,15 @@ export const EntryListHeader: FC<{
             )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && <WideModeButton />}
-              {view === FeedViewType.SocialMedia && <DailyReportButton />}
-              {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
+              {!views[view]!.wideMode && (
+                <WideModeButton className={isButtonHided ? "pointer-events-none" : void 0} />
+              )}
+              {view === FeedViewType.SocialMedia && (
+                <DailyReportButton className={isButtonHided ? "pointer-events-none" : void 0} />
+              )}
+              {view === FeedViewType.Pictures && (
+                <SwitchToMasonryButton className={isButtonHided ? "pointer-events-none" : void 0} />
+              )}
             </AppendTaildingDivider>
 
             {isOnline &&
@@ -111,6 +119,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refreshFeed()
                   }}
+                  className={isButtonHided ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon isRefreshing={isPending} />
                 </ActionButton>
@@ -124,6 +133,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refetch()
                   }}
+                  className={isButtonHided ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon
                     className={cn(hasUpdate && "text-accent")}
@@ -139,6 +149,7 @@ export const EntryListHeader: FC<{
               }
               shortcut={commandShortcuts[COMMAND_ID.timeline.unreadOnly]}
               onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
+              className={isButtonHided ? "pointer-events-none" : void 0}
             >
               {unreadOnly ? (
                 <i className="i-mgc-round-cute-fi" />
@@ -146,7 +157,10 @@ export const EntryListHeader: FC<{
                 <i className="i-mgc-round-cute-re" />
               )}
             </ActionButton>
-            <MarkAllReadButton shortcut />
+            <MarkAllReadButton
+              shortcut
+              className={isButtonHided ? "pointer-events-none" : void 0}
+            />
           </div>
         )}
       </div>
