@@ -34,6 +34,18 @@ export function PlayerAction({
     onPress()
   }, [onPress])
 
+  let playButtonIcon = <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />
+  switch (mediaState) {
+    case "playing": {
+      playButtonIcon = <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />
+      break
+    }
+    case "loading": {
+      playButtonIcon = <PlatformActivityIndicator />
+      break
+    }
+  }
+
   return (
     <NativePressable
       className={cn("absolute inset-0 flex items-center justify-center", className)}
@@ -45,13 +57,7 @@ export function PlayerAction({
           intensity={30}
           experimentalBlurMethod="none"
         />
-        {mediaState === "paused" && (
-          <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        )}
-        {mediaState === "playing" && (
-          <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        )}
-        {mediaState === "loading" && <PlatformActivityIndicator />}
+        {playButtonIcon}
       </View>
     </NativePressable>
   )
