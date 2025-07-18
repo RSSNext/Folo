@@ -1395,6 +1395,9 @@ importers:
       '@follow/hooks':
         specifier: workspace:*
         version: link:../hooks
+      '@follow/models':
+        specifier: workspace:*
+        version: link:../models
       '@follow/types':
         specifier: workspace:*
         version: link:../types

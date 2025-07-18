@@ -50,6 +50,7 @@ export type AccentColor =
   | "gray"
 export interface UISettings {
   accentColor: AccentColor
+  entryColWidth: number
   aiColWidth: number
   feedColWidth: number
   opaqueSidebar: boolean

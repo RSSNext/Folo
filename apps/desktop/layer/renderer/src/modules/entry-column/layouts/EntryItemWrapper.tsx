@@ -4,11 +4,13 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
+import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { NavLink } from "react-router"
 import { useDebounceCallback } from "usehooks-ts"
 
 import {
@@ -27,8 +29,8 @@ import {
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -112,22 +114,38 @@ export const EntryItemWrapper: FC<
   }, [isDropdownMenuOpen])
 
   const navigate = useNavigateEntry()
+  const navigationPath = useMemo(() => {
+    if (!entry?.id) return "#"
+    return getNavigateEntryPath({
+      entryId: entry?.id,
+    })
+  }, [entry?.id])
+
   const handleClick = useCallback(
-    (e: TouchEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>) => {
+    (e: TouchEvent<HTMLAnchorElement> | MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault()
       e.stopPropagation()
 
-      if (!entry?.id || !entry?.feedId) return
+      const shouldNavigate = getRouteParams().entryId !== entry?.id
+
+      if (!shouldNavigate) return
+      if (!entry?.feedId) return
       if (!asRead) {
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      // Navigate to entry content using routing
-      navigate({ entryId: entry.id })
+      setTimeout(
+        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+        60,
+      )
+
+      navigate({
+        entryId: entry.id,
+      })
     },
     [asRead, entry?.id, entry?.feedId, navigate],
   )
-  const handleDoubleClick: MouseEventHandler<HTMLDivElement> = useCallback(
+  const handleDoubleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
     [entry?.url],
   )
@@ -189,7 +207,8 @@ export const EntryItemWrapper: FC<
 
   return (
     <div data-entry-id={entry?.id} style={style}>
-      <div
+      <NavLink
+        to={navigationPath}
         className={cn(
           "hover:bg-theme-item-hover cursor-button relative block rounded-md duration-200",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
@@ -204,7 +223,7 @@ export const EntryItemWrapper: FC<
       >
         {children}
         <AnimatePresence>{showAction && <ActionBar entryId={entryId} />}</AnimatePresence>
-      </div>
+      </NavLink>
     </div>
   )
 }
