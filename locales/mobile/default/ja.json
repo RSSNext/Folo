@@ -1,6 +1,6 @@
 {
-  "entry.pull_up_to_next_entry": "Pull up to go to the next entry",
-  "entry.release_to_next_entry": "Release to go to the next entry",
+  "entry.pull_up_to_next_entry": "引っ張って次のエントリーに移動",
+  "entry.release_to_next_entry": "離して次のエントリーに移動",
   "login.back": "戻る",
   "login.continueWith": "{{provider}} で続行",
   "login.have_account": "すでにアカウントをお持ちですか？ <strong>サインイン</strong>",
