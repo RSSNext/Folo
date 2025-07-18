@@ -11,7 +11,7 @@ import { titleCase } from "title-case"
 
 import { AudioPlayer, useAudioPlayerAtomSelector } from "~/atoms/player"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
-import { useRealInWideMode, useUISettingKey } from "~/atoms/settings/ui"
+import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
 import { FEED_COLLECTION_LIST } from "~/constants"
@@ -86,15 +86,14 @@ export function ListItem({
 
   const inbox = useInboxById(entry?.inboxId)
 
-  const settingWideMode = useRealInWideMode()
   const thumbnailRatio = useUISettingKey("thumbnailRatio")
   const rid = `list-item-${entryId}`
 
   const bilingual = useGeneralSettingKey("translationMode") === "bilingual"
   const lineClamp = useMemo(() => {
     const envIsSafari = isSafari()
-    let lineClampTitle = settingWideMode ? 1 : 2
-    let lineClampDescription = settingWideMode ? 1 : 2
+    let lineClampTitle = 1
+    let lineClampDescription = 2
 
     if (translation?.title && !simple && bilingual) {
       lineClampTitle += 1
@@ -111,7 +110,7 @@ export function ListItem({
       title: envIsSafari ? `line-clamp-[${lineClampTitle}]` : "",
       description: envIsSafari ? `line-clamp-[${lineClampDescription}]` : "",
     }
-  }, [settingWideMode, simple, translation?.description, translation?.title, bilingual])
+  }, [simple, translation?.description, translation?.title, bilingual])
 
   const dimRead = useGeneralSettingKey("dimRead")
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
@@ -128,8 +127,8 @@ export function ListItem({
   // calculate the max width to have a correct truncation
   // FIXME: this is not easy to maintain, need to refactor
   const feedIconWidth = 20 + marginWidth
-  const audioCoverWidth = settingWideMode ? 65 : 80 + marginWidth
-  const mediaWidth = (settingWideMode ? 48 : 80) * (isMobile ? 1.125 : 1) + marginWidth
+  const audioCoverWidth = 80 + marginWidth
+  const mediaWidth = 80 * (isMobile ? 1.125 : 1) + marginWidth
 
   let savedWidth = 0
 
@@ -148,12 +147,11 @@ export function ListItem({
         "cursor-menu group relative mb-4 flex py-4",
         !isRead &&
           "before:bg-accent before:absolute before:-left-3 before:top-6 before:block before:size-2 before:rounded-full",
-        settingWideMode ? "py-3" : "py-4",
       )}
     >
       <FeedIcon feed={related} fallback entry={entry?.iconEntry} size={24} />
       <div
-        className={cn("-mt-0.5 ml-1 flex-1 text-sm leading-tight", lineClamp.global)}
+        className={cn("-mt-0.5 ml-1 h-fit flex-1 text-sm leading-tight", lineClamp.global)}
         style={{
           maxWidth: `calc(100% - ${savedWidth}px)`,
         }}
@@ -226,17 +224,11 @@ export function ListItem({
             <FeedIcon
               fallback={true}
               fallbackElement={
-                <div
-                  className={clsx(
-                    "bg-material-ultra-thick",
-                    settingWideMode ? "size-[65px]" : "size-[80px]",
-                    "rounded",
-                  )}
-                />
+                <div className={clsx("bg-material-ultra-thick", "size-[80px]", "rounded")} />
               }
               feed={feed || inbox}
               entry={entry?.iconEntry}
-              size={settingWideMode ? 65 : 80}
+              size={80}
               className="m-0 rounded"
               useMedia
               noMargin
@@ -251,10 +243,7 @@ export function ListItem({
           src={entry.firstMedia.url}
           type={entry.firstMedia.type}
           previewImageUrl={entry.firstMedia.preview_image_url}
-          className={cn(
-            "center ml-2 flex shrink-0 rounded",
-            settingWideMode ? "size-12" : "size-20",
-          )}
+          className={cn("center ml-2 flex shrink-0 rounded", "size-20")}
           mediaContainerClassName={"w-auto h-auto rounded"}
           loading="lazy"
           key={`${rid}-media-${thumbnailRatio}`}
