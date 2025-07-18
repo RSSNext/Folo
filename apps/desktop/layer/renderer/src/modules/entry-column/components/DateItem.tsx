@@ -74,7 +74,7 @@ const DateItemInner: FC<DateItemInnerProps> = ({
   )
   return (
     <div
-      className={cn(className, isSticky && "border-b")}
+      className={cn(className, isSticky && "bg-background border-b")}
       onClick={stopPropagation}
       onMouseEnter={removeConfirm.cancel}
       onMouseLeave={removeConfirm}
