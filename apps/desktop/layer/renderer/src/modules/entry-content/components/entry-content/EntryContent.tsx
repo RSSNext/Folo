@@ -255,6 +255,7 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
+      stopWheelPropagation={false}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
         className,

@@ -1,1 +1,1 @@
-export { CenterColumnLayout as Component } from "~/modules/app-layout/timeline-column/index"
+export { EntryColumnLayout as Component } from "~/modules/entry-column/EntryColumnLayout"

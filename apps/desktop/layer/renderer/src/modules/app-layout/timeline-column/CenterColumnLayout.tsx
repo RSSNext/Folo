@@ -2,6 +2,7 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
+import { Outlet } from "react-router"
 
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { EntryColumn } from "~/modules/entry-column"
@@ -36,6 +37,7 @@ export function CenterColumnLayout() {
       <div className="h-full flex-1 border-r">
         <AppLayoutGridContainerProvider>
           <EntryColumn />
+          <Outlet />
         </AppLayoutGridContainerProvider>
       </div>
       <PanelSplitter

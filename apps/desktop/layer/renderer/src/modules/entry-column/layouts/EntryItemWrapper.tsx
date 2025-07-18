@@ -27,7 +27,7 @@ import {
   useSortedEntryActions,
 } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
-import { usePeekModal } from "~/hooks/biz/usePeekModal"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
@@ -111,7 +111,7 @@ export const EntryItemWrapper: FC<
     }
   }, [isDropdownMenuOpen])
 
-  const peekModal = usePeekModal()
+  const navigate = useNavigateEntry()
   const handleClick = useCallback(
     (e: TouchEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>) => {
       e.preventDefault()
@@ -122,10 +122,10 @@ export const EntryItemWrapper: FC<
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      // Open entry content in modal instead of navigating
-      peekModal(entry.id, "modal")
+      // Navigate to entry content using routing
+      navigate({ entryId: entry.id })
     },
-    [asRead, entry?.id, entry?.feedId, peekModal],
+    [asRead, entry?.id, entry?.feedId, navigate],
   )
   const handleDoubleClick: MouseEventHandler<HTMLDivElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
