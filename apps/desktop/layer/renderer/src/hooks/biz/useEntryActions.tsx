@@ -21,6 +21,8 @@ import {
   setReadabilityStatus,
   useEntryIsInReadability,
 } from "~/atoms/readability"
+import { useServerConfigs } from "~/atoms/server-configs"
+import { useAIChatPinned } from "~/atoms/settings/ai"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -28,6 +30,8 @@ import { getCommand, useRunCommandFn } from "~/modules/command/hooks/use-command
 import { useCommandShortcuts } from "~/modules/command/hooks/use-command-binding"
 import type { FollowCommandId } from "~/modules/command/types"
 import { useToolbarOrderMap } from "~/modules/customize-toolbar/hooks"
+
+import { useRouteParams } from "./useRouteParams"
 
 export const enableEntryReadability = async ({ id, url }: { id: string; url: string }) => {
   const status = getReadabilityStatus()[id]
@@ -124,6 +128,7 @@ const entrySelector = (state: EntryModel) => {
   const { summary, translation, readability } = state.settings || {}
 
   const media = state.media || []
+  const attachments = state.attachments || []
   const images = media.filter((a) => a.type === "photo")
   const imagesLength = images.length
 
@@ -139,9 +144,21 @@ const entrySelector = (state: EntryModel) => {
     hasContent,
     doesContentContainsHTMLTags,
     imagesLength,
+    hasBitTorrent: attachments.some((a) => a.mime_type === "application/x-bittorrent"),
   }
 }
-
+export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
+  COMMAND_ID.entry.viewSourceContent,
+  COMMAND_ID.entry.toggleAISummary,
+  COMMAND_ID.entry.toggleAITranslation,
+  COMMAND_ID.global.toggleAIChatPinned,
+  COMMAND_ID.settings.customizeToolbar,
+  COMMAND_ID.entry.readability,
+  COMMAND_ID.entry.exportAsPDF,
+  // Copy
+  COMMAND_ID.entry.copyTitle,
+  COMMAND_ID.entry.copyLink,
+]
 export const useEntryActions = ({
   entryId,
   view,
@@ -152,6 +169,7 @@ export const useEntryActions = ({
   compact?: boolean
 }) => {
   const entry = useEntry(entryId, entrySelector)
+  const { isCollection } = useRouteParams()
   const isInCollection = useIsEntryStarred(entryId)
   const isEntryInReadability = useEntryIsInReadability(entryId)
 
@@ -170,7 +188,8 @@ export const useEntryActions = ({
   const isShowAISummaryOnce = useShowAISummaryOnce()
   const isShowAITranslationAuto = useShowAITranslationAuto(!!entry?.translation)
   const isShowAITranslationOnce = useShowAITranslationOnce()
-
+  const isShowAIChatPinned = useAIChatPinned()
+  const aiEnabled = useServerConfigs()?.AI_CHAT_ENABLED
   const runCmdFn = useRunCommandFn()
   const hasEntry = !!entry
 
@@ -220,6 +239,12 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.integration.saveToZotero,
         onClick: runCmdFn(COMMAND_ID.integration.saveToZotero, [{ entryId }]),
+        entryId,
+      }),
+      new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToQBittorrent,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToQBittorrent, [{ entryId }]),
+        hide: !IN_ELECTRON || !entry.hasBitTorrent,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -287,7 +312,7 @@ export const useEntryActions = ({
             view,
           ),
         active: isShowAISummaryOnce,
-        disabled: userRole === UserRole.Trial,
+        disabled: userRole === UserRole.Free || userRole === UserRole.Trial,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -299,7 +324,7 @@ export const useEntryActions = ({
             view,
           ),
         active: isShowAITranslationOnce,
-        disabled: userRole === UserRole.Trial,
+        disabled: userRole === UserRole.Free || userRole === UserRole.Trial,
         entryId,
       }),
       new EntryActionMenuItem({
@@ -312,13 +337,13 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readAbove,
         onClick: runCmdFn(COMMAND_ID.entry.readAbove, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         entryId,
       }),
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.read,
         onClick: runCmdFn(COMMAND_ID.entry.read, [{ entryId }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         active: !!entry.read,
         shortcut: shortcuts[COMMAND_ID.entry.read],
         entryId,
@@ -326,7 +351,7 @@ export const useEntryActions = ({
       new EntryActionMenuItem({
         id: COMMAND_ID.entry.readBelow,
         onClick: runCmdFn(COMMAND_ID.entry.readBelow, [{ publishedAt: entry.publishedAt }]),
-        hide: !!isInCollection,
+        hide: !!isCollection,
         entryId,
       }),
       MENU_ITEM_SEPARATOR,
@@ -352,6 +377,14 @@ export const useEntryActions = ({
         notice: !entry.doesContentContainsHTMLTags && !isEntryInReadability,
         entryId,
       }),
+
+      new EntryActionMenuItem({
+        id: COMMAND_ID.global.toggleAIChatPinned,
+        onClick: runCmdFn(COMMAND_ID.global.toggleAIChatPinned, [{ entryId }]),
+        entryId,
+        active: isShowAIChatPinned,
+        hide: !aiEnabled,
+      }),
       new EntryActionMenuItem({
         id: COMMAND_ID.settings.customizeToolbar,
         onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
@@ -370,19 +403,22 @@ export const useEntryActions = ({
     hasEntry,
     runCmdFn,
     entryId,
+    entry?.hasBitTorrent,
+    entry?.url,
+    entry?.imagesLength,
+    entry?.publishedAt,
+    entry?.read,
+    entry?.hasContent,
+    entry?.readability,
+    entry?.doesContentContainsHTMLTags,
     feed?.id,
     feed?.ownerUserId,
     feed?.siteUrl,
     isInbox,
     shortcuts,
     view,
+    isCollection,
     isInCollection,
-    entry?.url,
-    entry?.publishedAt,
-    entry?.hasContent,
-    entry?.read,
-    entry?.readability,
-    entry?.imagesLength,
     isShowSourceContent,
     isShowAISummaryAuto,
     isShowAISummaryOnce,
@@ -391,7 +427,8 @@ export const useEntryActions = ({
     isShowAITranslationOnce,
     compact,
     isEntryInReadability,
-    entry?.doesContentContainsHTMLTags,
+    isShowAIChatPinned,
+    aiEnabled,
   ])
 
   return actionConfigs

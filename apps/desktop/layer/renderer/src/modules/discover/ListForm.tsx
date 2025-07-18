@@ -90,6 +90,7 @@ export const ListForm: Component<{
             subscriptionData: feedQuery.data?.subscription,
             analytics: feedQuery.data?.analytics,
             list,
+            isLoading: feedQuery.isLoading,
           }}
         />
       ) : feedQuery.isLoading ? (
@@ -163,6 +164,7 @@ const ListInnerForm = ({
   subscriptionData,
   list,
   analytics,
+  isLoading,
 }: {
   defaultValues?: z.infer<typeof formSchema>
   id?: string
@@ -176,6 +178,7 @@ const ListInnerForm = ({
   }
   list: ListModel
   analytics?: ListAnalyticsModel
+  isLoading: boolean
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
   const isSubscribed = !!subscription
@@ -266,6 +269,7 @@ const ListInnerForm = ({
   return (
     <div className="flex flex-1 flex-col gap-y-4">
       <FeedSummary
+        isLoading={isLoading}
         feed={{
           ...list,
           fee: list.fee || 0,

@@ -99,7 +99,7 @@
 /* Checkbox */
 @layer components {
   .checkbox {
-    --chkbg: theme(colors.theme.accent.DEFAULT);
+    --chkbg: theme(colors.accent);
     --chkfg: theme(colors.zinc.100);
 
     flex-shrink: 0;
@@ -121,8 +121,8 @@
     outline-style: solid;
     outline-width: 2px;
     outline-offset: 2px;
-    outline-color: theme(colors.theme.accent.DEFAULT);
-    border-color: theme(colors.theme.accent.DEFAULT);
+    outline-color: theme(colors.accent);
+    border-color: theme(colors.accent);
   }
 
   .checkbox:disabled {
@@ -138,7 +138,7 @@
   .checkbox[aria-checked="true"] {
     background-repeat: no-repeat;
     animation: checkmark var(--animation-input, 0.2s) ease-out;
-    border-color: theme(colors.theme.accent.DEFAULT);
+    border-color: theme(colors.accent);
     background-color: var(--chkbg);
     background-image:
       linear-gradient(-45deg, transparent 65%, var(--chkbg) 65.99%),
@@ -183,10 +183,7 @@
 @layer components {
   .follow-link--underline {
     color: currentColor;
-    background-image: linear-gradient(
-      theme(colors.theme.accent.DEFAULT),
-      theme(colors.theme.accent.DEFAULT)
-    );
+    background-image: linear-gradient(theme(colors.accent), theme(colors.accent));
     background-size: 0% 1.5px;
     background-repeat: no-repeat;
     /* NOTE: this won't work with background images   */
@@ -369,6 +366,21 @@
   }
 }
 
+@layer utilities {
+  .animate-mask-left-to-right {
+    animation: mask-left-to-right var(--animation-duration, 0.5s) ease-in-out forwards;
+  }
+  @keyframes mask-left-to-right {
+    0% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 150% 0 / 400% no-repeat;
+      opacity: 0.2;
+    }
+    100% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 0 / 400% no-repeat;
+      opacity: 1;
+    }
+  }
+}
 @layer components {
   .mask-b {
     mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 20px), rgba(255, 255, 255, 0) 100%);

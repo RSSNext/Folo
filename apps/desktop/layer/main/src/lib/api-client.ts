@@ -16,6 +16,7 @@ const apiFetch = ofetch.create({
   credentials: "include",
   signal: abortController.signal,
   retry: false,
+  cache: "no-store",
   onRequest({ request }) {
     logger.info(`API Request: ${request.toString()}`)
   },

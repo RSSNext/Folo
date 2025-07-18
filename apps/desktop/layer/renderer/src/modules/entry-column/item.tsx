@@ -22,13 +22,17 @@ const EntryItemImpl = memo(function EntryItemImpl({
   entryId: string
   view: FeedViewType
 }) {
-  const actionLanguage = useActionLanguage()
   const enableTranslation = useGeneralSettingKey("translation")
-  const translation = useEntryTranslation(entryId, actionLanguage)
+  const actionLanguage = useActionLanguage()
+  const translation = useEntryTranslation({
+    entryId,
+    language: actionLanguage,
+    setting: enableTranslation,
+  })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     checkLanguage,
-    translation: enableTranslation,
+    setting: enableTranslation,
     language: actionLanguage,
     withContent: view === FeedViewType.SocialMedia,
   })

@@ -1,0 +1,17 @@
+---
+description: 
+globs: locales/**/*.json
+alwaysApply: false
+---
+
+i18n Coding Standards.
+
+1. Read and follow https://www.i18next.com/translation-function/formatting
+
+2. Use flat keys. Use `.` to separate. Do not use object form nesting.
+
+3. For languages sensitive to singular and plural, distinguish between them using the `_one` and `_other` forms.
+
+4. In the build stage, flattened dot-separated keys (such as 'exif.custom.rendered.custom') will be automatically converted to nested object objects, which may cause conflicts. For example, 'exif.custom.rendered.custom' may conflict with 'exif.custom.rendered'. Please avoid using such dot-separated flat keys.
+
+5. @locales is located at the root directory and needs to handle all existing languages at the same time.

@@ -60,7 +60,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const { entryId, noMedia, showReadability, showTranslation } = props
   const entry = useEntry(entryId, (state) => state)
   const language = useActionLanguage()
-  const translation = useEntryTranslation(entryId, language)
+  const translation = useEntryTranslation({ entryId, language, setting: showTranslation ?? false })
 
   const [mode, setMode] = React.useState<"normal" | "debug">("normal")
 

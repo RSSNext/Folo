@@ -1,7 +1,7 @@
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
-import { PanelSplitter } from "@follow/components/ui/divider/PanelSpliter.js"
+import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import type { FeedViewType } from "@follow/constants"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
@@ -34,8 +34,6 @@ import { UpdateNotice } from "~/modules/update-notice/UpdateNotice"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 export const SubscriptionColumnContainer = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -65,7 +63,7 @@ export const SubscriptionColumnContainer = () => {
 
   return (
     <AppLayoutGridContainerProvider>
-      <FeedResponsiveResizerContainer containerRef={containerRef}>
+      <FeedResponsiveResizerContainer>
         <DndContext
           autoScroll={{ threshold: { x: 0, y: 0.2 } }}
           sensors={sensors}
@@ -86,11 +84,11 @@ export const SubscriptionColumnContainer = () => {
 }
 
 const FeedResponsiveResizerContainer = ({
-  containerRef,
   children,
 }: {
-  containerRef: React.RefObject<HTMLDivElement | null>
+  children: React.ReactNode
 } & PropsWithChildren) => {
+  const containerRef = useRef<HTMLDivElement>(null)
   const { isDragging, position, separatorProps, separatorCursor, setPosition } = useResizable({
     axis: "x",
     min: 256,

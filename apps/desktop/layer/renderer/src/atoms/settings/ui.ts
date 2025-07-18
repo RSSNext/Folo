@@ -13,12 +13,11 @@ import { hookEnhancedSettings } from "./general"
 
 export const createDefaultUISettings = (): UISettings => ({
   ...defaultUISettings,
-
   // Action Order
   toolbarOrder: DEFAULT_ACTION_ORDER,
-
   // Discover
   discoverLanguage: getDefaultLanguage().startsWith("zh") ? "all" : "eng",
+  accentColor: "orange",
 })
 
 const zenModeAtom = atom(false)
@@ -62,6 +61,7 @@ export const uiServerSyncWhiteListKeys: (keyof UISettings)[] = [
   "uiFontFamily",
   "readerFontFamily",
   "opaqueSidebar",
+  "accentColor",
   // "customCSS",
 ]
 

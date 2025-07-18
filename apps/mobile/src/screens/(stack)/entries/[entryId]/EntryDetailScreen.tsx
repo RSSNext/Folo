@@ -1,5 +1,5 @@
 import { FeedViewType } from "@follow/constants"
-import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { useEntry, useEntryReadHistory, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
@@ -129,9 +130,9 @@ export const EntryDetailScreen: NavigationControllerView<{
 
 const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   const { showReadabilityAtom, showAITranslationAtom } = useEntryContentContext()
-  const showReadability = useAtomValue(showReadabilityAtom)
+  const showReadabilityOnce = useAtomValue(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
-  const showTranslation = useAtomValue(showAITranslationAtom)
+  const showTranslationOnce = useAtomValue(showAITranslationAtom)
   const actionLanguage = useActionLanguage()
   const translation = useGeneralSettingKey("translation")
 
@@ -143,10 +144,10 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     withContent: true,
-    target: showReadability && entry?.readabilityContent ? "readabilityContent" : "content",
+    target: showReadabilityOnce && entry?.readabilityContent ? "readabilityContent" : "content",
     language: actionLanguage,
     checkLanguage,
-    translation,
+    setting: translation,
   })
 
   // Auto toggle readability when content is empty
@@ -159,16 +160,16 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
   }, [isPending, entry?.content, setShowReadability])
 
   useEffect(() => {
-    if (showReadability) {
+    if (showReadabilityOnce) {
       entrySyncServices.fetchEntryReadabilityContent(entryId)
     }
-  }, [showReadability, entryId])
+  }, [showReadabilityOnce, entryId])
 
   return (
     <EntryContentWebView
       entryId={entryId}
-      showReadability={showReadability}
-      showTranslation={translationSetting || showTranslation}
+      showReadability={showReadabilityOnce}
+      showTranslation={translationSetting || showTranslationOnce}
     />
   )
 }
@@ -180,6 +181,9 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
   }))
   const feed = useFeedById(entry?.feedId)
   const secondaryLabelColor = useColor("secondaryLabel")
+
+  const readCount = useEntryReadHistory(entryId)?.entryReadHistories?.readCount
+  const hideRecentReader = useUISettingKey("hideRecentReader")
 
   if (!entry) return null
 
@@ -202,6 +206,11 @@ const EntryInfo = ({ entryId }: { entryId: string }) => {
           className="text-secondary-label text-sm leading-tight"
         />
       </View>
+      {!hideRecentReader && (
+        <View className="flex flex-row items-center gap-1">
+          <Text className="text-secondary-label text-sm leading-tight">{readCount}</Text>
+        </View>
+      )}
     </View>
   )
 }

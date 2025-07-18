@@ -1,6 +1,9 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
+import { useIsDark } from "@follow/hooks"
+import { getAccentColorValue } from "@follow/shared/settings/constants"
 import type { UISettings } from "@follow/shared/settings/interface"
 import { useUnreadAll } from "@follow/store/unread/hooks"
+import { hexToHslString } from "@follow/utils"
 import i18next from "i18next"
 import { useEffect, useInsertionEffect, useLayoutEffect, useRef } from "react"
 
@@ -41,7 +44,6 @@ const useUpdateDockBadge = (setting: UISettings) => {
     })
   }, [unreadCount, setting.showDockBadge])
 }
-
 const useUISettingSync = () => {
   const setting = useUISettingValue()
   const mobile = isMobile()
@@ -50,6 +52,16 @@ const useUISettingSync = () => {
     const root = document.documentElement
     root.style.fontSize = `${setting.uiTextSize * (mobile ? 1.125 : 1)}px`
   }, [setting.uiTextSize])
+
+  const isDark = useIsDark()
+  useInsertionEffect(() => {
+    const root = document.documentElement
+    // 21.6 100% 50%;
+    root.style.setProperty(
+      "--fo-a",
+      hexToHslString(getAccentColorValue(setting.accentColor)[isDark ? "dark" : "light"]),
+    )
+  }, [setting.accentColor, isDark])
 
   useInsertionEffect(() => {
     const root = document.documentElement

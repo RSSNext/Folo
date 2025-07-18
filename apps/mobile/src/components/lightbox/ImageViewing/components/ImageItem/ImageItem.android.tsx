@@ -1,4 +1,3 @@
-import { Image } from "expo-image"
 import * as React from "react"
 import { useState } from "react"
 import { ActivityIndicator, StyleSheet } from "react-native"
@@ -14,7 +13,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 
-import type { Dimensions as ImageDimensions, ImageSource, Transform } from "../../@types"
+import { Image as ProxyImage } from "@/src/components/ui/image/Image"
+
+import type { Dimensions as ImageDimensions, LightboxImageSource, Transform } from "../../@types"
 import type { TransformMatrix } from "../../transforms"
 import {
   applyRounding,
@@ -31,7 +32,7 @@ const MAX_ORIGINAL_IMAGE_ZOOM = 2
 const initialTransform = createTransform()
 
 type Props = {
-  imageSrc: ImageSource
+  imageSrc: LightboxImageSource
   onRequestClose: () => void
   onTap: () => void
   onZoom: (isZoomed: boolean) => void
@@ -345,11 +346,11 @@ const ImageItem = ({
           {showLoader && <ActivityIndicator size="small" color="#FFF" style={styles.loading} />}
           <Animated.View style={imageCropStyle}>
             <Animated.View style={imageStyle}>
-              <Image
+              <ProxyImage
                 contentFit="contain"
                 source={{ uri: imageSrc.uri }}
                 placeholderContentFit="contain"
-                placeholder={{ uri: imageSrc.thumbUri }}
+                placeholder={imageSrc.thumbUri}
                 accessibilityLabel={imageSrc.alt}
                 onLoad={
                   hasLoaded
@@ -359,7 +360,7 @@ const ImageItem = ({
                         onLoad({ width: e.source.width, height: e.source.height })
                       }
                 }
-                style={{ flex: 1, borderRadius }}
+                style={{ flex: 1, borderRadius, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
                 accessibilityHint=""
                 accessibilityIgnoresInvertColors
                 cachePolicy="memory"

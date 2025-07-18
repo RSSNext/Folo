@@ -69,6 +69,9 @@ export function Trending({
         },
       })
     },
+    meta: {
+      persist: true,
+    },
   })
 
   useEffect(() => {

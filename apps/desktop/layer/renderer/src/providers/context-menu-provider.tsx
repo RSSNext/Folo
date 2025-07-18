@@ -1,4 +1,7 @@
-import { useGlobalFocusableHasScope } from "@follow/components/common/Focusable/hooks.js"
+import {
+  useGlobalFocusableHasScope,
+  useSetGlobalFocusableScope,
+} from "@follow/components/common/Focusable/hooks.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
 import {
   ContextMenu,
@@ -53,15 +56,17 @@ const Handler = () => {
       }),
     )
   }, [contextMenuState])
+  const setGlobalFocusableScope = useSetGlobalFocusableScope()
 
   const handleOpenChange = useCallback(
     (state: boolean) => {
+      setGlobalFocusableScope(HotkeyScope.Menu, state ? "append" : "remove")
       if (state) return
       if (!contextMenuState.open) return
       setContextMenuState({ open: false })
       contextMenuState.abortController.abort()
     },
-    [contextMenuState, setContextMenuState],
+    [contextMenuState, setContextMenuState, setGlobalFocusableScope],
   )
 
   return (

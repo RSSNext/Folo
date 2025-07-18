@@ -13,6 +13,7 @@
 		21D47042A21541638A8813FF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 771F66ABFAD64B3D89ABAB8A /* GoogleService-Info.plist */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		948BDAD26FE9D66B8735BBD0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF90D1FA529DB2CC2AE941 /* ExpoModulesProvider.swift */; };
+		A6C8B6012E13C44000D28090 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C8B6002E13C44000D28090 /* StoreKit.framework */; };
 		A6D4133120E003E1031C2B48 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BB62D7D685AF319E0A030204 /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
@@ -27,6 +28,8 @@
 		5D1548572A564A709411B1D2 /* Pods-Folo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Folo.release.xcconfig"; path = "Target Support Files/Pods-Folo/Pods-Folo.release.xcconfig"; sourceTree = "<group>"; };
 		771F66ABFAD64B3D89ABAB8A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Folo/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		84F18C4CB344992039541AAC /* Pods-Folo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Folo.debug.xcconfig"; path = "Target Support Files/Pods-Folo/Pods-Folo.debug.xcconfig"; sourceTree = "<group>"; };
+		A652EE6C2E16CCFF00371A74 /* Folo - Follow everything.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Folo - Follow everything.storekit"; sourceTree = "<group>"; };
+		A6C8B6002E13C44000D28090 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Folo/SplashScreen.storyboard; sourceTree = "<group>"; };
 		B69598E8ACBE445EA3C3DCEE /* rn-web */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "rn-web"; path = "../../../out/rn-web"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -42,6 +45,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08804409FAE316B2F4286290 /* Pods_Folo.framework in Frameworks */,
+				A6C8B6012E13C44000D28090 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +78,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A6C8B6002E13C44000D28090 /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				2C9A37CAFE9FFED2FCC141E3 /* Pods_Folo.framework */,
 			);
@@ -115,6 +120,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A652EE6C2E16CCFF00371A74 /* Folo - Follow everything.storekit */,
 				13B07FAE1A68108700A75B9A /* Folo */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -307,6 +313,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesSwift/Promises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNDeviceInfo/RNDeviceInfoPrivacyInfo.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
@@ -346,6 +353,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Promises_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNDeviceInfoPrivacyInfo.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",

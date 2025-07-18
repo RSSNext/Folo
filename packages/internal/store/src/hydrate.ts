@@ -29,7 +29,7 @@ const hydrates: Hydratable[] = [
 
 export const hydrateDatabaseToStore = async (options?: { migrateDatabase?: boolean }) => {
   if (options?.migrateDatabase) {
-    initializeDB()
+    await initializeDB()
     await migrateDB()
   }
   await Promise.all(hydrates.map((h) => h.hydrate()))

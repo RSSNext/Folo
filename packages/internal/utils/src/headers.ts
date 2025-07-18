@@ -1,4 +1,4 @@
-import { DEV, WEB_BUILD } from "@follow/shared/constants"
+import { DEV, MICROSOFT_STORE_BUILD, WEB_BUILD } from "@follow/shared/constants"
 
 import { imageRefererMatches } from "./img-proxy"
 
@@ -50,6 +50,10 @@ export const createBuildSafeHeaders =
     return headers
   }
 
+const commonHeaders = {
+  "Cache-Control": "no-store",
+}
+
 enum DesktopPlatform {
   Desktop = "desktop",
   DesktopWeb = "desktop/web",
@@ -77,7 +81,7 @@ export const createDesktopAPIHeaders = ({ version }: { version: string }) => {
         break
       }
       case "win32": {
-        if (process.windowsStore) {
+        if (MICROSOFT_STORE_BUILD) {
           platform = DesktopPlatform.DesktopWindowsMS
         } else {
           platform = DesktopPlatform.DesktopWindowsEXE
@@ -92,6 +96,7 @@ export const createDesktopAPIHeaders = ({ version }: { version: string }) => {
   }
 
   return {
+    ...commonHeaders,
     ...(platform ? { "X-App-Platform": platform } : {}),
     "X-App-Name": "Folo Web",
     "X-App-Version": version,
@@ -105,6 +110,7 @@ enum SSRPlatform {
 
 export const createSSRAPIHeaders = ({ version }: { version: string }) => {
   return {
+    ...commonHeaders,
     "X-App-Platform": SSRPlatform.SSR,
     "X-App-Name": "Folo SSR",
     "X-App-Version": version,
@@ -148,6 +154,7 @@ export const createMobileAPIHeaders = ({
   }
 
   return {
+    ...commonHeaders,
     ...(platform ? { "X-App-Platform": platform } : {}),
     "X-App-Name": "Folo Mobile",
     "X-App-Version": version,

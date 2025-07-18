@@ -28,14 +28,6 @@ export const useFocusableContainerRef = () => {
   return use(FocusableContainerRefContext)
 }
 
-/**
- * Performance issue, use `useGlobalFocusableScopeSelector` instead
- * @deprecated use `useGlobalFocusableScopeSelector` instead
- */
-export const useGlobalFocusableScope = () => {
-  return useAtomValue(use(GlobalFocusableContext))
-}
-
 export const useGlobalFocusableHasScope = (scope: string) => {
   return useGlobalFocusableScopeSelector(useCallback((v) => v.has(scope), [scope]))
 }

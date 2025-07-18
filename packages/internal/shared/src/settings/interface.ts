@@ -39,7 +39,17 @@ export interface GeneralSettings {
   openLinksInExternalApp: boolean
 }
 
+export type AccentColor =
+  | "orange"
+  | "blue"
+  | "green"
+  | "purple"
+  | "pink"
+  | "red"
+  | "yellow"
+  | "gray"
 export interface UISettings {
+  accentColor: AccentColor
   entryColWidth: number
   feedColWidth: number
   opaqueSidebar: boolean
@@ -121,5 +131,25 @@ export interface IntegrationSettings {
   zoteroUserID: string
   zoteroToken: string
 
+  // qbittorrent
+  enableQBittorrent: boolean
+  qbittorrentHost: string
+  qbittorrentUsername: string
+  qbittorrentPassword: string
+
   saveSummaryAsDescription: boolean
+}
+
+export interface AIShortcut {
+  id: string
+  name: string
+  prompt: string
+  enabled: boolean
+  icon?: string
+  hotkey?: string
+}
+
+export interface AISettings {
+  personalizePrompt: string
+  shortcuts: AIShortcut[]
 }

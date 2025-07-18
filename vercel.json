@@ -11,7 +11,7 @@
     },
     {
       "source": "/share/:path*",
-      "destination": "https://follow-external-ssr.vercel.app/share/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/share/:path*",
       "has": [
         {
           "type": "host",
@@ -21,7 +21,7 @@
     },
     {
       "source": "/og/:path*",
-      "destination": "https://follow-external-ssr.vercel.app/og/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/og/:path*",
       "has": [
         {
           "type": "host",
@@ -31,7 +31,7 @@
     },
     {
       "source": "/login",
-      "destination": "https://follow-external-ssr.vercel.app/login",
+      "destination": "https://follow-external-ssr-follow.vercel.app/login",
       "has": [
         {
           "type": "host",
@@ -41,7 +41,7 @@
     },
     {
       "source": "/register",
-      "destination": "https://follow-external-ssr.vercel.app/register",
+      "destination": "https://follow-external-ssr-follow.vercel.app/register",
       "has": [
         {
           "type": "host",
@@ -51,7 +51,7 @@
     },
     {
       "source": "/forget-password",
-      "destination": "https://follow-external-ssr.vercel.app/forget-password",
+      "destination": "https://follow-external-ssr-follow.vercel.app/forget-password",
       "has": [
         {
           "type": "host",
@@ -61,7 +61,7 @@
     },
     {
       "source": "/reset-password",
-      "destination": "https://follow-external-ssr.vercel.app/reset-password",
+      "destination": "https://follow-external-ssr-follow.vercel.app/reset-password",
       "has": [
         {
           "type": "host",
@@ -71,7 +71,7 @@
     },
     {
       "source": "/terms",
-      "destination": "https://follow-external-ssr.vercel.app/terms",
+      "destination": "https://follow-external-ssr-follow.vercel.app/terms",
       "has": [
         {
           "type": "host",
@@ -81,7 +81,7 @@
     },
     {
       "source": "/privacy-policy",
-      "destination": "https://follow-external-ssr.vercel.app/privacy-policy",
+      "destination": "https://follow-external-ssr-follow.vercel.app/privacy-policy",
       "has": [
         {
           "type": "host",
@@ -91,7 +91,7 @@
     },
     {
       "source": "/external-dist/:path*",
-      "destination": "https://follow-external-ssr.vercel.app/external-dist/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/external-dist/:path*",
       "has": [
         {
           "type": "host",
@@ -101,7 +101,7 @@
     },
     {
       "source": "/dist-external/:path*",
-      "destination": "https://follow-external-ssr.vercel.app/dist-external/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/dist-external/:path*",
       "has": [
         {
           "type": "host",

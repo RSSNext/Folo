@@ -1,4 +1,3 @@
-import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { is } from "@electron-toolkit/utils"
@@ -8,6 +7,7 @@ import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import type { BrowserWindowConstructorOptions } from "electron"
 import { app, BrowserWindow, screen, shell } from "electron"
 import type { Event } from "electron/main"
+import path from "pathe"
 
 import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { isMacOS, isWindows, isWindows11 } from "~/env"

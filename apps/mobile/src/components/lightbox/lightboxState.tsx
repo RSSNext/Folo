@@ -2,11 +2,11 @@ import { nanoid } from "nanoid/non-secure"
 import type { PropsWithChildren } from "react"
 import { createContext, use, useCallback, useMemo, useState } from "react"
 
-import type { ImageSource } from "./ImageViewing/@types"
+import type { LightboxImageSource } from "./ImageViewing/@types"
 
 export type Lightbox = {
   id: string
-  images: ImageSource[]
+  images: LightboxImageSource[]
   index: number
 }
 

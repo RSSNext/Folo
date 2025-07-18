@@ -6,7 +6,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
-import type { FC, PropsWithChildren } from "react"
+import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
@@ -22,7 +22,7 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
-import { useEntryActions } from "~/hooks/biz/useEntryActions"
+import { HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU, useEntryActions } from "~/hooks/biz/useEntryActions"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -85,7 +85,7 @@ export const EntryItemWrapper: FC<
     })
   }, [entry?.id])
   const handleClick = useCallback(
-    (e) => {
+    (e: TouchEvent<HTMLAnchorElement> | MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -108,7 +108,7 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate],
   )
-  const handleDoubleClick: React.MouseEventHandler<HTMLAnchorElement> = useCallback(
+  const handleDoubleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
     [entry?.url],
   )
@@ -137,17 +137,7 @@ export const EntryItemWrapper: FC<
             if (item instanceof MenuItemSeparator) {
               return true
             }
-            return ![
-              COMMAND_ID.entry.viewSourceContent,
-              COMMAND_ID.entry.toggleAISummary,
-              COMMAND_ID.entry.toggleAITranslation,
-              COMMAND_ID.settings.customizeToolbar,
-              COMMAND_ID.entry.readability,
-              COMMAND_ID.entry.exportAsPDF,
-              // Copy
-              COMMAND_ID.entry.copyTitle,
-              COMMAND_ID.entry.copyLink,
-            ].includes(item.id as any)
+            return !HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU.includes(item.id as any)
           }),
           MENU_ITEM_SEPARATOR,
           ...feedItems.filter((item) => {

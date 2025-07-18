@@ -5,7 +5,7 @@ import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { cn } from "@follow/utils"
 import { Text, View } from "react-native"
 
-import { useActionLanguage } from "@/src/atoms/settings/general"
+import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 
@@ -27,8 +27,13 @@ export const EntryGridFooter = ({
     read: state.read,
     translation: state.settings?.translation,
   }))
+  const enableTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
-  const translation = useEntryTranslation(entryId, actionLanguage)
+  const translation = useEntryTranslation({
+    entryId,
+    language: actionLanguage,
+    setting: enableTranslation,
+  })
   const feed = useFeedById(entry?.feedId || "")
 
   if (!entry) return null

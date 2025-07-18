@@ -1,6 +1,7 @@
 import { Routes } from "@follow/constants"
 import { registerGlobalContext } from "@follow/shared/bridge"
 import { env } from "@follow/shared/env.desktop"
+import { invalidateUserSession } from "@follow/store/user/hooks"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
@@ -132,6 +133,13 @@ export const ExtensionExposeProvider = () => {
   }, [dialog])
 
   useBindElectronBridge()
+
+  useEffect(() => {
+    registerGlobalContext({
+      refreshSession: invalidateUserSession,
+    })
+  }, [dialog])
+
   return null
 }
 

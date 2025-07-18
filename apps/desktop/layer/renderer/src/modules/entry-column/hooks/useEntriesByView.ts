@@ -123,6 +123,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
     isFetching: query.isFetching,
     hasNextPage: query.hasNextPage,
     error: query.isError ? query.error : null,
+    fetchedTime,
   }
 }
 
@@ -327,6 +328,9 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     }, [query]),
     entriesIds: entryIds,
     groupedCounts,
+    isFetching: remoteQuery.isFetching,
+    isFetchingNextPage: remoteQuery.isFetchingNextPage,
+    isLoading: remoteQuery.isLoading,
   }
 }
 

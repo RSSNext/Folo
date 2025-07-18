@@ -50,7 +50,7 @@ export const EnvironmentIndicator = () => {
             })
           }}
         >
-          <div className="center bg-accent fixed bottom-0 right-0 z-[99999] flex rounded-tl px-1 py-0.5 text-xs text-white">
+          <div className="center bg-folo fixed bottom-0 right-0 z-[99999] flex rounded-tl px-1 py-0.5 text-xs text-white">
             {role}:{DEV && <i className="i-mgc-bug-cute-re size-3" />}
             {MODE}
           </div>

@@ -11,12 +11,12 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { JSAnimation, Variants } from "motion/react"
 import { m, useAnimationControls } from "motion/react"
 import * as React from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode, useUISettingKey } from "~/atoms/settings/ui"
@@ -36,11 +36,13 @@ import { AISummary } from "../../AISummary"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { EntryHeader } from "../entry-header"
+import { EntryAttachments } from "../EntryAttachments"
 import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
-import { ContainerToc } from "./ContainerToc"
+import { EntryContentAccessories } from "./accessories"
+import { AISmartSidebar } from "./ai"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
@@ -56,7 +58,7 @@ const pageMotionVariants = {
   exit: { opacity: 0, y: 25, transition: { duration: 0 } },
 } satisfies Variants
 
-export const EntryContent: Component<EntryContentProps> = ({
+const EntryContentImpl: Component<EntryContentProps> = ({
   entryId,
   noMedia,
   className,
@@ -79,15 +81,11 @@ export const EntryContent: Component<EntryContentProps> = ({
   const { error, content, isPending } = useEntryContent(entryId)
 
   const view = useRouteParamsSelector((route) => route.view)
-
   const scrollerRef = useRef<HTMLDivElement | null>(null)
-
   const safeUrl = useFeedSafeUrl(entryId)
-
   const customCSS = useUISettingKey("customCSS")
 
   const isInPeekModal = useInPeekModal()
-
   const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
@@ -147,7 +145,7 @@ export const EntryContent: Component<EntryContentProps> = ({
             transition={Spring.presets.bouncy}
             className="select-text"
           >
-            {!isZenMode && isInHasTimelineView && (
+            {!isZenMode && isInHasTimelineView && !isInPeekModal && (
               <>
                 <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
                   <MotionButtonBase
@@ -177,7 +175,12 @@ export const EntryContent: Component<EntryContentProps> = ({
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className="@[950px]:max-w-[70ch] @7xl:max-w-[80ch] relative m-auto min-w-0 max-w-[550px]"
+              className={clsx(
+                "relative m-auto min-w-0",
+                isInPeekModal
+                  ? "max-w-full"
+                  : "@[950px]:max-w-[70ch] @7xl:max-w-[80ch] max-w-[550px]",
+              )}
             >
               <EntryTitle entryId={entryId} compact={compact} />
 
@@ -226,15 +229,19 @@ export const EntryContent: Component<EntryContentProps> = ({
                 </div>
               )}
 
+              <EntryAttachments entryId={entryId} />
               <SupportCreator entryId={entryId} />
             </article>
           </m.div>
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
+
+      <React.Suspense>{!isInPeekModal && <AISmartSidebar entryId={entryId} />}</React.Suspense>
     </>
   )
 }
+export const EntryContent = memo(EntryContentImpl)
 
 const EntryScrollArea: Component<{
   scrollerRef: React.RefObject<HTMLDivElement | null>
@@ -277,7 +284,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} />),
+    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
     [isInPeekModal],
   )
 

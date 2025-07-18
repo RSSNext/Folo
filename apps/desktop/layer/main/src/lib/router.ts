@@ -74,6 +74,13 @@ export const handleUrlRouting = (url: string) => {
         })
         return
       }
+      case "/refresh": {
+        callMainWindow(url, (mainWindow) => {
+          const caller = callWindowExpose(mainWindow)
+          caller.refreshSession()
+        })
+        return
+      }
       case "/": {
         callMainWindow(url, (mainWindow) => {
           mainWindow.restore()

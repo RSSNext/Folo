@@ -1,24 +1,22 @@
 import { FeedViewType } from "@follow/constants"
 import type { MediaModel } from "@follow/database/schemas/types"
-import { getEntry } from "@follow/store/entry/getter"
 import { useEntry } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { uniqBy } from "es-toolkit/compat"
+import type { ImageSource } from "expo-image"
+import type { Ref } from "react"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
-import { runOnJS, runOnUI } from "react-native-reanimated"
+import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
-import { showEntryGaleriaAccessory } from "@/src/components/native/GaleriaAccessory/EntryGaleriaAccessory"
-import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
-import { getFeedIconSource } from "@/src/lib/image"
-import { isIOS } from "@/src/lib/platform"
 
 export function EntryPictureItem({ id }: { id: string }) {
   const { openLightbox } = useLightboxControls()
+  const aviRef = useAnimatedRef<View>()
 
   const item = useEntry(id, (state) => ({
     media: state.media,
@@ -44,9 +42,10 @@ export function EntryPictureItem({ id }: { id: string }) {
   return (
     <View className="m-1">
       <MediaItems
+        ref={aviRef}
         media={item.media}
         entryId={id}
-        onPreview={() => {
+        onPreview={(index, placeholder) => {
           const feed = getFeedById(item.feedId!)
           if (!feed) {
             return
@@ -56,31 +55,28 @@ export function EntryPictureItem({ id }: { id: string }) {
             entryId: id,
           })
 
-          if (isIOS) {
-            showEntryGaleriaAccessory({
-              author: item.author || "",
-              avatarUrl: getFeedIconSource(feed, "") ?? "",
-              publishedAt: item.publishedAt.toISOString(),
+          runOnUI(() => {
+            "worklet"
+            const rect = measure(aviRef)
+            runOnJS(openLightbox)({
+              images: (item.media ?? []).map((media) => ({
+                uri: media.url,
+                thumbUri: placeholder ?? { uri: media.url },
+                thumbDimensions: null,
+                thumbRect: rect,
+                dimensions: rect
+                  ? {
+                      height: rect.height,
+                      width: rect.width,
+                    }
+                  : null,
+                type: "image",
+              })),
+              index,
             })
-          } else {
-            runOnUI(() => {
-              "worklet"
-              // const rect = measureHandle(aviHandle)
-              runOnJS(openLightbox)({
-                images: (item.media ?? []).map((media) => ({
-                  uri: media.url,
-                  dimensions: null,
-                  thumbUri: media.url,
-                  thumbDimensions: null,
-                  thumbRect: null,
-                  type: "image",
-                })),
-                index: 0,
-              })
-            })()
-          }
-          const fullEntry = getEntry(id)
-          preloadWebViewEntry(fullEntry)
+          })()
+          // const fullEntry = getEntry(id)
+          // preloadWebViewEntry(fullEntry)
           unreadSyncService.markEntryAsRead(id)
         }}
       />
@@ -91,14 +87,16 @@ export function EntryPictureItem({ id }: { id: string }) {
 EntryPictureItem.displayName = "EntryPictureItem"
 
 const MediaItems = ({
+  ref,
   media,
   entryId,
   onPreview,
   aspectRatio,
 }: {
+  ref?: Ref<View>
   media: MediaModel[]
   entryId: string
-  onPreview?: () => void
+  onPreview?: (index: number, placeholder: ImageSource | undefined) => void
   aspectRatio?: number
 }) => {
   const firstMedia = media[0]
@@ -117,6 +115,7 @@ const MediaItems = ({
 
   return (
     <MediaCarousel
+      ref={ref}
       view={FeedViewType.Pictures}
       entryId={entryId}
       media={uniqMedia}

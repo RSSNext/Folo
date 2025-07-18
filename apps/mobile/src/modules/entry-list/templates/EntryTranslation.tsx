@@ -20,7 +20,6 @@ export const EntryTranslation = ({
   showTranslation?: boolean
   bilingual?: boolean
 } & TextProps) => {
-  const showTranslationFinal = useGeneralSettingKey("translation") || showTranslation
   const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
 
   const nextSource = useMemo(() => {
@@ -30,15 +29,11 @@ export const EntryTranslation = ({
     return source.trim()
   }, [source])
   const nextTarget = useMemo(() => {
-    if (
-      !target ||
-      !showTranslationFinal ||
-      nextSource.replaceAll(/\s/g, "") === target.replaceAll(/\s/g, "")
-    ) {
+    if (!target || nextSource.replaceAll(/\s/g, "") === target.replaceAll(/\s/g, "")) {
       return ""
     }
     return target.trim()
-  }, [nextSource, target, showTranslationFinal])
+  }, [nextSource, target])
 
   if (!bilingualFinal) {
     return (

@@ -33,6 +33,7 @@ export const createApiFetch = () => {
   return ofetch.create({
     credentials: "include",
     retry: false,
+    cache: "no-store",
     onRequest(context) {
       if (__DEV__) console.info(`request: ${context.request}`)
 

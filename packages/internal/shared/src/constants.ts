@@ -37,3 +37,9 @@ declare const ELECTRON: boolean
  */
 export const ELECTRON_BUILD = !!ELECTRON
 export const WEB_BUILD = !ELECTRON
+
+export const MICROSOFT_STORE_BUILD =
+  typeof process !== "undefined"
+    ? process.platform === "win32" &&
+      (process.windowsStore || process.execPath.startsWith("C:\\Program Files\\WindowsApps"))
+    : false

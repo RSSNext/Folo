@@ -8,6 +8,7 @@ import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import type { FC } from "react"
 import { memo, useEffect } from "react"
+import { toast } from "sonner"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -63,6 +64,11 @@ export const EntryColumnShortcutHandler: FC<{
 
       const nextIndex = Math.min(currentActiveEntryIndex + 1, data.length - 1)
 
+      if (currentActiveEntryIndex === nextIndex) {
+        toast.info("You are already at the last entry")
+        return
+      }
+
       handleScrollTo(nextIndex)
       const nextId = data![nextIndex]
 
@@ -79,6 +85,11 @@ export const EntryColumnShortcutHandler: FC<{
 
       const nextIndex =
         currentActiveEntryIndex === -1 ? data.length - 1 : Math.max(0, currentActiveEntryIndex - 1)
+
+      if (currentActiveEntryIndex === nextIndex) {
+        toast.info("You are already at the first entry")
+        return
+      }
 
       handleScrollTo(nextIndex)
       const nextId = data![nextIndex]

@@ -5,7 +5,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai"
 import { AnimatePresence, LayoutGroup, m } from "motion/react"
 import * as React from "react"
 
-import { PeekModalBaseButton } from "~/components/ui/modal/components/base"
+import { GlassButton } from "~/components/ui/button/GlassButton"
 import { ROUTE_FEED_PENDING } from "~/constants"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { DayOf } from "~/modules/ai/ai-daily/constants"
@@ -61,11 +61,15 @@ const SummaryDetailContent = () => {
   return (
     <>
       <div className="fade-in-0 absolute right-4 top-4 duration-200">
-        <PeekModalBaseButton
-          icon={<i className="i-mgc-close-cute-re" />}
-          label="Back"
+        <GlassButton
+          description="Back"
           onClick={() => setOpenedSummary(null)}
-        />
+          size="sm"
+          className="opacity-100"
+          variant="flat"
+        >
+          <i className="i-mgc-close-cute-re" />
+        </GlassButton>
       </div>
 
       <CollapseGroup defaultOpenId={`${openedSummary}`}>

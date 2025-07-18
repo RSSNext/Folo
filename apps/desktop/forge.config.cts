@@ -1,9 +1,6 @@
-import "dotenv/config"
-
 import crypto from "node:crypto"
 import fs, { readdirSync } from "node:fs"
 import { cp, readdir } from "node:fs/promises"
-import path, { resolve } from "node:path"
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
 import { MakerAppX } from "@electron-forge/maker-appx"
@@ -16,10 +13,13 @@ import type { ForgeConfig } from "@electron-forge/shared-types"
 import MakerAppImage from "@pengx17/electron-forge-maker-appimage"
 import setLanguages from "electron-packager-languages"
 import yaml from "js-yaml"
+import path, { resolve } from "pathe"
 import { rimraf, rimrafSync } from "rimraf"
 
 const platform = process.argv.find((arg) => arg.startsWith("--platform"))?.split("=")[1]
 const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
+const isMicrosoftStore =
+  process.argv.find((arg) => arg.startsWith("--ms"))?.split("=")[1] === "true"
 
 const isStaging = mode === "staging"
 
@@ -187,11 +187,6 @@ const config: ForgeConfig = {
       },
       ["darwin", "mas"],
     ),
-    new MakerSquirrel({
-      name: "Folo",
-      setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
-      iconUrl: "https://app.folo.is/favicon.ico",
-    }),
     new MakerAppImage({
       config: {
         icons: [
@@ -209,17 +204,29 @@ const config: ForgeConfig = {
       },
       ["mas"],
     ),
-    new MakerAppX({
-      publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
-      packageDisplayName: "Folo - Follow everything in one place",
-      devCert: "build/dev.pfx",
-      assets: "static/appx",
-      // @ts-ignore
-      publisherDisplayName: "Natural Selection Labs",
-      identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
-      packageBackgroundColor: "#FF5C00",
-      protocol: "follow", // TODO: use custom appx manifest to support both follow and folo
-    }),
+    // Only include AppX maker for Microsoft Store builds
+    ...(isMicrosoftStore
+      ? [
+          new MakerAppX({
+            publisher: "CN=7CBBEB6A-9B0E-4387-BAE3-576D0ACA279E",
+            packageDisplayName: "Folo - Follow everything in one place",
+            devCert: "build/dev.pfx",
+            assets: "static/appx",
+            manifest: "build/appxmanifest.xml",
+            // @ts-ignore
+            publisherDisplayName: "Natural Selection Labs",
+            identityName: "NaturalSelectionLabs.Follow-Yourfavoritesinoneinbo",
+            packageBackgroundColor: "#FF5C00",
+            protocol: "folo",
+          }),
+        ]
+      : [
+          new MakerSquirrel({
+            name: "Folo",
+            setupIcon: isStaging ? "resources/icon-staging.ico" : "resources/icon.ico",
+            iconUrl: "https://app.folo.is/favicon.ico",
+          }),
+        ]),
   ],
   plugins: [
     // Fuses are used to enable/disable various Electron functionality
@@ -261,36 +268,40 @@ const config: ForgeConfig = {
       }
       let basePath = ""
       makeResults = makeResults.map((result) => {
-        result.artifacts = result.artifacts.map((artifact) => {
-          if (artifactRegex.test(artifact)) {
-            if (!basePath) {
-              basePath = path.dirname(artifact)
-            }
-            const newArtifact = `${path.dirname(artifact)}/${
-              result.packageJSON.productName
-            }-${result.packageJSON.version}-${
-              platformNamesMap[result.platform]
-            }-${result.arch}${path.extname(artifact)}`
-            fs.renameSync(artifact, newArtifact)
+        result.artifacts = result.artifacts
+          .map((artifact) => {
+            if (artifactRegex.test(artifact)) {
+              if (!basePath) {
+                basePath = path.dirname(artifact)
+              }
+              const newArtifact = `${path.dirname(artifact)}/${
+                result.packageJSON.productName
+              }-${result.packageJSON.version}-${
+                platformNamesMap[result.platform]
+              }-${result.arch}${path.extname(artifact)}`
+              fs.renameSync(artifact, newArtifact)
 
-            try {
-              const fileData = fs.readFileSync(newArtifact)
-              const hash = crypto.createHash("sha512").update(fileData).digest("base64")
-              const { size } = fs.statSync(newArtifact)
+              try {
+                const fileData = fs.readFileSync(newArtifact)
+                const hash = crypto.createHash("sha512").update(fileData).digest("base64")
+                const { size } = fs.statSync(newArtifact)
 
-              yml.files.push({
-                url: path.basename(newArtifact),
-                sha512: hash,
-                size,
-              })
-            } catch {
-              console.error(`Failed to hash ${newArtifact}`)
+                yml.files.push({
+                  url: path.basename(newArtifact),
+                  sha512: hash,
+                  size,
+                })
+              } catch {
+                console.error(`Failed to hash ${newArtifact}`)
+              }
+              return newArtifact
+            } else if (!artifact.endsWith(".tmp")) {
+              return artifact
+            } else {
+              return null
             }
-            return newArtifact
-          } else {
-            return artifact
-          }
-        })
+          })
+          .filter((artifact) => artifact !== null)
         return result
       })
       yml.releaseDate = new Date().toISOString()

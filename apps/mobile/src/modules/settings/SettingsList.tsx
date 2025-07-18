@@ -1,7 +1,6 @@
 import { UserRole } from "@follow/constants"
 import type { ServerConfigs } from "@follow/models/types"
 import { useUserRole, useWhoami } from "@follow/store/user/hooks"
-import * as FileSystem from "expo-file-system"
 import type { ParseKeys } from "i18next"
 import type { FC } from "react"
 import { Fragment, useMemo } from "react"
@@ -14,7 +13,6 @@ import {
   GroupedInsetListNavigationLink,
   GroupedInsetListNavigationLinkIcon,
 } from "@/src/components/ui/grouped/GroupedList"
-import { getDbPath } from "@/src/database"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
@@ -22,6 +20,7 @@ import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { Magic2CuteFiIcon } from "@/src/icons/magic_2_cute_fi"
 import { NotificationCuteReIcon } from "@/src/icons/notification_cute_re"
 import { PaletteCuteFiIcon } from "@/src/icons/palette_cute_fi"
+import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { RadaCuteFiIcon } from "@/src/icons/rada_cute_fi"
 import { SafeLockFilledIcon } from "@/src/icons/safe_lock_filled"
 import { Settings1CuteFiIcon } from "@/src/icons/settings_1_cute_fi"
@@ -30,7 +29,7 @@ import { UserSettingCuteFiIcon } from "@/src/icons/user_setting_cute_fi"
 import { signOut } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
-import { InvitationScreen } from "@/src/screens/(modal)/InvitationScreen"
+import { accentColor } from "@/src/theme/colors"
 
 import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
@@ -42,7 +41,9 @@ import { GeneralScreen } from "./routes/General"
 import { InvitationsScreen } from "./routes/Invitations"
 import { ListsScreen } from "./routes/Lists"
 import { NotificationsScreen } from "./routes/Notifications"
+import { PlanScreen } from "./routes/Plan"
 import { PrivacyScreen } from "./routes/Privacy"
+import { ReferralScreen } from "./routes/Referral"
 
 interface GroupNavigationLink {
   label: Extract<ParseKeys<"settings">, `titles.${string}`>
@@ -115,6 +116,29 @@ const BetaGroupNavigationLinks: GroupNavigationLink[] = [
   },
 ]
 
+const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
+  {
+    label: "titles.plan.short",
+    icon: PowerOutlineIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(PlanScreen)
+    },
+    iconBackgroundColor: accentColor,
+    anonymous: false,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+  },
+  {
+    label: "titles.referral.short",
+    icon: LoveCuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(ReferralScreen)
+    },
+    iconBackgroundColor: "#EC4899",
+    anonymous: false,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+  },
+]
+
 const DataGroupNavigationLinks: GroupNavigationLink[] = [
   {
     label: "titles.actions",
@@ -180,11 +204,7 @@ const ActionGroupNavigationLinks: GroupNavigationLink[] = [
           text: "Sign out",
           style: "destructive",
           onPress: async () => {
-            // sign out
             await signOut()
-            const dbPath = getDbPath()
-            await FileSystem.deleteAsync(dbPath)
-            await expo.reloadAppAsync("User sign out")
           },
         },
       ])
@@ -216,8 +236,8 @@ const NavigationLinkGroup: FC<{
                 </GroupedInsetListNavigationLinkIcon>
               }
               onPress={() => {
-                if (link.trialNotAllowed && role === UserRole.Trial) {
-                  navigation.presentControllerView(InvitationScreen)
+                if (link.trialNotAllowed && (role === UserRole.Free || role === UserRole.Trial)) {
+                  navigation.presentControllerView(PlanScreen)
                 } else {
                   link.onPress({ navigation })
                 }
@@ -232,6 +252,7 @@ const NavigationLinkGroup: FC<{
 const navigationGroups = [
   SettingGroupNavigationLinks,
   DataGroupNavigationLinks,
+  ReferralGroupNavigationLinks,
   BetaGroupNavigationLinks,
   PrivacyGroupNavigationLinks,
   ActionGroupNavigationLinks,

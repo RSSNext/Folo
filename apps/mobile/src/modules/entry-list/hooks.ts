@@ -47,7 +47,9 @@ export function useOnViewableItemsChanged({
     )
     const removed = changed.filter((item) => !item.isViewable)
 
-    if (orientation.current === "down") {
+    // Only when the scroll direction is down and the current offset is a positive number, is it marked as read.
+    // This can avoid misjudgment during the rebound of the pull-to-refresh (because the offset will change from negative to zero during the rebound).
+    if (orientation.current === "down" && lastOffset.current > 0) {
       setLastViewableItems(viewableItems)
       if (removed.length > 0) {
         setLastRemovedItems((prev) => {

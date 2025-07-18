@@ -1,7 +1,6 @@
-import { dirname } from "node:path"
-import { resolve } from "node:path/posix"
 import { fileURLToPath } from "node:url"
 
+import { dirname, resolve } from "pathe"
 import { tsImport } from "tsx/esm/api"
 import type { UserConfig } from "vite"
 
@@ -17,6 +16,10 @@ const routeBuilderPluginV2 = await tsImport(
 const root = resolve(fileURLToPath(dirname(import.meta.url)), "..")
 
 const VITE_ROOT = resolve(root, "layer/renderer")
+
+const mode = process.argv.find((arg) => arg.startsWith("--mode"))?.split("=")[1]
+const isStaging = mode === "staging"
+
 export default {
   ...viteRenderBaseConfig,
 
@@ -46,14 +49,14 @@ export default {
   root: VITE_ROOT,
   build: {
     outDir: resolve(root, "dist/renderer"),
-    sourcemap: !!process.env.CI,
+    sourcemap: isStaging || !!process.env.CI,
     target: "esnext",
     rollupOptions: {
       input: {
         main: resolve(VITE_ROOT, "index.html"),
       },
     },
-    minify: true,
+    minify: !isStaging,
   },
   define: {
     ...viteRenderBaseConfig.define,

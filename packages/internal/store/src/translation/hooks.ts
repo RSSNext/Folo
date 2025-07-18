@@ -3,7 +3,7 @@ import type { SupportedActionLanguage } from "@follow/shared"
 import { useQueries } from "@tanstack/react-query"
 import { useCallback } from "react"
 
-import { useEntryList } from "../entry/hooks"
+import { useEntry, useEntryList } from "../entry/hooks"
 import type { EntryModel } from "../entry/types"
 import { translationSyncService, useTranslationStore } from "./store"
 
@@ -11,19 +11,19 @@ export const usePrefetchEntryTranslation = ({
   entryIds,
   withContent,
   target = "content",
-  translation,
+  setting,
   language,
   checkLanguage,
 }: {
   entryIds: string[]
   withContent?: boolean
   target?: "content" | "readabilityContent"
-  translation: boolean
+  setting: boolean
   language: SupportedActionLanguage
   checkLanguage: (params: { content: string; language: SupportedActionLanguage }) => boolean
 }) => {
   const entryList = (useEntryList(entryIds)?.filter(
-    (entry) => entry !== null && (translation || !!entry?.settings?.translation),
+    (entry) => entry !== null && (setting || !!entry?.settings?.translation),
   ) || []) as EntryModel[]
 
   return useQueries({
@@ -48,13 +48,24 @@ export const usePrefetchEntryTranslation = ({
   })
 }
 
-export const useEntryTranslation = (entryId: string, language: SupportedLanguages) => {
+export const useEntryTranslation = ({
+  entryId,
+  language,
+  setting,
+}: {
+  entryId: string
+  language: SupportedLanguages
+  setting: boolean
+}) => {
+  const actionSetting = useEntry(entryId, (state) => state.settings?.translation)
+
   return useTranslationStore(
     useCallback(
       (state) => {
+        if (!setting && !actionSetting) return
         return state.data[entryId]?.[language]
       },
-      [entryId, language],
+      [actionSetting, entryId, language, setting],
     ),
   )
 }

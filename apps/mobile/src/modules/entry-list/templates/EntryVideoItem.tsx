@@ -130,8 +130,7 @@ const openVideo = async (url: string) => {
   if (openLinksInExternalApp) {
     const schemeLink = parseSchemeLink(url)
     try {
-      const isInstalled = !!schemeLink && (await Linking.canOpenURL(schemeLink))
-      if (schemeLink && isInstalled) {
+      if (schemeLink) {
         await Linking.openURL(schemeLink)
         return
       }
@@ -141,6 +140,6 @@ const openVideo = async (url: string) => {
   }
 
   // Fallback to opening in in-app browser
-  const formattedUrl = transformVideoUrl({ url }) || url
+  const formattedUrl = openLinksInExternalApp ? url : transformVideoUrl({ url }) || url
   openLink(formattedUrl)
 }

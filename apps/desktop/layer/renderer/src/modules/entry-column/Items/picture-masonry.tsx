@@ -283,8 +283,13 @@ const MasonryRender: React.ComponentType<
   }>
 > = ({ data, index }) => {
   const firstScreenReady = use(FirstScreenReadyContext)
+  const enableTranslation = useGeneralSettingKey("translation")
   const actionLanguage = useActionLanguage()
-  const translation = useEntryTranslation(data.entryId, actionLanguage)
+  const translation = useEntryTranslation({
+    entryId: data.entryId,
+    language: actionLanguage,
+    setting: enableTranslation,
+  })
 
   if (data.entryId.startsWith("placeholder")) {
     return <LoadingSkeletonItem />

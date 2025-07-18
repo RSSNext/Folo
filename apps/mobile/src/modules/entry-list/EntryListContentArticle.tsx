@@ -6,8 +6,10 @@ import { useCallback, useImperativeHandle, useMemo } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { usePlayingUrl } from "@/src/lib/player"
 import { checkLanguage } from "@/src/lib/translation"
+import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
@@ -31,7 +33,8 @@ export const EntryListContentArticle = ({
     [playingAudioUrl, entryIds],
   )
 
-  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage } = useEntries()
+  const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
+    useEntries()
 
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
@@ -41,8 +44,8 @@ export const EntryListContentArticle = ({
   )
 
   const ListFooterComponent = useMemo(
-    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter />),
-    [hasNextPage],
+    () => (hasNextPage ? <EntryItemSkeleton /> : <EntryListFooter fetchedTime={fetchedTime} />),
+    [hasNextPage, fetchedTime],
   )
 
   const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
@@ -59,9 +62,23 @@ export const EntryListContentArticle = ({
   usePrefetchEntryTranslation({
     entryIds: active ? viewableItems.map((item) => item.key) : [],
     language: actionLanguage,
-    translation,
+    setting: translation,
     checkLanguage,
   })
+
+  const headerHeight = useHeaderHeight()
+  const tabBarHeight = useBottomTabBarHeight()
+
+  // Show loading skeleton when entries are not ready and no data yet
+  if (!isReady && (!entryIds || entryIds.length === 0)) {
+    return (
+      <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
+        {Array.from({ length: 7 }).map((_, index) => (
+          <EntryItemSkeleton key={index} />
+        ))}
+      </View>
+    )
+  }
 
   return (
     <TimelineSelectorList

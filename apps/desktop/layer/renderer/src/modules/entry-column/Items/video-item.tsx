@@ -173,13 +173,17 @@ const PreviewVideoModalContent: ModalContentComponent<{
 }> = ({ dismiss, src, entryId }) => {
   const entry = useEntry(entryId, (state) => ({ content: state.content }))
 
-  const actionLanguage = useActionLanguage()
   const enableTranslation = useGeneralSettingKey("translation")
-  const translation = useEntryTranslation(entryId, actionLanguage)
+  const actionLanguage = useActionLanguage()
+  const translation = useEntryTranslation({
+    entryId,
+    language: actionLanguage,
+    setting: enableTranslation,
+  })
   usePrefetchEntryTranslation({
     entryIds: [entryId],
     checkLanguage,
-    translation: enableTranslation,
+    setting: enableTranslation,
     language: actionLanguage,
     withContent: true,
   })

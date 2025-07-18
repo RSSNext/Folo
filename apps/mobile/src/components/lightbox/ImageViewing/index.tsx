@@ -35,7 +35,7 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 import { isIOS } from "@/src/lib/platform"
 
 import type { Lightbox } from "../lightboxState"
-import type { Dimensions, ImageSource, Transform } from "./@types"
+import type { Dimensions, LightboxImageSource, Transform } from "./@types"
 import ImageDefaultHeader from "./components/ImageDefaultHeader"
 import ImageItem from "./components/ImageItem/ImageItem"
 
@@ -377,7 +377,7 @@ function LightboxImage({
   openProgress,
   dismissSwipeTranslateY,
 }: {
-  imageSrc: ImageSource
+  imageSrc: LightboxImageSource
   onRequestClose: () => void
   onTap: () => void
   onZoom: (scaled: boolean) => void
@@ -517,7 +517,7 @@ function LightboxFooter({
   isAltExpanded,
   toggleAltExpanded,
 }: {
-  images: ImageSource[]
+  images: LightboxImageSource[]
   index: number
   isAltExpanded: boolean
   toggleAltExpanded: () => void

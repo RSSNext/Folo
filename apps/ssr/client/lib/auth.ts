@@ -11,6 +11,7 @@ const auth = new Auth({
   webURL: env.VITE_WEB_URL,
   fetchOptions: {
     headers,
+    cache: "no-store",
   },
 })
 

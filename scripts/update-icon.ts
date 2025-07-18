@@ -1,5 +1,6 @@
 import fs from "node:fs"
-import path from "node:path"
+
+import path from "pathe"
 
 const PATH_TO_NEW_ICONS_FOLDER = "../SVG 1.36"
 const PATH_TO_PROJECT_ICONS_FOLDER = "./icons/mgc"

@@ -302,7 +302,7 @@ function Step({ step, currentStep }: { step: number; currentStep: number }) {
           type: "tween",
           ease: "circOut",
         }}
-        className="bg-theme-accent/20 absolute inset-0 rounded-full"
+        className="bg-accent/20 absolute inset-0 rounded-full"
       />
 
       <m.div

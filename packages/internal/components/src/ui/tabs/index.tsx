@@ -93,8 +93,7 @@ TabsList.displayName = TabsPrimitive.List.displayName
 const tabsTriggerVariants = cva("", {
   variants: {
     variant: {
-      default:
-        "py-1.5 border-b-2 border-transparent data-[state=active]:text-accent dark:data-[state=active]:text-theme-accent-500",
+      default: "py-1.5 border-b-2 border-transparent data-[state=active]:text-accent",
       rounded: "!py-1 !px-3 bg-transparent",
     },
   },

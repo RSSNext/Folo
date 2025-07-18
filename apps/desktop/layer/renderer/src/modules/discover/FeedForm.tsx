@@ -112,6 +112,7 @@ export const FeedForm: Component<{
                         url,
 
                         onSuccess,
+                        isLoading: feedQuery.isLoading,
                         subscriptionData: feedQuery.data?.subscription,
                         entries: feedQuery.data?.entries,
                         feed,
@@ -177,6 +178,7 @@ const FeedInnerForm = ({
   analytics,
 
   placeholderRef,
+  isLoading,
 }: {
   defaultValues?: z.infer<typeof formSchema>
   id?: string
@@ -193,6 +195,7 @@ const FeedInnerForm = ({
   analytics?: FeedAnalyticsModel
 
   placeholderRef: React.RefObject<HTMLDivElement | null>
+  isLoading: boolean
 }) => {
   const subscription = useSubscriptionByFeedId(id || "") || subscriptionData
   const isSubscribed = !!subscription
@@ -302,7 +305,7 @@ const FeedInnerForm = ({
 
   return (
     <div className="flex flex-1 flex-col gap-y-4">
-      <FeedSummary feed={feed} analytics={analytics} showAnalytics />
+      <FeedSummary isLoading={isLoading} feed={feed} analytics={analytics} showAnalytics />
       <Form {...form}>
         <form
           id="feed-form"
