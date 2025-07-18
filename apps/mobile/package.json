@@ -14,6 +14,7 @@
     "start": "expo start --dev-client",
     "start:clean": "expo start --dev-client --clear",
     "typecheck": "tsc --noEmit",
+    "update": "tsx scripts/expo-update.ts",
     "web": "expo start --web"
   },
   "dependencies": {
