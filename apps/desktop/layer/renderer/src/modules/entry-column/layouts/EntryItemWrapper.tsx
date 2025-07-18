@@ -4,7 +4,6 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { FeedViewType, views } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
-import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
 import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
@@ -135,10 +134,11 @@ export const EntryItemWrapper: FC<
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      setTimeout(
-        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
-        60,
-      )
+      // TODO
+      // setTimeout(
+      //   () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+      //   60,
+      // )
 
       navigate({
         entryId: entry.id,
