@@ -385,7 +385,6 @@ const CollapsedSocialMediaItem: Component<{
           <button
             type="button"
             onClick={(e) => {
-              e.preventDefault()
               e.stopPropagation()
               setIsShowMore(true)
               collapsedItemCache.put(entryId, true)
