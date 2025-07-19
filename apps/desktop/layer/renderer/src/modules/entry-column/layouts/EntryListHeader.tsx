@@ -50,6 +50,8 @@ export const EntryListHeader: FC<{
 
   const isInCollectionList = feedId === FEED_COLLECTION_LIST
 
+  const showButtons = isInCollectionList || !headerTitle
+
   const titleInfo = !!headerTitle && (
     <div className="flex min-w-0 items-center break-all text-lg font-bold leading-tight">
       <EllipsisHorizontalTextWithTooltip className="inline-block !w-auto max-w-full">
@@ -83,7 +85,7 @@ export const EntryListHeader: FC<{
           <div
             className={cn(
               "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
-              (isInCollectionList || !headerTitle) && "pointer-events-none opacity-0",
+              showButtons && "pointer-events-none opacity-0",
 
               "translate-x-[6px]",
             )}
@@ -97,9 +99,15 @@ export const EntryListHeader: FC<{
             )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && <WideModeButton />}
-              {view === FeedViewType.SocialMedia && <DailyReportButton />}
-              {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
+              {!views[view]!.wideMode && (
+                <WideModeButton className={showButtons ? "pointer-events-none" : void 0} />
+              )}
+              {view === FeedViewType.SocialMedia && (
+                <DailyReportButton className={showButtons ? "pointer-events-none" : void 0} />
+              )}
+              {view === FeedViewType.Pictures && (
+                <SwitchToMasonryButton className={showButtons ? "pointer-events-none" : void 0} />
+              )}
             </AppendTaildingDivider>
 
             {isOnline &&
@@ -111,6 +119,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refreshFeed()
                   }}
+                  className={showButtons ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon isRefreshing={isPending} />
                 </ActionButton>
@@ -124,6 +133,7 @@ export const EntryListHeader: FC<{
                   onClick={() => {
                     refetch()
                   }}
+                  className={showButtons ? "pointer-events-none" : void 0}
                 >
                   <RotatingRefreshIcon
                     className={cn(hasUpdate && "text-accent")}
@@ -139,6 +149,7 @@ export const EntryListHeader: FC<{
               }
               shortcut={commandShortcuts[COMMAND_ID.timeline.unreadOnly]}
               onClick={() => runCmdFn(COMMAND_ID.timeline.unreadOnly, [!unreadOnly])()}
+              className={showButtons ? "pointer-events-none" : void 0}
             >
               {unreadOnly ? (
                 <i className="i-mgc-round-cute-fi" />
@@ -146,7 +157,7 @@ export const EntryListHeader: FC<{
                 <i className="i-mgc-round-cute-re" />
               )}
             </ActionButton>
-            <MarkAllReadButton shortcut />
+            <MarkAllReadButton shortcut className={showButtons ? "pointer-events-none" : void 0} />
           </div>
         )}
       </div>
