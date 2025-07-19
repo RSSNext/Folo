@@ -54,6 +54,7 @@
   "login.logInWithEmail": "メールでログイン",
   "login.new_password.label": "新しいパスワード",
   "login.no_account": "アカウントをお持ちでないですか？ <strong>サインアップ</strong>",
+  "login.no_client": "クライアントが検出されませんでした。<weblink>Web アプリを使用し続ける</weblink>ことができます。",
   "login.openApp": "アプリを開く",
   "login.or": "または",
   "login.password": "パスワード",
@@ -78,6 +79,10 @@
   "register.label": "{{app_name}} のアカウントを作成する",
   "register.login": "ログイン",
   "register.password": "パスワード",
+  "register.referral.days": "この招待コードを使用して、{{days}} 日間の Pro Preview を取得します",
+  "register.referral.description": "招待コードを使用して、Pro Preview の追加日数を取得します。",
+  "register.referral.invalid": "無効な招待コード",
+  "register.referral.label": "招待コード",
   "register.submit": "アカウントを作成",
   "words.email": "Email"
 }
