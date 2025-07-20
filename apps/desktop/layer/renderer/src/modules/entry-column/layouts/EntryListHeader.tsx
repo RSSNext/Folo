@@ -85,7 +85,7 @@ export const EntryListHeader: FC<{
           <div
             className={cn(
               "text-text-secondary relative z-[1] flex items-center gap-1 self-baseline",
-              showButtons && "pointer-events-none opacity-0",
+              showButtons && "[&_*]:!pointer-events-none opacity-0",
 
               "translate-x-[6px]",
             )}
