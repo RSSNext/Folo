@@ -6,12 +6,17 @@ import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
 import { PlayCuteFiIcon } from "@/src/icons/play_cute_fi"
+import type { SimpleMediaState } from "@/src/lib/player"
 
 import { NativePressable } from "../pressable/NativePressable"
 
 interface PlayerActionProps {
-  isPlaying: boolean
-  isLoading?: boolean
+  /**
+   * This is the state of the media instead of the play button.
+   *
+   * When the media is paused, the play button should be shown.
+   */
+  mediaState: SimpleMediaState
   onPress: () => void
   className?: string
   iconSize?: number
@@ -19,8 +24,7 @@ interface PlayerActionProps {
 }
 
 export function PlayerAction({
-  isPlaying,
-  isLoading = false,
+  mediaState,
   onPress,
   className = "",
   iconSize = 24,
@@ -29,6 +33,18 @@ export function PlayerAction({
   const handlePressPlay = useCallback(() => {
     onPress()
   }, [onPress])
+
+  let playButtonIcon = <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />
+  switch (mediaState) {
+    case "playing": {
+      playButtonIcon = <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />
+      break
+    }
+    case "loading": {
+      playButtonIcon = <PlatformActivityIndicator />
+      break
+    }
+  }
 
   return (
     <NativePressable
@@ -41,13 +57,7 @@ export function PlayerAction({
           intensity={30}
           experimentalBlurMethod="none"
         />
-        {isPlaying ? (
-          <PauseCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        ) : isLoading ? (
-          <PlatformActivityIndicator />
-        ) : (
-          <PlayCuteFiIcon color="white" width={iconSize} height={iconSize} />
-        )}
+        {playButtonIcon}
       </View>
     </NativePressable>
   )

@@ -7,13 +7,13 @@ import { useMemo, useRef } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
 import { FixedModalCloseButton } from "~/components/ui/modal/components/close"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { AIChatRoot } from "~/modules/ai/chat/components/AIChatRoot"
@@ -68,7 +68,7 @@ const EntryLayoutContentLegacy = () => {
     </AppLayoutGridContainerProvider>
   )
 }
-const EntryLayoutContentWithAI = () => {
+export const EntryLayoutContentWithAI = () => {
   const { entryId, view } = useRouteParams()
   const navigate = useNavigateEntry()
 
@@ -97,8 +97,8 @@ const EntryLayoutContentWithAI = () => {
 }
 
 export const EntryLayoutContent = () => {
-  const serverConfigs = useServerConfigs()
-  if (serverConfigs?.AI_CHAT_ENABLED) {
+  const aiEnabled = useFeature("ai")
+  if (aiEnabled) {
     return <EntryLayoutContentWithAI />
   }
   return <EntryLayoutContentLegacy />

@@ -4,6 +4,33 @@
   <dict>
     <key>EXUpdatesCheckOnLaunch</key>
     <string>ALWAYS</string>
+    <key>EXUpdatesCodeSigningCertificate</key>
+    <string>-----BEGIN CERTIFICATE-----&#xD;
+MIICzTCCAbWgAwIBAgIJUT2cNJFxkuU3MA0GCSqGSIb3DQEBCwUAMA8xDTALBgNV&#xD;
+BAMTBEZvbG8wIBcNMjUwNzE4MTUyNTU3WhgPMjA3NTA3MTgxNTI1NTdaMA8xDTAL&#xD;
+BgNVBAMTBEZvbG8wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcZ1Dc&#xD;
+4epFVgeyIcgb7Hm+6PfX5NCAJNWU+A+JZMVaDoTOzGK7hVnPwyv8Yl0BNJ34YBbK&#xD;
++b9DK6+5c8ELk3QxojVZ/GNCtC8cMKkIB3ttUh5cqE2CmzaWwDTYC9pbtVMUWUiy&#xD;
+CEgZ6TIA6g1WUtreEaRcxaAeTm+6CVExpOicatG6oAl2HWY15gezI4Q11VTGteet&#xD;
+q342tnT+uCWGTr1/ypDgBbnxmyVAvZ3lcRqKEur/E2Iakp50vJm8F8eRKcfcljev&#xD;
+fd8IRM8Bk0PLRptdSbYUgfSxua8uM86ZVpCWyNkrPd6y+eCXxBIlTz8zaQDh96/W&#xD;
+ehIVmtRrSNRqJMw7AgMBAAGjKjAoMA4GA1UdDwEB/wQEAwIHgDAWBgNVHSUBAf8E&#xD;
+DDAKBggrBgEFBQcDAzANBgkqhkiG9w0BAQsFAAOCAQEAPQNPfv171GV/tIr+EVzV&#xD;
+20iZhUubBWKpn9dDCATcPQiix1g42HPbX69kgpIQ8qPXE2kJ5cq4KUSaCmKqBGbv&#xD;
+12bujdLCROucJUS/xdONok4vSz8aXv8dAgqqAc6rA3hQXwjfJ0vxefsuyUZkHoax&#xD;
+nLAD4066h39QQ/xwuiJh4EJfaRlwQW2z2pBh/X66fIujxzx/TiMR0JlF4ZBrDmvR&#xD;
+rcOadEUe8kBPdyJ3hFJmT589EJ9G0Z2WP7lr8/YT3FCjp4lp90VLhMffcmB4QTqh&#xD;
+q3UTIob6SKjDJqOFrYsQgHJrD+OTQSeXB46sssLKe2zEjXN72oFK71V+3gXOSB93&#xD;
+fQ==&#xD;
+-----END CERTIFICATE-----&#xD;
+</string>
+    <key>EXUpdatesCodeSigningMetadata</key>
+    <dict>
+      <key>keyid</key>
+      <string>main</string>
+      <key>alg</key>
+      <string>rsa-v1_5-sha256</string>
+    </dict>
     <key>EXUpdatesEnabled</key>
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
@@ -11,6 +38,6 @@
     <key>EXUpdatesRuntimeVersion</key>
     <string>0.0.0-dev</string>
     <key>EXUpdatesURL</key>
-    <string>https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920</string>
+    <string>https://folo-custom-expo-updates.vercel.app/api/manifest</string>
   </dict>
 </plist>

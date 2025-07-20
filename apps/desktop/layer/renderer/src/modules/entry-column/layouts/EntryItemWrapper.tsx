@@ -1,13 +1,13 @@
 import { useGlobalFocusableScopeSelector } from "@follow/components/common/Focusable/hooks.js"
+import { Spring } from "@follow/components/constants/spring.js"
 import { useMobile } from "@follow/components/hooks/useMobile.js"
-import type { FeedViewType } from "@follow/constants"
-import { views } from "@follow/constants"
+import { FeedViewType, views } from "@follow/constants"
 import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
-import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
+import { AnimatePresence, m } from "motion/react"
 import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
 import { useDebounceCallback } from "usehooks-ts"
@@ -22,13 +22,20 @@ import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { FocusablePresets } from "~/components/common/Focusable"
 import { useEntryIsRead } from "~/hooks/biz/useAsRead"
 import { useContextMenuActionShortCutTrigger } from "~/hooks/biz/useContextMenuActionShortCutTrigger"
-import { HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU, useEntryActions } from "~/hooks/biz/useEntryActions"
+import {
+  HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU,
+  useEntryActions,
+  useSortedEntryActions,
+} from "~/hooks/biz/useEntryActions"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useFeedActions } from "~/hooks/biz/useFeedActions"
 import { getNavigateEntryPath, useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
-import { getRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
+import { getRouteParams, useRouteParams, useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { copyToClipboard } from "~/lib/clipboard"
 import { COMMAND_ID } from "~/modules/command/commands/id"
+import { EntryHeaderActions } from "~/modules/entry-content/actions/header-actions"
+import { MoreActions } from "~/modules/entry-content/actions/more-actions"
 
 export const EntryItemWrapper: FC<
   {
@@ -61,7 +68,8 @@ export const EntryItemWrapper: FC<
   const asRead = useEntryIsRead(entry)
   const hoverMarkUnread = useGeneralSettingKey("hoverMarkUnread")
 
-  const handleMouseEnter = useDebounceCallback(
+  const [showAction, setShowAction] = useState(false)
+  const handleMouseEnterMarkRead = useDebounceCallback(
     () => {
       if (!hoverMarkUnread) return
       if (!document.hasFocus()) return
@@ -76,14 +84,43 @@ export const EntryItemWrapper: FC<
     },
   )
 
-  const navigate = useNavigateEntry()
+  const handleMouseEnter = useMemo(() => {
+    return () => {
+      setShowAction(true)
+      handleMouseEnterMarkRead()
+    }
+  }, [handleMouseEnterMarkRead])
+  const handleMouseLeave = useMemo(() => {
+    return (e: React.MouseEvent) => {
+      handleMouseEnterMarkRead.cancel()
+      // If the mouse is over the action bar, don't hide the action bar
+      const { relatedTarget, currentTarget } = e
+      if (relatedTarget && relatedTarget instanceof Node && currentTarget.contains(relatedTarget)) {
+        return
+      }
+      setShowAction(false)
+    }
+  }, [handleMouseEnterMarkRead])
 
+  const isDropdownMenuOpen = useGlobalFocusableScopeSelector(
+    FocusablePresets.isNotFloatingLayerScope,
+  )
+
+  useEffect(() => {
+    // Hide the action bar when dropdown menu is open and click outside
+    if (isDropdownMenuOpen) {
+      setShowAction(false)
+    }
+  }, [isDropdownMenuOpen])
+
+  const navigate = useNavigateEntry()
   const navigationPath = useMemo(() => {
     if (!entry?.id) return "#"
     return getNavigateEntryPath({
       entryId: entry?.id,
     })
   }, [entry?.id])
+
   const handleClick = useCallback(
     (e: TouchEvent<HTMLAnchorElement> | MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault()
@@ -97,10 +134,11 @@ export const EntryItemWrapper: FC<
         unreadSyncService.markEntryAsRead(entry.id)
       }
 
-      setTimeout(
-        () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
-        60,
-      )
+      // TODO
+      // setTimeout(
+      //   () => EventBus.dispatch(COMMAND_ID.layout.focusToEntryRender, { highlightBoundary: false }),
+      //   60,
+      // )
 
       navigate({
         entryId: entry.id,
@@ -168,25 +206,55 @@ export const EntryItemWrapper: FC<
     },
   })
 
+  const aiEnabled = useFeature("ai")
+  const isWide = views[view as FeedViewType]?.wideMode || aiEnabled
+
   return (
     <div data-entry-id={entry?.id} style={style}>
       <NavLink
         to={navigationPath}
         className={cn(
           "hover:bg-theme-item-hover cursor-button relative block duration-200",
-          views[view as FeedViewType]?.wideMode ? "rounded-md" : "px-2",
+          isWide ? "rounded-md" : "",
           (isActive || isContextMenuOpen) && "!bg-theme-item-active",
           itemClassName,
         )}
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseEnter.cancel}
+        onMouseLeave={handleMouseLeave}
         onDoubleClick={handleDoubleClick}
         {...contextMenuProps}
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >
         {children}
+        <AnimatePresence>{showAction && isWide && <ActionBar entryId={entryId} />}</AnimatePresence>
       </NavLink>
     </div>
+  )
+}
+
+const ActionBar = ({ entryId }: { entryId: string }) => {
+  const { mainAction: entryActions } = useSortedEntryActions({
+    entryId,
+    view: FeedViewType.SocialMedia,
+  })
+  const { view } = useRouteParams()
+
+  if (entryActions.length === 0) return null
+
+  return (
+    <m.div
+      initial={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      animate={{ opacity: 1, scale: 1, y: "-1/2" }}
+      exit={{ opacity: 0, scale: 0.9, y: "-1/2" }}
+      transition={Spring.presets.smooth}
+      className="absolute right-1 top-0 -translate-y-1/2 rounded-lg border border-gray-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm dark:border-neutral-900 dark:bg-neutral-900"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center gap-1">
+        <EntryHeaderActions entryId={entryId} view={view} compact />
+        <MoreActions entryId={entryId} view={view} compact />
+      </div>
+    </m.div>
   )
 }

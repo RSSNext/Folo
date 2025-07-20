@@ -7,7 +7,6 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
-import { usePlayingUrl } from "@/src/lib/player"
 import { checkLanguage } from "@/src/lib/translation"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -27,11 +26,7 @@ export const EntryListContentArticle = ({
 }: { entryIds: string[] | null; active?: boolean; view: FeedViewType } & {
   ref?: React.Ref<ElementRef<typeof TimelineSelectorList> | null>
 }) => {
-  const playingAudioUrl = usePlayingUrl()
-  const extraData: EntryExtraData = useMemo(
-    () => ({ playingAudioUrl, entryIds }),
-    [playingAudioUrl, entryIds],
-  )
+  const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, fetchedTime, isReady } =
     useEntries()

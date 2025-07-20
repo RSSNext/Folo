@@ -1,28 +1,30 @@
-import type { AttachmentsModel } from "@follow/database/schemas/types"
 import { atom, useAtom } from "jotai"
 import { useCallback, useEffect } from "react"
-import TrackPlayer, { State, useActiveTrack, usePlaybackState } from "react-native-track-player"
+import TrackPlayer, { useActiveTrack, useIsPlaying } from "react-native-track-player"
 
 import { PlayerRegistered } from "../initialize/player"
 import { toast } from "./toast"
 
-const LOADING_SUFFIX = "_loading"
+export type SimpleMediaState = "playing" | "paused" | "loading"
 
-export function usePlayingUrl() {
+/**
+ * Learn more https://rntp.dev/docs/guides/play-button
+ */
+export function useAudioPlayState(audioUrl?: string): SimpleMediaState {
+  const playState = useIsPlaying()
   const activeTrack = useActiveTrack()
-  const playerState = usePlaybackState()
-  const isPlaying = !!activeTrack?.url && playerState.state === State.Playing
-  const isLoading = playerState.state === State.Buffering || playerState.state === State.Loading
-  return isPlaying ? activeTrack?.url : isLoading ? `${activeTrack?.url}${LOADING_SUFFIX}` : null
-}
+  const playingUrl = activeTrack?.url
 
-export function getAttachmentState(playingUrl?: string, attachment?: AttachmentsModel) {
-  if (!playingUrl || !attachment || !attachment.mime_type?.startsWith("audio/")) {
-    return null
+  const isCurrentTrack = !audioUrl || playingUrl === audioUrl
+  if (!playingUrl || !isCurrentTrack) {
+    // By default the audio should be in "paused" state
+    return "paused"
   }
-  const isPlaying = attachment.url === playingUrl
-  const isLoading = playingUrl === `${attachment.url}${LOADING_SUFFIX}`
-  return isPlaying ? "playing" : isLoading ? "loading" : null
+
+  if (playState.bufferingDuringPlay === true) {
+    return "loading"
+  }
+  return playState.playing ? "playing" : "paused"
 }
 
 class Player {

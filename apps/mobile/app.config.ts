@@ -28,7 +28,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     owner: "follow",
     updates: {
-      url: "https://u.expo.dev/a6335b14-fb84-45aa-ba80-6f6ab8926920",
+      url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
+      codeSigningCertificate: "./code-signing/certificate.pem",
+      codeSigningMetadata: {
+        keyid: "main",
+        alg: "rsa-v1_5-sha256",
+      },
     },
     runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
 

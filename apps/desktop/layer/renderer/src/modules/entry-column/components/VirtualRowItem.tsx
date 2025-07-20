@@ -56,7 +56,6 @@ export const VirtualRowItem: FC<VirtualRowItemProps> = memo(
         {isStickyItem && (
           <div
             className={clsx(
-              "bg-background",
               isActiveStickyItem
                 ? "sticky top-0 z-[1]"
                 : "absolute left-0 top-0 z-[1] w-full will-change-transform",
@@ -83,7 +82,7 @@ export const VirtualRowItem: FC<VirtualRowItemProps> = memo(
           style={useMemo(
             () => ({
               transform,
-              paddingTop: isStickyItem ? "1.75rem" : undefined,
+              paddingTop: isStickyItem ? "2.75rem" : undefined,
             }),
             [transform, isStickyItem],
           )}

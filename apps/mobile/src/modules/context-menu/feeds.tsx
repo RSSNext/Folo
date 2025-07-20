@@ -403,11 +403,7 @@ const PreviewFeeds = (props: { id: string; view: FeedViewType }) => {
 
   const renderItem = useCallback(
     ({ item: id }: ListRenderItemInfo<string>) => (
-      <EntryNormalItem
-        entryId={id}
-        extraData={{ entryIds: null, playingAudioUrl: null }}
-        view={props.view}
-      />
+      <EntryNormalItem entryId={id} extraData={{ entryIds: null }} view={props.view} />
     ),
     [props.view],
   )

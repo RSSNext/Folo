@@ -22,7 +22,8 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
-import { getAttachmentState, player } from "@/src/lib/player"
+import { player, useAudioPlayState } from "@/src/lib/player"
+import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
@@ -153,9 +154,7 @@ export const EntryNormalItem = memo(
               />
             )}
           </View>
-          {view !== FeedViewType.Notifications && (
-            <ThumbnailImage entryId={entryId} playingAudioUrl={extraData.playingAudioUrl} />
-          )}
+          {view !== FeedViewType.Notifications && <ThumbnailImage entryId={entryId} />}
         </ItemPressable>
       </EntryItemContextMenu>
     )
@@ -164,13 +163,7 @@ export const EntryNormalItem = memo(
 
 EntryNormalItem.displayName = "EntryNormalItem"
 
-const ThumbnailImage = ({
-  playingAudioUrl,
-  entryId,
-}: {
-  playingAudioUrl: string | null
-  entryId: string
-}) => {
+const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     media: state.media,
@@ -188,9 +181,7 @@ const ThumbnailImage = ({
   const blurhash = mediaModel?.blurhash
 
   const audio = entry?.attachments?.find((attachment) => attachment.mime_type?.startsWith("audio/"))
-  const audioState = getAttachmentState(playingAudioUrl ?? undefined, audio)
-  const isPlaying = audioState === "playing"
-  const isLoading = audioState === "loading"
+  const audioState = useAudioPlayState(audio?.url)
 
   const video = mediaModel?.type === "video" ? mediaModel : null
   const videoViewRef = useRef<null | VideoView>(null)
@@ -212,18 +203,22 @@ const ThumbnailImage = ({
       return
     }
     if (!audio) return
-    if (isLoading) return
-    if (isPlaying) {
+    if (audioState !== "paused") {
       player.pause()
       return
     }
-    player.play({
-      url: audio.url,
-      title: entry?.title,
-      artist: feed?.title,
-      artwork: image,
-    })
-  }, [audio, entry?.title, feed?.title, image, isLoading, isPlaying, video, videoPlayer])
+    try {
+      player.play({
+        url: audio.url,
+        title: entry?.title,
+        artist: feed?.title,
+        artwork: image,
+      })
+    } catch (error) {
+      console.error("Error playing audio:", error)
+      toast.error("Failed to play audio")
+    }
+  }, [audio, audioState, entry?.title, feed?.title, image, video, videoPlayer])
 
   const [imageError, setImageError] = useState(audio && !image)
   const handleImageError = useCallback(() => {
@@ -275,9 +270,7 @@ const ThumbnailImage = ({
       {/* Show feed icon if no image but audio is present */}
       {imageError && <FeedIcon feed={feed} size={96} />}
 
-      {(video || audio) && (
-        <PlayerAction isPlaying={isPlaying} isLoading={isLoading} onPress={handlePressPlay} />
-      )}
+      {(video || audio) && <PlayerAction mediaState={audioState} onPress={handlePressPlay} />}
     </View>
   )
 }

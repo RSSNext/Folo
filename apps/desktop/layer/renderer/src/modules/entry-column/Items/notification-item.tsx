@@ -5,11 +5,14 @@ import { ListItem } from "~/modules/entry-column/templates/list-item-template"
 import { FeedIcon } from "~/modules/feed/feed-icon"
 import { FeedTitle } from "~/modules/feed/feed-title"
 
+import { readableContentMaxWidth } from "../styles"
 import type { EntryItemStatelessProps, UniversalItemProps } from "../types"
 
 export function NotificationItem({ entryId, entryPreview, translation }: UniversalItemProps) {
   return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} simple />
 }
+
+NotificationItem.wrapperClassName = readableContentMaxWidth
 
 export function NotificationItemStateLess({ entry, feed }: EntryItemStatelessProps) {
   return (
