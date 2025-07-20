@@ -250,6 +250,14 @@ export const PreviewMediaContent: FC<{
   // This only to delay show
   const [currentSlideIndex, setCurrentSlideIndex] = useState(initialIndex)
 
+  // fallbackMap use in download to fix the cors image
+  const [fallbackMap, setFallbackMap] = useState<Record<string, string>>({})
+  const handleFallback = (original: string, fallback: string) => {
+    if (original && fallback) {
+      setFallbackMap((prev) => ({ ...prev, [original]: fallback }))
+    }
+  }
+
   useEffect(() => {
     if (emblaApi) {
       emblaApi.on("select", () => {
@@ -281,7 +289,7 @@ export const PreviewMediaContent: FC<{
     const { type } = media[0]!
     const isVideo = type === "video"
     return (
-      <Wrapper src={src} onZoomChange={onZoomChange} canDragClose>
+      <Wrapper src={fallbackMap[src] || src} onZoomChange={onZoomChange} canDragClose>
         {(handleZoomChange) => [
           <Fragment key={src}>
             {isVideo ? (
@@ -303,6 +311,7 @@ export const PreviewMediaContent: FC<{
                 width={media[0]!.width}
                 blurhash={media[0]!.blurhash}
                 onZoomChange={handleZoomChange}
+                onFallback={handleFallback}
               />
             )}
           </Fragment>,
@@ -312,7 +321,11 @@ export const PreviewMediaContent: FC<{
     )
   }
   return (
-    <Wrapper src={currentMedia!.url} onZoomChange={onZoomChange} canDragClose={false}>
+    <Wrapper
+      src={fallbackMap[currentMedia!.url] || currentMedia!.url}
+      onZoomChange={onZoomChange}
+      canDragClose={false}
+    >
       {(handleZoomChange) => [
         <div key={"left"} className="group size-full overflow-hidden" ref={emblaRef}>
           <div className="flex size-full">
@@ -338,6 +351,7 @@ export const PreviewMediaContent: FC<{
                     width={med.width}
                     blurhash={med.blurhash}
                     onZoomChange={handleZoomChange}
+                    onFallback={handleFallback}
                   />
                 )}
               </div>
@@ -379,8 +393,9 @@ const FallbackableImage: FC<
     fallbackUrl?: string
     blurhash?: string
     onZoomChange?: (isZoomed: boolean) => void
+    onFallback?: (original: string, fallback: string) => void
   }
-> = ({ src, fallbackUrl, containerClassName, onZoomChange, loading }) => {
+> = ({ src, fallbackUrl, containerClassName, onZoomChange, loading, onFallback }) => {
   const [currentSrc, setCurrentSrc] = useState(() => replaceImgUrlIfNeed(src))
   const [isAllError, setIsAllError] = useState(false)
 
@@ -389,6 +404,12 @@ const FallbackableImage: FC<
   const [currentState, setCurrentState] = useState<"proxy" | "origin" | "fallback">(() =>
     currentSrc === src ? "origin" : "proxy",
   )
+
+  useEffect(() => {
+    if (currentSrc && currentSrc !== src) {
+      onFallback?.(src, currentSrc)
+    }
+  }, [currentSrc])
 
   const handleError = useCallback(() => {
     switch (currentState) {
