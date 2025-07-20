@@ -18,7 +18,7 @@ import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
 
 import { setMasonryColumnValue, useMasonryColumnValue } from "../../atoms"
 
-export const SwitchToMasonryButton = ({ className }: { className?: string }) => {
+export const SwitchToMasonryButton = () => {
   const isMasonry = useUISettingKey("pictureViewMasonry")
   const { t } = useTranslation()
   const isMobile = useMobile()
@@ -32,7 +32,6 @@ export const SwitchToMasonryButton = ({ className }: { className?: string }) => 
           onClick={() => {
             setUISetting("pictureViewMasonry", !isMasonry)
           }}
-          className={className}
         >
           <i className={cn(!isMasonry ? "i-mgc-grid-cute-re" : "i-mgc-grid-2-cute-re")} />
         </ActionButton>

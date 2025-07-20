@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import { useAIDailyReportModal } from "~/modules/ai/ai-daily/useAIDailyReportModal"
 
-export const DailyReportButton: FC<{ className?: string }> = ({ className }) => {
+export const DailyReportButton: FC = () => {
   const present = useAIDailyReportModal()
   const { t } = useTranslation()
 
@@ -16,7 +16,6 @@ export const DailyReportButton: FC<{ className?: string }> = ({ className }) => 
         tracker.dailyReportModal()
       }}
       tooltip={t("entry_list_header.daily_report")}
-      className={className}
     >
       <i className="i-mgc-ai-cute-re" />
     </ActionButton>
