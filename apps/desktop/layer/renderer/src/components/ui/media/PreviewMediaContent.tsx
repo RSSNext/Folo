@@ -281,7 +281,7 @@ export const PreviewMediaContent: FC<{
     const { type } = media[0]!
     const isVideo = type === "video"
     return (
-      <Wrapper src={src} onZoomChange={onZoomChange} canDragClose>
+      <Wrapper src={src} onZoomChange={onZoomChange} canDragClose={!isVideo}>
         {(handleZoomChange) => [
           <Fragment key={src}>
             {isVideo ? (
