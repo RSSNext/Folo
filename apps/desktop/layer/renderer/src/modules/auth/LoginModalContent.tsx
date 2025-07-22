@@ -35,7 +35,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
 
   const { canClose = true, runtime } = props
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { data: authProviders, isLoading } = useAuthProviders()
 
   const isMobile = useMobile()
@@ -84,15 +84,26 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         </div>
       )}
 
-      <div className="-mt-9 mb-4 flex items-center justify-center">
-        <Logo className="size-16" />
-      </div>
-      <div className="mb-6 mt-4 flex items-center justify-center text-center">
-        <span className="text-3xl">
-          {isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")}
-        </span>
-        <Folo className="ml-2 size-14" />
-      </div>
+      {i18n.language === "ko" ? (
+        <div className="mb-6 mt-4 flex items-center justify-center text-center">
+          <Folo className="mr-2 size-16" />
+          <span className="text-3xl">
+            {isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")}
+          </span>
+        </div>
+      ) : (
+        <>
+          <div className="-mt-9 mb-4 flex items-center justify-center">
+            <Logo className="size-16" />
+          </div>
+          <div className="mb-6 mt-4 flex items-center justify-center text-center">
+            <span className="text-3xl">
+              {isRegister ? t("signin.sign_up_to") : t("signin.sign_in_to")}
+            </span>
+            <Folo className="ml-2 size-14" />
+          </div>
+        </>
+      )}
 
       {isEmail ? (
         isRegister ? (
