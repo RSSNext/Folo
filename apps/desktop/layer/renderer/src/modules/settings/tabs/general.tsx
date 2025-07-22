@@ -1,4 +1,13 @@
 import { useMobile } from "@follow/components/hooks/useMobile.js"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@follow/components/ui/select/index.jsx"
 import { ResponsiveSelect } from "@follow/components/ui/select/responsive.js"
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { ACTION_LANGUAGE_MAP } from "@follow/shared"
@@ -212,24 +221,55 @@ const VoiceSelector = () => {
 
   const voice = useGeneralSettingKey("voice")
 
+  // Group voices by language
+  const groupedVoices = data?.reduce(
+    (acc, item) => {
+      // Extract language from voice name (e.g., "Microsoft David - English (United States)" -> "English (United States)")
+      const match = item.FriendlyName.match(/- (.+)$/)
+      const language = match?.[1] || "Other"
+
+      if (!acc[language]) {
+        acc[language] = []
+      }
+      acc[language].push(item)
+      return acc
+    },
+    {} as Record<string, typeof data>,
+  )
+
   return (
-    <div className="-mt-1 mb-3 flex items-center justify-between">
-      <span className="shrink-0 text-sm font-medium">{t("general.voices")}</span>
-      <ResponsiveSelect
-        size="sm"
-        triggerClassName="w-48"
+    <div className="-mt-1 mb-3 flex items-center justify-between gap-12">
+      <span className="w-[150px] shrink-0 text-sm font-medium">{t("general.voices")}</span>
+      <Select
         defaultValue={voice}
         value={voice}
         onValueChange={(value) => {
           setGeneralSetting("voice", value)
         }}
-        items={
-          data?.map((item) => ({
-            label: item.FriendlyName,
-            value: item.ShortName,
-          })) ?? []
-        }
-      />
+      >
+        <SelectTrigger size="sm">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent position="item-aligned">
+          {groupedVoices &&
+            Object.entries(groupedVoices)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([language, voices]) => (
+                <SelectGroup key={language}>
+                  <SelectLabel className="bg-fill-secondary m-1 rounded-md px-2 py-1">
+                    {language}
+                  </SelectLabel>
+                  {voices
+                    .sort((a, b) => a.FriendlyName.localeCompare(b.FriendlyName))
+                    .map((item) => (
+                      <SelectItem key={item.ShortName} value={item.ShortName}>
+                        {item.FriendlyName}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
