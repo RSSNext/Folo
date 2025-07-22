@@ -62,7 +62,13 @@ export const EntryDetailScreen: NavigationControllerView<{
     const currentEntryIdx = entryIds.indexOf(entryId)
     return entryIds[currentEntryIdx + 1]
   }, [entryId, entryIds])
-  const { EntryPullUpToNext, scrollViewEventHandlers, pullUpViewProps } = usePullUpToNext({
+  const {
+    EntryPullUpToNext,
+    scrollViewEventHandlers,
+    pullUpViewProps,
+    GestureWrapper,
+    gestureWrapperProps,
+  } = usePullUpToNext({
     enabled: !!nextEntryId,
     onRefresh: useCallback(() => {
       if (!nextEntryId) return
@@ -85,39 +91,41 @@ export const EntryDetailScreen: NavigationControllerView<{
     <EntryContentContext value={ctxValue}>
       <PortalProvider>
         <BottomTabBarHeightContext value={insets.bottom}>
-          <SafeNavigationScrollView
-            Header={<EntryNavigationHeader entryId={entryId} />}
-            ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
-            automaticallyAdjustContentInsets={false}
-            contentContainerClassName="flex min-h-full pb-16"
-            {...scrollViewEventHandlers}
-          >
-            <ItemPressable
-              itemStyle={ItemPressableStyle.UnStyled}
-              onPress={() => entry?.url && openLink(entry.url)}
-              className="rounded-xl py-4"
+          <GestureWrapper {...gestureWrapperProps}>
+            <SafeNavigationScrollView
+              Header={<EntryNavigationHeader entryId={entryId} />}
+              ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
+              automaticallyAdjustContentInsets={false}
+              contentContainerClassName="flex min-h-full pb-16"
+              {...scrollViewEventHandlers}
             >
-              {viewType === FeedViewType.SocialMedia ? (
-                <EntrySocialTitle entryId={entryId} />
-              ) : (
-                <>
-                  <EntryTitle title={entry?.title || ""} entryId={entryId} />
-                  <EntryInfo entryId={entryId} />
-                </>
+              <ItemPressable
+                itemStyle={ItemPressableStyle.UnStyled}
+                onPress={() => entry?.url && openLink(entry.url)}
+                className="rounded-xl py-4"
+              >
+                {viewType === FeedViewType.SocialMedia ? (
+                  <EntrySocialTitle entryId={entryId} />
+                ) : (
+                  <>
+                    <EntryTitle title={entry?.title || ""} entryId={entryId} />
+                    <EntryInfo entryId={entryId} />
+                  </>
+                )}
+              </ItemPressable>
+              <EntryAISummary entryId={entryId} />
+              {entry && (
+                <View className="mt-3">
+                  <EntryContentWebViewWithContext entryId={entryId} />
+                </View>
               )}
-            </ItemPressable>
-            <EntryAISummary entryId={entryId} />
-            {entry && (
-              <View className="mt-3">
-                <EntryContentWebViewWithContext entryId={entryId} />
-              </View>
-            )}
-            {viewType === FeedViewType.SocialMedia && (
-              <View className="mt-2">
-                <EntryInfoSocial entryId={entryId} />
-              </View>
-            )}
-          </SafeNavigationScrollView>
+              {viewType === FeedViewType.SocialMedia && (
+                <View className="mt-2">
+                  <EntryInfoSocial entryId={entryId} />
+                </View>
+              )}
+            </SafeNavigationScrollView>
+          </GestureWrapper>
         </BottomTabBarHeightContext>
       </PortalProvider>
     </EntryContentContext>

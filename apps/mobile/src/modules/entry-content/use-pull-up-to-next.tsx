@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { View } from "react-native"
+import { useSharedValue } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
@@ -11,15 +12,22 @@ import { useColor } from "react-native-uikit-colors"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ArrowLeftCuteReIcon } from "@/src/icons/arrow_left_cute_re"
 
-interface EntryPullUpToNextProps {
-  active: boolean
-  hide?: boolean
-}
+import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./use-pull-up-to-next-types"
+
+// eslint-disable-next-line react-refresh/only-export-components
+const EmptyGestureWrapper: UsePullUpToNextReturn["GestureWrapper"] = ({
+  children,
+}: {
+  children?: React.ReactNode
+}) => children
 
 /**
  * Component that handles pulling up to navigate to the next unread entry
  */
-const EntryPullUpToNext = ({ active, hide = false }: EntryPullUpToNextProps) => {
+const EntryPullUpToNext: UsePullUpToNextReturn["EntryPullUpToNext"] = ({
+  active,
+  hide = false,
+}) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const textColor = useColor("secondaryLabel")
@@ -63,11 +71,7 @@ export const usePullUpToNext = ({
   enabled = true,
   onRefresh,
   progressViewOffset = 70,
-}: {
-  enabled?: boolean
-  onRefresh?: (() => void) | undefined
-  progressViewOffset?: number
-} = {}) => {
+}: UsePullUpToNextProps = {}): UsePullUpToNextReturn => {
   const dragging = useRef(false)
   const isOverThreshold = useRef(false)
   const [dragState, setDragState] = useState(false)
@@ -124,14 +128,20 @@ export const usePullUpToNext = ({
     },
     [dragging, onRefresh],
   )
+  const translateY = useSharedValue(0)
   if (!enabled) {
     return {
       scrollViewEventHandlers: {},
       pullUpViewProps: {
         active: false,
         hide: dragState,
-      } satisfies EntryPullUpToNextProps,
+        translateY,
+      } satisfies UsePullUpToNextReturn["pullUpViewProps"],
       EntryPullUpToNext: () => null,
+      GestureWrapper: EmptyGestureWrapper,
+      gestureWrapperProps: {
+        enabled: false,
+      },
     }
   }
   return {
@@ -143,7 +153,12 @@ export const usePullUpToNext = ({
     pullUpViewProps: {
       active: refreshing,
       hide: !dragState,
-    } satisfies EntryPullUpToNextProps,
+      translateY,
+    } satisfies UsePullUpToNextReturn["pullUpViewProps"],
     EntryPullUpToNext,
+    GestureWrapper: EmptyGestureWrapper,
+    gestureWrapperProps: {
+      enabled: false,
+    },
   }
 }
