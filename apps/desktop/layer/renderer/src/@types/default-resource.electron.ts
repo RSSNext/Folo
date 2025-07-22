@@ -1,4 +1,6 @@
 // DONT EDIT THIS FILE MANUALLY
+import ai_en from "@locales/ai/en.json"
+import ai_ja from "@locales/ai/ja.json"
 import en from "@locales/app/en.json"
 import app_ja from "@locales/app/ja.json"
 import app_zhCN from "@locales/app/zh-CN.json"
@@ -38,6 +40,7 @@ export const defaultResources = {
     settings: settings_en,
     shortcuts: shortcuts_en,
     errors: errors_en,
+    ai: ai_en,
   },
   "zh-CN": {
     app: app_zhCN,
@@ -46,6 +49,7 @@ export const defaultResources = {
     settings: settings_zhCN,
     shortcuts: shortcuts_zhCN,
     errors: errors_zhCN,
+    ai: ai_en, // Fallback to English until Chinese translation is available
   },
 
   ja: {
@@ -55,6 +59,7 @@ export const defaultResources = {
     settings: settings_ja,
     shortcuts: shortcuts_ja,
     errors: errors_ja,
+    ai: ai_ja,
   },
   "zh-TW": {
     app: app_zhTW,
@@ -63,6 +68,7 @@ export const defaultResources = {
     settings: settings_zhTW,
     shortcuts: shortcuts_zhTW,
     errors: errors_zhTW,
+    ai: ai_en, // Fallback to English until Traditional Chinese translation is available
   },
 } satisfies Record<
   RendererSupportedLanguages,
