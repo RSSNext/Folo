@@ -451,13 +451,28 @@ export function doesTextContainHTML(text?: string | null): boolean {
 }
 
 /**
- * Get current language from localStorage
+ * Cache for current language to avoid repeated localStorage reads
+ */
+let cachedLanguage: string | null = null
+let cacheTimestamp = 0
+const CACHE_DURATION = 5000 // 5 seconds cache
+
+/**
+ * Get current language from localStorage with caching
  */
 const getCurrentLanguage = (): string => {
+  // Return cached value if still valid
+  const now = Date.now()
+  if (cachedLanguage && now - cacheTimestamp < CACHE_DURATION) {
+    return cachedLanguage
+  }
+
   try {
     // First try to get from I18N_LOCALE
     const i18nLocale = globalThis.localStorage?.getItem("follow:I18N_LOCALE")
     if (i18nLocale) {
+      cachedLanguage = i18nLocale
+      cacheTimestamp = now
       return i18nLocale
     }
 
@@ -466,6 +481,8 @@ const getCurrentLanguage = (): string => {
     if (generalSettings) {
       const settings = JSON.parse(generalSettings)
       const language = settings?.language || "en"
+      cachedLanguage = language
+      cacheTimestamp = now
       return language
     }
 
@@ -476,12 +493,25 @@ const getCurrentLanguage = (): string => {
     if (settingsKey) {
       const settings = JSON.parse(settingsKey)
       const language = settings?.general?.language || "en"
+      cachedLanguage = language
+      cacheTimestamp = now
       return language
     }
   } catch {
     // Fallback silently
   }
+
+  cachedLanguage = "en"
+  cacheTimestamp = now
   return "en"
+}
+
+/**
+ * Clear the language cache (useful when language changes)
+ */
+export const clearLanguageCache = () => {
+  cachedLanguage = null
+  cacheTimestamp = 0
 }
 
 /**
@@ -498,12 +528,20 @@ export function formatNumber(num: number, locale?: string): string {
   // Use provided locale or get current language
   const currentLocale = locale || getCurrentLanguage()
 
-  // Special handling for Korean (만/억 system)
+  // Special handling for Korean (만/억/조 system)
   if (currentLocale === "ko") {
+    const jo = 1_000_000_000_000 // 조 (1 trillion)
     const uk = 100_000_000 // 억 (100 million)
     const man = 10_000 // 만 (10 thousand)
 
-    if (absNum >= uk) {
+    if (absNum >= jo) {
+      const joValue = absNum / jo
+      // If it's a clean 조 value, don't show decimal
+      if (joValue === Math.floor(joValue)) {
+        return `${isNegative ? "-" : ""}${joValue}조`
+      }
+      return `${isNegative ? "-" : ""}${joValue.toFixed(1)}조`
+    } else if (absNum >= uk) {
       const ukValue = absNum / uk
       // If it's a clean 억 value, don't show decimal
       if (ukValue === Math.floor(ukValue)) {
