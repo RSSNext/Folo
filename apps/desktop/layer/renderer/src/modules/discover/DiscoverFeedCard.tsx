@@ -95,7 +95,7 @@ interface DiscoverFeedCardProps {
 
 export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
   ({ item, onSuccess, className }) => {
-    const { t } = useTranslation("common")
+    const { t } = useTranslation(["app", "common"])
 
     const isSubscribed = useIsSubscribed(item.feed?.id || item.list?.id || "")
 
@@ -138,7 +138,7 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
 
                       <span>
                         {formatNumber(item.analytics.subscriptionCount)}{" "}
-                        {t("feed.follower", { count: item.analytics.subscriptionCount })}
+                        {t("common:feed.follower", { count: item.analytics.subscriptionCount })}
                       </span>
                     </div>
                   )}
@@ -146,13 +146,13 @@ export const DiscoverFeedCard: FC<DiscoverFeedCardProps> = memo(
                     <div className="flex items-center gap-1.5">
                       <i className="i-mgc-safety-certificate-cute-re" />
                       <span>
-                        {t("feed.entry_week", { count: item.analytics.updatesPerWeek ?? 0 })}
+                        {t("common:feed.entry_week", { count: item.analytics.updatesPerWeek ?? 0 })}
                       </span>
                     </div>
                   ) : item.analytics?.latestEntryPublishedAt ? (
                     <div className="flex items-center gap-1.5">
                       <i className="i-mgc-safe-alert-cute-re" />
-                      <span>{t("feed.updated_at")}</span>
+                      <span>{t("common:feed.updated_at")}</span>
                       <RelativeTime
                         date={item.analytics.latestEntryPublishedAt}
                         displayAbsoluteTimeAfterDay={Infinity}
