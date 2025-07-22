@@ -34,7 +34,7 @@
   "invitation.earlyAccess": "Folo는 현재 초대 코드가 필요합니다.",
   "invitation.earlyAccessMessage": "😰 죄송합니다, Folo는 현재 초대 코드가 필요합니다.",
   "invitation.generateButton": "새 코드 생성",
-  "invitation.generateCost": "친구를 위한 초대 코드를 생성하려면 {{INVITATION_PRICE}} Power를 사용할 수 있습니다.",
+  "invitation.generateCost": "친구를 위한 초대 코드를 생성하려면 {{INVITATION_PRICE}} 파워를 사용할 수 있습니다.",
   "invitation.getCodeMessage": "다음과 같은 방법으로 초대 코드를 받을 수 있습니다:",
   "invitation.title": "초대 코드",
   "login.backToWebApp": "웹 앱으로 돌아가기",
