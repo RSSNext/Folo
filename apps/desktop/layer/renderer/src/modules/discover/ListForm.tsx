@@ -44,6 +44,7 @@ const formSchema = z.object({
   view: z.string(),
   category: z.string().nullable().optional(),
   isPrivate: z.boolean().optional(),
+  hideFromTimeline: z.boolean().optional(),
   title: z.string().optional(),
 })
 
@@ -322,6 +323,29 @@ const ListInnerForm = ({
                   <div>
                     <FormLabel>{t("feed_form.private_follow")}</FormLabel>
                     <FormDescription>{t("feed_form.private_follow_description")}</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      className="shrink-0"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hideFromTimeline"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <FormLabel>{t("feed_form.hide_from_timeline")}</FormLabel>
+                    <FormDescription>
+                      {t("feed_form.hide_from_timeline_description")}
+                    </FormDescription>
                   </div>
                   <FormControl>
                     <Switch

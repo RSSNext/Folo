@@ -233,6 +233,8 @@
   "feed_form.follow": "Follow",
   "feed_form.follow_with_fee": "Follow with {{fee}} Power",
   "feed_form.followed": "🎉 Followed.",
+  "feed_form.hide_from_timeline": "Hide from Timeline",
+  "feed_form.hide_from_timeline_description": "Whether this subscription's entries are visible on your main view timeline.",
   "feed_form.private_follow": "Private Follow",
   "feed_form.private_follow_description": "Whether this follow is publicly visible on your profile page.",
   "feed_form.retry": "Retry",
