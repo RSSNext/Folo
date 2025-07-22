@@ -65,8 +65,6 @@ export type EntriesResponse = Array<
   | Exclude<Awaited<ReturnType<typeof _apiClient.entries.inbox.$post>>["data"], undefined>
 >[number]
 
-export type ActionSettings = Exclude<EntriesResponse[number]["settings"], undefined>
-
 export type CombinedEntryModel = Omit<EntriesResponse[number], "feeds"> & {
   entries: {
     content?: string | null

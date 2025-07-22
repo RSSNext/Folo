@@ -1,4 +1,4 @@
-import type { tools as honoTools } from "@follow/shared/hono"
+import type { tools as aiTools } from "@folo-services/ai-tools"
 import type { Tool, UIDataTypes, UIMessage } from "ai"
 
 export interface AIChatContextBlock {
@@ -33,7 +33,7 @@ type TransformTools<T> = {
 }
 
 // Apply the transformation to the hono tools
-export type BizUITools = TransformTools<typeof honoTools>
+export type BizUITools = TransformTools<typeof aiTools>
 
 export type BizUIMetadata = {
   startTime?: string
