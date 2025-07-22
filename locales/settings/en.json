@@ -462,6 +462,8 @@
   "profile.confirm_password.label": "Confirm Password",
   "profile.current_password.label": "Current Password",
   "profile.danger_zone": "Danger Zone",
+  "profile.delete_account.button": "Delete",
+  "profile.delete_account.confirm_message": "Are you sure you want to delete your account? This action is irreversible and may take up to two days to take effect.",
   "profile.delete_account.label": "Delete Account",
   "profile.edit_email": "Edit Email",
   "profile.edit_profile": "Edit Profile",
