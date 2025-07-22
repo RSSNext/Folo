@@ -451,16 +451,78 @@ export function doesTextContainHTML(text?: string | null): boolean {
 }
 
 /**
+ * Get current language from localStorage
+ */
+const getCurrentLanguage = (): string => {
+  try {
+    // First try to get from I18N_LOCALE
+    const i18nLocale = globalThis.localStorage?.getItem("follow:I18N_LOCALE")
+    if (i18nLocale) {
+      return i18nLocale
+    }
+
+    // Then try general settings
+    const generalSettings = globalThis.localStorage?.getItem("follow:general")
+    if (generalSettings) {
+      const settings = JSON.parse(generalSettings)
+      const language = settings?.language || "en"
+      return language
+    }
+
+    // Legacy keys
+    const settingsKey =
+      globalThis.localStorage?.getItem("follow:settings") ||
+      globalThis.localStorage?.getItem("follow-web:settings")
+    if (settingsKey) {
+      const settings = JSON.parse(settingsKey)
+      const language = settings?.general?.language || "en"
+      return language
+    }
+  } catch {
+    // Fallback silently
+  }
+  return "en"
+}
+
+/**
  * Format number to a more readable format
  * @param num - The number to format
+ * @param locale - The locale to use for formatting (e.g. "en", "ko", "zh-CN"). If not provided, uses current language
  * @returns The formatted number
  */
-export function formatNumber(num: number): string {
+export function formatNumber(num: number, locale?: string): string {
   // Handle negative numbers
   const isNegative = num < 0
   const absNum = Math.abs(num)
 
-  // Define thresholds
+  // Use provided locale or get current language
+  const currentLocale = locale || getCurrentLanguage()
+
+  // Special handling for Korean (만/억 system)
+  if (currentLocale === "ko") {
+    const uk = 100_000_000 // 억 (100 million)
+    const man = 10_000 // 만 (10 thousand)
+
+    if (absNum >= uk) {
+      const ukValue = absNum / uk
+      // If it's a clean 억 value, don't show decimal
+      if (ukValue === Math.floor(ukValue)) {
+        return `${isNegative ? "-" : ""}${ukValue}억`
+      }
+      return `${isNegative ? "-" : ""}${ukValue.toFixed(1)}억`
+    } else if (absNum >= man) {
+      const manValue = absNum / man
+      // If it's a clean 만 value, don't show decimal
+      if (manValue === Math.floor(manValue)) {
+        return `${isNegative ? "-" : ""}${manValue}만`
+      }
+      return `${isNegative ? "-" : ""}${manValue.toFixed(1)}만`
+    }
+
+    return `${isNegative ? "-" : ""}${absNum.toLocaleString("ko-KR")}`
+  }
+
+  // Standard international system for other languages
   const billion = 1_000_000_000
   const million = 1_000_000
   const thousand = 1_000
