@@ -1,17 +1,24 @@
 // DONT EDIT THIS FILE MANUALLY
 import ai_en from "@locales/ai/en.json"
+import ai_ko from "@locales/ai/ko.json"
 import en from "@locales/app/en.json"
+import ko from "@locales/app/ko.json"
 import common_en from "@locales/common/en.json"
 import common_ja from "@locales/common/ja.json"
+import common_ko from "@locales/common/ko.json"
 import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
+import errors_ko from "@locales/errors/ko.json"
 import lang_en from "@locales/lang/en.json"
 import lang_ja from "@locales/lang/ja.json"
+import lang_ko from "@locales/lang/ko.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
+import settings_ko from "@locales/settings/ko.json"
 import shortcuts_en from "@locales/shortcuts/en.json"
+import shortcuts_ko from "@locales/shortcuts/ko.json"
 
 import type { ns, RendererSupportedLanguages } from "./constants"
 
@@ -42,6 +49,15 @@ export const defaultResources = {
     common: common_ja,
   },
   "zh-TW": { lang: lang_zhTW, common: common_zhTW },
+  ko: {
+    app: ko,
+    lang: lang_ko,
+    common: common_ko,
+    settings: settings_ko,
+    shortcuts: shortcuts_ko,
+    errors: errors_ko,
+    ai: ai_ko,
+  },
 } satisfies Record<
   RendererSupportedLanguages,
   Partial<Record<(typeof ns)[number], Record<string, string>>>
