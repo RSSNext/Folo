@@ -12,7 +12,7 @@ import { useColor } from "react-native-uikit-colors"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ArrowLeftCuteReIcon } from "@/src/icons/arrow_left_cute_re"
 
-import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./use-pull-up-to-next-types"
+import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
 
 // eslint-disable-next-line react-refresh/only-export-components
 const EmptyGestureWrapper: UsePullUpToNextReturn["GestureWrapper"] = ({

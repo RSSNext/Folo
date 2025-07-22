@@ -5,8 +5,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 
-import { EntryPullUpToNextAndroid } from "./EntryPullUpToNextAndroid"
-import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./use-pull-up-to-next-types"
+import { PullUpIndicatorAndroid } from "./PullUpIndicatorAndroid"
+import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
 
 const THRESHOLD = 70 // The threshold in pixels to trigger the next entry
 const FEEDBACK_THRESHOLD = 0.5 // When to give haptic feedback (50% of the way to the threshold)
@@ -170,7 +170,7 @@ export const usePullUpToNext = ({
       translateY,
     },
 
-    EntryPullUpToNext: EntryPullUpToNextAndroid,
+    EntryPullUpToNext: PullUpIndicatorAndroid,
     GestureWrapper,
     gestureWrapperProps: {
       gesture: panGesture,

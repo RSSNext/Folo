@@ -29,7 +29,7 @@ import { checkLanguage } from "@/src/lib/translation"
 import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
-import { usePullUpToNext } from "@/src/modules/entry-content/use-pull-up-to-next"
+import { usePullUpToNext } from "@/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
 

@@ -6,12 +6,12 @@ import { useColor } from "react-native-uikit-colors"
 
 import { ArrowLeftCuteReIcon } from "@/src/icons/arrow_left_cute_re"
 
-import type { UsePullUpToNextReturn } from "./use-pull-up-to-next-types"
+import type { UsePullUpToNextReturn } from "./types"
 
 /**
  * Component that handles pulling up to navigate to the next unread entry for Android
  */
-export const EntryPullUpToNextAndroid: UsePullUpToNextReturn["EntryPullUpToNext"] = ({
+export const PullUpIndicatorAndroid: UsePullUpToNextReturn["EntryPullUpToNext"] = ({
   active,
   hide = false,
   translateY,
