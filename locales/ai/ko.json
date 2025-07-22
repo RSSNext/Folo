@@ -27,7 +27,7 @@
   "shortcuts.hotkey": "단축키 (선택사항)",
   "shortcuts.hotkey_placeholder": "예: Cmd+S",
   "shortcuts.name": "이름",
-  "shortcuts.name_placeholder": "예: 글 요약하기",
+  "shortcuts.name_placeholder": "예: 아티클 요약하기",
   "shortcuts.prompt": "프롬프트",
   "shortcuts.prompt_placeholder": "AI를 위한 명확한 지시사항을 작성하세요...",
   "shortcuts.title": "AI 단축키",
