@@ -109,7 +109,7 @@ const ActionButtonGroup = () => {
   const queryClient = useQueryClient()
   const actionLength = useActionRules((actions) => actions.length)
   const isDirty = useIsActionDataDirty()
-  const { t } = useTranslation("settings")
+  const { t } = useTranslation(["settings", "app"])
   unstable_usePrompt({
     message: t("actions.navigate.prompt"),
     when: ({ currentLocation, nextLocation }) =>
@@ -238,10 +238,10 @@ const ActionButtonGroup = () => {
       {/* Left side - Simple status */}
       <div className="hidden lg:block">
         <h3 className="text-text text-lg font-medium">
-          {hasActions ? `${actionLength} Rules` : "No Rules"}
+          {hasActions ? t("action.rules_count", { count: actionLength }) : t("action.no_rules")}
         </h3>
         <p className="text-text-secondary text-sm">
-          {hasActions ? "Active automation rules" : "Create your first automation rule"}
+          {hasActions ? t("action.active_automation_rules") : t("action.create_first_rule")}
         </p>
       </div>
 
@@ -255,26 +255,26 @@ const ActionButtonGroup = () => {
               ) : (
                 <i className="i-mgc-file-import-cute-re mr-2 size-4" />
               )}
-              {hasActions ? "Share" : "Import"}
+              {hasActions ? t("action.share") : t("app:words.import")}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem onClick={handleExport} disabled={!hasActions}>
               <i className="i-mgc-download-2-cute-re mr-3 size-4" />
-              Export to File
+              {t("action.export_to_file")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleImport}>
               <i className="i-mgc-file-upload-cute-re mr-3 size-4" />
-              Import from File
+              {t("action.import_from_file")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleCopyToClipboard} disabled={!hasActions}>
               <i className="i-mgc-copy-2-cute-re mr-3 size-4" />
-              Copy to Clipboard
+              {t("action.copy_to_clipboard")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleImportFromClipboard}>
               <i className="i-mgc-paste-cute-re mr-3 size-4" />
-              Import from Clipboard
+              {t("action.import_from_clipboard")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

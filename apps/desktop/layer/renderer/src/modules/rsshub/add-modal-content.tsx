@@ -67,10 +67,10 @@ export function AddModalContent({
   }, [details.data])
 
   const codes = [
-    `FOLLOW_OWNER_USER_ID=${me?.handle || me?.id}      # User id or handle of your follow account`,
-    `FOLLOW_DESCRIPTION=${instance?.description || `${me?.name}'s instance`} # The description of your instance`,
-    `FOLLOW_PRICE=${instance?.price || 100}                 # The monthly price of your instance, set to 0 means free.`,
-    `FOLLOW_USER_LIMIT=${instance?.userLimit || 1000}           # The user limit of your instance, set it to 0 or 1 can make your instance private, leaving it empty means no restriction`,
+    `FOLLOW_OWNER_USER_ID=${me?.handle || me?.id}      # ${t("rsshub.dotenv.user_id_comment")}`,
+    `FOLLOW_DESCRIPTION=${instance?.description || `${me?.name}'s instance`} # ${t("rsshub.dotenv.description_comment")}`,
+    `FOLLOW_PRICE=${instance?.price || 100}                 # ${t("rsshub.dotenv.price_comment")}`,
+    `FOLLOW_USER_LIMIT=${instance?.userLimit || 1000}           # ${t("rsshub.dotenv.user_limit_comment")}`,
   ]
 
   return (
