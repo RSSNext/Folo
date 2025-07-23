@@ -22,4 +22,4 @@ export type AIDisplayFeedsTool = ToolWithState<BizUITools["displayFeeds"]>
 export type AIDisplayEntriesTool = ToolWithState<BizUITools["displayEntries"]>
 export type AIDisplaySubscriptionsTool = ToolWithState<BizUITools["displaySubscriptions"]>
 
-export { type BizUIMessage, type BizUIMetadata } from "@folo-services/ai-tools"
+export { type BizUIMessage, type BizUIMetadata, type BizUITools } from "@folo-services/ai-tools"

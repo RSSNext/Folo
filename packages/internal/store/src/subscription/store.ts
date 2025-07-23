@@ -402,10 +402,6 @@ class SubscriptionSyncService {
           subscription.view = newView
 
           if (newCategory) {
-            const currentCategory = subscription.category
-            if (currentCategory) {
-              draft.categories[newView].delete(currentCategory)
-            }
             draft.categories[newView].add(newCategory)
             subscription.category = newCategory
           }
@@ -434,10 +430,6 @@ class SubscriptionSyncService {
 
           if (newCategory) {
             const currentCategory = current[index].category
-            draft.categories[newView].delete(newCategory)
-            if (currentCategory) {
-              draft.categories[current[index].view].add(currentCategory)
-            }
             subscription.category = currentCategory
           }
         }
