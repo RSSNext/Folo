@@ -1,17 +1,10 @@
-import { cn } from "@follow/utils"
 import * as Haptics from "expo-haptics"
 import { useCallback, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
-import { View } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useColor } from "react-native-uikit-colors"
 
-import { Text } from "@/src/components/ui/typography/Text"
-import { ArrowLeftCuteReIcon } from "@/src/icons/arrow_left_cute_re"
-
+import { PullUpIndicatorIos } from "./PullUpIndicatorIos"
 import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -21,52 +14,6 @@ const EmptyGestureWrapper: UsePullUpToNextReturn["GestureWrapper"] = ({
   children?: React.ReactNode
 }) => children
 
-/**
- * Component that handles pulling up to navigate to the next unread entry
- */
-const EntryPullUpToNext: UsePullUpToNextReturn["EntryPullUpToNext"] = ({
-  active,
-  hide = false,
-}) => {
-  const { t } = useTranslation()
-  const insets = useSafeAreaInsets()
-  const textColor = useColor("secondaryLabel")
-  const iconColor = useColor("label")
-  return (
-    <View
-      className={cn(
-        "absolute bottom-0 flex w-full translate-y-full flex-row items-center justify-center gap-2 pt-4 transition-all duration-200",
-        hide ? "opacity-0" : "opacity-100",
-      )}
-      style={{
-        paddingBottom: insets.bottom + 20,
-      }}
-    >
-      <View
-        className={cn(
-          "flex flex-row items-center gap-2 transition-all duration-200",
-          active ? "opacity-50" : "opacity-80",
-        )}
-      >
-        <View
-          className={cn(
-            "rotate-90 transition-all duration-200",
-            active ? "opacity-0" : "opacity-100",
-          )}
-        >
-          <ArrowLeftCuteReIcon width={16} height={16} color={iconColor} />
-        </View>
-        <Text
-          style={{
-            color: textColor,
-          }}
-        >
-          {active ? t("entry.release_to_next_entry") : t("entry.pull_up_to_next_entry")}
-        </Text>
-      </View>
-    </View>
-  )
-}
 export const usePullUpToNext = ({
   enabled = true,
   onRefresh,
@@ -155,7 +102,7 @@ export const usePullUpToNext = ({
       hide: !dragState,
       translateY,
     } satisfies UsePullUpToNextReturn["pullUpViewProps"],
-    EntryPullUpToNext,
+    EntryPullUpToNext: PullUpIndicatorIos,
     GestureWrapper: EmptyGestureWrapper,
     gestureWrapperProps: {
       enabled: false,
