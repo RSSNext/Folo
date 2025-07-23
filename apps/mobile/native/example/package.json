@@ -16,7 +16,7 @@
     "react": "19.0.0",
     "react-native": "0.79.1",
     "react-native-css-interop": "0.1.22",
-    "react-native-reanimated": "3.18.0",
+    "react-native-reanimated": "3.19.0",
     "react-native-safe-area-context": "5.4.1",
     "react-native-uikit-colors": "0.6.2"
   },
