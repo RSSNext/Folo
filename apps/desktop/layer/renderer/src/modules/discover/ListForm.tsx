@@ -214,6 +214,7 @@ const ListInnerForm = ({
         view: Number.parseInt(values.view),
         category: values.category,
         isPrivate: values.isPrivate,
+        hideFromTimeline: values.hideFromTimeline,
         title: values.title,
         TOTPCode: values.TOTPCode,
       }

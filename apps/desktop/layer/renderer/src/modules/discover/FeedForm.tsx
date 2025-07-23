@@ -240,6 +240,7 @@ const FeedInnerForm = ({
         view: Number.parseInt(values.view),
         category: values.category,
         isPrivate: values.isPrivate,
+        hideFromTimeline: values.hideFromTimeline,
         title: values.title,
         feedId: feed.id,
       }
