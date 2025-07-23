@@ -5,6 +5,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
 
+import { useScrollViewProgress } from "@/src/lib/navigation/ScreenItemContext"
+
 import { PullUpIndicatorAndroid } from "./PullUpIndicatorAndroid"
 import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
 
@@ -31,31 +33,25 @@ export const usePullUpToNext = ({
   enabled = true,
   onRefresh,
 }: UsePullUpToNextProps): UsePullUpToNextReturn => {
+  const scrollViewProgress = useScrollViewProgress()
   const isAtEnd = useSharedValue(false)
   const [refreshing, setRefreshing] = useState(false)
   const [dragState, setDragState] = useState(false)
   const feedbackGiven = useRef(false)
   const translateY = useSharedValue(0)
 
-  const handleScrollEndReached = useCallback(
-    (isEnd: boolean) => {
-      isAtEnd.value = isEnd
-    },
-    [isAtEnd],
-  )
-
   const initialTouchLocation = useSharedValue<{ x: number; y: number } | null>(null)
   const panGesture = Gesture.Pan()
     .enabled(enabled)
-    // .activateAfterLongPress(0)
     .manualActivation(true)
     .maxPointers(1)
     .onBegin((event) => {
       initialTouchLocation.value = { x: event.x, y: event.y }
     })
     .onTouchesMove((evt, state) => {
+      const isShortContent = scrollViewProgress.value === 1
       // Make sure we only process gestures when at end of content
-      if (!isAtEnd.value) {
+      if (!isAtEnd.value && !isShortContent) {
         state.fail()
         return
       }
@@ -77,7 +73,7 @@ export const usePullUpToNext = ({
     })
     .onUpdate((event) => {
       // Only process upward gestures when at the end of the content
-      if (!isAtEnd.value || event.translationY >= 0) {
+      if (event.translationY >= 0) {
         return
       }
       // Apply a damping effect to make the pull feel more natural
@@ -104,7 +100,7 @@ export const usePullUpToNext = ({
       feedbackGiven.current = false
       runOnJS(setDragState)(false)
 
-      if (isAtEnd.value && Math.abs(event.translationY) >= THRESHOLD) {
+      if (Math.abs(event.translationY) >= THRESHOLD) {
         if (onRefresh) {
           runOnJS(onRefresh)()
         }
@@ -135,12 +131,11 @@ export const usePullUpToNext = ({
       const isEnd =
         contentOffset.y >= contentSize.height - layoutMeasurement.height - 20 &&
         contentSize.height > layoutMeasurement.height
-
       if (isEnd !== isAtEnd.value) {
-        runOnJS(handleScrollEndReached)(isEnd)
+        isAtEnd.value = isEnd
       }
     },
-    [isAtEnd, handleScrollEndReached],
+    [isAtEnd],
   )
 
   if (!enabled || Platform.OS !== "android") {
