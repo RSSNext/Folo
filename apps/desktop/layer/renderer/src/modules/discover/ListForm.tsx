@@ -176,6 +176,7 @@ const ListInnerForm = ({
     category?: string | null
     isPrivate?: boolean
     title?: string | null
+    hideFromTimeline?: boolean | null
   }
   list: ListModel
   analytics?: ListAnalyticsModel
@@ -202,8 +203,11 @@ const ListInnerForm = ({
   useEffect(() => {
     if (subscription) {
       form.setValue("view", `${subscription?.view}`)
-      form.setValue("isPrivate", subscription?.isPrivate || false)
-      form.setValue("title", subscription?.title || "")
+      typeof subscription.isPrivate === "boolean" &&
+        form.setValue("isPrivate", subscription.isPrivate)
+      subscription?.title && form.setValue("title", subscription.title)
+      typeof subscription.hideFromTimeline === "boolean" &&
+        form.setValue("hideFromTimeline", subscription.hideFromTimeline)
     }
   }, [subscription])
 

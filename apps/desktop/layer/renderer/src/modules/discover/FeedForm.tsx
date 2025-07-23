@@ -190,6 +190,7 @@ const FeedInnerForm = ({
     category?: string | null
     isPrivate?: boolean
     title?: string | null
+    hideFromTimeline?: boolean | null
   }
   feed: FeedModel
   entries?: EntryModelSimple[]
@@ -218,8 +219,11 @@ const FeedInnerForm = ({
     if (subscription) {
       form.setValue("view", `${subscription?.view}`)
       subscription?.category && form.setValue("category", subscription.category)
-      form.setValue("isPrivate", subscription?.isPrivate || false)
-      form.setValue("title", subscription?.title || "")
+      typeof subscription.isPrivate === "boolean" &&
+        form.setValue("isPrivate", subscription.isPrivate)
+      typeof subscription.hideFromTimeline === "boolean" &&
+        form.setValue("hideFromTimeline", subscription.hideFromTimeline)
+      subscription?.title && form.setValue("title", subscription.title)
     }
   }, [subscription])
 
