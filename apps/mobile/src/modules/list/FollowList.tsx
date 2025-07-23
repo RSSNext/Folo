@@ -54,6 +54,7 @@ export const FollowList = (props: { id: string }) => {
 const formSchema = z.object({
   view: z.number(),
   isPrivate: z.boolean(),
+  hideFromTimeline: z.boolean().optional(),
   title: z.string().optional(),
 })
 
@@ -89,6 +90,11 @@ const Impl = (props: { id: string }) => {
 
         isPrivate: payload.isPrivate,
         title: payload.title,
+        hideFromTimeline: payload.hideFromTimeline,
+
+        url: undefined,
+        category: undefined,
+        feedId: undefined,
       }
 
       if (isSubscribed) {
@@ -213,6 +219,22 @@ const Impl = (props: { id: string }) => {
                   value={value}
                   label={t("subscription_form.private_follow")}
                   description={t("subscription_form.private_follow_description")}
+                  onValueChange={onChange}
+                  size="sm"
+                />
+              )}
+            />
+          </View>
+
+          <View className="-mx-1">
+            <Controller
+              name="hideFromTimeline"
+              control={form.control}
+              render={({ field: { onChange, value } }) => (
+                <FormSwitch
+                  value={value}
+                  label={t("subscription_form.hide_from_timeline")}
+                  description={t("subscription_form.hide_from_timeline_description")}
                   onValueChange={onChange}
                   size="sm"
                 />
