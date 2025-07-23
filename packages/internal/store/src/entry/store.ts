@@ -91,7 +91,9 @@ class EntryActions implements Hydratable, Resetable {
     if (!feedId) return
 
     const subscription = getSubscriptionById(feedId)
-    const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
+    const ignore =
+      (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
+      subscription?.hideFromTimeline
 
     if (typeof subscription?.view === "number" && !ignore) {
       draft.entryIdByView[subscription.view].add(entryId)
@@ -100,7 +102,9 @@ class EntryActions implements Hydratable, Resetable {
     // lists
     for (const s of sources ?? []) {
       const subscription = getSubscriptionById(s)
-      const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
+      const ignore =
+        (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
+        subscription?.hideFromTimeline
 
       if (typeof subscription?.view === "number" && !ignore) {
         draft.entryIdByView[subscription.view].add(entryId)

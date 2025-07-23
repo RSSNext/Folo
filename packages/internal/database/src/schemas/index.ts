@@ -31,6 +31,7 @@ export const subscriptionsTable = sqliteTable("subscriptions", {
   userId: text("user_id").notNull(),
   view: integer("view").notNull().$type<FeedViewType>(),
   isPrivate: integer("is_private", { mode: "boolean" }).notNull(),
+  hideFromTimeline: integer("hide_from_timeline", { mode: "boolean" }),
   title: text("title"),
   category: text("category"),
   createdAt: text("created_at"),
