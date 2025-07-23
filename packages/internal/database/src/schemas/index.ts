@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
-import type { ActionSettings } from "@follow/models/types"
 import type { SupportedActionLanguage } from "@follow/shared/language"
+import type { EntrySettings } from "@follow-app/client-sdk"
 import type { UIMessage } from "ai"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
@@ -82,7 +82,6 @@ export const usersTable = sqliteTable("users", {
     discord?: string
   }>(),
 })
-
 export const entriesTable = sqliteTable("entries", {
   id: text("id").primaryKey(),
   title: text("title"),
@@ -108,7 +107,7 @@ export const entriesTable = sqliteTable("entries", {
   inboxHandle: text("inbox_handle"),
   read: integer("read", { mode: "boolean" }),
   sources: text("sources", { mode: "json" }).$type<string[]>(),
-  settings: text("settings", { mode: "json" }).$type<ActionSettings>(),
+  settings: text("settings", { mode: "json" }).$type<EntrySettings>(),
 })
 
 export const collectionsTable = sqliteTable("collections", {

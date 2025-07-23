@@ -32,11 +32,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
     "ai": "5.0.0-beta.7",
-    "drizzle-orm": "0.44.2",
+    "drizzle-orm": "0.44.3",
     "expo-sqlite": "15.2.12",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",
     "wa-sqlite": "git+https://github.com/rhashimoto/wa-sqlite.git#v1.0.8"

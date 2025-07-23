@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
     "@follow/constants": "workspace:*",
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",

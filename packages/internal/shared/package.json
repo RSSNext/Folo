@@ -38,7 +38,7 @@
     "@t3-oss/env-core": "0.13.8",
     "ai": "5.0.0-beta.6",
     "better-auth": "1.2.9",
-    "drizzle-orm": "0.44.2",
+    "drizzle-orm": "0.44.3",
     "hono": "4.8.1",
     "sonner": "2.0.6",
     "stripe": "18.2.1",

@@ -114,6 +114,7 @@
     "react": "19.0.0"
   },
   "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
     "@follow/configs": "workspace:*",
     "@follow/constants": "workspace:*",
     "@follow/database": "workspace:*",
