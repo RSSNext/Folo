@@ -72,6 +72,7 @@ const Impl = (props: { id: string }) => {
     defaultValues: {
       view: list?.view ?? FeedViewType.Articles,
       isPrivate: subscription?.isPrivate,
+      hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
     },
   })

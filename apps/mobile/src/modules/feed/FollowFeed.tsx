@@ -94,9 +94,10 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: subscription?.category ?? "",
-      isPrivate: subscription?.isPrivate ?? false,
-      title: subscription?.title ?? "",
+      category: subscription?.category ?? undefined,
+      isPrivate: subscription?.isPrivate ?? undefined,
+      hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
+      title: subscription?.title ?? undefined,
       view: subscription?.view ?? defaultView ?? FeedViewType.Articles,
     },
   })
