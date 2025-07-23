@@ -1,9 +1,10 @@
 import { cn } from "@follow/utils"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { ArrowLeftCuteReIcon } from "@/src/icons/arrow_left_cute_re"
 
 import type { UsePullUpToNextReturn } from "./types"
