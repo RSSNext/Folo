@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics"
 import { useCallback, useRef, useState } from "react"
-import { Platform, View } from "react-native"
+import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
@@ -18,7 +18,7 @@ const GestureWrapper: UsePullUpToNextReturn["GestureWrapper"] = ({
   enabled,
   children,
 }) => {
-  if (!enabled || Platform.OS !== "android" || !gesture) {
+  if (!enabled || !gesture) {
     return <>{children}</>
   }
 
@@ -96,11 +96,11 @@ export const usePullUpToNext = ({
         runOnJS(setRefreshing)(false)
       }
     })
-    .onEnd((event) => {
+    .onEnd(() => {
       feedbackGiven.current = false
       runOnJS(setDragState)(false)
 
-      if (Math.abs(event.translationY) >= THRESHOLD) {
+      if (refreshing) {
         if (onRefresh) {
           runOnJS(onRefresh)()
         }
@@ -138,7 +138,7 @@ export const usePullUpToNext = ({
     [isAtEnd],
   )
 
-  if (!enabled || Platform.OS !== "android") {
+  if (!enabled) {
     // Return empty implementation for non-Android platforms
     return {
       scrollViewEventHandlers: {},
