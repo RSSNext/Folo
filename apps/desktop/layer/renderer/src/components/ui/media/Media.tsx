@@ -282,7 +282,7 @@ const MediaImpl: FC<MediaProps> = ({
             className={cn(
               "center",
               !(finalWidth || finalHeight) && "size-full",
-              "cursor-card relative bg-stone-100 object-cover",
+              "cursor-card relative object-cover",
               mediaContainerClassName,
             )}
             onClick={handleClick}
