@@ -1,7 +1,8 @@
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { PlainTextField } from "@/src/components/ui/form/TextField"
+import { Text } from "@/src/components/ui/typography/Text"
 import { Key2CuteReIcon } from "@/src/icons/key_2_cute_re"
 import type { DialogComponent } from "@/src/lib/dialog"
 import { Dialog } from "@/src/lib/dialog"
@@ -32,7 +33,6 @@ export const ConfirmTOTPCodeDialog: DialogComponent<{
     </View>
   )
 }
-
 ConfirmTOTPCodeDialog.id = "confirm-password-dialog"
 ConfirmTOTPCodeDialog.confirmText = "Confirm"
 ConfirmTOTPCodeDialog.cancelText = "Cancel"

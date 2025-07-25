@@ -4,10 +4,10 @@ import { usePrefetchSummary, useSummary, useSummaryStatus } from "@follow/store/
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { useCallback, useMemo } from "react"
-import { Text } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { ErrorBoundary } from "@/src/components/common/ErrorBoundary"
+import { Text } from "@/src/components/ui/typography/Text"
 import { renderMarkdown } from "@/src/lib/markdown"
 
 import { AISummary } from "../ai/summary"
@@ -26,7 +26,6 @@ export const EntryAISummary: FC<{
       (state) => {
         const target =
           showReadability && state.readabilityContent ? "readabilityContent" : "content"
-
         return {
           target,
         } as const
@@ -47,17 +46,14 @@ export const EntryAISummary: FC<{
     : summary?.summary
   const summaryToShow = useMemo(() => {
     if (!maybeMarkdown) return null
-
     return renderMarkdown(maybeMarkdown)
   }, [maybeMarkdown])
-
   const status = useSummaryStatus({
     entryId,
     actionLanguage,
     target: entry?.target || "content",
   })
   if (!showAISummary) return null
-
   return (
     <ErrorBoundary
       fallbackRender={() => (

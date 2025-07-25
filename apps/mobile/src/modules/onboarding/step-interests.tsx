@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { Search3CuteReIcon } from "@/src/icons/search_3_cute_re"
 import { accentColor } from "@/src/theme/colors"
 
@@ -9,7 +10,6 @@ import { OnboardingSectionScreenContainer } from "./shared"
 
 export const StepInterests = () => {
   const { t } = useTranslation()
-
   return (
     <OnboardingSectionScreenContainer>
       <View className="flex items-center gap-4">

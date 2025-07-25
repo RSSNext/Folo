@@ -1,7 +1,9 @@
 import { cn } from "@follow/utils/utils"
 import type { FC, PropsWithChildren } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { Text, View } from "react-native"
+import { View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const FormLabel: FC<
   PropsWithChildren<{

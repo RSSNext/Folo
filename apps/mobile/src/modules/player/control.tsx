@@ -1,10 +1,11 @@
 import { cn } from "@follow/utils"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { Slider } from "react-native-awesome-slider"
 import { FadeOut, useDerivedValue, useSharedValue, ZoomIn } from "react-native-reanimated"
 import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { ReAnimatedPressable } from "@/src/components/common/AnimatedComponents"
+import { Text } from "@/src/components/ui/typography/Text"
 import { Back2CuteReIcon } from "@/src/icons/back_2_cute_re"
 import { Forward2CuteReIcon } from "@/src/icons/forward_2_cute_re"
 import { PauseCuteFiIcon } from "@/src/icons/pause_cute_fi"
@@ -26,7 +27,6 @@ type ControlButtonProps = {
   className?: string
   color?: string
 }
-
 export function PlayPauseButton({ size = 24, className, color }: ControlButtonProps) {
   const { playing } = useIsPlaying()
   const label = useColor("label")
@@ -49,13 +49,14 @@ export function PlayPauseButton({ size = 24, className, color }: ControlButtonPr
     </View>
   )
 }
-
 export function SeekButton({
   size = 24,
   className,
   color,
   offset = 30,
-}: ControlButtonProps & { offset?: number }) {
+}: ControlButtonProps & {
+  offset?: number
+}) {
   const label = useColor("label")
   return (
     <View className={className}>
@@ -77,11 +78,9 @@ export function SeekButton({
     </View>
   )
 }
-
 export function RateSelector() {
   const { isBackgroundLight } = usePlayerScreenContext()
   const [currentRate, setCurrentRate] = useRate()
-
   return (
     <View className="flex-row items-center justify-center">
       <DropdownMenu.Root>
@@ -110,7 +109,6 @@ export function RateSelector() {
     </View>
   )
 }
-
 export function StopButton({ size = 24, className, color }: ControlButtonProps) {
   const label = useColor("label")
   const navigation = useNavigation()
@@ -126,11 +124,9 @@ export function StopButton({ size = 24, className, color }: ControlButtonProps) 
     </TouchableOpacity>
   )
 }
-
 export function ControlGroup() {
   const { isBackgroundLight } = usePlayerScreenContext()
   const buttonColor = isBackgroundLight ? "black" : "white"
-
   return (
     <View className="flex-row items-center justify-between">
       <RateSelector />
@@ -143,20 +139,15 @@ export function ControlGroup() {
     </View>
   )
 }
-
 const formatSecondsToMinutes = (seconds: number) => {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = Math.floor(seconds % 60)
-
   const formattedMinutes = String(minutes).padStart(2, "0")
   const formattedSeconds = String(remainingSeconds).padStart(2, "0")
-
   return `${formattedMinutes}:${formattedSeconds}`
 }
-
 export function ProgressBar() {
   const { isBackgroundLight } = usePlayerScreenContext()
-
   const { duration, position } = useProgress(250)
   const isSliding = useSharedValue(false)
   const progress = useDerivedValue(() => {
@@ -164,10 +155,8 @@ export function ProgressBar() {
   })
   const min = useSharedValue(0)
   const max = useSharedValue(1)
-
   const trackElapsedTime = formatSecondsToMinutes(position)
   const trackRemainingTime = formatSecondsToMinutes(duration - position)
-
   return (
     <View className="my-6">
       <Slider
@@ -175,7 +164,10 @@ export function ProgressBar() {
         minimumValue={min}
         maximumValue={max}
         thumbWidth={0}
-        containerStyle={{ height: 7, borderRadius: 16 }}
+        containerStyle={{
+          height: 7,
+          borderRadius: 16,
+        }}
         renderBubble={() => null}
         theme={{
           minimumTrackTintColor: "rgba(255,255,255,0.6)",
@@ -187,9 +179,7 @@ export function ProgressBar() {
         }}
         onSlidingComplete={async (value) => {
           if (!isSliding.value) return
-
           isSliding.value = false
-
           await player.seekTo(value * duration)
         }}
       />
@@ -219,19 +209,14 @@ export function ProgressBar() {
     </View>
   )
 }
-
 export function VolumeBar() {
   const { isBackgroundLight } = usePlayerScreenContext()
   const buttonColor = isBackgroundLight ? "black" : "white"
-
   const { volume, updateVolume } = useVolume()
-
   const progress = useSharedValue(0)
   const min = useSharedValue(0)
   const max = useSharedValue(1)
-
   progress.value = volume ?? 0
-
   return (
     <View className="mb-10">
       <View className="flex-row items-center justify-between">
@@ -240,7 +225,10 @@ export function VolumeBar() {
           <Slider
             progress={progress}
             minimumValue={min}
-            containerStyle={{ height: 7, borderRadius: 16 }}
+            containerStyle={{
+              height: 7,
+              borderRadius: 16,
+            }}
             onValueChange={(value) => {
               updateVolume(value)
             }}
@@ -258,7 +246,6 @@ export function VolumeBar() {
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   text: {
     fontVariant: ["tabular-nums"],

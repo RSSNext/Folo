@@ -2,9 +2,10 @@ import "./global.css"
 import "./polyfill"
 
 import {
-  apiClientSimpleContext,
-  authClientSimpleContext,
-  queryClientSimpleContext,
+  apiClientContext,
+  apiContext,
+  authClientContext,
+  queryClientContext,
 } from "@follow/store/context"
 import { registerRootComponent } from "expo"
 import { Image } from "expo-image"
@@ -16,8 +17,9 @@ import { enableFreeze } from "react-native-screens"
 import { App } from "./App"
 import { BottomTabProvider } from "./components/layouts/tabbar/BottomTabProvider"
 import { BottomTabs } from "./components/layouts/tabbar/BottomTabs"
-import { Lightbox } from "./components/lightbox/Lightbox"
+import { Lightbox } from "./components/ui/lightbox/Lightbox"
 import { initializeApp } from "./initialize"
+import { followApi } from "./lib/api-client"
 import { apiClient } from "./lib/api-fetch"
 import { authClient } from "./lib/auth"
 import { initializeI18n } from "./lib/i18n"
@@ -37,9 +39,10 @@ import { registerSitemap } from "./sitemap"
 global.APP_NAME = "Folo"
 // @ts-expect-error
 global.ELECTRON = false
-apiClientSimpleContext.provide(apiClient)
-authClientSimpleContext.provide(authClient)
-queryClientSimpleContext.provide(queryClient)
+apiClientContext.provide(apiClient)
+authClientContext.provide(authClient)
+queryClientContext.provide(queryClient)
+apiContext.provide(followApi)
 
 enableFreeze(true)
 ;[Image, LinearGradient].forEach((Component) => {

@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { useAtomValue } from "jotai"
 import { use, useEffect } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { Image } from "@/src/components/ui/image/Image"
+import { Text } from "@/src/components/ui/typography/Text"
 import { BottomTabContext } from "@/src/lib/navigation/bottom-tab/BottomTabContext"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useActiveTrack } from "@/src/lib/player"
@@ -19,7 +20,6 @@ import { usePrefetchImageColors } from "@/src/store/image/hooks"
 import { PlayPauseButton, SeekButton } from "./control"
 
 const allowedTabIdentifiers = new Set(["IndexTabScreen", "SubscriptionsTabScreen"])
-
 export function PlayerTabBar({ className }: { className?: string }) {
   const activeTrack = useActiveTrack()
   const tabRootCtx = use(BottomTabContext)
@@ -27,7 +27,6 @@ export function PlayerTabBar({ className }: { className?: string }) {
   const currentIndex = useAtomValue(tabRootCtx.currentIndexAtom)
   const currentTabProps = tabScreens.find((tabScreen) => tabScreen.tabScreenIndex === currentIndex)
   const identifier = currentTabProps?.identifier
-
   const isVisible = !!activeTrack && identifier && allowedTabIdentifiers.has(identifier)
   const isVisibleSV = useSharedValue(isVisible ? 1 : 0)
   useEffect(() => {
@@ -40,10 +39,8 @@ export function PlayerTabBar({ className }: { className?: string }) {
       overflow: "hidden",
     }
   })
-
   usePrefetchImageColors(activeTrack?.artwork)
   const navigation = useNavigation()
-
   return (
     <Animated.View
       style={animatedStyle}
@@ -55,7 +52,12 @@ export function PlayerTabBar({ className }: { className?: string }) {
         }}
       >
         <View className="flex flex-row items-center gap-4 overflow-hidden rounded-2xl p-2">
-          <Image source={{ uri: activeTrack?.artwork ?? "" }} className="size-12 rounded-lg" />
+          <Image
+            source={{
+              uri: activeTrack?.artwork ?? "",
+            }}
+            className="size-12 rounded-lg"
+          />
           <View className="flex-1 overflow-hidden">
             <Text className="text-label text-lg font-semibold" numberOfLines={1}>
               {activeTrack?.title ?? ""}

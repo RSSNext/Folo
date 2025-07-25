@@ -1,24 +1,24 @@
 import { cn, toScientificNotation } from "@follow/utils"
-import { Text } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const Balance = ({
   children,
-
   className,
   precision = 2,
 }: {
   /** The token balance in wei. */
   children: bigint
-
   className?: string
   precision?: number
 }) => {
   const n = BigInt(children || 0n)
-  const formatted = format(n, { digits: precision, trailingZeros: true })
-
+  const formatted = format(n, {
+    digits: precision,
+    trailingZeros: true,
+  })
   return <Text className={cn("tabular-nums", className)}>{formatted}</Text>
 }
-
 function format(
   value: bigint,
   options:
@@ -33,13 +33,17 @@ function format(
       } = {},
 ): string {
   // Normalize options
-  const opts = typeof options === "number" ? { digits: options } : options
+  const opts =
+    typeof options === "number"
+      ? {
+          digits: options,
+        }
+      : options
   const {
     digits,
     compact = false,
     trailingZeros = false,
     locale = "en-US",
-
     signDisplay = "auto",
   } = opts
 
@@ -59,7 +63,6 @@ function format(
   if (Math.abs(num) > 1e9 || (Math.abs(num) < 1e-9 && num !== 0)) {
     return toScientificNotation([value, 18], 10)
   }
-
   return new Intl.NumberFormat(locale, {
     maximumFractionDigits: digits,
     minimumFractionDigits: trailingZeros ? digits : 0,

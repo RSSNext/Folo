@@ -7,7 +7,7 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin"
 import { ComposeContextProvider } from "foxact/compose-context-provider"
 import { Provider } from "jotai"
 import type { ReactNode } from "react"
-import { StyleSheet, View } from "react-native"
+import { View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { SafeAreaProvider } from "react-native-safe-area-context"
@@ -16,9 +16,10 @@ import { useCurrentColorsVariants } from "react-native-uikit-colors"
 
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
-import { LightboxStateProvider } from "../components/lightbox/lightboxState"
+import { LightboxStateProvider } from "../components/ui/lightbox/lightboxState"
 import { queryClient } from "../lib/query-client"
 import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
+import { FontScalingProvider } from "./FontScalingProvider"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsLoader } from "./ServerConfigsLoader"
 
@@ -36,8 +37,8 @@ const contexts = [
   <TimelineSelectorDragProgressProvider children={null} />,
   <PortalProvider children={null} />,
   <SafeAreaProvider />,
+  <FontScalingProvider />,
 ]
-/* eslint-enable @eslint-react/no-missing-key */
 
 export const RootProviders = ({ children }: { children: ReactNode }) => {
   useDrizzleStudio(sqlite as any)
@@ -45,7 +46,7 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
   const currentThemeColors = useCurrentColorsVariants()
 
   return (
-    <View style={[styles.flex, currentThemeColors]}>
+    <View style={[flexStyle, currentThemeColors]}>
       {/* Learn more https://foxact.skk.moe/compose-context-provider/ */}
       <ComposeContextProvider contexts={contexts}>
         {children}
@@ -55,6 +56,4 @@ export const RootProviders = ({ children }: { children: ReactNode }) => {
   )
 }
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-})
+const flexStyle = { flex: 1 }

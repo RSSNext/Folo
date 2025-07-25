@@ -43,7 +43,6 @@
     "zod": "3.25.75"
   },
   "devDependencies": {
-    "@follow-app/vite-plugin-route-builder": "workspace:*",
     "@follow/components": "workspace:*",
     "@follow/configs": "workspace:*",
     "@follow/constants": "workspace:*",
@@ -70,6 +69,7 @@
     "tsdown": "0.12.9",
     "tsx": "4.20.3",
     "typescript": "catalog:",
-    "vite": "7.0.2"
+    "vite": "7.0.2",
+    "vite-plugin-route-builder": "0.3.0"
   }
 }

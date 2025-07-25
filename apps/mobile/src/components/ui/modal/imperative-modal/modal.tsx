@@ -2,20 +2,20 @@ import { nanoid } from "nanoid/non-secure"
 import type { ReactNode } from "react"
 import { cloneElement, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import RootSiblings from "react-native-root-siblings"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
+import { Text } from "@/src/components/ui/typography/Text"
 
 import type { BottomModalProps } from "../BottomModal"
 import { BottomModal } from "../BottomModal"
 import { Header, HeaderText, Input } from "./templates"
 
-export type Modal = { id: string; content: ReactNode } & Omit<
-  BottomModalProps,
-  "visible" | "children"
->
-
+export type Modal = {
+  id: string
+  content: ReactNode
+} & Omit<BottomModalProps, "visible" | "children">
 export type ModalInput = Omit<Modal, "id" | "closeOnBackdropPress"> & {
   /**
    * Optional: Will be auto-generated with nanoid if not provided
@@ -33,11 +33,9 @@ export type ModalInput = Omit<Modal, "id" | "closeOnBackdropPress"> & {
   // type?: "plain" // | 'select' | 'confirm' | 'input' | 'custom'
   abortController?: AbortController
 }
-
 export const openModal = (modal: ModalInput) => {
   const promise = Promise.withResolvers<void>()
   const abortController = modal.abortController || new AbortController()
-
   const node = (
     <BottomModal
       id={modal.id || nanoid()}
@@ -54,17 +52,14 @@ export const openModal = (modal: ModalInput) => {
     </BottomModal>
   )
   const siblings = new RootSiblings(node)
-
   abortController.signal.addEventListener("abort", () => {
     const newNode = cloneElement(node, {
       visible: false,
     })
     siblings.update(newNode)
   })
-
   return promise.promise
 }
-
 const PromptModal = ({
   defaultValue,
   title,
@@ -85,7 +80,9 @@ const PromptModal = ({
       <Header
         renderLeft={() => (
           <HeaderSubmitTextButton
-            label={t("words.cancel", { ns: "common" })}
+            label={t("words.cancel", {
+              ns: "common",
+            })}
             isValid={true}
             onPress={() => {
               abortController.abort()
@@ -111,14 +108,15 @@ const PromptModal = ({
           }}
         >
           <Text className="text-center text-base font-semibold text-white">
-            {t("words.save", { ns: "common" })}
+            {t("words.save", {
+              ns: "common",
+            })}
           </Text>
         </TouchableOpacity>
       </View>
     </View>
   )
 }
-
 export const modalPrompt = (
   title: string,
   message: string,

@@ -3,16 +3,11 @@ import { fileURLToPath } from "node:url"
 import react from "@vitejs/plugin-react"
 import { codeInspectorPlugin } from "code-inspector-plugin"
 import { dirname, resolve } from "pathe"
-import { tsImport } from "tsx/esm/api"
 import { defineConfig } from "vite"
+import { routeBuilderPlugin } from "vite-plugin-route-builder"
 
 import { viteRenderBaseConfig } from "../desktop/configs/vite.render.config"
 import { astPlugin } from "../desktop/plugins/vite/ast"
-
-const routeBuilderPluginV2 = await tsImport(
-  "@follow-app/vite-plugin-route-builder",
-  import.meta.url,
-).then((m) => m.default)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -38,7 +33,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    routeBuilderPluginV2({
+    routeBuilderPlugin({
       pagePattern: "client/pages/**/*.tsx",
       outputPath: "client/generated-routes.ts",
       enableInDev: true,

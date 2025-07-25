@@ -3,6 +3,7 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
+import { ShrinkingFocusBorder } from "@follow/components/ui/shrinking-focus-border/index.js"
 import type { FeedViewType } from "@follow/constants"
 import { views } from "@follow/constants"
 import { useInputComposition, useRefValue } from "@follow/hooks"
@@ -16,7 +17,7 @@ import { subscriptionActions, subscriptionSyncService } from "@follow/store/subs
 import { getDefaultCategory } from "@follow/store/subscription/utils"
 import { useSortedIdsByUnread, useUnreadByIds } from "@follow/store/unread/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
-import { stopPropagation } from "@follow/utils/dom"
+import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { cn, sortByAlphabet } from "@follow/utils/utils"
 import { useMutation } from "@tanstack/react-query"
 import { AnimatePresence, m } from "motion/react"
@@ -410,6 +411,8 @@ const RenameCategoryForm: FC<{
     },
   })
   const formRef = useRef<HTMLFormElement | null>(null)
+  const [isFocused, setIsFocused] = useState(false)
+
   useOnClickOutside(
     formRef as React.RefObject<HTMLElement>,
     () => {
@@ -419,7 +422,10 @@ const RenameCategoryForm: FC<{
   )
   const inputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
-    inputRef.current?.focus()
+    nextFrame(() => {
+      inputRef.current?.focus()
+      setIsFocused(true)
+    })
   }, [])
   const compositionInputProps = useInputComposition({
     onKeyDown: (e) => {
@@ -429,33 +435,37 @@ const RenameCategoryForm: FC<{
     },
   })
   return (
-    <form
-      ref={formRef}
-      className="ml-3 flex w-full items-center"
-      onSubmit={(e) => {
-        e.preventDefault()
+    <div className="relative ml-3 flex h-8 w-full items-center">
+      <ShrinkingFocusBorder isVisible={isFocused} containerRef={inputRef} persistBorder />
+      <form
+        className="flex w-full items-center"
+        onSubmit={(e) => {
+          e.preventDefault()
 
-        return renameMutation.mutateAsync({
-          lastCategory: currentCategory!,
-          newCategory: e.currentTarget.category.value,
-        })
-      }}
-    >
-      <input
-        {...compositionInputProps}
-        ref={inputRef}
-        name="category"
-        autoFocus
-        defaultValue={currentCategory}
-        className="caret-accent w-full appearance-none bg-transparent"
-      />
-      <MotionButtonBase
-        type="submit"
-        className="center hover:bg-material-ultra-thick text-green -mr-1 flex size-5 shrink-0 rounded-lg"
+          return renameMutation.mutateAsync({
+            lastCategory: currentCategory!,
+            newCategory: e.currentTarget.category.value,
+          })
+        }}
       >
-        <i className="i-mgc-check-filled size-3" />
-      </MotionButtonBase>
-    </form>
+        <input
+          {...compositionInputProps}
+          ref={inputRef}
+          name="category"
+          autoFocus
+          defaultValue={currentCategory}
+          className="caret-accent w-full appearance-none bg-transparent px-2 py-1"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
+        <MotionButtonBase
+          type="submit"
+          className="center hover:bg-material-ultra-thick text-green -mr-1 flex size-5 shrink-0 rounded-lg"
+        >
+          <i className="i-mgc-check-filled size-3" />
+        </MotionButtonBase>
+      </form>
+    </div>
   )
 }
 

@@ -1,5 +1,6 @@
-import { Pressable, Text } from "react-native"
+import { Pressable } from "react-native"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { destination } from "@/src/lib/navigation/biz/Destination"
 import { accentColor } from "@/src/theme/colors"
 

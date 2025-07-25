@@ -19,13 +19,13 @@ export function UnreadCount({
   max?: number
 } & AnimatedProps<object>) {
   const showUnreadCount = useUISettingKey("showUnreadCountViewAndSubscriptionMobile")
-
   if (!unread) return null
   return showUnreadCount ? (
     <Text
+      allowFontScaling={false}
       numberOfLines={1}
       ellipsizeMode="clip"
-      className={cn("text-tertiary-label text-xs", className, textClassName)}
+      className={cn("text-tertiary-label text-[12px]", className, textClassName)}
       {...rest}
     >
       {unread > max ? `${max}+` : unread}

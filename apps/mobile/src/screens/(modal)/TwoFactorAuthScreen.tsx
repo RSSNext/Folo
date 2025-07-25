@@ -1,7 +1,7 @@
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
-import { Text, TouchableWithoutFeedback, View } from "react-native"
+import { TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardController } from "react-native-keyboard-controller"
 import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
 import { HeaderCloseOnly } from "@/src/components/layouts/header/HeaderElements"
+import { Text } from "@/src/components/ui/typography/Text"
 import { isAuthCodeValid, twoFactor } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -20,18 +21,19 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
   const insets = useSafeAreaInsets()
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
-
   const otpInputRef = useRef<OtpInputRef>(null)
-
   const navigation = useNavigation()
-
   const submitMutation = useMutation({
     mutationFn: async (value: string) => {
-      const res = await twoFactor.verifyTotp({ code: value })
+      const res = await twoFactor.verifyTotp({
+        code: value,
+      })
       if (res.error) {
         throw new Error(res.error.message)
       }
-      await queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
+      await queryClient.invalidateQueries({
+        queryKey: whoamiQueryKey,
+      })
     },
     onError(error) {
       toast.error(`Failed to verify: ${error.message}`)
@@ -40,9 +42,13 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
       navigation.popToRoot()
     },
   })
-
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top + 56 }}>
+    <View
+      className="flex-1"
+      style={{
+        paddingTop: insets.top + 56,
+      }}
+    >
       <HeaderCloseOnly />
       <TouchableWithoutFeedback
         onPress={() => {
@@ -64,16 +70,26 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
             autoFocus
             focusColor={accentColor}
             theme={{
-              containerStyle: { paddingHorizontal: 20 },
-              pinCodeTextStyle: { color: label },
-              placeholderTextStyle: { color: tertiaryLabel },
-              filledPinCodeContainerStyle: { borderColor: label },
+              containerStyle: {
+                paddingHorizontal: 20,
+              },
+              pinCodeTextStyle: {
+                color: label,
+              },
+              placeholderTextStyle: {
+                color: tertiaryLabel,
+              },
+              filledPinCodeContainerStyle: {
+                borderColor: label,
+              },
               pinCodeContainerStyle: {
                 borderColor: tertiaryLabel,
                 aspectRatio: 1,
                 width: 50,
               },
-              focusedPinCodeContainerStyle: { borderColor: accentColor },
+              focusedPinCodeContainerStyle: {
+                borderColor: accentColor,
+              },
             }}
             onFilled={(code) => {
               if (isAuthCodeValid(code)) {

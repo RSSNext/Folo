@@ -10,7 +10,7 @@ import WebView from "react-native-webview"
 
 import { openLink } from "@/src/lib/native"
 
-import { useLightboxControls } from "../../lightbox/lightboxState"
+import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { htmlUrl } from "./constants"
 import { atEnd, atStart } from "./injected-js"
 

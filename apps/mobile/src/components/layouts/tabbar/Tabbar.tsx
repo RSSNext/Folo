@@ -29,15 +29,12 @@ export const Tabbar: FC<{
   onPress?: (index: number) => void
 }> = ({ onPress: onPressProp }) => {
   const setTabBarHeight = use(SetBottomTabBarHeightContext)
-
   const insets = useSafeAreaInsets()
   const tabBarVisible = use(BottomTabBarVisibleContext)
-
   const tabContext = use(BottomTabContext)
   const tabScreens = useAtomValue(tabContext.tabScreensAtom)
   const [selectedIndex, setSelectedIndex] = useAtom(tabContext.currentIndexAtom)
   const translateY = useSharedValue(0)
-
   useEffect(() => {
     cancelAnimation(translateY)
     translateY.value = withSpring(
@@ -45,7 +42,6 @@ export const Tabbar: FC<{
       !tabBarVisible ? quickSpringPreset : softSpringPreset,
     )
   }, [tabBarVisible, translateY])
-
   const placeholderTabScreens = useMemo<TabScreenProps[]>(() => {
     return [
       {
@@ -56,14 +52,11 @@ export const Tabbar: FC<{
       },
     ]
   }, [])
-
   const renderTabScreens = tabScreens.length > 0 ? tabScreens : placeholderTabScreens
-
   const onPress = useEventCallback((index: number) => {
     setSelectedIndex(index)
     onPressProp?.(index)
   })
-
   return (
     <Animated.View
       pointerEvents={tabScreens.length > 0 ? "auto" : "none"}
@@ -71,7 +64,11 @@ export const Tabbar: FC<{
       className="absolute inset-x-0 bottom-0"
       style={{
         paddingBottom: Math.max(insets.bottom, 8),
-        transform: [{ translateY }],
+        transform: [
+          {
+            translateY,
+          },
+        ],
       }}
       onLayout={(e) => {
         const tabBarHeight = e.nativeEvent.layout.height + (isAndroid ? insets.bottom : 0)
@@ -85,7 +82,6 @@ export const Tabbar: FC<{
         {renderTabScreens.map((route, index) => {
           const focused = index === selectedIndex
           const label = route.title
-
           return (
             <MemoedTabItem
               key={route.tabScreenIndex}
@@ -101,7 +97,6 @@ export const Tabbar: FC<{
     </Animated.View>
   )
 }
-
 const MemoedTabItem: FC<{
   focused: boolean
   index: number
@@ -113,10 +108,8 @@ const MemoedTabItem: FC<{
   const onPress = () => {
     onPressProp?.(index)
   }
-
   const accessibilityLabel =
     typeof label === "string" && Platform.OS === "ios" ? `${label}, tab` : undefined
-
   const renderIcon = useCallback(
     ({ focused }: { focused: boolean }) => {
       const iconSize = ICON_SIZE_ROUND
@@ -131,7 +124,6 @@ const MemoedTabItem: FC<{
     },
     [renderIconFn],
   )
-
   const renderLabel = useCallback(
     ({ focused }: { focused: boolean }) => {
       return (
@@ -146,7 +138,6 @@ const MemoedTabItem: FC<{
     },
     [label, accessibilityLabel, inactiveTintColor],
   )
-
   return (
     <TabItem
       focused={focused}
@@ -157,7 +148,6 @@ const MemoedTabItem: FC<{
     />
   )
 })
-
 const TextLabel = (props: {
   focused: boolean
   accessibilityLabel: string | undefined
@@ -166,12 +156,16 @@ const TextLabel = (props: {
   style: StyleProp<TextStyle>
 }) => {
   const { focused, accessibilityLabel, label, inactiveTintColor, style } = props
-
   return (
     <Text
       numberOfLines={1}
       accessibilityLabel={accessibilityLabel}
-      style={StyleSheet.flatten([style, { color: focused ? accentColor : inactiveTintColor }])}
+      style={StyleSheet.flatten([
+        style,
+        {
+          color: focused ? accentColor : inactiveTintColor,
+        },
+      ])}
       allowFontScaling
     >
       {label}
@@ -191,11 +185,17 @@ const TabIcon = ({
 }) => {
   const activeOpacity = focused ? 1 : 0
   const inactiveOpacity = focused ? 0 : 1
-
   return (
     <View style={styles.wrapperUikit}>
       {focused && (
-        <Animated.View style={[styles.icon, { opacity: activeOpacity }]}>
+        <Animated.View
+          style={[
+            styles.icon,
+            {
+              opacity: activeOpacity,
+            },
+          ]}
+        >
           {renderIcon({
             focused: true,
             size: iconSize,
@@ -204,7 +204,14 @@ const TabIcon = ({
         </Animated.View>
       )}
       {!focused && (
-        <Animated.View style={[styles.icon, { opacity: inactiveOpacity }]}>
+        <Animated.View
+          style={[
+            styles.icon,
+            {
+              opacity: inactiveOpacity,
+            },
+          ]}
+        >
           {renderIcon({
             focused: false,
             size: iconSize,
@@ -245,10 +252,8 @@ const styles = StyleSheet.create({
     height: ICON_SIZE_TALL,
   },
 })
-
 const TabBarBackground = () => {
   const { opacity } = use(BottomTabBarBackgroundContext)
-
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     ...styles.blurEffect,
@@ -273,33 +278,33 @@ const TabBarBackground = () => {
     </View>
   )
 }
-
 const TabItem = memo(
   ({
     focused,
-
     onPress,
     originalRenderIcon,
     originalRenderLabel,
     accessibilityLabel,
   }: {
     focused: boolean
-
     onPress: () => void
     originalRenderIcon: (scene: { focused: boolean }) => React.ReactNode
     originalRenderLabel: (scene: { focused: boolean }) => React.ReactNode
     accessibilityLabel?: string
   }) => {
     const pressed = useSharedValue(0)
-
     const animatedStyle = useAnimatedStyle(() => {
       return {
-        transform: [{ scale: 1 - 0.15 * pressed.value }],
+        transform: [
+          {
+            scale: 1 - 0.15 * pressed.value,
+          },
+        ],
       }
     })
-
-    const scene = { focused }
-
+    const scene = {
+      focused,
+    }
     return (
       <Pressable
         onPress={() => {
@@ -317,7 +322,9 @@ const TabItem = memo(
         className="flex-1 flex-col items-center justify-center"
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
-        accessibilityState={{ selected: focused }}
+        accessibilityState={{
+          selected: focused,
+        }}
       >
         <Animated.View style={animatedStyle}>
           {useMemo(() => {
@@ -329,5 +336,4 @@ const TabItem = memo(
     )
   },
 )
-
 const noop = () => null

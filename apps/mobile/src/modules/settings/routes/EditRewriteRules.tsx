@@ -1,7 +1,6 @@
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
-import { Text } from "react-native"
 
 import {
   NavigationBlurEffectHeaderView,
@@ -14,12 +13,14 @@ import {
   GroupedInsetListSectionHeader,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
-export const EditRewriteRulesScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+export const EditRewriteRulesScreen: NavigationControllerView<{
+  index: number
+}> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
-
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"

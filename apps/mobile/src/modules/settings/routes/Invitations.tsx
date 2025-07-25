@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
 import { Trans, useTranslation } from "react-i18next"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import { UINavigationHeaderActionButton } from "@/src/components/layouts/header/NavigationHeader"
@@ -21,6 +21,7 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { MonoText } from "@/src/components/ui/typography/MonoText"
+import { Text } from "@/src/components/ui/typography/Text"
 import { LoveCuteFiIcon } from "@/src/icons/love_cute_fi"
 import { PowerIcon } from "@/src/icons/power"
 import { apiClient } from "@/src/lib/api-fetch"
@@ -48,19 +49,16 @@ const useInvitationsLimitationQuery = () => {
   })
   return data?.data
 }
-
 const numberFormatter = new Intl.NumberFormat("en-US")
 export const InvitationsScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
-
   const { data: invitations, isLoading } = useInvitationsQuery()
   const limitation = useInvitationsLimitationQuery()
   const handleCopyCode = (code: string) => {
     setStringAsync(code)
     toast.success("Copied to clipboard")
   }
-
   const secondaryLabelColor = useColor("secondaryLabel")
   return (
     <SafeNavigationScrollView
@@ -87,7 +85,9 @@ export const InvitationsScreen: NavigationControllerView = () => {
                   {children}
                 </Text>
               )}
-              components={{ strong: <Text className="font-bold" /> }}
+              components={{
+                strong: <Text className="font-bold" />,
+              }}
             />
             <Trans
               ns="settings"
@@ -102,7 +102,18 @@ export const InvitationsScreen: NavigationControllerView = () => {
               }}
               components={{
                 PowerIcon: (
-                  <View style={{ transform: [{ translateY: 6 }, { translateX: -2 }] }}>
+                  <View
+                    style={{
+                      transform: [
+                        {
+                          translateY: 6,
+                        },
+                        {
+                          translateX: -2,
+                        },
+                      ],
+                    }}
+                  >
                     <PowerIcon color={accentColor} height={16} width={16} />
                   </View>
                 ),
@@ -170,7 +181,6 @@ export const InvitationsScreen: NavigationControllerView = () => {
     </SafeNavigationScrollView>
   )
 }
-
 const GenerateButton = () => {
   const { t } = useTranslation("settings")
   const limitation = useInvitationsLimitationQuery()
@@ -194,15 +204,15 @@ const GenerateButton = () => {
     </UINavigationHeaderActionButton>
   )
 }
-
 const ConfirmGenerateDialog: DialogComponent = () => {
   const serverConfigs = useServerConfigs()
   const { dismiss } = Dialog.useDialogContext()!
-
   const newInvitation = useMutation({
     mutationKey: ["newInvitation"],
     mutationFn: (values: Parameters<typeof apiClient.invitations.new.$post>[0]["json"]) =>
-      apiClient.invitations.new.$post({ json: values }),
+      apiClient.invitations.new.$post({
+        json: values,
+      }),
     onError(err) {
       toastFetchError(err)
       console.error(err)
@@ -212,14 +222,12 @@ const ConfirmGenerateDialog: DialogComponent = () => {
     },
     onSuccess(data) {
       toast.success("Generate successfully, code is copied to clipboard")
-
       type Invitation = {
         code: string
         createdAt: string | null
       }
       const old = queryClient.getQueryData<Invitation[]>(invitationQueryKey)
       setStringAsync(data.data)
-
       queryClient.setQueryData<Invitation[]>(invitationQueryKey, () => {
         return [
           {
@@ -231,16 +239,22 @@ const ConfirmGenerateDialog: DialogComponent = () => {
       })
     },
   })
-
   const confirm = useTOTPModalWrapper(newInvitation.mutateAsync, {
     dismiss,
   })
-
   return (
     <View>
       <Text>
         You can spend {serverConfigs?.INVITATION_PRICE}{" "}
-        <View style={{ transform: [{ translateY: 2 }] }}>
+        <View
+          style={{
+            transform: [
+              {
+                translateY: 2,
+              },
+            ],
+          }}
+        >
           <PowerIcon color={accentColor} height={16} width={16} />
         </View>{" "}
         Power to generate an invitation code for your friends.
@@ -254,7 +268,6 @@ const ConfirmGenerateDialog: DialogComponent = () => {
     </View>
   )
 }
-
 ConfirmGenerateDialog.id = "ConfirmGenerateDialog"
 ConfirmGenerateDialog.confirmText = "Generate"
 ConfirmGenerateDialog.title = "Generate Invitation Code"

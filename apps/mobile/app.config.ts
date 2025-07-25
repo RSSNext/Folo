@@ -27,14 +27,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     owner: "follow",
-    updates: {
-      url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
-      codeSigningCertificate: "./code-signing/certificate.pem",
-      codeSigningMetadata: {
-        keyid: "main",
-        alg: "rsa-v1_5-sha256",
-      },
-    },
+    // disable expo updates for now, https://github.com/expo/expo/issues/29630
+    // updates: {
+    //   url: "https://folo-custom-expo-updates.vercel.app/api/manifest",
+    //   codeSigningCertificate: "./code-signing/certificate.pem",
+    //   codeSigningMetadata: {
+    //     keyid: "main",
+    //     alg: "rsa-v1_5-sha256",
+    //   },
+    // },
     runtimeVersion: isDev ? "0.0.0-dev" : PKG.version,
 
     name: "Folo",

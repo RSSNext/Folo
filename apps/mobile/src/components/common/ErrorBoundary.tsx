@@ -3,14 +3,19 @@ import { getCrashlytics, recordError } from "@react-native-firebase/crashlytics"
 import type { FC } from "react"
 import { createElement, useEffect } from "react"
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary"
-import { Text, View } from "react-native"
+import { View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const ErrorBoundary = ({
   children,
   fallbackRender,
 }: {
   children: React.ReactNode
-  fallbackRender: FC<{ error: Error; resetError: () => void }>
+  fallbackRender: FC<{
+    error: Error
+    resetError: () => void
+  }>
 }) => {
   return (
     <ReactErrorBoundary
@@ -19,8 +24,13 @@ export const ErrorBoundary = ({
           return (
             <>
               {typeof fallbackRender === "function"
-                ? createElement(fallbackRender, { error, resetError: resetErrorBoundary })
-                : defaultFallbackRender({ error })}
+                ? createElement(fallbackRender, {
+                    error,
+                    resetError: resetErrorBoundary,
+                  })
+                : defaultFallbackRender({
+                    error,
+                  })}
               <ErrorReport error={error} />
             </>
           )
@@ -39,16 +49,13 @@ const defaultFallbackRender = ({ error }: { error: Error }) => {
     </View>
   )
 }
-
 const ErrorReport = ({ error }: { error: Error }) => {
   useEffect(() => {
     recordError(getCrashlytics(), error)
-
     console.error(error)
   }, [error])
   return null
 }
-
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   fallbackRender: (props: { error: Error; resetError: () => void }) => React.ReactNode,
@@ -60,8 +67,6 @@ export const withErrorBoundary = <P extends object>(
       </ErrorBoundary>
     )
   }
-
   WithErrorBoundaryComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || "Component"})`
-
   return WithErrorBoundaryComponent
 }

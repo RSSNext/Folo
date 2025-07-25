@@ -4,7 +4,7 @@ import { useActionRuleCondition } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import {
   NavigationBlurEffectHeaderView,
@@ -17,6 +17,7 @@ import {
   GroupedInsetListCard,
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import { views } from "@/src/constants/views"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { accentColor } from "@/src/theme/colors"
@@ -36,7 +37,6 @@ export const EditConditionScreen: NavigationControllerView<{
     </SafeNavigationScrollView>
   )
 }
-
 function ConditionForm({ index }: { index: ActionConditionIndex }) {
   const { t } = useTranslation("settings")
   const item = useActionRuleCondition(index)!
@@ -46,10 +46,12 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
     currentField?.type === "view"
       ? views.find((view) => view.view === Number(item.value))
       : undefined
-
   const operatorOptions = useMemo(() => {
     return filterOperatorOptions
-      .map((i) => ({ ...i, label: t(i.label) }))
+      .map((i) => ({
+        ...i,
+        label: t(i.label),
+      }))
       .filter((operator) => operator.types.includes(currentField?.type ?? "text"))
   }, [t, currentField])
   if (operatorOptions.length === 1 && currentOperator?.value !== operatorOptions[0]!.value) {
@@ -57,7 +59,6 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
       operator: operatorOptions[0]!.value as any,
     })
   }
-
   return (
     <>
       <GroupedInsetListSectionHeader label={t("actions.condition")} />
@@ -65,7 +66,10 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
         <GroupedInsetListBaseCell className="flex flex-row justify-between">
           <Text className="text-label">{t("actions.action_card.field")}</Text>
           <Select
-            options={filterFieldOptions.map((i) => ({ ...i, label: t(i.label) }))}
+            options={filterFieldOptions.map((i) => ({
+              ...i,
+              label: t(i.label),
+            }))}
             value={currentField?.value}
             onValueChange={(value) => {
               actionActions.pathCondition(index, {
@@ -102,7 +106,9 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
                 : item.value
             }
             onChange={(value) => {
-              actionActions.pathCondition(index, { value })
+              actionActions.pathCondition(index, {
+                value,
+              })
             }}
           />
         </GroupedInsetListBaseCell>
@@ -115,7 +121,6 @@ function ConditionForm({ index }: { index: ActionConditionIndex }) {
     </>
   )
 }
-
 function ValueField({
   type,
   value,
@@ -126,7 +131,6 @@ function ValueField({
   onChange: (value: string | undefined) => void
 }) {
   const { t } = useTranslation("common")
-
   switch (type) {
     case "view": {
       return (

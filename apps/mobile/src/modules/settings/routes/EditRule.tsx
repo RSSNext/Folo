@@ -9,7 +9,7 @@ import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { merge } from "es-toolkit/compat"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import * as DropdownMenu from "zeego/dropdown-menu"
 
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
@@ -26,6 +26,7 @@ import {
   GroupedInsetListSectionHeader,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import { views } from "@/src/constants/views"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
@@ -36,10 +37,11 @@ import { EditConditionScreen } from "./EditCondition"
 import { EditRewriteRulesScreen } from "./EditRewriteRules"
 import { EditWebhooksScreen } from "./EditWebhooks"
 
-export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+export const EditRuleScreen: NavigationControllerView<{
+  index: number
+}> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
-
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -54,14 +56,13 @@ export const EditRuleScreen: NavigationControllerView<{ index: number }> = ({ in
     </SafeNavigationScrollView>
   )
 }
-
-const RuleImpl: React.FC<{ index: number }> = ({ index }) => {
+const RuleImpl: React.FC<{
+  index: number
+}> = ({ index }) => {
   const rule = useActionRule(index)
-
   if (!rule) {
     return <Text>No rule available</Text>
   }
-
   return (
     <View className="gap-6">
       <NameSection rule={rule} />
@@ -76,8 +77,9 @@ const RuleImpl: React.FC<{ index: number }> = ({ index }) => {
     </View>
   )
 }
-
-const NameSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
+const NameSection: React.FC<{
+  rule: ActionModel
+}> = ({ rule }) => {
   const { t } = useTranslation("settings")
   return (
     <GroupedInsetListCard>
@@ -93,7 +95,9 @@ const NameSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
             hitSlop={10}
             selectionColor={accentColor}
             onChangeText={(text) => {
-              actionActions.patchRule(rule.index, { name: text })
+              actionActions.patchRule(rule.index, {
+                name: text,
+              })
             }}
           />
         </View>
@@ -101,8 +105,9 @@ const NameSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
     </GroupedInsetListCard>
   )
 }
-
-const FilterSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
+const FilterSection: React.FC<{
+  rule: ActionModel
+}> = ({ rule }) => {
   const { t } = useTranslation("settings")
   const hasCustomFilters = rule.condition.length > 0
   return (
@@ -130,13 +135,14 @@ const FilterSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
     </View>
   )
 }
-
-const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ filter, index }) => {
+const ConditionSection: React.FC<{
+  filter: ActionFilter
+  index: number
+}> = ({ filter, index }) => {
   const { t } = useTranslation("settings")
   const { t: tCommon } = useTranslation("common")
   const navigation = useNavigation()
   const colors = useColors()
-
   if (filter.length === 0) return null
   return (
     <View>
@@ -210,7 +216,10 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
             <GroupedPlainButtonCell
               label={t("actions.action_card.and")}
               onPress={() => {
-                actionActions.addConditionItem({ ruleIndex: index, groupIndex })
+                actionActions.addConditionItem({
+                  ruleIndex: index,
+                  groupIndex,
+                })
                 setTimeout(() => {
                   navigation.pushControllerView(EditConditionScreen, {
                     ruleIndex: index,
@@ -227,30 +236,38 @@ const ConditionSection: React.FC<{ filter: ActionFilter; index: number }> = ({ f
         <GroupedPlainButtonCell
           label={t("actions.action_card.or")}
           onPress={() => {
-            actionActions.addConditionGroup({ ruleIndex: index })
+            actionActions.addConditionGroup({
+              ruleIndex: index,
+            })
           }}
         />
       </GroupedInsetListCard>
     </View>
   )
 }
-
 const extendedAvailableActionList = Object.values(
   merge(availableActionMap, {
     rewriteRules: {
       onNavigate: (router: Navigation, index: number) => {
-        router.pushControllerView(EditRewriteRulesScreen, { index })
+        router.pushControllerView(EditRewriteRulesScreen, {
+          index,
+        })
       },
     },
     webhooks: {
       onNavigate: (router: Navigation, index: number) => {
-        router.pushControllerView(EditWebhooksScreen, { index })
+        router.pushControllerView(EditWebhooksScreen, {
+          index,
+        })
       },
     },
   }),
-) as (ActionAction & { onNavigate?: (router: Navigation, index: number) => void })[]
-
-const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
+) as (ActionAction & {
+  onNavigate?: (router: Navigation, index: number) => void
+})[]
+const ActionSection: React.FC<{
+  rule: ActionModel
+}> = ({ rule }) => {
   const { t } = useTranslation("settings")
   const enabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] !== undefined,
@@ -258,10 +275,8 @@ const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
   const notEnabledActions = extendedAvailableActionList.filter(
     (action) => rule.result[action.value] === undefined,
   )
-
   const navigation = useNavigation()
   const colors = useColors()
-
   return (
     <View>
       <GroupedInsetListSectionHeader label={t("actions.action_card.then_do")} marginSize="small" />
@@ -271,7 +286,9 @@ const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
             key={action.value}
             rightActions={[
               {
-                label: t("words.delete", { ns: "common" }),
+                label: t("words.delete", {
+                  ns: "common",
+                }),
                 onPress: () => {
                   actionActions.deleteRuleAction(rule.index, action.value)
                 },
@@ -310,7 +327,11 @@ const ActionSection: React.FC<{ rule: ActionModel }> = ({ rule }) => {
                     if (action.onEnable) {
                       action.onEnable(rule.index)
                     } else {
-                      actionActions.patchRule(rule.index, { result: { [action.value]: true } })
+                      actionActions.patchRule(rule.index, {
+                        result: {
+                          [action.value]: true,
+                        },
+                      })
                     }
                   }}
                 >

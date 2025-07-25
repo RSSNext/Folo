@@ -1,5 +1,8 @@
 import { persistQueryClient } from "@tanstack/react-query-persist-client"
 
+import { initializeDefaultDataSettings } from "../atoms/settings/data"
+import { initializeDefaultGeneralSettings } from "../atoms/settings/general"
+import { initializeDefaultUISettings } from "../atoms/settings/ui"
 import { kvStoragePersister, queryClient } from "../lib/query-client"
 
 declare module "@tanstack/react-query" {
@@ -10,7 +13,11 @@ declare module "@tanstack/react-query" {
   interface Register extends Meta {}
 }
 
-export const hydrateSettings = () => {}
+export const hydrateSettings = () => {
+  initializeDefaultUISettings()
+  initializeDefaultGeneralSettings()
+  initializeDefaultDataSettings()
+}
 export const hydrateQueryClient = () => {
   persistQueryClient({
     queryClient,

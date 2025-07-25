@@ -1,7 +1,6 @@
 import { useActionRule } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { useTranslation } from "react-i18next"
-import { Text } from "react-native"
 
 import {
   NavigationBlurEffectHeaderView,
@@ -14,12 +13,14 @@ import {
   GroupedInsetListCard,
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 
-export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = ({ index }) => {
+export const EditWebhooksScreen: NavigationControllerView<{
+  index: number
+}> = ({ index }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
-
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -34,7 +35,11 @@ export const EditWebhooksScreen: NavigationControllerView<{ index: number }> = (
               inputMode="url"
               value={webhook}
               onChangeText={(value) => {
-                actionActions.updateWebhook({ index, webhookIndex, value })
+                actionActions.updateWebhook({
+                  index,
+                  webhookIndex,
+                  value,
+                })
               }}
             />
           </GroupedInsetListBaseCell>

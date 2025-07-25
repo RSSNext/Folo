@@ -1,17 +1,16 @@
 import * as React from "react"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { useCanBack, useNavigation } from "@/src/lib/navigation/hooks"
 
 interface ScreenErrorScreenProps {
   error?: Error
   resetError?: () => void
 }
-
 export const ScreenErrorScreen: React.FC<ScreenErrorScreenProps> = ({ error }) => {
   const navigation = useNavigation()
   const canGoBack = useCanBack()
-
   return (
     <View className="bg-system-background flex-1">
       <View className="flex-1 items-center justify-center px-6">

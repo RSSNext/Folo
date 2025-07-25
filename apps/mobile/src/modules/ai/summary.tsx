@@ -10,7 +10,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -27,6 +26,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
 import { BottomModal } from "@/src/components/ui/modal/BottomModal"
+import { Text } from "@/src/components/ui/typography/Text"
 import { AiCuteReIcon } from "@/src/icons/ai_cute_re"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
@@ -44,24 +44,32 @@ export const AISummary: FC<{
   const opacity = useSharedValue(0.3)
   const height = useSharedValue(0)
   const [isSheetOpen, setSheetOpen] = React.useState(false)
-
   React.useEffect(() => {
     if (pending) {
       opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 800 }), withTiming(0.3, { duration: 800 })),
+        withSequence(
+          withTiming(1, {
+            duration: 800,
+          }),
+          withTiming(0.3, {
+            duration: 800,
+          }),
+        ),
         -1,
       )
     }
   }, [opacity, pending])
-
   const animatedContentStyle = useAnimatedStyle(() => ({
     height: height.value,
-    opacity: height.value === 0 ? 0 : withTiming(1, { duration: 200 }),
+    opacity:
+      height.value === 0
+        ? 0
+        : withTiming(1, {
+            duration: 200,
+          }),
     overflow: "hidden",
   }))
-
   const [contentHeight, setContentHeight] = React.useState(0)
-
   const measureContent = (event: LayoutChangeEvent) => {
     setContentHeight(event.nativeEvent.layout.height + 10)
     height.value = withSpring(event.nativeEvent.layout.height + 10, {
@@ -73,16 +81,13 @@ export const AISummary: FC<{
       duration: 200,
     })
   }
-
   const purpleColor = useColor("purple")
 
   // Check if summary is a React element or string
   const isReactElement = React.isValidElement(summary)
   const summaryText = typeof summary === "string" ? summary : ""
   const summaryTextForSheet = rawSummaryForCopy || summaryText
-
   if (pending || (!summary && !error)) return null
-
   const mainContent = (
     <Animated.View
       className={cn(
@@ -118,14 +123,23 @@ export const AISummary: FC<{
             }}
             onLongPress={() => setSheetOpen(true)}
             className="bg-quaternary-system-fill rounded-full p-1.5 active:opacity-70"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            hitSlop={{
+              top: 8,
+              bottom: 8,
+              left: 8,
+              right: 8,
+            }}
           >
             <CopyCuteReIcon width={14} height={14} color={purpleColor} />
           </TouchableOpacity>
         )}
       </View>
       <Animated.View style={animatedContentStyle}>
-        <View style={{ height: contentHeight }}>
+        <View
+          style={{
+            height: contentHeight,
+          }}
+        >
           {error ? (
             <View className="mt-3">
               <View className="flex-row items-center gap-2">
@@ -177,7 +191,6 @@ export const AISummary: FC<{
       </View>
     </Animated.View>
   )
-
   return (
     <>
       <Pressable onLongPress={summaryTextForSheet ? () => setSheetOpen(true) : undefined}>
@@ -191,7 +204,6 @@ export const AISummary: FC<{
     </>
   )
 }
-
 const SelectableTextSheet: FC<{
   visible: boolean
   onClose: () => void
@@ -199,16 +211,19 @@ const SelectableTextSheet: FC<{
 }> = ({ visible, onClose, text }) => {
   const insets = useSafeAreaInsets()
   const textColor = useColor("label")
-
   const handleCopyAll = () => {
     Clipboard.setString(text)
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     onClose()
   }
-
   return (
     <BottomModal visible={visible} onClose={onClose}>
-      <View className="m-4 mb-0 flex flex-1" style={{ paddingBottom: insets.bottom + 10 }}>
+      <View
+        className="m-4 mb-0 flex flex-1"
+        style={{
+          paddingBottom: insets.bottom + 10,
+        }}
+      >
         <View className="mb-4 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={handleCopyAll}
@@ -252,7 +267,6 @@ function SelectableText({ className, children }: { className?: string; children:
     )
   }
 }
-
 const styles = StyleSheet.create({
   card: {
     borderWidth: 0.5,

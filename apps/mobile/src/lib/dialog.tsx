@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { cn } from "@follow/utils"
 import { t } from "i18next"
 import type { Dispatch, FC, ReactElement, ReactNode, SetStateAction } from "react"
@@ -11,12 +12,14 @@ import {
   useMemo,
   useState,
 } from "react"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated"
 import RootSiblings from "react-native-root-siblings"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import type { ImageProps } from "react-native-svg"
 import { useColor } from "react-native-uikit-colors"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 import { FullWindowOverlay } from "../components/common/FullWindowOverlay"
 import { Overlay } from "../components/ui/overlay/Overlay"
@@ -32,15 +35,12 @@ export interface DialogProps<Ctx> {
   cancelText?: string
   confirmText?: string
   headerIcon?: ReactNode
-
   HeaderComponent?: FC<{
     title: string
     onClose: () => void
   }>
-
   id: string
 }
-
 interface ShowDialogOptions<Ctx> {
   override?: {
     onClose?: (ctx: Ctx & DialogContextType) => void
@@ -49,16 +49,13 @@ interface ShowDialogOptions<Ctx> {
     confirmText?: string
   }
 }
-
 const entering = SlideInUp.duration(200)
 const exiting = SlideOutUp.duration(200)
-
 type DialogContextType = {
   dismiss: () => void
   bizOnConfirm: (() => void) | null
   bizOnCancel: (() => void) | null
 }
-
 const DialogDynamicButtonActionContext = createContext<{
   onConfirm: (() => void) | null
   onCancel: (() => void) | null
@@ -66,7 +63,6 @@ const DialogDynamicButtonActionContext = createContext<{
   onConfirm: null,
   onCancel: null,
 })
-
 const SetDialogDynamicButtonActionContext = createContext<{
   setOnConfirm: Dispatch<SetStateAction<(() => void) | null>>
   setOnCancel: Dispatch<SetStateAction<(() => void) | null>>
@@ -74,23 +70,23 @@ const SetDialogDynamicButtonActionContext = createContext<{
   setOnConfirm: () => {},
   setOnCancel: () => {},
 })
-
 const DialogContext = createContext<DialogContextType | null>(null)
-export type DialogComponent<Ctx = unknown> = FC<{ ctx: Ctx }> & Omit<DialogProps<Ctx>, "content">
+export type DialogComponent<Ctx = unknown> = FC<{
+  ctx: Ctx
+}> &
+  Omit<DialogProps<Ctx>, "content">
 class DialogStatic {
   useDialogContext = () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     return use(DialogContext)
   }
-
   private currentStackedDialogs = new Set<string>()
 
   // Components
-  DialogConfirm: FC<{ onPress: () => void }> = ({ onPress }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+  DialogConfirm: FC<{
+    onPress: () => void
+  }> = ({ onPress }) => {
     const { setOnConfirm } = use(SetDialogDynamicButtonActionContext)
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       setOnConfirm(() => {
         return onPress
@@ -98,14 +94,13 @@ class DialogStatic {
     }, [onPress, setOnConfirm])
     return null
   }
-
-  DialogCancel: FC<{ onPress: () => void }> = ({ onPress }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+  DialogCancel: FC<{
+    onPress: () => void
+  }> = ({ onPress }) => {
     const { setOnCancel } = use(SetDialogDynamicButtonActionContext)
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+
     const { dismiss } = use(DialogContext)!
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       let timeout: NodeJS.Timeout
       setOnCancel(() => {
@@ -123,13 +118,11 @@ class DialogStatic {
     }, [onPress, setOnCancel, dismiss])
     return null
   }
-
   show<Ctx>(
     propsOrComponent: DialogProps<Ctx> | DialogComponent<Ctx>,
     options?: ShowDialogOptions<Ctx>,
   ) {
     const isExist = this.currentStackedDialogs.has(propsOrComponent.id)
-
     const override = options?.override
     if (isExist) {
       return
@@ -138,9 +131,7 @@ class DialogStatic {
       "content" in propsOrComponent
         ? propsOrComponent
         : (propsOrComponent as unknown as DialogProps<Ctx>)
-
     const dismiss = () => this.destroy(props.id, siblings)
-
     const reactCtx: DialogContextType = {
       dismiss,
       get bizOnConfirm() {
@@ -154,9 +145,10 @@ class DialogStatic {
         }
       },
     }
-
-    const mergeCtx = (ctx: Ctx) => ({ ...ctx, ...reactCtx })
-
+    const mergeCtx = (ctx: Ctx) => ({
+      ...ctx,
+      ...reactCtx,
+    })
     const ctx = {} as Ctx
     const children =
       "content" in propsOrComponent
@@ -164,7 +156,6 @@ class DialogStatic {
         : createElement(propsOrComponent, {
             ctx,
           })
-
     const handleClose = () => {
       dismiss()
       setTimeout(() => {
@@ -175,7 +166,6 @@ class DialogStatic {
         }
       }, 16)
     }
-
     const handleConfirm = () => {
       if (override?.onConfirm) {
         override.onConfirm(mergeCtx(ctx))
@@ -184,7 +174,6 @@ class DialogStatic {
         handleClose()
       }
     }
-
     const Header = props.HeaderComponent ? (
       createElement(props.HeaderComponent, {
         title: props.title ?? "",
@@ -193,7 +182,6 @@ class DialogStatic {
     ) : props.title ? (
       <DefaultHeader title={props.title} headerIcon={props.headerIcon} />
     ) : null
-
     const siblings = new RootSiblings(
       (
         <NavigationInstanceContext value={Navigation.rootNavigation}>
@@ -233,23 +221,25 @@ class DialogStatic {
         </NavigationInstanceContext>
       ),
     )
-
     this.currentStackedDialogs.add(props.id)
     return siblings
   }
-
   destroy(id: string, siblings: RootSiblings) {
     this.currentStackedDialogs.delete(id)
     siblings.destroy()
   }
 }
-
 const SafeInsetTop = () => {
   const insets = useSafeAreaInsets()
-  return <View style={{ height: insets.top }} />
+  return (
+    <View
+      style={{
+        height: insets.top,
+      }}
+    />
+  )
 }
 export const Dialog = new DialogStatic()
-
 const DefaultHeader = (props: { title?: string; headerIcon?: ReactNode }) => {
   const label = useColor("label")
   if (!props.title) return null
@@ -270,12 +260,10 @@ const DefaultHeader = (props: { title?: string; headerIcon?: ReactNode }) => {
     </View>
   )
 }
-
 const DialogDynamicButtonAction = (props: {
   type: "confirm" | "cancel"
   text: string
   fallbackCaller: () => void
-
   className?: string
   textClassName?: string
 }) => {
@@ -285,7 +273,6 @@ const DialogDynamicButtonAction = (props: {
       confirm: onConfirm,
       cancel: onCancel,
     }[props.type] || props.fallbackCaller
-
   return (
     <TouchableOpacity
       className={cn(
@@ -300,12 +287,23 @@ const DialogDynamicButtonAction = (props: {
     </TouchableOpacity>
   )
 }
-
 const DialogDynamicButtonActionProvider = (props: { children: ReactNode }) => {
   const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null)
   const [onCancel, setOnCancel] = useState<(() => void) | null>(null)
-  const ctx1 = useMemo(() => ({ onConfirm, onCancel }), [onConfirm, onCancel])
-  const ctx2 = useMemo(() => ({ setOnConfirm, setOnCancel }), [setOnConfirm, setOnCancel])
+  const ctx1 = useMemo(
+    () => ({
+      onConfirm,
+      onCancel,
+    }),
+    [onConfirm, onCancel],
+  )
+  const ctx2 = useMemo(
+    () => ({
+      setOnConfirm,
+      setOnCancel,
+    }),
+    [setOnConfirm, setOnCancel],
+  )
   return (
     <DialogDynamicButtonActionContext value={ctx1}>
       <SetDialogDynamicButtonActionContext value={ctx2}>

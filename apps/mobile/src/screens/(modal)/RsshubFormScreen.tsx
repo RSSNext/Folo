@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useMemo, useState } from "react"
 import type { FieldErrors } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
-import { KeyboardAvoidingView, Linking, Text, TouchableOpacity, View } from "react-native"
+import { KeyboardAvoidingView, Linking, TouchableOpacity, View } from "react-native"
 import { z } from "zod"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
@@ -23,6 +23,7 @@ import { FormProvider, useFormContext } from "@/src/components/ui/form/FormProvi
 import { Select } from "@/src/components/ui/form/Select"
 import { TextField } from "@/src/components/ui/form/TextField"
 import { MarkdownNative } from "@/src/components/ui/typography/MarkdownNative"
+import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -36,7 +37,6 @@ interface RsshubFormParams {
   routePrefix: string
   name: string
 }
-
 export const RsshubFormScreen: NavigationControllerView<RsshubFormParams> = ({
   route,
   routePrefix,
@@ -50,7 +50,6 @@ export const RsshubFormScreen: NavigationControllerView<RsshubFormParams> = ({
       return null
     }
   }, [route])
-
   const navigation = useNavigation()
   const canBack = navigation.canGoBack()
   useEffect(() => {
@@ -63,11 +62,9 @@ export const RsshubFormScreen: NavigationControllerView<RsshubFormParams> = ({
   }
   return <FormImpl route={parsedRoute} routePrefix={routePrefix as string} name={name!} />
 }
-
 function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
   const { name: routeName, topFeeds } = route
   const keys = useMemo(() => parseRegexpPathParams(route.path), [route.path])
-
   const formPlaceholder = useMemo<Record<string, string>>(() => {
     if (!route.example) return {}
     return parseFullPathParams(route.example.replace(`/${routePrefix}`, ""), route.path)
@@ -84,7 +81,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
       }),
     [keys],
   )
-
   const defaultValue = useMemo(() => {
     const ret = {} as Record<string, string | null>
     if (!route.parameters) return ret
@@ -95,7 +91,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
     }
     return ret
   }, [route.parameters])
-
   const form = useForm<z.infer<typeof dynamicFormSchema>>({
     resolver: zodResolver(dynamicFormSchema),
     defaultValues: defaultValue,
@@ -104,7 +99,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
 
   // eslint-disable-next-line unicorn/prefer-structured-clone
   const nextErrors = JSON.parse(JSON.stringify(form.formState.errors))
-
   const data = form.watch() as Record<string, string | undefined>
   const fullPath = useMemo(() => {
     try {
@@ -114,7 +108,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
       return route.path
     }
   }, [route.path, data])
-
   return (
     <FormProvider form={form}>
       <PortalProvider>
@@ -141,7 +134,6 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
               <View className="bg-secondary-system-grouped-background mx-4 mt-4 gap-5 rounded-[10px] px-4 py-5">
                 {keys.map((keyItem) => {
                   const parameters = normalizeRSSHubParameters(route.parameters[keyItem.name]!)
-
                   return (
                     <View key={keyItem.name}>
                       {!parameters?.options && (
@@ -202,7 +194,14 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
             {!!topFeeds?.length && (
               <View className="bg-secondary-system-grouped-background mx-4 mt-4 rounded-[10px] py-1">
                 {topFeeds.map((feed) => (
-                  <FeedSummary key={feed.id} item={{ feed }} simple className="px-4 py-2" />
+                  <FeedSummary
+                    key={feed.id}
+                    item={{
+                      feed,
+                    }}
+                    simple
+                    className="px-4 py-2"
+                  />
                 ))}
               </View>
             )}
@@ -219,12 +218,10 @@ function FormImpl({ route, routePrefix, name }: RsshubFormParams) {
     </FormProvider>
   )
 }
-
 const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
   if (!maintainers || maintainers.length === 0) {
     return null
   }
-
   return (
     <View className="text-tertiary-label mx-8 mt-4 flex flex-row flex-wrap gap-x-1 text-sm">
       <Text className="text-secondary-label text-xs">
@@ -238,14 +235,15 @@ const Maintainers = ({ maintainers }: { maintainers?: string[] }) => {
     </View>
   )
 }
-
 const normalizeRSSHubParameters = (parameters: RSSHubParameter): RSSHubParameterObject | null =>
   parameters
     ? typeof parameters === "string"
-      ? { description: parameters, default: null }
+      ? {
+          description: parameters,
+          default: null,
+        }
       : parameters
     : null
-
 type ScreenOptionsProps = {
   name: string
   routeName: string
@@ -256,7 +254,6 @@ type ScreenOptionsProps = {
 const ScreenOptions = memo(
   ({ name, routeName, route, routePrefix, errors }: ScreenOptionsProps) => {
     const form = useFormContext()
-
     const setScreenOptions = useSetModalScreenOptions()
     useEffect(() => {
       setScreenOptions({
@@ -276,9 +273,7 @@ const ScreenOptions = memo(
     )
   },
 )
-
 const routeParamsKeyPrefix = "route-params-"
-
 const ModalHeaderSubmitButtonImpl = ({
   routePrefix,
   route,
@@ -290,16 +285,13 @@ const ModalHeaderSubmitButtonImpl = ({
 }) => {
   const form = useFormContext()
   const isValid = Object.keys(errors).length === 0
-
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false)
-
   const submit = form.handleSubmit((_data) => {
     setIsLoading(true)
     const data = Object.fromEntries(
       Object.entries(_data).filter(([key]) => !key.startsWith(routeParamsKeyPrefix)),
     )
-
     try {
       const routeParamsPath = encodeURIComponent(
         Object.entries(_data)
@@ -308,17 +300,16 @@ const ModalHeaderSubmitButtonImpl = ({
           .map(([key, value]) => `${key}=${value}`)
           .join("&"),
       )
-
       const fillRegexpPath = regexpPathToPath(
         routeParamsPath ? route.slice(0, route.indexOf("/:routeParams")) : route,
         data,
       )
       const url = `rsshub://${routePrefix}${fillRegexpPath}`
-
       const finalUrl = routeParamsPath ? `${url}/${routeParamsPath}` : url
-
       feedSyncServices
-        .fetchFeedById({ url: finalUrl })
+        .fetchFeedById({
+          url: finalUrl,
+        })
         .then((feed) => {
           navigation.pushControllerView(FollowScreen, {
             id: feed?.id,
@@ -342,7 +333,6 @@ const ModalHeaderSubmitButtonImpl = ({
       }
     }
   })
-
   return (
     <HeaderSubmitTextButton isLoading={isLoading} isValid={isValid} onPress={submit} label="Next" />
   )

@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import { Logo } from "@/src/components/ui/logo"
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const StepFinished = () => {
   const { t } = useTranslation()
-
   return (
     <View className="flex-1 items-center justify-center">
       <Logo width={80} height={80} />

@@ -8,7 +8,7 @@ import { useIAP } from "expo-iap"
 import { openURL } from "expo-linking"
 import { useEffect } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Pressable, Text, View } from "react-native"
+import { Linking, Pressable, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import {
@@ -19,6 +19,8 @@ import {
   GroupedInformationCell,
   GroupedInsetListCard,
 } from "@/src/components/ui/grouped/GroupedList"
+// Plan configuration types
+import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { PowerOutlineIcon } from "@/src/icons/power_outline"
 import { TimeCuteReIcon } from "@/src/icons/time_cute_re"
@@ -32,7 +34,6 @@ import { accentColor } from "@/src/theme/colors"
 
 import { ReferralScreen } from "./Referral"
 
-// Plan configuration types
 interface Plan {
   id: string
   title: string
@@ -47,10 +48,13 @@ interface Plan {
 
 // Plan hierarchy: Free (1) < Pro Preview (2) < Pro (3)
 const PLAN_TIER_MAP: Record<UserRole, number> = {
-  [UserRole.Admin]: 4, // Admin has highest tier
+  [UserRole.Admin]: 4,
+  // Admin has highest tier
   [UserRole.Free]: 1,
-  [UserRole.Trial]: 1, // Same as Free (deprecated)
-  [UserRole.PreProTrial]: 2, // Same tier as PrePro
+  [UserRole.Trial]: 1,
+  // Same as Free (deprecated)
+  [UserRole.PreProTrial]: 2,
+  // Same tier as PrePro
   [UserRole.PrePro]: 2,
   [UserRole.Pro]: 3,
 }
@@ -89,14 +93,12 @@ const PLAN_CONFIGS: Plan[] = [
     tier: PLAN_TIER_MAP[UserRole.Pro],
   },
 ]
-
 const useReferralInfoQuery = () => {
   return useQuery({
     queryKey: ["referral", "info"],
     queryFn: () => apiClient.referrals.$get().then((res) => res.data),
   })
 }
-
 export const PlanScreen: NavigationControllerView = () => {
   const { connected, getProducts, requestPurchase, validateReceipt } = useIAP({
     onPurchaseSuccess: (purchase) => {
@@ -106,13 +108,11 @@ export const PlanScreen: NavigationControllerView = () => {
       console.error("Purchase failed:", error)
     },
   })
-
   useEffect(() => {
     if (connected) {
       getProducts(["is.follow.propreview"])
     }
   }, [connected])
-
   const validatePurchase = async (purchase: ProductPurchase) => {
     if (!purchase.transactionId) {
       return
@@ -120,33 +120,37 @@ export const PlanScreen: NavigationControllerView = () => {
     try {
       const result = await validateReceipt(purchase.transactionId)
       if (result.isValid) {
-        apiClient.referrals["verify-receipt"].$post({ json: { appReceipt: result.receiptData } })
+        apiClient.referrals["verify-receipt"].$post({
+          json: {
+            appReceipt: result.receiptData,
+          },
+        })
       }
     } catch (error) {
       console.error("Validation failed:", error)
     }
   }
-
   const navigation = useNavigation()
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
-
   const { data: referralInfo } = useReferralInfoQuery()
   const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
-
   const role = useUserRole()
   const roleEndDate = useRoleEndAt()
   const daysLeft = roleEndDate
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
   const progress = (validInvitationsAmount / requiredInvitationsAmount) * 100
-
   const upgradePlanMutation = useMutation({
     mutationFn: async () => {
       if (isIOS) {
-        await requestPurchase({ request: { sku: "is.follow.propreview" } })
+        await requestPurchase({
+          request: {
+            sku: "is.follow.propreview",
+          },
+        })
       } else {
         const res = await authClient.subscription.upgrade({
           plan: "folo pro preview",
@@ -160,7 +164,6 @@ export const PlanScreen: NavigationControllerView = () => {
       }
     },
   })
-
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -278,7 +281,6 @@ export const PlanScreen: NavigationControllerView = () => {
     </SafeNavigationScrollView>
   )
 }
-
 interface PlanCardProps {
   plan: Plan
   currentUserRole: UserRole | null
@@ -287,7 +289,6 @@ interface PlanCardProps {
   onUpgrade?: () => void
   disabled?: boolean
 }
-
 function PlanCard({ plan, isCurrentPlan, daysLeft, onUpgrade, disabled }: PlanCardProps) {
   return (
     <View

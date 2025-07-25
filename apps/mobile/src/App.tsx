@@ -1,6 +1,7 @@
 import { usePrefetchActions } from "@follow/store/action/hooks"
 import { usePrefetchSessionUser } from "@follow/store/user/hooks"
 import { StatusBar } from "expo-status-bar"
+import type { FC, PropsWithChildren } from "react"
 import { View } from "react-native"
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { RootSiblingParent } from "react-native-root-siblings"
@@ -14,15 +15,25 @@ import { useUnreadCountBadge } from "./hooks/useUnreadCountBadge"
 import { DebugButton, EnvProfileIndicator } from "./modules/debug"
 
 export function App({ children }: { children: React.ReactNode }) {
-  useIntentHandler()
-  useOnboarding()
-  useUnreadCountBadge()
-  useBackHandler()
+  return (
+    <>
+      <StatusBar translucent animated style="auto" />
+      <View className="flex-1 bg-black">
+        <SideEffect />
 
-  // prefetch actions to detect if the user has any actions contains notifications
-  usePrefetchActions()
-  useUpdateMessagingToken()
-  useMessaging()
+        <ScaleableWrapper>
+          <RootSiblingParent>{children}</RootSiblingParent>
+        </ScaleableWrapper>
+
+        {__DEV__ && <DebugButton />}
+
+        <EnvProfileIndicator />
+      </View>
+    </>
+  )
+}
+
+const ScaleableWrapper: FC<PropsWithChildren> = ({ children }) => {
   const { scale } = useSheet()
 
   const style = useAnimatedStyle(() => ({
@@ -34,23 +45,22 @@ export function App({ children }: { children: React.ReactNode }) {
     ],
   }))
   return (
-    <>
-      <StatusBar translucent animated style="auto" />
-      <View className="flex-1 bg-black">
-        <Session />
-
-        <Animated.View className="flex-1 overflow-hidden" style={style}>
-          <RootSiblingParent>{children}</RootSiblingParent>
-        </Animated.View>
-        {__DEV__ && <DebugButton />}
-
-        <EnvProfileIndicator />
-      </View>
-    </>
+    <Animated.View className="flex-1 overflow-hidden" style={style}>
+      {children}
+    </Animated.View>
   )
 }
 
-const Session = () => {
+const SideEffect = () => {
   usePrefetchSessionUser()
+  useUnreadCountBadge()
+  useBackHandler()
+  useIntentHandler()
+  useOnboarding()
+
+  // prefetch actions to detect if the user has any actions contains notifications
+  usePrefetchActions()
+  useUpdateMessagingToken()
+  useMessaging()
   return null
 }

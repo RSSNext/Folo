@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { Animated, Text, useAnimatedValue, useWindowDimensions, View } from "react-native"
+import { Animated, useAnimatedValue, useWindowDimensions, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import { useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -20,6 +20,7 @@ import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { TabBar } from "@/src/components/ui/tabview/TabBar"
 import type { TabComponent } from "@/src/components/ui/tabview/TabView"
+import { Text } from "@/src/components/ui/typography/Text"
 import { MingcuteLeftLineIcon } from "@/src/icons/mingcute_left_line"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { useColor } from "@/src/theme/colors"
@@ -29,16 +30,17 @@ import { RecommendationListItem } from "./RecommendationListItem"
 
 export const Recommendations = () => {
   const { t } = useTranslation("common")
-
   const animatedX = useAnimatedValue(0)
   const [currentTab, setCurrentTab] = useState(0)
   const windowWidth = useWindowDimensions().width
   const ref = useRef<ScrollView>(null)
-
   useEffect(() => {
-    ref.current?.scrollTo({ x: currentTab * windowWidth, y: 0, animated: true })
+    ref.current?.scrollTo({
+      x: currentTab * windowWidth,
+      y: 0,
+      animated: true,
+    })
   }, [ref, currentTab, windowWidth])
-
   const [loadedTabIndex, setLoadedTabIndex] = useState(() => new Set())
   useEffect(() => {
     setLoadedTabIndex((prev) => {
@@ -46,7 +48,6 @@ export const Recommendations = () => {
       return new Set(prev)
     })
   }, [currentTab])
-
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const label = useColor("label")
@@ -78,9 +79,20 @@ export const Recommendations = () => {
       </View>
       <AnimatedScrollView
         contentInsetAdjustmentBehavior="never"
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: animatedX } } }], {
-          useNativeDriver: true,
-        })}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: animatedX,
+                },
+              },
+            },
+          ],
+          {
+            useNativeDriver: true,
+          },
+        )}
         ref={ref}
         horizontal
         pagingEnabled
@@ -88,16 +100,28 @@ export const Recommendations = () => {
         nestedScrollEnabled
       >
         {RSSHubCategories.map((category, index) => (
-          <View className="flex-1" style={{ width: windowWidth }} key={category}>
+          <View
+            className="flex-1"
+            style={{
+              width: windowWidth,
+            }}
+            key={category}
+          >
             {loadedTabIndex.has(index) && (
               <RecommendationTab
                 key={category}
-                insets={{ top: 44 + insets.top - 10, bottom: insets.bottom }}
+                insets={{
+                  top: 44 + insets.top - 10,
+                  bottom: insets.bottom,
+                }}
                 contentContainerStyle={{
                   paddingTop: 44 + insets.top,
                   paddingBottom: insets.bottom,
                 }}
-                tab={{ name: t(`discover.category.${category}`), value: category }}
+                tab={{
+                  name: t(`discover.category.${category}`),
+                  value: category,
+                }}
                 isSelected={currentTab === index}
               />
             )}
@@ -107,16 +131,17 @@ export const Recommendations = () => {
     </View>
   )
 }
-
 const LanguageMap = {
   all: "all",
   eng: "en",
   cmn: "zh-CN",
 } as const
-
 export const RecommendationTab: TabComponent<{
   contentContainerStyle?: ContentStyle
-  insets?: { top?: number; bottom?: number }
+  insets?: {
+    top?: number
+    bottom?: number
+  }
   reanimatedScrollY?: SharedValue<number>
 }> = ({
   tab,
@@ -127,41 +152,36 @@ export const RecommendationTab: TabComponent<{
   ...rest
 }) => {
   const discoverLanguage = useUISettingKey("discoverLanguage")
-
   const { data, isLoading } = useQuery({
     queryKey: ["rsshub-popular", tab.value, discoverLanguage],
     queryFn: () =>
       fetchRsshubPopular(tab.value, LanguageMap[discoverLanguage]).then((res) => res.data),
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    staleTime: 1000 * 60 * 60 * 24,
+    // 1 day
     meta: {
       persist: true,
     },
   })
-
   const { data: analysisData, isLoading: isAnalysisLoading } = useQuery({
     queryKey: ["rsshub-analysis", discoverLanguage],
     queryFn: () => fetchRsshubAnalysis(LanguageMap[discoverLanguage]).then((res) => res.data),
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    staleTime: 1000 * 60 * 60 * 24,
+    // 1 day
     meta: {
       persist: true,
     },
   })
-
   const keys = useMemo(() => {
     if (!data) {
       return []
     }
-
     return Object.keys(data).sort((a, b) => {
       const aname = data[a]!.name
       const bname = data[b]!.name
-
       const aRouteName = data[a]!.routes[Object.keys(data[a]!.routes)[0]!]!.name
       const bRouteName = data[b]!.routes[Object.keys(data[b]!.routes)[0]!]!.name
-
       const ia = isASCII(aname) && isASCII(aRouteName)
       const ib = isASCII(bname) && isASCII(bRouteName)
-
       if (ia && ib) {
         return aname.toLowerCase() < bname.toLowerCase() ? -1 : 1
       } else if (ia || ib) {
@@ -171,9 +191,11 @@ export const RecommendationTab: TabComponent<{
       }
     })
   }, [data])
-
   const alphabetGroups = useMemo(() => {
-    const result = [] as { key: string; data: RSSHubRouteDeclaration }[]
+    const result = [] as {
+      key: string
+      data: RSSHubRouteDeclaration
+    }[]
     for (const item of keys) {
       if (!data) {
         continue
@@ -189,7 +211,6 @@ export const RecommendationTab: TabComponent<{
         data: dataWithAnalysis,
       })
     }
-
     result.sort((a, b) => {
       let aHeat = 0
       let bHeat = 0
@@ -205,39 +226,49 @@ export const RecommendationTab: TabComponent<{
       }
       return bHeat - aHeat
     })
-
     return result
   }, [data, keys, analysisData])
 
   // Add ref for FlashList
-  const listRef =
-    useRegisterNavigationScrollView<FlashList<{ key: string; data: RSSHubRouteDeclaration }>>(
-      isSelected,
-    )
-
-  const getItemType = useRef((item: string | { key: string }) => {
-    return typeof item === "string" ? "sectionHeader" : "row"
-  }).current
-
-  const keyExtractor = useRef((item: string | { key: string }) => {
-    return typeof item === "string" ? item : item.key
-  }).current
-
+  const listRef = useRegisterNavigationScrollView<
+    FlashList<{
+      key: string
+      data: RSSHubRouteDeclaration
+    }>
+  >(isSelected)
+  const getItemType = useRef(
+    (
+      item:
+        | string
+        | {
+            key: string
+          },
+    ) => {
+      return typeof item === "string" ? "sectionHeader" : "row"
+    },
+  ).current
+  const keyExtractor = useRef(
+    (
+      item:
+        | string
+        | {
+            key: string
+          },
+    ) => {
+      return typeof item === "string" ? item : item.key
+    },
+  ).current
   const scrollOffsetRef = useRef(0)
   const animatedY = useSharedValue(0)
-
   useEffect(() => {
     if (isSelected) {
       animatedY.value = scrollOffsetRef.current
     }
   }, [animatedY, isSelected])
-
   const insets = useSafeAreaInsets()
-
   if (isLoading || isAnalysisLoading) {
     return <PlatformActivityIndicator className="flex-1 items-center justify-center" />
   }
-
   if (keys.length === 0) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -245,7 +276,6 @@ export const RecommendationTab: TabComponent<{
       </View>
     )
   }
-
   return (
     <View className="bg-system-grouped-background flex-1" {...rest}>
       <FlashList
@@ -277,7 +307,13 @@ export const RecommendationTab: TabComponent<{
     </View>
   )
 }
-
-const ItemRenderer = ({ item }: { item: { key: string; data: RSSHubRouteDeclaration } }) => {
+const ItemRenderer = ({
+  item,
+}: {
+  item: {
+    key: string
+    data: RSSHubRouteDeclaration
+  }
+}) => {
   return <RecommendationListItem data={item.data} routePrefix={item.key} />
 }

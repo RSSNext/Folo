@@ -3,12 +3,13 @@ import { formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { memo } from "react"
-import { Text, useWindowDimensions, View } from "react-native"
+import { useWindowDimensions, View } from "react-native"
 
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { RightCuteReIcon } from "@/src/icons/right_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { apiClient } from "@/src/lib/api-fetch"
@@ -22,12 +23,10 @@ import { ItemSeparator } from "./__base"
 import { useDataSkeleton } from "./hooks"
 
 type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
-
 export const SearchList = () => {
   const { searchValueAtom } = useSearchPageContext()
   const searchValue = useAtomValue(searchValueAtom)
   const windowWidth = useWindowDimensions().width
-
   const { data, isLoading } = useQuery({
     queryKey: ["searchList", searchValue],
     queryFn: () => {
@@ -40,13 +39,15 @@ export const SearchList = () => {
     },
     enabled: !!searchValue,
   })
-
   const skeleton = useDataSkeleton(isLoading, data)
   if (skeleton) return skeleton
   if (data === undefined) return null
-
   return (
-    <View style={{ width: windowWidth }}>
+    <View
+      style={{
+        width: windowWidth,
+      }}
+    >
       <Text className="text-text/60 px-6 pt-4">Found {data.data?.length} lists</Text>
       <View>
         {data.data?.map((item) => (
@@ -59,12 +60,10 @@ export const SearchList = () => {
     </View>
   )
 }
-
 const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
   const isSubscribed = useSubscriptionByListId(item.list?.id ?? "")
   const navigation = useNavigation()
   const iconColor = useColor("text")
-
   return (
     <ItemPressable
       itemStyle={ItemPressableStyle.Plain}
@@ -82,7 +81,13 @@ const SearchListCard = memo(({ item }: { item: SearchResultItem }) => {
       <View className="flex-row items-center gap-2 pl-4 pr-2">
         <View className="size-[32px] overflow-hidden rounded-lg">
           {item.list?.image ? (
-            <Image source={{ uri: item.list.image }} className="size-full" contentFit="cover" />
+            <Image
+              source={{
+                uri: item.list.image,
+              }}
+              className="size-full"
+              contentFit="cover"
+            />
           ) : (
             !!item.list?.title && <FallbackIcon title={item.list.title} size={32} />
           )}

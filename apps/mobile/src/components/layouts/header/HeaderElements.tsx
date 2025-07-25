@@ -16,14 +16,12 @@ export interface ModalHeaderSubmitButtonProps {
   onPress: () => void
   isLoading?: boolean
 }
-
 export const HeaderSubmitButton = ({
   isValid,
   onPress,
   isLoading,
 }: ModalHeaderSubmitButtonProps) => {
   const label = useColor("label")
-
   return (
     <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
       {isLoading ? (
@@ -34,7 +32,6 @@ export const HeaderSubmitButton = ({
     </UINavigationHeaderActionButton>
   )
 }
-
 export const HeaderSubmitTextButton = ({
   isValid,
   onPress,
@@ -44,7 +41,6 @@ export const HeaderSubmitTextButton = ({
   label?: string
 }) => {
   const { t } = useTranslation("common")
-
   const labelColor = useColor("label")
   return (
     <UINavigationHeaderActionButton onPress={onPress} disabled={!isValid || isLoading}>
@@ -54,8 +50,9 @@ export const HeaderSubmitTextButton = ({
         </View>
       )}
       <Text
+        allowFontScaling={false}
         className={cn(
-          "text-accent text-base font-bold",
+          "text-accent text-[16px] font-bold",
           !isValid && "text-secondary-label",
           isLoading && "opacity-0",
         )}
@@ -65,7 +62,6 @@ export const HeaderSubmitTextButton = ({
     </UINavigationHeaderActionButton>
   )
 }
-
 export const HeaderCloseOnly = () => {
   const insets = useSafeAreaInsets()
   const canDismiss = useCanDismiss()

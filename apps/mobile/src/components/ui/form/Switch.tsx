@@ -1,5 +1,7 @@
 import type { StyleProp, ViewStyle } from "react-native"
-import { Text, View } from "react-native"
+import { View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 import type { SwitchProps, SwitchRef } from "../switch/Switch"
 import { Switch } from "../switch/Switch"
@@ -8,13 +10,10 @@ import { FormLabel } from "./Label"
 interface Props {
   wrapperClassName?: string
   wrapperStyle?: StyleProp<ViewStyle>
-
   label?: string
   description?: string
-
   size?: "sm" | "default"
 }
-
 export const FormSwitch = ({
   ref,
   wrapperClassName,
@@ -23,9 +22,11 @@ export const FormSwitch = ({
   description,
   size = "default",
   ...rest
-}: Props & SwitchProps & { ref?: React.Ref<SwitchRef | null> }) => {
+}: Props &
+  SwitchProps & {
+    ref?: React.Ref<SwitchRef | null>
+  }) => {
   const Trigger = <Switch size={size} ref={ref} {...rest} />
-
   if (!label) {
     return Trigger
   }

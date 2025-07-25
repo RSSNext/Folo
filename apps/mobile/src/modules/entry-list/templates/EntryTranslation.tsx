@@ -1,8 +1,9 @@
 import { useMemo } from "react"
 import type { TextProps } from "react-native"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const EntryTranslation = ({
   source,
@@ -21,7 +22,6 @@ export const EntryTranslation = ({
   bilingual?: boolean
 } & TextProps) => {
   const bilingualFinal = useGeneralSettingKey("translationMode") === "bilingual" || bilingual
-
   const nextSource = useMemo(() => {
     if (!source) {
       return ""
@@ -34,7 +34,6 @@ export const EntryTranslation = ({
     }
     return target.trim()
   }, [nextSource, target])
-
   if (!bilingualFinal) {
     return (
       <Text {...props} className={className}>
@@ -42,7 +41,6 @@ export const EntryTranslation = ({
       </Text>
     )
   }
-
   if (inline) {
     return (
       <Text {...props} className={className}>
@@ -50,7 +48,6 @@ export const EntryTranslation = ({
       </Text>
     )
   }
-
   return (
     <View>
       <Text {...props} className={className}>

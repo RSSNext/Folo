@@ -56,6 +56,7 @@ export const defaultResources = {
     settings: settings_zhCN,
     shortcuts: shortcuts_zhCN,
     errors: errors_zhCN,
+    ai: ai_en, // Fallback to English until Chinese translation is available
   },
 
   ja: {
@@ -74,6 +75,7 @@ export const defaultResources = {
     settings: settings_zhTW,
     shortcuts: shortcuts_zhTW,
     errors: errors_zhTW,
+    ai: ai_en, // Fallback to English until Traditional Chinese translation is available
   },
   ko: {
     app: app_ko,

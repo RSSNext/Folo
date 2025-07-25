@@ -2,7 +2,7 @@ import { useWhoami } from "@follow/store/user/hooks"
 import { use } from "react"
 import { useTranslation } from "react-i18next"
 import type { ScrollView } from "react-native"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -11,6 +11,7 @@ import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
 import { getDefaultHeaderHeight } from "@/src/components/layouts/utils"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
+import { Text } from "@/src/components/ui/typography/Text"
 import { Settings1CuteFiIcon } from "@/src/icons/settings_1_cute_fi"
 import { Settings1CuteReIcon } from "@/src/icons/settings_1_cute_re"
 import type { TabScreenComponent } from "@/src/lib/navigation/bottom-tab/types"
@@ -25,12 +26,13 @@ export function Settings() {
   const screenContext = use(ScreenItemContext)
   const whoami = useWhoami()
   const scrollViewRef = useRegisterNavigationScrollView<ScrollView>()
-
   return (
     <>
       <SafeNavigationScrollView
         ref={scrollViewRef}
-        style={{ paddingTop: insets.top }}
+        style={{
+          paddingTop: insets.top,
+        }}
         className="bg-system-grouped-background flex-1"
         contentViewClassName="-mt-24 pb-8"
       >
@@ -58,10 +60,14 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
       paddingTop: insets.top,
     }
   })
-
   const whoami = useWhoami()
   return (
-    <View className="pt-safe absolute inset-x-0 top-0" style={{ height: headerHeight }}>
+    <View
+      className="pt-safe absolute inset-x-0 top-0"
+      style={{
+        height: headerHeight,
+      }}
+    >
       <Animated.View
         pointerEvents="none"
         className="border-b-hairline border-opaque-separator absolute inset-x-0 top-0 flex-row items-center px-4 pb-2"
@@ -76,7 +82,6 @@ const SettingHeader = ({ scrollY }: { scrollY: SharedValue<number> }) => {
     </View>
   )
 }
-
 const EditProfileButton = () => {
   const { t } = useTranslation("common")
   const navigation = useNavigation()
@@ -91,7 +96,6 @@ const EditProfileButton = () => {
     </TouchableOpacity>
   )
 }
-
 export const SettingsTabScreen: TabScreenComponent = Settings
 SettingsTabScreen.tabBarIcon = ({ focused, color }) => {
   const Icon = !focused ? Settings1CuteReIcon : Settings1CuteFiIcon

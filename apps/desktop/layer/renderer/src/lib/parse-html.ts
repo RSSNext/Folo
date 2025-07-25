@@ -35,7 +35,7 @@ export const parseHtml = (
     components: {
       a: ({ node, ...props }) => {
         // markInlineImage(node)
-        return createElement(MarkdownLink, { ...props } as any)
+        return createElement(MarkdownLink, { ...props, className: "text-accent" } as any)
       },
       img: Img,
 

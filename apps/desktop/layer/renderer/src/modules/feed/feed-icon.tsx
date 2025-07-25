@@ -13,6 +13,14 @@ import { useMemo } from "react"
 
 const { Avatar, AvatarFallback, AvatarImage } = AvatarPrimitive
 
+// Size-responsive border radius utility function
+const getBorderRadius = (size: number) => {
+  if (size <= 24) return "rounded-sm" // 2px for small avatars
+  if (size <= 32) return "rounded-md" // 6px for medium avatars
+  if (size <= 48) return "rounded-lg" // 8px for large avatars
+  return "rounded-xl" // 12px for extra large avatars
+}
+
 function getIconProps(
   props: Pick<
     Parameters<typeof FeedIcon>[0],
@@ -280,7 +288,7 @@ export function FeedIcon({
   if (finalSrc) {
     return (
       <Avatar className={cn("shrink-0 [&_*]:select-none", marginClassName)} style={sizeStyle}>
-        <AvatarImage className="rounded-sm object-cover" asChild src={finalSrc}>
+        <AvatarImage className={cn("object-cover", getBorderRadius(size))} asChild src={finalSrc}>
           {imageElement}
         </AvatarImage>
         <AvatarFallback delayMs={200} asChild>

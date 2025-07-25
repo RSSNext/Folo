@@ -2,11 +2,12 @@ import { tracker } from "@follow/tracker"
 import * as AppleAuthentication from "expo-apple-authentication"
 import { useColorScheme } from "nativewind"
 import { useTranslation } from "react-i18next"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import { Image } from "@/src/components/ui/image/Image"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { Text } from "@/src/components/ui/typography/Text"
 import { signIn, useAuthProviders } from "@/src/lib/auth"
 
 import { ReferralForm } from "./referral"
@@ -23,7 +24,6 @@ export function SocialLogin({
   const { colorScheme } = useColorScheme()
   const providers = Object.entries(authProviders || [])
   const { t } = useTranslation()
-
   if (isLoading) {
     return (
       <View className="flex h-[240px] w-screen items-center justify-center">
@@ -31,7 +31,6 @@ export function SocialLogin({
       </View>
     )
   }
-
   return (
     <View className="flex w-screen items-center justify-center gap-4 px-6">
       {providers.map(([key, provider]) => {
@@ -53,7 +52,6 @@ export function SocialLogin({
                       AppleAuthentication.AppleAuthenticationScope.EMAIL,
                     ],
                   })
-
                   if (credential.identityToken) {
                     await signIn.social({
                       provider: "apple",
@@ -73,7 +71,6 @@ export function SocialLogin({
                 }
                 return
               }
-
               await signIn.social({
                 provider: provider.id as any,
                 callbackURL: "/",
@@ -92,7 +89,9 @@ export function SocialLogin({
               contentFit="contain"
             />
             <Text className="text-label text-lg font-semibold">
-              {t("login.continueWith", { provider: provider.name })}
+              {t("login.continueWith", {
+                provider: provider.name,
+              })}
             </Text>
           </TouchableOpacity>
         )

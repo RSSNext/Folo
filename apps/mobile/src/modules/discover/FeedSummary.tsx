@@ -1,7 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { getBackgroundGradient } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { ScrollView } from "react-native-gesture-handler"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
@@ -9,36 +9,59 @@ import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import type { apiClient } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
+import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
+
+import { selectFeed, selectTimeline } from "../screen/atoms"
 
 type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
-
 export const FeedSummary = ({
   item,
   children,
   preChildren,
   className,
   simple,
+  view,
+  preview,
 }: {
   item: SearchResultItem
   children?: React.ReactNode
   preChildren?: React.ReactNode
   className?: string
   simple?: boolean
+  view?: number | null
+  preview?: boolean
 }) => {
   const navigation = useNavigation()
-
   return (
     <ItemPressable
       itemStyle={ItemPressableStyle.UnStyled}
       onPress={() => {
         if (item.feed?.id) {
-          navigation.presentControllerView(FollowScreen, {
-            id: item.feed.id,
-            type: "feed",
-          })
+          if (preview) {
+            if (typeof view === "number") {
+              selectTimeline({
+                type: "view",
+                viewId: view,
+              })
+            }
+
+            selectFeed({
+              type: "feed",
+              feedId: item.feed.id,
+            })
+            navigation.pushControllerView(FeedScreen, {
+              feedId: item.feed?.id,
+            })
+          } else {
+            navigation.presentControllerView(FollowScreen, {
+              id: item.feed.id,
+              type: "feed",
+            })
+          }
         } else if (item.feed?.url) {
           navigation.presentControllerView(FollowScreen, {
             url: item.feed.url,
@@ -104,18 +127,18 @@ export const FeedSummary = ({
     </ItemPressable>
   )
 }
-
 const PreviewItem = ({ entry }: { entry: NonNullable<SearchResultItem["entries"]>[number] }) => {
   const firstMedia = entry.media?.[0]
   const [, , , bgAccent, bgAccentLight] = getBackgroundGradient(
     entry.title || entry.url || "Untitled",
   )
-
   return (
     <View className="bg-secondary-system-background w-[112] flex-col overflow-hidden rounded-lg">
       {firstMedia ? (
         <Image
-          source={{ uri: firstMedia.url }}
+          source={{
+            uri: firstMedia.url,
+          }}
           className="w-full"
           placeholder={{
             blurhash: firstMedia.blurhash,

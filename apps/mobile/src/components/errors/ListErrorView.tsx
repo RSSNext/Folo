@@ -1,6 +1,7 @@
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { AlertCuteFiIcon } from "@/src/icons/alert_cute_fi"
 
 import { MonoText } from "../ui/typography/MonoText"

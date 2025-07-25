@@ -14,7 +14,7 @@ import { useActionLanguage } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 
-import { useLightboxControls } from "../../lightbox/lightboxState"
+import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
 import { htmlUrl } from "./constants"
