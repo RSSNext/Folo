@@ -91,6 +91,9 @@ jobs:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
 
+      - name: 🔧 Setup Xcode
+        uses: ./.github/actions/setup-xcode
+
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
