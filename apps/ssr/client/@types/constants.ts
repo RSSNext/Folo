@@ -1,5 +1,5 @@
 // DONT EDIT THIS FILE MANUALLY
-const langs = ["en", "ja", "zh-CN", "zh-TW"] as const
+const langs = ["en", "ja", "zh-CN", "zh-TW", "ko"] as const
 export const currentSupportedLanguages = langs as readonly string[]
 export type SSRSupportedLanguages = (typeof langs)[number]
 
@@ -8,6 +8,7 @@ export const dayjsLocaleImportMap = {
   ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],
   ["ja"]: ["ja", () => import("dayjs/locale/ja")],
   ["zh-TW"]: ["zh-tw", () => import("dayjs/locale/zh-tw")],
+  ["ko"]: ["ko", () => import("dayjs/locale/ko")],
 }
 export const ns = ["common", "external"] as const
 export const defaultNS = "external" as const

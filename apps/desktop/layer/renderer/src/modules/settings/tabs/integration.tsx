@@ -17,10 +17,42 @@ import { setIntegrationSetting, useIntegrationSettingValue } from "~/atoms/setti
 import { createSetting } from "../helper/builder"
 import { useSetSettingCanSync } from "../modal/hooks"
 
-const { defineSettingItem, SettingBuilder } = createSetting(
+// Helper function to convert \n to <br /> in descriptions
+const formatDescription = (text: string) => {
+  const lines = text.split("\n")
+  if (lines.length === 1) return text
+
+  return (
+    <>
+      {lines.map((line, index) => (
+        <span key={index}>
+          {line}
+          {index < lines.length - 1 && <br />}
+        </span>
+      ))}
+    </>
+  )
+}
+
+const { defineSettingItem: originalDefineSettingItem, SettingBuilder } = createSetting(
   useIntegrationSettingValue,
   setIntegrationSetting,
 )
+
+// Wrapper to automatically format descriptions
+const defineSettingItem = <K extends keyof ReturnType<typeof useIntegrationSettingValue>>(
+  key: K,
+  options: Parameters<typeof originalDefineSettingItem>[1],
+) => {
+  const processedOptions = { ...options }
+
+  // If description is a string, apply formatDescription
+  if (typeof options.description === "string") {
+    processedOptions.description = formatDescription(options.description)
+  }
+
+  return originalDefineSettingItem(key, processedOptions)
+}
 export const SettingIntegration = () => {
   const { t } = useTranslation("settings")
   const setSync = useSetSettingCanSync()
@@ -61,7 +93,7 @@ export const SettingIntegration = () => {
             type: "password",
             description: (
               <>
-                {t("integration.cubox.token.description")}{" "}
+                {formatDescription(t("integration.cubox.token.description"))}{" "}
                 <a
                   target="_blank"
                   className="underline"
@@ -159,7 +191,7 @@ export const SettingIntegration = () => {
             type: "password",
             description: (
               <>
-                {t("integration.readwise.token.description")}{" "}
+                {formatDescription(t("integration.readwise.token.description"))}{" "}
                 <a
                   target="_blank"
                   className="underline"
@@ -240,7 +272,7 @@ export const SettingIntegration = () => {
             label: t("integration.zotero.userID.label"),
             description: (
               <>
-                {t("integration.zotero.userID.description")}{" "}
+                {formatDescription(t("integration.zotero.userID.description"))}{" "}
                 <a
                   target="_blank"
                   className="underline"
@@ -259,7 +291,7 @@ export const SettingIntegration = () => {
             label: t("integration.zotero.token.label"),
             description: (
               <>
-                {t("integration.zotero.token.description")}{" "}
+                {formatDescription(t("integration.zotero.token.description"))}{" "}
                 <a
                   target="_blank"
                   className="underline"
