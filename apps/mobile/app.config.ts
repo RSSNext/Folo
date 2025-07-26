@@ -111,8 +111,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-media-library",
         {
-          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
-          savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
+          photosPermission:
+            "$(PRODUCT_NAME) accesses your photo library to allow you to select and upload profile pictures for your account.",
+          savePhotosPermission:
+            "$(PRODUCT_NAME) saves images to your photo library to store photos you create or edit.",
           isAccessMediaLocationEnabled: true,
         },
       ],
@@ -141,7 +143,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         "expo-image-picker",
         {
-          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+          photosPermission:
+            "$(PRODUCT_NAME) accesses your photo library to allow you to select and upload profile pictures for your account.",
         },
       ],
       [
