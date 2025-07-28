@@ -497,8 +497,8 @@ const getCurrentLanguage = (): string => {
       cacheTimestamp = now
       return language
     }
-  } catch {
-    // Fallback silently
+  } catch (error) {
+    console.error("Error occurred while determining the current language:", error);
   }
 
   cachedLanguage = "en"
