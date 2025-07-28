@@ -507,7 +507,11 @@ const getCurrentLanguage = (): string => {
 }
 
 /**
- * Clear the language cache (useful when language changes)
+ * Clears the cached language and resets the cache timestamp.
+ * 
+ * This function should be called whenever the application's language changes
+ * to ensure that subsequent calls to `getCurrentLanguage` fetch the updated
+ * language from localStorage instead of using stale cached values.
  */
 export const clearLanguageCache = () => {
   cachedLanguage = null
