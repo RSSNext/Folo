@@ -1,4 +1,4 @@
-name: "translator"
+name: "🌍 translator"
 on:
   issues:
     types: [opened, edited]

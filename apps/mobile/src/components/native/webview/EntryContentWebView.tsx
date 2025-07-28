@@ -1,6 +1,3 @@
-import { useEntry } from "@follow/store/entry/hooks"
-import type { EntryModel } from "@follow/store/entry/types"
-import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
@@ -10,16 +7,15 @@ import { useEffect } from "react"
 import { TouchableOpacity, View } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
 
-import { useActionLanguage } from "@/src/atoms/settings/general"
-import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
 import { sharedWebViewHeightAtom } from "./atom"
-import { htmlUrl } from "./constants"
-import { prepareEntryRenderWebView, SharedWebViewModule } from "./index"
+import { useWebViewEntry, useWebViewMode } from "./hooks"
+import { prepareEntryRenderWebView } from "./index"
 import { NativeWebView } from "./native-webview"
+import { WebViewManager } from "./webview-manager"
 
 type EntryContentWebViewProps = {
   entryId: string
@@ -28,41 +24,15 @@ type EntryContentWebViewProps = {
   showTranslation?: boolean
 }
 
-const setCodeTheme = (light: string, dark: string) => {
-  SharedWebViewModule.evaluateJavaScript(
-    `setCodeTheme(${JSON.stringify(light)}, ${JSON.stringify(dark)})`,
-  )
-}
-
-const setWebViewEntry = (entry?: EntryModel | null) => {
-  if (!entry) return
-  SharedWebViewModule.evaluateJavaScript(
-    `setEntry(JSON.parse(${JSON.stringify(JSON.stringify(entry))}))`,
-  )
-}
-export { setWebViewEntry as preloadWebViewEntry }
-
-const setNoMedia = (value: boolean) => {
-  SharedWebViewModule.evaluateJavaScript(`setNoMedia(${value})`)
-}
-
-const setReaderRenderInlineStyle = (value: boolean) => {
-  SharedWebViewModule.evaluateJavaScript(`setReaderRenderInlineStyle(${value})`)
-}
+// Export for backward compatibility
 
 export function EntryContentWebView(props: EntryContentWebViewProps) {
   const [contentHeight, setContentHeight] = useAtom(sharedWebViewHeightAtom)
   const { openLightbox } = useLightboxControls()
 
-  const codeThemeLight = useUISettingKey("codeHighlightThemeLight")
-  const codeThemeDark = useUISettingKey("codeHighlightThemeDark")
-  const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
-  const { entryId, noMedia, showReadability, showTranslation } = props
-  const entry = useEntry(entryId, (state) => state)
-  const language = useActionLanguage()
-  const translation = useEntryTranslation({ entryId, language, setting: showTranslation ?? false })
-
-  const [mode, setMode] = React.useState<"normal" | "debug">("normal")
+  // Use custom hooks for WebView management
+  const { entryInWebview, isLoading } = useWebViewEntry(props)
+  const { handleModeSwitch, mode } = useWebViewMode()
 
   // Handle image preview events
   useEffect(() => {
@@ -86,48 +56,18 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     })
   }, [openLightbox])
 
-  useEffect(() => {
-    setNoMedia(!!noMedia)
-  }, [noMedia, mode])
-
-  useEffect(() => {
-    setReaderRenderInlineStyle(readerRenderInlineStyle)
-  }, [readerRenderInlineStyle, mode])
-
-  useEffect(() => {
-    setCodeTheme(codeThemeLight, codeThemeDark)
-  }, [codeThemeLight, codeThemeDark, mode])
-
-  const entryInWebview = React.useMemo(() => {
-    if (!entry) return null
-
-    const entryContent = showReadability ? entry?.readabilityContent : entry?.content
-    const translatedContent = showReadability
-      ? translation?.readabilityContent
-      : translation?.content
-    const content = showTranslation ? translatedContent || entryContent : entryContent
-
-    return {
-      ...entry,
-      content,
-    }
-  }, [
-    entry,
-    showReadability,
-    showTranslation,
-    translation?.content,
-    translation?.readabilityContent,
-  ])
-
-  useEffect(() => {
-    setWebViewEntry(entryInWebview)
-  }, [entryInWebview])
-
+  // Initialize WebView once
   const onceRef = React.useRef(false)
   if (!onceRef.current) {
     onceRef.current = true
     prepareEntryRenderWebView()
   }
+
+  const handleModeToggle = React.useCallback(() => {
+    const nextMode = mode === "debug" ? "normal" : "debug"
+
+    handleModeSwitch(nextMode)
+  }, [mode, handleModeSwitch])
 
   return (
     <>
@@ -135,7 +75,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
         key={mode}
         style={{ height: contentHeight, transform: [{ translateY: 0 }] }}
         onLayout={() => {
-          setWebViewEntry(entryInWebview)
+          WebViewManager.setEntry(entryInWebview)
         }}
       >
         <NativeWebView
@@ -146,7 +86,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
       </View>
 
       <Portal>
-        {(showReadability ? !entry?.readabilityContent : !entry?.content) && (
+        {isLoading && (
           <View className="absolute inset-0 items-center justify-center">
             <PlatformActivityIndicator />
           </View>
@@ -160,15 +100,7 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
                 "flex size-12 items-center justify-center rounded-full",
                 mode === "debug" ? "bg-yellow" : "bg-red",
               )}
-              onPress={() => {
-                const nextMode = mode === "debug" ? "normal" : "debug"
-                setMode(nextMode)
-                if (nextMode === "debug") {
-                  SharedWebViewModule.load("http://localhost:5173/")
-                } else {
-                  SharedWebViewModule.load(htmlUrl)
-                }
-              }}
+              onPress={handleModeToggle}
             >
               <BugCuteReIcon color="#fff" />
             </TouchableOpacity>
@@ -178,3 +110,5 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
     </>
   )
 }
+
+export { preloadWebViewEntry } from "./webview-manager"

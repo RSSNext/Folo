@@ -32,7 +32,7 @@ export const EntryTitle = ({ title, entryId }: { title: string; entryId: string 
       }}
     >
       <EntryTranslation
-        className="text-label px-5 text-4xl font-bold leading-snug"
+        className="text-label text-title1 px-5 font-bold leading-snug"
         source={title}
         target={translation?.title}
         bilingual

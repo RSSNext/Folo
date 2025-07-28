@@ -11,10 +11,8 @@ import { useTranslation } from "react-i18next"
 import { Share, View } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
-import {
-  EntryContentWebView,
-  preloadWebViewEntry,
-} from "@/src/components/native/webview/EntryContentWebView"
+import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
+import { preloadWebViewEntry } from "@/src/components/native/webview/webview-manager"
 import { ContextMenu } from "@/src/components/ui/context-menu"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"

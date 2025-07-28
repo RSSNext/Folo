@@ -23,18 +23,25 @@ export const getSubscriptionByEntryId = (entryId: string | undefined) => {
   return possibleSource.map((id) => getSubscriptionByFeedId(id)).find((s) => !!s)
 }
 
-export const getSubscribedFeedIdAndInboxHandlesByView = (
-  view: FeedViewType | undefined,
-  excludePrivate: boolean,
-): string[] => {
+export const getSubscribedFeedIdAndInboxHandlesByView = ({
+  view,
+  excludePrivate,
+  excludeHidden,
+}: {
+  view: FeedViewType | undefined
+  excludePrivate: boolean
+  excludeHidden: boolean
+}): string[] => {
   if (typeof view !== "number") return []
   const state = useSubscriptionStore.getState()
   return Array.from(state.feedIdByView[view])
     .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
+    .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
     .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
     .concat(
       Array.from(state.listIdByView[view])
         .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
+        .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
         .flatMap((id) => getListFeedIds(id) ?? []),
     )
 }

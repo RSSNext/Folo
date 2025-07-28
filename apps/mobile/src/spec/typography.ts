@@ -3,8 +3,8 @@ export const typography = {
   title1: [28, 32], // 28px
   title2: [24, 28], // 24px
   title3: [20, 24], // 20px
-  headline: [18, 22], // 18px
-  body: [16, 20], // 16px
+  headline: [18, 26], // 18px
+  body: [16, 24], // 16px
   callout: [14, 20], // 14px
   subheadline: [13, 18], // 13px
   footnote: [12, 16], // 12px

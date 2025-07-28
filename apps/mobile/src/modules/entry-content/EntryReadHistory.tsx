@@ -1,7 +1,8 @@
 import { useEntryReadHistory } from "@follow/store/entry/hooks"
-import { Pressable, View } from "react-native"
+import { View } from "react-native"
 
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
+import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { ProfileScreen } from "@/src/screens/(modal)/ProfileScreen"
 
@@ -15,7 +16,7 @@ export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
         const user = data.users[userId]
         if (!user) return null
         return (
-          <Pressable
+          <NativePressable
             onPress={() => {
               navigation.presentControllerView(ProfileScreen, {
                 userId: user.id,
@@ -38,7 +39,7 @@ export const EntryReadHistory = ({ entryId }: { entryId: string }) => {
               image={user.image}
               className="border-secondary-system-fill border"
             />
-          </Pressable>
+          </NativePressable>
         )
       })}
     </View>
