@@ -84,7 +84,7 @@ export const LoginModalContent = (props: LoginModalContentProps) => {
         </div>
       )}
 
-      {i18n.language === "ko" ? (
+      {languageLayoutConfig[i18n.language]?.layout === "ko" ? (
         <div className="mb-6 mt-4 flex items-center justify-center text-center">
           <Folo className="mr-2 size-16" />
           <span className="text-3xl">
