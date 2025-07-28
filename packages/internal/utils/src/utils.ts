@@ -524,6 +524,8 @@ export const clearLanguageCache = () => {
  * @param locale - The locale to use for formatting (e.g. "en", "ko", "zh-CN"). If not provided, uses current language
  * @returns The formatted number
  */
+export function formatNumber(num: number): string;
+export function formatNumber(num: number, locale?: string): string;
 export function formatNumber(num: number, locale?: string): string {
   // Handle negative numbers
   const isNegative = num < 0
