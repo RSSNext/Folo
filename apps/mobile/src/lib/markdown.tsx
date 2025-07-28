@@ -85,7 +85,7 @@ export const renderMarkdown = (markdown: string) => {
     {
       // React Native compatible components - GitHub markdown style
       p: ({ children, node, ...props }: any) => (
-        <TextInput className="text-label text-body mb-4" multiline readOnly {...props}>
+        <TextInput className="text-label mb-4 text-base" multiline readOnly {...props}>
           {renderTextChildren(children)}
         </TextInput>
       ),

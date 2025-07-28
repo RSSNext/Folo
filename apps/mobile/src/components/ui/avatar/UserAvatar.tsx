@@ -2,10 +2,9 @@ import { UserRole } from "@follow/constants"
 import { cn } from "@follow/utils/utils"
 import type { Image as ExpoImage } from "expo-image"
 import { useCallback } from "react"
-import { TouchableOpacity, View } from "react-native"
+import { Text, TouchableOpacity, View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
-import { Text } from "@/src/components/ui/typography/Text"
 import { PowerIcon } from "@/src/icons/power"
 import { User4CuteFiIcon } from "@/src/icons/user_4_cute_fi"
 import { accentColor } from "@/src/theme/colors"
@@ -88,6 +87,7 @@ export const UserAvatar = ({
       >
         {name ? (
           <Text
+            allowFontScaling={false}
             className="text-secondary-label p-2 text-center uppercase"
             style={{
               fontSize: size / 3,

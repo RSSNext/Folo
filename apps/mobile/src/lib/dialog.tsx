@@ -49,8 +49,8 @@ interface ShowDialogOptions<Ctx> {
     confirmText?: string
   }
 }
-const entering = SlideInUp.duration(200)
-const exiting = SlideOutUp.duration(200)
+const entering = SlideInUp.springify().damping(20).stiffness(140)
+const exiting = SlideOutUp.duration(400)
 type DialogContextType = {
   dismiss: () => void
   bizOnConfirm: (() => void) | null

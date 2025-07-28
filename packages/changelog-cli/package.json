@@ -1,0 +1,35 @@
+{
+  "name": "@follow/changelog-cli",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-driven changelog generator for Follow project",
+  "keywords": [
+    "changelog",
+    "git",
+    "ai",
+    "cli",
+    "automation"
+  ],
+  "main": "./index.ts",
+  "bin": {
+    "changelog-cli": "./bin/cli.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx index.ts",
+    "generate": "tsx index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "17.2.0",
+    "pathe": "2.0.3"
+  },
+  "devDependencies": {
+    "tsx": "4.20.3",
+    "typescript": "catalog:"
+  }
+}

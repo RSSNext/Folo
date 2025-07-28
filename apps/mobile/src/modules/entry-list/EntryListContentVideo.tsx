@@ -1,8 +1,8 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
-import type { MasonryFlashListProps } from "@shopify/flash-list"
+import type { FlashList, MasonryFlashListProps } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { useImperativeHandle, useMemo } from "react"
+import { useImperativeHandle, useMemo, useRef } from "react"
 import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -13,7 +13,7 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { GridEntryListFooter } from "./EntryListFooter"
-import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
+import { useOnViewableItemsChanged } from "./hooks"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
 export const EntryListContentVideo = ({
@@ -25,12 +25,11 @@ export const EntryListContentVideo = ({
   MasonryFlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
-  const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
+  const ref = useRef<FlashList<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
-    onScroll: hackOnScroll,
   })
 
   const translation = useGeneralSettingKey("translation")
@@ -100,7 +99,6 @@ export const EntryListContentVideo = ({
       ListFooterComponent={ListFooterComponent}
       {...rest}
       onRefresh={refetch}
-      style={hackStyle}
       contentContainerStyle={styles.contentContainer}
     />
   )

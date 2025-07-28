@@ -13,7 +13,7 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useUISettingKey } from "@/src/atoms/settings/ui"
-import { preloadWebViewEntry } from "@/src/components/native/webview/EntryContentWebView"
+import { preloadWebViewEntry } from "@/src/components/native/webview/webview-manager"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"

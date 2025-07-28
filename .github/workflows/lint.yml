@@ -8,7 +8,7 @@ env:
   VITE_WEB_URL: https://app.folo.is
   VITE_API_URL: https://api.follow.is
 
-name: CI Format, Typecheck and Lint
+name: ✨ CI Format, Typecheck and Lint
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-lint
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}

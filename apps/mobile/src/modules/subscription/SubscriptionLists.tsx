@@ -35,7 +35,6 @@ import { selectFeed } from "@/src/modules/screen/atoms"
 import { TimelineSelectorList } from "@/src/modules/screen/TimelineSelectorList"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
-import { usePagerListPerformanceHack } from "../entry-list/hooks"
 import { useFeedListSortMethod, useFeedListSortOrder } from "./atoms"
 import { CategoryGrouped } from "./CategoryGrouped"
 import { InboxItem } from "./items/InboxItem"
@@ -129,7 +128,7 @@ const SubscriptionListImpl = ({
     return subscriptionSyncService.fetch(view)
   })
   const scrollViewRef = useRegisterNavigationScrollView<FlashList<any> | null>(active)
-  const { onScroll, style } = usePagerListPerformanceHack(scrollViewRef)
+
   return (
     <TimelineSelectorList
       contentContainerClassName="pb-6"
@@ -146,8 +145,6 @@ const SubscriptionListImpl = ({
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
       extraData={extraData}
-      onScroll={onScroll}
-      style={style}
     />
   )
 }

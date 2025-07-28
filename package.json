@@ -74,6 +74,9 @@
       "eslint --fix",
       "prettier --ignore-unknown --write"
     ],
+    "apps/mobile/src/**/*": [
+      "bash scripts/increment-build-id.sh"
+    ],
     "locales/**/*.json": [
       "npm run dedupe:locales",
       "git add locales"

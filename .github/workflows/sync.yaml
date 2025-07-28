@@ -1,4 +1,4 @@
-name: Branch Synchronization
+name: 🔄 Branch Synchronization
 
 on:
   push:

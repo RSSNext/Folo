@@ -25,16 +25,33 @@ declare class ISharedWebViewModule extends NativeModule<{
 
 export const SharedWebViewModule = requireNativeModule<ISharedWebViewModule>("FOSharedWebView")
 
+// Re-export all WebView utilities
+export { usePrepareEntryRenderWebView, useWebViewEntry, useWebViewMode } from "./hooks"
+export { preloadWebViewEntry, WebViewManager } from "./webview-manager"
+
 let prepareOnce = false
+
+/**
+ * Initializes the shared WebView module with proper error handling and event listeners
+ * This function is idempotent and will only execute once per app lifecycle
+ */
 export const prepareEntryRenderWebView = () => {
   if (prepareOnce) return
-  prepareOnce = true
-  SharedWebViewModule.load(htmlUrl)
-  // SharedWebViewModule.addListener("onContentHeightChanged", ({ height }) => {
-  //   jotaiStore.set(sharedWebViewHeightAtom, height)
-  // })
 
-  SharedWebViewModule.addListener("onImagePreview", (event: ImagePreviewEvent) => {
-    EventBus.dispatch("PREVIEW_IMAGE", event)
-  })
+  try {
+    prepareOnce = true
+
+    if (!htmlUrl) {
+      throw new Error("HTML URL is not available for WebView initialization")
+    }
+
+    SharedWebViewModule.load(htmlUrl)
+
+    // Set up image preview event listener with error handling
+    SharedWebViewModule.addListener("onImagePreview", (event: ImagePreviewEvent) => {
+      EventBus.dispatch("PREVIEW_IMAGE", event)
+    })
+  } catch (error) {
+    console.error("Failed to prepare entry render WebView:", error)
+  }
 }

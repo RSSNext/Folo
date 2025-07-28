@@ -27,9 +27,9 @@ export default withUIKit({
 
         // Custom font sizes
         largeTitle: ["var(--text-large-title)", "var(--text-large-title-line-height)"], // 32px
-        title1: ["var(--text-title-1)", "var(--text-title-1-line-height)"], // 28px
-        title2: ["var(--text-title-2)", "var(--text-title-2-line-height)"], // 24px
-        title3: ["var(--text-title-3)", "var(--text-title-3-line-height)"], // 20px
+        title1: ["var(--text-title1)", "var(--text-title1-line-height)"], // 28px
+        title2: ["var(--text-title2)", "var(--text-title2-line-height)"], // 24px
+        title3: ["var(--text-title3)", "var(--text-title3-line-height)"], // 20px
         headline: ["var(--text-headline)", "var(--text-headline-line-height)"], // 18px
         body: ["var(--text-body)", "var(--text-body-line-height)"], // 16px
         callout: ["var(--text-callout)", "var(--text-callout-line-height)"], // 14px
