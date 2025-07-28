@@ -1,8 +1,8 @@
 import { withOpacity } from "@follow/utils"
 import { useMemo } from "react"
-import { Text } from "react-native"
 
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { Text } from "@/src/components/ui/typography/Text"
 import { SadCuteReIcon } from "@/src/icons/sad_cute_re"
 import { useColor } from "@/src/theme/colors"
 
@@ -18,7 +18,6 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
         </BaseSearchPageRootView>
       )
     }
-
     if (data?.data.length === 0) {
       return (
         <BaseSearchPageRootView className="h-64 items-center justify-center">
@@ -27,7 +26,6 @@ export const useDataSkeleton = (isLoading: boolean, data: any) => {
         </BaseSearchPageRootView>
       )
     }
-
     return null
   }, [isLoading, data, textColor])
 }

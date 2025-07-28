@@ -3,7 +3,7 @@ import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo, use } from "react"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
 
@@ -13,6 +13,7 @@ import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { WifiOffCuteReIcon } from "@/src/icons/wifi_off_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { selectFeed } from "@/src/modules/screen/atoms"
@@ -32,8 +33,9 @@ export const SubscriptionItem = memo(
     const unreadCount = useUnreadById(id)
     const feed = useFeedById(id)!
     const inGrouped = !!use(GroupedContext)
-    const { isLoading } = usePrefetchFeed(id, { enabled: !subscription && !feed })
-
+    const { isLoading } = usePrefetchFeed(id, {
+      enabled: !subscription && !feed,
+    })
     const navigation = useNavigation()
     if (isLoading) {
       return (
@@ -42,14 +44,14 @@ export const SubscriptionItem = memo(
         </View>
       )
     }
-
     if (!subscription && !feed) return null
-
     return (
       <>
         <Animated.View
           exiting={FadeOutUp}
-          style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
+          style={{
+            marginHorizontal: GROUPED_LIST_MARGIN,
+          }}
           className={cn("overflow-hidden", {
             "rounded-t-[10px]": isFirst,
             "rounded-b-[10px]": isLast,
@@ -61,7 +63,6 @@ export const SubscriptionItem = memo(
               className={cn(
                 "flex h-12 flex-row items-center",
                 inGrouped ? "pl-8 pr-4" : "px-4",
-
                 className,
               )}
               onPress={() => {
@@ -69,7 +70,6 @@ export const SubscriptionItem = memo(
                   type: "feed",
                   feedId: id,
                 })
-
                 navigation.pushControllerView(FeedScreen, {
                   feedId: id,
                 })
@@ -82,7 +82,9 @@ export const SubscriptionItem = memo(
                 <Text
                   numberOfLines={1}
                   className={cn("text-text shrink font-medium", feed.errorAt && "text-red")}
-                  style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+                  style={{
+                    marginLeft: GROUPED_ICON_TEXT_GAP,
+                  }}
                 >
                   {subscription?.title || feed.title}
                 </Text>

@@ -25,16 +25,16 @@ import { TimelineViewSelectorContextMenu } from "./TimelineViewSelectorContextMe
 const ACTIVE_WIDTH = 180
 const INACTIVE_WIDTH = 48
 const ACTIVE_TEXT_WIDTH = 100
-
 export function TimelineViewSelector() {
   const activeViews = useViewWithSubscription()
   const scrollViewRef = React.useRef<ScrollView | null>(null)
   const selectedFeed = useSelectedFeed()
-
   return (
     <View
       className="flex items-center justify-between py-2"
-      style={{ height: TIMELINE_VIEW_SELECTOR_HEIGHT }}
+      style={{
+        height: TIMELINE_VIEW_SELECTOR_HEIGHT,
+      }}
     >
       <ScrollView
         ref={scrollViewRef}
@@ -60,7 +60,6 @@ export function TimelineViewSelector() {
     </View>
   )
 }
-
 function ItemWrapper({
   index,
   activeColor,
@@ -80,13 +79,11 @@ function ItemWrapper({
   const { width: windowWidth } = useWindowDimensions()
   const activeViews = useViewWithSubscription()
   const dragProgress = useTimelineSelectorDragProgress()
-
   const activeWidth = Math.max(
     windowWidth - (INACTIVE_WIDTH + 12) * (activeViews.length - 1) - 8 * 2,
     ACTIVE_WIDTH,
   )
   const bgColor = useColor("gray5")
-
   return (
     <ReAnimatedPressable
       className={cn(
@@ -113,7 +110,6 @@ function ItemWrapper({
     </ReAnimatedPressable>
   )
 }
-
 function ViewItem({
   view,
   index,
@@ -142,7 +138,10 @@ function ViewItem({
       timeout = setTimeout(() => {
         itemRef.current?.measureInWindow((x, y, width) => {
           const scrollX = x - windowWidth / 2 + width / 2
-          scrollViewRef.current?.scrollTo({ x: Math.max(0, scrollX), animated: true })
+          scrollViewRef.current?.scrollTo({
+            x: Math.max(0, scrollX),
+            animated: true,
+          })
         })
       }, 50)
     }
@@ -152,7 +151,6 @@ function ViewItem({
       }
     }
   }, [isActive, scrollViewRef, windowWidth])
-
   return (
     <TimelineViewSelectorContextMenu type="view" viewId={view.view}>
       <View ref={itemRef}>
@@ -160,7 +158,12 @@ function ViewItem({
           isActive={isActive}
           index={index}
           activeColor={view.activeColor}
-          onPress={() => selectTimeline({ type: "view", viewId: view.view })}
+          onPress={() =>
+            selectTimeline({
+              type: "view",
+              viewId: view.view,
+            })
+          }
         >
           <View className="relative">
             <Animated.View
@@ -192,8 +195,9 @@ function ViewItem({
             }))}
           >
             <Text
+              allowFontScaling={false}
               key={view.name}
-              className="text-sm font-semibold text-white"
+              className="text-[14px] font-semibold text-white"
               numberOfLines={1}
               ellipsizeMode="clip"
             >

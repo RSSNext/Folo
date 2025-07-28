@@ -14,7 +14,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -22,6 +21,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Select } from "@/src/components/ui/form/Select"
+import { Text } from "@/src/components/ui/typography/Text"
 import { getDbPath } from "@/src/database"
 import { cookieKey, getCookie, sessionTokenKey, signOut } from "@/src/lib/auth"
 import { loading } from "@/src/lib/loading"
@@ -34,12 +34,12 @@ import { toast } from "@/src/lib/toast"
 
 import { ProfileScreen } from "../(modal)/ProfileScreen"
 import { MarkdownScreen } from "./(debug)/markdown"
+import { TextDebugScreen } from "./(debug)/text"
 
 interface MenuSection {
   title: string
   items: (MenuItem | FC)[]
 }
-
 interface MenuItem {
   title: string
   onPress: () => Promise<void> | void
@@ -48,7 +48,6 @@ interface MenuItem {
 export const DebugScreen: NavigationControllerView = () => {
   const insets = useSafeAreaInsets()
   const envProfile = useEnvProfile()
-
   const menuSections: MenuSection[] = [
     {
       title: "Users",
@@ -95,7 +94,10 @@ export const DebugScreen: NavigationControllerView = () => {
           textClassName: "!text-red",
           onPress: async () => {
             Alert.alert("Clear Sqlite Data?", "This will delete all your data", [
-              { text: "Cancel", style: "cancel" },
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
               {
                 text: "Clear",
                 style: "destructive",
@@ -129,7 +131,6 @@ export const DebugScreen: NavigationControllerView = () => {
             toast.success("Hello, world!".repeat(3))
           },
         },
-
         {
           title: "Glow Effect",
           onPress: () => {
@@ -142,7 +143,6 @@ export const DebugScreen: NavigationControllerView = () => {
             requireNativeModule("AppleIntelligenceGlowEffect").hide()
           },
         },
-
         {
           title: "Testing Native Scroll To Top",
           onPress: async () => {
@@ -162,29 +162,52 @@ export const DebugScreen: NavigationControllerView = () => {
           },
         },
         {
+          title: "TextSizeView",
+          onPress: () => {
+            navigation.pushControllerView(TextDebugScreen)
+          },
+        },
+        {
           title: "Present Profile Modal",
           onPress: () => {
-            navigation.presentControllerView(ProfileScreen, { userId: whoami()!.id })
+            navigation.presentControllerView(ProfileScreen, {
+              userId: whoami()!.id,
+            })
           },
         },
       ],
     },
   ]
-
   const ref = useRef<ScrollView>(null)
-
   const navigation = useNavigation()
-
   return (
-    <ScrollView ref={ref} className="flex-1 bg-black" style={{ paddingTop: insets.top }}>
+    <ScrollView
+      ref={ref}
+      className="flex-1 bg-black"
+      style={{
+        paddingTop: insets.top,
+      }}
+    >
       <View className="flex-row items-center justify-between px-8">
         <Text className="text-2xl font-medium text-white">Current Env Profile: {envProfile}</Text>
         <Select
           options={[
-            { label: "Dev", value: "dev" },
-            { label: "Prod", value: "prod" },
-            { label: "Staging", value: "staging" },
-            { label: "Local", value: "local" },
+            {
+              label: "Dev",
+              value: "dev",
+            },
+            {
+              label: "Prod",
+              value: "prod",
+            },
+            {
+              label: "Staging",
+              value: "staging",
+            },
+            {
+              label: "Local",
+              value: "local",
+            },
           ]}
           value={envProfile}
           onValueChange={(value) => {
@@ -199,9 +222,10 @@ export const DebugScreen: NavigationControllerView = () => {
             <View style={styles.itemContainer}>
               {section.items.map((item, index) => {
                 if (typeof item === "function") {
-                  return React.createElement(item, { key: index })
+                  return React.createElement(item, {
+                    key: index,
+                  })
                 }
-
                 return (
                   <TouchableOpacity
                     key={item.title}
@@ -229,7 +253,6 @@ export const DebugScreen: NavigationControllerView = () => {
                 style={styles.itemPressable}
                 onPress={() => {
                   const { Component, props, stackPresentation } = register
-
                   if (stackPresentation === "push") {
                     navigation.pushControllerView(Component, props)
                   } else {
@@ -246,7 +269,6 @@ export const DebugScreen: NavigationControllerView = () => {
     </ScrollView>
   )
 }
-
 const UserSessionSetting = () => {
   const [input, setInput] = useState("")
   const inputRef = useRef<TextInput>(null)
@@ -286,9 +308,11 @@ const UserSessionSetting = () => {
     </Pressable>
   )
 }
-
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: "5%", paddingVertical: 16 },
+  container: {
+    paddingHorizontal: "5%",
+    paddingVertical: 16,
+  },
   itemContainer: {
     borderWidth: 1,
     borderColor: "#313538",
@@ -304,5 +328,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  filename: { color: "white", fontSize: 20, marginLeft: 12 },
+  filename: {
+    color: "white",
+    fontSize: 20,
+    marginLeft: 12,
+  },
 })

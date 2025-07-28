@@ -5,10 +5,11 @@ import { debounce } from "es-toolkit/compat"
 
 import { clearAllFeedUnreadDirty, clearFeedUnreadDirty } from "../atoms/feed"
 import { collectionActions } from "../collection/store"
-import { apiClient } from "../context"
+import { api, apiClient } from "../context"
 import { feedActions } from "../feed/store"
 import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
+import { apiMorph } from "../morph/api"
 import { dbStoreMorph } from "../morph/db-store"
 import { honoMorph } from "../morph/hono"
 import { storeDbMorph } from "../morph/store-db"
@@ -90,7 +91,9 @@ class EntryActions implements Hydratable, Resetable {
     if (!feedId) return
 
     const subscription = getSubscriptionById(feedId)
-    const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
+    const ignore =
+      (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
+      subscription?.hideFromTimeline
 
     if (typeof subscription?.view === "number" && !ignore) {
       draft.entryIdByView[subscription.view].add(entryId)
@@ -99,7 +102,9 @@ class EntryActions implements Hydratable, Resetable {
     // lists
     for (const s of sources ?? []) {
       const subscription = getSubscriptionById(s)
-      const ignore = hidePrivateSubscriptionsInTimeline && subscription?.isPrivate
+      const ignore =
+        (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
+        subscription?.hideFromTimeline
 
       if (typeof subscription?.view === "number" && !ignore) {
         draft.entryIdByView[subscription.view].add(entryId)
@@ -471,25 +476,21 @@ class EntrySyncServices {
     })
 
     const res = params.inboxId
-      ? await apiClient().entries.inbox.$post({
-          json: {
-            publishedAfter: pageParam,
-            read,
-            limit,
-            isCollection,
-            inboxId: params.inboxId,
-            ...params,
-          },
+      ? await api().entries.inbox.list({
+          publishedAfter: pageParam,
+          read,
+          limit,
+          isCollection,
+          inboxId: params.inboxId,
+          ...params,
         })
-      : await apiClient().entries.$post({
-          json: {
-            publishedAfter: pageParam,
-            read,
-            limit,
-            isCollection,
-            excludePrivate,
-            ...params,
-          },
+      : await api().entries.list({
+          publishedAfter: pageParam,
+          read,
+          limit,
+          isCollection,
+          excludePrivate,
+          ...params,
         })
 
     // Mark feed unread dirty, so re-fetch the unread data when view feed unread entires in the next time
@@ -507,7 +508,7 @@ class EntrySyncServices {
       }
     }
 
-    const entries = honoMorph.toEntryList(res.data)
+    const entries = apiMorph.toEntryList(res.data)
     const entriesInDB = await EntryService.getEntryMany(entries.map((e) => e.id))
     for (const entry of entries) {
       const entryInDB = entriesInDB.find((e) => e.id === entry.id)
@@ -521,7 +522,7 @@ class EntrySyncServices {
     await entryActions.upsertMany(entries)
 
     if (typeof view === "number") {
-      const { collections, entryIdsNotInCollections } = honoMorph.toCollections(res.data, view)
+      const { collections, entryIdsNotInCollections } = apiMorph.toCollections(res.data, view)
       await collectionActions.upsertMany(collections, {
         reset: params.isCollection && !pageParam,
       })
@@ -529,7 +530,7 @@ class EntrySyncServices {
     }
 
     const dataFeeds = res.data?.map((e) => e.feeds).filter((f) => f.type === "feed")
-    const feeds = dataFeeds?.map((f) => honoMorph.toFeed(f)) ?? []
+    const feeds = dataFeeds?.map((f) => apiMorph.toFeed(f)) ?? []
     const users = dataFeeds?.flatMap((f) => f.tipUsers).filter((u) => !!u) ?? []
     feedActions.upsertMany(feeds)
     userActions.upsertMany(

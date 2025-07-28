@@ -1,6 +1,8 @@
 import { deleteAsync } from "expo-file-system"
 import type { ReactNode } from "react"
-import { Button, Text, View } from "react-native"
+import { Button, View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 import { PlatformActivityIndicator } from "../components/ui/loading/PlatformActivityIndicator"
 import { getDbPath } from "../database"
@@ -9,7 +11,6 @@ import { useDatabaseMigration } from "../initialize/migration"
 
 export const MigrationProvider = ({ children }: { children: ReactNode }) => {
   const { success, error } = useDatabaseMigration()
-
   if (error) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -31,7 +32,6 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
       </View>
     )
   }
-
   if (!success) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -40,6 +40,5 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
       </View>
     )
   }
-
   return children
 }

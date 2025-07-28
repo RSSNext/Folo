@@ -1,0 +1,17 @@
+{
+  "extends": "../configs/tsconfig.extend.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

@@ -1,8 +1,9 @@
 import { unreadSyncService } from "@follow/store/unread/store"
 import { useTranslation } from "react-i18next"
-import { Text, TouchableOpacity } from "react-native"
+import { TouchableOpacity } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
+import { Text } from "@/src/components/ui/typography/Text"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { useColor } from "@/src/theme/colors"
 
@@ -13,7 +14,6 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
-
   const labelColor = useColor("label")
   return (
     <>
@@ -26,7 +26,11 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
             unreadSyncService.markBatchAsRead({
               view: selectedView,
               filter: payload,
-              time: fetchedTime ? { insertedBefore: fetchedTime } : undefined,
+              time: fetchedTime
+                ? {
+                    insertedBefore: fetchedTime,
+                  }
+                : undefined,
               excludePrivate: getHideAllReadSubscriptions(),
             })
           }
@@ -42,12 +46,10 @@ export const EntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
     </>
   )
 }
-
 export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
-
   return (
     <TouchableOpacity
       className="flex-row items-center justify-center gap-1.5 py-6"
@@ -57,7 +59,11 @@ export const GridEntryListFooter = ({ fetchedTime }: { fetchedTime?: number }) =
           unreadSyncService.markBatchAsRead({
             view: selectedView,
             filter: payload,
-            time: fetchedTime ? { insertedBefore: fetchedTime } : undefined,
+            time: fetchedTime
+              ? {
+                  insertedBefore: fetchedTime,
+                }
+              : undefined,
             excludePrivate: getHideAllReadSubscriptions(),
           })
         }

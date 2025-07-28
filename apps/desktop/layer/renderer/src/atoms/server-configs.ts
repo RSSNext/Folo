@@ -1,11 +1,11 @@
-import type { ServerConfigs } from "@follow/models/types"
+import type { ExtractResponseData, GetStatusConfigsResponse } from "@follow-app/client-sdk"
 import PKG from "@pkg"
 import { atom } from "jotai"
 
 import { createAtomHooks } from "~/lib/jotai"
 
 export const [, , useServerConfigs, , getServerConfigs, setServerConfigs] = createAtomHooks(
-  atom<Nullable<ServerConfigs>>(null),
+  atom<Nullable<ExtractResponseData<GetStatusConfigsResponse>>>(null),
 )
 
 export const useIsInMASReview = () => {

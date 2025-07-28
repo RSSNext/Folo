@@ -1,8 +1,9 @@
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { formatNumber } from "@follow/utils"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
+import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
@@ -12,11 +13,9 @@ import { useColor } from "@/src/theme/colors"
 import { FeedSummary } from "../FeedSummary"
 
 type SearchResultItem = Awaited<ReturnType<typeof apiClient.discover.$post>>["data"][number]
-
 export const SearchFeedCard = ({ item }: { item: SearchResultItem }) => {
   const isSubscribed = useSubscriptionByFeedId(item.feed?.id ?? "")
   const iconColor = useColor("secondaryLabel")
-
   return (
     <FeedSummary item={item} className="py-4 pl-4">
       <View className="mt-4 flex-row items-center gap-6">

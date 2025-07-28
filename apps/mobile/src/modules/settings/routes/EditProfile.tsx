@@ -8,7 +8,6 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   KeyboardAvoidingView,
-  Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -31,6 +30,7 @@ import {
   GroupedOutlineDescription,
 } from "@/src/components/ui/grouped/GroupedList"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { Text } from "@/src/components/ui/typography/Text"
 import { CheckCircleCuteReIcon } from "@/src/icons/check_circle_cute_re"
 import { CloseCircleFillIcon } from "@/src/icons/close_circle_fill"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -42,10 +42,8 @@ import { setAvatar } from "../utils"
 
 export const EditProfileScreen = () => {
   const whoami = useWhoami()
-
   const { t } = useTranslation("settings")
   const [dirtyFields, setDirtyFields] = useState<Partial<UserProfileEditable>>({})
-
   const { mutateAsync: updateProfile, isPending } = useMutation({
     mutationFn: async () => {
       await userSyncService.updateProfile(dirtyFields)
@@ -58,7 +56,6 @@ export const EditProfileScreen = () => {
       toast.error(error.message)
     },
   })
-
   if (!whoami) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -66,7 +63,6 @@ export const EditProfileScreen = () => {
       </View>
     )
   }
-
   return (
     <KeyboardAvoidingView behavior="padding" className="flex-1">
       <SafeNavigationScrollView
@@ -75,7 +71,9 @@ export const EditProfileScreen = () => {
           <NavigationBlurEffectHeaderView
             headerRight={
               <HeaderSubmitTextButton
-                label={t("words.save", { ns: "common" })}
+                label={t("words.save", {
+                  ns: "common",
+                })}
                 isValid={Object.keys(dirtyFields).length > 0}
                 isLoading={isPending}
                 onPress={() => {
@@ -94,7 +92,6 @@ export const EditProfileScreen = () => {
     </KeyboardAvoidingView>
   )
 }
-
 const AvatarSection: FC<{
   whoami: MeModel
 }> = ({ whoami }) => {
@@ -114,16 +111,13 @@ const AvatarSection: FC<{
     </View>
   )
 }
-
 const ProfileForm: FC<{
   whoami: MeModel
   dirtyFields: Partial<UserProfileEditable>
   setDirtyFields: (dirtyFields: Partial<UserProfileEditable>) => void
 }> = ({ whoami, dirtyFields, setDirtyFields }) => {
   const { t } = useTranslation("settings")
-
   const navigation = useNavigation()
-
   const socialLinkFields: (keyof NonNullable<MeModel["socialLinks"]>)[] = [
     "twitter",
     "github",
@@ -132,7 +126,6 @@ const ProfileForm: FC<{
     "youtube",
     "discord",
   ]
-
   const socialCopyMap = {
     twitter: t("profile.social.twitter", "Twitter"),
     github: t("profile.social.github", "GitHub"),
@@ -141,7 +134,6 @@ const ProfileForm: FC<{
     youtube: t("profile.social.youtube", "YouTube"),
     discord: t("profile.social.discord", "Discord"),
   }
-
   return (
     <View className="mt-4">
       <TouchableWithoutFeedback
@@ -163,7 +155,10 @@ const ProfileForm: FC<{
                   hitSlop={10}
                   selectionColor={accentColor}
                   onChangeText={(text) => {
-                    setDirtyFields({ ...dirtyFields, name: text })
+                    setDirtyFields({
+                      ...dirtyFields,
+                      name: text,
+                    })
                   }}
                 />
               </View>
@@ -185,7 +180,10 @@ const ProfileForm: FC<{
                   hitSlop={10}
                   selectionColor={accentColor}
                   onChangeText={(text) => {
-                    setDirtyFields({ ...dirtyFields, handle: text })
+                    setDirtyFields({
+                      ...dirtyFields,
+                      handle: text,
+                    })
                   }}
                 />
               </View>
@@ -225,7 +223,10 @@ const ProfileForm: FC<{
                 multiline
                 selectionColor={accentColor}
                 onChangeText={(text) => {
-                  setDirtyFields({ ...dirtyFields, bio: text })
+                  setDirtyFields({
+                    ...dirtyFields,
+                    bio: text,
+                  })
                 }}
                 textAlignVertical="top"
                 placeholder={t("profile.bio.placeholder", "Tell us about yourself")}
@@ -247,7 +248,10 @@ const ProfileForm: FC<{
                   hitSlop={10}
                   selectionColor={accentColor}
                   onChangeText={(text) => {
-                    setDirtyFields({ ...dirtyFields, website: text })
+                    setDirtyFields({
+                      ...dirtyFields,
+                      website: text,
+                    })
                   }}
                   autoCapitalize="none"
                   autoCorrect={false}

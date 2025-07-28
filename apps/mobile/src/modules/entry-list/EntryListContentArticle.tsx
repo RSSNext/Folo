@@ -1,8 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
-import type { ListRenderItemInfo } from "@shopify/flash-list"
+import type { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
-import { useCallback, useImperativeHandle, useMemo } from "react"
+import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -13,7 +13,7 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListFooter } from "./EntryListFooter"
-import { useOnViewableItemsChanged, usePagerListPerformanceHack } from "./hooks"
+import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparator } from "./ItemSeparator"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 import type { EntryExtraData } from "./types"
@@ -43,11 +43,10 @@ export const EntryListContentArticle = ({
     [hasNextPage, fetchedTime],
   )
 
-  const { onScroll: hackOnScroll, ref, style: hackStyle } = usePagerListPerformanceHack()
+  const ref = useRef<FlashList<any>>(null)
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
-    onScroll: hackOnScroll,
   })
 
   useImperativeHandle(forwardRef, () => ref.current!)
@@ -90,7 +89,6 @@ export const EntryListContentArticle = ({
       onViewableItemsChanged={onViewableItemsChanged}
       ItemSeparatorComponent={ItemSeparator}
       ListFooterComponent={ListFooterComponent}
-      style={hackStyle}
     />
   )
 }

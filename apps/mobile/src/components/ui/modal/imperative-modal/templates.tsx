@@ -6,7 +6,9 @@ import type {
   TextStyle,
   ViewStyle,
 } from "react-native"
-import { Text, TextInput, View } from "react-native"
+import { TextInput, View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 export function Header({
   renderLeft,
@@ -38,7 +40,6 @@ export function Header({
     </View>
   )
 }
-
 export function HeaderText({
   children,
   style,
@@ -52,7 +53,6 @@ export function HeaderText({
     </Text>
   )
 }
-
 export function Input({
   value,
   onChangeText,

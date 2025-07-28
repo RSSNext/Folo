@@ -8,37 +8,38 @@ import { uniqBy } from "es-toolkit/compat"
 import type { ImageSource } from "expo-image"
 import type { Ref } from "react"
 import { useMemo } from "react"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
-import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { MediaCarousel } from "@/src/components/ui/carousel/MediaCarousel"
+import { useLightboxControls } from "@/src/components/ui/lightbox/lightboxState"
+import { Text } from "@/src/components/ui/typography/Text"
 
 export function EntryPictureItem({ id }: { id: string }) {
   const { openLightbox } = useLightboxControls()
   const aviRef = useAnimatedRef<View>()
-
   const item = useEntry(id, (state) => ({
     media: state.media,
     feedId: state.feedId,
     publishedAt: state.publishedAt,
     author: state.author,
   }))
-
   if (!item || !item.media) {
     return null
   }
-
   const hasMedia = item.media.length > 0
-
   if (!hasMedia) {
     return (
-      <View className="w-full items-center justify-center" style={{ aspectRatio: 16 / 9 }}>
+      <View
+        className="w-full items-center justify-center"
+        style={{
+          aspectRatio: 16 / 9,
+        }}
+      >
         <Text className="text-label text-center">No media available</Text>
       </View>
     )
   }
-
   return (
     <View className="m-1">
       <MediaItems
@@ -54,14 +55,16 @@ export function EntryPictureItem({ id }: { id: string }) {
             feedId: item.feedId!,
             entryId: id,
           })
-
           runOnUI(() => {
             "worklet"
+
             const rect = measure(aviRef)
             runOnJS(openLightbox)({
               images: (item.media ?? []).map((media) => ({
                 uri: media.url,
-                thumbUri: placeholder ?? { uri: media.url },
+                thumbUri: placeholder ?? {
+                  uri: media.url,
+                },
                 thumbDimensions: null,
                 thumbRect: rect,
                 dimensions: rect
@@ -83,9 +86,7 @@ export function EntryPictureItem({ id }: { id: string }) {
     </View>
   )
 }
-
 EntryPictureItem.displayName = "EntryPictureItem"
-
 const MediaItems = ({
   ref,
   media,
@@ -100,19 +101,15 @@ const MediaItems = ({
   aspectRatio?: number
 }) => {
   const firstMedia = media[0]
-
   const uniqMedia = useMemo(() => {
     return uniqBy(media, "url")
   }, [media])
-
   if (!firstMedia) {
     return null
   }
-
   const { height } = firstMedia
   const { width } = firstMedia
   const realAspectRatio = aspectRatio || (width && height ? width / height : 1)
-
   return (
     <MediaCarousel
       ref={ref}

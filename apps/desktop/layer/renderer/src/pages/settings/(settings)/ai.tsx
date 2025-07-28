@@ -9,6 +9,7 @@ export const loader = defineSettingPageData({
   icon: iconName,
   name: "titles.ai",
   priority,
+  hideIf: (_ctx, serverConfigs) => !serverConfigs?.AI_CHAT_ENABLED,
 })
 
 export function Component() {

@@ -1,4 +1,4 @@
-name: Issue labeler
+name: 🏷️ Issue labeler
 on:
   issues:
     types: [opened]

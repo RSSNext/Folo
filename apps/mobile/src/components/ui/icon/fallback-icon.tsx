@@ -27,22 +27,28 @@ export const FallbackIcon = ({
   gray?: boolean
 }) => {
   const colors = useMemo(() => getBackgroundGradient(title || url || ""), [title, url])
-  const sizeStyle = useMemo(() => ({ width: size, height: size }), [size])
-
+  const sizeStyle = useMemo(
+    () => ({
+      width: size,
+      height: size,
+    }),
+    [size],
+  )
   const [, , , bgAccent, bgAccentLight, bgAccentUltraLight] = colors
-
   const renderedText = useMemo(() => {
     const firstChar = title.at(0)
     const isCJK = firstChar ? isCJKChar(firstChar) : false
     return (
-      <Text style={StyleSheet.flatten([styles.text, textStyle])} className={textClassName}>
+      <Text
+        allowFontScaling={false}
+        style={StyleSheet.flatten([styles.text, textStyle])}
+        className={textClassName}
+      >
         {isCJK ? title[0] : title.slice(0, 2)}
       </Text>
     )
   }, [title, textStyle, textClassName])
-
   const grayColor = useColor("gray2")
-
   return (
     <LinearGradient
       className={className}
@@ -56,7 +62,6 @@ export const FallbackIcon = ({
     </LinearGradient>
   )
 }
-
 export const IconWithFallback = (props: {
   url?: string | undefined | null
   size: number
@@ -68,7 +73,6 @@ export const IconWithFallback = (props: {
 }) => {
   const { url, size, title = "", className, style, textClassName, textStyle } = props
   const [hasError, setHasError] = useState(false)
-
   if (!url || hasError) {
     return (
       <FallbackIcon
@@ -81,18 +85,23 @@ export const IconWithFallback = (props: {
       />
     )
   }
-
   return (
     <View className={className} style={style}>
       <Image
-        source={{ uri: url }}
-        style={[{ width: size, height: size }]}
+        source={{
+          uri: url,
+        }}
+        style={[
+          {
+            width: size,
+            height: size,
+          },
+        ]}
         onError={() => setHasError(true)}
       />
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   container: {
     display: "flex",

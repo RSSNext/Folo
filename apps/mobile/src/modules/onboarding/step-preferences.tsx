@@ -1,9 +1,10 @@
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { GroupedInsetListNavigationLinkIcon } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import { DocmentCuteReIcon } from "@/src/icons/docment_cute_re"
 import { FileImportCuteReIcon } from "@/src/icons/file_import_cute_re"
 import { ListCheck2CuteReIcon } from "@/src/icons/list_check_2_cute_re"
@@ -23,7 +24,6 @@ import { OnboardingSectionScreenContainer } from "./shared"
 export const StepPreferences = () => {
   const { t } = useTranslation()
   const { behavior } = useReadingBehavior()
-
   const navigation = useNavigation()
   return (
     <OnboardingSectionScreenContainer>
@@ -48,7 +48,9 @@ export const StepPreferences = () => {
         >
           <View className="flex flex-row items-center justify-between">
             <Text className="text-text text-base font-medium">
-              {t("general.language.title", { ns: "settings" })}
+              {t("general.language.title", {
+                ns: "settings",
+              })}
             </Text>
             <View className="w-[150px]">
               <LanguageSelect settingKey="language" />
@@ -124,14 +126,12 @@ export const StepPreferences = () => {
     </OnboardingSectionScreenContainer>
   )
 }
-
 type PreferenceCardProps = PropsWithChildren<{
   title?: string
   icon?: React.ReactNode
   showRightArrow?: boolean
   onPress?: () => void
 }>
-
 const PreferenceCard = ({
   title,
   children,
@@ -140,7 +140,6 @@ const PreferenceCard = ({
   showRightArrow = true,
 }: PreferenceCardProps) => {
   const rightIconColor = useColor("tertiaryLabel")
-
   return (
     <Pressable
       className="bg-secondary-system-grouped-background flex flex-row items-center gap-2 rounded-xl p-4"

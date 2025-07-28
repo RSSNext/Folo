@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
     "@follow/configs": "workspace:*",
     "@follow/types": "workspace:*"
   }

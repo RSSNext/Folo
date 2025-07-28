@@ -8,14 +8,13 @@ import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Share, Text, View } from "react-native"
+import { Share, View } from "react-native"
 
 import { getHideAllReadSubscriptions } from "@/src/atoms/settings/general"
-import {
-  EntryContentWebView,
-  preloadWebViewEntry,
-} from "@/src/components/native/webview/EntryContentWebView"
+import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
+import { preloadWebViewEntry } from "@/src/components/native/webview/webview-manager"
 import { ContextMenu } from "@/src/components/ui/context-menu"
+import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
@@ -26,7 +25,10 @@ export const EntryItemContextMenu = ({
   id,
   children,
   view,
-}: PropsWithChildren<{ id: string; view: FeedViewType }>) => {
+}: PropsWithChildren<{
+  id: string
+  view: FeedViewType
+}>) => {
   const { t } = useTranslation()
   const selectedView = useSelectedView()
   const selectedFeed = useSelectedFeed()
@@ -39,7 +41,6 @@ export const EntryItemContextMenu = ({
   }))
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
-
   const navigation = useNavigation()
   const handlePressPreview = useCallback(() => {
     if (entry) {
@@ -53,9 +54,7 @@ export const EntryItemContextMenu = ({
       })
     }
   }, [entry, id, navigation, view])
-
   if (!entry) return null
-
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
@@ -153,7 +152,9 @@ export const EntryItemContextMenu = ({
             key="Star"
             onSelect={() => {
               if (isEntryStarred) {
-                collectionSyncService.unstarEntry({ entryId: id })
+                collectionSyncService.unstarEntry({
+                  entryId: id,
+                })
                 toast.success("Unstarred")
               } else {
                 collectionSyncService.starEntry({

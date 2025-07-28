@@ -1,4 +1,4 @@
-name: Tag on SemVer Commit
+name: 🏷️ Tag on SemVer Commit
 
 on:
   push:

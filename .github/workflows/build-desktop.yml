@@ -1,4 +1,4 @@
-name: Build Desktop
+name: 🖥️ Build Desktop
 
 on:
   push:

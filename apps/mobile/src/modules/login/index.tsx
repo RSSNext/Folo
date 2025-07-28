@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import * as ContextMenu from "zeego/context-menu"
 
 import { Logo } from "@/src/components/ui/logo"
+import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { NavigationLink } from "@/src/lib/navigation/NavigationLink"
 import { useScaleHeight } from "@/src/lib/responsive"
@@ -24,12 +25,15 @@ export function Login() {
   const fontSize = scaledHeight(28)
   const lineHeight = scaledHeight(32)
   const { t } = useTranslation()
-
   const [isRegister, setIsRegister] = useState(true)
   const [isEmail, setIsEmail] = useState(false)
-
   return (
-    <View className="pb-safe-or-2 flex-1 justify-between" style={{ paddingTop: insets.top + 56 }}>
+    <View
+      className="pb-safe-or-2 flex-1 justify-between"
+      style={{
+        paddingTop: insets.top + 56,
+      }}
+    >
       <KeyboardAvoidingView behavior={"position"}>
         <TouchableWithoutFeedback
           onPress={() => {
@@ -43,7 +47,12 @@ export function Login() {
               gap: gapSize,
             }}
           >
-            <Logo style={{ width: logoSize, height: logoSize }} />
+            <Logo
+              style={{
+                width: logoSize,
+                height: logoSize,
+              }}
+            />
             <Text
               className="text-label"
               style={{
@@ -92,11 +101,14 @@ export function Login() {
     </View>
   )
 }
-
 const TermsCheckBox = () => {
   const shakeSharedValue = useSharedValue(0)
   const shakeStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shakeSharedValue.value }],
+    transform: [
+      {
+        translateX: shakeSharedValue.value,
+      },
+    ],
   }))
   return (
     <Animated.View
@@ -107,7 +119,6 @@ const TermsCheckBox = () => {
     </Animated.View>
   )
 }
-
 const TermsText = () => {
   const navigation = useNavigation()
   return (

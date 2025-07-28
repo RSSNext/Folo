@@ -35,7 +35,6 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
         .unsubscribe([subscription.feedId, subscription.listId])
         .then(([feed]) => {
           subscriptionSyncService.fetch()
-          unreadActions.updateById(subscription.feedId, 0)
 
           if (!subscription) return
           if (!feed) return

@@ -1,12 +1,13 @@
 import { applicationName } from "expo-application"
 import * as React from "react"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 interface GlobalErrorScreenProps {
   error?: Error
   resetError?: () => void
 }
-
 export const GlobalErrorScreen: React.FC<GlobalErrorScreenProps> = ({ error, resetError }) => {
   return (
     <View className="bg-system-background flex-1">

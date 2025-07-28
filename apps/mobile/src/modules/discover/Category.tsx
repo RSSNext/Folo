@@ -3,12 +3,13 @@ import { CategoryMap, RSSHubCategories } from "@follow/constants"
 import { LinearGradient } from "expo-linear-gradient"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { Grid } from "@/src/components/ui/grid"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { Grid2CuteReIcon } from "@/src/icons/grid_2_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -19,7 +20,6 @@ import { RecommendationCategoryScreen } from "@/src/screens/(stack)/recommendati
 export const Category = () => {
   const navigation = useNavigation()
   const label = useColor("label")
-
   return (
     <>
       <View className="mt-4 flex-row items-center justify-between pb-1 pl-6 pr-5 pt-4">
@@ -46,12 +46,10 @@ export const Category = () => {
     </>
   )
 }
-
 const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
   const { t } = useTranslation("common")
   const name = t(`discover.category.${category}`)
   const navigation = useNavigation()
-
   return (
     <Pressable
       className="overflow-hidden rounded-2xl"
@@ -68,8 +66,14 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
     >
       <LinearGradient
         colors={[`${CategoryMap[category].color}80`, CategoryMap[category].color]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
+        start={{
+          x: 0,
+          y: 0,
+        }}
+        end={{
+          x: 0,
+          y: 1,
+        }}
         className="rounded-2xl p-4"
         style={styles.cardItem}
       >
@@ -81,7 +85,6 @@ const CategoryItem = memo(({ category }: { category: RSSHubCategory }) => {
     </Pressable>
   )
 })
-
 const styles = StyleSheet.create({
   cardItem: {
     aspectRatio: 16 / 9,

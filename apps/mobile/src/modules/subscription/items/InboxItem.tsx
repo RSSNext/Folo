@@ -4,12 +4,13 @@ import { useUnreadById } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { useColorScheme } from "nativewind"
 import { memo } from "react"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 
 import { GROUPED_ICON_TEXT_GAP, GROUPED_LIST_MARGIN } from "@/src/components/ui/grouped/constants"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { InboxCuteFiIcon } from "@/src/icons/inbox_cute_fi"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { selectFeed } from "@/src/modules/screen/atoms"
@@ -28,7 +29,9 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
   return (
     <Animated.View
       exiting={FadeOutUp}
-      style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
+      style={{
+        marginHorizontal: GROUPED_LIST_MARGIN,
+      }}
       className={cn("overflow-hidden", {
         "rounded-t-[10px]": isFirst,
         "rounded-b-[10px]": isLast,
@@ -39,7 +42,10 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
           itemStyle={ItemPressableStyle.Grouped}
           className="h-12 flex-row items-center px-3"
           onPress={() => {
-            selectFeed({ type: "inbox", inboxId: id })
+            selectFeed({
+              type: "inbox",
+              inboxId: id,
+            })
             navigation.pushControllerView(FeedScreen, {
               feedId: id,
             })
@@ -53,7 +59,12 @@ export const InboxItem = memo(({ id, isFirst, isLast }: SubscriptionItemBaseProp
             />
           </View>
 
-          <Text className="text-label font-medium" style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}>
+          <Text
+            className="text-label font-medium"
+            style={{
+              marginLeft: GROUPED_ICON_TEXT_GAP,
+            }}
+          >
             {subscription.title}
           </Text>
           <UnreadCount unread={unreadCount} className="ml-auto" />

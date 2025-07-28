@@ -3,7 +3,7 @@ import { useSubscriptionById } from "@follow/store/subscription/hooks"
 import { useUnreadByListId } from "@follow/store/unread/hooks"
 import { cn } from "@follow/utils"
 import { memo } from "react"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import Animated, { FadeOutUp } from "react-native-reanimated"
 import { useColor } from "react-native-uikit-colors"
 
@@ -13,6 +13,7 @@ import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
@@ -25,18 +26,18 @@ import { UnreadCount } from "./UnreadCount"
 interface ListSubscriptionItemProps extends SubscriptionItemBaseProps {}
 export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscriptionItemProps) => {
   const colorLabel = useColor("label")
-
   const list = useListById(id)
   const subscription = useSubscriptionById(id)
   const unreadCount = useUnreadByListId(id)
   const navigation = useNavigation()
-
   if (!list) return null
   return (
     <>
       <Animated.View
         exiting={FadeOutUp}
-        style={{ marginHorizontal: GROUPED_LIST_MARGIN }}
+        style={{
+          marginHorizontal: GROUPED_LIST_MARGIN,
+        }}
         className={cn("overflow-hidden", {
           "rounded-t-[10px]": isFirst,
           "rounded-b-[10px]": isLast,
@@ -63,8 +64,13 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
                     width: 20,
                     height: 20,
                   }}
-                  style={{ height: 20, width: 20 }}
-                  source={{ uri: list.image }}
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={{
+                    uri: list.image,
+                  }}
                 />
               )}
               {!list.image && <FallbackIcon title={list.title} size={20} />}
@@ -74,7 +80,9 @@ export const ListSubscriptionItem = memo(({ id, isFirst, isLast }: ListSubscript
               <Text
                 numberOfLines={1}
                 className="text-text shrink font-medium"
-                style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+                style={{
+                  marginLeft: GROUPED_ICON_TEXT_GAP,
+                }}
               >
                 {subscription?.title || list.title}
               </Text>

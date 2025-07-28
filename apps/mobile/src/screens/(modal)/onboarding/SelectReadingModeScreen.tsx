@@ -1,13 +1,14 @@
 import { cn } from "@follow/utils"
 import type { PropsWithChildren } from "react"
 import { useTranslation } from "react-i18next"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { GroupedInsetListNavigationLinkIcon } from "@/src/components/ui/grouped/GroupedList"
+import { Text } from "@/src/components/ui/typography/Text"
 import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { Grid2CuteReIcon } from "@/src/icons/grid_2_cute_re"
 import { PowerIcon } from "@/src/icons/power"
@@ -17,7 +18,6 @@ import { useReadingBehavior } from "@/src/modules/onboarding/hooks/use-reading-b
 export const SelectReadingModeScreen: NavigationControllerView = () => {
   const { t } = useTranslation()
   const { behavior, updateSettings } = useReadingBehavior()
-
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -69,7 +69,6 @@ export const SelectReadingModeScreen: NavigationControllerView = () => {
     </SafeNavigationScrollView>
   )
 }
-
 const Card = ({
   children,
   onPress,

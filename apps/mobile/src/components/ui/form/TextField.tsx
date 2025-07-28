@@ -2,9 +2,10 @@ import { composeEventHandlers } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
 import { useEffect, useImperativeHandle, useRef, useState } from "react"
 import type { StyleProp, TextInputProps, ViewStyle } from "react-native"
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { gentleSpringPreset } from "@/src/constants/spring"
 import { CloseCircleFillIcon } from "@/src/icons/close_circle_fill"
 import { accentColor, useColor } from "@/src/theme/colors"
@@ -17,10 +18,8 @@ interface BaseFieldProps {
   label?: string
   description?: string
   required?: boolean
-
   inputPostfixElement?: React.ReactNode
 }
-
 const BaseField = ({
   ref,
   className,
@@ -32,7 +31,10 @@ const BaseField = ({
   required,
   inputPostfixElement,
   ...rest
-}: TextInputProps & BaseFieldProps & { ref?: React.Ref<TextInput | null> }) => {
+}: TextInputProps &
+  BaseFieldProps & {
+    ref?: React.Ref<TextInput | null>
+  }) => {
   return (
     <View className="w-full flex-1 gap-1">
       {!!label && <FormLabel className="pl-2.5" label={label} optional={!required} />}
@@ -58,20 +60,18 @@ const BaseField = ({
     </View>
   )
 }
-
 export const TextField = ({
   ref,
   ...props
-}: TextInputProps & BaseFieldProps & { ref?: React.Ref<TextInput | null> }) => (
-  <BaseField {...props} ref={ref} />
-)
-
+}: TextInputProps &
+  BaseFieldProps & {
+    ref?: React.Ref<TextInput | null>
+  }) => <BaseField {...props} ref={ref} />
 interface NumberFieldProps extends BaseFieldProps {
   value?: number
   onChangeNumber?: (value: number) => void
   defaultValue?: number
 }
-
 export const NumberField = ({
   ref,
   value,
@@ -79,7 +79,9 @@ export const NumberField = ({
   defaultValue,
   ...rest
 }: Omit<TextInputProps, "keyboardType" | "value" | "onChangeText" | "defaultValue"> &
-  NumberFieldProps & { ref?: React.Ref<TextInput | null> }) => (
+  NumberFieldProps & {
+    ref?: React.Ref<TextInput | null>
+  }) => (
   <BaseField
     {...rest}
     ref={ref}
@@ -89,31 +91,31 @@ export const NumberField = ({
     defaultValue={defaultValue?.toString()}
   />
 )
-
 export const PlainTextField = ({
   ref,
   ...props
-}: TextInputProps & { ref?: React.Ref<TextInput | null> }) => {
+}: TextInputProps & {
+  ref?: React.Ref<TextInput | null>
+}) => {
   const secondaryLabelColor = useColor("secondaryLabel")
-
   const [isFocused, setIsFocused] = useState(false)
   const textInputRef = useRef<TextInput>(null)
   useImperativeHandle(ref, () => textInputRef.current!)
-
   const pressableButtonXSharedValue = useSharedValue(20)
   const pressableButtonOpacity = useSharedValue(0)
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: pressableButtonXSharedValue.value }],
+      transform: [
+        {
+          translateX: pressableButtonXSharedValue.value,
+        },
+      ],
       opacity: pressableButtonOpacity.value,
       position: "absolute",
       right: 0,
     }
   })
-
   const pressableWidthSharedValue = useSharedValue(isFocused ? 20 : 0)
-
   useEffect(() => {
     if (isFocused) {
       pressableButtonXSharedValue.value = withSpring(0, gentleSpringPreset)
@@ -125,7 +127,6 @@ export const PlainTextField = ({
       pressableWidthSharedValue.value = withSpring(0, gentleSpringPreset)
     }
   }, [isFocused, pressableButtonXSharedValue, pressableButtonOpacity, pressableWidthSharedValue])
-
   return (
     <View className="flex-1 flex-row items-center">
       <TextInput
@@ -156,7 +157,6 @@ export const PlainTextField = ({
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   textField: {
     fontSize: 16,

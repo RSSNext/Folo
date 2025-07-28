@@ -3,10 +3,11 @@ import type { RSSHubRouteDeclaration } from "@follow/models/rsshub"
 import type { FC } from "react"
 import { memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 
 import { GroupedInsetListCard, GroupedInsetListCell } from "@/src/components/ui/grouped/GroupedList"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
+import { Text } from "@/src/components/ui/typography/Text"
 import { FireCuteReIcon } from "@/src/icons/fire_cute_re"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { RsshubFormScreen } from "@/src/screens/(modal)/RsshubFormScreen"
@@ -29,9 +30,7 @@ export const RecommendationListItem: FC<{
       categories: Array.from(categories) as unknown as typeof RSSHubCategories,
     }
   }, [data])
-
   const navigation = useNavigation()
-
   return (
     <View className="py-4">
       <View className="mt-1.5 flex-row justify-between overflow-hidden px-6">

@@ -1,17 +1,12 @@
 import { fileURLToPath } from "node:url"
 
 import { dirname, resolve } from "pathe"
-import { tsImport } from "tsx/esm/api"
 import type { UserConfig } from "vite"
+import { routeBuilderPlugin } from "vite-plugin-route-builder"
 
 import { cleanupUnnecessaryFilesPlugin } from "../plugins/vite/cleanup"
 import { createPlatformSpecificImportPlugin } from "../plugins/vite/specific-import"
 import { viteRenderBaseConfig } from "./vite.render.config"
-
-const routeBuilderPluginV2 = await tsImport(
-  "@follow-app/vite-plugin-route-builder",
-  import.meta.url,
-).then((m) => m.default)
 
 const root = resolve(fileURLToPath(dirname(import.meta.url)), "..")
 
@@ -26,7 +21,7 @@ export default {
   plugins: [
     ...viteRenderBaseConfig.plugins,
     createPlatformSpecificImportPlugin("electron"),
-    routeBuilderPluginV2({
+    routeBuilderPlugin({
       pagePattern: "src/pages/**/*.tsx",
       outputPath: "src/generated-routes.ts",
       enableInDev: true,

@@ -27,7 +27,7 @@ export function SwipeMedia({
   proxySize?: {
     width: number
     height: number
-  }
+  } | null
 }) {
   const uniqMedia = media ? uniqBy(media, "url") : []
 
@@ -60,19 +60,21 @@ export function SwipeMedia({
             {uniqMedia?.slice(0, 5).map((med, i) => (
               <div className="mr-2 size-full flex-none" key={med.url}>
                 <Media
-                  className={cn(imgClassName, "size-full rounded-none")}
-                  mediaContainerClassName="object-cover"
+                  className="size-full rounded-none"
+                  mediaContainerClassName={cn("object-cover", imgClassName)}
                   alt="cover"
                   cacheDimensions={med.type === "photo"}
                   src={med.url}
                   type={med.type}
                   previewImageUrl={med.preview_image_url}
                   loading="lazy"
-                  proxy={proxySize}
+                  proxy={proxySize || undefined}
                   blurhash={med.blurhash}
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onPreview?.(uniqMedia, i)
+                    if (onPreview) {
+                      e.stopPropagation()
+                      onPreview(uniqMedia, i)
+                    }
                   }}
                   showFallback={true}
                   fitContent

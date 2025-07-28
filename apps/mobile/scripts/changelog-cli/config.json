@@ -1,0 +1,54 @@
+{
+  "internalTeamMembers": [
+    "Innei",
+    "DIYgod",
+    "hyoban",
+    "renovate[bot]",
+    "github-actions[bot]",
+    "dependabot[bot]",
+    "vercel[bot]",
+    "whitewater"
+  ],
+  "aiModel": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.3,
+    "maxTokens": 1000,
+    "apiKey": "",
+    "baseURL": "https://openrouter.ai/v1",
+    "customEndpoint": ""
+  },
+  "commitAnalysis": {
+    "categories": {
+      "features": {
+        "keywords": ["feat", "feature", "add", "implement", "introduce"],
+        "section": "Shiny new things"
+      },
+      "improvements": {
+        "keywords": ["improve", "enhance", "optimize", "refactor", "update", "perf"],
+        "section": "Improvements"
+      },
+      "fixes": {
+        "keywords": ["fix", "bug", "patch", "resolve", "correct"],
+        "section": "No longer broken"
+      }
+    },
+    "ignorePatterns": [
+      "^chore:",
+      "^docs:",
+      "^test:",
+      "^ci:",
+      "^build:",
+      "Merge pull request",
+      "Merge branch",
+      "version bump",
+      "changelog",
+      "Update dependencies"
+    ]
+  },
+  "changelog": {
+    "maxCommitsPerSection": 5,
+    "includeCommitHash": true,
+    "includePullRequestLinks": true
+  }
+}

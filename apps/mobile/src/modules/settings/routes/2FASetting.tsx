@@ -1,7 +1,7 @@
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
-import { KeyboardAvoidingView, Text, View } from "react-native"
+import { KeyboardAvoidingView, View } from "react-native"
 import type { OtpInputRef } from "react-native-otp-entry"
 import { OtpInput } from "react-native-otp-entry"
 
@@ -10,6 +10,7 @@ import {
   SafeNavigationScrollView,
 } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { QRCode } from "@/src/components/ui/qrcode/QRCode"
+import { Text } from "@/src/components/ui/typography/Text"
 import { twoFactor } from "@/src/lib/auth"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -20,18 +21,23 @@ import { accentColor, useColor } from "@/src/theme/colors"
 const isAuthCodeValid = (code: string) => {
   return code.length === 6 && Number(code) > 0
 }
-export const TwoFASetting: NavigationControllerView<{ totpURI: string }> = ({ totpURI }) => {
+export const TwoFASetting: NavigationControllerView<{
+  totpURI: string
+}> = ({ totpURI }) => {
   const label = useColor("label")
   const tertiaryLabel = useColor("tertiaryLabel")
-
   const navigation = useNavigation()
   const submitMutation = useMutation({
     mutationFn: async (value: string) => {
-      const res = await twoFactor.verifyTotp({ code: value })
+      const res = await twoFactor.verifyTotp({
+        code: value,
+      })
       if (res.error) {
         throw new Error(res.error.message)
       }
-      await queryClient.invalidateQueries({ queryKey: whoamiQueryKey })
+      await queryClient.invalidateQueries({
+        queryKey: whoamiQueryKey,
+      })
     },
     onError(error) {
       toast.error(`Failed to verify: ${error.message}`)
@@ -42,7 +48,6 @@ export const TwoFASetting: NavigationControllerView<{ totpURI: string }> = ({ to
     },
   })
   const otpInputRef = useRef<OtpInputRef>(null)
-
   return (
     <KeyboardAvoidingView behavior="padding">
       <SafeNavigationScrollView Header={<NavigationBlurEffectHeaderView title="Setting 2FA" />}>
@@ -72,16 +77,26 @@ export const TwoFASetting: NavigationControllerView<{ totpURI: string }> = ({ to
           autoFocus
           focusColor={accentColor}
           theme={{
-            containerStyle: { paddingHorizontal: 20 },
-            pinCodeTextStyle: { color: label },
-            placeholderTextStyle: { color: tertiaryLabel },
-            filledPinCodeContainerStyle: { borderColor: label },
+            containerStyle: {
+              paddingHorizontal: 20,
+            },
+            pinCodeTextStyle: {
+              color: label,
+            },
+            placeholderTextStyle: {
+              color: tertiaryLabel,
+            },
+            filledPinCodeContainerStyle: {
+              borderColor: label,
+            },
             pinCodeContainerStyle: {
               borderColor: tertiaryLabel,
               aspectRatio: 1,
               width: 50,
             },
-            focusedPinCodeContainerStyle: { borderColor: accentColor },
+            focusedPinCodeContainerStyle: {
+              borderColor: accentColor,
+            },
           }}
           onFilled={(code) => {
             if (isAuthCodeValid(code)) {

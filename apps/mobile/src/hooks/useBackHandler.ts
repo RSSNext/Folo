@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { BackHandler } from "react-native"
 
-import { useLightboxControls } from "../components/lightbox/lightboxState"
+import { useLightboxControls } from "../components/ui/lightbox/lightboxState"
 import { useCanDismiss, useNavigation } from "../lib/navigation/hooks"
 import { isAndroid } from "../lib/platform"
 

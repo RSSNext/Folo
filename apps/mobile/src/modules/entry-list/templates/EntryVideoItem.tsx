@@ -4,12 +4,13 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { formatDuration, transformVideoUrl } from "@follow/utils"
 import { memo, useMemo } from "react"
-import { Linking, Text, View } from "react-native"
+import { Linking, View } from "react-native"
 
 import { getGeneralSettings } from "@/src/atoms/settings/general"
 import { Image } from "@/src/components/ui/image/Image"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { openLink } from "@/src/lib/native"
 import { toast } from "@/src/lib/toast"
 
@@ -23,7 +24,6 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
     feedId: state.feedId,
     url: state.url,
   }))
-
   const duration = useMemo(() => {
     const seconds = item?.attachments?.find(
       (attachment) => attachment.duration_in_seconds,
@@ -33,13 +33,10 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
     }
     return 0
   }, [item?.attachments])
-
   if (!item) {
     return null
   }
-
   const imageUrl = item.media?.at(0)?.url
-
   return (
     <View className="m-1">
       <VideoContextMenu entryId={id}>
@@ -55,14 +52,15 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
               toast.error("No video URL found")
               return
             }
-
             openVideo(item.url)
           }}
         >
           <View className="relative">
             {imageUrl ? (
               <Image
-                source={{ uri: imageUrl }}
+                source={{
+                  uri: imageUrl,
+                }}
                 aspectRatio={16 / 9}
                 className="w-full rounded-lg"
                 proxy={{
@@ -84,18 +82,17 @@ export const EntryVideoItem = memo(({ id }: { id: string }) => {
     </View>
   )
 })
-
 EntryVideoItem.displayName = "EntryVideoItem"
-
 const FallbackMedia = () => (
   <View
     className="bg-tertiary-system-fill w-full items-center justify-center rounded-lg"
-    style={{ aspectRatio: 16 / 9 }}
+    style={{
+      aspectRatio: 16 / 9,
+    }}
   >
     <Text className="text-label text-center">No media available</Text>
   </View>
 )
-
 const parseSchemeLink = (url: string) => {
   let urlObject: URL
   try {
@@ -103,7 +100,6 @@ const parseSchemeLink = (url: string) => {
   } catch {
     return null
   }
-
   switch (urlObject.hostname) {
     case "www.bilibili.com": {
       // bilibili://video/{av}or{bv}
@@ -124,7 +120,6 @@ const parseSchemeLink = (url: string) => {
     }
   }
 }
-
 const openVideo = async (url: string) => {
   const { openLinksInExternalApp } = getGeneralSettings()
   if (openLinksInExternalApp) {
@@ -140,6 +135,10 @@ const openVideo = async (url: string) => {
   }
 
   // Fallback to opening in in-app browser
-  const formattedUrl = openLinksInExternalApp ? url : transformVideoUrl({ url }) || url
+  const formattedUrl = openLinksInExternalApp
+    ? url
+    : transformVideoUrl({
+        url,
+      }) || url
   openLink(formattedUrl)
 }

@@ -1,11 +1,12 @@
 {
   "name": "@follow/mobile",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {
     "android": "expo run:android",
     "bump": "vv",
+    "changelog:generate": "tsx ../../packages/changelog-cli/index.ts",
     "dev": "npm run start",
     "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
     "eas-build-pre-install": "command -v pod >/dev/null 2>&1 && pod repo update || echo 'CocoaPods not found, skipping pod repo update'",
@@ -115,7 +116,7 @@
     "react-native-keyboard-controller": "1.17.5",
     "react-native-otp-entry": "1.8.4",
     "react-native-pager-view": "6.8.1",
-    "react-native-reanimated": "3.18.0",
+    "react-native-reanimated": "3.19.0",
     "react-native-root-siblings": "5.0.1",
     "react-native-safe-area-context": "5.4.1",
     "react-native-screens": "4.11.1",

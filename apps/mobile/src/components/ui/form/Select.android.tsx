@@ -2,26 +2,31 @@ import { cn } from "@follow/utils/utils"
 import { FlashList } from "@shopify/flash-list"
 import { useCallback, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { Text } from "@/src/components/ui/typography/Text"
 import { CheckFilledIcon } from "@/src/icons/check_filled"
 import { MingcuteDownLineIcon } from "@/src/icons/mingcute_down_line"
-import { accentColor } from "@/src/theme/colors"
+import { accentColor, useColor } from "@/src/theme/colors"
 
 import { BottomModal } from "../modal/BottomModal"
 import { FormLabel } from "./Label"
 
 interface SelectProps<T> {
-  options: { label: string; value: T; subLabel?: string }[]
+  options: {
+    label: string
+    value: T
+    subLabel?: string
+  }[]
   value: T
   onValueChange: (value: T) => void
   displayValue?: string
   wrapperClassName?: string
   wrapperStyle?: StyleProp<ViewStyle>
   label?: string
+  disabled?: boolean
 }
-
 export function Select<T>({
   options,
   value,
@@ -30,19 +35,18 @@ export function Select<T>({
   wrapperClassName,
   wrapperStyle,
   label,
+  disabled,
 }: SelectProps<T>) {
+  const grayColor = useColor("gray")
   const [isModalVisible, setModalVisible] = useState(false)
   const selectedOption = options.find((opt) => opt.value === value)
   const insets = useSafeAreaInsets()
-
   const showOptions = useCallback(() => {
     setModalVisible(true)
   }, [])
-
   const closeModal = useCallback(() => {
     setModalVisible(false)
   }, [])
-
   const handleSelectOption = useCallback(
     (optionValue: T) => {
       onValueChange(optionValue)
@@ -50,17 +54,24 @@ export function Select<T>({
     },
     [onValueChange, closeModal],
   )
-
   const renderOption = useCallback(
-    ({ item }: { item: { label: string; value: T; subLabel?: string } }) => {
+    ({
+      item,
+    }: {
+      item: {
+        label: string
+        value: T
+        subLabel?: string
+      }
+    }) => {
       const isSelected = value === item.value
-
       return (
         <>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => handleSelectOption(item.value)}
             className="flex-row items-center justify-between p-4"
+            disabled={disabled}
           >
             <View className="flex-1">
               <Text
@@ -80,43 +91,50 @@ export function Select<T>({
           </TouchableOpacity>
           <View
             className={cn("bg-opaque-separator/70 mb-px ml-4")}
-            style={{ height: StyleSheet.hairlineWidth }}
+            style={{
+              height: StyleSheet.hairlineWidth,
+            }}
           />
         </>
       )
     },
-    [handleSelectOption, value],
+    [handleSelectOption, value, disabled],
   )
   const Trigger = (
     <TouchableOpacity
       className={cn(
         "min-w-24 flex-1 shrink flex-row items-center rounded-lg pl-3",
-
+        disabled ? "opacity-50" : "",
         wrapperClassName,
       )}
       hitSlop={30}
       onPress={showOptions}
+      disabled={disabled}
       style={wrapperStyle}
     >
       <Text
-        className="text-accent flex-1 text-right font-semibold"
+        className={cn("flex-1 text-right font-semibold", disabled ? "text-gray" : "text-accent")}
         ellipsizeMode="middle"
         numberOfLines={1}
       >
         {displayValue || selectedOption?.label || "Select"}
       </Text>
       <View className="ml-auto shrink-0 pl-1">
-        <MingcuteDownLineIcon color={accentColor} height={18} width={18} />
+        <MingcuteDownLineIcon color={disabled ? grayColor : accentColor} height={18} width={18} />
       </View>
     </TouchableOpacity>
   )
-
   const SelectModal = (
     <BottomModal visible={isModalVisible} onClose={closeModal}>
       <View className="border-b-hairline border-opaque-separator flex-row items-center justify-between p-4">
         <Text className="text-label text-xl font-semibold">Select an option</Text>
         <TouchableOpacity onPress={closeModal}>
-          <Text style={{ color: accentColor }} className="text-lg font-bold">
+          <Text
+            style={{
+              color: accentColor,
+            }}
+            className="text-lg font-bold"
+          >
             Done
           </Text>
         </TouchableOpacity>
@@ -133,7 +151,6 @@ export function Select<T>({
       />
     </BottomModal>
   )
-
   if (!label) {
     return (
       <>
@@ -142,7 +159,6 @@ export function Select<T>({
       </>
     )
   }
-
   return (
     <>
       <View className="flex-1 flex-row items-center justify-between">

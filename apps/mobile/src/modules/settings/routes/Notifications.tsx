@@ -1,4 +1,6 @@
-import { Text, View } from "react-native"
+import { View } from "react-native"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 export const NotificationsScreen = () => {
   return (

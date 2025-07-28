@@ -1,12 +1,13 @@
 import { cn, formatNumber } from "@follow/utils"
 import { useQuery } from "@tanstack/react-query"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { useColor } from "react-native-uikit-colors"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { FilterCuteReIcon } from "@/src/icons/filter_cute_re"
 import { TrendingUpCuteReIcon } from "@/src/icons/trending_up_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
@@ -37,7 +38,6 @@ export const Trending = ({
     },
   })
   const navigation = useNavigation()
-
   return (
     <View className={className}>
       <View className={cn("flex-row items-center justify-between pb-1 pt-4", itemClassName)}>
@@ -64,6 +64,8 @@ export const Trending = ({
         ) : (
           data?.map((item, index) => (
             <FeedSummary
+              preview
+              view={item.view}
               key={item.feed?.id}
               item={item}
               className={cn("flex flex-1 flex-row items-center bg-none py-3", itemClassName)}

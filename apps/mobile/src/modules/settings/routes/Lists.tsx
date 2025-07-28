@@ -3,7 +3,7 @@ import type { ListModel } from "@follow/store/list/types"
 import { createContext, createElement, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItem } from "react-native"
-import { Image, StyleSheet, Text, View } from "react-native"
+import { Image, StyleSheet, View } from "react-native"
 import Animated, { LinearTransition } from "react-native-reanimated"
 import { useColor, useColors } from "react-native-uikit-colors"
 
@@ -20,6 +20,7 @@ import {
 import { FallbackIcon } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { views } from "@/src/constants/views"
 import { AddCuteReIcon } from "@/src/icons/add_cute_re"
 import { PowerIcon } from "@/src/icons/power"
@@ -38,7 +39,6 @@ export const ListsScreen = () => {
   const { t } = useTranslation("settings")
   const { isLoading, data } = usePrefetchLists()
   const lists = useOwnedLists()
-
   return (
     <SafeNavigationScrollView
       nestedScrollEnabled
@@ -103,7 +103,6 @@ export const ListsScreen = () => {
     </SafeNavigationScrollView>
   )
 }
-
 const AddListButton = () => {
   const labelColor = useColor("label")
   const navigation = useNavigation()
@@ -117,19 +116,22 @@ const AddListButton = () => {
     </UINavigationHeaderActionButton>
   )
 }
-
 const ItemSeparatorComponent = () => {
   return (
     <View
       className="bg-opaque-separator/50 ml-24 h-px flex-1"
       collapsable={false}
-      style={{ transform: [{ scaleY: 0.5 }] }}
+      style={{
+        transform: [
+          {
+            scaleY: 0.5,
+          },
+        ],
+      }}
     />
   )
 }
-
 const keyExtractor = (item: ListModel) => item.id
-
 const ListItemCell: ListRenderItem<ListModel> = (props) => {
   return <ListItemCellImpl {...props} />
 }
@@ -137,10 +139,8 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
   const { t } = useTranslation("common")
   const { title, description } = list
   const listData = use(ListContext)[list.id]
-
   const navigation = useNavigation()
   const colors = useColors()
-
   return (
     <SwipeableItem
       swipeRightToCallAction
@@ -148,14 +148,18 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
         {
           label: t("words.manage"),
           onPress: () => {
-            navigation.pushControllerView(ManageListScreen, { id: list.id })
+            navigation.pushControllerView(ManageListScreen, {
+              id: list.id,
+            })
           },
           backgroundColor: accentColor,
         },
         {
           label: t("words.edit"),
           onPress: () => {
-            navigation.presentControllerView(ListScreen, { listId: list.id })
+            navigation.presentControllerView(ListScreen, {
+              listId: list.id,
+            })
           },
           backgroundColor: colors.blue,
         },
@@ -163,11 +167,21 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
     >
       <ItemPressable
         className="flex-row p-4"
-        onPress={() => navigation.pushControllerView(ManageListScreen, { id: list.id })}
+        onPress={() =>
+          navigation.pushControllerView(ManageListScreen, {
+            id: list.id,
+          })
+        }
       >
         <View className="size-16 overflow-hidden rounded-lg">
           {list.image ? (
-            <Image source={{ uri: list.image }} resizeMode="cover" className="size-full" />
+            <Image
+              source={{
+                uri: list.image,
+              }}
+              resizeMode="cover"
+              className="size-full"
+            />
           ) : (
             <FallbackIcon title={list.title || ""} size="100%" textStyle={styles.title} />
           )}
@@ -200,7 +214,9 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
 
         <View
           className="bg-opaque-separator mx-4 h-full"
-          style={{ width: StyleSheet.hairlineWidth }}
+          style={{
+            width: StyleSheet.hairlineWidth,
+          }}
         />
         <View className="w-16 gap-1">
           <View className="flex-row items-center gap-1">
@@ -226,7 +242,6 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
     </SwipeableItem>
   )
 }
-
 const styles = StyleSheet.create({
   title: {
     fontSize: 20,

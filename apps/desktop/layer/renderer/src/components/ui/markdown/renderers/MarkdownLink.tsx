@@ -1,3 +1,4 @@
+import { Button } from "@follow/components/ui/button/index.js"
 import { MagneticHoverEffect } from "@follow/components/ui/effect/MagneticHoverEffect.js"
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
 import {
@@ -7,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
 import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
-import { stopPropagation } from "@follow/utils"
+import { cn, stopPropagation } from "@follow/utils"
 import { use, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -16,7 +17,7 @@ import { copyToClipboard } from "~/lib/clipboard"
 
 import { MarkdownRenderActionContext } from "../context"
 
-export const MarkdownLink = (props: LinkProps) => {
+export const MarkdownLink: Component<LinkProps> = (props) => {
   const { transformUrl, isAudio, ensureAndRenderTimeStamp } = use(MarkdownRenderActionContext)
   const { t } = useTranslation()
 
@@ -51,7 +52,7 @@ export const MarkdownLink = (props: LinkProps) => {
         <MagneticHoverEffect
           as="a"
           draggable="false"
-          className="text-text font-semibold no-underline"
+          className={cn("text-text font-semibold no-underline", props.className)}
           href={populatedFullHref}
           title={props.title}
           target="_blank"
@@ -68,14 +69,23 @@ export const MarkdownLink = (props: LinkProps) => {
       {!!populatedFullHref && (
         <TooltipPortal>
           <TooltipContent align="start" className="break-all" style={{ zIndex }} side="bottom">
-            <span>{populatedFullHref}</span>
-            <button
-              type="button"
-              className="text-accent ml-2 cursor-pointer"
-              onClick={handleCopyLink}
+            <a
+              className="follow-link--underline"
+              href={populatedFullHref}
+              target="_blank"
+              rel="noreferrer"
             >
-              {t("share.copy_link")}
-            </button>
+              {populatedFullHref}
+            </a>
+
+            <Button
+              onClick={handleCopyLink}
+              buttonClassName="p-1 cursor-link"
+              variant={"ghost"}
+              aria-label={t("share.copy_link")}
+            >
+              <i className="i-mgc-copy-2-cute-re ml-1 size-3" />
+            </Button>
           </TooltipContent>
         </TooltipPortal>
       )}

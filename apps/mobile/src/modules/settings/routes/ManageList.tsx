@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query"
 import type { MutableRefObject } from "react"
 import { createContext, use, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { PixelRatio, StyleSheet, Text, View } from "react-native"
+import { PixelRatio, StyleSheet, View } from "react-native"
 
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/src/components/ui/grouped/GroupedList"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { CheckLineIcon } from "@/src/icons/check_line"
 import { getBizFetchErrorMessage } from "@/src/lib/api-fetch"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -34,24 +35,25 @@ import { accentColor } from "@/src/theme/colors"
 const ManageListContext = createContext<{
   nextSelectedFeedIdRef: MutableRefObject<Set<string>>
 }>(null!)
-
-export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id }) => {
+export const ManageListScreen: NavigationControllerView<{
+  id: string
+}> = ({ id }) => {
   usePrefetchLists()
   const list = useListById(id)
   const { t } = useTranslation("settings")
-
   const nextSelectedFeedIdRef = useRef(new Set<string>())
-  const ctxValue = useMemo(() => ({ nextSelectedFeedIdRef }), [nextSelectedFeedIdRef])
-
+  const ctxValue = useMemo(
+    () => ({
+      nextSelectedFeedIdRef,
+    }),
+    [nextSelectedFeedIdRef],
+  )
   const initOnceRef = useRef(false)
-
   useEffect(() => {
     if (initOnceRef.current) return
     initOnceRef.current = true
-
     nextSelectedFeedIdRef.current = new Set(list?.feedIds ?? [])
   }, [list?.feedIds])
-
   const addFeedsToFeedListMutation = useMutation({
     mutationFn: () =>
       listSyncServices.addFeedsToFeedList({
@@ -68,7 +70,9 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
           title={`${t("lists.manage_list")} - ${list?.title}`}
           headerRight={() => (
             <HeaderSubmitTextButton
-              label={t("words.save", { ns: "common" })}
+              label={t("words.save", {
+                ns: "common",
+              })}
               isLoading={addFeedsToFeedListMutation.isPending}
               isValid
               onPress={() => {
@@ -95,16 +99,14 @@ export const ManageListScreen: NavigationControllerView<{ id: string }> = ({ id 
     </SafeNavigationScrollView>
   )
 }
-
-const ListImpl: React.FC<{ id: string }> = ({ id }) => {
+const ListImpl: React.FC<{
+  id: string
+}> = ({ id }) => {
   const { t } = useTranslation("settings")
   const list = useListById(id)!
   usePrefetchSubscription(list.view)
-
   const subscriptionIds = useFeedSubscriptionIdsByView(list.view)
-
   const sortedSubscriptionIds = useSortedFeedSubscriptionByAlphabet(subscriptionIds)
-
   return (
     <>
       <GroupedInsetListSectionHeader label={t("lists.select_feeds")} />
@@ -116,24 +118,21 @@ const ListImpl: React.FC<{ id: string }> = ({ id }) => {
     </>
   )
 }
-
 const SeparatorComponent = () => {
   return (
     <View
       className="bg-opaque-separator/70 ml-16"
-      style={{ height: StyleSheet.hairlineWidth }}
+      style={{
+        height: StyleSheet.hairlineWidth,
+      }}
       collapsable={false}
     />
   )
 }
-
 const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
   const feed = useFeedById(props.feedId)
-
   const { nextSelectedFeedIdRef } = use(ManageListContext)
-
   const [currentSelected, setCurrentSelected] = useState(props.isSelected)
-
   const iconMariginRight = 36 / PixelRatio.get()
   if (!feed) return null
   return (
@@ -145,7 +144,6 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
         } else {
           nextSelectedFeedIdRef.current.add(feed.id)
         }
-
         setCurrentSelected(!has)
       }}
     >
@@ -153,7 +151,9 @@ const FeedCell = (props: { feedId: string; isSelected: boolean }) => {
         <View className="flex-1 flex-row items-center gap-4">
           <View
             className="size-4 items-center justify-center"
-            style={{ marginRight: iconMariginRight }}
+            style={{
+              marginRight: iconMariginRight,
+            }}
           >
             <View className="overflow-hidden rounded-lg">
               <FeedIcon feed={feed} size={24} />

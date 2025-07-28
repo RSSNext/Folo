@@ -12,6 +12,19 @@ export const getSubscriptionStoreId = (subscription: SubscriptionModel) => {
   throw new Error("Invalid subscription")
 }
 
+export const getSubscriptionDBId = (subscription: SubscriptionModel) => {
+  if (subscription.feedId && subscription.type === "feed") {
+    return `${subscription.type}/${subscription.feedId}`
+  }
+  if (subscription.listId && subscription.type === "list") {
+    return `${subscription.type}/${subscription.listId}`
+  }
+  if (subscription.inboxId && subscription.type === "inbox") {
+    return `${subscription.type}/${subscription.inboxId}`
+  }
+  throw new Error("Invalid subscription")
+}
+
 export const getDefaultCategory = (subscription?: SubscriptionModel) => {
   if (!subscription) return null
   const { feedId } = subscription

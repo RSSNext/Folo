@@ -2,9 +2,11 @@ import { isNewUserQueryKey, isOnboardingFinishedStorageKey } from "@follow/store
 import { tracker } from "@follow/tracker"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+
+import { Text } from "@/src/components/ui/typography/Text"
 
 import { kv } from "../lib/kv"
 import { useNavigation } from "../lib/navigation/hooks"
@@ -18,32 +20,45 @@ import { StepWelcome } from "../modules/onboarding/step-welcome"
 export const OnboardingScreen: NavigationControllerView = () => {
   const { t } = useTranslation("common")
   const insets = useSafeAreaInsets()
-
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
-
   const navigation = useNavigation()
   const handleNext = useCallback(() => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
-      tracker.onBoarding({ step: currentStep, done: false })
+      tracker.onBoarding({
+        step: currentStep,
+        done: false,
+      })
     } else {
       // Complete onboarding
-      tracker.onBoarding({ step: currentStep, done: true })
-      kv.set(isOnboardingFinishedStorageKey, "true")
-      queryClient.invalidateQueries({ queryKey: isNewUserQueryKey }).then(() => {
-        navigation.back()
+      tracker.onBoarding({
+        step: currentStep,
+        done: true,
       })
+      kv.set(isOnboardingFinishedStorageKey, "true")
+      queryClient
+        .invalidateQueries({
+          queryKey: isNewUserQueryKey,
+        })
+        .then(() => {
+          navigation.back()
+        })
     }
   }, [currentStep, navigation])
   useEffect(() => {
-    tracker.onBoarding({ step: 0, done: false })
+    tracker.onBoarding({
+      step: 0,
+      done: false,
+    })
   }, [])
-
   return (
     <View
       className="bg-system-grouped-background flex-1 px-6"
-      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      style={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+      }}
     >
       <ProgressIndicator
         currentStep={currentStep}
@@ -82,7 +97,6 @@ export const OnboardingScreen: NavigationControllerView = () => {
     </View>
   )
 }
-
 function ProgressIndicator({
   currentStep,
   totalSteps,
@@ -94,7 +108,9 @@ function ProgressIndicator({
 }) {
   return (
     <View className="mb-6 mt-4 flex flex-row justify-center gap-2">
-      {Array.from({ length: totalSteps }).map((_, index) => (
+      {Array.from({
+        length: totalSteps,
+      }).map((_, index) => (
         <TouchableOpacity
           key={`step-${index}-indicator`}
           onPress={() => {
@@ -102,9 +118,7 @@ function ProgressIndicator({
           }}
         >
           <View
-            className={`mx-1 h-2 w-10 rounded-full ${
-              currentStep >= index + 1 ? "bg-accent" : "bg-gray-300"
-            }`}
+            className={`mx-1 h-2 w-10 rounded-full ${currentStep >= index + 1 ? "bg-accent" : "bg-gray-300"}`}
           />
         </TouchableOpacity>
       ))}

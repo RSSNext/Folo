@@ -46,6 +46,7 @@ const formSchema = z.object({
   view: z.string(),
   category: z.string().nullable().optional(),
   isPrivate: z.boolean().optional(),
+  hideFromTimeline: z.boolean().optional(),
   title: z.string().optional(),
 })
 export type FeedFormDataValuesType = z.infer<typeof formSchema>
@@ -189,6 +190,7 @@ const FeedInnerForm = ({
     category?: string | null
     isPrivate?: boolean
     title?: string | null
+    hideFromTimeline?: boolean | null
   }
   feed: FeedModel
   entries?: EntryModelSimple[]
@@ -217,8 +219,11 @@ const FeedInnerForm = ({
     if (subscription) {
       form.setValue("view", `${subscription?.view}`)
       subscription?.category && form.setValue("category", subscription.category)
-      form.setValue("isPrivate", subscription?.isPrivate || false)
-      form.setValue("title", subscription?.title || "")
+      typeof subscription.isPrivate === "boolean" &&
+        form.setValue("isPrivate", subscription.isPrivate)
+      typeof subscription.hideFromTimeline === "boolean" &&
+        form.setValue("hideFromTimeline", subscription.hideFromTimeline)
+      subscription?.title && form.setValue("title", subscription.title)
     }
   }, [subscription])
 
@@ -239,6 +244,7 @@ const FeedInnerForm = ({
         view: Number.parseInt(values.view),
         category: values.category,
         isPrivate: values.isPrivate,
+        hideFromTimeline: values.hideFromTimeline,
         title: values.title,
         feedId: feed.id,
       }
@@ -375,6 +381,29 @@ const FeedInnerForm = ({
                   <div>
                     <FormLabel>{t("feed_form.private_follow")}</FormLabel>
                     <FormDescription>{t("feed_form.private_follow_description")}</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      className="shrink-0"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hideFromTimeline"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <FormLabel>{t("feed_form.hide_from_timeline")}</FormLabel>
+                    <FormDescription>
+                      {t("feed_form.hide_from_timeline_description")}
+                    </FormDescription>
                   </div>
                   <FormControl>
                     <Switch

@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 import { useEffect, useRef } from "react"
-import { Button, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import { Button, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 
 import { FullWindowOverlay } from "@/src/components/common/FullWindowOverlay"
+import { Text } from "@/src/components/ui/typography/Text"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 
 import { useNavigation } from "../hooks"
@@ -30,7 +31,6 @@ export const DebugButtonGroup = () => {
       disposers.forEach((disposer) => disposer())
     }
   }, [])
-
   const cntRef = useRef(0)
   return (
     <View className="flex-1 bg-gray-50">
@@ -101,7 +101,6 @@ export const DebugButtonGroup = () => {
     </View>
   )
 }
-
 const TestScreen3: NavigationControllerView = () => {
   const navigation = useNavigation()
   return (
@@ -130,7 +129,6 @@ const TestScreen3: NavigationControllerView = () => {
 }
 TestScreen3.sheetAllowedDetents = [0.7, 1]
 TestScreen3.sheetCornerRadius = 0
-
 const TestScreen: NavigationControllerView = () => {
   const navigation = useNavigation()
   return (
@@ -144,7 +142,9 @@ const TestScreen: NavigationControllerView = () => {
         <CloseCuteReIcon height={20} width={20} color="black" />
       </TouchableOpacity>
       <ScrollView className="flex-1 bg-white">
-        {Array.from({ length: 100 }).map((_, index) => {
+        {Array.from({
+          length: 100,
+        }).map((_, index) => {
           return (
             <Text key={index} className="text-black">
               TestScreen
@@ -155,5 +155,4 @@ const TestScreen: NavigationControllerView = () => {
     </View>
   )
 }
-
 TestScreen.sheetAllowedDetents = [0.5, 1]

@@ -63,6 +63,8 @@
   "signin.sign_up_to": "Sign up to",
   "subscription_form.category": "Category",
   "subscription_form.category_description": "By default, your follows will be grouped by website.",
+  "subscription_form.hide_from_timeline": "Hide from Timeline",
+  "subscription_form.hide_from_timeline_description": "Whether this subscription's entries are visible on your main view timeline.",
   "subscription_form.private_follow": "Private Follow",
   "subscription_form.private_follow_description": "Whether this follow is publicly visible on your profile page.",
   "subscription_form.title": "Title",

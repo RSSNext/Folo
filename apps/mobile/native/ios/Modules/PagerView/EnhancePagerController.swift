@@ -253,7 +253,8 @@ extension EnhancePagerController {
   public func setCurrentPage(index: Int) {
     if pageControllers.indices.contains(index) {
       let vc = pageControllers[index]
-      setViewControllers([vc], direction: .forward, animated: true)
+      let direction: UIPageViewController.NavigationDirection = index > currentPageIndex ? .forward : .reverse
+      setViewControllers([vc], direction: direction, animated: true)
       currentPageIndex = index
     }
   }

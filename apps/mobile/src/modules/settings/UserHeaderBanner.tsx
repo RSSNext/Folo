@@ -5,7 +5,7 @@ import { cn, getLuminance } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import type { FC } from "react"
 import { useMemo } from "react"
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Linking, StyleSheet, TouchableOpacity, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import ReAnimated, { FadeIn, FadeOut, interpolate, useAnimatedStyle } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -13,6 +13,7 @@ import { useColor } from "react-native-uikit-colors"
 
 import { useServerConfigs } from "@/src/atoms/server-configs"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
+import { Text } from "@/src/components/ui/typography/Text"
 import { DiscordCuteFiIcon } from "@/src/icons/discord_cute_fi"
 import { FacebookCuteFiIcon } from "@/src/icons/facebook_cute_fi"
 import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
@@ -28,19 +29,59 @@ import { usePrefetchImageColors } from "@/src/store/image/hooks"
 import { accentColor } from "@/src/theme/colors"
 
 const defaultGradientColors = ["#000", "#100", "#200"]
-
 const PlatformInfoMap: Record<
   string,
-  { component: FC<any>; color: { light: string; dark: string } }
+  {
+    component: FC<any>
+    color: {
+      light: string
+      dark: string
+    }
+  }
 > = {
-  github: { component: GithubCuteFiIcon, color: { light: "#181717", dark: "#FFFFFF" } },
-  twitter: { component: TwitterCuteFiIcon, color: { light: "#1DA1F2", dark: "#1DA1F2" } },
-  youtube: { component: YoutubeCuteFiIcon, color: { light: "#FF0000", dark: "#FF0000" } },
-  discord: { component: DiscordCuteFiIcon, color: { light: "#5865F2", dark: "#5865F2" } },
-  instagram: { component: InstagramCuteFiIcon, color: { light: "#C13584", dark: "#C13584" } },
-  facebook: { component: FacebookCuteFiIcon, color: { light: "#1877F2", dark: "#1877F2" } },
+  github: {
+    component: GithubCuteFiIcon,
+    color: {
+      light: "#181717",
+      dark: "#FFFFFF",
+    },
+  },
+  twitter: {
+    component: TwitterCuteFiIcon,
+    color: {
+      light: "#1DA1F2",
+      dark: "#1DA1F2",
+    },
+  },
+  youtube: {
+    component: YoutubeCuteFiIcon,
+    color: {
+      light: "#FF0000",
+      dark: "#FF0000",
+    },
+  },
+  discord: {
+    component: DiscordCuteFiIcon,
+    color: {
+      light: "#5865F2",
+      dark: "#5865F2",
+    },
+  },
+  instagram: {
+    component: InstagramCuteFiIcon,
+    color: {
+      light: "#C13584",
+      dark: "#C13584",
+    },
+  },
+  facebook: {
+    component: FacebookCuteFiIcon,
+    color: {
+      light: "#1877F2",
+      dark: "#1877F2",
+    },
+  },
 }
-
 export const UserHeaderBanner = ({
   scrollY,
   userId,
@@ -53,16 +94,12 @@ export const UserHeaderBanner = ({
   const serverConfigs = useServerConfigs()
   const bgColor = useColor("systemGroupedBackground")
   const avatarIconColor = useColor("secondaryLabel")
-
   const user = useUserById(userId)
   const role = useUserRole()
-
   usePrefetchImageColors(user?.image)
   const insets = useSafeAreaInsets()
-
   const MAX_PULL = 100
   const SCALE_FACTOR = 1.8
-
   const imageColors = useImageColors(user?.image)
   const gradientColors = useMemo(() => {
     if (!imageColors || imageColors.platform === "web")
@@ -76,16 +113,17 @@ export const UserHeaderBanner = ({
     }
     return [imageColors.primary, imageColors.secondary, imageColors.background]
   }, [bgColor, imageColors, user])
-
   const socialLinks = useMemo(() => {
     if (!user?.socialLinks) {
       return []
     }
     return Object.entries(user.socialLinks)
       .filter(([, value]) => !!value)
-      .map(([platform, link]) => ({ platform, link: link! }))
+      .map(([platform, link]) => ({
+        platform,
+        link: link!,
+      }))
   }, [user?.socialLinks])
-
   const gradientLight = useMemo(() => {
     if (!imageColors) return false
     if (imageColors.platform === "web") return false
@@ -94,15 +132,17 @@ export const UserHeaderBanner = ({
     )
     return dominantLuminance > 0.5
   }, [imageColors])
-
   const styles = useAnimatedStyle(() => {
     const scaleValue = interpolate(scrollY.value, [-MAX_PULL, 0], [SCALE_FACTOR, 1], {
       extrapolateLeft: "extend",
       extrapolateRight: "clamp",
     })
-
     return {
-      transform: [{ scale: scaleValue }],
+      transform: [
+        {
+          scale: scaleValue,
+        },
+      ],
     }
   })
 
@@ -119,24 +159,36 @@ export const UserHeaderBanner = ({
       extrapolateLeft: "extend",
       extrapolateRight: "clamp",
     })
-
     return {
-      transform: [{ scale: avatarScale }, { translateY: avatarTranslateY }],
+      transform: [
+        {
+          scale: avatarScale,
+        },
+        {
+          translateY: avatarTranslateY,
+        },
+      ],
     }
   })
-
   const navigation = useNavigation()
-
   return (
     <View
       className="relative items-center justify-center pt-[22px]"
-      style={{ marginTop: -insets.top - 22 }}
+      style={{
+        marginTop: -insets.top - 22,
+      }}
     >
       <ReAnimated.View entering={FadeIn} className="absolute inset-0" style={styles}>
         <LinearGradient
           colors={defaultGradientColors as [string, string, ...string[]]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          start={{
+            x: 0,
+            y: 0,
+          }}
+          end={{
+            x: 1,
+            y: 1,
+          }}
           style={StyleSheet.absoluteFillObject}
         />
         {gradientColors && (
@@ -147,14 +199,25 @@ export const UserHeaderBanner = ({
           >
             <LinearGradient
               colors={gradientColors as [string, string, ...string[]]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+              start={{
+                x: 0,
+                y: 0,
+              }}
+              end={{
+                x: 1,
+                y: 1,
+              }}
               style={StyleSheet.absoluteFillObject}
             />
           </ReAnimated.View>
         )}
       </ReAnimated.View>
-      <View className="items-center px-4 pb-[24px]" style={{ paddingTop: insets.top }}>
+      <View
+        className="items-center px-4 pb-[24px]"
+        style={{
+          paddingTop: insets.top,
+        }}
+      >
         <ReAnimated.View style={avatarStyles} className="bg-system-background rounded-full">
           <UserAvatar
             image={user?.image}
@@ -261,7 +324,6 @@ export const UserHeaderBanner = ({
               : gradientLight
                 ? "rgba(0,0,0,0.8)"
                 : "rgba(255,255,255,0.8)"
-
             return (
               <TouchableOpacity key={platform} onPress={() => Linking.openURL(link)}>
                 <IconComponent height={22} width={22} color={color} />

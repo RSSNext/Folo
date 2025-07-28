@@ -3,7 +3,7 @@ import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
 import { omit } from "es-toolkit"
 
-import { apiClient } from "../context"
+import { api } from "../context"
 import { invalidateEntriesQuery } from "../entry/hooks"
 import { getFeedById } from "../feed/getter"
 import { feedActions } from "../feed/store"
@@ -12,13 +12,14 @@ import type { Hydratable, Resetable } from "../internal/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../internal/helper"
 import { getListById } from "../list/getters"
 import { listActions } from "../list/store"
+import { apiMorph } from "../morph/api"
 import { dbStoreMorph } from "../morph/db-store"
-import { honoMorph } from "../morph/hono"
 import { buildSubscriptionDbId, storeDbMorph } from "../morph/store-db"
+import { unreadActions } from "../unread/store"
 import { whoami } from "../user/getters"
 import { getCategoryFeedIds } from "./getter"
 import type { SubscriptionForm, SubscriptionModel } from "./types"
-import { getDefaultCategory, getInboxStoreId, getSubscriptionStoreId } from "./utils"
+import { getDefaultCategory, getSubscriptionDBId, getSubscriptionStoreId } from "./utils"
 
 type FeedId = string
 type ListId = string
@@ -88,23 +89,20 @@ class SubscriptionActions implements Hydratable, Resetable {
   async upsertManyInSession(subscriptions: SubscriptionModel[]) {
     immerSet((draft) => {
       for (const subscription of subscriptions) {
+        const subscriptionSetId = getSubscriptionDBId(subscription)
+        const subscriptionStoreId = getSubscriptionStoreId(subscription)
+
+        draft.data[subscriptionStoreId] = subscription
+        draft.subscriptionIdSet.add(subscriptionSetId)
+
         if (subscription.feedId && subscription.type === "feed") {
-          draft.data[subscription.feedId] = subscription
-          draft.subscriptionIdSet.add(`${subscription.type}/${subscription.feedId}`)
-          draft.feedIdByView[subscription.view as FeedViewType].add(subscription.feedId)
+          draft.feedIdByView[subscription.view].add(subscription.feedId)
           if (subscription.category) {
-            draft.categories[subscription.view as FeedViewType].add(subscription.category)
+            draft.categories[subscription.view].add(subscription.category)
           }
         }
         if (subscription.listId && subscription.type === "list") {
-          draft.data[subscription.listId] = subscription
-          draft.subscriptionIdSet.add(`${subscription.type}/${subscription.listId}`)
-          draft.listIdByView[subscription.view as FeedViewType].add(subscription.listId)
-        }
-
-        if (subscription.inboxId && subscription.type === "inbox") {
-          draft.data[getInboxStoreId(subscription.inboxId)] = subscription
-          draft.subscriptionIdSet.add(`${subscription.type}/${subscription.inboxId}`)
+          draft.listIdByView[subscription.view].add(subscription.listId)
         }
       }
     })
@@ -182,30 +180,23 @@ class SubscriptionActions implements Hydratable, Resetable {
 
 class SubscriptionSyncService {
   async fetch(view?: FeedViewType) {
-    const res = await apiClient().subscriptions.$get({
-      query: {
-        view: view !== undefined ? String(view) : undefined,
-      },
+    const { data } = await api().subscriptions.get({
+      view: view !== undefined ? view : undefined,
     })
 
-    const { subscriptions, feeds, lists, inboxes } = honoMorph.toSubscription(res.data)
+    const { subscriptions, collections } = apiMorph.toSubscription(data)
 
-    await SubscriptionService.deleteNotExists(
-      subscriptions.map((s) => buildSubscriptionDbId(s)),
-      view,
-    )
-
-    feedActions.upsertMany(feeds)
+    feedActions.upsertMany(collections.feeds)
     subscriptionActions.upsertMany(subscriptions, {
       resetBeforeUpsert: typeof view === "number" ? view : true,
     })
-    listActions.upsertMany(lists)
+    listActions.upsertMany(collections.lists)
 
-    inboxActions.upsertMany(inboxes)
+    inboxActions.upsertMany(collections.inboxes)
 
     return {
       subscriptions,
-      feeds,
+      feeds: collections.feeds,
     }
   }
 
@@ -251,15 +242,13 @@ class SubscriptionSyncService {
       })
     })
     tx.request(async () => {
-      await apiClient().subscriptions.$patch({
-        json: {
-          view: subscription.view,
-          feedId: subscription.feedId ?? undefined,
-          isPrivate: subscription.isPrivate ?? undefined,
-          listId: subscription.listId ?? undefined,
-          category: subscription.category ?? undefined,
-          title: subscription.title ?? undefined,
-        },
+      await api().subscriptions.update({
+        view: subscription.view,
+        feedId: subscription.feedId ?? undefined,
+        isPrivate: subscription.isPrivate ?? undefined,
+        listId: subscription.listId ?? undefined,
+        category: subscription.category ?? undefined,
+        title: subscription.title ?? undefined,
       })
     })
 
@@ -271,16 +260,7 @@ class SubscriptionSyncService {
   }
 
   async subscribe(subscription: SubscriptionForm) {
-    const data = await apiClient().subscriptions.$post({
-      json: {
-        url: subscription.url,
-        view: subscription.view,
-        category: subscription.category,
-        isPrivate: subscription.isPrivate,
-        title: subscription.title,
-        listId: subscription.listId,
-      },
-    })
+    const data = await api().subscriptions.create(subscription)
 
     if (data.feed) {
       feedActions.upsertMany([data.feed])
@@ -298,6 +278,10 @@ class SubscriptionSyncService {
         },
       ])
       tracker.subscribe({ listId: data.list.id, view: subscription.view })
+    }
+
+    if (data.unread) {
+      unreadActions.upsertMany(data.unread)
     }
     // Insert to subscription
     subscriptionActions.upsertMany([
@@ -332,25 +316,23 @@ class SubscriptionSyncService {
     tx.store(() => {
       immerSet((draft) => {
         for (const id of normalizedIds) {
-          delete draft.data[id]
           const subscription = draft.data[id]
           if (!subscription) continue
-          draft.subscriptionIdSet.delete(getSubscriptionStoreId(subscription))
+          draft.subscriptionIdSet.delete(getSubscriptionDBId(subscription))
           if (subscription.feedId) draft.feedIdByView[subscription.view].delete(subscription.feedId)
           if (subscription.listId) draft.listIdByView[subscription.view].delete(subscription.listId)
           if (subscription.category)
             draft.categories[subscription.view].delete(subscription.category)
+          delete draft.data[id]
         }
       })
     })
 
     tx.request(async () => {
       const feedIdList = feedSubscriptions.map((s) => s.feedId).filter((i) => typeof i === "string")
-      await apiClient().subscriptions.$delete({
-        json: {
-          feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
-          listId: listSubscriptions.at(0)?.listId || undefined,
-        },
+      await api().subscriptions.delete({
+        feedIdList: feedIdList.length > 0 ? feedIdList : undefined,
+        listId: listSubscriptions.at(0)?.listId || undefined,
       })
     })
 
@@ -362,7 +344,7 @@ class SubscriptionSyncService {
 
           draft.data[id] = subscription
 
-          draft.subscriptionIdSet.add(`${subscription.type}/${subscription.feedId}`)
+          draft.subscriptionIdSet.add(getSubscriptionDBId(subscription))
           if (subscription.feedId) draft.feedIdByView[subscription.view].add(subscription.feedId)
           if (subscription.listId) draft.listIdByView[subscription.view].add(subscription.listId)
           if (subscription.category) draft.categories[subscription.view].add(subscription.category)
@@ -377,6 +359,10 @@ class SubscriptionSyncService {
     await tx.run()
     invalidateEntriesQuery({
       views: Array.from(new Set([...feedSubscriptions, ...listSubscriptions].map((i) => i.view))),
+    })
+
+    feedSubscriptions.forEach((i) => {
+      unreadActions.updateById(i.feedId, 0)
     })
     return feedsAndLists
   }
@@ -414,10 +400,6 @@ class SubscriptionSyncService {
           subscription.view = newView
 
           if (newCategory) {
-            const currentCategory = subscription.category
-            if (currentCategory) {
-              draft.categories[newView].delete(currentCategory)
-            }
             draft.categories[newView].add(newCategory)
             subscription.category = newCategory
           }
@@ -426,12 +408,10 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await apiClient().subscriptions.batch.$patch({
-        json: {
-          feedIds,
-          category: newCategory,
-          view: newView,
-        },
+      await api().subscriptions.batchUpdate({
+        feedIds,
+        category: newCategory,
+        view: newView,
       })
     })
 
@@ -448,10 +428,6 @@ class SubscriptionSyncService {
 
           if (newCategory) {
             const currentCategory = current[index].category
-            draft.categories[newView].delete(newCategory)
-            if (currentCategory) {
-              draft.categories[current[index].view].add(currentCategory)
-            }
             subscription.category = currentCategory
           }
         }
@@ -494,11 +470,9 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await apiClient().subscriptions.$patch({
-        json: {
-          view,
-          listId,
-        },
+      await api().subscriptions.update({
+        view,
+        listId,
       })
     })
 
@@ -542,11 +516,9 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await apiClient().categories.$delete({
-        json: {
-          feedIdList: feedIds,
-          deleteSubscriptions: false,
-        },
+      await api().categories.delete({
+        feedIdList: feedIds,
+        deleteSubscriptions: false,
       })
     })
 
@@ -626,11 +598,9 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await apiClient().categories.$patch({
-        json: {
-          feedIdList: feedIds,
-          category: newCategory,
-        },
+      await api().categories.update({
+        feedIdList: feedIds,
+        category: newCategory,
       })
     })
 

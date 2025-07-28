@@ -1,7 +1,7 @@
 import { cn } from "@follow/utils"
 import { LinearGradient } from "expo-linear-gradient"
 import { useEffect, useMemo } from "react"
-import { SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { SafeAreaView, StyleSheet, View } from "react-native"
 import Reanimated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -11,6 +11,7 @@ import Reanimated, {
 import { SheetScreen } from "react-native-sheet-transitions"
 
 import { Image } from "@/src/components/ui/image/Image"
+import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 
 import { gentleSpringPreset } from "../constants/spring"
@@ -24,49 +25,58 @@ import { usePrefetchImageColors } from "../store/image/hooks"
 function CoverArt({ cover }: { cover?: string }) {
   const scale = useSharedValue(1)
   const { playing } = useIsPlaying()
-
   useEffect(() => {
     cancelAnimation(scale)
     scale.value = withSpring(playing ? 1 : 0.7, gentleSpringPreset)
   }, [playing, scale])
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
     }
   })
-
   return (
     <Reanimated.View className="mx-auto my-12 aspect-square w-[87%] shadow" style={[animatedStyle]}>
-      <Image source={{ uri: cover ?? "" }} className="size-full rounded-lg" />
+      <Image
+        source={{
+          uri: cover ?? "",
+        }}
+        className="size-full rounded-lg"
+      />
     </Reanimated.View>
   )
 }
-
 export const PlayerScreen: NavigationControllerView = () => {
   const activeTrack = useActiveTrack()
   usePrefetchImageColors(activeTrack?.artwork)
-
   const { gradientColors, isGradientLight } = useCoverGradient(activeTrack?.artwork)
-
   const playerScreenContextValue = useMemo(
-    () => ({ isBackgroundLight: isGradientLight }),
+    () => ({
+      isBackgroundLight: isGradientLight,
+    }),
     [isGradientLight],
   )
-
   const navigation = useNavigation()
   if (!activeTrack) {
     return null
   }
-
   return (
     <SheetScreen onClose={() => navigation.dismiss()}>
       <PlayerScreenContext value={playerScreenContextValue}>
         <LinearGradient
           style={StyleSheet.absoluteFill}
           colors={gradientColors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          start={{
+            x: 0,
+            y: 0,
+          }}
+          end={{
+            x: 1,
+            y: 0,
+          }}
         />
         <SafeAreaView className="flex-1">
           <View className="flex-1">
@@ -102,7 +112,6 @@ export const PlayerScreen: NavigationControllerView = () => {
     </SheetScreen>
   )
 }
-
 PlayerScreen.transparent = true
 function DismissIndicator() {
   const { isBackgroundLight } = usePlayerScreenContext()

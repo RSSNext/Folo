@@ -32,6 +32,7 @@ import m0028 from "./0028_chief_cyclops.sql"
 import m0029 from "./0029_flaky_gorgon.sql"
 import m0030 from "./0030_common_gabe_jones.sql"
 import m0031 from "./0031_kind_ikaris.sql"
+import m0032 from "./0032_orange_prima.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -69,5 +70,6 @@ export default {
     m0029,
     m0030,
     m0031,
+    m0032,
   },
 }

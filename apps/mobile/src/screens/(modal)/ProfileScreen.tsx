@@ -6,7 +6,7 @@ import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Image, Share, Text, TouchableOpacity, View } from "react-native"
+import { Alert, FlatList, Image, Share, TouchableOpacity, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -37,6 +37,7 @@ import type { FeedIconRequiredFeed } from "@/src/components/ui/icon/feed-icon"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { apiClient } from "@/src/lib/api-fetch"
 import { Navigation } from "@/src/lib/navigation/Navigation"
@@ -51,26 +52,21 @@ import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
 import { FollowScreen } from "./FollowScreen"
 
 type Subscription = Awaited<ReturnType<typeof apiClient.subscriptions.$get>>["data"][number]
-
 export const ProfileScreen: NavigationControllerView<{
   userId: string
 }> = ({ userId }) => {
   const whoami = useWhoami()
-
   if (!whoami) {
     return null
   }
   return <ProfileScreenImpl userId={userId || whoami?.id} />
 }
-
 const IsMyProfileContext = createContext<boolean>(false)
-
 const ActionContext = createContext<{
   removeItemById: (id: string) => void
 }>({
   removeItemById: () => {},
 })
-
 function ProfileScreenImpl(props: { userId: string }) {
   const { t } = useTranslation()
   const scrollY = useSharedValue(0)
@@ -78,18 +74,15 @@ function ProfileScreenImpl(props: { userId: string }) {
     data: subscriptions,
     isLoading,
     isError,
-
     removeItemById,
   } = useShareSubscription({
     userId: props.userId,
   })
-
   const headerOpacity = useSharedValue(0)
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y
     headerOpacity.value = scrollY.value / 100
   })
-
   usePrefetchUser(props.userId)
   const user = useUserById(props.userId)
   useEffect(() => {
@@ -97,9 +90,7 @@ function ProfileScreenImpl(props: { userId: string }) {
       toast.error("Failed to fetch subscriptions")
     }
   }, [isError])
-
   const insets = useSafeAreaInsets()
-
   const textLabelColor = useColor("label")
   const openShareUrl = useCallback(() => {
     if (!user?.id) return
@@ -110,20 +101,24 @@ function ProfileScreenImpl(props: { userId: string }) {
       title: `Folo | ${user.name}'s Profile`,
     })
   }, [user?.id, user?.name])
-
   const frame = useSafeAreaFrame()
   const headerHeight = getDefaultHeaderHeight(frame, false, 0)
-
   const whoami = useWhoami()
   const isMyProfile = user?.id === whoami?.id
-  const actionCtx = useMemo(() => ({ removeItemById }), [removeItemById])
-
+  const actionCtx = useMemo(
+    () => ({
+      removeItemById,
+    }),
+    [removeItemById],
+  )
   return (
     <View className="bg-system-grouped-background flex-1">
       <Animated.View
         pointerEvents="box-none"
         className="border-system-fill border-hairline absolute inset-x-0 top-0 z-[99]"
-        style={{ opacity: headerOpacity }}
+        style={{
+          opacity: headerOpacity,
+        }}
       >
         <BlurEffect />
 
@@ -172,7 +167,6 @@ function ProfileScreenImpl(props: { userId: string }) {
     </View>
   )
 }
-
 type PickedListModel = Pick<ListModel, "id" | "title" | "image" | "description" | "view"> & {
   customTitle?: string | null
 }
@@ -189,9 +183,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
   const { lists, feeds, groupedFeeds } = useMemo(() => {
     const lists = [] as PickedListModel[]
     const feeds = [] as PickedFeedModel[]
-
     const groupedFeeds = {} as Record<string, PickedFeedModel[]>
-
     for (const subscription of subscriptions) {
       if ("listId" in subscription) {
         lists.push({
@@ -204,7 +196,6 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
         })
         continue
       }
-
       if ("feedId" in subscription && "feeds" in subscription) {
         const feed = {
           id: subscription.feedId,
@@ -216,7 +207,6 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
           view: subscription.view as FeedViewType,
           customTitle: subscription.title,
         }
-
         if (subscription.category) {
           groupedFeeds[subscription.category] = [
             ...(groupedFeeds[subscription.category] || []),
@@ -227,9 +217,12 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
         }
       }
     }
-    return { lists, feeds, groupedFeeds }
+    return {
+      lists,
+      feeds,
+      groupedFeeds,
+    }
   }, [subscriptions])
-
   const hasFeeds = Object.keys(groupedFeeds).length > 0 || feeds.length > 0
   return (
     <View>
@@ -284,7 +277,9 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <ItemPressable
     className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
-    style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+    style={{
+      paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+    }}
     onPress={() => {
       if (getSubscriptionById(item.id))
         Navigation.rootNavigation.pushControllerView(FeedScreen, {
@@ -300,7 +295,14 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
   >
     <View className="overflow-hidden rounded">
       {!!item.image && (
-        <Image source={{ uri: item.image, width: 24, height: 24 }} resizeMode="cover" />
+        <Image
+          source={{
+            uri: item.image,
+            width: 24,
+            height: 24,
+          }}
+          resizeMode="cover"
+        />
       )}
       {!item.image && <FallbackIcon title={item.title} size={24} />}
     </View>
@@ -308,18 +310,21 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
     <Text
       className="text-text mr-4"
       numberOfLines={1}
-      style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+      style={{
+        marginLeft: GROUPED_ICON_TEXT_GAP,
+      }}
     >
       {item.title}
     </Text>
   </ItemPressable>
 )
-
 const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
   <MaybeSwipeable id={item.id}>
     <ItemPressable
       className="bg-secondary-system-grouped-background flex h-12 flex-row items-center"
-      style={{ paddingHorizontal: GROUPED_LIST_ITEM_PADDING }}
+      style={{
+        paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+      }}
       onPress={() => {
         if (getSubscriptionById(item.id))
           Navigation.rootNavigation.pushControllerView(FeedScreen, {
@@ -351,14 +356,15 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
       <Text
         className="text-text mr-4"
         numberOfLines={1}
-        style={{ marginLeft: GROUPED_ICON_TEXT_GAP }}
+        style={{
+          marginLeft: GROUPED_ICON_TEXT_GAP,
+        }}
       >
         {item.title}
       </Text>
     </ItemPressable>
   </MaybeSwipeable>
 )
-
 const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNode }) => {
   const isMyProfile = use(IsMyProfileContext)
   const { t } = useTranslation()
@@ -396,12 +402,18 @@ const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNod
     </SwipeableItem>
   )
 }
-
 const SectionHeader = ({ title }: { title: string }) => (
-  <View className="mb-2 mt-5" style={{ marginHorizontal: GROUPED_LIST_MARGIN }}>
+  <View
+    className="mb-2 mt-5"
+    style={{
+      marginHorizontal: GROUPED_LIST_MARGIN,
+    }}
+  >
     <Text
       className="text-label text-xl font-medium"
-      style={{ marginLeft: GROUPED_LIST_ITEM_PADDING }}
+      style={{
+        marginLeft: GROUPED_LIST_ITEM_PADDING,
+      }}
     >
       {title}
     </Text>

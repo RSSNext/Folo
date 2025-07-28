@@ -1,6 +1,6 @@
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application"
 import { Trans, useTranslation } from "react-i18next"
-import { Linking, Text, View } from "react-native"
+import { Linking, View } from "react-native"
 
 import { Link } from "@/src/components/common/Link"
 import {
@@ -15,6 +15,7 @@ import {
   GroupedInsetListSectionHeader,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Logo } from "@/src/components/ui/logo"
+import { Text } from "@/src/components/ui/typography/Text"
 import { DiscordCuteFiIcon } from "@/src/icons/discord_cute_fi"
 import { GithubCuteFiIcon } from "@/src/icons/github_cute_fi"
 import { SocialXCuteReIcon } from "@/src/icons/social_x_cute_re"
@@ -42,12 +43,10 @@ const links = [
     iconColor: "#FFFFFF",
   },
 ]
-
 export const AboutScreen = () => {
   const { t } = useTranslation("settings")
   const buildId = nativeBuildVersion
   const appVersion = nativeApplicationVersion
-
   return (
     <SafeNavigationScrollView
       Header={<NavigationBlurEffectHeaderView title={t("titles.about")} />}

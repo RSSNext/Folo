@@ -171,7 +171,7 @@ export const EntryColumnLayout = () => {
                       </div>
                     </Button>
                   </div>
-                  <EntryContent entryId={realEntryId} className="h-full" />
+                  <EntryContent entryId={realEntryId} className="h-[calc(100%-2.25rem)]" />
                 </m.div>
               )}
             </AnimatePresence>

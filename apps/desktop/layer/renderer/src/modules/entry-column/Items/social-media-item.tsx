@@ -209,7 +209,7 @@ export const SocialMediaItemSkeleton = (
   </div>
 )
 
-const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
+export const SocialMediaGallery = ({ entryId }: { entryId: string }) => {
   const entry = useEntry(entryId, (state) => ({ media: state.media }))
   const media = useMemo(() => entry?.media || [], [entry?.media])
 

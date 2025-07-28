@@ -7,21 +7,22 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import type { ImageSource } from "expo-image"
 import { memo, useCallback } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 import type { MeasuredDimensions } from "react-native-reanimated"
 import Animated, { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
-import type { LightboxImageSource } from "@/src/components/lightbox/ImageViewing/@types"
-import { useLightboxControls } from "@/src/components/lightbox/lightboxState"
 import { UserAvatar } from "@/src/components/ui/avatar/UserAvatar"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { Image } from "@/src/components/ui/image/Image"
 import { getAllSources } from "@/src/components/ui/image/utils"
+import type { LightboxImageSource } from "@/src/components/ui/lightbox/ImageViewing/@types"
+import { useLightboxControls } from "@/src/components/ui/lightbox/lightboxState"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
+import { Text } from "@/src/components/ui/typography/Text"
 import { VideoPlayer } from "@/src/components/ui/video/VideoPlayer"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
@@ -52,9 +53,7 @@ export const EntrySocialItem = memo(
       setting: enableTranslation,
     })
     const { openLightbox } = useLightboxControls()
-
     const feed = useFeedById(entry?.feedId || "")
-
     const navigation = useNavigation()
     const handlePress = useCallback(() => {
       unreadSyncService.markEntryAsRead(entryId)
@@ -68,9 +67,7 @@ export const EntrySocialItem = memo(
         view: FeedViewType.SocialMedia,
       })
     }, [entry?.feedId, entryId, extraData.entryIds, navigation])
-
     const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
-
     const navigationToFeedEntryList = useCallback(() => {
       if (!entry) return
       if (!entry.feedId) return
@@ -78,10 +75,10 @@ export const EntrySocialItem = memo(
         feedId: entry.feedId,
       })
     }, [entry, navigation])
-
     const onPreviewImage = useCallback(
       (index: number, rect: MeasuredDimensions | null, placeholder: ImageSource | undefined) => {
         "worklet"
+
         runOnJS(openLightbox)({
           images: (entry?.media ?? [])
             .map((mediaItem) => {
@@ -97,7 +94,9 @@ export const EntrySocialItem = memo(
                   width: mediaItem.width ?? 0,
                   height: mediaItem.height ?? 0,
                 },
-                thumbUri: placeholder ?? { uri: imageUrl },
+                thumbUri: placeholder ?? {
+                  uri: imageUrl,
+                },
                 thumbDimensions: null,
                 thumbRect: rect,
                 type: "image" as const,
@@ -109,11 +108,8 @@ export const EntrySocialItem = memo(
       },
       [entry?.media, openLightbox],
     )
-
     if (!entry) return <EntryItemSkeleton />
-
     const { description, publishedAt, media } = entry
-
     return (
       <EntryItemContextMenu id={entryId} view={FeedViewType.SocialMedia}>
         <ItemPressable
@@ -181,9 +177,7 @@ export const EntrySocialItem = memo(
     )
   },
 )
-
 EntrySocialItem.displayName = "EntrySocialItem"
-
 interface EntryMediaItemProps {
   index: number
   entryId: string
@@ -195,11 +189,9 @@ interface EntryMediaItemProps {
     placeholder: ImageSource | undefined,
   ) => void
 }
-
 const EntryMediaItem = memo(
   ({ mediaItem, index, fullWidth, entryId, onPreviewImage }: EntryMediaItemProps) => {
     const aviRef = useAnimatedRef<View>()
-
     const imageUrl =
       mediaItem.type === "video"
         ? mediaItem.preview_image_url
@@ -207,7 +199,6 @@ const EntryMediaItem = memo(
           ? mediaItem.url
           : undefined
     if (!imageUrl) return null
-
     const proxy = {
       width: fullWidth ? 400 : 200,
     }
@@ -215,17 +206,28 @@ const EntryMediaItem = memo(
       <Animated.View ref={aviRef} collapsable={false}>
         <NativePressable
           onPress={() => {
-            const [placeholder] = getAllSources({ uri: imageUrl }, proxy)
+            const [placeholder] = getAllSources(
+              {
+                uri: imageUrl,
+              },
+              proxy,
+            )
             runOnUI(() => {
               "worklet"
+
               const rect = measure(aviRef)
-              onPreviewImage(index, rect, { blurhash: mediaItem.blurhash, ...placeholder })
+              onPreviewImage(index, rect, {
+                blurhash: mediaItem.blurhash,
+                ...placeholder,
+              })
             })()
           }}
         >
           <Image
             proxy={proxy}
-            source={{ uri: imageUrl }}
+            source={{
+              uri: imageUrl,
+            }}
             blurhash={mediaItem.blurhash}
             className="border-secondary-system-background w-full rounded-lg border"
             aspectRatio={
@@ -237,7 +239,6 @@ const EntryMediaItem = memo(
         </NativePressable>
       </Animated.View>
     )
-
     if (mediaItem.type === "video") {
       return (
         <View key={`${entryId}-${mediaItem.url}`} className="w-full">
@@ -256,5 +257,4 @@ const EntryMediaItem = memo(
     return <Pressable className={fullWidth ? "w-full" : "w-1/2 p-0.5"}>{ImageItem}</Pressable>
   },
 )
-
 EntryMediaItem.displayName = "EntryMediaItem"

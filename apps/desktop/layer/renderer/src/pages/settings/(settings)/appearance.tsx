@@ -1,4 +1,4 @@
-import { SettingAppearance } from "~/modules/settings/tabs/apperance"
+import { SettingAppearance } from "~/modules/settings/tabs/appearance"
 import { SettingsTitle } from "~/modules/settings/title"
 import { defineSettingPageData } from "~/modules/settings/utils"
 

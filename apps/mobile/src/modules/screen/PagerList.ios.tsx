@@ -4,6 +4,7 @@ import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
 import { useCallback, useId, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Freeze } from "react-freeze"
 import type { StyleProp, ViewStyle } from "react-native"
 import { clamp, withTiming } from "react-native-reanimated"
 
@@ -76,15 +77,20 @@ export function PagerList({
         [activeViews, rid],
       )}
       renderPage={useTypeScriptHappyCallback(
-        (index) => (
-          <PagerListVisibleContext value={index === activeViewIndex} key={activeViews[index]!}>
-            <PagerListWillVisibleContext
-              value={(index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging}
-            >
-              {renderItem(activeViews[index]!, index === activeViewIndex)}
-            </PagerListWillVisibleContext>
-          </PagerListVisibleContext>
-        ),
+        (index) => {
+          const isActive = index === activeViewIndex
+          const willVisible =
+            (index === activeViewIndex + 1 || index === activeViewIndex - 1) && dragging
+          const freeze = !(isActive || willVisible)
+          return (
+            <PagerListVisibleContext value={isActive} key={activeViews[index]!}>
+              <PagerListWillVisibleContext value={willVisible}>
+                <Freeze freeze={freeze}>{renderItem(activeViews[index]!, isActive)}</Freeze>
+              </PagerListWillVisibleContext>
+            </PagerListVisibleContext>
+          )
+        },
+
         [activeViews, activeViewIndex, dragging, renderItem],
       )}
       pageTotal={activeViews.length}
