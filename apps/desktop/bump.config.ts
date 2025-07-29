@@ -11,12 +11,8 @@ export default defineConfig({
     "pnpm prettier --ignore-unknown --write package.json",
     "git add package.json",
   ],
-  trailing: ["git checkout -b release/desktop/${NEW_VERSION}"],
-  finally: [
-    "git push origin release/desktop/${NEW_VERSION}",
-    "gh pr create --title 'release(desktop): Release v${NEW_VERSION}' --body 'v${NEW_VERSION}' --base main --head release/desktop/${NEW_VERSION}",
-  ],
-  push: false,
+
+  push: true,
   commitMessage: "release(desktop): release v${NEW_VERSION}",
   tag: false,
   allowDirty: true,
