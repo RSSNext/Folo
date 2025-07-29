@@ -1,0 +1,72 @@
+diff --git a/ios/RNSScreenStack.h b/ios/RNSScreenStack.h
+index 516fc49d999ce01e84493ad2e74e56ca6ddabd60..050ff6ae4cf85d42f8f461d967901b038d12764e 100644
+--- a/ios/RNSScreenStack.h
++++ b/ios/RNSScreenStack.h
+@@ -9,7 +9,7 @@
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 
+-@interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
++@interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate, UIGestureRecognizerDelegate>
+ 
+ @end
+ 
+diff --git a/ios/RNSScreenStack.mm b/ios/RNSScreenStack.mm
+index 9eb103b135e420484c44f26464338aaf3503215e..6a76b06f45ad36230244b822b689b0fac910660c 100644
+--- a/ios/RNSScreenStack.mm
++++ b/ios/RNSScreenStack.mm
+@@ -19,6 +19,8 @@
+ #import <React/RCTUIManagerUtils.h>
+ #import "RCTTouchHandler+RNSUtility.h"
+ #endif // RCT_NEW_ARCH_ENABLED
++#import <objc/runtime.h>
++
+ 
+ #import "RNSDefines.h"
+ #import "RNSPercentDrivenInteractiveTransition.h"
+@@ -54,6 +56,37 @@ namespace react = facebook::react;
+ 
+ @implementation RNSNavigationController
+ 
++- (void)viewDidLoad
++{
++  [super viewDidLoad];
++  // Add back gesture
++  // @credits: https://github.com/unixzii
++  [self _installFullScreenGestureRecognizer];
++
++}
++
++- (void)_installFullScreenGestureRecognizer __attribute__((objc_direct)) {
++    id originalTarget = [[self.interactivePopGestureRecognizer valueForKey:@"_targets"] firstObject];
++    Ivar actionIvar = class_getInstanceVariable([originalTarget class], "_action");
++    SEL originalAction = *(SEL *) (( ptrdiff_t)(__bridge void *) originalTarget + ivar_getOffset(actionIvar));
++    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc]
++                                                    initWithTarget:[originalTarget valueForKey:@"target"]
++                                                    action:originalAction];
++    panGestureRecognizer.delegate = self;
++    [self.view addGestureRecognizer:panGestureRecognizer];
++}
++
++#pragma mark - UIGestureRecognizerDelegate
++
++- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
++    return NO;
++}
++
++- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
++    return self.viewControllers.count > 1;
++}
++
++
+ #if !TARGET_OS_TV
+ - (UIViewController *)childViewControllerForStatusBarStyle
+ {
+@@ -347,6 +380,7 @@ RNS_IGNORE_SUPER_CALL_END
+       if (parentView.reactViewController) {
+         [parentView.reactViewController addChildViewController:controller];
+         [self addSubview:controller.view];
++      
+ #if !TARGET_OS_TV
+         _controller.interactivePopGestureRecognizer.delegate = self;
+ #endif

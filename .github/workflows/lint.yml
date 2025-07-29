@@ -1,28 +1,42 @@
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, dev]
 
-name: CI Typecheck and Lint
+# Do not use secrets or variables to allow for public access
+env:
+  VITE_WEB_URL: https://app.folo.is
+  VITE_API_URL: https://api.follow.is
 
+name: ✨ CI Format, Typecheck and Lint
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-lint
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
 jobs:
   build:
-    name: Lint and Typecheck
+    name: Format, Lint and Typecheck
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [lts/*]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           lfs: true
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
       - name: Checkout LFS objects
         run: git lfs checkout
 
-      - uses: pnpm/action-setup@v4.0.0
+      - uses: pnpm/action-setup@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -31,10 +45,12 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
-      - name: Lint and Typecheck
-
+      - name: Build web and SSR server
         run: |
-          pnpm run typecheck
-          npm run lint
+          npm exec turbo run Folo#build:web @follow/ssr#build
+      - name: Format, Lint and Typecheck
+        run: |
+          export NODE_OPTIONS="--max_old_space_size=16384"
+          npm exec turbo run format:check typecheck lint
       - name: Run test
-        run: pnpm test
+        run: npm exec turbo run test

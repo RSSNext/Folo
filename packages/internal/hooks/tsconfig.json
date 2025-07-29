@@ -1,0 +1,15 @@
+{
+  "extends": "@follow/configs/tsconfig.extend.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "declaration": true,
+    "types": ["@follow/types/react", "@follow/types/global", "vite/client"],
+    "paths": {
+      "@follow/hooks/*": ["./src/*"],
+      "@pkg": ["../../package.json"]
+    }
+  },
+  "include": ["src/**/*"]
+}

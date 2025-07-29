@@ -1,0 +1,130 @@
+{
+  "name": "@follow/store",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "require": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./action/*": {
+      "types": "./src/action/*.ts",
+      "require": "./src/action/*.ts",
+      "import": "./src/action/*.ts"
+    },
+    "./atoms/*": {
+      "types": "./src/atoms/*.ts",
+      "require": "./src/atoms/*.ts",
+      "import": "./src/atoms/*.ts"
+    },
+    "./collection/*": {
+      "types": "./src/collection/*.ts",
+      "require": "./src/collection/*.ts",
+      "import": "./src/collection/*.ts"
+    },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "require": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts"
+    },
+    "./context": {
+      "types": "./src/context.ts",
+      "require": "./src/context.ts",
+      "import": "./src/context.ts"
+    },
+    "./entry/*": {
+      "types": "./src/entry/*.ts",
+      "require": "./src/entry/*.ts",
+      "import": "./src/entry/*.ts"
+    },
+    "./feed/*": {
+      "types": "./src/feed/*.ts",
+      "require": "./src/feed/*.ts",
+      "import": "./src/feed/*.ts"
+    },
+    "./hydrate": {
+      "types": "./src/hydrate.ts",
+      "require": "./src/hydrate.ts",
+      "import": "./src/hydrate.ts"
+    },
+    "./image/*": {
+      "types": "./src/image/*.ts",
+      "require": "./src/image/*.ts",
+      "import": "./src/image/*.ts"
+    },
+    "./inbox/*": {
+      "types": "./src/inbox/*.ts",
+      "require": "./src/inbox/*.ts",
+      "import": "./src/inbox/*.ts"
+    },
+    "./list/*": {
+      "types": "./src/list/*.ts",
+      "require": "./src/list/*.ts",
+      "import": "./src/list/*.ts"
+    },
+    "./morph": {
+      "types": "./src/morph/*.ts",
+      "require": "./src/morph/*.ts",
+      "import": "./src/morph/*.ts"
+    },
+    "./reset": {
+      "types": "./src/reset.ts",
+      "require": "./src/reset.ts",
+      "import": "./src/reset.ts"
+    },
+    "./subscription/*": {
+      "types": "./src/subscription/*.ts",
+      "require": "./src/subscription/*.ts",
+      "import": "./src/subscription/*.ts"
+    },
+    "./summary/*": {
+      "types": "./src/summary/*.ts",
+      "require": "./src/summary/*.ts",
+      "import": "./src/summary/*.ts"
+    },
+    "./translation/*": {
+      "types": "./src/translation/*.ts",
+      "require": "./src/translation/*.ts",
+      "import": "./src/translation/*.ts"
+    },
+    "./unread/*": {
+      "types": "./src/unread/*.ts",
+      "require": "./src/unread/*.ts",
+      "import": "./src/unread/*.ts"
+    },
+    "./user/*": {
+      "types": "./src/user/*.ts",
+      "require": "./src/user/*.ts",
+      "import": "./src/user/*.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "19.0.0"
+  },
+  "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
+    "@follow/configs": "workspace:*",
+    "@follow/constants": "workspace:*",
+    "@follow/database": "workspace:*",
+    "@follow/models": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "@follow/tracker": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "@tanstack/react-query": "5.81.5",
+    "es-toolkit": "1.39.6",
+    "immer": "10.1.1",
+    "zustand": "5.0.6"
+  }
+}

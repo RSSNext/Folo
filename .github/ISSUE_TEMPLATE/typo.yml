@@ -13,3 +13,11 @@ body:
     id: context
     attributes:
       label: Additional context
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validations
+      description: Before submitting the issue, please make sure you do the following
+      options:
+        - label: This issue is valid
+          required: true

@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2022",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noEmit": true,
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "types": ["vite/client", "@follow/types/react", "@follow/types/global"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "~/*": ["./src/*"],
+      "@client/*": ["./client/*"],
+      "@locales/*": ["../../locales/*"]
+    }
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./index.ts",
+    "./api/index.ts",
+    "./scripts/**/*.ts",
+    "tsdown.config.ts",
+    "./client/**/*.ts",
+    "./client/**/*.tsx",
+    "vite.config.mts",
+    "./tailwind.config.ts",
+    "./helper/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

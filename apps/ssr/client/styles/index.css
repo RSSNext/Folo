@@ -1,0 +1,32 @@
+@import "@fontsource/sn-pro/200-italic.css";
+@import "@fontsource/sn-pro/200.css";
+@import "@fontsource/sn-pro/300-italic.css";
+@import "@fontsource/sn-pro/300.css";
+@import "@fontsource/sn-pro/400-italic.css";
+@import "@fontsource/sn-pro/400.css";
+@import "@fontsource/sn-pro/500-italic.css";
+@import "@fontsource/sn-pro/500.css";
+@import "@fontsource/sn-pro/600-italic.css";
+@import "@fontsource/sn-pro/600.css";
+@import "@fontsource/sn-pro/700-italic.css";
+@import "@fontsource/sn-pro/700.css";
+@import "@fontsource/sn-pro/800-italic.css";
+@import "@fontsource/sn-pro/800.css";
+@import "@fontsource/sn-pro/900-italic.css";
+@import "@fontsource/sn-pro/900.css";
+
+button {
+  --cursor-button: pointer;
+}
+
+::selection {
+  @apply bg-accent text-white;
+}
+
+:root {
+  --bg-opacity: rgba(255, 255, 255, 0.72);
+}
+
+[data-theme="dark"] {
+  --bg-opacity: rgba(29, 29, 31, 0.72);
+}

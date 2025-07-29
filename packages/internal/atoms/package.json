@@ -1,0 +1,25 @@
+{
+  "name": "@follow/atoms",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    "./atoms/*": {
+      "import": "./src/atoms/*",
+      "types": "./src/atoms/*"
+    },
+    "./helper/*": {
+      "import": "./src/helper/*",
+      "types": "./src/helper/*"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@follow/configs": "workspace:*",
+    "@follow/hooks": "workspace:*",
+    "@follow/types": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "jotai": "2.12.5"
+  }
+}

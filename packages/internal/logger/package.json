@@ -1,0 +1,20 @@
+{
+  "name": "@follow/logger",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./electron.ts",
+      "web": "./web.ts",
+      "default": "./electron.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "electron-log": "5.4.1"
+  },
+  "devDependencies": {
+    "@follow/configs": "workspace:*"
+  }
+}

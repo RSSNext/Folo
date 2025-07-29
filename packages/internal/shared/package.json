@@ -1,0 +1,47 @@
+{
+  "name": "@follow/shared",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "require": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "require": "./src/*.ts",
+      "import": "./src/*.ts"
+    },
+    "./interface/*": {
+      "types": "./src/interface/*.ts",
+      "require": "./src/interface/*.ts",
+      "import": "./src/interface/*.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/stripe": "1.2.9",
+    "@electron-toolkit/preload": "3.0.2",
+    "@electron-toolkit/tsconfig": "1.0.1",
+    "@hono/node-server": "1.15.0",
+    "@t3-oss/env-core": "0.13.8",
+    "ai": "5.0.0-beta.6",
+    "better-auth": "1.2.9",
+    "drizzle-orm": "0.44.3",
+    "hono": "4.8.1",
+    "sonner": "2.0.6",
+    "stripe": "18.2.1",
+    "zod": "3.25.75"
+  }
+}

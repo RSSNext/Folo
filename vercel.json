@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
       "source": "/__debug_proxy",
@@ -9,8 +10,405 @@
       "destination": "/__debug_proxy.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/share/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr-follow.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr-follow.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr-follow.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr-follow.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/terms",
+      "destination": "https://follow-external-ssr-follow.vercel.app/terms",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "https://follow-external-ssr-follow.vercel.app/privacy-policy",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr-follow.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/share/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/terms",
+      "destination": "https://follow-external-ssr.vercel.app/terms",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "https://follow-external-ssr.vercel.app/privacy-policy",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.folo.is"
+        }
+      ]
+    },
+    {
+      "source": "/share/:path*",
+      "destination": "https://follow-external-ssr-dev.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr-dev.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr-dev.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr-dev.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr-dev.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr-dev.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr-dev.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr-dev.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/share/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/share/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/og/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/og/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "destination": "https://follow-external-ssr-staging.vercel.app/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "destination": "https://follow-external-ssr-staging.vercel.app/register",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/forget-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/forget-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://follow-external-ssr-staging.vercel.app/reset-password",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/external-dist/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/external-dist/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/dist-external/:path*",
+      "destination": "https://follow-external-ssr-staging.vercel.app/dist-external/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "staging.follow.is"
+        }
+      ]
+    },
+    {
+      "source": "/((?!assets|vendor|locales|dist-external|external-dist/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/feed/:id",
+      "destination": "/share/feeds/:id",
+      "permanent": true
+    },
+    {
+      "source": "/list/:id",
+      "destination": "/share/lists/:id",
+      "permanent": true
+    },
+    {
+      "source": "/profile/:path*",
+      "destination": "/share/users/:path*",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/vendor/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Tag",
+          "value": "follow-assets"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Tag",
+          "value": "follow-assets"
+        }
+      ]
     }
   ]
 }

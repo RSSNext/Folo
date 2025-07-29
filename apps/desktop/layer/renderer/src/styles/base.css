@@ -1,0 +1,65 @@
+html,
+#shadow-html {
+  --fo-font-family: "SN Pro", system-ui, sans-serif;
+}
+
+html {
+  overflow: hidden;
+}
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-build-type]:not([data-build-type="electron"]) #root {
+  background-color: hsl(var(--background));
+}
+
+html[data-viewport="desktop"],
+html[data-viewport="desktop"] body,
+html[data-viewport="desktop"] #shadow-html,
+html[data-viewport="desktop"] #root {
+  overscroll-behavior: none;
+}
+
+body,
+#root {
+  @apply h-auto lg:h-screen;
+  @apply cursor-default;
+  @apply select-none;
+  /* @apply bg-white; */
+
+  @apply font-theme;
+
+  @apply print:h-auto print:overflow-auto;
+}
+
+:focus-visible {
+  /* outline: theme(colors.theme.accent.DEFAULT) auto 1px; */
+  outline: none;
+}
+
+button {
+  cursor: var(--pointer);
+}
+
+.prose a {
+  @apply cursor-pointer;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+::selection {
+  @apply bg-accent/80 text-white;
+}
+
+#react-scan-toolbar {
+  @apply no-drag-region max-lg:!hidden;
+}

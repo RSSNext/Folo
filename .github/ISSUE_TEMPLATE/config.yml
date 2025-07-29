@@ -3,3 +3,6 @@ contact_links:
   - name: 💬 Follow's Discord Server
     url: https://discord.gg/tUDVZjEr
     about: Want to discuss / chat with the community? Here you go!
+  - name: Discuss an issue
+    url: https://github.com/RSSNext/Follow/discussions
+    about: For general questions, ideas, or non-bug related discussions, please use GitHub Discussions.

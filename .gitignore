@@ -6,8 +6,26 @@ out
 .env
 .eslintcache
 .env.*
+!.env.example
 
 # Sentry Config File
 .env.sentry-build-plugin
 .vercel
 stats.html
+
+electron.vite.config.*.mjs
+vite.config.*.mjs
+
+.generated
+.turbo
+
+apps/desktop/src/renderer/dev-dist
+tsconfig.tsbuildinfo
+buildServer.json
+
+**/**/generated-routes.ts
+
+apps/desktop/build/appxmanifest.xml
+
+.claude/settings.local.json
+PRPS/*

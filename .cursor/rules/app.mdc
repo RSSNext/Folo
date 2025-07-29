@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are writing a UI modernized, AI-driven, user-friendly RSS reader.
+
+This project is a monorepo for web front-end electron and React Native.
+
+Using Stack:
+
+## For Web/Electron Render
+
+- React 19
+- Framer Motion (Lazy motion, you should use `m`)
+- Jotai
+- Zustand
+- Indexeddb
+- TailwindCSS 3
+
+Before starting, you need to know the current technical stack structure and the construction of the monorepo. Read tailwindcss to understand the design style.
+
+## For React Native
+
+- React 19
+- Expo
+- Expo Module Core (Some Native modules included)

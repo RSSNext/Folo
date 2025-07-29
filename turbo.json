@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "envMode": "loose",
+  "tasks": {
+    "Folo#build:web": {
+      "dependsOn": ["@follow/legal#build"],
+      "outputs": ["out/**"]
+    },
+    "//#format:check": {},
+    "//#lint": {},
+    "test": {},
+    "@follow/electron-main#build": {
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["@follow/electron-main#build"]
+    },
+    "@follow/ssr#build": {
+      "dependsOn": ["@follow/legal#build"],
+      "outputs": ["dist/**"]
+    },
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    }
+  }
+}

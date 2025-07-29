@@ -1,0 +1,410 @@
+/* This CSS File do not import anywhere, just write atom class for tailwindcss. The tailwindcss intellisense will be work. */
+
+@tailwind components;
+
+@layer components {
+  .drag-region {
+    -webkit-app-region: drag;
+  }
+
+  .no-drag-region {
+    -webkit-app-region: no-drag;
+  }
+  .mask-squircle {
+    mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjAwJyBoZWlnaHQ9JzIwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cGF0aCBkPSdNMTAwIDBDMjAgMCAwIDIwIDAgMTAwczIwIDEwMCAxMDAgMTAwIDEwMC0yMCAxMDAtMTAwUzE4MCAwIDEwMCAwWicvPjwvc3ZnPg==);
+  }
+  .mask {
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  .center {
+    @apply flex items-center justify-center;
+  }
+
+  .shadow-perfect {
+    /* https://codepen.io/jh3y/pen/yLWgjpd */
+    --tint: 214;
+    --alpha: 3;
+    --base: hsl(var(--tint, 214) 80% 27% / calc(var(--alpha, 4) * 1%));
+    /**
+      * Use relative syntax to get to: hsl(221 25% 22% / 40%)
+    */
+    --shade: hsl(from var(--base) calc(h + 8) 25 calc(l - 5));
+    --perfect-shadow:
+      0 0 0 1px var(--base), 0 1px 1px -0.5px var(--shade), 0 3px 3px -1.5px var(--shade),
+      0 6px 6px -3px var(--shade), 0 12px 12px -6px var(--base), 0 24px 24px -12px var(--base);
+    box-shadow: var(--perfect-shadow);
+  }
+
+  .perfect-sm {
+    --alpha: 1;
+  }
+
+  .perfect-md {
+    --alpha: 2;
+  }
+
+  [theme="dark"] .shadow-perfect {
+    --tint: 221;
+  }
+
+  .shadow-modal {
+    @apply shadow-2xl shadow-stone-300 dark:shadow-stone-900;
+  }
+  /* Utils */
+  .no-animation {
+    --btn-focus-scale: 1;
+    --animation-btn: 0;
+    --animation-input: 0;
+  }
+
+  @keyframes radiomark {
+    0% {
+      box-shadow:
+        0 0 0 12px var(--fallback-b1, oklch(var(--b1) / 1)) inset,
+        0 0 0 12px var(--fallback-b1, oklch(var(--b1) / 1)) inset;
+    }
+
+    50% {
+      box-shadow:
+        0 0 0 3px var(--fallback-b1, oklch(var(--b1) / 1)) inset,
+        0 0 0 3px var(--fallback-b1, oklch(var(--b1) / 1)) inset;
+    }
+
+    to {
+      box-shadow:
+        0 0 0 4px var(--fallback-b1, oklch(var(--b1) / 1)) inset,
+        0 0 0 4px var(--fallback-b1, oklch(var(--b1) / 1)) inset;
+    }
+  }
+}
+
+/* KBD */
+@layer components {
+  .kbd {
+    background-color: oklch(0.984625 0.001706 247.839);
+    /* @apply shadow-[0px_2px_0px_0px_rgba(255,255,255,0.5)] dark:shadow-[0px_2px_0px_0px_rgba(0,0,0,0.6)]; */
+    @apply rounded-[4px] px-1 text-[0.5em];
+    @apply border border-zinc-300 font-mono dark:border-neutral-700;
+    @apply inline-flex items-center justify-center;
+  }
+
+  [data-theme="dark"] .kbd {
+    background-color: oklch(0.232607 0.013807 253.101);
+  }
+}
+
+/* Checkbox */
+@layer components {
+  .checkbox {
+    --chkbg: theme(colors.accent);
+    --chkfg: theme(colors.zinc.100);
+
+    flex-shrink: 0;
+    height: 0.9em;
+    width: 0.9em;
+    cursor: pointer;
+    appearance: none;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: theme(colors.border);
+    --tw-border-opacity: 0.2;
+  }
+
+  .checkbox:focus {
+    box-shadow: none;
+  }
+
+  .checkbox:focus-visible {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: theme(colors.accent);
+    border-color: theme(colors.accent);
+  }
+
+  .checkbox:disabled {
+    border-width: 0;
+    cursor: not-allowed;
+    border-color: transparent;
+    --tw-bg-opacity: 1;
+    background-color: var(--chkbg);
+    opacity: 0.2;
+  }
+
+  .checkbox:checked,
+  .checkbox[aria-checked="true"] {
+    background-repeat: no-repeat;
+    animation: checkmark var(--animation-input, 0.2s) ease-out;
+    border-color: theme(colors.accent);
+    background-color: var(--chkbg);
+    background-image:
+      linear-gradient(-45deg, transparent 65%, var(--chkbg) 65.99%),
+      linear-gradient(45deg, transparent 75%, var(--chkbg) 75.99%),
+      linear-gradient(-45deg, var(--chkbg) 40%, transparent 40.99%),
+      linear-gradient(
+        45deg,
+        var(--chkbg) 30%,
+        var(--chkfg) 30.99%,
+        var(--chkfg) 40%,
+        transparent 40.99%
+      ),
+      linear-gradient(-45deg, var(--chkfg) 50%, var(--chkbg) 50.99%);
+  }
+
+  @keyframes checkmark {
+    0% {
+      background-position-y: 5px;
+    }
+
+    50% {
+      background-position-y: -2px;
+    }
+
+    to {
+      background-position-y: 0;
+    }
+  }
+}
+
+/* Context menu */
+@layer components {
+  .shadow-context-menu {
+    box-shadow:
+      rgba(0, 0, 0, 0.067) 0px 3px 8px,
+      rgba(0, 0, 0, 0.067) 0px 2px 5px,
+      rgba(0, 0, 0, 0.067) 0px 1px 1px;
+  }
+}
+
+/* Link */
+@layer components {
+  .follow-link--underline {
+    color: currentColor;
+    background-image: linear-gradient(theme(colors.accent), theme(colors.accent));
+    background-size: 0% 1.5px;
+    background-repeat: no-repeat;
+    /* NOTE: this won't work with background images   */
+
+    transition: all 500ms ease;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    @apply decoration-accent/30 hover:no-underline;
+    @apply border-0;
+
+    background-position: left 1.1em;
+
+    &::selection {
+      text-shadow: none !important;
+    }
+
+    &:hover {
+      background-size: 100% 1.5px;
+      text-shadow:
+        0.05em 0 theme(colors.background),
+        -0.05em 0 theme(colors.background);
+
+      transition: all 250ms ease;
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .shadow-drawer-to-left {
+    box-shadow:
+      -12px 0 20px -6px rgba(41, 41, 41, 0.1),
+      24px 0 20px -6px rgba(41, 41, 41, 0.1);
+  }
+  [data-theme="dark"] .shadow-drawer-to-left {
+    box-shadow:
+      -12px 0px 20px -6px rgba(0, 0, 0, 0.653),
+      24px 0 20px -6px rgba(0, 0, 0, 0.653);
+  }
+
+  .shadow-drawer-to-right {
+    box-shadow: 12px 0px 20px -6px rgba(41, 41, 41, 0.1);
+  }
+  [data-theme="dark"] .shadow-drawer-to-right {
+    box-shadow: 12px 0px 20px -6px rgba(0, 0, 0, 0.653);
+  }
+}
+
+@layer components {
+  .animate-mask-in {
+    animation: mask-in 0.5s ease-in-out forwards;
+  }
+  @keyframes mask-in {
+    0% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 150% 0 / 400% no-repeat;
+      opacity: 0.2;
+    }
+    100% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 0 / 400% no-repeat;
+      opacity: 1;
+    }
+  }
+}
+
+@layer components {
+  .shadow-tooltip-bottom {
+    --bg: theme(colors.accent/0.3);
+    box-shadow: 0px 5px 20px -11px var(--bg);
+  }
+
+  .shadow-tooltip-top {
+    --bg: theme(colors.accent/0.3);
+    box-shadow: 0px -5px 20px -11px var(--bg);
+  }
+}
+
+@layer utilities {
+  .easing-spring {
+    animation-timing-function: var(--spring-easing);
+    animation-duration: var(--spring-duration);
+  }
+  .spring-soft {
+    --spring-easing: linear(
+      0,
+      0.0019,
+      0.0073 1.2%,
+      0.0274 2.39%,
+      0.0624,
+      0.1075 5.08%,
+      0.2108 7.62%,
+      0.4632 13.15%,
+      0.5727 15.69%,
+      0.6768 18.38%,
+      0.7617 20.92%,
+      0.8365,
+      0.8963 26.29%,
+      0.921 27.64%,
+      0.9447,
+      0.9647,
+      0.9813 32.12%,
+      1.0028 34.66%,
+      1.0185 37.5%,
+      1.0279 40.64%,
+      1.0315 44.07%,
+      1.0291 49%,
+      1.0105 62.9%,
+      1.0028 71.86%,
+      0.9994 82.62%,
+      0.9993 99.95%
+    );
+    --spring-duration: 1.157s;
+  }
+}
+
+@layer utilities {
+  .animate-flip {
+    animation: flip 0.5s ease-in-out infinite;
+  }
+
+  @keyframes flip {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(180deg);
+    }
+  }
+
+  @keyframes rocketAnimation {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translate(2px, -1px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-rocket {
+    animation: rocketAnimation 1s infinite ease-out;
+  }
+
+  @keyframes radialPulse {
+    0% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, hsl(var(--fo-a) / 0.3)) 0%,
+        transparent 0%
+      );
+    }
+    40% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, hsl(var(--fo-a) / 0.3)) 0%,
+        transparent 50%
+      );
+      opacity: 1;
+    }
+    100% {
+      background: radial-gradient(
+        circle,
+        var(--highlight-color, oklch(var(--fo-a) / 0.3)) 0%,
+        transparent 80%
+      );
+      opacity: 0;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-mask-left-to-right {
+    animation: mask-left-to-right var(--animation-duration, 0.5s) ease-in-out forwards;
+  }
+  @keyframes mask-left-to-right {
+    0% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 150% 0 / 400% no-repeat;
+      opacity: 0.2;
+    }
+    100% {
+      mask: linear-gradient(90deg, #000 25%, #000000e6 50%, #00000000) 0 / 400% no-repeat;
+      opacity: 1;
+    }
+  }
+}
+@layer components {
+  .mask-b {
+    mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 20px), rgba(255, 255, 255, 0) 100%);
+  }
+
+  .mask-b-lg {
+    mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 50px), rgba(255, 255, 255, 0) 100%);
+  }
+
+  .mask-b-xl {
+    mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 70px), rgba(255, 255, 255, 0) 100%);
+  }
+
+  .mask-b-2xl {
+    mask-image: linear-gradient(rgb(255, 255, 255) calc(100% - 90px), rgba(255, 255, 255, 0) 100%);
+  }
+
+  .mask-horizontal {
+    mask-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 1) 14%,
+      rgba(255, 255, 255, 1) 86%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}

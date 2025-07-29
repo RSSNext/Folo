@@ -1,0 +1,56 @@
+name: 🌐 Internationalization (i18n)
+description: Contribute to or report issues with translations
+title: "[i18n]: "
+labels: ["i18n", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to contribute to our internationalization efforts!
+
+        Before proceeding, please check our [i18n Contribution Guidelines](https://github.com/RSSNext/Follow/blob/dev/wiki/contribute-i18n.md) for detailed instructions.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of i18n contribution
+      options:
+        - New language support
+        - Update existing translations
+        - Report incorrect translation
+        - Other i18n-related issue
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: What language are you contributing to or reporting about?
+      placeholder: e.g., Spanish, French, Japanese
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please provide details about your contribution or the issue you're reporting.
+      placeholder: |
+        For new languages: List any specific challenges or considerations.
+        For updates: Describe what you're changing and why.
+        For issues: Provide the incorrect translation and suggest a correction.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or file references here.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com/code-of-conduct)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+        - label: This issue is valid
+          required: true

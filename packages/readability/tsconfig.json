@@ -1,0 +1,10 @@
+{
+  "extends": "@follow/configs/tsconfig.extend.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "paths": {}
+  },
+  "include": ["src/**/*"]
+}

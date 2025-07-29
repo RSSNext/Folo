@@ -1,0 +1,25 @@
+name: "🌍 translator"
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  discussion:
+    types: [created, edited]
+  discussion_comment:
+    types: [created, edited]
+
+jobs:
+  translate:
+    permissions:
+      issues: write
+      discussions: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lizheming/github-translate-action@c55aac477e98562d4faed9f77c54ab8306ae6ebf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          IS_MODIFY_TITLE: true

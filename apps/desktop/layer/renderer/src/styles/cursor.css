@@ -1,0 +1,11 @@
+html,
+#shadow-html {
+  --cursor-button: var(--pointer);
+  --cursor-select: var(--pointer);
+  --cursor-checkbox: var(--pointer);
+  --cursor-link: var(--pointer);
+  --cursor-menu: default;
+  --cursor-radio: var(--pointer);
+  --cursor-switch: var(--pointer);
+  --cursor-card: var(--pointer);
+}

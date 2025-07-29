@@ -1,0 +1,25 @@
+{
+  "name": "@follow/hooks",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@follow/shared": "workspace:*",
+    "@follow/types": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "foxact": "0.2.49",
+    "jotai": "2.12.5",
+    "usehooks-ts": "3.1.1"
+  },
+  "devDependencies": {
+    "@follow/configs": "workspace:*"
+  }
+}

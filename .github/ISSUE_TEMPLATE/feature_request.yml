@@ -1,6 +1,7 @@
 name: 🚀 New feature proposal
 description: Propose a new feature
 labels: [enhancement]
+type: Feature
 body:
   - type: markdown
     attributes:
@@ -37,4 +38,6 @@ body:
       description: Before submitting the issue, please make sure you do the following
       options:
         - label: Check that there isn't already an issue that request the same feature to avoid creating a duplicate.
+          required: true
+        - label: This issue is valid
           required: true

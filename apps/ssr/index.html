@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" type="image/x-icon" />
+    <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
+    <!-- FireFox -->
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>Folo</title>
+
+    <meta name="apple-itunes-app" content="app-id=6739802604" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZMBZBW3EC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag("js", new Date())
+
+      gtag("config", "G-DZMBZBW3EC")
+    </script>
+    <script>
+      function setTheme() {
+        let e = "follow:color-mode",
+          t = document.documentElement,
+          a = localStorage.getItem(e)
+        function h() {
+          return window.matchMedia
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : void 0
+            : void 0
+        }
+        if (!a) {
+          t.dataset.theme = h() || "light"
+          return
+        }
+        switch ((a = JSON.parse(a))) {
+          case "dark":
+            t.dataset.theme = "dark"
+            break
+          case "light":
+            t.dataset.theme = "light"
+            break
+          case "system":
+            t.dataset.theme = h() || "light"
+        }
+      }
+      setTheme()
+    </script>
+  </head>
+  <body class="flex h-full flex-col">
+    <div id="root" class="flex h-full flex-col"></div>
+  </body>
+  <script type="module" src="/client/index.tsx"></script>
+</html>

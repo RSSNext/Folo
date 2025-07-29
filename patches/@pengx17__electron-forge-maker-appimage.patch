@@ -1,0 +1,67 @@
+diff --git a/dist/src/MakerAppimage.d.ts b/dist/src/MakerAppimage.d.ts
+index 389100d510dd90c10b28d3f3ee0996c01a7714d9..7fa2bfd46bbf7b7d10e4b0190fda6a3fae053c37 100644
+--- a/dist/src/MakerAppimage.d.ts
++++ b/dist/src/MakerAppimage.d.ts
+@@ -1,14 +1,28 @@
+-import MakerBase, { MakerOptions } from "@electron-forge/maker-base";
+-import { ForgePlatform } from "@electron-forge/shared-types";
+-import { MakerAppImageConfig } from "./Config";
++import MakerBase, { MakerOptions } from "@electron-forge/maker-base"
++import { ForgePlatform } from "@electron-forge/shared-types"
++import { MakerAppImageConfig } from "./Config"
++
++export interface AppImageForgeConfig {
++  template?: string
++  chmodChromeSandbox?: string
++  icons?: { file: string; size: number }[]
++}
++
+ export default class MakerAppImage extends MakerBase<MakerAppImageConfig> {
+-    name: string;
+-    defaultPlatforms: ForgePlatform[];
+-    isSupportedOnCurrentPlatform(): boolean;
+-    make({ dir, // '/home/build/Software/monorepo/packages/electron/out/canary/name-linux-x64'
++  constructor(private config: { config: AppImageForgeConfig }) {
++    super()
++  }
++
++  name: string
++  defaultPlatforms: ForgePlatform[]
++  isSupportedOnCurrentPlatform(): boolean
++  make({
++    dir, // '/home/build/Software/monorepo/packages/electron/out/canary/name-linux-x64'
+     appName, // 'name'
+     makeDir, // '/home/build/Software/monorepo/packages/electron/out/canary/make',
+     targetArch, // 'x64'
+-    packageJSON, targetPlatform, //'linux',
+-    forgeConfig, }: MakerOptions): Promise<string[]>;
++    packageJSON,
++    targetPlatform, //'linux',
++    forgeConfig,
++  }: MakerOptions): Promise<string[]>
+ }
+diff --git a/dist/src/MakerAppimage.js b/dist/src/MakerAppimage.js
+index a57b183ad759c91aa36691a430e87c385ba63f62..032877c9fd3fe2dd6905e75de76c17936b19534e 100644
+--- a/dist/src/MakerAppimage.js
++++ b/dist/src/MakerAppimage.js
+@@ -48,7 +48,7 @@ const isIForgeResolvableMaker = (maker) => {
+ class MakerAppImage extends maker_base_1.default {
+     constructor() {
+         super(...arguments);
+-        this.name = "appImage";
++        this.name = makerPackageName;
+         this.defaultPlatforms = ["linux"];
+     }
+     isSupportedOnCurrentPlatform() {
+@@ -65,9 +65,9 @@ class MakerAppImage extends maker_base_1.default {
+             const executableName = forgeConfig.packagerConfig.executableName || appName;
+             // Check for any optional configuration data passed in from forge config, specific to this maker.
+             let config;
+-            const maker = forgeConfig.makers.find((maker) => isIForgeResolvableMaker(maker) && maker.name === makerPackageName);
++            const maker = forgeConfig.makers.find((maker) => maker?.name === makerPackageName);
+             if (maker !== undefined && isIForgeResolvableMaker(maker)) {
+-                config = maker.config;
++                config = maker.configOrConfigFetcher?.config;
+             }
+             const appFileName = `${appName}-${packageJSON.version}.AppImage`;
+             const appPath = path_1.default.join(makeDir, appFileName);

@@ -1,0 +1,33 @@
+{
+  "name": "@follow/models",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    },
+    "./rsshub": {
+      "import": "./src/rsshub.ts",
+      "types": "./src/rsshub.ts"
+    },
+    "./types": {
+      "import": "./src/types.ts",
+      "require": "./src/types.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@follow-app/client-sdk": "catalog:",
+    "@follow/constants": "workspace:*",
+    "@follow/shared": "workspace:*",
+    "@follow/types": "workspace:*",
+    "@follow/utils": "workspace:*",
+    "hono": "4.8.1"
+  },
+  "devDependencies": {
+    "@follow/configs": "workspace:*"
+  }
+}

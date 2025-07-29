@@ -1,0 +1,44 @@
+.mask-scroller {
+  mask:
+    linear-gradient(white, transparent) 50% 0 / 100% 0 no-repeat,
+    linear-gradient(white, white) 50% 50% / 100% 100% no-repeat,
+    linear-gradient(transparent, white) 50% 100% / 100% 30px no-repeat;
+  mask-composite: exclude;
+  mask-size:
+    100% calc((var(--scroll-progress-top) / 100) * 30px),
+    100% 100%,
+    100% calc((100 - (100 * (var(--scroll-progress-bottom) / 100))) * 1px);
+}
+
+@supports (animation-timeline: scroll()) {
+  .mask-scroller {
+    mask:
+      linear-gradient(white, transparent) 50% 0 / 100% 0 no-repeat,
+      linear-gradient(white, white) 50% 50% / 100% 100% no-repeat,
+      linear-gradient(transparent, white) 50% 100% / 100% 30px no-repeat;
+    mask-composite: exclude;
+    animation:
+      mask-up both linear,
+      mask-down both linear;
+    animation-timeline: scroll(self);
+    animation-range:
+      0 50px,
+      calc(100% - 50px) 100%;
+  }
+}
+@keyframes mask-up {
+  100% {
+    mask-size:
+      100% 30px,
+      100% 100%,
+      100% 30px;
+  }
+}
+@keyframes mask-down {
+  100% {
+    mask-size:
+      100% 30px,
+      100% 100%,
+      100% 0;
+  }
+}

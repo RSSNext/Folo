@@ -1,0 +1,154 @@
+diff --git a/src/SheetProvider.tsx b/src/SheetProvider.tsx
+index 2e3964c86ad78a9eddcb074ab26ae8ee2ae12179..20e2f9c25cdb0e7daca3c2211967f21452a04ed9 100644
+--- a/src/SheetProvider.tsx
++++ b/src/SheetProvider.tsx
+@@ -1,23 +1,23 @@
+-import React, { createContext, useContext, useCallback, useEffect } from 'react'
+-import { Platform, View } from 'react-native'
+-import Animated, {
++import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react"
++import { Platform } from "react-native"
++import {
++  cancelAnimation,
+   useSharedValue,
+   withSpring,
+-  useAnimatedStyle,
+-  cancelAnimation,
+-  runOnJS
+-} from 'react-native-reanimated'
++  type SharedValue,
++} from "react-native-reanimated"
+ 
+ interface SheetContextType {
+-  scale: Animated.SharedValue<number>
++  scale: SharedValue<number>
+   setScale: (scale: number) => void
+-  resizeType: 'incremental' | 'decremental'
++  isScaling: boolean
++  resizeType: "incremental" | "decremental"
+   enableForWeb: boolean
+ }
+ 
+ interface SheetProviderProps {
+   children: React.ReactNode
+-  resizeType?: 'incremental' | 'decremental'
++  resizeType?: "incremental" | "decremental"
+   enableForWeb?: boolean
+ }
+ 
+@@ -25,11 +25,12 @@ const SheetContext = createContext<SheetContextType | null>(null)
+ 
+ export function SheetProvider({
+   children,
+-  resizeType = 'decremental',
+-  enableForWeb = false
++  resizeType = "decremental",
++  enableForWeb = false,
+ }: SheetProviderProps) {
+   const scale = useSharedValue(1)
+   const isMounted = useSharedValue(false)
++  const [isScaling, setIsScaling] = React.useState(false)
+ 
+   useEffect(() => {
+     // Delay setting isMounted to ensure view is ready
+@@ -46,11 +47,13 @@ export function SheetProvider({
+   const setScale = useCallback((newScale: number) => {
+     if (!isMounted.value) return
+ 
+-    if (Platform.OS === 'android') {
++    if (Platform.OS === "android") {
+       scale.value = newScale
+       return
+     }
+ 
++    setIsScaling(newScale !== 1)
++
+     scale.value = withSpring(newScale, {
+       damping: 20,
+       stiffness: 300,
+@@ -60,47 +63,22 @@ export function SheetProvider({
+     })
+   }, [])
+ 
+-  const animatedStyle = useAnimatedStyle(() => {
+-    if (!isMounted.value) return {}
+-
+-    return {
+-      transform: [{ scale: scale.value }],
+-    }
+-  }, [])
+-
+-  const isEnabled = Platform.OS === 'web' ? enableForWeb : true
++  const isEnabled = Platform.OS === "web" ? enableForWeb : true
+ 
+   return (
+-    <SheetContext.Provider value={{
+-      scale,
+-      setScale,
+-      resizeType,
+-      enableForWeb: isEnabled
+-    }}>
+-      {/* <View style={{ flex: 1, backgroundColor: 'red',
+-          position: 'absolute',
+-          top: 0,
+-          left: 0,
+-          right: 0,
+-          bottom: 0,
+-          zIndex: -1
+-         }}/> */}
+-
+-      <Animated.View
+-        style={[
+-          {
+-            flex: 1,
+-            backfaceVisibility: 'hidden',
+-          },
+-          Platform.OS === 'ios' ? animatedStyle : null
+-        ]}
+-        collapsable={false}
+-      >
+-
+-        {children}
+-
+-      </Animated.View>
+-
++    <SheetContext.Provider
++      value={useMemo(
++        () => ({
++          scale,
++          setScale,
++          isScaling,
++          resizeType,
++          enableForWeb: isEnabled,
++        }),
++        [scale, setScale, isScaling, resizeType, isEnabled],
++      )}
++    >
++      {children}
+     </SheetContext.Provider>
+   )
+ }
+@@ -108,7 +86,7 @@ export function SheetProvider({
+ export function useSheet() {
+   const context = useContext(SheetContext)
+   if (!context) {
+-    throw new Error('useSheet must be used within a SheetProvider')
++    throw new Error("useSheet must be used within a SheetProvider")
+   }
+   return context
+-} 
+\ No newline at end of file
++}
+diff --git a/src/SheetScreen.tsx b/src/SheetScreen.tsx
+index 3eebf713a5dcf42dd43b2c34cef136b682828d23..ca1394fe4319151cd1a31f303c2e70de5f48850a 100644
+--- a/src/SheetScreen.tsx
++++ b/src/SheetScreen.tsx
+@@ -278,7 +278,7 @@ export function SheetScreen({
+         { scale }
+       ],
+       opacity: opacity.value,
+-      borderRadius: borderRadius.value,
++      borderRadius: translateY.value === 0 ? 0 : borderRadius.value,
+     }
+   }, [disableSheetContentResizeOnDragDown])
+ 

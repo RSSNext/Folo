@@ -1,0 +1,51 @@
+{
+  "name": "@follow/utils",
+  "type": "module",
+  "private": true,
+  "author": "Folo Team",
+  "license": "MIT",
+  "homepage": "https://github.com/RSSNext",
+  "repository": {
+    "url": "https://github.com/RSSNext/follow",
+    "type": "git"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "require": "./src/index.ts",
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./*": {
+      "require": "./src/*.ts",
+      "import": "./src/*.ts",
+      "types": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.74.0"
+  },
+  "dependencies": {
+    "@follow/shared": "workspace:*",
+    "@follow/types": "workspace:*",
+    "@mozilla/readability": "0.6.0",
+    "chardet": "2.1.0",
+    "clsx": "2.1.1",
+    "dompurify": "3.2.6",
+    "linkedom": "0.18.11",
+    "motion": "12.23.0",
+    "nanoid": "5.1.5",
+    "path-to-regexp": "8.2.0",
+    "tailwind-merge": "3.3.1",
+    "tldts": "7.0.10",
+    "uniqolor": "1.1.1"
+  },
+  "devDependencies": {
+    "@follow/configs": "workspace:*",
+    "vite-tsconfig-paths": "5.1.4"
+  }
+}

@@ -1,0 +1,12 @@
+---
+description: 
+globs: apps/mobile/**/*
+alwaysApply: false
+---
+1. This is an app written in React native.
+
+2. You need to use @/apps/mobile/icons for icons, do not use other icon libraries.
+
+3. You need to use NativewindCSS to write styles, not external StyleSheet.create.
+
+4. You need to use https://github.com/Innei/apple-uikit-colors/tree/main/packages/react-native-uikit-colors for color design.

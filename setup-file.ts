@@ -1,1 +1,0 @@
-import "fake-indexeddb/auto"

@@ -1,0 +1,65 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+      time: "12:00"
+      timezone: Asia/Singapore
+    target-branch: dev
+    ignore:
+      - dependency-name: "@shopify/flash-list"
+        versions: [">1.7.3"]
+
+      # Stuck by tailwindcss 4
+      - dependency-name: tailwindcss
+        versions: [">=4.0.0"]
+      - dependency-name: daisyui
+        versions: [">=5.0.0"]
+
+      # Stuck by expo 52
+      - dependency-name: react-native
+        versions: [">=0.78.0"]
+
+      # It's using export map and metro doesn't support it well
+      - dependency-name: unist-util-visit-parents
+        versions: [">=6.0.0"]
+      # electron 35
+      - dependency-name: electron
+        versions: [">=35.0.0"]
+      - dependency-name: react-native-sheet-transitions
+        versions: [">0.1.2"]
+
+      # filter not work
+      - dependency-name: unplugin-ast
+        versions: ["0.14.5"]
+
+    open-pull-requests-limit: 100
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+      pathed:
+        patterns:
+          - immer
+          - re-resizable
+          - hono
+          - electron-context-menu
+          - "@mozilla/readability"
+          - daisyui
+          - jsonpointer
+          - workbox-precaching
+          - "@pengx17/electron-forge-maker-appimage"
+          - "@microflash/remark-callout-directives"
+          - react-native-track-player
+          - react-native-sheet-transitions
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: dev
+    open-pull-requests-limit: 100

@@ -1,20 +1,35 @@
 name: Setup Version
-description: 'Setup Version'
+description: "Setup Version"
+inputs:
+  type:
+    required: true
+    description: "Type of the app, either 'desktop' or 'mobile'"
+    default: "desktop"
 outputs:
   APP_VERSION:
-    description: 'App Version'
+    description: "App Version"
     value: ${{ steps.version.outputs.APP_VERSION }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: 'Write Version'
+    - name: "Write Version"
       id: version
       shell: bash
       run: |
         if [ "${{ github.ref_type }}" == "tag" ]; then
-          APP_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          # Handle new tag format: desktop/v1.2.3 or mobile/v1.2.3
+          if [[ "${{ github.ref_name }}" =~ ^(desktop|mobile)/v(.*)$ ]]; then
+            APP_VERSION="${BASH_REMATCH[2]}"
+          else
+            # Fallback for old format: v1.2.3
+            APP_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          fi
         else
-          APP_VERSION=$(node -p "require('./package.json').version")
+          if [ "${{ inputs.type }}" == "desktop" ]; then
+            APP_VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          else
+            APP_VERSION=$(node -p "require('./apps/mobile/package.json').version")
+          fi
         fi
         echo $APP_VERSION
         echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_OUTPUT"

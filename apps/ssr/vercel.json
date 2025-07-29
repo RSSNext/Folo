@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!external-dist|dist-external).*)",
+      "destination": "/api"
+    }
+  ]
+}

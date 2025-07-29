@@ -1,0 +1,164 @@
+diff --git a/package.json b/package.json
+index 10b546f7484967ba6ef0856d0c7ad2a855845b69..8bcb3b45d413c5ad75d0910ef941d7f97b2f723f 100644
+--- a/package.json
++++ b/package.json
+@@ -2,9 +2,9 @@
+   "name": "react-native-ios-utilities",
+   "version": "5.1.5",
+   "description": "Utilities for react-native + iOS and wrappers for using swift together with fabric/paper + JSI",
+-  "main": "lib/commonjs/index",
+-  "module": "lib/module/index",
+-  "types": "lib/typescript/src/index.d.ts",
++  "main": "src/index",
++  "module": "src/index",
++  "types": "src/index",
+   "react-native": "src/index",
+   "source": "src/index",
+   "files": [
+diff --git a/src/index.ts b/src/index.ts
+index 4e3dc7f25438fdab57ee654e88f21ec621ad2ba0..4acd61d7471bc70e7b0990de3ef901424cb3c892 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -1,4 +1,3 @@
+-
+ export * from './native_components/RNIDetachedView';
+ export * from './native_components/RNIWrapperView';
+ 
+@@ -23,19 +22,5 @@ export type * from './types/UtilityTypes';
+ export type * from './types/ReactNativeUtilityTypes';
+ export type * from './types/SharedAnimationEvents';
+ 
+-export * from './example_components/CardBody';
+-export * from './example_components/CardTitle';
+-export * from './example_components/CardButton';
+-export * from './example_components/CardRowLabelDisplay';
+-export * from './example_components/CardRowSwitch';
+-export * from './example_components/CardRowStepper';
+-export * from './example_components/CardRowTextInput';
+-export * from './example_components/CardRowColorPicker';
+-
+-export * from './example_components/ExampleItemCard';
+-export * from './example_components/ObjectPropertyDisplay';
+-export * from './example_components/Spacer';
+-export * from './example_components/ViewShapes';
+-
+ export * from './misc/Colors';
+ export * from './misc/Helpers';
+diff --git a/src/native_components/RNIDetachedView/RNIDetachedView.tsx b/src/native_components/RNIDetachedView/RNIDetachedView.tsx
+index 5f7eb500892fbcef4a799a26a2c02c01e7abcf49..527b49e5fa3fd4c4d72362322b0ee3b5e2032336 100644
+--- a/src/native_components/RNIDetachedView/RNIDetachedView.tsx
++++ b/src/native_components/RNIDetachedView/RNIDetachedView.tsx
+@@ -2,17 +2,22 @@ import * as React from 'react';
+ import { StyleSheet } from 'react-native';
+ 
+ import { RNIDetachedNativeView } from './RNIDetachedNativeView';
+-import { DEFAULT_DETACHED_SUBVIEW_ENTRY, type DetachedSubviewsMap } from './DetachedSubviewsMap';
+-
+-import type { RNIDetachedViewProps, RNIDetachedViewRef, } from './RNIDetachedViewTypes';
++import {
++  DEFAULT_DETACHED_SUBVIEW_ENTRY,
++  type DetachedSubviewsMap,
++} from './DetachedSubviewsMap';
++
++import type {
++  RNIDetachedViewProps,
++  RNIDetachedViewRef,
++} from './RNIDetachedViewTypes';
+ import type { RNIDetachedViewContentProps } from './RNIDetachedViewContentTypes';
+ 
+ import type { StateViewID, StateReactTag } from '../../types/SharedStateTypes';
+ import { Helpers } from '../../misc/Helpers';
+ 
+-
+ export const RNIDetachedView = React.forwardRef<
+-  RNIDetachedViewRef, 
++  RNIDetachedViewRef,
+   RNIDetachedViewProps
+ >((props, ref) => {
+   const [viewID, setViewID] = React.useState<StateViewID>();
+@@ -20,10 +25,8 @@ export const RNIDetachedView = React.forwardRef<
+ 
+   const [isDetachedInNative, setIsDetachedInNative] = React.useState(false);
+ 
+-  const [
+-    detachedSubviewsMap, 
+-    setDetachedSubviewsMap
+-  ] = React.useState<DetachedSubviewsMap>({});
++  const [detachedSubviewsMap, setDetachedSubviewsMap] =
++    React.useState<DetachedSubviewsMap>({});
+ 
+   React.useImperativeHandle(ref, () => ({
+     getReactTag: () => {
+@@ -36,18 +39,18 @@ export const RNIDetachedView = React.forwardRef<
+       return detachedSubviewsMap;
+     },
+     attachToWindow: async (commandArgs) => {
+-      if(viewID == null) return;
++      if (viewID == null) return;
+       const module = Helpers.getRNIUtilitiesModule();
+ 
+       setIsDetachedInNative(true);
+       await module.viewCommandRequest(
+         /* viewID     : */ viewID,
+         /* commandName: */ 'attachToWindow',
+-        /* commandArgs: */ commandArgs,
++        /* commandArgs: */ commandArgs
+       );
+     },
+     presentInModal: async (commandArgs) => {
+-      if(viewID == null) return;
++      if (viewID == null) return;
+       const module = Helpers.getRNIUtilitiesModule();
+ 
+       setIsDetachedInNative(true);
+@@ -59,7 +62,7 @@ export const RNIDetachedView = React.forwardRef<
+     },
+   }));
+ 
+-  const shouldEnableDebugBackgroundColors = 
++  const shouldEnableDebugBackgroundColors =
+     props.shouldEnableDebugBackgroundColors ?? false;
+ 
+   const shouldImmediatelyDetach = props.shouldImmediatelyDetach ?? false;
+@@ -68,8 +71,12 @@ export const RNIDetachedView = React.forwardRef<
+   const reactChildrenCount = React.Children.count(props.children);
+ 
+   const children = React.Children.map(props.children, (child) => {
++    // child is React.Fragment
++    if (React.isValidElement(child) && child.type === React.Fragment) {
++      return child;
++    }
+     return React.cloneElement(
+-      child as React.ReactElement<RNIDetachedViewContentProps>, 
++      child as React.ReactElement<RNIDetachedViewContentProps>,
+       {
+         isParentDetached: isDetached,
+         shouldEnableDebugBackgroundColors,
+diff --git a/src/native_components/RNIDetachedView/RNIDetachedViewContent.tsx b/src/native_components/RNIDetachedView/RNIDetachedViewContent.tsx
+index 37db0454c3430fc1eed0c9fc1d82660613b47353..ed1e72e556a1b066b15cbdf198b735ff914c92e6 100644
+--- a/src/native_components/RNIDetachedView/RNIDetachedViewContent.tsx
++++ b/src/native_components/RNIDetachedView/RNIDetachedViewContent.tsx
+@@ -14,7 +14,7 @@ export function RNIDetachedViewContent(
+   props: React.PropsWithChildren<RNIDetachedViewContentProps>
+ ) {
+   const [viewID, setViewID] = React.useState<StateViewID>();
+-  
++  const { isParentDetached, ...rest } = props
+   const wrapperStyle: StyleProp<ViewStyle> = [
+     props.shouldEnableDebugBackgroundColors && styles.wrapperViewDebug,
+     props.contentContainerStyle,
+@@ -25,12 +25,12 @@ export function RNIDetachedViewContent(
+     ?? DEFAULT_DETACHED_SUBVIEW_ENTRY;
+ 
+   const didDetach = 
+-       (props.isParentDetached ?? false)
++       (isParentDetached ?? false)
+     || detachedSubviewEntry.didDetachFromOriginalParent;
+ 
+   return (
+     <RNIWrapperView
+-      {...props}
++      {...rest}
+       style={[
+         ...(IS_USING_NEW_ARCH 
+           ? wrapperStyle 

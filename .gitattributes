@@ -1,0 +1,2 @@
+* text=auto eol=lf
+*.splinecode filter=lfs diff=lfs merge=lfs -text

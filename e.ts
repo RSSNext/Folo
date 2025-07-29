@@ -1,4 +1,4 @@
- 
-import fs from 'fs'
-const version = 'test'
-fs.appendFileSync(process.env.GITHUB_ENV, `version=${version}\n`);
+import fs from "node:fs"
+
+const version = "test"
+fs.appendFileSync(process.env.GITHUB_ENV, `version=${version}\n`)

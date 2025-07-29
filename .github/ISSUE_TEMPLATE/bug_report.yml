@@ -1,11 +1,30 @@
 name: 🐞 Bug report
 description: Report an issue
-labels: [pending triage]
+labels: [pending triage, bug]
+type: Bug
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: On which platforms does this bug occur?
+      multiple: true
+      options:
+        - Desktop - macOS
+        - Desktop - Windows
+        - Desktop - Linux
+        - Desktop - Web
+        - Mobile - iOS
+        - Mobile - Android
+        - Mobile - Web
+    validations:
+      required: true
+
   - type: textarea
     id: bug-description
     attributes:
@@ -14,14 +33,35 @@ body:
       placeholder: Bug description
     validations:
       required: true
-  - type: textarea
-    id: feed-info
+
+  - type: input
+    id: entryId
     attributes:
-      label: Feed Info
-      description: Please provide your feed id, feed url, and any other information that can help us reproduce the issue.
-      placeholder: Feed ID, Feed URL, etc.
+      label: Entry ID
+      description: Please provide the entry id of the entry that is causing the issue. If you are not sure, please provide the entry url.
+
+  - type: textarea
+    id: relevant-information
+    attributes:
+      label: Relevant Information
+      description: Please provide your user id, feed id, feed url, or any other information that can help us reproduce the issue.
+      placeholder: User ID, Feed ID, Feed URL, etc.
     validations:
-      required: true
+      required: false
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Video
+      description: If possible, please provide a video that demonstrates the bug.
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide the environment in which you are using the application. You can find this information by going to Preferences > About and clicking the copy button next to the version tag.
 
   - type: checkboxes
     id: checkboxes
@@ -33,6 +73,9 @@ body:
           required: true
         - label: Check that this is a concrete bug. For Q&A, please open a GitHub Discussion instead.
           required: true
+        - label: This issue is valid
+          required: true
+
   - type: checkboxes
     id: contributions
     attributes:

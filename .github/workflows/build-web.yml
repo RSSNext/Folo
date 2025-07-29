@@ -1,0 +1,45 @@
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+name: 🌐 CI Build web and SSR server
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-ssr
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+jobs:
+  build:
+    name: Build web and SSR server
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts/*]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build web and SSR server
+        run: |
+          npm exec turbo run Folo#build:web @follow/ssr#build

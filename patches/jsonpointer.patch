@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index a832ba9fc48f08300d8e5e595409c0488217af86..23af6ad8e16a8add0580151e8124f71451ebfc94 100644
+--- a/package.json
++++ b/package.json
+@@ -23,8 +23,8 @@
+   "engines": {
+     "node": ">=0.10.0"
+   },
+-  "main": "./jsonpointer",
+-  "typings": "jsonpointer.d.ts",
++  "main": "./jsonpointer.js",
++  "typings": "./jsonpointer.d.ts",
+   "files": [
+     "jsonpointer.js",
+     "jsonpointer.d.ts"
