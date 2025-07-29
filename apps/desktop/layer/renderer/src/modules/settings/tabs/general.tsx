@@ -226,7 +226,7 @@ const VoiceSelector = () => {
     (acc, item) => {
       // Extract language from voice name (e.g., "Microsoft David - English (United States)" -> "English (United States)")
       const match = item.FriendlyName.match(/- (.+)$/)
-      const language = match?.[1] || "Other"
+      const language = match?.[1] || t("general.other")
 
       if (!acc[language]) {
         acc[language] = []
