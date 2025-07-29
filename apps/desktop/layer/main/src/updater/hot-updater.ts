@@ -1,6 +1,7 @@
 /**
  * @description This file handles hot updates for the electron renderer layer
  */
+import { info } from "node:console"
 import { existsSync, readFileSync } from "node:fs"
 import { mkdir, readdir, rename, rm, stat, writeFile } from "node:fs/promises"
 import os from "node:os"
@@ -151,7 +152,7 @@ const downloadRenderAsset = async (manifest: Manifest) => {
   const url = await getFileDownloadUrl(filename)
   const filePath = path.resolve(downloadTempDir, filename)
 
-  logger.info(`Downloading ${url}`)
+  logger.info(`Downloading ${url}, Save to ${filePath}`)
 
   const success = await downloadFileWithProgress({
     url,
@@ -171,14 +172,20 @@ export const hotUpdateRender = async (manifest: Manifest) => {
   if (!manifest) return false
 
   const filePath = await downloadRenderAsset(manifest)
+  logger.info(`Downloaded render asset to ${filePath}`)
   if (!filePath) return false
 
   // Extract the tar.gz file
   await mkdir(HOTUPDATE_RENDER_ENTRY_DIR, { recursive: true })
+  logger.info(`Extracting render asset to ${HOTUPDATE_RENDER_ENTRY_DIR}`)
   await x({
     f: filePath,
     cwd: HOTUPDATE_RENDER_ENTRY_DIR,
   })
+
+  logger.info(
+    `Extracted render asset to ${HOTUPDATE_RENDER_ENTRY_DIR}, rename to ${manifest.version}`,
+  )
 
   // Rename `renderer` folder to `manifest.version`
   await rename(
@@ -186,10 +193,10 @@ export const hotUpdateRender = async (manifest: Manifest) => {
     path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, manifest.version),
   )
 
-  await writeFile(
-    path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, "manifest.yml"),
-    JSON.stringify(manifest),
-  )
+  const manifestPath = path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, "manifest.yml")
+  logger.info(`Write manifest to ${manifestPath}`)
+
+  await writeFile(manifestPath, JSON.stringify(manifest))
   logger.info(`Hot update render success, update to ${manifest.version}`)
 
   const mainWindow = WindowManager.getMainWindow()

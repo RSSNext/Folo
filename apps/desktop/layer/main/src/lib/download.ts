@@ -2,6 +2,7 @@ import { createHash } from "node:crypto"
 import { createWriteStream } from "node:fs"
 import { mkdir } from "node:fs/promises"
 import https from "node:https"
+import os from "node:os"
 import { pipeline } from "node:stream"
 import { promisify } from "node:util"
 
@@ -109,6 +110,8 @@ export async function downloadFileWithProgress(options: DownloadOptions): Promis
               }
               onLog?.("Hash verification passed")
             }
+
+            onLog?.(`Download completed: ${outputPath}`)
 
             resolve(true)
           } catch (error) {
