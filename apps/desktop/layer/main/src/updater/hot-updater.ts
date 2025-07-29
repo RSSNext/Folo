@@ -26,7 +26,25 @@ const releasesUrl = `${url}/releases`
 const releaseApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`
 
 const getLatestReleaseTag = async () => {
-  // Get all releases and filter for desktop releases only
+  // First try to get the latest release
+  try {
+    const latestRes = await fetch(`${releaseApiUrl}/latest`)
+    if (latestRes.ok) {
+      const latestRelease = await latestRes.json()
+      // Check if the latest release is a desktop release
+      if (
+        latestRelease.tag_name &&
+        latestRelease.tag_name.startsWith("desktop/") &&
+        !latestRelease.draft
+      ) {
+        return latestRelease.tag_name
+      }
+    }
+  } catch (error) {
+    logger.warn("Failed to fetch latest release, falling back to all releases", error)
+  }
+
+  // If latest release is not a desktop release or fetch failed, get all releases
   const res = await fetch(releaseApiUrl)
 
   if (!res.ok) {
@@ -54,7 +72,12 @@ const getLatestReleaseTag = async () => {
     throw new Error("No desktop releases found")
   }
 
-  // Return the most recent desktop release (GitHub orders by created_at desc)
+  // Sort by created_at date in descending order to get the most recent first
+  desktopReleases.sort((a: any, b: any) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
+
+  // Return the most recent desktop release
   return desktopReleases[0].tag_name
 }
 
