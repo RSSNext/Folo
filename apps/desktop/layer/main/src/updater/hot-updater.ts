@@ -25,21 +25,10 @@ const releasesUrl = `${url}/releases`
 const releaseApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`
 
 const getLatestReleaseTag = async () => {
-  // Get all releases and filter for desktop releases only
-  const res = await fetch(releaseApiUrl)
-  const releases = await res.json()
+  const res = await fetch(`${releaseApiUrl}/latest`)
+  const json = await res.json()
 
-  // Filter for desktop releases and find the latest one
-  const desktopReleases = releases.filter(
-    (release: any) => release.tag_name.startsWith("desktop/") && !release.draft,
-  )
-
-  if (desktopReleases.length === 0) {
-    throw new Error("No desktop releases found")
-  }
-
-  // Return the most recent desktop release (GitHub orders by created_at desc)
-  return desktopReleases[0].tag_name
+  return json.tag_name
 }
 
 const getFileDownloadUrl = async (filename: string) => {

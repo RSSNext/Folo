@@ -1,10 +1,13 @@
 import { Kbd } from "@follow/components/ui/kbd/Kbd.js"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionModel } from "@follow/store/subscription/types"
+import { unreadActions } from "@follow/store/unread/store"
 import { useMutation } from "@tanstack/react-query"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
+
+import { apiClient } from "~/lib/api-fetch"
 
 import { navigateEntry } from "./useNavigateEntry"
 import { getRouteParams } from "./useRouteParams"
@@ -36,16 +39,19 @@ export const useDeleteSubscription = ({ onSuccess }: { onSuccess?: () => void } 
           if (!subscription) return
           if (!feed) return
           const undo = async () => {
-            await subscriptionSyncService.subscribe({
-              url: feed.type === "feed" ? feed.url : undefined,
-              listId: feed.type === "list" ? feed.id : undefined,
-              view: subscription.view,
-              category: subscription.category,
-              isPrivate: subscription.isPrivate,
-              feedId: feed.id,
-              title: feed.title,
-              hideFromTimeline: subscription.hideFromTimeline,
+            // TODO store action
+            const { unread } = await apiClient.subscriptions.$post({
+              json: {
+                url: feed.type === "feed" ? feed.url : undefined,
+                listId: feed.type === "list" ? feed.id : undefined,
+                view: subscription.view,
+                category: subscription.category,
+                isPrivate: subscription.isPrivate,
+              },
             })
+            unreadActions.upsertMany(unread)
+
+            subscriptionSyncService.fetch()
 
             toast.dismiss(toastId)
           }

@@ -197,7 +197,6 @@ export const ModalInternal = memo(function Modal({
   const handleClickOutsideToDismiss = useCallback(
     (e: SyntheticEvent) => {
       if (isSelectingRef.current) return
-
       const fn = modal ? (clickOutsideToDismiss && canClose ? dismiss : noticeModal) : undefined
       fn?.(e)
     },

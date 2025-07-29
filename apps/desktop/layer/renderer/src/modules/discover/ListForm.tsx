@@ -13,11 +13,12 @@ import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { ListAnalyticsModel } from "@follow/models/types"
+import { invalidateEntriesQuery } from "@follow/store/entry/hooks"
 import { useListById, usePrefetchListById } from "@follow/store/list/hooks"
 import type { ListModel } from "@follow/store/list/types"
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
-import { whoami } from "@follow/store/user/getters"
+import { unreadActions } from "@follow/store/unread/store"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,8 +29,10 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { useCurrentModal } from "~/components/ui/modal/stacked/hooks"
 import { useI18n } from "~/hooks/common"
+import { apiClient } from "~/lib/api-fetch"
 import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { getNewIssueUrl } from "~/lib/issues"
 
@@ -210,31 +213,46 @@ const ListInnerForm = ({
 
   const followMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema> & { TOTPCode?: string }) => {
-      const userId = whoami()?.id || ""
       const body = {
         listId: list.id,
         view: Number.parseInt(values.view),
         category: values.category,
-        isPrivate: values.isPrivate || false,
+        isPrivate: values.isPrivate,
         hideFromTimeline: values.hideFromTimeline,
         title: values.title,
         TOTPCode: values.TOTPCode,
-        userId,
-        type: "list",
-        url: undefined,
-        feedId: undefined,
-      } as const
-
-      if (isSubscribed) {
-        return subscriptionSyncService.edit(body)
-      } else {
-        return subscriptionSyncService.subscribe(body)
       }
+      const $method = isSubscribed ? apiClient.subscriptions.$patch : apiClient.subscriptions.$post
+
+      return $method({
+        json: body,
+      }) as unknown as Promise<
+        | ReturnType<typeof apiClient.subscriptions.$post>
+        | ReturnType<typeof apiClient.subscriptions.$patch>
+      >
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
+        invalidateEntriesQuery({ views: [Number(variables.view)] })
+      }
+
+      if ("unread" in data) {
+        const { unread } = data
+        unreadActions.upsertMany(unread)
+      }
+      subscriptionSyncService.fetch()
+
+      const listId = list.id
+      if (listId) {
+        // listsQuery.byId({ id: listId }).invalidate()
+      }
       toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,
       })
+
+      if (!isSubscribed) {
+        tracker.subscribe({ listId: list.id, view: Number.parseInt(variables.view) })
+      }
 
       onSuccess?.()
     },
