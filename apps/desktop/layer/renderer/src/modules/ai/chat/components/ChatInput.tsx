@@ -1,14 +1,18 @@
-import { useInputComposition } from "@follow/hooks"
 import { cn, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
-import { memo, use, useCallback, useState } from "react"
+import type { EditorState, LexicalEditor } from "lexical"
+import { $getRoot } from "lexical"
+import { memo, use, useCallback, useRef, useState } from "react"
 
-import { AIChatContext, AIPanelRefsContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatContextBar } from "~/modules/ai/chat/components/AIChatContextBar"
 import { AIChatSendButton } from "~/modules/ai/chat/components/AIChatSendButton"
+import { convertLexicalToMarkdown } from "~/modules/ai/chat/utils/lexical-markdown"
 
 import { CollapsibleError } from "./CollapsibleError"
+import type { LexicalRichEditorRef } from "./LexicalRichEditor"
+import { LexicalRichEditor } from "./LexicalRichEditor"
 
 const chatInputVariants = cva(
   [
@@ -33,39 +37,47 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
 }
 
 export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
-  const { inputRef } = use(AIPanelRefsContext)
   const { status, stop, error } = use(AIChatContext)
+  const editorRef = useRef<LexicalRichEditorRef>(null)
   const [isEmpty, setIsEmpty] = useState(true)
+  const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
   const isProcessing = status === "submitted" || status === "streaming"
 
   const handleSend = useCallback(() => {
-    if (inputRef.current && inputRef.current.value.trim()) {
-      const message = inputRef.current.value.trim()
-      onSend(message)
-      inputRef.current.value = ""
-      setIsEmpty(true)
+    if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
+      const markdown = convertLexicalToMarkdown(currentEditor)
+      if (markdown.trim()) {
+        onSend(markdown.trim())
+        editorRef.current.clear()
+      }
     }
-  }, [onSend, inputRef])
-  const handleKeyPress = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault()
+  }, [currentEditor, onSend])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault()
         if (isProcessing) {
           stop?.()
         } else {
           handleSend()
         }
+        return true
       }
+      return false
     },
     [handleSend, isProcessing, stop],
   )
-  const inputProps = useInputComposition<HTMLTextAreaElement>({
-    onKeyDown: handleKeyPress,
-  })
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setIsEmpty(e.target.value.trim() === "")
+  const handleEditorChange = useCallback((editorState: EditorState, editor: LexicalEditor) => {
+    setCurrentEditor(editor)
+    // Update isEmpty state based on editor content
+    editorState.read(() => {
+      const root = $getRoot()
+      const textContent = root.getTextContent().trim()
+      setIsEmpty(textContent === "")
+    })
   }, [])
 
   return (
@@ -76,15 +88,13 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
       {/* Integrated Input Container with Context Bar */}
       <div className={cn(chatInputVariants({ variant }))}>
         {/* Input Area */}
-        <div className="relative z-10 flex items-end">
-          <textarea
-            onContextMenu={stopPropagation}
-            ref={inputRef}
-            onChange={handleChange}
-            {...inputProps}
+        <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
+          <LexicalRichEditor
+            ref={editorRef}
             placeholder="Message AI assistant..."
-            className="scrollbar-none text-text placeholder:text-text-secondary max-h-40 min-h-14 w-full resize-none bg-transparent px-5 py-3.5 pr-14 text-sm !outline-none transition-all duration-200"
-            rows={1}
+            className="w-full"
+            onChange={handleEditorChange}
+            onKeyDown={handleKeyDown}
             autoFocus
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">

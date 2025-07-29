@@ -1,7 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { SupportedActionLanguage } from "@follow/shared/language"
 import type { EntrySettings } from "@follow-app/client-sdk"
-import type { UIMessage } from "ai"
 import { sql } from "drizzle-orm"
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
@@ -156,28 +155,96 @@ export const imagesTable = sqliteTable("images", (t) => ({
     .default(sql`(unixepoch() * 1000)`),
 }))
 
-export const aiChatTable = sqliteTable("ai_chat", (t) => ({
+// AI Chat Sessions Table
+export const aiChatTable = sqliteTable("ai_chat_sessions", (t) => ({
   roomId: t.text("room_id").notNull().primaryKey(),
   title: t.text("title"),
   createdAt: t
     .integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
+  updatedAt: t
+    .integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
 }))
 
-export const aiChatMessagesTable = sqliteTable(
-  "ai_chat_messages",
-  (t) => ({
-    roomId: t
-      .text("room_id")
-      .notNull()
-      .references(() => aiChatTable.roomId),
-    id: t.text("id").notNull().primaryKey(),
-    createdAt: t
-      .integer("created_at", { mode: "timestamp_ms" })
-      .notNull()
-      .default(sql`(unixepoch() * 1000)`),
-    message: t.text("message", { mode: "json" }).$type<UIMessage<any, any, any>>().notNull(),
-  }),
-  (t) => [uniqueIndex("ai_chat_messages_unq").on(t.roomId, t.id)],
-)
+// Message Part types based on Vercel AI SDK UIMessage parts
+interface TextUIPart {
+  type: "text"
+  text: string
+}
+
+interface ReasoningUIPart {
+  type: "reasoning"
+  reasoning: string
+}
+
+interface ToolInvocationUIPart {
+  type: "tool-invocation"
+  toolInvocation: {
+    state: "partial-call" | "call" | "result"
+    toolCallId: string
+    toolName: string
+    args: any
+    result?: any
+  }
+}
+
+interface SourceUIPart {
+  type: "source"
+  source: {
+    sourceType: "url"
+    id: string
+    url: string
+    title?: string
+  }
+}
+
+interface StepStartUIPart {
+  type: "step-start"
+}
+
+type UIMessagePart =
+  | TextUIPart
+  | ReasoningUIPart
+  | ToolInvocationUIPart
+  | SourceUIPart
+  | StepStartUIPart
+
+// AI Chat Messages Table - Rich text support
+export const aiChatMessagesTable = sqliteTable("ai_chat_messages", (t) => ({
+  id: t.text("id").notNull().primaryKey(),
+  roomId: t
+    .text("room_id")
+    .notNull()
+    .references(() => aiChatTable.roomId, { onDelete: "cascade" }),
+
+  // Core message properties matching Vercel AI SDK UIMessage
+  role: t.text("role").notNull().$type<"user" | "assistant" | "system">(), // 移除 "data" role，在这个场景下不需要
+
+  // Content handling for rich text support
+  contentFormat: t
+    .text("content_format")
+    .notNull()
+    .$type<"plaintext" | "richtext">()
+    .default("plaintext"),
+  content: t.text("content").notNull(), // Markdown string - primary content for AI
+  richTextSchema: t
+    .text("rich_text_schema", { mode: "json" })
+    .$type<import("lexical").SerializedEditorState>(), // Lexical schema for user rich text
+
+  // Vercel AI SDK UIMessage properties
+  createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
+  annotations: t.text("annotations", { mode: "json" }).$type<any[]>(),
+
+  // Message processing status
+  status: t
+    .text("status")
+    .$type<"pending" | "streaming" | "completed" | "error">()
+    .default("completed"),
+  finishedAt: t.integer("finished_at", { mode: "timestamp_ms" }),
+
+  // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
+  messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
+}))
