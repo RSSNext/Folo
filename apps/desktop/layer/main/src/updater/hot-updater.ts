@@ -153,7 +153,7 @@ const downloadRenderAsset = async (manifest: Manifest) => {
 
   logger.info(`Downloading ${url}`)
 
-  await downloadFileWithProgress({
+  const success = await downloadFileWithProgress({
     url,
     outputPath: filePath,
     expectedHash: manifest.hash,
@@ -162,7 +162,8 @@ const downloadRenderAsset = async (manifest: Manifest) => {
       logger.info(message)
     },
   })
-  throw new Error("Download hot update render asset failed")
+  if (!success) throw new Error("Download hot update render asset failed")
+  return filePath
 }
 export const hotUpdateRender = async (manifest: Manifest) => {
   if (!appUpdaterConfig.enableRenderHotUpdate) return false
