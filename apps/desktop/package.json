@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.6.4",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
