@@ -25,9 +25,7 @@ jobs:
 
       - name: Make script executable
         run: |
-          ls -a
-          ls -a .github
-          chmod +x .github/scripts/extract-release-info.js
+          chmod +x .github/scripts/extract-release-info.mjs
 
       - name: Extract release information
         id: extract_info
