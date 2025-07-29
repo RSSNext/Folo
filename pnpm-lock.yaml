@@ -389,6 +389,9 @@ importers:
       js-yaml:
         specifier: 4.1.0
         version: 4.1.0
+      ky:
+        specifier: 1.8.2
+        version: 1.8.2
       linkedom:
         specifier: 0.18.11
         version: 0.18.11
@@ -11262,6 +11265,10 @@ packages:
   kose-font@1.0.0:
     resolution: {integrity: sha512-8R1M6ajjPvG0E4UxiNgZe0Hoy4qGTX1RuNZHN96dvqzuUwNM08gkpx1O+Q8/PzT8lp3lqH7w2DCUCGr8Wt7wPA==}
 
+  ky@1.8.2:
+    resolution: {integrity: sha512-XybQJ3d4Ea1kI27DoelE5ZCT3bSJlibYTtQuMsyzKox3TMyayw1asgQdl54WroAm+fIA3ZCr8zXW2RpR7qWVpA==}
+    engines: {node: '>=18'}
+
   kysely@0.28.2:
     resolution: {integrity: sha512-4YAVLoF0Sf0UTqlhgQMFU9iQECdah7n+13ANkiuVfRvlK+uI0Etbgd7bVP36dKlG+NXWbhGua8vnGt+sdhvT7A==}
     engines: {node: '>=18.0.0'}
@@ -14415,6 +14422,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
@@ -28048,6 +28056,8 @@ snapshots:
   kolorist@1.8.0: {}
 
   kose-font@1.0.0: {}
+
+  ky@1.8.2: {}
 
   kysely@0.28.2: {}
 

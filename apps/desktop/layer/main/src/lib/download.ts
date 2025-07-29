@@ -1,11 +1,10 @@
 import { createHash } from "node:crypto"
 import { createWriteStream } from "node:fs"
 import { mkdir } from "node:fs/promises"
-import https from "node:https"
-import os from "node:os"
 import { pipeline } from "node:stream"
 import { promisify } from "node:util"
 
+import ky from "ky"
 import path from "pathe"
 
 const streamPipeline = promisify(pipeline)
@@ -34,117 +33,91 @@ export async function downloadFile(url: string, dest: string) {
 export async function downloadFileWithProgress(options: DownloadOptions): Promise<boolean> {
   const { url, outputPath, expectedHash, onProgress, onLog } = options
 
-  return new Promise<boolean>((resolve) => {
-    https
-      .get(url, (response) => {
-        // Handle HTTP status codes properly
-        if (!response.statusCode || response.statusCode < 200 || response.statusCode >= 400) {
-          onLog?.(`Failed to download file: ${response.statusCode} ${response.statusMessage}`)
-          resolve(false)
-          return
+  try {
+    // Create download directory
+    await mkdir(path.dirname(outputPath), { recursive: true })
+
+    let lastProgressTime = Date.now()
+    const sha256 = expectedHash ? createHash("sha256") : null
+
+    onLog?.(`Starting download: ${path.basename(outputPath)}`)
+
+    // Use ky with onDownloadProgress
+    const response = await ky.get(url, {
+      onDownloadProgress: (progress) => {
+        const now = Date.now()
+        // Call progress callback every 500ms to avoid spam
+        if (now - lastProgressTime > 500 || progress.percent === 1) {
+          const percentage = progress.percent * 100
+          const downloadedMB = (progress.transferredBytes / 1024 / 1024).toFixed(2)
+          const totalMB = (progress.totalBytes / 1024 / 1024).toFixed(2)
+
+          onLog?.(`Download progress: ${percentage.toFixed(1)}% (${downloadedMB}/${totalMB} MB)`)
+
+          // Call progress callback if provided
+          if (onProgress) {
+            onProgress(progress.transferredBytes, progress.totalBytes, percentage)
+          }
+
+          lastProgressTime = now
         }
+      },
+    })
 
-        // Handle redirects (3xx status codes)
-        if (response.statusCode >= 300 && response.statusCode < 400) {
-          const { location } = response.headers
-          if (location) {
-            onLog?.(`Redirecting to: ${location}`)
-            // Recursively handle redirect
-            return downloadFileWithProgress({
-              ...options,
-              url: location,
-            })
-              .then(resolve)
-              .catch(() => resolve(false))
-          } else {
-            onLog?.(`Redirect response without location header: ${response.statusCode}`)
-            resolve(false)
-            return
-          }
-        }
+    if (!response.ok) {
+      onLog?.(`Failed to download file: ${response.status} ${response.statusText}`)
+      return false
+    }
 
-        const totalSize = Number.parseInt(response.headers["content-length"] || "0", 10)
-        let downloadedSize = 0
-        let lastProgressTime = Date.now()
-        const sha256 = expectedHash ? createHash("sha256") : null
+    // Get the response as array buffer
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
 
-        onLog?.(
-          `Starting download: ${path.basename(outputPath)} (${(totalSize / 1024 / 1024).toFixed(2)} MB)`,
-        )
+    // Verify hash if provided
+    if (expectedHash && sha256) {
+      sha256.update(buffer)
+      const hash = sha256.digest("hex")
+      if (hash !== expectedHash) {
+        onLog?.(`Hash verification failed. Expected: ${expectedHash}, Got: ${hash}`)
+        return false
+      }
+      onLog?.("Hash verification passed")
+    }
 
-        response.on("data", (chunk: Buffer) => {
-          downloadedSize += chunk.length
-          if (sha256) {
-            sha256.update(chunk)
-          }
+    // Write to file
+    const writeStream = createWriteStream(outputPath)
 
-          const now = Date.now()
-          // Call progress callback every 500ms to avoid spam
-          if (now - lastProgressTime > 500 || downloadedSize === totalSize) {
-            const percentage = totalSize > 0 ? (downloadedSize / totalSize) * 100 : 0
-
-            onLog?.(
-              `Download progress: ${percentage.toFixed(1)}% (${(downloadedSize / 1024 / 1024).toFixed(2)}/${(totalSize / 1024 / 1024).toFixed(2)} MB)`,
-            )
-
-            // Call progress callback if provided
-            if (onProgress) {
-              onProgress(downloadedSize, totalSize, percentage)
-            }
-
-            lastProgressTime = now
-          }
-        })
-
-        response.on("end", async () => {
-          try {
-            onLog?.(`Download completed: ${url}`)
-
-            // Verify hash if provided
-            if (expectedHash && sha256) {
-              const hash = sha256.digest("hex")
-              if (hash !== expectedHash) {
-                onLog?.(`Hash verification failed. Expected: ${expectedHash}, Got: ${hash}`)
-                resolve(false)
-                return
-              }
-              onLog?.("Hash verification passed")
-            }
-
-            onLog?.(`Download completed: ${outputPath}`)
-
-            resolve(true)
-          } catch (error) {
-            onLog?.(`Error during download completion: ${error}`)
-            resolve(false)
-          }
-        })
-
-        response.on("error", (error) => {
-          onLog?.(`Download error: ${error}`)
-          resolve(false)
-        })
-
-        // Create download directory and write stream
-        mkdir(path.dirname(outputPath), { recursive: true })
-          .then(() => {
-            const writeStream = createWriteStream(outputPath)
-
-            writeStream.on("error", (error) => {
-              onLog?.(`Write stream error: ${error}`)
-              resolve(false)
-            })
-
-            response.pipe(writeStream)
-          })
-          .catch((error) => {
-            onLog?.(`Error creating download directory: ${error}`)
-            resolve(false)
-          })
-      })
-      .on("error", (error) => {
-        onLog?.(`HTTPS request error: ${error}`)
+    return new Promise<boolean>((resolve) => {
+      writeStream.on("error", (error) => {
+        onLog?.(`Write stream error: ${error}`)
         resolve(false)
       })
-  })
+
+      writeStream.on("finish", () => {
+        onLog?.(`Download completed: ${outputPath}`)
+        resolve(true)
+      })
+
+      writeStream.end(buffer)
+    })
+  } catch (error) {
+    onLog?.(`Download error: ${error}`)
+    return false
+  }
 }
+
+// async function testDownload() {
+//   console.info("Testing ky onDownloadProgress implementation...")
+
+//   const result = await downloadFileWithProgress({
+//     url: "https://github.com/Innei/Follow/releases/download/desktop/v1.2.5/manifest.yml",
+//     outputPath: path.resolve(os.tmpdir(), "follow-render-update", "manifest.yml"),
+//     onLog(message) {
+//       console.info(`[LOG] ${message}`)
+//     },
+//   })
+
+//   console.info(`Download result: ${result}`)
+// }
+
+// testDownload().catch(console.error)
