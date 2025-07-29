@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: lts/*
 
       - name: Make script executable
         run: chmod +x .github/scripts/extract-release-info.js
