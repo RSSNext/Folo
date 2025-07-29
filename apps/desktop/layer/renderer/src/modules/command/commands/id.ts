@@ -28,6 +28,8 @@ export const COMMAND_ID = {
     saveToCubox: "integration:save-to-cubox",
     saveToZotero: "integration:save-to-zotero",
     saveToQBittorrent: "integration:save-to-qbittorrent",
+
+    custom: "integration:custom",
   },
   list: {
     edit: "list:edit",

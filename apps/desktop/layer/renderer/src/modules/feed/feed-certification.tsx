@@ -30,13 +30,15 @@ export const FeedCertification = ({
     (feed.ownerUserId === me?.id ? (
       <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
-          <i className={cn("i-mgc-certificate-cute-fi text-accent ml-1.5 shrink-0", className)} />
+          <i
+            className={cn("i-mgc-certificate-cute-fi ml-1.5 shrink-0 text-orange-500", className)}
+          />
         </TooltipTrigger>
 
         <TooltipPortal>
           <TooltipContent className="px-4 py-2">
             <div className="flex items-center text-base font-semibold">
-              <i className="i-mgc-certificate-cute-fi text-accent mr-2 size-4 shrink-0" />
+              <i className="i-mgc-certificate-cute-fi mr-2 size-4 shrink-0 text-orange-500" />
               {type === "feed" ? t("feed_item.claimed_feed") : t("feed_item.claimed_list")}
             </div>
             <div>{t("feed_item.claimed_by_you")}</div>

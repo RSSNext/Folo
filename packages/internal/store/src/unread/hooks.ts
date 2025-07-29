@@ -42,13 +42,15 @@ export const useSyncUnreadWhenUnMatch = (entryIds: string[]) => {
   }, [entryIds.toString()])
 }
 
-export const useAutoMarkAsRead = (entryId: string) => {
+export const useAutoMarkAsRead = (entryId: string, enabled: boolean) => {
   const { mutate } = useMutation({
     mutationFn: (entryId: string) => unreadSyncService.markEntryAsRead(entryId),
   })
   useEffect(() => {
-    mutate(entryId)
-  }, [entryId, mutate])
+    if (enabled) {
+      mutate(entryId)
+    }
+  }, [enabled, entryId, mutate])
 }
 
 export const useUnreadById = (id: string) => {

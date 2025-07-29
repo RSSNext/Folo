@@ -37,8 +37,9 @@ export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
   entryIds?: string[]
   view: FeedViewType
-}> = ({ entryId, entryIds, view: viewType }) => {
-  useAutoMarkAsRead(entryId)
+  isInbox?: boolean
+}> = ({ entryId, entryIds, view: viewType, isInbox }) => {
+  usePrefetchEntryDetail(entryId, isInbox)
   const entry = useEntry(entryId, (state) => ({
     title: state.title,
     url: state.url,
@@ -46,6 +47,7 @@ export const EntryDetailScreen: NavigationControllerView<{
     translation: state.settings?.translation,
     readability: state.settings?.readability,
   }))
+  useAutoMarkAsRead(entryId, !!entry)
   const insets = useSafeAreaInsets()
   const ctxValue = useMemo(
     () => ({

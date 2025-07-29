@@ -543,11 +543,12 @@ class EntrySyncServices {
     return res
   }
 
-  async fetchEntryDetail(entryId: EntryId) {
+  async fetchEntryDetail(entryId: EntryId, isInbox?: boolean) {
     const currentEntry = getEntry(entryId)
-    const res = currentEntry?.inboxHandle
-      ? await apiClient().entries.inbox.$get({ query: { id: entryId } })
-      : await apiClient().entries.$get({ query: { id: entryId } })
+    const res =
+      currentEntry?.inboxHandle || isInbox
+        ? await apiClient().entries.inbox.$get({ query: { id: entryId } })
+        : await apiClient().entries.$get({ query: { id: entryId } })
     const entry = honoMorph.toEntry(res.data)
     if (!currentEntry && entry) {
       await entryActions.upsertMany([entry])

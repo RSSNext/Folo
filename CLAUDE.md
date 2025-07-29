@@ -232,3 +232,10 @@ Example:
 - **Styling**: Tailwind CSS, Framer Motion
 - **Database**: Drizzle ORM, SQLite
 - **Utils**: Day.js, Zod, i18next
+
+## Agent Guidelines
+
+- When performing tasks, you can call the corresponding sub agent to complete the specified task.
+  - tech-lead-orchestrator
+  - react-architect
+  - ui-design-engineer
