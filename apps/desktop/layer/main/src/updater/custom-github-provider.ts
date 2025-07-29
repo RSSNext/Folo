@@ -84,10 +84,11 @@ export class CustomGitHubProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         const hrefElement = hrefRegExp.exec(element.element("link").attribute("href"))
 
         // If this is null then something is wrong and skip this release
-        if (hrefElement === null) continue
-
+        let hrefTag = hrefElement?.[1]
+        if (hrefElement === null || !hrefTag) continue
+        // <link rel="alternate" type="text/html" href="https://github.com/Innei/Follow/releases/tag/desktop%2Fv1.2.0"/>
+        hrefTag = decodeURIComponent(hrefTag)
         // This Release's Tag
-        const hrefTag = hrefElement[1]!
         // Get Channel from this release's tag
         // Handle new format: desktop/v1.2.3 or mobile/v1.2.3
         let hrefChannel = "stable"

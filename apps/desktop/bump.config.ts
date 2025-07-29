@@ -18,7 +18,8 @@ export default defineConfig({
   ],
   push: false,
   commitMessage: "release(desktop): release v${NEW_VERSION}",
-  tagPrefix: "desktop@",
+  tag: false,
+  allowDirty: true,
   changelog: false,
-  allowedBranches: ["dev"],
+  allowedBranches: ["dev", "main"],
 })

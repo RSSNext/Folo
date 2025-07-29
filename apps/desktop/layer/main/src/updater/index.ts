@@ -67,6 +67,8 @@ export const checkForAppUpdates = async (): Promise<{ hasUpdate: boolean; error?
 
         // Auto upgrade renderer
         upgradeRenderIfNeeded()
+
+        return { hasUpdate }
       }
     }
 

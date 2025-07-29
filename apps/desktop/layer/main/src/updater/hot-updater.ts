@@ -1,7 +1,6 @@
 /**
  * @description This file handles hot updates for the electron renderer layer
  */
-import { createHash } from "node:crypto"
 import { existsSync, readFileSync } from "node:fs"
 import { mkdir, readdir, rename, rm, stat, writeFile } from "node:fs/promises"
 import os from "node:os"
@@ -14,6 +13,7 @@ import path from "pathe"
 import { x } from "tar"
 
 import { GITHUB_OWNER, GITHUB_REPO, HOTUPDATE_RENDER_ENTRY_DIR } from "~/constants/app"
+import { downloadFileWithProgress } from "~/lib/download"
 import { WindowManager } from "~/manager/window"
 
 import { appUpdaterConfig } from "./configs"
@@ -27,11 +27,26 @@ const releaseApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REP
 const getLatestReleaseTag = async () => {
   // Get all releases and filter for desktop releases only
   const res = await fetch(releaseApiUrl)
+
+  if (!res.ok) {
+    throw new Error(`GitHub API request failed: ${res.status} ${res.statusText}`)
+  }
+
   const releases = await res.json()
+
+  // Check if the response contains an error message
+  if (releases.message) {
+    throw new Error(`GitHub API error: ${releases.message}`)
+  }
+
+  // Ensure releases is an array
+  if (!Array.isArray(releases)) {
+    throw new TypeError("Invalid response format from GitHub API")
+  }
 
   // Filter for desktop releases and find the latest one
   const desktopReleases = releases.filter(
-    (release: any) => release.tag_name.startsWith("desktop/") && !release.draft,
+    (release: any) => release.tag_name && release.tag_name.startsWith("desktop/") && !release.draft,
   )
 
   if (desktopReleases.length === 0) {
@@ -61,6 +76,12 @@ const getLatestReleaseManifest = async () => {
   const url = await getFileDownloadUrl("manifest.yml")
   logger.info(`Fetching manifest from ${url}`)
   const res = await fetch(url)
+
+  if (!res.ok) {
+    logger.error(`Failed to fetch manifest: ${res.status} ${res.statusText}`)
+    return null
+  }
+
   const text = await res.text()
   const manifest = load(text) as Manifest
   if (typeof manifest !== "object") {
@@ -88,28 +109,10 @@ export const canUpdateRender = async (): Promise<[CanUpdateRenderState, Manifest
 
   if (!manifest) return [CanUpdateRenderState.NETWORK_ERROR, null]
 
-  // const isAppShouldUpdate = shouldUpdateApp(appVersion, manifest.version)
-  // if (isAppShouldUpdate) {
-  //   logger.info(
-  //     "app should update, skip render update, app version: ",
-  //     appVersion,
-  //     ", the manifest version: ",
-  //     manifest.version,
-  //   )
-  //   return false
-  // }
-
   const appSupport = mainHash === manifest.mainHash
   if (!appSupport) {
     logger.info("app not support, should trigger app force update, app version: ", appVersion)
-    // hotUpdateAppNotSupportTriggerTrack({
-    //   appVersion,
-    //   manifestVersion: manifest.version,
-    // })
-    // // Trigger app force update
-    // checkForAppUpdates().then(() => {
-    //   downloadAppUpdate()
-    // })
+
     return [CanUpdateRenderState.APP_NOT_SUPPORT, null]
   }
 
@@ -146,23 +149,20 @@ export const canUpdateRender = async (): Promise<[CanUpdateRenderState, Manifest
 const downloadRenderAsset = async (manifest: Manifest) => {
   const { filename } = manifest
   const url = await getFileDownloadUrl(filename)
+  const filePath = path.resolve(downloadTempDir, filename)
 
   logger.info(`Downloading ${url}`)
-  const res = await fetch(url)
-  const arrayBuffer = await res.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
-  const filePath = path.resolve(downloadTempDir, filename)
-  await mkdir(downloadTempDir, { recursive: true })
-  await writeFile(filePath, buffer)
 
-  const sha256 = createHash("sha256")
-  sha256.update(buffer)
-  const hash = sha256.digest("hex")
-  if (hash !== manifest.hash) {
-    logger.error("Hash mismatch", hash, manifest.hash)
-    return false
-  }
-  return filePath
+  await downloadFileWithProgress({
+    url,
+    outputPath: filePath,
+    expectedHash: manifest.hash,
+
+    onLog: (message) => {
+      logger.info(message)
+    },
+  })
+  throw new Error("Download hot update render asset failed")
 }
 export const hotUpdateRender = async (manifest: Manifest) => {
   if (!appUpdaterConfig.enableRenderHotUpdate) return false
