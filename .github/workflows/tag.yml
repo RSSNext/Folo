@@ -24,11 +24,14 @@ jobs:
           node-version: lts/*
 
       - name: Make script executable
-        run: chmod +x .github/scripts/extract-release-info.js
+        run: |
+          ls -a
+          ls -a .github
+          chmod +x .github/scripts/extract-release-info.js
 
       - name: Extract release information
         id: extract_info
-        run: ./.github/scripts/extract-release-info.mjs
+        run: .github/scripts/extract-release-info.mjs
         continue-on-error: false
 
       - name: Validate git configuration
