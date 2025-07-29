@@ -89,8 +89,19 @@ export class CustomGitHubProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         // This Release's Tag
         const hrefTag = hrefElement[1]!
         // Get Channel from this release's tag
-        // If it is null, we believe it is stable version
-        const hrefChannel = (semver.prerelease(hrefTag)?.[0] as string) || "stable"
+        // Handle new format: desktop/v1.2.3 or mobile/v1.2.3
+        let hrefChannel = "stable"
+        if (hrefTag.startsWith("desktop/")) {
+          // For desktop tags, extract the version and check if it's a prerelease
+          const version = hrefTag.replace("desktop/", "")
+          hrefChannel = (semver.prerelease(version)?.[0] as string) || "stable"
+        } else if (hrefTag.startsWith("mobile/")) {
+          // Skip mobile releases for desktop updater
+          continue
+        } else {
+          // Legacy format: check for prerelease directly
+          hrefChannel = (semver.prerelease(hrefTag)?.[0] as string) || "stable"
+        }
 
         let isNextPreRelease = false
         if (releaseTag) {
@@ -210,7 +221,21 @@ export class CustomGitHubProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         }
 
         const releaseTag = release.tag_name
-        const releaseChannel = (semver.prerelease(releaseTag)?.[0] as string) || "stable"
+
+        // Handle new format: desktop/v1.2.3 or mobile/v1.2.3
+        let releaseChannel = "stable"
+        if (releaseTag.startsWith("desktop/")) {
+          // For desktop tags, extract the version and check if it's a prerelease
+          const version = releaseTag.replace("desktop/", "")
+          releaseChannel = (semver.prerelease(version)?.[0] as string) || "stable"
+        } else if (releaseTag.startsWith("mobile/")) {
+          // Skip mobile releases for desktop updater
+          continue
+        } else {
+          // Legacy format: check for prerelease directly
+          releaseChannel = (semver.prerelease(releaseTag)?.[0] as string) || "stable"
+        }
+
         if (releaseChannel === currentChannel) {
           return release.tag_name
         }

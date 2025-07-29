@@ -30,7 +30,7 @@ export const TextArea = ({
     className,
     wrapperClassName,
     children,
-    rounded = "xl",
+    rounded = "lg",
     bordered = true,
     onCmdEnter,
     autoHeight,

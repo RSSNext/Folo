@@ -144,6 +144,13 @@ export const defaultIntegrationSettings: IntegrationSettings = {
   qbittorrentPassword: "",
 
   saveSummaryAsDescription: false,
+
+  // custom actions
+  enableCustomIntegration: false,
+  customIntegration: [],
+
+  // fetch preferences (Electron only)
+  useBrowserFetch: true,
 }
 
 export const defaultAISettings: AISettings = {

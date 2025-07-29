@@ -15,11 +15,10 @@ import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import type { EntryModelSimple, FeedAnalyticsModel, FeedModel } from "@follow/models/types"
-import { invalidateEntriesQuery } from "@follow/store/entry/hooks"
 import { useFeedByIdOrUrl } from "@follow/store/feed/hooks"
 import { useCategories, useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
-import { unreadActions } from "@follow/store/unread/store"
+import { whoami } from "@follow/store/user/getters"
 import { tracker } from "@follow/tracker"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,12 +29,10 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { getGeneralSettings } from "~/atoms/settings/general"
 import { Autocomplete } from "~/components/ui/auto-completion"
 import { useCurrentModal, useIsInModal } from "~/components/ui/modal/stacked/hooks"
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
-import { apiClient } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
@@ -239,34 +236,27 @@ const FeedInnerForm = ({
 
   const followMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const userId = whoami()?.id || ""
       const body = {
         url: feed.url,
         view: Number.parseInt(values.view),
         category: values.category,
-        isPrivate: values.isPrivate,
+        isPrivate: values.isPrivate || false,
         hideFromTimeline: values.hideFromTimeline,
         title: values.title,
         feedId: feed.id,
-      }
-      const $method = isSubscribed ? apiClient.subscriptions.$patch : apiClient.subscriptions.$post
+        userId,
+        type: "feed",
+        listId: undefined,
+      } as const
 
-      return $method({
-        json: body,
-      }) as unknown as Promise<
-        | ReturnType<typeof apiClient.subscriptions.$post>
-        | ReturnType<typeof apiClient.subscriptions.$patch>
-      >
+      if (isSubscribed) {
+        return subscriptionSyncService.edit(body)
+      } else {
+        return subscriptionSyncService.subscribe(body)
+      }
     },
-    onSuccess: (data, variables) => {
-      if (getGeneralSettings().hidePrivateSubscriptionsInTimeline) {
-        invalidateEntriesQuery({ views: [Number(variables.view)] })
-      }
-
-      if ("unread" in data) {
-        unreadActions.upsertMany(data.unread)
-      }
-      subscriptionSyncService.fetch()
-
+    onSuccess: () => {
       const feedId = feed.id
       if (feedId) {
         feedQuery.byId({ id: feedId }).invalidate()
@@ -274,10 +264,6 @@ const FeedInnerForm = ({
       toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,
       })
-
-      if (!isSubscribed) {
-        tracker.subscribe({ feedId: feed.id, view: Number.parseInt(variables.view) })
-      }
 
       onSuccess?.()
     },

@@ -8,6 +8,8 @@ import { createSettingAtom } from "./internal/helper"
 export interface UISettings extends BaseUISettings {
   fontScale: number
   useSystemFontScaling: boolean
+  useDifferentFontSizeForContent: boolean
+  mobileContentFontSize: number
 }
 export const createDefaultSettings = (): UISettings => ({
   ...defaultUISettings,
@@ -15,6 +17,8 @@ export const createDefaultSettings = (): UISettings => ({
 
   fontScale: 1,
   useSystemFontScaling: true,
+  useDifferentFontSizeForContent: false,
+  mobileContentFontSize: 16,
 })
 
 export const {

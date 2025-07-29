@@ -182,6 +182,7 @@ const useLocalEntries = (): UseEntriesReturn => {
         entryIdsByInboxId,
         entryIdsByListId,
         entryIdsByView,
+        isCollection,
         showEntriesByView,
         unreadOnly,
       ],

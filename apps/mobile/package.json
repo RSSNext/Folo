@@ -6,6 +6,7 @@
   "scripts": {
     "android": "expo run:android",
     "bump": "vv",
+    "changelog:generate": "tsx ../../packages/changelog-cli/index.ts",
     "dev": "npm run start",
     "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
     "eas-build-pre-install": "command -v pod >/dev/null 2>&1 && pod repo update || echo 'CocoaPods not found, skipping pod repo update'",

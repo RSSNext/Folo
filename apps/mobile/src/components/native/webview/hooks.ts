@@ -61,11 +61,24 @@ export function useWebViewEntry({
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")
   const useSystemFontScaling = useUISettingKey("useSystemFontScaling")
   const customFontScale = useUISettingKey("fontScale")
+  const useDifferentFontSizeForContent = useUISettingKey("useDifferentFontSizeForContent")
+  const mobileContentFontSize = useUISettingKey("mobileContentFontSize")
 
   useEffect(() => {
     const fontScale = useSystemFontScaling ? PixelRatio.getFontScale() : customFontScale
     WebViewManager.setRootFontSize(fontScale * 16)
   }, [useSystemFontScaling, customFontScale])
+
+  // Handle content-specific font size
+  useEffect(() => {
+    if (useDifferentFontSizeForContent) {
+      WebViewManager.setRootFontSize(mobileContentFontSize)
+    } else {
+      // Reset to use the global font scaling
+      const fontScale = useSystemFontScaling ? PixelRatio.getFontScale() : customFontScale
+      WebViewManager.setRootFontSize(fontScale * 16)
+    }
+  }, [useDifferentFontSizeForContent, mobileContentFontSize, useSystemFontScaling, customFontScale])
 
   // Prepare entry data for WebView
   const entryInWebview = useMemo(() => {

@@ -10,6 +10,7 @@ export interface ToolbarActionOrder {
 export const ENTRY_ITEM_HIDE_IN_HEADER = new Set<UniqueIdentifier>([
   COMMAND_ID.entry.readAbove,
   COMMAND_ID.entry.readBelow,
+  COMMAND_ID.settings.customizeToolbar,
 ])
 
 const MAIN_ACTIONS = [
@@ -30,6 +31,5 @@ export const DEFAULT_ACTION_ORDER: ToolbarActionOrder = {
   more: [
     ...Object.values(COMMAND_ID.integration),
     ...Object.values(COMMAND_ID.entry).filter((id) => !MAIN_ACTIONS_SET.has(id)),
-    COMMAND_ID.settings.customizeToolbar,
   ],
 }
