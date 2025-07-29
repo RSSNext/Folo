@@ -7,7 +7,7 @@
   "author": "Folo Team",
   "homepage": "https://github.com/RSSNext",
   "repository": {
-    "url": "https://github.com/RSSNext/Folo",
+    "url": "https://github.com/Innei/Follow",
     "type": "git"
   },
   "main": "./dist/main/index.js",

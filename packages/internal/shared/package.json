@@ -6,7 +6,7 @@
   "license": "GPL-3.0-only",
   "homepage": "https://github.com/RSSNext",
   "repository": {
-    "url": "https://github.com/RSSNext/follow",
+    "url": "https://github.com/Innei/Follow",
     "type": "git"
   },
   "sideEffects": false,

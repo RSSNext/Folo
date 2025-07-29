@@ -49,7 +49,7 @@ describe("proxy", () => {
     })
 
     it("should handle default port", () => {
-      // https://github.com/RSSNext/Follow/issues/1197
+      // https://github.com/Innei/Follow/issues/1197
       const proxy = "http://example.com:80"
       const result = setProxyConfig(proxy)
       expect(store.set).toHaveBeenCalledWith("proxy", "http://example.com")

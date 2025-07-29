@@ -75,7 +75,7 @@ export const AboutScreen = () => {
               }}
               components={{
                 OpenIssueLink: (
-                  <Link className="text-accent" href="https://github.com/RSSNext/follow" />
+                  <Link className="text-accent" href="https://github.com/Innei/Follow" />
                 ),
                 ExternalLinkIcon: <View />,
               }}

@@ -70,7 +70,7 @@ export async function readability(baseUrl: string) {
   const reader = new Readability(document, {
     debug: isDev,
     // keep classes to set the right code language
-    // https://github.com/RSSNext/Follow/issues/1058
+    // https://github.com/Innei/Follow/issues/1058
     keepClasses: true,
   })
   return reader.parse()

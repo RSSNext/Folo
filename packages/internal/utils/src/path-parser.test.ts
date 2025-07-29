@@ -100,7 +100,7 @@ describe("test `regexpPathToPath()`", () => {
         user: "rssnext",
         repo: "follow",
       }),
-    ).toMatchInlineSnapshot(`"/issue/rssnext/follow"`)
+    ).toMatchInlineSnapshot(`"/issue/Innei/Follow"`)
   })
 
   test("path with many optional params, but when using the optional parameter(s) after the optional parameter(s), the previous optional parameter(s) is/are not filled in.", () => {
@@ -134,7 +134,7 @@ describe("test `regexpPathToPath()`", () => {
         state: "open",
         labels: "rss",
       }),
-    ).toMatchInlineSnapshot(`"/issue/rssnext/follow/open/rss"`)
+    ).toMatchInlineSnapshot(`"/issue/Innei/Follow/open/rss"`)
   })
 
   test("omit empty string and nil value", () => {
@@ -151,7 +151,7 @@ describe("test `regexpPathToPath()`", () => {
           omitNilAndEmptyString: true,
         },
       ),
-    ).toMatchInlineSnapshot(`"/issue/rssnext/follow/open"`)
+    ).toMatchInlineSnapshot(`"/issue/Innei/Follow/open"`)
   })
 
   test("omit empty string and nil value will throw", () => {
@@ -194,7 +194,7 @@ describe("test `regexpPathToPath()`", () => {
         },
         { omitNilAndEmptyString: false },
       ),
-    ).toMatchInlineSnapshot(`"/issue/rssnext/follow//l"`)
+    ).toMatchInlineSnapshot(`"/issue/Innei/Follow//l"`)
   })
 })
 
