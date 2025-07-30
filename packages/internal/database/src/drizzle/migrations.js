@@ -38,6 +38,10 @@ import m0034 from "./0034_mixed_gwen_stacy.sql"
 import m0035 from "./0035_colossal_cargill.sql"
 import m0036 from "./0036_big_machine_man.sql"
 import m0037 from "./0037_dusty_whirlwind.sql"
+import m0038 from "./0038_aberrant_ulik.sql"
+import m0039 from "./0039_optimal_eddie_brock.sql"
+import m0040 from "./0040_fluffy_bloodstorm.sql"
+import m0041 from "./0041_fluffy_exodus.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -81,5 +85,9 @@ export default {
     m0035,
     m0036,
     m0037,
+    m0038,
+    m0039,
+    m0040,
+    m0041,
   },
 }

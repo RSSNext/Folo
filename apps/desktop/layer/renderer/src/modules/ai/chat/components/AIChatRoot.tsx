@@ -12,8 +12,6 @@ import {
 } from "../__internal__/AIChatContext"
 import { useChatActions, useCurrentChatId } from "../__internal__/hooks"
 import { createAIChatStore } from "../__internal__/store"
-import { useSessionPersisted, useSetSessionPersisted } from "../atoms/session"
-import { useChatHistory } from "../hooks/useChatHistory"
 import { AIPersistService } from "../services"
 
 interface AIChatRootProps extends PropsWithChildren {
@@ -23,11 +21,6 @@ interface AIChatRootProps extends PropsWithChildren {
 
 // Inner component that has access to the AI chat store context
 const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId }) => {
-  const sessionPersisted = useSessionPersisted()
-  const setSessionPersisted = useSetSessionPersisted()
-
-  const { createNewSession } = useChatHistory()
-
   // Use the new internal hooks
   const currentChatId = useCurrentChatId()
 
@@ -36,12 +29,9 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
   // Initialize room ID on mount
   useMemo(() => {
     if (!currentChatId && !externalChatId) {
-      createNewSession(false)
-      chatActions.newChat()
-    } else if (externalChatId && externalChatId !== currentChatId) {
       chatActions.newChat()
     }
-  }, [currentChatId, externalChatId, createNewSession, chatActions])
+  }, [currentChatId, externalChatId, chatActions])
 
   const handleTitleGenerated = useCallback(
     async (title: string) => {
@@ -57,22 +47,10 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
     [currentChatId, chatActions],
   )
 
-  const handleFirstMessage = useCallback(async () => {
-    if (!sessionPersisted && currentChatId) {
-      try {
-        await AIPersistService.createSession(currentChatId, "New Chat")
-        setSessionPersisted(true)
-      } catch (error) {
-        console.error("Failed to persist session:", error)
-      }
-    }
-  }, [sessionPersisted, currentChatId, setSessionPersisted])
-
   const handleNewChat = useCallback(() => {
     chatActions.newChat()
-    setSessionPersisted(false)
     chatActions.setCurrentTitle(undefined)
-  }, [chatActions, setSessionPersisted])
+  }, [chatActions])
 
   const panelRef = useRef<HTMLDivElement>(null!)
   const inputRef = useRef<HTMLTextAreaElement>(null!)
@@ -82,10 +60,9 @@ const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId
   const sessionMethods = useMemo<AIChatSessionMethods>(
     () => ({
       handleTitleGenerated,
-      handleFirstMessage,
       handleNewChat,
     }),
-    [handleTitleGenerated, handleFirstMessage, handleNewChat],
+    [handleTitleGenerated, handleNewChat],
   )
 
   if (!currentChatId) {

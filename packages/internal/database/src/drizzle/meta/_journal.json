@@ -267,6 +267,34 @@
       "when": 1753874099102,
       "tag": "0037_dusty_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1753881637020,
+      "tag": "0038_aberrant_ulik",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "6",
+      "when": 1753882436545,
+      "tag": "0039_optimal_eddie_brock",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "6",
+      "when": 1753886818992,
+      "tag": "0040_fluffy_bloodstorm",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "6",
+      "when": 1753887264224,
+      "tag": "0041_fluffy_exodus",
+      "breakpoints": true
     }
   ]
 }

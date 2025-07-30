@@ -4,7 +4,6 @@ import { springScrollTo } from "@follow/utils/scroller"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
 import {
   useChatActions,
   useChatError,
@@ -18,7 +17,6 @@ import {
 } from "~/modules/ai/chat/components/message/AIChatMessage"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
-import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
 
 import { ChatInput } from "./ChatInput"
 import { WelcomeScreen } from "./WelcomeScreen"
@@ -32,14 +30,12 @@ export const ChatInterface = () => {
   const error = useChatError()
 
   const currentChatId = useCurrentChatId()
-  const { handleFirstMessage } = useAIChatSessionMethods()
+
   const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const [hasHandledFirstMessage, setHasHandledFirstMessage] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
 
   // Reset handlers when chatId changes
   useEffect(() => {
-    setHasHandledFirstMessage(false)
     setIsAtBottom(true)
   }, [currentChatId])
 
@@ -58,7 +54,6 @@ export const ChatInterface = () => {
       })
     },
   })
-  useSaveMessages(currentChatId || "", { enabled: !isLoadingHistory })
 
   const { resetScrollState } = useAutoScroll(scrollAreaRef.current, status === "streaming")
 
@@ -91,12 +86,6 @@ export const ChatInterface = () => {
 
   const handleSendMessage = useEventCallback((message: string) => {
     resetScrollState()
-
-    // Handle first message persistence
-    if (messages.length === 0 && !hasHandledFirstMessage) {
-      handleFirstMessage()
-      setHasHandledFirstMessage(true)
-    }
 
     // Use string message directly as supported by AI SDK
     chatActions.sendMessage(message)

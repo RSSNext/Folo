@@ -1,6 +1,7 @@
+import type { AsyncDb } from "@follow/database/db"
 import { db } from "@follow/database/db"
 import { aiChatMessagesTable, aiChatTable } from "@follow/database/schemas/index"
-import { asc, eq, inArray, sql } from "drizzle-orm"
+import { asc, count, eq, inArray, sql } from "drizzle-orm"
 import type { SerializedEditorState } from "lexical"
 
 import type { BizUIMessage } from "../__internal__/types"
@@ -103,12 +104,12 @@ class AIPersistServiceStatic {
       .onConflictDoUpdate({
         target: [aiChatMessagesTable.id],
         set: {
-          messageParts: sql`excluded.messageParts`,
+          messageParts: sql`excluded.message_parts`,
           metadata: sql`excluded.metadata`,
-          finishedAt: sql`excluded.finishedAt`,
-          createdAt: sql`excluded.createdAt`,
+          finishedAt: sql`excluded.finished_at`,
+          createdAt: sql`excluded.created_at`,
           status: sql`excluded.status`,
-          richTextSchema: sql`excluded.richTextSchema`,
+          richTextSchema: sql`excluded.rich_text_schema`,
         },
       })
   }
@@ -116,6 +117,149 @@ class AIPersistServiceStatic {
   async replaceAllMessages(chatId: string, messages: BizUIMessage[]) {
     await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.chatId, chatId))
     await this.insertMessages(chatId, messages)
+  }
+
+  /**
+   * Upsert specific messages (insert new, update existing)
+   * Ensures the chat session exists before inserting messages
+   */
+  async upsertMessages(chatId: string, messages: BizUIMessage[]) {
+    if (messages.length === 0) {
+      return
+    }
+
+    // Ensure the chat session exists first to avoid foreign key constraint failure
+    await this.ensureSession(chatId)
+
+    await db
+      .insert(aiChatMessagesTable)
+      .values(
+        messages.map((message) => {
+          const convertedParts = message.parts as any[]
+
+          return {
+            id: message.id,
+            chatId,
+            role: message.role,
+            contentFormat: "plaintext" as const,
+            richTextSchema: undefined,
+            createdAt: new Date(),
+            status: "completed" as const,
+            finishedAt: message.metadata?.finishTime
+              ? new Date(message.metadata.finishTime)
+              : undefined,
+            messageParts: convertedParts,
+            metadata: message.metadata,
+          } as typeof aiChatMessagesTable.$inferInsert
+        }),
+      )
+      .onConflictDoUpdate({
+        target: [aiChatMessagesTable.id],
+        set: {
+          messageParts: sql`excluded.message_parts`,
+          metadata: sql`excluded.metadata`,
+          finishedAt: sql`excluded.finished_at`,
+          status: sql`excluded.status`,
+          richTextSchema: sql`excluded.rich_text_schema`,
+        },
+      })
+  }
+
+  /**
+   * Delete specific messages by ID
+   */
+  async deleteMessages(chatId: string, messageIds: string[]) {
+    if (messageIds.length === 0) {
+      return
+    }
+
+    await db
+      .delete(aiChatMessagesTable)
+      .where(eq(aiChatMessagesTable.chatId, chatId) && inArray(aiChatMessagesTable.id, messageIds))
+  }
+
+  /**
+   * Ensure session exists (idempotent operation)
+   */
+  async ensureSession(chatId: string, title?: string) {
+    const existing = await this.getChatSession(chatId)
+
+    if (!existing) {
+      await this.createSession(chatId, title)
+      return { created: true, session: { chatId, title, createdAt: new Date() } }
+    }
+    return { created: false, session: existing }
+  }
+
+  /**
+   * Batch multiple persistence operations atomically
+   */
+  async batchUpdate(
+    operations: Array<{
+      type: "session_create" | "session_update" | "messages_upsert" | "messages_delete"
+      payload: any
+    }>,
+  ) {
+    return db.transaction(async (tx) => {
+      for (const operation of operations) {
+        switch (operation.type) {
+          case "session_create": {
+            await tx
+              .insert(aiChatTable)
+              .values({
+                chatId: operation.payload.chatId,
+                title: operation.payload.title,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .onConflictDoNothing()
+            break
+          }
+
+          case "session_update": {
+            await tx
+              .update(aiChatTable)
+              .set({
+                title: operation.payload.title,
+                updatedAt: new Date(),
+              })
+              .where(eq(aiChatTable.chatId, operation.payload.chatId))
+            break
+          }
+
+          case "messages_upsert": {
+            if (operation.payload.messages.length > 0) {
+              await tx
+                .insert(aiChatMessagesTable)
+                .values(operation.payload.messages)
+                .onConflictDoUpdate({
+                  target: [aiChatMessagesTable.id],
+                  set: {
+                    messageParts: sql`excluded.message_parts`,
+                    metadata: sql`excluded.metadata`,
+                    finishedAt: sql`excluded.finished_at`,
+                    status: sql`excluded.status`,
+                    richTextSchema: sql`excluded.rich_text_schema`,
+                  },
+                })
+            }
+            break
+          }
+
+          case "messages_delete": {
+            if (operation.payload.messageIds.length > 0) {
+              await tx
+                .delete(aiChatMessagesTable)
+                .where(
+                  eq(aiChatMessagesTable.chatId, operation.payload.chatId) &&
+                    inArray(aiChatMessagesTable.id, operation.payload.messageIds),
+                )
+            }
+            break
+          }
+        }
+      }
+    })
   }
 
   async createSession(chatId: string, title?: string) {
@@ -129,7 +273,7 @@ class AIPersistServiceStatic {
   }
 
   async getChatSession(chatId: string) {
-    return db.query.aiChatTable.findFirst({
+    const result = await db.query.aiChatTable.findFirst({
       where: eq(aiChatTable.chatId, chatId),
       columns: {
         chatId: true,
@@ -137,6 +281,13 @@ class AIPersistServiceStatic {
         createdAt: true,
       },
     })
+
+    // Explicitly check if the result is valid
+    if (!result || !result.chatId) {
+      return null
+    }
+
+    return result
   }
 
   async getChatSessions(limit = 20) {
@@ -150,24 +301,30 @@ class AIPersistServiceStatic {
       limit,
     })
 
-    const result = await Promise.all(
-      chats.map(async (chat) => {
-        const messageCountResult = await db.values<[number]>(
-          sql`SELECT COUNT(*) FROM ${aiChatMessagesTable} WHERE ${aiChatMessagesTable.chatId} = ${chat.chatId}`,
-        )
+    if (chats.length === 0) {
+      return []
+    }
 
-        const messageCount = messageCountResult[0]?.[0] || 0
+    const chatIds = chats.map((chat) => chat.chatId)
+    const messageCounts = await (db as AsyncDb)
+      .select({
+        chatId: aiChatMessagesTable.chatId,
+        messageCount: count(aiChatMessagesTable.id),
+      })
+      .from(aiChatMessagesTable)
+      .where(inArray(aiChatMessagesTable.chatId, chatIds))
+      .groupBy(aiChatMessagesTable.chatId)
 
-        return {
-          chatId: chat.chatId,
-          title: chat.title,
-          createdAt: chat.createdAt,
-          messageCount,
-        }
-      }),
-    )
+    const messageCountMap = new Map(messageCounts.map((item) => [item.chatId, item.messageCount]))
 
-    return result.filter((chat) => chat.messageCount > 0)
+    return chats
+      .map((chat) => ({
+        chatId: chat.chatId,
+        title: chat.title,
+        createdAt: chat.createdAt,
+        messageCount: messageCountMap.get(chat.chatId) || 0,
+      }))
+      .filter((chat) => chat.messageCount > 0)
   }
 
   async deleteSession(chatId: string) {

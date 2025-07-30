@@ -110,7 +110,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex max-w-[calc(100%-1rem)] flex-col gap-2">
+      <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
         {/* Show editable message if editing */}
         {isEditing && isUserMessage ? (
           <EditableMessage
@@ -158,7 +158,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
 
             {/* Action buttons */}
             <m.div
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} gap-1`}
+              className={`absolute bottom-0 flex ${message.role === "user" ? "right-0" : "left-0"} gap-1`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{
                 opacity: isHovered ? 1 : 0,
@@ -199,6 +199,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
                 </button>
               )}
             </m.div>
+
+            <div className="h-6" />
           </>
         )}
       </div>

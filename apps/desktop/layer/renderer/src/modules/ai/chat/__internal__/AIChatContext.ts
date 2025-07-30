@@ -26,7 +26,7 @@ export const useAIChatStore = () => {
 // Session methods context for managing chat session actions
 export interface AIChatSessionMethods {
   handleTitleGenerated: (title: string) => Promise<void>
-  handleFirstMessage: () => Promise<void>
+
   handleNewChat: () => void
 }
 

@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid"
 import { useCallback, useState } from "react"
 
 import { AIPersistService } from "~/modules/ai/chat/services/index"
@@ -28,20 +27,9 @@ export const useChatHistory = () => {
     }
   }, [])
 
-  const createNewSession = (shouldPersist = false) => {
-    const chatId = nanoid()
-    if (shouldPersist) {
-      AIPersistService.createSession(chatId, "New Chat").catch((error) => {
-        console.error("Failed to create new session:", error)
-      })
-    }
-    return chatId
-  }
-
   return {
     sessions,
     loading,
     loadHistory,
-    createNewSession,
   }
 }

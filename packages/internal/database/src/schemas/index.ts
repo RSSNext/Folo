@@ -2,7 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import type { SupportedActionLanguage } from "@follow/shared/language"
 import type { EntrySettings } from "@follow-app/client-sdk"
 import { sql } from "drizzle-orm"
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
 import type { AttachmentsModel, ExtraModel, ImageColorsResult, MediaModel } from "./types"
 
@@ -156,18 +156,24 @@ export const imagesTable = sqliteTable("images", (t) => ({
 }))
 
 // AI Chat Sessions Table
-export const aiChatTable = sqliteTable("ai_chat_sessions", (t) => ({
-  chatId: t.text("room_id").notNull().primaryKey(),
-  title: t.text("title"),
-  createdAt: t
-    .integer("created_at", { mode: "timestamp_ms" })
-    .notNull()
-    .default(sql`(unixepoch() * 1000)`),
-  updatedAt: t
-    .integer("updated_at", { mode: "timestamp_ms" })
-    .notNull()
-    .default(sql`(unixepoch() * 1000)`),
-}))
+export const aiChatTable = sqliteTable(
+  "ai_chat_sessions",
+  (t) => ({
+    chatId: t.text("id").notNull().primaryKey(),
+    title: t.text("title"),
+    createdAt: t
+      .integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedAt: t
+      .integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  }),
+  (table) => ({
+    updatedAtIdx: index("idx_ai_chat_sessions_updated_at").on(table.updatedAt),
+  }),
+)
 
 // Message Part types based on Vercel AI SDK UIMessage parts
 interface TextUIPart {
@@ -213,31 +219,42 @@ type UIMessagePart =
   | StepStartUIPart
 
 // AI Chat Messages Table - Rich text support
-export const aiChatMessagesTable = sqliteTable("ai_chat_messages", (t) => ({
-  id: t.text("id").notNull().primaryKey(),
-  chatId: t
-    .text("chat_id")
-    .notNull()
-    .references(() => aiChatTable.chatId, { onDelete: "cascade" }),
+export const aiChatMessagesTable = sqliteTable(
+  "ai_chat_messages",
+  (t) => ({
+    id: t.text("id").notNull().primaryKey(),
+    chatId: t
+      .text("chat_id")
+      .notNull()
+      .references(() => aiChatTable.chatId, { onDelete: "cascade" }),
 
-  // Core message properties matching Vercel AI SDK UIMessage
-  role: t.text("role").notNull().$type<"user" | "assistant" | "system">(),
+    // Core message properties matching Vercel AI SDK UIMessage
+    role: t.text("role").notNull().$type<"user" | "assistant" | "system">(),
 
-  richTextSchema: t
-    .text("rich_text_schema", { mode: "json" })
-    .$type<import("lexical").SerializedEditorState>(), // Lexical schema for user rich text
+    richTextSchema: t
+      .text("rich_text_schema", { mode: "json" })
+      .$type<import("lexical").SerializedEditorState>(), // Lexical schema for user rich text
 
-  // Vercel AI SDK UIMessage properties
-  createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
-  metadata: t.text("metadata", { mode: "json" }).$type<any>(),
+    // Vercel AI SDK UIMessage properties
+    createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
+    metadata: t.text("metadata", { mode: "json" }).$type<any>(),
 
-  // Message processing status
-  status: t
-    .text("status")
-    .$type<"pending" | "streaming" | "completed" | "error">()
-    .default("completed"),
-  finishedAt: t.integer("finished_at", { mode: "timestamp_ms" }),
+    // Message processing status
+    status: t
+      .text("status")
+      .$type<"pending" | "streaming" | "completed" | "error">()
+      .default("completed"),
+    finishedAt: t.integer("finished_at", { mode: "timestamp_ms" }),
 
-  // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
-  messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
-}))
+    // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
+    messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
+  }),
+  (table) => ({
+    chatIdCreatedAtIdx: index("idx_ai_chat_messages_chat_id_created_at").on(
+      table.chatId,
+      table.createdAt,
+    ),
+    statusIdx: index("idx_ai_chat_messages_status").on(table.status),
+    chatIdRoleIdx: index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
+  }),
+)

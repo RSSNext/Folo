@@ -59,9 +59,12 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
   #error: Error | undefined = undefined
   #eventEmitter = new ChatStateEventEmitter<UI_MESSAGE>()
 
+  #lastSavedMessageCount = -1
+
   constructor(
     initialMessages: UI_MESSAGE[] = [],
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
+    private chatId: string,
   ) {
     this.#messages = initialMessages
     this.#setupEventHandlers()
@@ -121,30 +124,30 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
   set messages(newMessages: UI_MESSAGE[]) {
     this.#messages = [...newMessages]
     this.#eventEmitter.emit("messages", { messages: this.#messages })
+
+    // Auto-persist messages when they change
+    this.#persistMessages()
   }
 
   pushMessage = (message: UI_MESSAGE) => {
-    this.#messages = this.#messages.concat(message)
-    this.#eventEmitter.emit("messages", { messages: this.#messages })
+    this.messages = this.#messages.concat(message)
   }
 
   popMessage = () => {
     if (this.#messages.length === 0) return
 
-    this.#messages = this.#messages.slice(0, -1)
-    this.#eventEmitter.emit("messages", { messages: this.#messages })
+    this.messages = this.#messages.slice(0, -1)
   }
 
   replaceMessage = (index: number, message: UI_MESSAGE) => {
     if (index < 0 || index >= this.#messages.length) return
 
-    this.#messages = [
+    this.messages = [
       ...this.#messages.slice(0, index),
       // Deep clone the message to ensure React detects changes
       this.snapshot(message),
       ...this.#messages.slice(index + 1),
     ]
-    this.#eventEmitter.emit("messages", { messages: this.#messages })
   }
 
   snapshot = <T>(value: T): T => structuredClone(value)
@@ -180,6 +183,28 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
     return this.#eventEmitter.on("error", ({ error }) => listener(error))
   }
 
+  // Persistence methods
+  #persistMessages = throttle(
+    async () => {
+      // Skip if no messages
+      if (this.#messages.length === 0) return
+
+      // Skip if no changes
+      if (this.#messages.length === this.#lastSavedMessageCount) return
+
+      try {
+        await AIPersistService.ensureSession(this.chatId, "New Chat")
+        // Save messages using incremental updates
+        await AIPersistService.upsertMessages(this.chatId, this.#messages)
+        this.#lastSavedMessageCount = this.#messages.length
+      } catch (error) {
+        console.error("Failed to persist messages:", error)
+      }
+    },
+    100,
+    { leading: true, trailing: true },
+  )
+
   // Cleanup method
   destroy(): void {
     this.#eventEmitter.clear()
@@ -188,21 +213,21 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
 
 // Custom Chat class that uses Zustand-integrated state
 export class ZustandChat<UI_MESSAGE extends BizUIMessage> extends AbstractChat<UI_MESSAGE> {
-  #state: ZustandChatState<UI_MESSAGE>
+  override state: ZustandChatState<UI_MESSAGE>
   #unsubscribeFns: (() => void)[] = []
 
   constructor(
     { messages, ...init }: ChatInit<UI_MESSAGE>,
     updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
   ) {
-    const state = new ZustandChatState(messages, updateZustandState)
+    const state = new ZustandChatState(messages, updateZustandState, init.id || "")
     super({ ...init, state })
-    this.#state = state
+    this.state = state
   }
 
   // Public getter for state access
   get chatState() {
-    return this.#state
+    return this.state
   }
 
   // Cleanup method
@@ -211,7 +236,13 @@ export class ZustandChat<UI_MESSAGE extends BizUIMessage> extends AbstractChat<U
     this.#unsubscribeFns.forEach((unsubscribe) => unsubscribe())
     this.#unsubscribeFns = []
 
-    this.#state.destroy()
+    this.state.destroy()
+  }
+
+  protected override setStatus({ status, error }: { status: ChatStatus; error?: Error }): void {
+    super.setStatus({ status, error })
+    this.state.status = status
+    this.state.error = error
   }
 }
 
