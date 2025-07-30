@@ -498,7 +498,7 @@ const getCurrentLanguage = (): string => {
       return language
     }
   } catch (error) {
-    console.error("Error occurred while determining the current language:", error);
+    console.error("Error occurred while determining the current language:", error)
   }
 
   cachedLanguage = "en"
@@ -508,7 +508,7 @@ const getCurrentLanguage = (): string => {
 
 /**
  * Clears the cached language and resets the cache timestamp.
- * 
+ *
  * This function should be called whenever the application's language changes
  * to ensure that subsequent calls to `getCurrentLanguage` fetch the updated
  * language from localStorage instead of using stale cached values.
@@ -524,8 +524,8 @@ export const clearLanguageCache = () => {
  * @param locale - The locale to use for formatting (e.g. "en", "ko", "zh-CN"). If not provided, uses current language
  * @returns The formatted number
  */
-export function formatNumber(num: number): string;
-export function formatNumber(num: number, locale?: string): string;
+export function formatNumber(num: number): string
+export function formatNumber(num: number, locale?: string): string
 export function formatNumber(num: number, locale?: string): string {
   // Handle negative numbers
   const isNegative = num < 0
