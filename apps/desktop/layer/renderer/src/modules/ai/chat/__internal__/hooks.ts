@@ -47,6 +47,14 @@ export const useChatActions = () => {
 }
 
 /**
+ * Hook to get the block actions
+ */
+export const useBlockActions = () => {
+  const store = useAIChatStore()
+  return store((state) => state.blockActions)
+}
+
+/**
  * Hook to get the chat instance
  */
 export const useChatInstance = () => {
@@ -62,6 +70,15 @@ export const useMessages = () => {
   return store((state) => state.messages)
 }
 
+/**
+ * Hook to check if the chat has messages
+ */
+export const useHasMessages = () => {
+  const store = useAIChatStore()
+  return store((state) => state.messages.length > 0)
+}
+
+export const useChatBlockActions = () => useAIChatStore()((state) => state.blockActions)
 /**
  * Hook to get the chat status
  */

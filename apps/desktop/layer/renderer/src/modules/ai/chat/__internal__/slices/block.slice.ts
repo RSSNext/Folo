@@ -102,4 +102,8 @@ class BlockSliceAction {
       }),
     )
   }
+
+  getBlocks() {
+    return this.get().blocks
+  }
 }

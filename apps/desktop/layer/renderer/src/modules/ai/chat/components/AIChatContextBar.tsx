@@ -25,10 +25,12 @@ import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
 import { useAIChatStore } from "~/modules/ai/chat/__internal__/AIChatContext"
 import type { AIChatContextBlock } from "~/modules/ai/chat/__internal__/types"
 
+import { useChatBlockActions } from "../__internal__/hooks"
+
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
   ({ className, onSendShortcut }) => {
     const blocks = useAIChatStore()((s) => s.blocks)
-    const { addBlock } = useAIChatStore()()
+    const blockActions = useChatBlockActions()
     const { shortcuts } = useAISettingValue()
 
     // Filter enabled shortcuts
@@ -47,7 +49,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           <DropdownMenuSubContent>
             <CurrentFeedEntriesPickerList
               onSelect={(entryId) =>
-                addBlock({
+                blockActions.addBlock({
                   type: "referEntry",
                   value: entryId,
                 })
@@ -65,7 +67,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           <DropdownMenuSubContent>
             <RecentEntriesPickerList
               onSelect={(entryId) =>
-                addBlock({
+                blockActions.addBlock({
                   type: "referEntry",
                   value: entryId,
                 })
@@ -81,7 +83,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           <DropdownMenuSubContent>
             <FeedPickerList
               onSelect={(feedId) =>
-                addBlock({
+                blockActions.addBlock({
                   type: "referFeed",
                   value: feedId,
                 })
@@ -227,7 +229,7 @@ const PickerList = <T extends PickerItem>({
 const CurrentFeedEntriesPickerList: FC<{ onSelect: (entryId: string) => void }> = ({
   onSelect,
 }) => {
-  const mainEntryId = useAIChatStore()((s) => s.state.mainEntryId)
+  const mainEntryId = useAIChatStore()((s) => s.blocks.find((b) => b.type === "mainEntry")?.value)
   const feedId = useEntry(mainEntryId, (e) => e?.feedId)
 
   const entryIds = useEntryIdsByFeedId(feedId!)
@@ -329,7 +331,7 @@ const FeedPickerItem: FC<{
 }
 
 const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
-  const { removeBlock } = useAIChatStore()()
+  const blockActions = useChatBlockActions()
 
   const getBlockIcon = () => {
     switch (block.type) {
@@ -409,7 +411,7 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       {canRemove && (
         <button
           type="button"
-          onClick={() => removeBlock(block.id)}
+          onClick={() => blockActions.removeBlock(block.id)}
           className="text-text-tertiary hover:text-text-secondary flex-shrink-0 opacity-0 transition-all group-hover:opacity-100"
         >
           <i className="i-mgc-close-cute-re size-3" />

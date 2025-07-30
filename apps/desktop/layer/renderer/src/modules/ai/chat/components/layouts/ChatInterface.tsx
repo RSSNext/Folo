@@ -1,14 +1,17 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, nextFrame } from "@follow/utils"
 import { springScrollTo } from "@follow/utils/scroller"
+import { nanoid } from "nanoid"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import {
+  useBlockActions,
   useChatActions,
   useChatError,
   useChatStatus,
   useCurrentChatId,
+  useHasMessages,
   useMessages,
 } from "~/modules/ai/chat/__internal__/hooks"
 import {
@@ -24,7 +27,7 @@ import { WelcomeScreen } from "./WelcomeScreen"
 const SCROLL_BOTTOM_THRESHOLD = 50
 
 export const ChatInterface = () => {
-  const messages = useMessages()
+  const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
@@ -84,11 +87,24 @@ export const ChatInterface = () => {
     springScrollTo(scrollElement.scrollHeight, scrollElement)
   }, [])
 
+  const blockActions = useBlockActions()
   const handleSendMessage = useEventCallback((message: string) => {
     resetScrollState()
 
-    // Use string message directly as supported by AI SDK
-    chatActions.sendMessage(message)
+    chatActions.sendMessage({
+      parts: [
+        {
+          type: "data-block",
+          data: blockActions.getBlocks().map((b) => ({
+            type: b.type,
+            value: b.value,
+          })),
+        },
+        { type: "text", text: message },
+      ],
+      role: "user",
+      id: nanoid(),
+    })
   })
 
   useEffect(() => {
@@ -96,8 +112,6 @@ export const ChatInterface = () => {
       resetScrollState()
     }
   }, [status, resetScrollState])
-
-  const hasMessages = messages.length > 0
 
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
@@ -118,9 +132,7 @@ export const ChatInterface = () => {
               </div>
             ) : (
               <div className="mx-auto max-w-4xl px-6 py-8">
-                {messages.map((message) => (
-                  <AIChatMessage key={message.id} message={message} />
-                ))}
+                <Messages />
                 {status === "submitted" && <AIChatTypingIndicator />}
               </div>
             )}
@@ -156,5 +168,17 @@ export const ChatInterface = () => {
         </div>
       )}
     </div>
+  )
+}
+
+const Messages = () => {
+  const messages = useMessages()
+
+  return (
+    <>
+      {messages.map((message) => (
+        <AIChatMessage key={message.id} message={message} />
+      ))}
+    </>
   )
 }

@@ -1,9 +1,9 @@
 import { createWithEqualityFn } from "zustand/traditional"
 
+import type { BlockSlice } from "./slices/block.slice"
+import { createBlockSlice } from "./slices/block.slice"
 import type { ChatSlice } from "./slices/chat.slice"
 import { createChatSlice } from "./slices/chat.slice"
-import type { BlockSlice } from "./slices/context.slice"
-import { createBlockSlice } from "./slices/context.slice"
 import type { AIChatStoreInitial } from "./types"
 
 export type AiChatStore = BlockSlice &

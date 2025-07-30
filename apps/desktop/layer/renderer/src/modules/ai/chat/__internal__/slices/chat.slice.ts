@@ -59,8 +59,6 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
   #error: Error | undefined = undefined
   #eventEmitter = new ChatStateEventEmitter<UI_MESSAGE>()
 
-  #lastSavedMessageCount = -1
-
   constructor(
     initialMessages: UI_MESSAGE[] = [],
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
@@ -189,14 +187,10 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
       // Skip if no messages
       if (this.#messages.length === 0) return
 
-      // Skip if no changes
-      if (this.#messages.length === this.#lastSavedMessageCount) return
-
       try {
         await AIPersistService.ensureSession(this.chatId, "New Chat")
         // Save messages using incremental updates
         await AIPersistService.upsertMessages(this.chatId, this.#messages)
-        this.#lastSavedMessageCount = this.#messages.length
       } catch (error) {
         console.error("Failed to persist messages:", error)
       }
@@ -418,7 +412,9 @@ class ChatSliceActions {
       // Convert string to message object if needed
       const messageObj =
         typeof message === "string"
-          ? ({ text: message } as Parameters<typeof this.chatInstance.sendMessage>[0])
+          ? ({ parts: [{ type: "text", text: message }] } as Parameters<
+              typeof this.chatInstance.sendMessage
+            >[0])
           : (message as Parameters<typeof this.chatInstance.sendMessage>[0])
 
       // Use the AI SDK's sendMessage method
