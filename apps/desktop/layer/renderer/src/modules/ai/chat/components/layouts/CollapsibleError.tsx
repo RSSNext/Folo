@@ -179,10 +179,6 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
           {/* Collapsed Content */}
           <div className="relative z-10 flex items-center gap-3 p-3">
             <m.div
-              animate={{
-                rotate: isExpanded ? 0 : -90,
-                scale: isExpanded ? 1 : 0.8,
-              }}
               transition={{ duration: 0.2 }}
               className="bg-red/20 flex size-6 flex-shrink-0 items-center justify-center rounded-full"
             >

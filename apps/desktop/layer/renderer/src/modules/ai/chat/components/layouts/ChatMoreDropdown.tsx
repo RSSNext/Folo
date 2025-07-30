@@ -20,7 +20,6 @@ import {
   useChatActions,
   useCurrentChatId,
   useCurrentTitle,
-  useMessages,
 } from "~/modules/ai/chat/__internal__/hooks"
 import { useChatHistory } from "~/modules/ai/chat/hooks/useChatHistory"
 import { AIPersistService } from "~/modules/ai/chat/services"
@@ -35,7 +34,6 @@ export const ChatMoreDropdown = () => {
   const { ask } = useDialog()
   const [deletingChatId, setDeletingChatId] = useState<string | null>(null)
   const { sessions, loading, loadHistory } = useChatHistory()
-  const messages = useMessages()
 
   const handleDropdownOpen = (open: boolean) => {
     if (open) {
@@ -80,6 +78,7 @@ export const ChatMoreDropdown = () => {
   )
 
   const handleExport = useCallback(() => {
+    const messages = chatActions.getMessages()
     if (messages.length === 0) {
       toast.error(t("export_empty_chat"))
       return
@@ -94,7 +93,7 @@ export const ChatMoreDropdown = () => {
       toast.error(t("export_error"))
       console.error("Export error:", error)
     }
-  }, [messages, currentTitle, t])
+  }, [chatActions, currentTitle, t])
 
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>

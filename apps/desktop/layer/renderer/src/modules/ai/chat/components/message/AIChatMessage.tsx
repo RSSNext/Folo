@@ -5,7 +5,7 @@ import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import { useChatActions, useMessages } from "~/modules/ai/chat/__internal__/hooks"
+import { useChatActions } from "~/modules/ai/chat/__internal__/hooks"
 import type { BizUIMetadata, BizUITools } from "~/modules/ai/chat/__internal__/types"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai/chat/atoms/session"
 
@@ -27,7 +27,7 @@ interface AIChatMessageProps {
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
   const chatActions = useChatActions()
-  const messages = useMessages()
+
   const messageId = message.id
   const [isHovered, setIsHovered] = React.useState(false)
   const editingMessageId = useEditingMessageId()
@@ -54,6 +54,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
 
   const handleSaveEdit = React.useCallback(
     (newContent: string) => {
+      const messages = chatActions.getMessages()
       if (newContent.trim() !== messageContent.trim()) {
         // Find the message index and remove all messages after it (including AI responses)
         const messageIndex = messages.findIndex((msg) => msg.id === messageId)
@@ -67,7 +68,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
       }
       setEditingMessageId(null)
     },
-    [messageContent, messageId, messages, chatActions, setEditingMessageId],
+    [messageContent, messageId, chatActions, setEditingMessageId],
   )
 
   const handleCancelEdit = React.useCallback(() => {

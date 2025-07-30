@@ -350,6 +350,11 @@ class ChatSliceActions {
     }
   }
 
+  // Getter
+  getMessages = (): BizUIMessage[] => {
+    return this.chatInstance.chatState.messages
+  }
+
   // Status management (delegating to chat instance state)
   setStatus = (status: ChatStatus) => {
     this.chatInstance.chatState.status = status

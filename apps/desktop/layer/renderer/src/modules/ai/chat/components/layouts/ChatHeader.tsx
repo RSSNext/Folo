@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
-import { useCurrentTitle, useMessages } from "~/modules/ai/chat/__internal__/hooks"
+import { useChatActions, useCurrentTitle } from "~/modules/ai/chat/__internal__/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
@@ -13,12 +13,12 @@ export const ChatHeader = () => {
   const currentTitle = useCurrentTitle()
   const { handleNewChat } = useAIChatSessionMethods()
   const settingModalPresent = useSettingModal()
-  const messages = useMessages()
-
+  const chatActions = useChatActions()
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
 
   const handleNewChatClick = useCallback(() => {
+    const messages = chatActions.getMessages()
     if (messages.length === 0 && !currentTitle) {
       return
     }
@@ -31,7 +31,7 @@ export const ChatHeader = () => {
         handleNewChat()
       },
     })
-  }, [messages.length, currentTitle, ask, t, handleNewChat])
+  }, [chatActions, currentTitle, ask, t, handleNewChat])
 
   const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
   return (
