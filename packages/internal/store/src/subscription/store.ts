@@ -243,12 +243,9 @@ class SubscriptionSyncService {
     })
     tx.request(async () => {
       await api().subscriptions.update({
-        view: subscription.view,
+        ...subscription,
         feedId: subscription.feedId ?? undefined,
-        isPrivate: subscription.isPrivate ?? undefined,
         listId: subscription.listId ?? undefined,
-        category: subscription.category ?? undefined,
-        title: subscription.title ?? undefined,
       })
     })
 
@@ -257,6 +254,8 @@ class SubscriptionSyncService {
     })
 
     await tx.run()
+
+    invalidateEntriesQuery({ views: [subscription.view] })
   }
 
   async subscribe(subscription: SubscriptionForm) {
@@ -283,8 +282,9 @@ class SubscriptionSyncService {
     if (data.unread) {
       unreadActions.upsertMany(data.unread)
     }
+
     // Insert to subscription
-    subscriptionActions.upsertMany([
+    await subscriptionActions.upsertMany([
       {
         ...subscription,
         title: subscription.title ?? null,
@@ -298,6 +298,8 @@ class SubscriptionSyncService {
         userId: whoami()?.id ?? "",
       },
     ])
+
+    invalidateEntriesQuery({ views: [subscription.view] })
   }
 
   async unsubscribe(id: string | undefined | null | (string | undefined | null)[]) {

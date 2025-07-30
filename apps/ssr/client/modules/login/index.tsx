@@ -131,7 +131,7 @@ export function Login() {
                     t={t}
                     i18nKey="login.no_client"
                     components={{
-                      weblink: <Link to="/" className="text-accent" />,
+                      weblink: <a href="/" className="text-accent" />,
                     }}
                   />
                 </p>

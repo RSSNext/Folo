@@ -252,12 +252,14 @@ const useCreateEntryAIContext = (entryId: string) => {
 
   return ctxStore
 }
+// eslint-disable-next-line unicorn/no-thenable
+const infiniteThenable = { then() {} }
 export const AISmartSidebar = ({ entryId }: { entryId: string }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const hasAi = React.use(AIChatContext)
   if (!hasAi) {
-    throw Promise.reject("ai not enabled")
+    throw infiniteThenable
   }
 
   const ctxStore = useCreateEntryAIContext(entryId)

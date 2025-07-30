@@ -1,4 +1,5 @@
 import { useHasNotificationActions } from "@follow/store/action/hooks"
+import { ROUTE_FEED_IN_INBOX } from "@follow/store/constants/app"
 import { useWhoami } from "@follow/store/user/hooks"
 import { getApp } from "@react-native-firebase/app"
 import type { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
@@ -48,6 +49,7 @@ export function useMessaging() {
     function navigateToEntry(message: FirebaseMessagingTypes.RemoteMessage) {
       if (
         !message.data ||
+        message.data.type !== "new-entry" ||
         typeof message.data.view !== "string" ||
         typeof message.data.entryId !== "string"
       ) {
@@ -57,6 +59,7 @@ export function useMessaging() {
       navigation.pushControllerView(EntryDetailScreen, {
         entryId: message.data.entryId,
         view: Number.parseInt(message.data.view),
+        isInbox: String(message.data.feedId).startsWith(ROUTE_FEED_IN_INBOX),
       })
     }
 

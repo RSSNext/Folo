@@ -1,7 +1,6 @@
 /**
  * @description This file handles hot updates for the electron renderer layer
  */
-import { createHash } from "node:crypto"
 import { existsSync, readFileSync } from "node:fs"
 import { mkdir, readdir, rename, rm, stat, writeFile } from "node:fs/promises"
 import os from "node:os"
@@ -14,6 +13,7 @@ import path from "pathe"
 import { x } from "tar"
 
 import { GITHUB_OWNER, GITHUB_REPO, HOTUPDATE_RENDER_ENTRY_DIR } from "~/constants/app"
+import { downloadFileWithProgress } from "~/lib/download"
 import { WindowManager } from "~/manager/window"
 
 import { appUpdaterConfig } from "./configs"
@@ -25,10 +25,59 @@ const releasesUrl = `${url}/releases`
 const releaseApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`
 
 const getLatestReleaseTag = async () => {
-  const res = await fetch(`${releaseApiUrl}/latest`)
-  const json = await res.json()
+  // First try to get the latest release
+  try {
+    const latestRes = await fetch(`${releaseApiUrl}/latest`)
+    if (latestRes.ok) {
+      const latestRelease = await latestRes.json()
+      // Check if the latest release is a desktop release
+      if (
+        latestRelease.tag_name &&
+        latestRelease.tag_name.startsWith("desktop/") &&
+        !latestRelease.draft
+      ) {
+        return latestRelease.tag_name
+      }
+    }
+  } catch (error) {
+    logger.warn("Failed to fetch latest release, falling back to all releases", error)
+  }
 
-  return json.tag_name
+  // If latest release is not a desktop release or fetch failed, get all releases
+  const res = await fetch(releaseApiUrl)
+
+  if (!res.ok) {
+    throw new Error(`GitHub API request failed: ${res.status} ${res.statusText}`)
+  }
+
+  const releases = await res.json()
+
+  // Check if the response contains an error message
+  if (releases.message) {
+    throw new Error(`GitHub API error: ${releases.message}`)
+  }
+
+  // Ensure releases is an array
+  if (!Array.isArray(releases)) {
+    throw new TypeError("Invalid response format from GitHub API")
+  }
+
+  // Filter for desktop releases and find the latest one
+  const desktopReleases = releases.filter(
+    (release: any) => release.tag_name && release.tag_name.startsWith("desktop/") && !release.draft,
+  )
+
+  if (desktopReleases.length === 0) {
+    throw new Error("No desktop releases found")
+  }
+
+  // Sort by created_at date in descending order to get the most recent first
+  desktopReleases.sort((a: any, b: any) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
+
+  // Return the most recent desktop release
+  return desktopReleases[0].tag_name
 }
 
 const getFileDownloadUrl = async (filename: string) => {
@@ -50,6 +99,12 @@ const getLatestReleaseManifest = async () => {
   const url = await getFileDownloadUrl("manifest.yml")
   logger.info(`Fetching manifest from ${url}`)
   const res = await fetch(url)
+
+  if (!res.ok) {
+    logger.error(`Failed to fetch manifest: ${res.status} ${res.statusText}`)
+    return null
+  }
+
   const text = await res.text()
   const manifest = load(text) as Manifest
   if (typeof manifest !== "object") {
@@ -77,28 +132,10 @@ export const canUpdateRender = async (): Promise<[CanUpdateRenderState, Manifest
 
   if (!manifest) return [CanUpdateRenderState.NETWORK_ERROR, null]
 
-  // const isAppShouldUpdate = shouldUpdateApp(appVersion, manifest.version)
-  // if (isAppShouldUpdate) {
-  //   logger.info(
-  //     "app should update, skip render update, app version: ",
-  //     appVersion,
-  //     ", the manifest version: ",
-  //     manifest.version,
-  //   )
-  //   return false
-  // }
-
   const appSupport = mainHash === manifest.mainHash
   if (!appSupport) {
     logger.info("app not support, should trigger app force update, app version: ", appVersion)
-    // hotUpdateAppNotSupportTriggerTrack({
-    //   appVersion,
-    //   manifestVersion: manifest.version,
-    // })
-    // // Trigger app force update
-    // checkForAppUpdates().then(() => {
-    //   downloadAppUpdate()
-    // })
+
     return [CanUpdateRenderState.APP_NOT_SUPPORT, null]
   }
 
@@ -135,22 +172,20 @@ export const canUpdateRender = async (): Promise<[CanUpdateRenderState, Manifest
 const downloadRenderAsset = async (manifest: Manifest) => {
   const { filename } = manifest
   const url = await getFileDownloadUrl(filename)
-
-  logger.info(`Downloading ${url}`)
-  const res = await fetch(url)
-  const arrayBuffer = await res.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
   const filePath = path.resolve(downloadTempDir, filename)
-  await mkdir(downloadTempDir, { recursive: true })
-  await writeFile(filePath, buffer)
 
-  const sha256 = createHash("sha256")
-  sha256.update(buffer)
-  const hash = sha256.digest("hex")
-  if (hash !== manifest.hash) {
-    logger.error("Hash mismatch", hash, manifest.hash)
-    return false
-  }
+  logger.info(`Downloading ${url}, Save to ${filePath}`)
+
+  const success = await downloadFileWithProgress({
+    url,
+    outputPath: filePath,
+    expectedHash: manifest.hash,
+
+    onLog: (message) => {
+      logger.info(message)
+    },
+  })
+  if (!success) throw new Error("Download hot update render asset failed")
   return filePath
 }
 export const hotUpdateRender = async (manifest: Manifest) => {
@@ -159,14 +194,20 @@ export const hotUpdateRender = async (manifest: Manifest) => {
   if (!manifest) return false
 
   const filePath = await downloadRenderAsset(manifest)
+  logger.info(`Downloaded render asset to ${filePath}`)
   if (!filePath) return false
 
   // Extract the tar.gz file
   await mkdir(HOTUPDATE_RENDER_ENTRY_DIR, { recursive: true })
+  logger.info(`Extracting render asset to ${HOTUPDATE_RENDER_ENTRY_DIR}`)
   await x({
     f: filePath,
     cwd: HOTUPDATE_RENDER_ENTRY_DIR,
   })
+
+  logger.info(
+    `Extracted render asset to ${HOTUPDATE_RENDER_ENTRY_DIR}, rename to ${manifest.version}`,
+  )
 
   // Rename `renderer` folder to `manifest.version`
   await rename(
@@ -174,10 +215,10 @@ export const hotUpdateRender = async (manifest: Manifest) => {
     path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, manifest.version),
   )
 
-  await writeFile(
-    path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, "manifest.yml"),
-    JSON.stringify(manifest),
-  )
+  const manifestPath = path.resolve(HOTUPDATE_RENDER_ENTRY_DIR, "manifest.yml")
+  logger.info(`Write manifest to ${manifestPath}`)
+
+  await writeFile(manifestPath, JSON.stringify(manifest))
   logger.info(`Hot update render success, update to ${manifest.version}`)
 
   const mainWindow = WindowManager.getMainWindow()

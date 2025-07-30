@@ -22,6 +22,10 @@ import { LegalModalContent } from "./LegalModal"
 import { ReferralForm } from "./ReferralForm"
 import { TokenModalContent } from "./TokenModal"
 
+const languageLayoutConfig = {
+  ko: { layout: "ko" },
+}
+
 interface LoginModalContentProps {
   runtime: LoginRuntime
   canClose?: boolean

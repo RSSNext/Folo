@@ -4,6 +4,7 @@ import fsp from "node:fs/promises"
 import path from "pathe"
 
 import { store } from "~/lib/store"
+import { logger } from "~/logger"
 
 import type { IpcContext } from "../base"
 import { IpcMethod, IpcService } from "../base"
@@ -42,6 +43,14 @@ interface CheckQBittorrentAuthInput {
 interface AddMagnetInput {
   host: string
   urls: string[]
+}
+
+interface CustomFetchInput {
+  url: string
+  method: string
+  headers: Record<string, string>
+  body?: string
+  timeout?: number
 }
 
 export class IntegrationService extends IpcService {
@@ -194,5 +203,148 @@ ${content}
 
     // eslint-disable-next-line no-console
     console.log(`Added magnet links to qBittorrent: ${urls.join(", ")}`)
+  }
+
+  @IpcMethod()
+  async customFetch(context: IpcContext, input: CustomFetchInput) {
+    const requestId = Math.random().toString(36).slice(2, 8)
+    const { url, method, headers, body, timeout = 10_000 } = input
+
+    // Log request start
+    logger.info(`[CustomFetch:${requestId}] Starting request`, {
+      url: url.replaceAll(/(\?|&)([^=]+)=([^&]+)/g, (_, prefix, key, value) =>
+        // Mask potential sensitive query parameters
+        key.toLowerCase().includes("token") ||
+        key.toLowerCase().includes("key") ||
+        key.toLowerCase().includes("password")
+          ? `${prefix}${key}=***`
+          : `${prefix}${key}=${value}`,
+      ),
+      method,
+      timeout,
+      hasBody: !!body,
+      bodyLength: body?.length || 0,
+      headerCount: Object.keys(headers || {}).length,
+    })
+
+    // Log request headers (mask sensitive headers)
+    const safeHeaders = { ...headers }
+    Object.keys(safeHeaders).forEach((key) => {
+      if (
+        key.toLowerCase().includes("authorization") ||
+        key.toLowerCase().includes("token") ||
+        key.toLowerCase().includes("key")
+      ) {
+        safeHeaders[key] = "***"
+      }
+    })
+    logger.debug(`[CustomFetch:${requestId}] Request headers`, { headers: safeHeaders })
+
+    // Log request body (truncated for large bodies)
+    if (body) {
+      const truncatedBody =
+        body.length > 500
+          ? `${body.slice(0, 500)}... [truncated, total: ${body.length} chars]`
+          : body
+      logger.debug(`[CustomFetch:${requestId}] Request body`, { body: truncatedBody })
+    }
+
+    const startTime = Date.now()
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => {
+        logger.warn(`[CustomFetch:${requestId}] Request timeout triggered after ${timeout}ms`)
+        controller.abort()
+      }, timeout)
+
+      logger.debug(`[CustomFetch:${requestId}] Sending request...`)
+
+      const response = await fetch(url, {
+        method,
+        headers,
+        body: body && ["POST", "PUT", "PATCH"].includes(method.toUpperCase()) ? body : undefined,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+      const duration = Date.now() - startTime
+
+      // Log response info
+      logger.info(`[CustomFetch:${requestId}] Request completed`, {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        duration: `${duration}ms`,
+      })
+
+      // Convert response headers to plain object
+      const responseHeaders: Record<string, string> = {}
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value
+      })
+
+      logger.debug(`[CustomFetch:${requestId}] Response headers`, {
+        headers: responseHeaders,
+        contentType: responseHeaders["content-type"],
+        contentLength: responseHeaders["content-length"],
+      })
+
+      // Get response text
+      const text = await response.text()
+      const responseSize = text.length
+
+      logger.debug(`[CustomFetch:${requestId}] Response body received`, {
+        size: `${responseSize} chars`,
+        preview: text.length > 200 ? `${text.slice(0, 200)}...` : text,
+      })
+
+      // Try to parse as JSON, fallback to text
+      let data: any
+      try {
+        data = JSON.parse(text)
+        logger.debug(`[CustomFetch:${requestId}] Response successfully parsed as JSON`)
+      } catch {
+        data = text
+        logger.debug(`[CustomFetch:${requestId}] Response kept as text (not valid JSON)`)
+      }
+
+      const result = {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+        data,
+        text,
+      }
+
+      logger.info(`[CustomFetch:${requestId}] Request successful`, {
+        finalStatus: result.ok ? "success" : "http_error",
+        responseSize: `${responseSize} chars`,
+        totalDuration: `${Date.now() - startTime}ms`,
+      })
+
+      return result
+    } catch (error) {
+      const duration = Date.now() - startTime
+
+      if (error instanceof Error && error.name === "AbortError") {
+        logger.error(`[CustomFetch:${requestId}] Request timeout`, {
+          duration: `${duration}ms`,
+          timeout: `${timeout}ms`,
+          url: url.split("?")[0], // Remove query params for privacy
+        })
+        throw new Error(`Request timeout after ${timeout}ms`)
+      }
+
+      logger.error(`[CustomFetch:${requestId}] Request failed`, {
+        error: error instanceof Error ? error.message : String(error),
+        errorName: error instanceof Error ? error.name : "Unknown",
+        duration: `${duration}ms`,
+        url: url.split("?")[0], // Remove query params for privacy
+      })
+
+      throw error
+    }
   }
 }

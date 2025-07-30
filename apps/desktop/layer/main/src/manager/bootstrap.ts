@@ -78,6 +78,33 @@ export class BootstrapManager {
         callback({ cancel: false, requestHeaders: details.requestHeaders })
       })
 
+      // Bypass CORS for PostHog analytics
+      session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        const url = new URL(details.url)
+
+        if (url.hostname === "us.i.posthog.com") {
+          const responseHeaders = details.responseHeaders || {}
+
+          responseHeaders["Access-Control-Allow-Origin"] = ["*"]
+          responseHeaders["Access-Control-Allow-Methods"] = [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS",
+          ]
+          responseHeaders["Access-Control-Allow-Headers"] = ["*"]
+          responseHeaders["Access-Control-Allow-Credentials"] = ["true"]
+
+          callback({
+            cancel: false,
+            responseHeaders,
+          })
+        } else {
+          callback({ cancel: false })
+        }
+      })
+
       WindowManager.getMainWindowOrCreate()
 
       app.on("open-url", (_, url) => {

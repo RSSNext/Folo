@@ -139,6 +139,28 @@ export interface IntegrationSettings {
   qbittorrentPassword: string
 
   saveSummaryAsDescription: boolean
+
+  // custom actions
+  enableCustomIntegration: boolean
+  customIntegration: CustomIntegration[]
+
+  // fetch preferences (Electron only)
+  useBrowserFetch: boolean
+}
+
+export interface FetchTemplate {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
+  url: string
+  headers: Record<string, string>
+  body?: string
+}
+
+export interface CustomIntegration {
+  id: string
+  name: string
+  icon: string
+  fetchTemplate: FetchTemplate
+  enabled: boolean
 }
 
 export interface AIShortcut {

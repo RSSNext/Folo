@@ -120,10 +120,10 @@ export const useEntriesQuery = (
   }, [entriesIds, query])
 }
 
-export const usePrefetchEntryDetail = (entryId: string) => {
+export const usePrefetchEntryDetail = (entryId: string, isInbox?: boolean) => {
   return useQuery({
     queryKey: ["entry", entryId],
-    queryFn: () => entrySyncServices.fetchEntryDetail(entryId),
+    queryFn: () => entrySyncServices.fetchEntryDetail(entryId, isInbox),
   })
 }
 
@@ -172,7 +172,7 @@ export const useEntryIdsByView = (view: FeedViewType, excludePrivate: boolean | 
         return Array.from(ids)
           .filter((id) => {
             const subscription = getSubscriptionByEntryId(id)
-            if (excludePrivate && subscription?.isPrivate) {
+            if ((excludePrivate && subscription?.isPrivate) || subscription?.hideFromTimeline) {
               return false
             }
             return true

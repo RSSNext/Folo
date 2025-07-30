@@ -17,7 +17,13 @@ runs:
       shell: bash
       run: |
         if [ "${{ github.ref_type }}" == "tag" ]; then
-          APP_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          # Handle new tag format: desktop/v1.2.3 or mobile/v1.2.3
+          if [[ "${{ github.ref_name }}" =~ ^(desktop|mobile)/v(.*)$ ]]; then
+            APP_VERSION="${BASH_REMATCH[2]}"
+          else
+            # Fallback for old format: v1.2.3
+            APP_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          fi
         else
           if [ "${{ inputs.type }}" == "desktop" ]; then
             APP_VERSION=$(node -p "require('./apps/desktop/package.json').version")
