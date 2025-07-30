@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "27368c71-fbca-4ac8-8f64-79046dd2eaa7",
+  "id": "339611d0-cf1e-4ec9-9bf6-275608b815f5",
   "prevId": "611bbe39-b8f0-4c81-a067-315ac9b0f8a3",
   "tables": {
     "ai_chat_messages": {
@@ -14,8 +14,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "room_id": {
-          "name": "room_id",
+        "chat_id": {
+          "name": "chat_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -23,21 +23,6 @@
         },
         "role": {
           "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "content_format": {
-          "name": "content_format",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'plaintext'"
-        },
-        "content": {
-          "name": "content",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -57,8 +42,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "annotations": {
-          "name": "annotations",
+        "metadata": {
+          "name": "metadata",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -88,19 +73,29 @@
         }
       },
       "indexes": {
-        "ai_chat_messages_room_idx": {
-          "name": "ai_chat_messages_room_idx",
-          "columns": ["room_id", "created_at"],
-          "isUnique": true
+        "idx_ai_chat_messages_chat_id_created_at": {
+          "name": "idx_ai_chat_messages_chat_id_created_at",
+          "columns": ["chat_id", "created_at"],
+          "isUnique": false
+        },
+        "idx_ai_chat_messages_status": {
+          "name": "idx_ai_chat_messages_status",
+          "columns": ["status"],
+          "isUnique": false
+        },
+        "idx_ai_chat_messages_chat_id_role": {
+          "name": "idx_ai_chat_messages_chat_id_role",
+          "columns": ["chat_id", "role"],
+          "isUnique": false
         }
       },
       "foreignKeys": {
-        "ai_chat_messages_room_id_ai_chat_sessions_room_id_fk": {
-          "name": "ai_chat_messages_room_id_ai_chat_sessions_room_id_fk",
+        "ai_chat_messages_chat_id_ai_chat_sessions_id_fk": {
+          "name": "ai_chat_messages_chat_id_ai_chat_sessions_id_fk",
           "tableFrom": "ai_chat_messages",
           "tableTo": "ai_chat_sessions",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["room_id"],
+          "columnsFrom": ["chat_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -112,8 +107,8 @@
     "ai_chat_sessions": {
       "name": "ai_chat_sessions",
       "columns": {
-        "room_id": {
-          "name": "room_id",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -143,7 +138,13 @@
           "default": "(unixepoch() * 1000)"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_ai_chat_sessions_updated_at": {
+          "name": "idx_ai_chat_sessions_updated_at",
+          "columns": ["updated_at"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -939,7 +940,8 @@
       "\"ai_chat\"": "\"ai_chat_sessions\""
     },
     "columns": {
-      "\"ai_chat_messages\".\"message\"": "\"ai_chat_messages\".\"role\""
+      "\"ai_chat_messages\".\"room_id\"": "\"ai_chat_messages\".\"chat_id\"",
+      "\"ai_chat_sessions\".\"room_id\"": "\"ai_chat_sessions\".\"id\""
     }
   },
   "internal": {

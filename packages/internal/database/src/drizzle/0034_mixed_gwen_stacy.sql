@@ -1,1 +1,0 @@
-DROP INDEX `ai_chat_messages_room_idx`;

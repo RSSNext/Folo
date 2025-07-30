@@ -236,64 +236,8 @@
     {
       "idx": 33,
       "version": "6",
-      "when": 1753806477979,
-      "tag": "0033_youthful_the_stranger",
-      "breakpoints": true
-    },
-    {
-      "idx": 34,
-      "version": "6",
-      "when": 1753807665671,
-      "tag": "0034_mixed_gwen_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 35,
-      "version": "6",
-      "when": 1753866309865,
-      "tag": "0035_colossal_cargill",
-      "breakpoints": true
-    },
-    {
-      "idx": 36,
-      "version": "6",
-      "when": 1753874062939,
-      "tag": "0036_big_machine_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 37,
-      "version": "6",
-      "when": 1753874099102,
-      "tag": "0037_dusty_whirlwind",
-      "breakpoints": true
-    },
-    {
-      "idx": 38,
-      "version": "6",
-      "when": 1753881637020,
-      "tag": "0038_aberrant_ulik",
-      "breakpoints": true
-    },
-    {
-      "idx": 39,
-      "version": "6",
-      "when": 1753882436545,
-      "tag": "0039_optimal_eddie_brock",
-      "breakpoints": true
-    },
-    {
-      "idx": 40,
-      "version": "6",
-      "when": 1753886818992,
-      "tag": "0040_fluffy_bloodstorm",
-      "breakpoints": true
-    },
-    {
-      "idx": 41,
-      "version": "6",
-      "when": 1753887264224,
-      "tag": "0041_fluffy_exodus",
+      "when": 1753890574250,
+      "tag": "0033_shiny_sebastian_shaw",
       "breakpoints": true
     }
   ]

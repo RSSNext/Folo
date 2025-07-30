@@ -1,4 +1,7 @@
-ALTER TABLE `ai_chat_sessions` RENAME COLUMN "chat_id" TO "id";--> statement-breakpoint
+ALTER TABLE `ai_chat` RENAME TO `ai_chat_sessions`;--> statement-breakpoint
+ALTER TABLE `ai_chat_sessions` RENAME COLUMN "room_id" TO "id";--> statement-breakpoint
+ALTER TABLE `ai_chat_sessions` ADD `updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL;--> statement-breakpoint
+CREATE INDEX `idx_ai_chat_sessions_updated_at` ON `ai_chat_sessions` (`updated_at`);--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_ai_chat_messages` (
 	`id` text PRIMARY KEY NOT NULL,

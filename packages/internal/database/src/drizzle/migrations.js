@@ -33,15 +33,7 @@ import m0029 from "./0029_flaky_gorgon.sql"
 import m0030 from "./0030_common_gabe_jones.sql"
 import m0031 from "./0031_kind_ikaris.sql"
 import m0032 from "./0032_orange_prima.sql"
-import m0033 from "./0033_youthful_the_stranger.sql"
-import m0034 from "./0034_mixed_gwen_stacy.sql"
-import m0035 from "./0035_colossal_cargill.sql"
-import m0036 from "./0036_big_machine_man.sql"
-import m0037 from "./0037_dusty_whirlwind.sql"
-import m0038 from "./0038_aberrant_ulik.sql"
-import m0039 from "./0039_optimal_eddie_brock.sql"
-import m0040 from "./0040_fluffy_bloodstorm.sql"
-import m0041 from "./0041_fluffy_exodus.sql"
+import m0033 from "./0033_shiny_sebastian_shaw.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -81,13 +73,5 @@ export default {
     m0031,
     m0032,
     m0033,
-    m0034,
-    m0035,
-    m0036,
-    m0037,
-    m0038,
-    m0039,
-    m0040,
-    m0041,
   },
 }
