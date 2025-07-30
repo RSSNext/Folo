@@ -6,7 +6,7 @@ import type { BizUIMessage, BizUIMetadata } from "../__internal__/types"
 import { AIPersistService } from "../services"
 
 export const useLoadMessages = (
-  roomId: string,
+  chatId: string,
   options?: { onLoad?: (messages: BizUIMessage[]) => void },
 ) => {
   const chatActions = useChatActions()
@@ -20,7 +20,7 @@ export const useLoadMessages = (
   useEffect(() => {
     let mounted = true
     setIsLoading(true)
-    AIPersistService.loadMessages(roomId)
+    AIPersistService.loadMessages(chatId)
       .then((messages) => {
         if (mounted) {
           const messagesToSet: BizUIMessage[] = messages.map((message) => ({
@@ -44,6 +44,6 @@ export const useLoadMessages = (
     return () => {
       mounted = false
     }
-  }, [roomId, onLoadEventCallback, chatActions])
+  }, [chatId, onLoadEventCallback, chatActions])
   return { isLoading }
 }

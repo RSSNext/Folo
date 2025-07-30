@@ -44,11 +44,11 @@ export const ChatHeader = () => {
         }}
       />
 
-      <div className="relative z-10 flex h-full items-center justify-between px-6">
+      <div className="relative z-10 flex h-full items-center justify-between px-4">
         {/* Left side - Title */}
         <div className="mr-2 min-w-0 flex-1">
           {currentTitle && (
-            <h1 key={currentTitle} className="text-text truncate font-medium">
+            <h1 key={currentTitle} className="text-text truncate font-bold">
               <span className="animate-mask-left-to-right [--animation-duration:1s]">
                 {currentTitle}
               </span>
@@ -59,11 +59,11 @@ export const ChatHeader = () => {
         {/* Right side - Actions */}
         <div className="flex items-center gap-2">
           <ActionButton tooltip="New Chat" onClick={handleNewChatClick}>
-            <i className="i-mgc-add-cute-re size-5 opacity-80" />
+            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <ActionButton tooltip="AI Settings" onClick={() => settingModalPresent("ai")}>
-            <i className="i-mgc-user-setting-cute-re size-5 opacity-80" />
+            <i className="i-mgc-user-setting-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <ChatMoreDropdown />

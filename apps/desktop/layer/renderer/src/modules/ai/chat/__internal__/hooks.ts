@@ -3,7 +3,7 @@ import { useAIChatStore } from "./AIChatContext"
 /**
  * Hook to get the current room ID (chat ID) from the AI chat store
  */
-export const useCurrentRoomId = () => {
+export const useCurrentChatId = () => {
   const store = useAIChatStore()
   return store((state) => state.chatId)
 }
@@ -19,11 +19,11 @@ export const useCurrentTitle = () => {
 /**
  * Hook to get the setter for current room ID
  */
-export const useSetCurrentRoomId = () => {
+export const useSetCurrentChatId = () => {
   const store = useAIChatStore()
-  return (roomId: string | null) => {
+  return (chatId: string | null) => {
     const actions = store.getState().chatActions
-    if (roomId && roomId !== actions.getCurrentRoomId()) {
+    if (chatId && chatId !== actions.getCurrentChatId()) {
       // If we need to switch to a different room, create a new chat
       actions.newChat()
     }

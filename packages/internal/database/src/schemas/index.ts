@@ -157,7 +157,7 @@ export const imagesTable = sqliteTable("images", (t) => ({
 
 // AI Chat Sessions Table
 export const aiChatTable = sqliteTable("ai_chat_sessions", (t) => ({
-  roomId: t.text("room_id").notNull().primaryKey(),
+  chatId: t.text("room_id").notNull().primaryKey(),
   title: t.text("title"),
   createdAt: t
     .integer("created_at", { mode: "timestamp_ms" })
@@ -215,21 +215,14 @@ type UIMessagePart =
 // AI Chat Messages Table - Rich text support
 export const aiChatMessagesTable = sqliteTable("ai_chat_messages", (t) => ({
   id: t.text("id").notNull().primaryKey(),
-  roomId: t
-    .text("room_id")
+  chatId: t
+    .text("chat_id")
     .notNull()
-    .references(() => aiChatTable.roomId, { onDelete: "cascade" }),
+    .references(() => aiChatTable.chatId, { onDelete: "cascade" }),
 
   // Core message properties matching Vercel AI SDK UIMessage
-  role: t.text("role").notNull().$type<"user" | "assistant" | "system">(), // 移除 "data" role，在这个场景下不需要
+  role: t.text("role").notNull().$type<"user" | "assistant" | "system">(),
 
-  // Content handling for rich text support
-  contentFormat: t
-    .text("content_format")
-    .notNull()
-    .$type<"plaintext" | "richtext">()
-    .default("plaintext"),
-  content: t.text("content").notNull(), // Markdown string - primary content for AI
   richTextSchema: t
     .text("rich_text_schema", { mode: "json" })
     .$type<import("lexical").SerializedEditorState>(), // Lexical schema for user rich text

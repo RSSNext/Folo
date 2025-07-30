@@ -1,5 +1,6 @@
 import type { ChatInit, ChatState, ChatStatus } from "ai"
 import { AbstractChat } from "ai"
+import { throttle } from "es-toolkit/compat"
 import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
@@ -8,21 +9,87 @@ import { generateChatTitle } from "../../utils/titleGeneration"
 import { createChatTransport } from "../transport"
 import type { BizUIMessage } from "../types"
 
+// Event types and payloads
+interface ChatStateEvents<UI_MESSAGE extends BizUIMessage> {
+  messages: { messages: UI_MESSAGE[] }
+  status: { status: ChatStatus }
+  error: { error: Error | undefined }
+}
+
+type ChatStateEventType = keyof ChatStateEvents<any>
+
+// Event emitter for AI chat state changes with typed payloads
+class ChatStateEventEmitter<UI_MESSAGE extends BizUIMessage> {
+  #listeners = new Map<ChatStateEventType, Set<(payload: any) => void>>()
+
+  on<T extends ChatStateEventType>(
+    event: T,
+    listener: (payload: ChatStateEvents<UI_MESSAGE>[T]) => void,
+  ): () => void {
+    if (!this.#listeners.has(event)) {
+      this.#listeners.set(event, new Set())
+    }
+    this.#listeners.get(event)!.add(listener)
+
+    // Return unsubscribe function
+    return () => {
+      this.#listeners.get(event)?.delete(listener)
+    }
+  }
+
+  emit<T extends ChatStateEventType>(event: T, payload: ChatStateEvents<UI_MESSAGE>[T]): void {
+    this.#listeners.get(event)?.forEach((listener) => {
+      try {
+        listener(payload)
+      } catch (error) {
+        console.error(`Error in chat state listener for event ${event}:`, error)
+      }
+    })
+  }
+
+  clear(): void {
+    this.#listeners.clear()
+  }
+}
+
 // Zustand Chat State that implements AI SDK ChatState interface
 class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_MESSAGE> {
   #messages: UI_MESSAGE[]
   #status: ChatStatus = "ready"
   #error: Error | undefined = undefined
-
-  #messagesCallbacks = new Set<() => void>()
-  #statusCallbacks = new Set<() => void>()
-  #errorCallbacks = new Set<() => void>()
+  #eventEmitter = new ChatStateEventEmitter<UI_MESSAGE>()
 
   constructor(
     initialMessages: UI_MESSAGE[] = [],
     private updateZustandState: (updater: (state: ChatSlice) => ChatSlice) => void,
   ) {
     this.#messages = initialMessages
+    this.#setupEventHandlers()
+  }
+
+  #setupEventHandlers(): void {
+    // Setup event handlers for automatic Zustand synchronization
+    this.#eventEmitter.on("messages", ({ messages }) => {
+      this.updateZustandState((state) => ({
+        ...state,
+        messages: [...messages],
+      }))
+    })
+
+    this.#eventEmitter.on("status", ({ status }) => {
+      this.updateZustandState((state) => ({
+        ...state,
+        status,
+        isStreaming: status === "streaming",
+      }))
+    })
+
+    this.#eventEmitter.on("error", ({ error }) => {
+      this.updateZustandState((state) => ({
+        ...state,
+        error,
+      }))
+    })
   }
 
   get status(): ChatStatus {
@@ -30,14 +97,10 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
   }
 
   set status(newStatus: ChatStatus) {
+    if (this.#status === newStatus) return
+
     this.#status = newStatus
-    this.#callStatusCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      status: newStatus,
-      isStreaming: newStatus === "streaming",
-    }))
+    this.#eventEmitter.emit("status", { status: newStatus })
   }
 
   get error(): Error | undefined {
@@ -45,13 +108,10 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
   }
 
   set error(newError: Error | undefined) {
+    if (this.#error === newError) return
+
     this.#error = newError
-    this.#callErrorCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      error: newError,
-    }))
+    this.#eventEmitter.emit("error", { error: newError })
   }
 
   get messages(): UI_MESSAGE[] {
@@ -60,103 +120,76 @@ class ZustandChatState<UI_MESSAGE extends BizUIMessage> implements ChatState<UI_
 
   set messages(newMessages: UI_MESSAGE[]) {
     this.#messages = [...newMessages]
-    this.#callMessagesCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      messages: [...newMessages],
-    }))
+    this.#eventEmitter.emit("messages", { messages: this.#messages })
   }
 
   pushMessage = (message: UI_MESSAGE) => {
     this.#messages = this.#messages.concat(message)
-    this.#callMessagesCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      messages: [...this.#messages],
-    }))
+    this.#eventEmitter.emit("messages", { messages: this.#messages })
   }
 
   popMessage = () => {
+    if (this.#messages.length === 0) return
+
     this.#messages = this.#messages.slice(0, -1)
-    this.#callMessagesCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      messages: [...this.#messages],
-    }))
+    this.#eventEmitter.emit("messages", { messages: this.#messages })
   }
 
   replaceMessage = (index: number, message: UI_MESSAGE) => {
+    if (index < 0 || index >= this.#messages.length) return
+
     this.#messages = [
       ...this.#messages.slice(0, index),
       // Deep clone the message to ensure React detects changes
       this.snapshot(message),
       ...this.#messages.slice(index + 1),
     ]
-    this.#callMessagesCallbacks()
-    // Sync to Zustand
-    this.updateZustandState((state) => ({
-      ...state,
-      messages: [...this.#messages],
-    }))
+    this.#eventEmitter.emit("messages", { messages: this.#messages })
   }
 
   snapshot = <T>(value: T): T => structuredClone(value)
 
-  // Callback registration methods (using symbol-like names from AI SDK)
-  "~registerMessagesCallback" = (onChange: () => void, throttleWaitMs?: number): (() => void) => {
-    const callback = throttleWaitMs ? this.throttle(onChange, throttleWaitMs) : onChange
-    this.#messagesCallbacks.add(callback)
-    return () => {
-      this.#messagesCallbacks.delete(callback)
-    }
+  // Callback registration methods with proper AI SDK compatibility
+  registerMessagesCallback = (onChange: () => void, throttleWaitMs?: number): (() => void) => {
+    const callback = throttleWaitMs ? throttle(onChange, throttleWaitMs) : onChange
+
+    // Convert payload-based event to AI SDK expected callback format
+    return this.#eventEmitter.on("messages", () => callback())
   }
 
-  "~registerStatusCallback" = (onChange: () => void): (() => void) => {
-    this.#statusCallbacks.add(onChange)
-    return () => {
-      this.#statusCallbacks.delete(onChange)
-    }
+  registerStatusCallback = (onChange: () => void): (() => void) => {
+    // Convert payload-based event to AI SDK expected callback format
+    return this.#eventEmitter.on("status", () => onChange())
   }
 
-  "~registerErrorCallback" = (onChange: () => void): (() => void) => {
-    this.#errorCallbacks.add(onChange)
-    return () => {
-      this.#errorCallbacks.delete(onChange)
-    }
+  registerErrorCallback = (onChange: () => void): (() => void) => {
+    // Convert payload-based event to AI SDK expected callback format
+    return this.#eventEmitter.on("error", () => onChange())
   }
 
-  #callMessagesCallbacks = () => {
-    this.#messagesCallbacks.forEach((callback) => callback())
+  // Internal event subscription with payload access
+  onMessagesChange = (listener: (messages: UI_MESSAGE[]) => void): (() => void) => {
+    return this.#eventEmitter.on("messages", ({ messages }) => listener(messages))
   }
 
-  #callStatusCallbacks = () => {
-    this.#statusCallbacks.forEach((callback) => callback())
+  onStatusChange = (listener: (status: ChatStatus) => void): (() => void) => {
+    return this.#eventEmitter.on("status", ({ status }) => listener(status))
   }
 
-  #callErrorCallbacks = () => {
-    this.#errorCallbacks.forEach((callback) => callback())
+  onErrorChange = (listener: (error: Error | undefined) => void): (() => void) => {
+    return this.#eventEmitter.on("error", ({ error }) => listener(error))
   }
 
-  // Simple throttle implementation
-  private throttle = (func: () => void, wait: number) => {
-    let timeout: ReturnType<typeof setTimeout> | null = null
-    return () => {
-      if (timeout === null) {
-        timeout = setTimeout(() => {
-          func()
-          timeout = null
-        }, wait)
-      }
-    }
+  // Cleanup method
+  destroy(): void {
+    this.#eventEmitter.clear()
   }
 }
 
 // Custom Chat class that uses Zustand-integrated state
 export class ZustandChat<UI_MESSAGE extends BizUIMessage> extends AbstractChat<UI_MESSAGE> {
   #state: ZustandChatState<UI_MESSAGE>
+  #unsubscribeFns: (() => void)[] = []
 
   constructor(
     { messages, ...init }: ChatInit<UI_MESSAGE>,
@@ -167,18 +200,18 @@ export class ZustandChat<UI_MESSAGE extends BizUIMessage> extends AbstractChat<U
     this.#state = state
   }
 
-  "~registerMessagesCallback" = (onChange: () => void, throttleWaitMs?: number): (() => void) =>
-    this.#state["~registerMessagesCallback"](onChange, throttleWaitMs)
-
-  "~registerStatusCallback" = (onChange: () => void): (() => void) =>
-    this.#state["~registerStatusCallback"](onChange)
-
-  "~registerErrorCallback" = (onChange: () => void): (() => void) =>
-    this.#state["~registerErrorCallback"](onChange)
-
   // Public getter for state access
   get chatState() {
     return this.#state
+  }
+
+  // Cleanup method
+  destroy(): void {
+    // Unsubscribe from AI SDK callbacks
+    this.#unsubscribeFns.forEach((unsubscribe) => unsubscribe())
+    this.#unsubscribeFns = []
+
+    this.#state.destroy()
   }
 }
 
@@ -235,7 +268,9 @@ export const createChatSlice: StateCreator<ChatSlice, [], [], ChatSlice> = (...p
             if (title && chatId) {
               try {
                 await AIPersistService.updateSessionTitle(chatId, title)
-                if (get().chatId === chatId) chatActions.setCurrentTitle(title)
+                if (get().chatId === chatId) {
+                  chatActions.setCurrentTitle(title)
+                }
               } catch (error) {
                 console.error("Failed to update session title:", error)
               }
@@ -280,7 +315,9 @@ class ChatSliceActions {
   }
 
   // Direct message management methods (delegating to chat instance state)
-  setMessages(messagesParam: BizUIMessage[] | ((messages: BizUIMessage[]) => BizUIMessage[])) {
+  setMessages = (
+    messagesParam: BizUIMessage[] | ((messages: BizUIMessage[]) => BizUIMessage[]),
+  ) => {
     if (typeof messagesParam === "function") {
       this.chatInstance.chatState.messages = messagesParam(this.chatInstance.chatState.messages)
     } else {
@@ -300,7 +337,7 @@ class ChatSliceActions {
     this.chatInstance.chatState.replaceMessage(index, message)
   }
 
-  updateMessage(id: string, updates: Partial<BizUIMessage>) {
+  updateMessage = (id: string, updates: Partial<BizUIMessage>) => {
     const messageIndex = this.chatInstance.chatState.messages.findIndex(
       (msg: BizUIMessage) => msg.id === id,
     )
@@ -314,33 +351,33 @@ class ChatSliceActions {
   }
 
   // Status management (delegating to chat instance state)
-  setStatus(status: ChatStatus) {
+  setStatus = (status: ChatStatus) => {
     this.chatInstance.chatState.status = status
   }
 
-  setError(error: Error | undefined) {
+  setError = (error: Error | undefined) => {
     this.chatInstance.chatState.error = error
   }
 
-  setStreaming(streaming: boolean) {
+  setStreaming = (streaming: boolean) => {
     this.chatInstance.chatState.status = streaming ? "streaming" : "ready"
   }
 
   // Title management
-  setCurrentTitle(title: string | undefined) {
+  setCurrentTitle = (title: string | undefined) => {
     this.set((state) => ({ ...state, currentTitle: title }))
   }
 
-  getCurrentTitle(): string | undefined {
+  getCurrentTitle = (): string | undefined => {
     return this.get().currentTitle
   }
 
-  getCurrentRoomId(): string | null {
+  getCurrentChatId = (): string | null => {
     return this.get().chatId
   }
 
   // Core chat actions using AI SDK AbstractChat methods
-  async sendMessage(message: string | BizUIMessage) {
+  sendMessage = async (message: string | BizUIMessage) => {
     try {
       // Convert string to message object if needed
       const messageObj =
@@ -357,7 +394,7 @@ class ChatSliceActions {
     }
   }
 
-  async regenerate({ messageId }: { messageId: string }) {
+  regenerate = async ({ messageId }: { messageId: string }) => {
     try {
       // Use the AI SDK's regenerate method
       const response = await this.chatInstance.regenerate({ messageId })
@@ -368,12 +405,12 @@ class ChatSliceActions {
     }
   }
 
-  stop() {
+  stop = () => {
     // Use AI SDK's stop method
     this.chatInstance.stop()
   }
 
-  async resumeStream() {
+  resumeStream = async () => {
     try {
       // Use AI SDK's resumeStream method
       await this.chatInstance.resumeStream()
@@ -383,12 +420,7 @@ class ChatSliceActions {
     }
   }
 
-  addToolResult(toolCallId: string, result: any) {
-    // Use AI SDK's addToolResult method
-    this.chatInstance.addToolResult({ toolCallId, output: result })
-  }
-
-  resetChat() {
+  resetChat = () => {
     // Reset through the chat instance state
     this.chatInstance.chatState.messages = []
     this.chatInstance.chatState.error = undefined
@@ -397,8 +429,11 @@ class ChatSliceActions {
     this.setCurrentTitle(undefined)
   }
 
-  newChat() {
+  newChat = () => {
     const newChatId = nanoid()
+
+    // Cleanup old chat instance
+    this.chatInstance.destroy()
 
     // Create new chat instance
     const newChatInstance = new ZustandChat<BizUIMessage>(
@@ -425,4 +460,53 @@ class ChatSliceActions {
     // Update the reference
     this.chatInstance = newChatInstance
   }
+
+  switchToChat = async (chatId: string) => {
+    try {
+      // Set loading state (using ready as there's no loading status in ChatStatus)
+      this.setStatus("ready")
+      this.setError(undefined)
+
+      // Load messages from persistence service
+      const messages = await AIPersistService.loadUIMessages(chatId)
+
+      // Load chat session details to get title (direct SQL query)
+      const chatSession = await AIPersistService.getChatSession(chatId)
+
+      // Cleanup old chat instance
+      this.chatInstance.destroy()
+
+      // Create new chat instance with loaded messages
+      const newChatInstance = new ZustandChat<BizUIMessage>(
+        {
+          id: chatId,
+          messages,
+          transport: createChatTransport(),
+        },
+        this.set,
+      )
+
+      // Update store state
+      this.set((state) => ({
+        ...state,
+        chatId,
+        messages: [...messages],
+        status: "ready" as ChatStatus,
+        error: undefined,
+        isStreaming: false,
+        currentTitle: chatSession?.title || undefined,
+        chatInstance: newChatInstance,
+      }))
+
+      // Update the reference
+      this.chatInstance = newChatInstance
+    } catch (error) {
+      console.error("Failed to switch to chat:", error)
+      this.setError(error as Error)
+      this.setStatus("ready")
+      throw error
+    }
+  }
 }
+
+export { type ChatStatus } from "ai"

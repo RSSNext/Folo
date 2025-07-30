@@ -1,5 +1,5 @@
 export interface ChatSession {
-  roomId: string
+  chatId: string
   title?: string
   createdAt: Date
   messageCount: number

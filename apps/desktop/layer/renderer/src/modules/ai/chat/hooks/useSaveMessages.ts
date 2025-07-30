@@ -4,7 +4,7 @@ import { useChatStatus, useMessages } from "../__internal__/hooks"
 import { AIPersistService } from "../services"
 
 export const useSaveMessages = (
-  roomId: string,
+  chatId: string,
   options: {
     enabled: boolean
   },
@@ -19,7 +19,7 @@ export const useSaveMessages = (
       return
     }
 
-    if (!roomId) {
+    if (!chatId) {
       return
     }
 
@@ -28,6 +28,6 @@ export const useSaveMessages = (
       return
     }
 
-    AIPersistService.replaceAllMessages(roomId, messages)
-  }, [roomId, messages, options.enabled, isStreaming])
+    AIPersistService.replaceAllMessages(chatId, messages)
+  }, [chatId, messages, options.enabled, isStreaming])
 }

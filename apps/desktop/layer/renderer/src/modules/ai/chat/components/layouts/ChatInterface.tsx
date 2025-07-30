@@ -9,7 +9,7 @@ import {
   useChatActions,
   useChatError,
   useChatStatus,
-  useCurrentRoomId,
+  useCurrentChatId,
   useMessages,
 } from "~/modules/ai/chat/__internal__/hooks"
 import {
@@ -31,19 +31,19 @@ export const ChatInterface = () => {
   const chatActions = useChatActions()
   const error = useChatError()
 
-  const currentRoomId = useCurrentRoomId()
+  const currentChatId = useCurrentChatId()
   const { handleFirstMessage } = useAIChatSessionMethods()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [hasHandledFirstMessage, setHasHandledFirstMessage] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
 
-  // Reset handlers when roomId changes
+  // Reset handlers when chatId changes
   useEffect(() => {
     setHasHandledFirstMessage(false)
     setIsAtBottom(true)
-  }, [currentRoomId])
+  }, [currentChatId])
 
-  const { isLoading: isLoadingHistory } = useLoadMessages(currentRoomId || "", {
+  const { isLoading: isLoadingHistory } = useLoadMessages(currentChatId || "", {
     onLoad: () => {
       nextFrame(() => {
         const $scrollArea = scrollAreaRef.current
@@ -58,7 +58,7 @@ export const ChatInterface = () => {
       })
     },
   })
-  useSaveMessages(currentRoomId || "", { enabled: !isLoadingHistory })
+  useSaveMessages(currentChatId || "", { enabled: !isLoadingHistory })
 
   const { resetScrollState } = useAutoScroll(scrollAreaRef.current, status === "streaming")
 

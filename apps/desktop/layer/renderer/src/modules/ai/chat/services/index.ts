@@ -7,9 +7,9 @@ import type { BizUIMessage } from "../__internal__/types"
 import type { MessageContent } from "../utils/lexical-markdown"
 
 class AIPersistServiceStatic {
-  async loadMessages(roomId: string) {
+  async loadMessages(chatId: string) {
     return db.query.aiChatMessagesTable.findMany({
-      where: eq(aiChatMessagesTable.roomId, roomId),
+      where: eq(aiChatMessagesTable.chatId, chatId),
       orderBy: [asc(aiChatMessagesTable.createdAt)],
     })
   }
@@ -45,125 +45,104 @@ class AIPersistServiceStatic {
   /**
    * Enhanced message loading that converts to UIMessage format
    */
-  async loadUIMessages(roomId: string): Promise<BizUIMessage[]> {
-    const dbMessages = await this.loadMessages(roomId)
+  async loadUIMessages(chatId: string): Promise<BizUIMessage[]> {
+    const dbMessages = await this.loadMessages(chatId)
     return dbMessages.map((msg) => this.convertToUIMessage(msg))
   }
 
   /**
    * Store a rich text message from user input
    */
-  async insertRichTextMessage(
-    roomId: string,
-    messageId: string,
-    content: MessageContent,
-    markdownContent?: string,
-  ) {
-    let finalMarkdown = markdownContent
+  async insertRichTextMessage(chatId: string, messageId: string, content: MessageContent) {
     let richTextSchema: SerializedEditorState | undefined
 
     if (content.format === "richtext") {
       richTextSchema = content.content as SerializedEditorState
-      // Convert to markdown if not provided
-      if (!finalMarkdown) {
-        // This would need a Lexical editor instance to convert
-        // For now, we'll extract text content from the schema
-        finalMarkdown = this.extractTextFromSchema(richTextSchema)
-      }
-    } else {
-      finalMarkdown = content.content as string
     }
 
     await db.insert(aiChatMessagesTable).values({
       id: messageId,
-      roomId,
+      chatId,
       role: "user",
-      contentFormat: content.format,
-      content: finalMarkdown,
+
       richTextSchema,
       createdAt: new Date(),
       status: "completed",
     })
   }
 
-  /**
-   * Extract plain text from Lexical schema for fallback
-   */
-  private extractTextFromSchema(schema: SerializedEditorState): string {
-    try {
-      const textContent: string[] = []
-
-      const extractText = (node: any) => {
-        if (node.type === "text") {
-          textContent.push(node.text || "")
-        }
-        if (node.children) {
-          node.children.forEach(extractText)
-        }
-      }
-
-      schema.root?.children?.forEach(extractText)
-      return textContent.join("")
-    } catch (error) {
-      console.error("Failed to extract text from Lexical schema:", error)
-      return ""
-    }
-  }
-
-  async insertMessages(roomId: string, messages: BizUIMessage[]) {
+  async insertMessages(chatId: string, messages: BizUIMessage[]) {
     if (messages.length === 0) {
       return
     }
 
-    await db.insert(aiChatMessagesTable).values(
-      messages.map((message) => {
-        // Extract text content from parts array for fallback content
-        const textContent = message.parts
-          .filter((part) => part.type === "text")
-          .map((part) => (part as any).text)
-          .join("")
+    await db
+      .insert(aiChatMessagesTable)
+      .values(
+        messages.map((message) => {
+          // Store parts as-is since they're stored as JSON and the UI can handle them
+          const convertedParts = message.parts as any[]
 
-        // Store parts as-is since they're stored as JSON and the UI can handle them
-        const convertedParts = message.parts as any[]
+          return {
+            id: message.id,
+            chatId,
+            role: message.role,
+            contentFormat: "plaintext" as const,
 
-        return {
-          id: message.id,
-          roomId,
-          role: message.role,
-          contentFormat: "plaintext" as const,
-          content: textContent || "",
-          richTextSchema: undefined,
-          createdAt: new Date(),
-          annotations: [], // AI SDK v5 messages don't have annotations
-          status: "completed" as const,
-          finishedAt: message.metadata?.finishTime
-            ? new Date(message.metadata.finishTime)
-            : undefined,
-          messageParts: convertedParts,
-        }
-      }),
-    )
+            richTextSchema: undefined,
+            createdAt: new Date(),
+            status: "completed" as const,
+            finishedAt: message.metadata?.finishTime
+              ? new Date(message.metadata.finishTime)
+              : undefined,
+            messageParts: convertedParts,
+            metadata: message.metadata,
+          } as typeof aiChatMessagesTable.$inferInsert
+        }),
+      )
+      .onConflictDoUpdate({
+        target: [aiChatMessagesTable.id],
+        set: {
+          messageParts: sql`excluded.messageParts`,
+          metadata: sql`excluded.metadata`,
+          finishedAt: sql`excluded.finishedAt`,
+          createdAt: sql`excluded.createdAt`,
+          status: sql`excluded.status`,
+          richTextSchema: sql`excluded.richTextSchema`,
+        },
+      })
   }
 
-  async replaceAllMessages(roomId: string, messages: BizUIMessage[]) {
-    await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.roomId, roomId))
-    await this.insertMessages(roomId, messages)
+  async replaceAllMessages(chatId: string, messages: BizUIMessage[]) {
+    await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.chatId, chatId))
+    await this.insertMessages(chatId, messages)
   }
 
-  async createSession(roomId: string, title?: string) {
+  async createSession(chatId: string, title?: string) {
     const now = new Date()
     await db.insert(aiChatTable).values({
-      roomId,
+      chatId,
       title,
       createdAt: now,
       updatedAt: now,
     })
   }
 
+  async getChatSession(chatId: string) {
+    return db.query.aiChatTable.findFirst({
+      where: eq(aiChatTable.chatId, chatId),
+      columns: {
+        chatId: true,
+        title: true,
+        createdAt: true,
+      },
+    })
+  }
+
   async getChatSessions(limit = 20) {
     const chats = await db.query.aiChatTable.findMany({
       columns: {
-        roomId: true,
+        chatId: true,
         title: true,
         createdAt: true,
       },
@@ -173,15 +152,14 @@ class AIPersistServiceStatic {
 
     const result = await Promise.all(
       chats.map(async (chat) => {
-        // Use raw SQL count query
         const messageCountResult = await db.values<[number]>(
-          sql`SELECT COUNT(*) FROM ${aiChatMessagesTable} WHERE ${aiChatMessagesTable.roomId} = ${chat.roomId}`,
+          sql`SELECT COUNT(*) FROM ${aiChatMessagesTable} WHERE ${aiChatMessagesTable.chatId} = ${chat.chatId}`,
         )
 
         const messageCount = messageCountResult[0]?.[0] || 0
 
         return {
-          roomId: chat.roomId,
+          chatId: chat.chatId,
           title: chat.title,
           createdAt: chat.createdAt,
           messageCount,
@@ -189,41 +167,39 @@ class AIPersistServiceStatic {
       }),
     )
 
-    // Filter out chats with 0 messages
     return result.filter((chat) => chat.messageCount > 0)
   }
 
-  async deleteSession(roomId: string) {
-    await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.roomId, roomId))
-    await db.delete(aiChatTable).where(eq(aiChatTable.roomId, roomId))
+  async deleteSession(chatId: string) {
+    await db.delete(aiChatMessagesTable).where(eq(aiChatMessagesTable.chatId, chatId))
+    await db.delete(aiChatTable).where(eq(aiChatTable.chatId, chatId))
   }
 
-  async updateSessionTitle(roomId: string, title: string) {
+  async updateSessionTitle(chatId: string, title: string) {
     await db
       .update(aiChatTable)
       .set({
         title,
         updatedAt: new Date(Date.now()),
       })
-      .where(eq(aiChatTable.roomId, roomId))
+      .where(eq(aiChatTable.chatId, chatId))
   }
 
   async cleanupEmptySessions() {
-    // Use raw SQL to find empty sessions
     const emptySessions = await db.values<[string]>(
       sql`
-        SELECT ${aiChatTable.roomId}
+        SELECT ${aiChatTable.chatId}
         FROM ${aiChatTable}
-        LEFT JOIN ${aiChatMessagesTable} ON ${aiChatTable.roomId} = ${aiChatMessagesTable.roomId}
-        GROUP BY ${aiChatTable.roomId}
+        LEFT JOIN ${aiChatMessagesTable} ON ${aiChatTable.chatId} = ${aiChatMessagesTable.chatId}
+        GROUP BY ${aiChatTable.chatId}
         HAVING COUNT(${aiChatMessagesTable.id}) = 0
       `,
     )
 
     // Delete empty sessions
     if (emptySessions.length > 0) {
-      const roomIdsToDelete = emptySessions.map((row) => row[0])
-      await db.delete(aiChatTable).where(inArray(aiChatTable.roomId, roomIdsToDelete))
+      const chatIdsToDelete = emptySessions.map((row) => row[0])
+      await db.delete(aiChatTable).where(inArray(aiChatTable.chatId, chatIdsToDelete))
     }
   }
 }

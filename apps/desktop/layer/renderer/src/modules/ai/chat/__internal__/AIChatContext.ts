@@ -28,7 +28,6 @@ export interface AIChatSessionMethods {
   handleTitleGenerated: (title: string) => Promise<void>
   handleFirstMessage: () => Promise<void>
   handleNewChat: () => void
-  handleSwitchRoom: (roomId: string) => Promise<void>
 }
 
 export const AIChatSessionMethodsContext = createContext<AIChatSessionMethods>(null!)

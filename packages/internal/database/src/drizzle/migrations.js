@@ -36,6 +36,8 @@ import m0032 from "./0032_orange_prima.sql"
 import m0033 from "./0033_youthful_the_stranger.sql"
 import m0034 from "./0034_mixed_gwen_stacy.sql"
 import m0035 from "./0035_colossal_cargill.sql"
+import m0036 from "./0036_big_machine_man.sql"
+import m0037 from "./0037_dusty_whirlwind.sql"
 import journal from "./meta/_journal.json"
 
 export default {
@@ -77,5 +79,7 @@ export default {
     m0033,
     m0034,
     m0035,
+    m0036,
+    m0037,
   },
 }
