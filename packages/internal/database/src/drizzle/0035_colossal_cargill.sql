@@ -1,0 +1,1 @@
+ALTER TABLE `ai_chat_messages` RENAME COLUMN "annotations" TO "metadata";

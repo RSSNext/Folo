@@ -5,7 +5,7 @@ import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { useChatActions, useMessages } from "~/modules/ai/chat/__internal__/hooks"
 import type { BizUIMetadata, BizUITools } from "~/modules/ai/chat/__internal__/types"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai/chat/atoms/session"
 
@@ -26,7 +26,8 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
-  const { regenerate, sendMessage, setMessages, messages } = React.use(AIChatContext)
+  const chatActions = useChatActions()
+  const messages = useMessages()
   const messageId = message.id
   const [isHovered, setIsHovered] = React.useState(false)
   const editingMessageId = useEditingMessageId()
@@ -58,20 +59,15 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
         const messageIndex = messages.findIndex((msg) => msg.id === messageId)
         if (messageIndex !== -1) {
           const messagesToKeep = messages.slice(0, messageIndex)
-          setMessages(messagesToKeep)
+          chatActions.setMessages(messagesToKeep)
 
           // Send the edited message
-          sendMessage({
-            text: newContent,
-            metadata: {
-              finishTime: new Date().toISOString(),
-            },
-          })
+          chatActions.sendMessage(newContent)
         }
       }
       setEditingMessageId(null)
     },
-    [messageContent, messageId, messages, setMessages, sendMessage, setEditingMessageId],
+    [messageContent, messageId, messages, chatActions, setEditingMessageId],
   )
 
   const handleCancelEdit = React.useCallback(() => {
@@ -88,8 +84,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
   }, [messageContent])
 
   const handleRetry = React.useCallback(() => {
-    regenerate({ messageId })
-  }, [regenerate, messageId])
+    chatActions.regenerate({ messageId })
+  }, [chatActions, messageId])
 
   return (
     <m.div

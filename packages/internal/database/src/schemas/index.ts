@@ -236,7 +236,7 @@ export const aiChatMessagesTable = sqliteTable("ai_chat_messages", (t) => ({
 
   // Vercel AI SDK UIMessage properties
   createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
-  annotations: t.text("annotations", { mode: "json" }).$type<any[]>(),
+  metadata: t.text("metadata", { mode: "json" }).$type<any>(),
 
   // Message processing status
   status: t

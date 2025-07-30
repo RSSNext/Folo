@@ -1,8 +1,8 @@
 import { useInputComposition } from "@follow/hooks"
 import { cn } from "@follow/utils"
-import { use, useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { useChatStatus } from "~/modules/ai/chat/__internal__/hooks"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai/chat/atoms/session"
 
 interface EditableMessageProps {
@@ -20,7 +20,7 @@ export const EditableMessage = ({
   onCancel,
   className,
 }: EditableMessageProps) => {
-  const { status } = use(AIChatContext)
+  const status = useChatStatus()
   const editingMessageId = useEditingMessageId()
   const setEditingMessageId = useSetEditingMessageId()
   const [content, setContent] = useState(initialContent)

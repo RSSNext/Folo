@@ -1,5 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { use, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -15,23 +15,25 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
 import {
-  AIChatContext,
-  useAIChatSessionMethods,
-} from "~/modules/ai/chat/__internal__/AIChatContext"
-import { useSessionState } from "~/modules/ai/chat/atoms/session"
+  useCurrentRoomId,
+  useCurrentTitle,
+  useMessages,
+} from "~/modules/ai/chat/__internal__/hooks"
 import { useChatHistory } from "~/modules/ai/chat/hooks/useChatHistory"
 import { AIPersistService } from "~/modules/ai/chat/services"
 import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai/chat/utils/export"
 
 export const ChatMoreDropdown = () => {
-  const { currentTitle, currentRoomId } = useSessionState()
+  const currentTitle = useCurrentTitle()
+  const currentRoomId = useCurrentRoomId()
   const { handleNewChat, handleSwitchRoom } = useAIChatSessionMethods()
   const { t } = useTranslation("ai")
   const { ask } = useDialog()
   const [deletingRoomId, setDeletingRoomId] = useState<string | null>(null)
   const { sessions, loading, loadHistory } = useChatHistory()
-  const { messages } = use(AIChatContext)
+  const messages = useMessages()
 
   const handleDropdownOpen = (open: boolean) => {
     if (open) {

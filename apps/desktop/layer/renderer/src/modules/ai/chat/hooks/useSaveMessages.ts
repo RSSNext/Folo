@@ -1,6 +1,6 @@
-import { use, useEffect } from "react"
+import { useEffect } from "react"
 
-import { AIChatContext } from "../__internal__/AIChatContext"
+import { useChatStatus, useMessages } from "../__internal__/hooks"
 import { AIPersistService } from "../services"
 
 export const useSaveMessages = (
@@ -9,7 +9,8 @@ export const useSaveMessages = (
     enabled: boolean
   },
 ) => {
-  const { messages, status } = use(AIChatContext)
+  const messages = useMessages()
+  const status = useChatStatus()
 
   const isStreaming = status === "streaming"
 

@@ -1,31 +1,37 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, nextFrame } from "@follow/utils"
 import { springScrollTo } from "@follow/utils/scroller"
-import { use, useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
 import {
-  AIChatContext,
-  useAIChatSessionMethods,
-} from "~/modules/ai/chat/__internal__/AIChatContext"
-import { useCurrentRoomId } from "~/modules/ai/chat/atoms/session"
-import { ChatInput } from "~/modules/ai/chat/components/ChatInput"
+  useChatActions,
+  useChatError,
+  useChatStatus,
+  useCurrentRoomId,
+  useMessages,
+} from "~/modules/ai/chat/__internal__/hooks"
 import {
   AIChatMessage,
   AIChatTypingIndicator,
 } from "~/modules/ai/chat/components/message/AIChatMessage"
-import { WelcomeScreen } from "~/modules/ai/chat/components/WelcomeScreen"
 import { useAutoScroll } from "~/modules/ai/chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai/chat/hooks/useLoadMessages"
 import { useSaveMessages } from "~/modules/ai/chat/hooks/useSaveMessages"
 
+import { ChatInput } from "./ChatInput"
+import { WelcomeScreen } from "./WelcomeScreen"
+
 const SCROLL_BOTTOM_THRESHOLD = 50
 
 export const ChatInterface = () => {
-  const { messages, status, sendMessage, error } = use(AIChatContext)
+  const messages = useMessages()
+  const status = useChatStatus()
+  const chatActions = useChatActions()
+  const error = useChatError()
 
   const currentRoomId = useCurrentRoomId()
-
   const { handleFirstMessage } = useAIChatSessionMethods()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [hasHandledFirstMessage, setHasHandledFirstMessage] = useState(false)
@@ -92,12 +98,8 @@ export const ChatInterface = () => {
       setHasHandledFirstMessage(true)
     }
 
-    sendMessage({
-      text: message,
-      metadata: {
-        finishTime: new Date().toISOString(),
-      },
-    })
+    // Use string message directly as supported by AI SDK
+    chatActions.sendMessage(message)
   })
 
   useEffect(() => {

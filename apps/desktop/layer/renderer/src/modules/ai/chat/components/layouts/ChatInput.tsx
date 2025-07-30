@@ -3,13 +3,13 @@ import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
 import type { EditorState, LexicalEditor } from "lexical"
 import { $getRoot } from "lexical"
-import { memo, use, useCallback, useRef, useState } from "react"
+import { memo, useCallback, useRef, useState } from "react"
 
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
 import { AIChatContextBar } from "~/modules/ai/chat/components/AIChatContextBar"
-import { AIChatSendButton } from "~/modules/ai/chat/components/AIChatSendButton"
 import { convertLexicalToMarkdown } from "~/modules/ai/chat/utils/lexical-markdown"
 
+import { useChatActions, useChatError, useChatStatus } from "../../__internal__/hooks"
+import { AIChatSendButton } from "./AIChatSendButton"
 import { CollapsibleError } from "./CollapsibleError"
 import type { LexicalRichEditorRef } from "./LexicalRichEditor"
 import { LexicalRichEditor } from "./LexicalRichEditor"
@@ -37,7 +37,13 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
 }
 
 export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
-  const { status, stop, error } = use(AIChatContext)
+  const status = useChatStatus()
+  const chatActions = useChatActions()
+  const error = useChatError()
+  const stop = useCallback(() => {
+    chatActions.stop()
+  }, [chatActions])
+
   const editorRef = useRef<LexicalRichEditorRef>(null)
   const [isEmpty, setIsEmpty] = useState(true)
   const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)

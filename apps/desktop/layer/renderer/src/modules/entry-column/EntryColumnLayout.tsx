@@ -112,7 +112,7 @@ export const EntryColumnLayout = () => {
   const { position, separatorProps, isDragging, separatorCursor, setPosition } = useResizable({
     axis: "x",
     min: 300,
-    max: 600,
+    max: 1200,
     initial: aiColWidth,
     reverse: true,
     onResizeStart({ position }) {
@@ -187,7 +187,11 @@ export const EntryColumnLayout = () => {
           setPosition(defaultUISettings.aiColWidth)
         }}
       />
-      <AIChatLayout style={{ width: position }} />
+      <AIChatLayout
+        style={
+          { width: position, "--ai-chat-layout-width": `${position}px` } as React.CSSProperties
+        }
+      />
     </div>
   )
 }

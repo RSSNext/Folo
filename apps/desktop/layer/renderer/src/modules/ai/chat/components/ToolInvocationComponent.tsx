@@ -16,7 +16,7 @@ export const ToolInvocationComponent: React.FC<ToolInvocationComponentProps> = (
   const toolName = getToolName(part)
   return (
     <div className="bg-material-medium border-border size-full min-w-0 max-w-prose rounded-lg border text-left">
-      <div className="w-[9999px] max-w-prose" />
+      <div className="w-[9999px] max-w-[calc(var(--ai-chat-layout-width,65ch)_-120px)]" />
       <Accordion type="single" collapsible>
         <AccordionItem value="tool-invocation">
           <AccordionTrigger className="flex w-full cursor-pointer items-center gap-3 py-1 pl-4 pr-2 hover:no-underline">
