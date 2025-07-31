@@ -32,5 +32,13 @@
         },
       })
     },
+    seekAudio: (time) => {
+      send({
+        type: "audio:seekTo",
+        payload: {
+          time,
+        },
+      })
+    },
   }
 })()

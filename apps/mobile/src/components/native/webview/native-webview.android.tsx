@@ -5,6 +5,7 @@ import type { RefObject } from "react"
 import { useCallback, useRef } from "react"
 import type { ViewProps } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
+import TrackPlayer from "react-native-track-player"
 import type { WebViewNavigation } from "react-native-webview"
 import WebView from "react-native-webview"
 
@@ -73,29 +74,41 @@ export const NativeWebView: React.ComponentType<
       onMessage={(e) => {
         const message = e.nativeEvent.data
         const parsed = JSON.parse(message)
-        if (parsed.type === "setContentHeight") {
-          onContentHeightChange?.({
-            nativeEvent: { height: parsed.payload },
-          })
-          return
-        } else if (parsed.type === "previewImage") {
-          const { imageUrls, index } = parsed.payload
-          runOnUI(() => {
-            "worklet"
-            // const rect = measureHandle(aviHandle)
-            runOnJS(openLightbox)({
-              images: (imageUrls as string[]).map((url: string) => ({
-                uri: url,
-                dimensions: null,
-                thumbUri: url,
-                thumbDimensions: null,
-                thumbRect: null,
-                type: "image",
-              })),
-              index,
+        switch (parsed.type) {
+          case "setContentHeight": {
+            onContentHeightChange?.({
+              nativeEvent: { height: parsed.payload },
             })
-          })()
-          return
+            return
+          }
+          case "previewImage": {
+            const { imageUrls, index } = parsed.payload
+            runOnUI(() => {
+              "worklet"
+              // const rect = measureHandle(aviHandle)
+              runOnJS(openLightbox)({
+                images: (imageUrls as string[]).map((url: string) => ({
+                  uri: url,
+                  dimensions: null,
+                  thumbUri: url,
+                  thumbDimensions: null,
+                  thumbRect: null,
+                  type: "image",
+                })),
+                index,
+              })
+            })()
+            return
+          }
+          case "audio:seekTo": {
+            const { time } = parsed.payload
+            if (typeof time === "number") {
+              TrackPlayer.seekTo(time)
+            }
+
+            break
+          }
+          // No default
         }
       }}
     />
