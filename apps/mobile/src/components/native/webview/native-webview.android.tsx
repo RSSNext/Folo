@@ -1,3 +1,4 @@
+import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { jotaiStore } from "@follow/utils"
 import { atom } from "jotai"
 import type * as React from "react"
@@ -36,7 +37,7 @@ const onLoadEnd = () => {
 export const NativeWebView: React.ComponentType<
   ViewProps & {
     onContentHeightChange?: (e: { nativeEvent: { height: number } }) => void
-    onSeekAudio?: (time: number) => void
+    onSeekAudio?: (e: { nativeEvent: { time: number } }) => void
     url?: string
   }
 > = ({ onContentHeightChange, onSeekAudio }) => {
@@ -71,47 +72,50 @@ export const NativeWebView: React.ComponentType<
       }}
       onNavigationStateChange={onNavigationStateChange}
       onLoadEnd={onLoadEnd}
-      onMessage={(e) => {
-        const message = e.nativeEvent.data
-        const parsed = JSON.parse(message)
-        switch (parsed.type) {
-          case "setContentHeight": {
-            onContentHeightChange?.({
-              nativeEvent: { height: parsed.payload },
-            })
-            return
-          }
-          case "previewImage": {
-            const { imageUrls, index } = parsed.payload
-            runOnUI(() => {
-              "worklet"
-              // const rect = measureHandle(aviHandle)
-              runOnJS(openLightbox)({
-                images: (imageUrls as string[]).map((url: string) => ({
-                  uri: url,
-                  dimensions: null,
-                  thumbUri: url,
-                  thumbDimensions: null,
-                  thumbRect: null,
-                  type: "image",
-                })),
-                index,
+      onMessage={useTypeScriptHappyCallback(
+        (e) => {
+          const message = e.nativeEvent.data
+          const parsed = JSON.parse(message)
+          switch (parsed.type) {
+            case "setContentHeight": {
+              onContentHeightChange?.({
+                nativeEvent: { height: parsed.payload },
               })
-            })()
-            return
-          }
-          case "audio:seekTo": {
-            const { time } = parsed.payload
-            if (typeof time !== "number") {
-              console.warn("Failed to seek audio! Invalid time", time)
               return
             }
-            onSeekAudio?.({ nativeEvent: { time } })
-            break
+            case "previewImage": {
+              const { imageUrls, index } = parsed.payload
+              runOnUI(() => {
+                "worklet"
+                // const rect = measureHandle(aviHandle)
+                runOnJS(openLightbox)({
+                  images: (imageUrls as string[]).map((url: string) => ({
+                    uri: url,
+                    dimensions: null,
+                    thumbUri: url,
+                    thumbDimensions: null,
+                    thumbRect: null,
+                    type: "image",
+                  })),
+                  index,
+                })
+              })()
+              return
+            }
+            case "audio:seekTo": {
+              const { time } = parsed.payload
+              if (typeof time !== "number") {
+                console.warn("Failed to seek audio! Invalid time", time)
+                return
+              }
+              onSeekAudio?.({ nativeEvent: { time } })
+              break
+            }
+            // No default
           }
-          // No default
-        }
-      }}
+        },
+        [onContentHeightChange, onSeekAudio, openLightbox],
+      )}
     />
   )
 }
