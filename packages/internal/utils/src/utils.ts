@@ -395,6 +395,27 @@ export const formatTimeToSeconds = (time?: string | number) => {
   }
 }
 
+/**
+ * @example
+ * ```ts
+ * timeStringToSeconds("1:30") // 90
+ * timeStringToSeconds("1:30:00") // 5400
+ * ```
+ */
+export function timeStringToSeconds(time: string): number | null {
+  const timeParts = time.split(":").map(Number)
+
+  if (timeParts.length === 2) {
+    const [minutes, seconds] = timeParts
+    return minutes! * 60 + seconds!
+  } else if (timeParts.length === 3) {
+    const [hours, minutes, seconds] = timeParts
+    return hours! * 3600 + minutes! * 60 + seconds!
+  } else {
+    return null
+  }
+}
+
 export const formatEstimatedMins = (estimatedMins: number) => {
   const minutesInHour = 60
   const minutesInDay = minutesInHour * 24
