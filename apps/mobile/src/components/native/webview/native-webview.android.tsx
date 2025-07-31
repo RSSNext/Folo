@@ -106,7 +106,7 @@ export const NativeWebView: React.ComponentType<
               console.warn("Failed to seek audio! Invalid time", time)
               return
             }
-            onSeekAudio?.(time)
+            onSeekAudio?.({ nativeEvent: { time } })
             break
           }
           // No default
