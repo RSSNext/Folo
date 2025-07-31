@@ -5,7 +5,6 @@ import type { RefObject } from "react"
 import { useCallback, useRef } from "react"
 import type { ViewProps } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
-import TrackPlayer from "react-native-track-player"
 import type { WebViewNavigation } from "react-native-webview"
 import WebView from "react-native-webview"
 
@@ -37,9 +36,10 @@ const onLoadEnd = () => {
 export const NativeWebView: React.ComponentType<
   ViewProps & {
     onContentHeightChange?: (e: { nativeEvent: { height: number } }) => void
+    onSeekAudio?: (time: number) => void
     url?: string
   }
-> = ({ onContentHeightChange }) => {
+> = ({ onContentHeightChange, onSeekAudio }) => {
   const webViewRef = useRef<WebView | null>(null)
   const { onNavigationStateChange } = useWebViewNavigation({ webViewRef })
   const { openLightbox } = useLightboxControls()
@@ -102,10 +102,11 @@ export const NativeWebView: React.ComponentType<
           }
           case "audio:seekTo": {
             const { time } = parsed.payload
-            if (typeof time === "number") {
-              TrackPlayer.seekTo(time)
+            if (typeof time !== "number") {
+              console.warn("Failed to seek audio! Invalid time", time)
+              return
             }
-
+            onSeekAudio?.(time)
             break
           }
           // No default

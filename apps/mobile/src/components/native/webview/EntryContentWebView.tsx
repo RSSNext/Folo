@@ -6,8 +6,10 @@ import * as React from "react"
 import { useEffect } from "react"
 import { TouchableOpacity, View } from "react-native"
 import { runOnJS, runOnUI } from "react-native-reanimated"
+import TrackPlayer from "react-native-track-player"
 
 import { BugCuteReIcon } from "@/src/icons/bug_cute_re"
+import { player } from "@/src/lib/player"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -81,6 +83,24 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
         <NativeWebView
           onContentHeightChange={(e) => {
             setContentHeight(e.nativeEvent.height)
+          }}
+          onSeekAudio={async (time) => {
+            const activeTrack = await TrackPlayer.getActiveTrack()
+            const entryAudio = entryInWebview?.attachments?.find((attachment) =>
+              attachment.mime_type?.startsWith("audio/"),
+            )
+            if (!entryAudio) {
+              console.warn("Failed to seek audio! No audio attachment found")
+              return
+            }
+            if (activeTrack?.url !== entryAudio.url) {
+              await player.play({
+                url: entryAudio.url || "",
+                title: entryInWebview?.title || "Unknown Title",
+                artist: entryInWebview?.author || "Unknown Artist",
+              })
+            }
+            await player.seekTo(time)
           }}
         />
       </View>
