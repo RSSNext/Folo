@@ -37,7 +37,7 @@ const onLoadEnd = () => {
 export const NativeWebView: React.ComponentType<
   ViewProps & {
     onContentHeightChange?: (e: { nativeEvent: { height: number } }) => void
-    onSeekAudio?: (e: { nativeEvent: { time: number } }) => void
+    onSeekAudio?: (e: { time: number }) => void
     url?: string
   }
 > = ({ onContentHeightChange, onSeekAudio }) => {
@@ -108,7 +108,7 @@ export const NativeWebView: React.ComponentType<
                 console.warn("Failed to seek audio! Invalid time", time)
                 return
               }
-              onSeekAudio?.({ nativeEvent: { time } })
+              onSeekAudio?.({ time })
               break
             }
             // No default
