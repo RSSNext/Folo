@@ -1,28 +1,25 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { use, useCallback } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
-import {
-  AIChatContext,
-  useAIChatSessionMethods,
-} from "~/modules/ai/chat/__internal__/AIChatContext"
-import { useSessionState } from "~/modules/ai/chat/atoms/session"
+import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { useChatActions, useCurrentTitle } from "~/modules/ai/chat/__internal__/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { ChatMoreDropdown } from "./ChatMoreDropdown"
 
 export const ChatHeader = () => {
-  const { currentTitle } = useSessionState()
+  const currentTitle = useCurrentTitle()
   const { handleNewChat } = useAIChatSessionMethods()
   const settingModalPresent = useSettingModal()
-  const { messages } = use(AIChatContext)
-
+  const chatActions = useChatActions()
   const { ask } = useDialog()
   const { t } = useTranslation("ai")
 
   const handleNewChatClick = useCallback(() => {
-    if (messages.length === 0) {
+    const messages = chatActions.getMessages()
+    if (messages.length === 0 && !currentTitle) {
       return
     }
 
@@ -34,11 +31,11 @@ export const ChatHeader = () => {
         handleNewChat()
       },
     })
-  }, [ask, messages.length, t, handleNewChat])
+  }, [chatActions, currentTitle, ask, t, handleNewChat])
 
   const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
   return (
-    <div className="absolute inset-x-0 top-0 z-20 h-12">
+    <div className="absolute inset-x-0 top-0 z-[1] h-12">
       <div
         className="bg-background/70 backdrop-blur-background absolute inset-0"
         style={{
@@ -47,11 +44,11 @@ export const ChatHeader = () => {
         }}
       />
 
-      <div className="relative z-10 flex h-full items-center justify-between px-6">
+      <div className="relative z-10 flex h-full items-center justify-between px-4">
         {/* Left side - Title */}
         <div className="mr-2 min-w-0 flex-1">
           {currentTitle && (
-            <h1 key={currentTitle} className="text-text truncate font-medium">
+            <h1 key={currentTitle} className="text-text truncate font-bold">
               <span className="animate-mask-left-to-right [--animation-duration:1s]">
                 {currentTitle}
               </span>
@@ -62,11 +59,11 @@ export const ChatHeader = () => {
         {/* Right side - Actions */}
         <div className="flex items-center gap-2">
           <ActionButton tooltip="New Chat" onClick={handleNewChatClick}>
-            <i className="i-mgc-add-cute-re size-5 opacity-80" />
+            <i className="i-mgc-add-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <ActionButton tooltip="AI Settings" onClick={() => settingModalPresent("ai")}>
-            <i className="i-mgc-user-setting-cute-re size-5 opacity-80" />
+            <i className="i-mgc-user-setting-cute-re text-text-secondary size-5" />
           </ActionButton>
 
           <ChatMoreDropdown />

@@ -58,6 +58,56 @@ export const AIMarkdownMessage = memo(
                 a: ({ node, ...props }) => {
                   return createElement(RelatedEntryLink, { ...props } as any)
                 },
+                table: ({ children, ref, node, ...props }) => {
+                  return (
+                    <div className="border-border bg-material-thin overflow-x-auto rounded-lg border">
+                      <table {...props} className="divide-border my-0 min-w-full divide-y text-sm">
+                        {children}
+                      </table>
+                    </div>
+                  )
+                },
+                thead: ({ children, ref, node, ...props }) => {
+                  return (
+                    <thead {...props} className="bg-fill-tertiary">
+                      {children}
+                    </thead>
+                  )
+                },
+                th: ({ children, ref, node, ...props }) => {
+                  return (
+                    <th
+                      {...props}
+                      className="text-text-secondary whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                    >
+                      {children}
+                    </th>
+                  )
+                },
+                tbody: ({ children, ref, node, ...props }) => {
+                  return (
+                    <tbody {...props} className="bg-material-ultra-thin divide-border divide-y">
+                      {children}
+                    </tbody>
+                  )
+                },
+                tr: ({ children, ref, node, ...props }) => {
+                  return (
+                    <tr
+                      {...props}
+                      className="hover:bg-material-thin transition-colors duration-150"
+                    >
+                      {children}
+                    </tr>
+                  )
+                },
+                td: ({ children, ref, node, ...props }) => {
+                  return (
+                    <td {...props} className="text-text whitespace-nowrap px-4 py-3 text-sm">
+                      {children}
+                    </td>
+                  )
+                },
               },
             }).content,
           [isProcessing, text],

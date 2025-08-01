@@ -233,9 +233,122 @@ Example:
 - **Database**: Drizzle ORM, SQLite
 - **Utils**: Day.js, Zod, i18next
 
-## Agent Guidelines
+## Specialized Agent Usage Guidelines
 
-- When performing tasks, you can call the corresponding sub agent to complete the specified task.
-  - tech-lead-orchestrator
-  - react-architect
-  - ui-design-engineer
+Claude Code has access to specialized agents for different development tasks. **Always use the most appropriate agent** based on the task requirements:
+
+### 🧭 **tech-lead-orchestrator** (Project Management & Quality)
+
+**Use when:**
+
+- Coordinating complex features across multiple components/platforms
+- Conducting project quality assessments and code reviews
+- Planning large refactoring efforts or architectural changes
+- Breaking down complex tasks into manageable subtasks
+- Managing cross-platform consistency and standards
+
+**Examples:** "Implement RSS feed management system", "Review codebase quality", "Plan state management refactor"
+
+### ⚛️ **react-architect** (React Architecture & Performance)
+
+**Use when:**
+
+- Optimizing React component performance and re-rendering issues
+- Designing component architecture and data flow patterns
+- Implementing complex state management with Jotai/Zustand
+- Reviewing React code patterns and best practices
+- Solving React-specific performance bottlenecks
+
+**Examples:** "Component re-renders too much", "Design data visualization architecture", "Optimize React Query usage"
+
+### 🎨 **ui-design-engineer** (UI/UX & Components)
+
+**Use when:**
+
+- Creating or modifying UI components with Tailwind CSS
+- Implementing animations with Framer Motion
+- Following Apple HIG and modern SaaS design patterns
+- Ensuring accessibility and responsive design
+- Integrating with UIKit color system and design tokens
+
+**Examples:** "Create modal component", "Improve visual hierarchy", "Add micro-interactions"
+
+### 🔗 **platform-integration-specialist** (Cross-Platform Features)
+
+**Use when:**
+
+- Implementing features that work across Electron, React Native, and Web
+- Handling platform-specific APIs and native integrations
+- Managing cross-platform data synchronization
+- Creating unified abstractions for platform differences
+- Working with Electron main/renderer processes
+
+**Examples:** "Add notifications across all platforms", "Implement file system access", "Cross-platform deep linking"
+
+### 📰 **content-processing-expert** (RSS & Content Handling)
+
+**Use when:**
+
+- Working with RSS/Atom feed parsing and processing
+- Enhancing content extraction and readability
+- Implementing content sanitization and security
+- Optimizing feed discovery and update mechanisms
+- Processing different content types (articles, podcasts, media)
+
+**Examples:** "Fix RSS parsing issues", "Improve article extraction", "Add new feed format support"
+
+### 🗄️ **data-architect** (Database & Data Management)
+
+**Use when:**
+
+- Designing database schemas and migrations with Drizzle ORM
+- Optimizing SQLite performance and query efficiency
+- Planning data synchronization strategies
+- Creating data access patterns and caching layers
+- Managing database performance and scaling
+
+**Examples:** "Add user preferences table", "Optimize feed loading queries", "Design migration strategy"
+
+### ⚡ **performance-specialist** (Performance & Optimization)
+
+**Use when:**
+
+- Analyzing and fixing performance issues (memory, CPU, rendering)
+- Optimizing Vite build times and bundle sizes
+- Implementing code splitting and lazy loading
+- Monitoring and improving Core Web Vitals
+- Debugging memory leaks and performance bottlenecks
+
+**Examples:** "App feels sluggish", "Bundle size too large", "Memory usage growing"
+
+### 🧪 **test-engineer** (Testing & Quality Assurance)
+
+**Use when:**
+
+- Designing comprehensive testing strategies
+- Implementing unit, integration, and E2E tests
+- Setting up test automation and CI/CD testing
+- Fixing flaky tests and improving test reliability
+- Creating testing utilities and mock strategies
+
+**Examples:** "Add tests for AI chat feature", "Fix failing test suite", "Improve test coverage"
+
+### 🎯 **Agent Selection Guidelines**
+
+**For multi-domain tasks**, start with **tech-lead-orchestrator** to coordinate other agents.
+
+**Common combinations:**
+
+- New feature: `tech-lead-orchestrator` → `ui-design-engineer` + `data-architect` + `test-engineer`
+- Performance issues: `performance-specialist` + `react-architect`
+- Content problems: `content-processing-expert` + `data-architect`
+- Cross-platform features: `platform-integration-specialist` + `tech-lead-orchestrator`
+
+**Always specify the agent explicitly** when the task matches their domain expertise.
+
+## Agent Usage Notes
+
+- **Primary web app is at `@apps/desktop/layer/renderer`** - A Vite + React SPA, not full Electron features
+- **SSR app is minimal** - Only for external sharing pages, not main development focus
+- **Mobile app** - React Native with Expo for iOS/Android
+- **Always use Task tool with appropriate agent** - Don't implement complex features directly, delegate to specialized agents

@@ -14,7 +14,7 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import type { AIDisplayEntriesTool } from "../../__internal__/types"
 import { ErrorState, LoadingState } from "../common-states"
-import { CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
+import { CategoryTag, EmptyState, StatCard } from "./shared"
 
 type EntryData = AIDisplayEntriesTool["output"]["entries"]
 type EntryItem = EntryData[number]
@@ -59,10 +59,7 @@ const EntriesGrid = ({
   }
 
   return (
-    <GridContainer
-      columns={{ base: 1, md: 2, lg: 3 }}
-      className="@[600px]:grid-cols-2 @[900px]:grid-cols-3"
-    >
+    <div className="@[600px]:grid-cols-2 @[900px]:grid-cols-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {data.map((item) => (
         <EntryCard
           key={item.entry.id}
@@ -71,7 +68,7 @@ const EntriesGrid = ({
           showMetadata={showMetadata}
         />
       ))}
-    </GridContainer>
+    </div>
   )
 }
 
@@ -266,18 +263,7 @@ const GroupedEntries = ({
   )
 }
 
-export const AIDisplayEntriesPart = ({ part }: { part: AIDisplayEntriesTool }) => {
-  // Handle loading state
-  if (part.state === "input-streaming" || part.state === "input-available") {
-    return (
-      <LoadingState
-        title="Loading Entries..."
-        description="Fetching entry data..."
-        maxWidth="max-w-6xl"
-      />
-    )
-  }
-
+export const AIDisplayEntriesPart = memo(({ part }: { part: AIDisplayEntriesTool }) => {
   // Handle error state
   if (part.state === "output-error") {
     return (
@@ -343,7 +329,7 @@ export const AIDisplayEntriesPart = ({ part }: { part: AIDisplayEntriesTool }) =
 
   return (
     <Card className="mb-2 w-full min-w-0">
-      <div className="w-[9999px]" />
+      <div className="w-[9999px] max-w-[calc(var(--ai-chat-layout-width,65ch)_-120px)]" />
       <CardHeader>
         <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
           <span className="text-lg">📰</span>
@@ -355,16 +341,16 @@ export const AIDisplayEntriesPart = ({ part }: { part: AIDisplayEntriesTool }) =
       </CardHeader>
       <CardContent className="@container space-y-6">
         {/* Statistics Overview */}
-        <GridContainer columns={{ base: 2, md: 4 }} className="@[600px]:grid-cols-4">
+        <div className="@[600px]:grid-cols-4 grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatCard title="Total Entries" value={totalEntries} emoji="📄" />
           <StatCard title="Feeds" value={feedsCount} emoji="📡" />
           <StatCard title="Authors" value={authorsCount} emoji="✍️" />
           <StatCard title="Categories" value={categoriesCount} emoji="🏷️" />
-        </GridContainer>
+        </div>
 
         {/* Entries Display */}
         {renderEntries()}
       </CardContent>
     </Card>
   )
-}
+})

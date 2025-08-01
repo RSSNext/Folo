@@ -33,7 +33,6 @@ export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
   "sendAnonymousData",
   "language",
   "appLaunchOnStartup",
-  "dataPersist",
   "voice",
 ]
 

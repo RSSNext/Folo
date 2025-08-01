@@ -236,8 +236,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
-
-      {/* <React.Suspense>{!isInPeekModal && <AISmartSidebar entryId={entryId} />}</React.Suspense> */}
     </>
   )
 }

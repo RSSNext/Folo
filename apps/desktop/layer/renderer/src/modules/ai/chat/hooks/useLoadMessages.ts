@@ -1,18 +1,15 @@
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
-import { AIChatContext } from "../__internal__/AIChatContext"
-import type { BizUIMessage } from "../__internal__/types"
+import { useChatActions } from "../__internal__/hooks"
+import type { BizUIMessage, BizUIMetadata } from "../__internal__/types"
 import { AIPersistService } from "../services"
 
 export const useLoadMessages = (
-  roomId: string,
+  chatId: string,
   options?: { onLoad?: (messages: BizUIMessage[]) => void },
 ) => {
-  const { setMessages } = use(AIChatContext)
-  const setMessageEventCallback = useEventCallback((messages: BizUIMessage[]) => {
-    setMessages(messages)
-  })
+  const chatActions = useChatActions()
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -23,11 +20,16 @@ export const useLoadMessages = (
   useEffect(() => {
     let mounted = true
     setIsLoading(true)
-    AIPersistService.loadMessages(roomId)
+    AIPersistService.loadMessages(chatId)
       .then((messages) => {
         if (mounted) {
-          const messagesToSet = messages.map((message) => message.message) as BizUIMessage[]
-          setMessageEventCallback(messagesToSet)
+          const messagesToSet: BizUIMessage[] = messages.map((message) => ({
+            id: message.id,
+            parts: message.messageParts as any[],
+            role: message.role,
+            metadata: message.metadata as BizUIMetadata,
+          }))
+          chatActions.setMessages(messagesToSet)
           onLoadEventCallback(messagesToSet)
         }
       })
@@ -42,6 +44,6 @@ export const useLoadMessages = (
     return () => {
       mounted = false
     }
-  }, [setMessageEventCallback, roomId, onLoadEventCallback])
+  }, [chatId, onLoadEventCallback, chatActions])
   return { isLoading }
 }

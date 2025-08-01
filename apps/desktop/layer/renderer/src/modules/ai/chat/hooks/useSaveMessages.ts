@@ -1,15 +1,16 @@
-import { use, useEffect } from "react"
+import { useEffect } from "react"
 
-import { AIChatContext } from "../__internal__/AIChatContext"
+import { useChatStatus, useMessages } from "../__internal__/hooks"
 import { AIPersistService } from "../services"
 
 export const useSaveMessages = (
-  roomId: string,
+  chatId: string,
   options: {
     enabled: boolean
   },
 ) => {
-  const { messages, status } = use(AIChatContext)
+  const messages = useMessages()
+  const status = useChatStatus()
 
   const isStreaming = status === "streaming"
 
@@ -18,7 +19,7 @@ export const useSaveMessages = (
       return
     }
 
-    if (!roomId) {
+    if (!chatId) {
       return
     }
 
@@ -27,6 +28,6 @@ export const useSaveMessages = (
       return
     }
 
-    AIPersistService.replaceAllMessages(roomId, messages)
-  }, [roomId, messages, options.enabled, isStreaming])
+    AIPersistService.replaceAllMessages(chatId, messages)
+  }, [chatId, messages, options.enabled, isStreaming])
 }

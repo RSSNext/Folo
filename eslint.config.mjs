@@ -44,6 +44,7 @@ export default defineConfig(
       "@eslint-react/hooks-extra/no-unnecessary-use-callback": "warn",
       // NOTE: Disable this temporarily
       "react-compiler/react-compiler": 0,
+      "unicorn/no-array-callback-reference": 0,
       "no-restricted-syntax": 0,
       "no-restricted-globals": [
         "error",

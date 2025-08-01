@@ -1,202 +1,56 @@
-import { Chat, useChat } from "@ai-sdk/react"
-import { env } from "@follow/shared/env.desktop"
-import type { UIDataTypes, UIMessage } from "ai"
-import { DefaultChatTransport } from "ai"
 import type { FC, PropsWithChildren } from "react"
 import { useCallback, useMemo, useRef } from "react"
-import { toast } from "sonner"
-import { useEventCallback } from "usehooks-ts"
 
 import { Focusable } from "~/components/common/Focusable"
 import { HotkeyScope } from "~/constants"
 
 import type { AIChatSessionMethods, AIPanelRefs } from "../__internal__/AIChatContext"
 import {
-  AIChatContext,
-  AIChatContextStoreContext,
   AIChatSessionMethodsContext,
+  AIChatStoreContext,
   AIPanelRefsContext,
 } from "../__internal__/AIChatContext"
-import { createAIChatContextStore } from "../__internal__/store"
-import type { BizUIMetadata, BizUITools } from "../__internal__/types"
-import {
-  useCurrentRoomId,
-  useSessionPersisted,
-  useSetCurrentRoomId,
-  useSetCurrentTitle,
-  useSetSessionPersisted,
-} from "../atoms/session"
-import { useChatHistory } from "../hooks/useChatHistory"
+import { useChatActions, useCurrentChatId } from "../__internal__/hooks"
+import { createAIChatStore } from "../__internal__/store"
 import { AIPersistService } from "../services"
-import { generateChatTitle } from "../utils/titleGeneration"
 
 interface AIChatRootProps extends PropsWithChildren {
   wrapFocusable?: boolean
-  roomId?: string
+  chatId?: string
 }
 
-export const AIChatRoot: FC<AIChatRootProps> = ({
-  children,
-  wrapFocusable = true,
-  roomId: externalRoomId,
-}) => {
-  const currentRoomId = useCurrentRoomId()
-  const sessionPersisted = useSessionPersisted()
-  const setCurrentRoomId = useSetCurrentRoomId()
-  const setCurrentTitle = useSetCurrentTitle()
-  const setSessionPersisted = useSetSessionPersisted()
+// Inner component that has access to the AI chat store context
+const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId }) => {
+  // Use the new internal hooks
+  const currentChatId = useCurrentChatId()
 
-  const { createNewSession } = useChatHistory()
-  const useAiContextStore = useMemo(createAIChatContextStore, [])
+  const chatActions = useChatActions()
 
   // Initialize room ID on mount
   useMemo(() => {
-    if (!currentRoomId && !externalRoomId) {
-      const newRoomId = createNewSession(false)
-      setCurrentRoomId(newRoomId)
-    } else if (externalRoomId && externalRoomId !== currentRoomId) {
-      setCurrentRoomId(externalRoomId)
+    if (!currentChatId && !externalChatId) {
+      chatActions.newChat()
     }
-  }, [currentRoomId, externalRoomId, createNewSession, setCurrentRoomId])
+  }, [currentChatId, externalChatId, chatActions])
 
   const handleTitleGenerated = useCallback(
     async (title: string) => {
-      if (currentRoomId) {
+      if (currentChatId) {
         try {
-          await AIPersistService.updateSessionTitle(currentRoomId, title)
-          setCurrentTitle(title)
+          await AIPersistService.updateSessionTitle(currentChatId, title)
+          chatActions.setCurrentTitle(title)
         } catch (error) {
           console.error("Failed to update session title:", error)
         }
       }
     },
-    [currentRoomId, setCurrentTitle],
+    [currentChatId, chatActions],
   )
-
-  const handleFirstMessage = useCallback(async () => {
-    if (!sessionPersisted && currentRoomId) {
-      try {
-        await AIPersistService.createSession(currentRoomId, "New Chat")
-        setSessionPersisted(true)
-      } catch (error) {
-        console.error("Failed to persist session:", error)
-      }
-    }
-  }, [sessionPersisted, currentRoomId, setSessionPersisted])
-
-  // Handle AI response completion - this is where we generate title
-  const handleChatFinish = useEventCallback(
-    async (options: { message: UIMessage<BizUIMetadata, UIDataTypes, BizUITools> }) => {
-      const { message } = options
-
-      // Only trigger title generation for assistant messages (AI responses)
-      if (message.role !== "assistant") return
-
-      // Get current messages to check if this is the first AI response
-
-      const allMessages = chatInstance.messages
-
-      // Check if we have exactly 2 messages (1 user + 1 assistant = first exchange)
-      // Or if we have 2+ messages and this is the first assistant message
-      const assistantMessages = allMessages.filter((m) => m.role === "assistant")
-      const isFirstAIResponse = assistantMessages.length === 1
-
-      if (isFirstAIResponse && allMessages.length >= 2) {
-        try {
-          // Generate title using the first user message and first AI response
-          const firstExchange = allMessages.slice(0, 2)
-
-          const title = await generateChatTitle(firstExchange)
-
-          if (title) {
-            await handleTitleGenerated(title)
-          }
-        } catch (error) {
-          console.error("Failed to generate chat title:", error)
-        }
-      }
-    },
-  )
-  const chatInstance = useMemo(() => {
-    return new Chat<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>({
-      // FIXME: this id can't modify after init, so used a fixed id
-      id: "ai-room",
-      transport: new DefaultChatTransport({
-        api: `${env.VITE_API_URL}/ai/chat`,
-        credentials: "include",
-        fetch: (url: string | Request | URL, options?: RequestInit) => {
-          if (!options?.body) return fetch(url, options)
-          try {
-            const state = useAiContextStore.getState()
-            state.syncBlocksToContext()
-
-            options.body = JSON.stringify({
-              ...JSON.parse(options.body as string),
-              context: state.state,
-              blocks: state.blocks,
-            })
-          } catch (error) {
-            console.error(error)
-          }
-
-          return fetch(url, options)
-        },
-      }),
-      onError: (error) => {
-        console.error(error)
-      },
-      onFinish: handleChatFinish,
-    })
-  }, [useAiContextStore, handleChatFinish])
-
-  const ctx = useChat<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>({
-    chat: chatInstance,
-  })
 
   const handleNewChat = useCallback(() => {
-    // Create a new session without persistence initially
-    const newRoomId = createNewSession(false)
-    setCurrentRoomId(newRoomId)
-    setSessionPersisted(false)
-    setCurrentTitle(undefined)
-    // Clear messages
-    ctx.setMessages([])
-  }, [createNewSession, ctx, setCurrentRoomId, setSessionPersisted, setCurrentTitle])
-
-  const handleSwitchRoom = useCallback(
-    async (roomId: string) => {
-      try {
-        // First check if we need to save current messages
-        if (sessionPersisted && currentRoomId && ctx.messages.length > 0) {
-          // Messages are automatically saved by useSaveMessages hook
-        }
-
-        // Clear current messages before switching
-        ctx.setMessages([])
-
-        // Switch to new room
-        setCurrentRoomId(roomId)
-
-        // Load session info
-        const sessionData = await AIPersistService.getChatSessions()
-        const session = sessionData.find((s) => s.roomId === roomId)
-
-        if (session) {
-          setCurrentTitle(session.title || "New Chat")
-          setSessionPersisted(true)
-        } else {
-          setCurrentTitle(undefined)
-          setSessionPersisted(false)
-        }
-
-        // Messages will be loaded automatically by useLoadMessages in ChatInterface
-      } catch (error) {
-        console.error("Failed to switch room:", error)
-        toast.error("Failed to switch chat session")
-      }
-    },
-    [sessionPersisted, currentRoomId, ctx, setCurrentRoomId, setCurrentTitle, setSessionPersisted],
-  )
+    chatActions.newChat()
+    chatActions.setCurrentTitle(undefined)
+  }, [chatActions])
 
   const panelRef = useRef<HTMLDivElement>(null!)
   const inputRef = useRef<HTMLTextAreaElement>(null!)
@@ -206,14 +60,12 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
   const sessionMethods = useMemo<AIChatSessionMethods>(
     () => ({
       handleTitleGenerated,
-      handleFirstMessage,
       handleNewChat,
-      handleSwitchRoom,
     }),
-    [handleTitleGenerated, handleFirstMessage, handleNewChat, handleSwitchRoom],
+    [handleTitleGenerated, handleNewChat],
   )
 
-  if (!currentRoomId || !ctx) {
+  if (!currentChatId) {
     return (
       <div className="bg-background flex size-full items-center justify-center">
         <div className="flex items-center gap-2">
@@ -224,16 +76,24 @@ export const AIChatRoot: FC<AIChatRootProps> = ({
     )
   }
 
+  return (
+    <AIPanelRefsContext value={refsContext}>
+      <AIChatSessionMethodsContext value={sessionMethods}>{children}</AIChatSessionMethodsContext>
+    </AIPanelRefsContext>
+  )
+}
+
+export const AIChatRoot: FC<AIChatRootProps> = ({
+  children,
+  wrapFocusable = true,
+  chatId: externalChatId,
+}) => {
+  const useAiContextStore = useMemo(createAIChatStore, [])
+
   const Element = (
-    <AIChatContext value={ctx}>
-      <AIPanelRefsContext value={refsContext}>
-        <AIChatContextStoreContext value={useAiContextStore}>
-          <AIChatSessionMethodsContext value={sessionMethods}>
-            {children}
-          </AIChatSessionMethodsContext>
-        </AIChatContextStoreContext>
-      </AIPanelRefsContext>
-    </AIChatContext>
+    <AIChatStoreContext value={useAiContextStore}>
+      <AIChatRootInner chatId={externalChatId}>{children}</AIChatRootInner>
+    </AIChatStoreContext>
   )
 
   if (wrapFocusable) {

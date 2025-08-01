@@ -158,17 +158,23 @@ const SocialMediaDateItem = ({
   isSticky?: boolean
 }) => {
   const { startOfDay, endOfDay, dateObj } = useParseDate(date)
+  const aiEnabled = useFeature("ai")
 
   return (
     <DateItemInner
       // @ts-expect-error
       Wrapper={useCallback(
         ({ children }) => (
-          <div className="m-auto flex w-[645px] max-w-full select-none gap-3 pl-5 text-base lg:text-lg">
+          <div
+            className={cn(
+              "m-auto flex w-[645px] max-w-full select-none gap-3 pl-5 text-base lg:text-lg",
+              aiEnabled && "pl-2",
+            )}
+          >
             {children}
           </div>
         ),
-        [],
+        [aiEnabled],
       )}
       className={className}
       date={dateObj}

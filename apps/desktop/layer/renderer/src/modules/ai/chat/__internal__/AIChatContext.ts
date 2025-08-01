@@ -1,15 +1,8 @@
-import type { UIMessage, UseChatHelpers } from "@ai-sdk/react"
-import type { UIDataTypes } from "ai"
 import { createContext, use } from "react"
 import type { StoreApi } from "zustand"
 import type { UseBoundStoreWithEqualityFn } from "zustand/traditional"
 
-import type { AiChatContextStore } from "./store"
-import type { BizUIMetadata, BizUITools } from "./types"
-
-export const AIChatContext = createContext<
-  UseChatHelpers<UIMessage<BizUIMetadata, UIDataTypes, BizUITools>>
->(null!)
+import type { AiChatStore } from "./store"
 
 export type AIPanelRefs = {
   panelRef: React.RefObject<HTMLDivElement>
@@ -18,15 +11,14 @@ export type AIPanelRefs = {
 
 export const AIPanelRefsContext = createContext<AIPanelRefs>(null!)
 
-export const AIChatContextStoreContext = createContext<
-  UseBoundStoreWithEqualityFn<StoreApi<AiChatContextStore>>
->(null!)
+export const AIChatStoreContext = createContext<UseBoundStoreWithEqualityFn<StoreApi<AiChatStore>>>(
+  null!,
+)
 
-// Hook to access AI chat context information
 export const useAIChatStore = () => {
-  const store = use(AIChatContextStoreContext)
+  const store = use(AIChatStoreContext)
   if (!store && import.meta.env.DEV) {
-    throw new Error("useAIChatStore must be used within a AIChatContextStoreContext")
+    throw new Error("useAIChatStore must be used within a AIChatStoreContext")
   }
   return store
 }
@@ -34,9 +26,8 @@ export const useAIChatStore = () => {
 // Session methods context for managing chat session actions
 export interface AIChatSessionMethods {
   handleTitleGenerated: (title: string) => Promise<void>
-  handleFirstMessage: () => Promise<void>
+
   handleNewChat: () => void
-  handleSwitchRoom: (roomId: string) => Promise<void>
 }
 
 export const AIChatSessionMethodsContext = createContext<AIChatSessionMethods>(null!)

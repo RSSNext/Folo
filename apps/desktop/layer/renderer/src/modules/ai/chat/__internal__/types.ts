@@ -6,11 +6,8 @@ export interface AIChatContextBlock {
   value: string
 }
 
-export interface AIChatContextInfo {
-  mainEntryId?: string
-  referEntryIds?: string[]
-  referFeedIds?: string[]
-  selectedText?: string
+export interface AIChatStoreInitial {
+  blocks: AIChatContextBlock[]
 }
 
 export interface AIChatContextBlocks {

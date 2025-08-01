@@ -78,8 +78,7 @@ export async function migrateDB() {
     await migrate(db, migrations)
   }
 }
-
-export async function exportDB() {
+export async function getDBFile() {
   const module = await SQLiteESMFactory()
   const vfs = await MyVFS.create(IDB_NAME, module)
   const source = new DatabaseSource(vfs, SQLITE_DB_NAME)
@@ -93,7 +92,11 @@ export async function exportDB() {
     },
   })
   const databaseFile = await response.blob()
+  return databaseFile
+}
 
+export async function exportDB() {
+  const databaseFile = await getDBFile()
   const fileUrl = URL.createObjectURL(databaseFile)
 
   const a = document.createElement("a")

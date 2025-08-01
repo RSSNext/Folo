@@ -7,7 +7,6 @@ import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
 import { useMemo, useRef } from "react"
 
-import { useEntryIsInReadability } from "~/atoms/readability"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
@@ -49,10 +48,9 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   }))
   const feed = useFeedById(entry?.feedId)
   const isInbox = useIsInbox(entry?.inboxId)
-  const _isInReadabilityMode = useEntryIsInReadability(entryId)
+
   const { content } = useEntryContent(entryId)
   const customCSS = useUISettingKey("customCSS")
-  const _isInPeekModal = useInPeekModal()
 
   if (!entry) return null
 

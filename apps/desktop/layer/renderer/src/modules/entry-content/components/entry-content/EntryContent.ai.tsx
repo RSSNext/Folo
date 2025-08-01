@@ -99,7 +99,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   if (!entry) return null
 
   return (
-    <div className={cn(className, "flex flex-col")}>
+    <div className={cn(className, "@container flex flex-col")}>
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
       {!isInPeekModal && (
         <EntryHeader

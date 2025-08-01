@@ -1,14 +1,18 @@
+import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
 import { stopPropagation } from "@follow/utils"
 import type { UIDataTypes, UIMessage } from "ai"
+import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { m } from "motion/react"
 import * as React from "react"
 import { toast } from "sonner"
 
 import { copyToClipboard } from "~/lib/clipboard"
-import { AIChatContext } from "~/modules/ai/chat/__internal__/AIChatContext"
+import { useChatActions } from "~/modules/ai/chat/__internal__/hooks"
 import type { BizUIMetadata, BizUITools } from "~/modules/ai/chat/__internal__/types"
 import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai/chat/atoms/session"
 
+import type { RichTextPart } from "../../types/ChatSession"
+import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
 import { EditableMessage } from "./EditableMessage"
 
@@ -26,7 +30,8 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
-  const { regenerate, sendMessage, setMessages, messages } = React.use(AIChatContext)
+  const chatActions = useChatActions()
+
   const messageId = message.id
   const [isHovered, setIsHovered] = React.useState(false)
   const editingMessageId = useEditingMessageId()
@@ -35,43 +40,67 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
   const isEditing = editingMessageId === messageId
   const isUserMessage = message.role === "user"
 
-  // Get message content for editing
-  const messageContent = React.useMemo(() => {
-    return (
-      message.parts
-        ?.filter((part) => part.type === "text")
-        .map((part) => part.text)
-        .join(" ") || ""
-    )
-  }, [message.parts])
-
   const handleEdit = React.useCallback(() => {
     if (isUserMessage) {
       setEditingMessageId(messageId)
     }
   }, [isUserMessage, messageId, setEditingMessageId])
 
-  const handleSaveEdit = React.useCallback(
-    (newContent: string) => {
-      if (newContent.trim() !== messageContent.trim()) {
-        // Find the message index and remove all messages after it (including AI responses)
-        const messageIndex = messages.findIndex((msg) => msg.id === messageId)
-        if (messageIndex !== -1) {
-          const messagesToKeep = messages.slice(0, messageIndex)
-          setMessages(messagesToKeep)
-
-          // Send the edited message
-          sendMessage({
-            text: newContent,
-            metadata: {
-              finishTime: new Date().toISOString(),
-            },
-          })
+  const getMessageMarkdownFormat = React.useCallback(() => {
+    let content = ""
+    for (const part of message.parts) {
+      let lexicalEditor: LexicalEditor | null = null
+      switch (part.type) {
+        case "text": {
+          content += part.text
+          break
         }
+        case "data-rich-text": {
+          lexicalEditor ||= createDefaultLexicalEditor()
+          lexicalEditor.setEditorState(
+            lexicalEditor.parseEditorState((part as RichTextPart).data.state),
+          )
+          content += convertLexicalToMarkdown(lexicalEditor)
+          break
+        }
+
+        default: {
+          if (part.type.startsWith("tool-")) {
+            content += `\n\n[TOOL CALL: ${part.type.replace("tool-", "")}]\n\n`
+          }
+          break
+        }
+      }
+    }
+    return content
+  }, [message.parts])
+
+  const handleSaveEdit = React.useCallback(
+    (newState: SerializedEditorState, editor: LexicalEditor) => {
+      const messageContent = convertLexicalToMarkdown(editor)
+      const messages = chatActions.getMessages()
+      const messageIndex = messages.findIndex((msg) => msg.id === messageId)
+      if (messageIndex !== -1) {
+        const messagesToKeep = messages.slice(0, messageIndex)
+        const nextMessage = messages[messageIndex]!
+        chatActions.setMessages(messagesToKeep)
+
+        const richTextPart = nextMessage.parts.find(
+          (part) => part.type === "data-rich-text",
+        ) as RichTextPart
+        if (richTextPart) {
+          richTextPart.data = {
+            state: newState,
+            text: messageContent,
+          }
+        }
+
+        // Send the edited message
+        chatActions.sendMessage(nextMessage)
       }
       setEditingMessageId(null)
     },
-    [messageContent, messageId, messages, setMessages, sendMessage, setEditingMessageId],
+    [chatActions, messageId, setEditingMessageId],
   )
 
   const handleCancelEdit = React.useCallback(() => {
@@ -79,17 +108,18 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
   }, [setEditingMessageId])
 
   const handleCopy = React.useCallback(async () => {
+    const messageContent = getMessageMarkdownFormat()
     try {
       await copyToClipboard(messageContent)
       toast.success("Message copied to clipboard")
     } catch {
       toast.error("Failed to copy message")
     }
-  }, [messageContent])
+  }, [getMessageMarkdownFormat])
 
   const handleRetry = React.useCallback(() => {
-    regenerate({ messageId })
-  }, [regenerate, messageId])
+    chatActions.regenerate({ messageId })
+  }, [chatActions, messageId])
 
   return (
     <m.div
@@ -113,12 +143,12 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex max-w-[calc(100%-1rem)] flex-col gap-2">
+      <div className="relative flex max-w-[calc(100%-1rem)] flex-col gap-2">
         {/* Show editable message if editing */}
         {isEditing && isUserMessage ? (
           <EditableMessage
             messageId={messageId}
-            initialContent={messageContent}
+            parts={message.parts}
             onSave={handleSaveEdit}
             onCancel={handleCancelEdit}
           />
@@ -161,7 +191,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
 
             {/* Action buttons */}
             <m.div
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} gap-1`}
+              className={`absolute bottom-0 flex ${message.role === "user" ? "right-0" : "left-0"} gap-1`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{
                 opacity: isHovered ? 1 : 0,
@@ -202,6 +232,8 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
                 </button>
               )}
             </m.div>
+
+            <div className="h-6" />
           </>
         )}
       </div>

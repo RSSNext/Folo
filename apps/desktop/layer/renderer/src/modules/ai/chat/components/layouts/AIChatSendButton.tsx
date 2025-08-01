@@ -26,7 +26,7 @@ export const AIChatSendButton: FC<AIChatSendButtonProps> = ({
           ? "bg-red-500/90 hover:bg-red-500 shadow-lg shadow-red-500/25 backdrop-blur-sm"
           : disabled
             ? "bg-gray-200/80 cursor-not-allowed backdrop-blur-sm"
-            : "bg-gradient-to-r from-blue-500/90 to-blue-600/90 hover:from-blue-500 hover:to-blue-600 shadow-lg shadow-blue-500/25 backdrop-blur-sm hover:shadow-blue-500/35",
+            : "bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 shadow-lg shadow-accent/25 backdrop-blur-sm hover:shadow-accent/35",
         className,
       )}
     >

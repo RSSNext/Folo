@@ -1,0 +1,6 @@
+export { createDefaultLexicalEditor, createLexicalEditor } from "./editor"
+export { LexicalRichEditor } from "./LexicalRichEditor"
+export { LexicalRichEditorNodes } from "./nodes"
+export { KeyboardPlugin } from "./plugins"
+export { defaultLexicalTheme } from "./theme"
+export type { LexicalRichEditorProps, LexicalRichEditorRef } from "./types"

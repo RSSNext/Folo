@@ -250,8 +250,6 @@
   "general.content": "コンテンツ",
   "general.data": "データ",
   "general.data_file.label": "データファイル",
-  "general.data_persist.description": "ローカルデータを保持してオフラインアクセスとローカル検索を可能にします。",
-  "general.data_persist.label": "オフライン使用のためにデータを保持",
   "general.dim_read.description": "タイムラインで既読のエントリの色を薄くします。",
   "general.dim_read.label": "既読アイテムをフェード",
   "general.enhanced.description": "強化された設定を有効にすると、より多くのカスタマイズオプションが提供されますが、予期しない問題が発生する可能性もあります。",

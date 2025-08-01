@@ -1,9 +1,8 @@
 import type { FeedViewType } from "@follow/constants"
 import type { SupportedActionLanguage } from "@follow/shared/language"
 import type { EntrySettings } from "@follow-app/client-sdk"
-import type { UIMessage } from "ai"
 import { sql } from "drizzle-orm"
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
 import type { AttachmentsModel, ExtraModel, ImageColorsResult, MediaModel } from "./types"
 
@@ -156,28 +155,99 @@ export const imagesTable = sqliteTable("images", (t) => ({
     .default(sql`(unixepoch() * 1000)`),
 }))
 
-export const aiChatTable = sqliteTable("ai_chat", (t) => ({
-  roomId: t.text("room_id").notNull().primaryKey(),
-  title: t.text("title"),
-  createdAt: t
-    .integer("created_at", { mode: "timestamp_ms" })
-    .notNull()
-    .default(sql`(unixepoch() * 1000)`),
-}))
-
-export const aiChatMessagesTable = sqliteTable(
-  "ai_chat_messages",
+// AI Chat Sessions Table
+export const aiChatTable = sqliteTable(
+  "ai_chat_sessions",
   (t) => ({
-    roomId: t
-      .text("room_id")
-      .notNull()
-      .references(() => aiChatTable.roomId),
-    id: t.text("id").notNull().primaryKey(),
+    chatId: t.text("id").notNull().primaryKey(),
+    title: t.text("title"),
     createdAt: t
       .integer("created_at", { mode: "timestamp_ms" })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
-    message: t.text("message", { mode: "json" }).$type<UIMessage<any, any, any>>().notNull(),
+    updatedAt: t
+      .integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
   }),
-  (t) => [uniqueIndex("ai_chat_messages_unq").on(t.roomId, t.id)],
+  (table) => ({
+    updatedAtIdx: index("idx_ai_chat_sessions_updated_at").on(table.updatedAt),
+  }),
+)
+
+// Message Part types based on Vercel AI SDK UIMessage parts
+interface TextUIPart {
+  type: "text"
+  text: string
+}
+
+interface ReasoningUIPart {
+  type: "reasoning"
+  reasoning: string
+}
+
+interface ToolInvocationUIPart {
+  type: "tool-invocation"
+  toolInvocation: {
+    state: "partial-call" | "call" | "result"
+    toolCallId: string
+    toolName: string
+    args: any
+    result?: any
+  }
+}
+
+interface SourceUIPart {
+  type: "source"
+  source: {
+    sourceType: "url"
+    id: string
+    url: string
+    title?: string
+  }
+}
+
+interface StepStartUIPart {
+  type: "step-start"
+}
+
+type UIMessagePart =
+  | TextUIPart
+  | ReasoningUIPart
+  | ToolInvocationUIPart
+  | SourceUIPart
+  | StepStartUIPart
+
+// AI Chat Messages Table - Rich text support
+export const aiChatMessagesTable = sqliteTable(
+  "ai_chat_messages",
+  (t) => ({
+    id: t.text("id").notNull().primaryKey(),
+    chatId: t
+      .text("chat_id")
+      .notNull()
+      .references(() => aiChatTable.chatId, { onDelete: "cascade" }),
+
+    role: t.text("role").notNull().$type<"user" | "assistant" | "system">(),
+
+    createdAt: t.integer("created_at", { mode: "timestamp_ms" }),
+    metadata: t.text("metadata", { mode: "json" }).$type<any>(),
+
+    status: t
+      .text("status")
+      .$type<"pending" | "streaming" | "completed" | "error">()
+      .default("completed"),
+    finishedAt: t.integer("finished_at", { mode: "timestamp_ms" }),
+
+    // Store UIMessage parts for complex assistant responses (tools, reasoning, etc)
+    messageParts: t.text("message_parts", { mode: "json" }).$type<UIMessagePart[]>(),
+  }),
+  (table) => ({
+    chatIdCreatedAtIdx: index("idx_ai_chat_messages_chat_id_created_at").on(
+      table.chatId,
+      table.createdAt,
+    ),
+    statusIdx: index("idx_ai_chat_messages_status").on(table.status),
+    chatIdRoleIdx: index("idx_ai_chat_messages_chat_id_role").on(table.chatId, table.role),
+  }),
 )

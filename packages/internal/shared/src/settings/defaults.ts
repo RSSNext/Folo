@@ -11,8 +11,7 @@ export const defaultGeneralSettings: GeneralSettings = {
 
   // mobile app
   startupScreen: "timeline",
-  // Data control
-  dataPersist: true,
+
   sendAnonymousData: true,
   showQuickTimeline: true,
 

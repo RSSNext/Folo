@@ -6,7 +6,6 @@ export interface GeneralSettings {
   summary: boolean
   actionLanguage: string
   startupScreen: "subscription" | "timeline"
-  dataPersist: boolean
   sendAnonymousData: boolean
   unreadOnly: boolean
   scrollMarkUnread: boolean

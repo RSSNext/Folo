@@ -107,7 +107,6 @@ export class OpenPanel {
       return
     }
 
-    // eslint-disable-next-line unicorn/no-array-callback-reference
     if (this.options.filter && !this.options.filter(payload)) {
       return
     }

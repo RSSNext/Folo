@@ -1,5 +1,5 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
-import { use, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -15,36 +15,39 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu/dropdown-menu"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
+import { useAIChatSessionMethods } from "~/modules/ai/chat/__internal__/AIChatContext"
 import {
-  AIChatContext,
-  useAIChatSessionMethods,
-} from "~/modules/ai/chat/__internal__/AIChatContext"
-import { useSessionState } from "~/modules/ai/chat/atoms/session"
+  useChatActions,
+  useCurrentChatId,
+  useCurrentTitle,
+} from "~/modules/ai/chat/__internal__/hooks"
 import { useChatHistory } from "~/modules/ai/chat/hooks/useChatHistory"
 import { AIPersistService } from "~/modules/ai/chat/services"
 import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai/chat/utils/export"
 
 export const ChatMoreDropdown = () => {
-  const { currentTitle, currentRoomId } = useSessionState()
-  const { handleNewChat, handleSwitchRoom } = useAIChatSessionMethods()
+  const currentTitle = useCurrentTitle()
+  const currentChatId = useCurrentChatId()
+  const { handleNewChat } = useAIChatSessionMethods()
+  const chatActions = useChatActions()
   const { t } = useTranslation("ai")
   const { ask } = useDialog()
-  const [deletingRoomId, setDeletingRoomId] = useState<string | null>(null)
+  const [deletingChatId, setDeletingChatId] = useState<string | null>(null)
   const { sessions, loading, loadHistory } = useChatHistory()
-  const { messages } = use(AIChatContext)
 
   const handleDropdownOpen = (open: boolean) => {
     if (open) {
       loadHistory()
+      AIPersistService.cleanupEmptySessions()
     }
   }
 
   const handleDeleteSession = useCallback(
-    async (roomId: string, e: React.MouseEvent) => {
+    async (chatId: string, e: React.MouseEvent) => {
       e.stopPropagation()
       e.preventDefault()
 
-      const session = sessions.find((s) => s.roomId === roomId)
+      const session = sessions.find((s) => s.chatId === chatId)
       if (!session) return
 
       const confirm = await ask({
@@ -55,12 +58,12 @@ export const ChatMoreDropdown = () => {
 
       if (!confirm) return
 
-      setDeletingRoomId(roomId)
+      setDeletingChatId(chatId)
       try {
-        await AIPersistService.deleteSession(roomId)
+        await AIPersistService.deleteSession(chatId)
         toast.success(t("delete_chat_success"))
 
-        if (roomId === currentRoomId) {
+        if (chatId === currentChatId) {
           handleNewChat()
         }
 
@@ -69,13 +72,14 @@ export const ChatMoreDropdown = () => {
         console.error("Failed to delete session:", error)
         toast.error(t("delete_chat_error"))
       } finally {
-        setDeletingRoomId(null)
+        setDeletingChatId(null)
       }
     },
-    [sessions, ask, t, currentRoomId, loadHistory, handleNewChat],
+    [sessions, ask, t, currentChatId, loadHistory, handleNewChat],
   )
 
   const handleExport = useCallback(() => {
+    const messages = chatActions.getMessages()
     if (messages.length === 0) {
       toast.error(t("export_empty_chat"))
       return
@@ -90,7 +94,7 @@ export const ChatMoreDropdown = () => {
       toast.error(t("export_error"))
       console.error("Export error:", error)
     }
-  }, [messages, currentTitle, t])
+  }, [chatActions, currentTitle, t])
 
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>
@@ -118,8 +122,8 @@ export const ChatMoreDropdown = () => {
                 </div>
                 {sessions.map((session) => (
                   <DropdownMenuItem
-                    key={session.roomId}
-                    onClick={() => handleSwitchRoom(session.roomId)}
+                    key={session.chatId}
+                    onClick={() => chatActions.switchToChat(session.chatId)}
                     className="group flex h-12 cursor-pointer items-center justify-between rounded-md px-2 py-3"
                   >
                     <div className="min-w-0 flex-1">
@@ -135,11 +139,11 @@ export const ChatMoreDropdown = () => {
                       </span>
                       <button
                         type="button"
-                        onClick={(e) => handleDeleteSession(session.roomId, e)}
-                        className="group-data-[highlighted]:text-red bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:opacity-100"
-                        disabled={deletingRoomId === session.roomId}
+                        onClick={(e) => handleDeleteSession(session.chatId, e)}
+                        className="bg-accent absolute inset-y-0 right-0 flex items-center px-2 py-1 text-white opacity-0 shadow-lg backdrop-blur-sm group-data-[highlighted]:text-white group-data-[highlighted]:opacity-100"
+                        disabled={deletingChatId === session.chatId}
                       >
-                        {deletingRoomId === session.roomId ? (
+                        {deletingChatId === session.chatId ? (
                           <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
                         ) : (
                           <i className="i-mgc-delete-2-cute-re size-4" />

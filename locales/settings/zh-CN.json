@@ -240,8 +240,6 @@
   "general.content": "内容",
   "general.data": "数据",
   "general.data_file.label": "数据文件",
-  "general.data_persist.description": "在本地保留数据以启用离线访问和本地搜索。",
-  "general.data_persist.label": "保留数据以供离线使用",
   "general.dim_read.description": "淡化时间线中已读条目的显示颜色。",
   "general.dim_read.label": "淡化已读条目",
   "general.enhanced.description": "启用增强设置可提供更多自定义选项，但也可能引发不可预见的问题。",

@@ -33,6 +33,7 @@ export async function migrateDB(): Promise<void> {
   }
 }
 
+export async function getDBFile() {}
 export async function exportDB() {}
 export async function deleteDB() {
   try {

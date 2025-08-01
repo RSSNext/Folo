@@ -6,12 +6,13 @@ import {
   CardTitle,
 } from "@follow/components/ui/card/index.js"
 import dayjs from "dayjs"
+import { memo } from "react"
 
 import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import type { AIDisplayFeedsTool } from "../../__internal__/types"
 import { ErrorState, LoadingState } from "../common-states"
-import { AnalyticsMetrics, EmptyState, GridContainer, StatCard } from "./shared"
+import { AnalyticsMetrics, EmptyState, StatCard } from "./shared"
 
 type FeedData = AIDisplayFeedsTool["output"]["feeds"]
 
@@ -21,7 +22,7 @@ const FeedsGrid = ({ data, showAnalytics }: { data: FeedData; showAnalytics: boo
   }
 
   return (
-    <GridContainer columns={{ base: 2, md: 3 }} className="@[600px]:grid-cols-3">
+    <div className="@[600px]:grid-cols-3 grid grid-cols-2 gap-4 md:grid-cols-3">
       {data.map((item) => (
         <Card key={item.feed.id} className="p-4">
           <CardHeader className="h-24 px-2 py-3">
@@ -72,22 +73,11 @@ const FeedsGrid = ({ data, showAnalytics }: { data: FeedData; showAnalytics: boo
           </CardContent>
         </Card>
       ))}
-    </GridContainer>
+    </div>
   )
 }
 
-export const AIDisplayFeedsPart = ({ part }: { part: AIDisplayFeedsTool }) => {
-  // Handle loading state
-  if (part.state === "input-streaming" || part.state === "input-available") {
-    return (
-      <LoadingState
-        title="Loading Feeds..."
-        description="Fetching feed data..."
-        maxWidth="max-w-6xl"
-      />
-    )
-  }
-
+export const AIDisplayFeedsPart = memo(({ part }: { part: AIDisplayFeedsTool }) => {
   // Handle error state
   if (part.state === "output-error") {
     return (
@@ -135,7 +125,7 @@ export const AIDisplayFeedsPart = ({ part }: { part: AIDisplayFeedsTool }) => {
 
   return (
     <Card className="mb-2 w-full min-w-0">
-      <div className="w-[9999px]" />
+      <div className="w-[9999px] max-w-[calc(var(--ai-chat-layout-width,65ch)_-120px)]" />
       <CardHeader>
         <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
           <span className="text-lg">📡</span>
@@ -145,7 +135,7 @@ export const AIDisplayFeedsPart = ({ part }: { part: AIDisplayFeedsTool }) => {
       </CardHeader>
       <CardContent className="@container space-y-6">
         {/* Statistics Overview */}
-        <GridContainer columns={{ base: 2, md: 4 }} className="@[600px]:grid-cols-4">
+        <div className="@[600px]:grid-cols-4 grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatCard title="Total Feeds" value={totalFeeds} emoji="📊" />
           <StatCard
             title="Active Feeds"
@@ -163,11 +153,11 @@ export const AIDisplayFeedsPart = ({ part }: { part: AIDisplayFeedsTool }) => {
               <StatCard title="Total Views" value={totalViews.toLocaleString()} emoji="👀" />
             </>
           )}
-        </GridContainer>
+        </div>
 
         {/* Feeds Display */}
         {renderFeeds()}
       </CardContent>
     </Card>
   )
-}
+})
