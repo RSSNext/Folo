@@ -11,7 +11,8 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 
 import type { AIDisplaySubscriptionsTool } from "../../__internal__/types"
 import { ErrorState, LoadingState } from "../common-states"
-import { AnalyticsMetrics, CategoryTag, EmptyState, GridContainer, StatCard } from "./shared"
+import { toolMemo } from "./share"
+import { AnalyticsMetrics, CategoryTag, EmptyState, StatCard } from "./shared"
 
 type SubscriptionData = AIDisplaySubscriptionsTool["output"]["subscriptions"]
 
@@ -58,7 +59,7 @@ const SubscriptionsGrid = ({
   }
 
   return (
-    <GridContainer columns={{ base: 2, md: 3 }} className="@[600px]:grid-cols-3">
+    <div className="@[600px]:grid-cols-3 @[400px]:grid-cols-2 grid grid-cols-1 gap-4">
       {data.map((sub) => (
         <Card key={`${sub.subscription?.userId}-${sub.subscription?.feedId}`} className="p-4">
           <CardHeader className="h-24 px-2 py-3">
@@ -105,7 +106,7 @@ const SubscriptionsGrid = ({
           </CardContent>
         </Card>
       ))}
-    </GridContainer>
+    </div>
   )
 }
 
@@ -171,116 +172,107 @@ const GroupedSubscriptions = ({
   )
 }
 
-export const AIDisplaySubscriptionsPart = ({ part }: { part: AIDisplaySubscriptionsTool }) => {
-  // Handle loading state
-  if (part.state === "input-streaming" || part.state === "input-available") {
-    return (
-      <LoadingState
-        title="Loading Subscriptions..."
-        description="Fetching subscription data..."
-        maxWidth="max-w-6xl"
-      />
-    )
-  }
-
-  // Handle error state
-  if (part.state === "output-error") {
-    return (
-      <ErrorState
-        title="Subscriptions Error"
-        error="An error occurred while loading subscriptions"
-        maxWidth="max-w-6xl"
-      />
-    )
-  }
-
-  // Handle no output or invalid state
-  if (part.state !== "output-available" || !part.output) {
-    return (
-      <LoadingState
-        title="Loading Subscriptions..."
-        description="Fetching subscription data..."
-        maxWidth="max-w-6xl"
-      />
-    )
-  }
-
-  // Extract output with proper typing
-  const output = part.output as NonNullable<AIDisplaySubscriptionsTool["output"]>
-
-  const {
-    subscriptions,
-    displayType = "list",
-    showAnalytics = true,
-    showCategories = true,
-    title,
-    groupBy = "none",
-    filterBy = "all",
-  } = output
-
-  // Calculate statistics
-  const totalSubscriptions = subscriptions.length
-  const categoriesCount = new Set(
-    subscriptions.map((s) => s.subscription?.category).filter(Boolean),
-  ).size
-  const activeSubscriptions = subscriptions.filter((s) => !s.feed?.errorMessage).length
-  const totalViews = subscriptions.reduce((acc, s) => acc + (s.subscription?.view || 0), 0)
-
-  const renderSubscriptions = () => {
-    if (groupBy !== "none") {
+export const AIDisplaySubscriptionsPart = toolMemo(
+  ({ part }: { part: AIDisplaySubscriptionsTool }) => {
+    // Handle error state
+    if (part.state === "output-error") {
       return (
-        <GroupedSubscriptions
-          data={subscriptions}
-          groupBy={groupBy}
-          displayType={displayType}
-          showAnalytics={showAnalytics}
-          showCategories={showCategories}
+        <ErrorState
+          title="Subscriptions Error"
+          error="An error occurred while loading subscriptions"
+          maxWidth="max-w-6xl"
         />
       )
     }
 
-    switch (displayType) {
-      default: {
+    // Handle loading state
+    if (part.state !== "output-available" || !part.output) {
+      return (
+        <LoadingState
+          title="Loading Subscriptions..."
+          description="Fetching subscription data..."
+          maxWidth="max-w-6xl"
+        />
+      )
+    }
+
+    // Extract output with proper typing
+    const output = part.output as NonNullable<AIDisplaySubscriptionsTool["output"]>
+
+    const {
+      subscriptions,
+      displayType = "list",
+      showAnalytics = true,
+      showCategories = true,
+      title,
+      groupBy = "none",
+      filterBy = "all",
+    } = output
+
+    // Calculate statistics
+    const totalSubscriptions = subscriptions.length
+    const categoriesCount = new Set(
+      subscriptions.map((s) => s.subscription?.category).filter(Boolean),
+    ).size
+    const activeSubscriptions = subscriptions.filter((s) => !s.feed?.errorMessage).length
+    const totalViews = subscriptions.reduce((acc, s) => acc + (s.subscription?.view || 0), 0)
+
+    const renderSubscriptions = () => {
+      if (groupBy !== "none") {
         return (
-          <SubscriptionsGrid
+          <GroupedSubscriptions
             data={subscriptions}
+            groupBy={groupBy}
+            displayType={displayType}
             showAnalytics={showAnalytics}
             showCategories={showCategories}
           />
         )
       }
+
+      switch (displayType) {
+        default: {
+          return (
+            <SubscriptionsGrid
+              data={subscriptions}
+              showAnalytics={showAnalytics}
+              showCategories={showCategories}
+            />
+          )
+        }
+      }
     }
-  }
 
-  return (
-    <Card className="mb-2 w-full min-w-0">
-      <div className="w-[9999px]" />
-      <CardHeader>
-        <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
-          <span className="text-lg">📋</span>
-          <span>{title || "My Subscriptions"}</span>
-        </CardTitle>
-        <CardDescription>
-          {formatDisplayType(displayType)} • {formatFilterBy(filterBy)} • {formatGroupBy(groupBy)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="@container space-y-6">
-        {/* Statistics Overview */}
-        <GridContainer columns={{ base: 2, md: 4 }} className="@[600px]:grid-cols-4">
-          <StatCard title="Total Subscriptions" value={totalSubscriptions} emoji="📊" />
-          <StatCard
-            title="Active Feeds"
-            value={activeSubscriptions}
-            description={`${totalSubscriptions - activeSubscriptions} inactive`}
-            emoji="🟢"
-          />
-          {showCategories && <StatCard title="Categories" value={categoriesCount} emoji="🏷️" />}
-          <StatCard title="Total Views" value={totalViews.toLocaleString()} emoji="👀" />
-        </GridContainer>
+    return (
+      <Card className="mb-2 w-full min-w-0">
+        <div className="w-[9999px] max-w-[calc(var(--ai-chat-layout-width,65ch)_-120px)]" />
+        <CardHeader>
+          <CardTitle className="text-text flex items-center gap-2 text-xl font-semibold">
+            <span className="text-lg">📋</span>
+            <span>{title || "My Subscriptions"}</span>
+          </CardTitle>
+          <CardDescription>
+            {formatDisplayType(displayType)} • {formatFilterBy(filterBy)} • {formatGroupBy(groupBy)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="@container space-y-6">
+          {/* Statistics Overview */}
+          <div className="@[700px]:grid-cols-4 grid grid-cols-2 gap-4">
+            <StatCard title="Total Subscriptions" value={totalSubscriptions} emoji="📊" />
+            <StatCard
+              title="Active Feeds"
+              value={activeSubscriptions}
+              description={`${totalSubscriptions - activeSubscriptions} inactive`}
+              emoji="🟢"
+            />
+            {showCategories && <StatCard title="Categories" value={categoriesCount} emoji="🏷️" />}
+            <StatCard title="Total Views" value={totalViews.toLocaleString()} emoji="👀" />
+          </div>
 
-        {/* Subscriptions Display */}
-        {renderSubscriptions()}
-      </CardContent>
-    </Card>
-  )
-}
+          {/* Subscriptions Display */}
+          {renderSubscriptions()}
+        </CardContent>
+      </Card>
+    )
+  },
+)

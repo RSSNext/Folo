@@ -17,6 +17,7 @@ import dayjs from "dayjs"
 
 import type { AIDisplayAnalyticsTool } from "../../__internal__/types"
 import { ErrorState, LoadingState } from "../common-states"
+import { toolMemo } from "./share"
 import { ChartPlaceholder, StatCard } from "./shared"
 
 type AnalyticsData = AIDisplayAnalyticsTool["output"]["analyticsData"]
@@ -229,18 +230,7 @@ const OverviewAnalytics = ({ data }: { data: AnalyticsData["overviewStats"] }) =
   )
 }
 
-export const AIDisplayAnalyticsPart = ({ part }: { part: AIDisplayAnalyticsTool }) => {
-  // Handle loading state
-  if (part.state === "input-streaming" || part.state === "input-available") {
-    return (
-      <LoadingState
-        title="Loading Analytics..."
-        description="Fetching analytics data..."
-        maxWidth="max-w-4xl"
-      />
-    )
-  }
-
+export const AIDisplayAnalyticsPart = toolMemo(({ part }: { part: AIDisplayAnalyticsTool }) => {
   // Handle error state
   if (part.state === "output-error") {
     return (
@@ -256,9 +246,8 @@ export const AIDisplayAnalyticsPart = ({ part }: { part: AIDisplayAnalyticsTool 
     )
   }
 
-  // Handle no output
-  const { output } = part
-  if (!output) {
+  // Handle no output or invalid state
+  if (part.state !== "output-available" || !part.output) {
     return (
       <LoadingState
         title="Loading Analytics..."
@@ -268,7 +257,7 @@ export const AIDisplayAnalyticsPart = ({ part }: { part: AIDisplayAnalyticsTool 
     )
   }
 
-  const { analyticsData, analyticsType, timeRange, displayType, title } = output
+  const { analyticsData, analyticsType, timeRange, displayType, title } = part.output
 
   const renderAnalytics = () => {
     switch (analyticsType) {
@@ -309,4 +298,4 @@ export const AIDisplayAnalyticsPart = ({ part }: { part: AIDisplayAnalyticsTool 
       <CardContent>{renderAnalytics()}</CardContent>
     </Card>
   )
-}
+})

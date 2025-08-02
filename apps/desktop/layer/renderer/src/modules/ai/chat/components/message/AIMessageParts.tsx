@@ -1,8 +1,10 @@
 import type { ToolUIPart } from "ai"
+import type { SerializedEditorState } from "lexical"
 import { m } from "motion/react"
 import * as React from "react"
 
 import type {
+  AIChatContextBlock,
   AIDisplayAnalyticsTool,
   AIDisplayEntriesTool,
   AIDisplayFeedsTool,
@@ -17,7 +19,9 @@ import {
   AIDisplaySubscriptionsPart,
 } from "../displays"
 import { ToolInvocationComponent } from "../ToolInvocationComponent"
+import { AIDataBlockPart } from "./AIDataBlockPart"
 import { AIMarkdownMessage } from "./AIMarkdownMessage"
+import { AIRichTextMessage } from "./AIRichTextMessage"
 
 interface MessagePartsProps {
   message: BizUIMessage
@@ -61,6 +65,7 @@ const ThinkingIndicator: React.FC = () => {
     </div>
   )
 }
+
 export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message }) => {
   if (!message.parts || message.parts.length === 0) {
     // In AI SDK v5, messages should always have parts
@@ -88,6 +93,20 @@ export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message
             )
           }
 
+          case "data-block": {
+            return <AIDataBlockPart key={partKey} blocks={part.data as AIChatContextBlock[]} />
+          }
+
+          case "data-rich-text": {
+            return (
+              <AIRichTextMessage
+                key={partKey}
+                data={part.data as { state: SerializedEditorState; text: string }}
+                className={isUser ? "text-white" : "text-text"}
+              />
+            )
+          }
+
           case "tool-displayAnalytics": {
             return <AIDisplayAnalyticsPart key={partKey} part={part as AIDisplayAnalyticsTool} />
           }
@@ -102,20 +121,6 @@ export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message
           case "tool-displayFeeds": {
             return <AIDisplayFeedsPart key={partKey} part={part as AIDisplayFeedsTool} />
           }
-
-          // case "reasoning": {
-          //   return (
-          //     <details key={partKey} className="my-2">
-          //       <summary className="text-text-tertiary hover:text-text cursor-pointer text-sm font-medium">
-          //         <i className="i-mgc-brain-cute-re mr-2 size-3" />
-          //         Show reasoning
-          //       </summary>
-          //       <div className="bg-fill-secondary border-purple/50 text-text-secondary mt-2 rounded border-l-4 p-3 text-sm">
-          //         {parseMarkdown(part.reasoning).content}
-          //       </div>
-          //     </details>
-          //   )
-          // }
 
           default: {
             if (part.type.startsWith("tool-")) {

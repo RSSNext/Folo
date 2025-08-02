@@ -24,8 +24,6 @@
   "shortcuts.empty.description": "一般的なタスクを迅速に実行し、即座にAIアシスタンスを得るためのカスタムAIショートカットを作成します。",
   "shortcuts.empty.title": "ショートカットはまだありません",
   "shortcuts.enabled": "有効",
-  "shortcuts.hotkey": "ホットキー（オプション）",
-  "shortcuts.hotkey_placeholder": "例：Cmd+S",
   "shortcuts.name": "名前",
   "shortcuts.name_placeholder": "例：記事を要約",
   "shortcuts.prompt": "プロンプト",

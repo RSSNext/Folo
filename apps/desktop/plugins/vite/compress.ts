@@ -44,7 +44,7 @@ function compressAndFingerprintPlugin(outDir: string): Plugin {
       // Get the current git tag version
       let version = "unknown"
       try {
-        version = execSync("git describe --tags").toString().trim()
+        version = execSync("git describe --tags").toString().trim().replace("desktop/", "")
       } catch (error) {
         console.warn("Could not retrieve git tag version:", error)
       }

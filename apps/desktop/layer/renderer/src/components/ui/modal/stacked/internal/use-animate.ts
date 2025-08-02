@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { nextFrame } from "@follow/utils/dom"
 import { useAnimationControls } from "motion/react"
 import { useCallback, useEffect, useLayoutEffect } from "react"
@@ -19,10 +20,8 @@ export const useModalAnimate = (isTop: boolean) => {
   const noticeModal = useCallback(() => {
     animateController
       .start({
-        scale: 1.05,
-        transition: {
-          duration: 0.06,
-        },
+        scale: 1.01,
+        transition: Spring.snappy(0.06),
       })
       .then(() => {
         animateController.start({

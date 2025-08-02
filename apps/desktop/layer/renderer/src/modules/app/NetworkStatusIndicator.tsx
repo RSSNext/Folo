@@ -2,19 +2,16 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@follow/components/ui/t
 import { cn } from "@follow/utils/utils"
 
 import { NetworkStatus, useApiStatus, useNetworkStatus } from "~/atoms/network"
-import { useGeneralSettingKey } from "~/atoms/settings/general"
 
 export const NetworkStatusIndicator = () => {
   const networkStatus = useNetworkStatus()
   const apiStatus = useApiStatus()
-  const canUseLocalData = useGeneralSettingKey("dataPersist")
 
   if (networkStatus === NetworkStatus.ONLINE && apiStatus === NetworkStatus.ONLINE) {
     return null
   }
   const canAccessAnyData =
-    canUseLocalData ||
-    (networkStatus === NetworkStatus.ONLINE && apiStatus === NetworkStatus.ONLINE)
+    networkStatus === NetworkStatus.ONLINE && apiStatus === NetworkStatus.ONLINE
 
   return (
     <Tooltip>
@@ -29,9 +26,7 @@ export const NetworkStatusIndicator = () => {
           <i className="i-mgc-wifi-off-cute-re shrink-0 text-base" />
           <span className="shrink-0 text-xs font-semibold opacity-50">
             {networkStatus === NetworkStatus.OFFLINE
-              ? canUseLocalData
-                ? "Local Mode (alpha)"
-                : "Offline"
+              ? "Local Mode (alpha)"
               : apiStatus === NetworkStatus.OFFLINE
                 ? "API Error"
                 : ""}
@@ -40,9 +35,7 @@ export const NetworkStatusIndicator = () => {
       </TooltipTrigger>
       <TooltipContent className="max-w-[35ch]" align="start" side="top">
         {networkStatus === NetworkStatus.OFFLINE
-          ? canUseLocalData
-            ? "Currently in Local data mode due to current network connection failure."
-            : "Your network environment is abnormal and you are unable to request a remote server."
+          ? "Currently in Local data mode due to current network connection failure."
           : apiStatus === NetworkStatus.OFFLINE
             ? "Your network connection is normal, there may be an error on the remote server and the API interface is temporarily unreachable."
             : ""}

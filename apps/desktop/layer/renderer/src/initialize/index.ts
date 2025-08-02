@@ -11,7 +11,6 @@ import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
 import { ElectronCloseEvent, ElectronShowEvent } from "~/providers/invalidate-query-provider"
 
 import { subscribeNetworkStatus } from "../atoms/network"
-import { getGeneralSettings } from "../atoms/settings/general"
 import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
@@ -27,6 +26,12 @@ declare global {
 
 export const initializeApp = async () => {
   appLog(`${APP_NAME}: Follow everything in one place`, repository.url)
+
+  const dataHydratedTime = await apm("hydrateDatabaseToStore", () => {
+    return hydrateDatabaseToStore({
+      migrateDatabase: true,
+    })
+  })
 
   if (DEV) {
     const favicon = await import("/favicon-dev.ico?url")
@@ -77,21 +82,8 @@ export const initializeApp = async () => {
 
   apm("hydrateSettings", hydrateSettings)
 
-  // should after hydrateSettings
-  const { dataPersist: enabledDataPersist } = getGeneralSettings()
-
   initSentry()
   await apm("i18n", initI18n)
-
-  let dataHydratedTime: undefined | number
-  // Initialize the database
-  if (enabledDataPersist) {
-    dataHydratedTime = await apm("hydrateDatabaseToStore", () => {
-      return hydrateDatabaseToStore({
-        migrateDatabase: true,
-      })
-    })
-  }
 
   apm("setting sync", () => {
     settingSyncQueue.init()
@@ -106,7 +98,6 @@ export const initializeApp = async () => {
   tracker.appInit({
     electron: IN_ELECTRON,
     loading_time: loadingTime,
-    using_indexed_db: enabledDataPersist,
     data_hydrated_time: dataHydratedTime,
     version: APP_VERSION,
     rn: false,

@@ -232,6 +232,20 @@
       "when": 1753240775348,
       "tag": "0032_orange_prima",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1753890574250,
+      "tag": "0033_shiny_sebastian_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1753937164043,
+      "tag": "0034_curly_darkstar",
+      "breakpoints": true
     }
   ]
 }

@@ -33,10 +33,7 @@ import { SettingActionItem, SettingDescription } from "../control"
 import { createSetting } from "../helper/builder"
 import { SettingItemGroup } from "../section"
 
-const { defineSettingItem, SettingBuilder } = createSetting(
-  useGeneralSettingValue,
-  setGeneralSetting,
-)
+const { SettingBuilder } = createSetting(useGeneralSettingValue, setGeneralSetting)
 
 export const SettingDataControl = () => {
   const { t } = useTranslation("settings")
@@ -52,11 +49,6 @@ export const SettingDataControl = () => {
             type: "title",
             value: t("general.data"),
           },
-
-          defineSettingItem("dataPersist", {
-            label: t("general.data_persist.label"),
-            description: t("general.data_persist.description"),
-          }),
 
           {
             type: "title",

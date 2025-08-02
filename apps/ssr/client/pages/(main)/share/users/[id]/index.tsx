@@ -249,7 +249,7 @@ const Subscriptions = ({ userId }: { userId: string }) => {
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
       ...prev,
-      [category]: !prev[category],
+      [category]: !(prev[category] ?? true),
     }))
   }
   return (

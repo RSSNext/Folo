@@ -193,7 +193,7 @@ const FeedItemImpl = ({ view, feedId, className, isPreview }: FeedItemProps) => 
         <FeedTitle feed={feed} />
         {isFeed && (
           <ErrorTooltip errorAt={feed.errorAt} errorMessage={feed.errorMessage}>
-            <i className="i-mgc-wifi-off-cute-re ml-1 shrink-0 text-base" />
+            <i className="i-mingcute-close-circle-fill ml-1 shrink-0 text-base" />
           </ErrorTooltip>
         )}
         {subscription?.isPrivate && (

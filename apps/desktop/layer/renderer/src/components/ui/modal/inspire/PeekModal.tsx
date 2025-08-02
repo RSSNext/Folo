@@ -11,16 +11,16 @@ import { FixedModalCloseButton } from "../components/close"
 import { useCurrentModal, useModalStack } from "../stacked/hooks"
 import { InPeekModal } from "./InPeekModal"
 
-export const PeekModal = (
-  props: PropsWithChildren<{
-    to?: string
-    rightActions?: {
-      onClick: () => void
-      label: string
-      icon: ReactNode
-    }[]
-  }>,
-) => {
+interface PeekModalProps {
+  to?: string
+  rightActions?: {
+    onClick: () => void
+    label: string
+    icon: ReactNode
+  }[]
+}
+
+export const PeekModal = (props: PropsWithChildren<PeekModalProps>) => {
   const { dismissAll } = useModalStack()
 
   const { to, children } = props

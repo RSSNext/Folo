@@ -1,1 +1,1 @@
-export { CenterColumnLayout } from "./CenterColumnLayout"
+export { TimelineColumnLayout as CenterColumnLayout } from "./TimelineColumnLayout"

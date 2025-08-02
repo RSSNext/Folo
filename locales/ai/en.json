@@ -24,8 +24,6 @@
   "shortcuts.empty.description": "Create custom AI shortcuts to quickly perform common tasks and get instant AI assistance.",
   "shortcuts.empty.title": "No Shortcuts Yet",
   "shortcuts.enabled": "Enabled",
-  "shortcuts.hotkey": "Hotkey (Optional)",
-  "shortcuts.hotkey_placeholder": "e.g. Cmd+S",
   "shortcuts.name": "Name",
   "shortcuts.name_placeholder": "e.g. Summarize Article",
   "shortcuts.prompt": "Prompt",

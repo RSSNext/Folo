@@ -1,6 +1,16 @@
+import type { SerializedEditorState } from "lexical"
+
 export interface ChatSession {
-  roomId: string
+  chatId: string
   title?: string
   createdAt: Date
   messageCount: number
+}
+
+export type RichTextPart = {
+  type: "data-rich-text"
+  data: {
+    state: SerializedEditorState
+    text: string
+  }
 }

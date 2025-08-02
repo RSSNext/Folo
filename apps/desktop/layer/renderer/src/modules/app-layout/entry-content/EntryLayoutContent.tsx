@@ -3,11 +3,11 @@ import { views } from "@follow/constants"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
-import { useMemo, useRef } from "react"
+import { useMemo } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { setAIChatPinned, useAIChatPinned } from "~/atoms/settings/ai"
+import { useAIChatPinned } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -16,12 +16,9 @@ import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useFeature } from "~/hooks/biz/useFeature"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
-import { AIChatRoot } from "~/modules/ai/chat/components/AIChatRoot"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
-import { AIChatPanelContainer } from "~/modules/entry-content/components/entry-content/ai"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { AIChatLayout } from "../ai/AIChatLayout"
 import { EntryContentPlaceholder } from "./EntryContentPlaceholder"
 
 const EntryLayoutContentLegacy = () => {
@@ -86,11 +83,7 @@ export const EntryLayoutContentWithAI = () => {
             onClick={() => navigate({ entryId: null })}
           />
         )}
-        {realEntryId && !isWideView ? (
-          <Grid entryId={realEntryId} />
-        ) : (
-          !isWideView && <AIChatLayout />
-        )}
+        {realEntryId && !isWideView ? <Grid entryId={realEntryId} /> : null}
       </EntryGridContainer>
     </AppLayoutGridContainerProvider>
   )
@@ -119,50 +112,42 @@ const Grid = ({ entryId }) => {
     initial: 400,
     reverse: true,
   })
-  const handleAIChatPanelClose = useRef(() => setAIChatPinned(false)).current
 
   return (
-    <AIChatRoot wrapFocusable={false}>
-      <div
-        className={clsx(
-          aiPinned && "grid grid-cols-[1fr_400px]",
-          "flex min-h-0 grow flex-col overflow-hidden",
-        )}
-        style={{
-          gridTemplateColumns: `1fr ${position}px`,
-        }}
-      >
-        <div className="flex min-h-0 grow flex-col overflow-hidden">
-          <EntryContent
-            entryId={entryId}
-            classNames={useMemo(() => {
-              return {
-                header: shouldHeaderPaddingLeft
-                  ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
-                  : wideMode
-                    ? "ml-12"
-                    : "",
-              }
-            }, [shouldHeaderPaddingLeft, wideMode])}
+    <div
+      className={clsx(
+        aiPinned && "grid grid-cols-[1fr_400px]",
+        "flex min-h-0 grow flex-col overflow-hidden",
+      )}
+      style={{
+        gridTemplateColumns: `1fr ${position}px`,
+      }}
+    >
+      <div className="flex min-h-0 grow flex-col overflow-hidden">
+        <EntryContent
+          entryId={entryId}
+          classNames={useMemo(() => {
+            return {
+              header: shouldHeaderPaddingLeft
+                ? "ml-[calc(theme(width.feed-col)+theme(width.8))]"
+                : wideMode
+                  ? "ml-12"
+                  : "",
+            }
+          }, [shouldHeaderPaddingLeft, wideMode])}
+        />
+      </div>
+      {aiPinned && (
+        <div className="relative flex min-h-0 grow flex-col border-l">
+          <PanelSplitter
+            className="absolute inset-y-0 left-0"
+            isDragging={isDragging}
+            cursor={separatorCursor}
+            {...separatorProps}
           />
         </div>
-        {aiPinned && (
-          <div className="relative flex min-h-0 grow flex-col border-l">
-            <PanelSplitter
-              className="absolute inset-y-0 left-0"
-              isDragging={isDragging}
-              cursor={separatorCursor}
-              {...separatorProps}
-            />
-            <AIChatPanelContainer
-              className="absolute inset-0"
-              entryId={entryId}
-              onClose={handleAIChatPanelClose}
-            />
-          </div>
-        )}
-      </div>
-    </AIChatRoot>
+      )}
+    </div>
   )
 }
 

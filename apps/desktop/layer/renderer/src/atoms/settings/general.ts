@@ -195,12 +195,8 @@ export function useHideAllReadSubscriptions() {
   return hideAllReadSubscriptions && unreadOnly
 }
 
-export const subscribeShouldUseIndexedDB = (callback: (value: boolean) => void) =>
-  jotaiStore.sub(__generalSettingAtom, () => callback(getGeneralSettingsInternal().dataPersist))
-
 export const generalServerSyncWhiteListKeys: (keyof GeneralSettings)[] = [
   "appLaunchOnStartup",
-  "dataPersist",
   "sendAnonymousData",
   "language",
   "voice",

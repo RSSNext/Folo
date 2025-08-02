@@ -22,6 +22,7 @@ import {
   useEntryIsInReadability,
 } from "~/atoms/readability"
 import { useAIChatPinned } from "~/atoms/settings/ai"
+import { useIntegrationSettingValue } from "~/atoms/settings/integration"
 import { useShowSourceContent } from "~/atoms/source-content"
 import { ipcServices } from "~/lib/client"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -118,7 +119,67 @@ export class EntryActionMenuItem extends MenuItemText {
     })
   }
 }
-export type EntryActionItem = EntryActionMenuItem | MenuItemSeparator
+
+export class EntryActionDropdownItem extends MenuItemText {
+  protected privateConfig: EntryActionMenuItemConfig
+  public children: EntryActionMenuItem[]
+
+  constructor(config: EntryActionMenuItemConfig & { children?: EntryActionMenuItem[] }) {
+    const cmd = getCommand(config.id) || null
+    super({
+      ...config,
+      label: cmd?.label.title || "",
+      click: () => config.onClick?.(),
+      hide: !cmd || config.hide,
+    })
+
+    this.privateConfig = config
+    this.children = config.children || []
+  }
+
+  public get id() {
+    return this.privateConfig.id
+  }
+
+  public get active() {
+    return this.privateConfig.active
+  }
+
+  public get notice() {
+    return this.privateConfig.notice
+  }
+
+  public get entryId() {
+    return this.privateConfig.entryId
+  }
+
+  public get hasChildren() {
+    return this.children.length > 0
+  }
+
+  public get enabledChildren() {
+    return this.children.filter((child) => !child.hide)
+  }
+
+  public addChild(child: EntryActionMenuItem) {
+    this.children.push(child)
+  }
+
+  public removeChild(childId: string) {
+    this.children = this.children.filter((child) => child.id !== childId)
+  }
+
+  public override extend(
+    config: Partial<EntryActionMenuItemConfig & { children?: EntryActionMenuItem[] }>,
+  ) {
+    return new EntryActionDropdownItem({
+      ...this.privateConfig,
+      ...config,
+      children: config.children || this.children,
+    })
+  }
+}
+export type EntryActionItem = EntryActionMenuItem | EntryActionDropdownItem | MenuItemSeparator
 
 const entrySelector = (state: EntryModel) => {
   const content = state.content || ""
@@ -194,6 +255,7 @@ export const useEntryActions = ({
   const hasEntry = !!entry
 
   const userRole = useUserRole()
+  const integrationSettings = useIntegrationSettingValue()
 
   const shortcuts = useCommandShortcuts()
 
@@ -292,6 +354,7 @@ export const useEntryActions = ({
         id: COMMAND_ID.entry.openInBrowser,
         hide: !entry.url,
         onClick: runCmdFn(COMMAND_ID.entry.openInBrowser, [{ entryId }]),
+        shortcut: shortcuts[COMMAND_ID.entry.openInBrowser],
         entryId,
       }),
       new EntryActionMenuItem({
@@ -385,11 +448,34 @@ export const useEntryActions = ({
         active: isShowAIChatPinned,
         hide: !aiEnabled,
       }),
-      new EntryActionMenuItem({
-        id: COMMAND_ID.settings.customizeToolbar,
-        onClick: runCmdFn(COMMAND_ID.settings.customizeToolbar, []),
-        entryId,
-      }),
+
+      // Custom Integration with sub-menu
+      ...(() => {
+        const customIntegrations = integrationSettings.customIntegration || []
+        const enabledIntegrations = customIntegrations.filter((integration) => integration.enabled)
+
+        if (!integrationSettings.enableCustomIntegration || enabledIntegrations.length === 0) {
+          return []
+        }
+
+        return [
+          new EntryActionDropdownItem({
+            id: COMMAND_ID.integration.custom,
+            onClick: runCmdFn(COMMAND_ID.integration.custom, [{ entryId }]),
+            entryId,
+            children: enabledIntegrations.map((integration) => {
+              const virtualId = `integration:custom:${integration.id}` as FollowCommandId
+              return new EntryActionMenuItem({
+                id: virtualId,
+                onClick: () => {
+                  runCmdFn(virtualId, [{ entryId }])()
+                },
+                entryId,
+              })
+            }),
+          }),
+        ]
+      })(),
     ].filter((config) => {
       if (config === MENU_ITEM_SEPARATOR) {
         return config
@@ -417,7 +503,6 @@ export const useEntryActions = ({
     isInbox,
     shortcuts,
     view,
-    isCollection,
     isInCollection,
     isShowSourceContent,
     isShowAISummaryAuto,
@@ -425,10 +510,13 @@ export const useEntryActions = ({
     userRole,
     isShowAITranslationAuto,
     isShowAITranslationOnce,
+    isCollection,
     compact,
     isEntryInReadability,
     isShowAIChatPinned,
     aiEnabled,
+    integrationSettings.customIntegration,
+    integrationSettings.enableCustomIntegration,
   ])
 
   return actionConfigs

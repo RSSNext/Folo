@@ -92,16 +92,15 @@ jobs:
         id: version
         uses: ./.github/actions/setup-version
         with:
-          # We don't want to create a new release for mobile
-          type: "desktop"
+          type: "mobile"
 
       - name: Create Release Draft
         if: github.event.inputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.APP_VERSION }}
+          name: Mobile v${{ steps.version.outputs.APP_VERSION }}
           draft: false
           prerelease: true
-          tag_name: v${{ steps.version.outputs.APP_VERSION }}
+          tag_name: mobile/v${{ steps.version.outputs.APP_VERSION }}
           # .aab cannot be installed directly on your Android Emulator or device.
           files: ${{ github.workspace }}/build.apk

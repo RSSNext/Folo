@@ -6,7 +6,6 @@ export interface GeneralSettings {
   summary: boolean
   actionLanguage: string
   startupScreen: "subscription" | "timeline"
-  dataPersist: boolean
   sendAnonymousData: boolean
   unreadOnly: boolean
   scrollMarkUnread: boolean
@@ -139,6 +138,35 @@ export interface IntegrationSettings {
   qbittorrentPassword: string
 
   saveSummaryAsDescription: boolean
+
+  // custom actions
+  enableCustomIntegration: boolean
+  customIntegration: CustomIntegration[]
+
+  // fetch preferences (Electron only)
+  useBrowserFetch: boolean
+}
+
+export interface FetchTemplate {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
+  url: string
+  headers: Record<string, string>
+  body?: string
+}
+
+export interface URLSchemeTemplate {
+  scheme: string // e.g., "obsidian://", "bear://", "drafts://action"
+  // URL schemes use query parameters or path segments for data
+}
+
+export interface CustomIntegration {
+  id: string
+  name: string
+  icon: string
+  type?: "http" | "url-scheme" // Optional for backward compatibility
+  fetchTemplate?: FetchTemplate // Keep optional for url-scheme integrations
+  urlSchemeTemplate?: URLSchemeTemplate
+  enabled: boolean
 }
 
 export interface AIShortcut {

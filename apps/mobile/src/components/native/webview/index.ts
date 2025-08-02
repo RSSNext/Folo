@@ -9,15 +9,21 @@ export interface ImagePreviewEvent {
   index: number
 }
 
+export interface AudioSeekEvent {
+  time: number
+}
+
 declare module "@follow/utils/event-bus" {
   export interface CustomEvent {
     PREVIEW_IMAGE: ImagePreviewEvent
+    SEEK_AUDIO: AudioSeekEvent
   }
 }
 
 declare class ISharedWebViewModule extends NativeModule<{
   onContentHeightChanged: ({ height }: { height: number }) => void
   onImagePreview: (event: ImagePreviewEvent) => void
+  onSeekAudio?: (e: { time: number }) => void
 }> {
   load(url: string): void
   evaluateJavaScript(js: string): void
@@ -50,6 +56,9 @@ export const prepareEntryRenderWebView = () => {
     // Set up image preview event listener with error handling
     SharedWebViewModule.addListener("onImagePreview", (event: ImagePreviewEvent) => {
       EventBus.dispatch("PREVIEW_IMAGE", event)
+    })
+    SharedWebViewModule.addListener("onSeekAudio", (event: AudioSeekEvent) => {
+      EventBus.dispatch("SEEK_AUDIO", event)
     })
   } catch (error) {
     console.error("Failed to prepare entry render WebView:", error)
