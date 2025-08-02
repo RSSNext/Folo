@@ -520,7 +520,7 @@ const VideoPreview: FC<{
           poster={previewImageUrl}
           ref={setVideoRef}
           muted
-          className="relative size-full object-cover"
+          className="not-prose relative size-full object-cover"
         />
       )}
 

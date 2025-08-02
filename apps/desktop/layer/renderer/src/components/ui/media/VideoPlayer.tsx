@@ -145,7 +145,7 @@ export const VideoPlayer = ({
       scope={HotkeyScope.VideoPlayer}
     >
       {element}
-      <div className="center pointer-events-none absolute">
+      <div className="center pointer-events-none absolute inset-0">
         <m.div
           className="center flex size-20 rounded-full bg-black p-3"
           style={{ scale: scaleValue, opacity: opacityValue }}
@@ -195,7 +195,7 @@ const FloatMutedButton = () => {
   const isMuted = ctx.state.muted
   return (
     <MotionButtonBase
-      className="center absolute right-2 top-10 z-10 size-7 rounded-full bg-black/50 opacity-0 duration-200 group-hover:opacity-100"
+      className="center absolute right-4 top-4 z-10 size-7 rounded-full bg-black/50 opacity-0 duration-200 group-hover:opacity-100"
       onClick={(e) => {
         e.stopPropagation()
         if (isMuted) {
