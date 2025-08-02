@@ -20,8 +20,10 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm -w run typecheck)",
       "Bash(pnpm --filter @follow/components run typecheck)",
-      "Bash(pnpm -w run lint:fix)"
+      "Bash(pnpm -w run lint:fix)",
+      "WebFetch(domain:lexical.dev)"
     ],
     "deny": []
-  }
+  },
+  "$schema": "https://json.schemastore.org/claude-code-settings.json"
 }
