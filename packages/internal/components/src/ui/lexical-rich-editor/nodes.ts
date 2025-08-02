@@ -5,6 +5,8 @@ import { MarkNode } from "@lexical/mark"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ParagraphNode, TextNode } from "lexical"
 
+import { MentionNode } from "./nodes/MentionNode"
+
 export const LexicalRichEditorNodes = [
   // Core nodes
   ParagraphNode,
@@ -27,4 +29,7 @@ export const LexicalRichEditorNodes = [
 
   // Text format nodes
   MarkNode, // For HIGHLIGHT transformer
+
+  // Mention nodes
+  MentionNode, // For @mentions
 ]

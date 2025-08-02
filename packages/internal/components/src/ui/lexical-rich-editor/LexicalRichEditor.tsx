@@ -16,7 +16,7 @@ import { $getRoot } from "lexical"
 import { useImperativeHandle, useRef, useState } from "react"
 
 import { LexicalRichEditorNodes } from "./nodes"
-import { KeyboardPlugin } from "./plugins"
+import { KeyboardPlugin, MentionPlugin } from "./plugins"
 import { defaultLexicalTheme } from "./theme"
 import type { LexicalRichEditorProps, LexicalRichEditorRef } from "./types"
 
@@ -29,6 +29,7 @@ const defaultEnabledPlugins = {
   list: true,
   link: true,
   autoFocus: true,
+  mentions: true,
 }
 
 export const LexicalRichEditor = ({
@@ -108,6 +109,11 @@ export const LexicalRichEditor = ({
         {enabledPlugins.markdown && <MarkdownShortcutPlugin transformers={TRANSFORMERS} />}
         {enabledPlugins.list && <ListPlugin />}
         {enabledPlugins.link && <LinkPlugin />}
+        {enabledPlugins.mentions && (
+          <MentionPlugin
+            {...(typeof enabledPlugins.mentions === "object" ? enabledPlugins.mentions : {})}
+          />
+        )}
 
         <KeyboardPlugin onKeyDown={onKeyDown} />
         {autoFocus && enabledPlugins.autoFocus && <AutoFocusPlugin />}

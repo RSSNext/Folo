@@ -1,5 +1,7 @@
 import type { EditorState, LexicalEditor } from "lexical"
 
+import type { MentionPluginProps } from "./plugins"
+
 export interface LexicalRichEditorRef {
   getEditor: () => LexicalEditor
   focus: () => void
@@ -21,6 +23,7 @@ export interface LexicalRichEditorProps {
     list?: boolean
     link?: boolean
     autoFocus?: boolean
+    mentions?: boolean | MentionPluginProps
   }
   initalEditorState?: EditorState
 }
