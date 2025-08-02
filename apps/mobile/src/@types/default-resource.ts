@@ -1,21 +1,26 @@
 import common_en from "@locales/common/en.json"
 import common_ja from "@locales/common/ja.json"
+import common_ko from "@locales/common/ko.json"
 import common_zhCN from "@locales/common/zh-CN.json"
 import common_zhTW from "@locales/common/zh-TW.json"
 import errors_en from "@locales/errors/en.json"
 import errors_ja from "@locales/errors/ja.json"
+import errors_ko from "@locales/errors/ko.json"
 import errors_zhCN from "@locales/errors/zh-CN.json"
 import errors_zhTW from "@locales/errors/zh-TW.json"
 import lang_en from "@locales/lang/en.json"
 import lang_ja from "@locales/lang/ja.json"
+import lang_ko from "@locales/lang/ko.json"
 import lang_zhCN from "@locales/lang/zh-CN.json"
 import lang_zhTW from "@locales/lang/zh-TW.json"
 import en from "@locales/mobile/default/en.json"
 import ja from "@locales/mobile/default/ja.json"
+import ko from "@locales/mobile/default/ko.json"
 import zhCN from "@locales/mobile/default/zh-CN.json"
 import zhTW from "@locales/mobile/default/zh-TW.json"
 import settings_en from "@locales/settings/en.json"
 import settings_ja from "@locales/settings/ja.json"
+import settings_ko from "@locales/settings/ko.json"
 import settings_zhCN from "@locales/settings/zh-CN.json"
 import settings_zhTW from "@locales/settings/zh-TW.json"
 
@@ -54,6 +59,14 @@ export const defaultResources = {
     errors: errors_ja,
     lang: lang_ja,
     settings: settings_ja,
+  },
+  // @keep-sorted
+  ko: {
+    common: common_ko,
+    default: ko,
+    errors: errors_ko,
+    lang: lang_ko,
+    settings: settings_ko,
   },
 } satisfies Record<
   MobileSupportedLanguages,
