@@ -80,11 +80,11 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
 
             <Button
               onClick={handleCopyLink}
-              buttonClassName="p-1 cursor-link"
+              buttonClassName="ml-1 p-1 cursor-link"
               variant={"ghost"}
               aria-label={t("share.copy_link")}
             >
-              <i className="i-mgc-copy-2-cute-re ml-1 size-3" />
+              <i className="i-mgc-copy-2-cute-re size-3" />
             </Button>
           </TooltipContent>
         </TooltipPortal>
