@@ -5,7 +5,6 @@ import { nextFrame } from "@follow/utils"
 import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
-import type { RefObject } from "react"
 import { use, useCallback, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { RefreshControl, View } from "react-native"
@@ -145,7 +144,7 @@ export const TimelineSelectorMasonryList = ({
 
   return (
     <FlashList
-      ref={ref as RefObject<FlashListRef<any>>}
+      ref={ref}
       masonry
       refreshControl={
         <RefreshControl
