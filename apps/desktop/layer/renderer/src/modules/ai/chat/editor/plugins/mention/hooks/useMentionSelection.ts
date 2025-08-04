@@ -8,7 +8,7 @@ import { insertMentionNode } from "../utils/textReplacement"
 
 interface UseMentionSelectionOptions {
   mentionMatch: MentionMatch | null
-  onMentionInsert?: (mention: MentionData) => void
+  onMentionInsert?: (mention: MentionData, nodeKey?: string) => void
   onSelectionComplete?: () => void
 }
 
@@ -23,17 +23,25 @@ export const useMentionSelection = ({
     (mentionData: MentionData) => {
       if (!mentionMatch) return false
 
-      let success = false
+      let result = { success: false, nodeKey: undefined as string | undefined }
       editor.update(() => {
-        success = insertMentionNode(mentionData, mentionMatch)
+        result = insertMentionNode(mentionData, mentionMatch)
+
+        if (result.success && result.nodeKey) {
+          // Call onMentionInsert immediately within the same editor update
+          // to ensure the node tracking happens before any mutations
+          onMentionInsert?.(mentionData, result.nodeKey)
+        }
       })
 
-      if (success) {
-        onMentionInsert?.(mentionData)
-        onSelectionComplete?.()
+      // Call onSelectionComplete after the editor update is complete
+      if (result.success) {
+        setTimeout(() => {
+          onSelectionComplete?.()
+        }, 0)
       }
 
-      return success
+      return result.success
     },
     [editor, mentionMatch, onMentionInsert, onSelectionComplete],
   )

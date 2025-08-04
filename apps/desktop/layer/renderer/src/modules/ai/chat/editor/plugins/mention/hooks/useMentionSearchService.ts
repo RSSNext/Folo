@@ -11,11 +11,6 @@ import type { MentionData, MentionType } from "../types"
 export const useMentionSearchService = () => {
   const { search } = useFeedEntrySearchService({
     maxRecentEntries: 50,
-    fuseOptions: {
-      keys: ["title", "id"],
-      threshold: 0.3,
-      includeScore: true,
-    },
   })
 
   // Search function that converts search results to MentionData format

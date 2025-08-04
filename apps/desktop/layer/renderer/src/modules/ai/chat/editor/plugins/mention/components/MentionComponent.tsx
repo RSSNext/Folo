@@ -39,7 +39,7 @@ const MentionTooltipContent = ({ mentionData }: { mentionData: MentionData }) =>
 const getMentionStyles = (type: MentionData["type"]) => {
   const baseStyles = tw`
     inline-flex items-center gap-1 px-2 py-0.5 rounded-md
-    font-medium text-sm cursor-pointer
+    font-medium text-sm cursor-pointer select-none
   `
 
   switch (type) {

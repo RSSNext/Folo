@@ -77,23 +77,18 @@ const MentionSuggestionItem = React.memo(
         aria-selected={isSelected}
       >
         {/* Icon */}
-        <span className="mr-1.5 inline-flex size-4 items-center justify-center">
+        <span
+          className={cn(
+            "mr-1.5 inline-flex size-4 items-center justify-center",
+            mention.type === "entry" && "text-blue-500",
+            mention.type === "feed" && "text-orange-500",
+          )}
+        >
           <MentionTypeIcon type={mention.type} />
         </span>
 
         {/* Content */}
         <span className="flex-1 truncate">{highlightText(mention.name, query)}</span>
-
-        {/* Type Badge */}
-        <span
-          className={cn(
-            "ml-2 rounded px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide opacity-60",
-            mention.type === "entry" && "text-blue",
-            mention.type === "feed" && "text-orange",
-          )}
-        >
-          {mention.type}
-        </span>
 
         {/* Selection Indicator */}
         {isSelected && (

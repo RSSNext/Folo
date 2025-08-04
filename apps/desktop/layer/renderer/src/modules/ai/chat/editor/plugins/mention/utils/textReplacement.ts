@@ -6,14 +6,14 @@ import type { MentionData, MentionMatch } from "../types"
 export const insertMentionNode = (
   mentionData: MentionData,
   mentionMatch: MentionMatch,
-): boolean => {
+): { success: boolean; nodeKey?: string } => {
   const selection = $getSelection()
-  if (!$isRangeSelection(selection) || !selection.isCollapsed()) return false
+  if (!$isRangeSelection(selection) || !selection.isCollapsed()) return { success: false }
 
   const { anchor } = selection
   const anchorNode = anchor.getNode()
 
-  if (!$isTextNode(anchorNode)) return false
+  if (!$isTextNode(anchorNode)) return { success: false }
 
   // Replace the mention text with the mention node
   const textContent = anchorNode.getTextContent()
@@ -50,5 +50,5 @@ export const insertMentionNode = (
     spaceNode.select(1, 1)
   }
 
-  return true
+  return { success: true, nodeKey: mentionNode.getKey() }
 }

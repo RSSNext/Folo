@@ -1,34 +1,25 @@
 import { useCallback } from "react"
 
-import { useChatBlockActions } from "~/modules/ai/chat/__internal__/hooks"
-
-import { useMentionSearchService } from "../services/mentionSearchService"
 import type { MentionData } from "../types"
+import { useMentionBlockSync } from "./useMentionBlockSync"
+import { useMentionSearchService } from "./useMentionSearchService"
 
 /**
  * Hook that integrates mention search with context block management
- * Provides search functionality and handles automatic context block addition
+ * Provides search functionality and handles bidirectional synchronization
  */
 export const useMentionIntegration = () => {
   const { searchMentions } = useMentionSearchService()
-  const blockActions = useChatBlockActions()
+  const { handleMentionInsert: syncMentionInsert } = useMentionBlockSync()
 
-  // Handle mention insertion - automatically add to context blocks
+  // Handle mention insertion with node key tracking
   const handleMentionInsert = useCallback(
-    (mention: MentionData) => {
-      if (mention.type === "feed") {
-        blockActions.addBlock({
-          type: "referFeed",
-          value: mention.id,
-        })
-      } else if (mention.type === "entry") {
-        blockActions.addBlock({
-          type: "referEntry",
-          value: mention.id,
-        })
+    (mention: MentionData, nodeKey?: string) => {
+      if (nodeKey) {
+        syncMentionInsert(mention, nodeKey)
       }
     },
-    [blockActions],
+    [syncMentionInsert],
   )
 
   return {

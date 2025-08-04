@@ -43,7 +43,6 @@ export const LexicalRichEditor = ({
   enabledPlugins = defaultEnabledPlugins,
   initalEditorState,
   plugins,
-  nodes,
 }: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) => {
   const editorRef = useRef<LexicalEditor | null>(null)
   const [isEmpty, setIsEmpty] = useState(true)
@@ -52,7 +51,7 @@ export const LexicalRichEditor = ({
   const pluginNodes = plugins?.flatMap((plugin) => plugin.nodes || []) || []
 
   // Merge base nodes with custom nodes and plugin nodes
-  const allNodes = [...LexicalRichEditorNodes, ...(nodes || []), ...pluginNodes]
+  const allNodes = [...LexicalRichEditorNodes, ...pluginNodes]
 
   const initialConfig: InitialConfigType = {
     namespace,

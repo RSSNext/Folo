@@ -102,7 +102,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
             plugins={[MentionPlugin]}
             namespace="AIChatRichEditor"
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <div className="absolute right-3 top-3">
             <AIChatSendButton
               onClick={isProcessing ? stop : handleSend}
               disabled={!isProcessing && isEmpty}

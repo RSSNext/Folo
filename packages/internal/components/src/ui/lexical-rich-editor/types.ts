@@ -25,7 +25,6 @@ export interface LexicalRichEditorProps {
   enabledPlugins?: BuiltInPlugins
   initalEditorState?: EditorState
   plugins?: LexicalPluginFC[]
-  nodes?: ReadonlyArray<Klass<LexicalNode>>
 }
 export type LexicalPluginFC<T = unknown> = React.FC<T> & {
   id: string
