@@ -10,16 +10,36 @@
     "*.css": "tailwindcss"
   },
   "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
-    ["tw`([^`]*)`", "([^`]*)"],
-    ["[a-zA-Z]+[cC]lass[nN]ame[\"'`]?:\\s*[\"'`]([^\"'`]*)[\"'`]", "([^\"'`]*)"],
-    ["[a-zA-Z]+[cC]lass[nN]ame\\s*=\\s*[\"'`]([^\"'`]*)[\"'`]", "([^\"'`]*)"]
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ],
+    [
+      "tw`([^`]*)`",
+      "([^`]*)"
+    ],
+    [
+      "[a-zA-Z]+[cC]lass[nN]ame[\"'`]?:\\s*[\"'`]([^\"'`]*)[\"'`]",
+      "([^\"'`]*)"
+    ],
+    [
+      "[a-zA-Z]+[cC]lass[nN]ame\\s*=\\s*[\"'`]([^\"'`]*)[\"'`]",
+      "([^\"'`]*)"
+    ]
   ],
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
   "tailwindCSS.experimental.configFile": {
     "apps/mobile/tailwind.config.ts": "apps/mobile/**",
     "apps/ssr/tailwind.config.ts": "apps/ssr/**",
-    "apps/desktop/tailwind.config.ts": ["!apps/mobile/**", "!apps/ssr/**", "**"]
+    "apps/desktop/tailwind.config.ts": [
+      "!apps/mobile/**",
+      "!apps/ssr/**",
+      "**"
+    ]
   },
   "typescript.tsserver.maxTsServerMemory": 8096,
   "typescript.tsserver.nodePath": "node",
@@ -66,13 +86,21 @@
       "severity": "off"
     }
   ],
-  "cSpell.words": ["Hydable", "rsshub", "Русский"],
+  "cSpell.words": [
+    "Hydable",
+    "rsshub",
+    "Русский"
+  ],
   // "editor.foldingImportsByDefault": true,
   "commentTranslate.hover.enabled": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "i18n-ally.enabledFrameworks": ["i18next"],
+  "i18n-ally.enabledFrameworks": [
+    "i18next"
+  ],
   "i18n-ally.displayLanguage": "en",
-  "i18n-ally.localesPaths": ["locales"],
+  "i18n-ally.localesPaths": [
+    "locales"
+  ],
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{namespaces}/{locale}.json",
   "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",

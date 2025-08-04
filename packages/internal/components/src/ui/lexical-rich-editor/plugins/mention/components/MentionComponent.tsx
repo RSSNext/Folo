@@ -3,28 +3,12 @@ import { m as motion } from "motion/react"
 import * as React from "react"
 import { useState } from "react"
 
-import type { MentionData } from "../nodes/MentionNode"
+import type { MentionData } from "../types"
+import { MentionTypeIcon } from "./shared/MentionTypeIcon"
 
 interface MentionComponentProps {
   mentionData: MentionData
   className?: string
-}
-
-const MentionTypeIcon = ({ type }: { type: MentionData["type"] }) => {
-  switch (type) {
-    case "user": {
-      return <i className="i-mgc-user-3-cute-re size-3" />
-    }
-    case "topic": {
-      return <i className="i-mgc-hashtag-cute-re size-3" />
-    }
-    case "channel": {
-      return <i className="i-mgc-hash-cute-re size-3" />
-    }
-    default: {
-      return <i className="i-mgc-at-cute-re size-3" />
-    }
-  }
 }
 
 const MentionTooltip = ({
@@ -34,7 +18,7 @@ const MentionTooltip = ({
   mentionData: MentionData
   isVisible: boolean
 }) => {
-  if (!isVisible || !mentionData.description) return null
+  if (!isVisible) return null
 
   return (
     <motion.div
@@ -55,33 +39,21 @@ const MentionTooltip = ({
     >
       <div className="mb-1 flex items-center gap-2">
         <div className="bg-fill border-fill-secondary flex size-6 flex-shrink-0 items-center justify-center rounded-full border">
-          {mentionData.avatar ? (
-            <img
-              src={mentionData.avatar}
-              alt={mentionData.name}
-              className="size-full rounded-full object-cover"
-            />
-          ) : (
-            <MentionTypeIcon type={mentionData.type} />
-          )}
+          <MentionTypeIcon type={mentionData.type} />
         </div>
         <div>
           <p className="text-text text-sm font-medium">@{mentionData.name}</p>
           <span
             className={cn(
               "rounded px-1.5 py-0.5 text-xs font-medium",
-              mentionData.type === "user" && "bg-blue text-white",
-              mentionData.type === "topic" && "bg-green text-white",
-              mentionData.type === "channel" && "bg-purple text-white",
+              mentionData.type === "entry" && "bg-blue text-black",
+              mentionData.type === "feed" && "bg-orange text-black",
             )}
           >
             {mentionData.type}
           </span>
         </div>
       </div>
-      {mentionData.description && (
-        <p className="text-text-secondary text-xs">{mentionData.description}</p>
-      )}
 
       {/* Tooltip arrow */}
       <div className="absolute left-1/2 top-full -translate-x-1/2 transform">
@@ -103,32 +75,18 @@ export const MentionComponent: React.FC<MentionComponentProps> = ({ mentionData,
     )
 
     switch (type) {
-      case "user": {
+      case "entry": {
         return cn(
           baseStyles,
           "bg-blue/10 text-blue border-blue/20",
           "hover:bg-blue/20 hover:border-blue/30",
         )
       }
-      case "topic": {
+      case "feed": {
         return cn(
           baseStyles,
-          "bg-green/10 text-green border-green/20",
-          "hover:bg-green/20 hover:border-green/30",
-        )
-      }
-      case "channel": {
-        return cn(
-          baseStyles,
-          "bg-purple/10 text-purple border-purple/20",
-          "hover:bg-purple/20 hover:border-purple/30",
-        )
-      }
-      default: {
-        return cn(
-          baseStyles,
-          "bg-fill text-text border-fill-secondary",
-          "hover:bg-fill-secondary hover:border-fill-tertiary",
+          "bg-orange/10 text-orange border-orange/20",
+          "hover:bg-orange/20 hover:border-orange/30",
         )
       }
     }

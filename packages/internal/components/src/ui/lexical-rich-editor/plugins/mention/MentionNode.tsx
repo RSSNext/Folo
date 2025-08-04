@@ -1,25 +1,18 @@
-import type { NodeKey, SerializedLexicalNode, Spread } from "lexical"
-import {
-  $applyNodeReplacement,
-  DecoratorNode,
-  type DOMConversionMap,
-  type DOMConversionOutput,
-  type DOMExportOutput,
-  type EditorConfig,
-  type LexicalEditor,
-  type LexicalNode,
+import type {
+  DOMConversionMap,
+  DOMConversionOutput,
+  DOMExportOutput,
+  EditorConfig,
+  LexicalEditor,
+  LexicalNode,
+  NodeKey,
+  SerializedLexicalNode,
+  Spread,
 } from "lexical"
-import React from "react"
+import { $applyNodeReplacement, DecoratorNode } from "lexical"
+import * as React from "react"
 
-export type MentionType = "user" | "topic" | "channel"
-
-export interface MentionData {
-  id: string
-  name: string
-  type: MentionType
-  avatar?: string
-  description?: string
-}
+import type { MentionData } from "./types"
 
 export type SerializedMentionNode = Spread<
   {
@@ -29,7 +22,7 @@ export type SerializedMentionNode = Spread<
 >
 
 const MentionComponent = React.lazy(() =>
-  import("../components/MentionComponent").then((module) => ({
+  import("./components/MentionComponent").then((module) => ({
     default: module.MentionComponent,
   })),
 )
@@ -53,9 +46,9 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
   override createDOM(config: EditorConfig): HTMLElement {
     const dom = document.createElement("span")
     dom.className = config.theme.mention || "mention-node"
-    dom.setAttribute("data-lexical-mention", "true")
-    dom.setAttribute("data-mention-type", this.__mentionData.type)
-    dom.setAttribute("data-mention-id", this.__mentionData.id)
+    dom.dataset.lexicalMention = "true"
+    dom.dataset.mentionType = this.__mentionData.type
+    dom.dataset.mentionId = this.__mentionData.id
     return dom
   }
 
@@ -66,7 +59,7 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
   static override importDOM(): DOMConversionMap | null {
     return {
       span: (domNode: HTMLElement) => {
-        if (!domNode.hasAttribute("data-lexical-mention")) {
+        if (!Object.hasOwn(domNode.dataset, "lexicalMention")) {
           return null
         }
         return {
@@ -85,9 +78,9 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
 
   override exportDOM(): DOMExportOutput {
     const element = document.createElement("span")
-    element.setAttribute("data-lexical-mention", "true")
-    element.setAttribute("data-mention-type", this.__mentionData.type)
-    element.setAttribute("data-mention-id", this.__mentionData.id)
+    element.dataset.lexicalMention = "true"
+    element.dataset.mentionType = this.__mentionData.type
+    element.dataset.mentionId = this.__mentionData.id
     element.textContent = `@${this.__mentionData.name}`
     element.className = "mention-node"
     return { element }
@@ -105,7 +98,7 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     return `@${this.__mentionData.name}`
   }
 
-  override decorate(_editor: LexicalEditor, config: EditorConfig): React.JSX.Element {
+  override decorate(_editor: LexicalEditor): React.JSX.Element {
     return (
       <React.Suspense fallback={<span>@{this.__mentionData.name}</span>}>
         <MentionComponent mentionData={this.__mentionData} />
@@ -152,10 +145,10 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
 }
 
 function convertMentionElement(domNode: HTMLElement): DOMConversionOutput {
-  const mentionType = domNode.getAttribute("data-mention-type") as MentionType | null
-  const mentionId = domNode.getAttribute("data-mention-id")
+  const mentionType = domNode.dataset.mentionType as MentionData["type"] | null
+  const { mentionId } = domNode.dataset
   const textContent = domNode.textContent || ""
-  
+
   if (!mentionType || !mentionId) {
     return { node: null }
   }
@@ -178,8 +171,6 @@ export function $createMentionNode(mentionData: MentionData): MentionNode {
   return $applyNodeReplacement(mentionNode)
 }
 
-export function $isMentionNode(
-  node: LexicalNode | null | undefined,
-): node is MentionNode {
+export function $isMentionNode(node: LexicalNode | null | undefined): node is MentionNode {
   return node instanceof MentionNode
 }

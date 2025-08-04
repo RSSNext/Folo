@@ -1,6 +1,6 @@
 import type { LexicalEditor } from "lexical"
 
-import type { MentionData, MentionType } from "../nodes/MentionNode"
+import type { MentionData, MentionType } from "../plugins/mention"
 
 /**
  * Configuration for mention system
@@ -38,7 +38,7 @@ export type MentionSearchFunction = (
   context?: {
     editor: LexicalEditor
     currentSelection?: any
-  }
+  },
 ) => Promise<MentionData[]> | MentionData[]
 
 /**
@@ -46,7 +46,7 @@ export type MentionSearchFunction = (
  */
 export type MentionTriggerFunction = (
   text: string,
-  editor: LexicalEditor
+  editor: LexicalEditor,
 ) => {
   leadOffset: number
   matchingString: string
@@ -119,7 +119,7 @@ export interface MentionContextValue {
 export type MentionFilterFunction = (
   mentions: MentionData[],
   query: string,
-  type: MentionType
+  type: MentionType,
 ) => MentionData[]
 
 /**
@@ -138,7 +138,7 @@ export interface MentionTransformer {
  * Default mention configuration
  */
 export const DEFAULT_MENTION_CONFIG: MentionConfig = {
-  enabledTypes: ["user", "topic", "channel"],
+  enabledTypes: ["feed", "entry"],
   maxSuggestions: 10,
   minSearchLength: 1,
   searchDebounce: 150,

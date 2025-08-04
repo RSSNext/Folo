@@ -5,7 +5,7 @@ import { MarkNode } from "@lexical/mark"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ParagraphNode, TextNode } from "lexical"
 
-import { MentionNode } from "./nodes/MentionNode"
+import { MentionNode } from "./plugins/mention"
 
 export const LexicalRichEditorNodes = [
   // Core nodes

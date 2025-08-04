@@ -1,8 +1,8 @@
-import type { LexicalEditor, LexicalNode } from "lexical"
+import type { LexicalEditor } from "lexical"
 import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode } from "lexical"
 
-import type { MentionData, MentionType } from "../nodes/MentionNode"
-import { $createMentionNode, $isMentionNode, MentionNode } from "../nodes/MentionNode"
+import type { MentionData, MentionNode,MentionType  } from "../plugins/mention"
+import { $createMentionNode, $isMentionNode } from "../plugins/mention"
 
 /**
  * Utility functions for working with mentions in Lexical editor
@@ -13,11 +13,11 @@ import { $createMentionNode, $isMentionNode, MentionNode } from "../nodes/Mentio
  */
 export function $findMentionNodes(editor?: LexicalEditor): MentionNode[] {
   const mentionNodes: MentionNode[] = []
-  
+
   const root = editor?.getEditorState().read(() => {
     return editor.getRootElement()
   })
-  
+
   if (!root) return mentionNodes
 
   // Traverse all nodes to find mentions
@@ -25,7 +25,7 @@ export function $findMentionNodes(editor?: LexicalEditor): MentionNode[] {
     if ($isMentionNode(node)) {
       mentionNodes.push(node)
     }
-    
+
     if (node.getChildren) {
       const children = node.getChildren()
       for (const child of children) {
@@ -50,7 +50,7 @@ export function $findMentionNodes(editor?: LexicalEditor): MentionNode[] {
  */
 export function $getMentionsFromEditor(editor: LexicalEditor): MentionData[] {
   const mentionNodes = $findMentionNodes(editor)
-  return mentionNodes.map(node => node.getMentionData())
+  return mentionNodes.map((node) => node.getMentionData())
 }
 
 /**
@@ -58,38 +58,38 @@ export function $getMentionsFromEditor(editor: LexicalEditor): MentionData[] {
  */
 export function $insertMentionAtSelection(mentionData: MentionData, replaceText?: string): boolean {
   const selection = $getSelection()
-  
+
   if (!$isRangeSelection(selection)) {
     return false
   }
 
   const mentionNode = $createMentionNode(mentionData)
-  
+
   if (replaceText) {
     // Find and replace specific text
-    const anchor = selection.anchor
-    const focus = selection.focus
+    const {anchor} = selection
+    const {focus} = selection
     const anchorNode = anchor.getNode()
-    
+
     if ($isTextNode(anchorNode)) {
       const textContent = anchorNode.getTextContent()
       const replaceIndex = textContent.indexOf(replaceText)
-      
+
       if (replaceIndex !== -1) {
         // Split the text node and insert mention
         const beforeText = textContent.slice(0, replaceIndex)
         const afterText = textContent.slice(replaceIndex + replaceText.length)
-        
+
         if (beforeText) {
           selection.insertText(beforeText)
         }
-        
+
         selection.insertNodes([mentionNode])
-        
+
         if (afterText) {
           selection.insertText(afterText)
         }
-        
+
         return true
       }
     }
@@ -98,7 +98,7 @@ export function $insertMentionAtSelection(mentionData: MentionData, replaceText?
     selection.insertNodes([mentionNode])
     return true
   }
-  
+
   return false
 }
 
@@ -107,14 +107,14 @@ export function $insertMentionAtSelection(mentionData: MentionData, replaceText?
  */
 export function $updateMentionNode(nodeKey: string, newData: Partial<MentionData>): boolean {
   const node = $getNodeByKey(nodeKey)
-  
+
   if (!$isMentionNode(node)) {
     return false
   }
-  
+
   const currentData = node.getMentionData()
   const updatedData = { ...currentData, ...newData }
-  
+
   node.setMentionData(updatedData)
   return true
 }
@@ -124,11 +124,11 @@ export function $updateMentionNode(nodeKey: string, newData: Partial<MentionData
  */
 export function $removeMentionNode(nodeKey: string): boolean {
   const node = $getNodeByKey(nodeKey)
-  
+
   if (!$isMentionNode(node)) {
     return false
   }
-  
+
   node.remove()
   return true
 }
@@ -137,12 +137,7 @@ export function $removeMentionNode(nodeKey: string): boolean {
  * Validate mention data
  */
 export function validateMentionData(data: Partial<MentionData>): data is MentionData {
-  return !!(
-    data.id &&
-    data.name &&
-    data.type &&
-    ["user", "topic", "channel"].includes(data.type)
-  )
+  return !!(data.id && data.name && data.type && ["feed", "entry"].includes(data.type))
 }
 
 /**
@@ -152,17 +147,11 @@ export function createMentionData(
   id: string,
   name: string,
   type: MentionType,
-  options?: {
-    avatar?: string
-    description?: string
-  }
 ): MentionData {
   return {
     id,
     name,
     type,
-    avatar: options?.avatar,
-    description: options?.description,
   }
 }
 
@@ -173,22 +162,22 @@ export function parseMentionFromText(text: string): {
   type: MentionType
   name: string
 } | null {
-  // Match patterns like @username, @#channel, @+topic
-  const mentionMatch = text.match(/^@([#+]?)([a-zA-Z0-9_-]+)$/)
-  
+  // Match patterns like @username, @#feed, @+entry
+  const mentionMatch = text.match(/^@([#+]?)([\w-]+)$/)
+
   if (!mentionMatch) {
     return null
   }
-  
+
   const [, prefix = "", name = ""] = mentionMatch
-  
-  let type: MentionType = "user"
+
+  let type: MentionType = "feed"
   if (prefix === "#") {
-    type = "channel"
+    type = "feed"
   } else if (prefix === "+") {
-    type = "topic"
+    type = "entry"
   }
-  
+
   return { type, name }
 }
 
@@ -196,7 +185,7 @@ export function parseMentionFromText(text: string): {
  * Format mention for display
  */
 export function formatMentionDisplay(mentionData: MentionData): string {
-  const prefix = mentionData.type === "channel" ? "#" : mentionData.type === "topic" ? "+" : ""
+  const prefix = mentionData.type === "feed" ? "#" : mentionData.type === "entry" ? "+" : ""
   return `@${prefix}${mentionData.name}`
 }
 
@@ -209,26 +198,25 @@ export function $getMentionStats(editor: LexicalEditor): {
   unique: number
 } {
   const mentions = $getMentionsFromEditor(editor)
-  
+
   const stats = {
     total: mentions.length,
     byType: {
-      user: 0,
-      topic: 0,
-      channel: 0,
+      feed: 0,
+      entry: 0,
     } as Record<MentionType, number>,
     unique: 0,
   }
-  
+
   const uniqueIds = new Set<string>()
-  
+
   for (const mention of mentions) {
     stats.byType[mention.type]++
     uniqueIds.add(`${mention.type}:${mention.id}`)
   }
-  
+
   stats.unique = uniqueIds.size
-  
+
   return stats
 }
 
@@ -246,7 +234,7 @@ export function importMentionsFromJSON(json: string): MentionData[] {
   try {
     const data = JSON.parse(json)
     if (Array.isArray(data)) {
-      return data.filter(item => validateMentionData(item))
+      return data.filter((item) => validateMentionData(item))
     }
     return []
   } catch {
