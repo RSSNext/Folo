@@ -1,6 +1,16 @@
 import type { LexicalEditor } from "lexical"
 
-import type { MentionData, MentionType } from "../plugins/mention"
+// Mention functionality moved to desktop app
+// import type { MentionData, MentionType } from "../plugins/mention"
+
+// Temporary type definitions to avoid breaking imports
+export type MentionType = "entry" | "feed"
+export interface MentionData {
+  id: string
+  name: string
+  type: MentionType
+  value: unknown
+}
 
 /**
  * Configuration for mention system

@@ -3,20 +3,22 @@ import { Suspense, useMemo } from "react"
 
 import { MentionDropdown } from "./components/MentionDropdown"
 import { DEFAULT_MAX_SUGGESTIONS } from "./constants"
+import { useMentionIntegration } from "./hooks/useMentionIntegration"
 import { useMentionKeyboard } from "./hooks/useMentionKeyboard"
 import { useMentionSearch } from "./hooks/useMentionSearch"
 import { useMentionSelection } from "./hooks/useMentionSelection"
 import { useMentionTrigger } from "./hooks/useMentionTrigger"
+import { MentionNode } from "./MentionNode"
 import { defaultTriggerFn } from "./utils/triggerDetection"
 
-const defaultMentionPluginConfiguration = {
-  maxSuggestions: DEFAULT_MAX_SUGGESTIONS,
-  triggerFn: defaultTriggerFn,
-  onMentionInsert: () => {},
-}
-const onSearch = async () => []
 export function MentionPlugin() {
-  const { maxSuggestions, triggerFn, onMentionInsert } = defaultMentionPluginConfiguration
+  // Get integrated search and context block handling
+  const { searchMentions, handleMentionInsert } = useMentionIntegration()
+
+  const { maxSuggestions, triggerFn } = {
+    maxSuggestions: DEFAULT_MAX_SUGGESTIONS,
+    triggerFn: defaultTriggerFn,
+  }
   // Hook for detecting mention triggers
   const { mentionMatch, isActive, clearMentionMatch } = useMentionTrigger({
     triggerFn,
@@ -27,19 +29,19 @@ export function MentionPlugin() {
     suggestions,
     selectedIndex,
     isLoading,
-    searchMentions,
+    searchMentions: performSearch,
     clearSuggestions,
     setSelectedIndex,
     hasResults,
   } = useMentionSearch({
-    onSearch,
+    onSearch: searchMentions,
     maxSuggestions,
   })
 
   // Hook for handling mention selection
   const { selectMention } = useMentionSelection({
     mentionMatch,
-    onMentionInsert,
+    onMentionInsert: handleMentionInsert,
     onSelectionComplete: () => {
       clearMentionMatch()
       clearSuggestions()
@@ -90,11 +92,11 @@ export function MentionPlugin() {
   // Search when mention match changes
   React.useEffect(() => {
     if (mentionMatch) {
-      searchMentions(mentionMatch.matchingString)
+      performSearch(mentionMatch.matchingString)
     } else {
       clearSuggestions()
     }
-  }, [mentionMatch, searchMentions, clearSuggestions])
+  }, [mentionMatch, performSearch, clearSuggestions])
 
   // Calculate dropdown props
   const dropdownProps = useMemo(() => {
@@ -128,3 +130,4 @@ export function MentionPlugin() {
 }
 
 MentionPlugin.id = "mention"
+MentionPlugin.nodes = [MentionNode]

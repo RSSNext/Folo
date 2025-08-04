@@ -9,6 +9,8 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import type { SerializedEditorState } from "lexical"
 import * as React from "react"
 
+import { MentionNode } from "../../editor/plugins/mention/MentionNode"
+
 function onError(error: Error) {
   console.error("Lexical Read-Only Editor Error:", error)
 }
@@ -29,7 +31,7 @@ export const AIRichTextMessage: React.FC<AIRichTextMessageProps> = React.memo(
       onError,
       editable: false, // Read-only mode
       editorState: JSON.stringify(data.state),
-      nodes: LexicalRichEditorNodes,
+      nodes: [...LexicalRichEditorNodes, MentionNode],
     }
 
     return (

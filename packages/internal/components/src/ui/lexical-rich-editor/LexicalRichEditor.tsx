@@ -43,15 +43,22 @@ export const LexicalRichEditor = ({
   enabledPlugins = defaultEnabledPlugins,
   initalEditorState,
   plugins,
+  nodes,
 }: LexicalRichEditorProps & { ref?: React.RefObject<LexicalRichEditorRef | null> }) => {
   const editorRef = useRef<LexicalEditor | null>(null)
   const [isEmpty, setIsEmpty] = useState(true)
+
+  // Collect nodes from plugins
+  const pluginNodes = plugins?.flatMap((plugin) => plugin.nodes || []) || []
+
+  // Merge base nodes with custom nodes and plugin nodes
+  const allNodes = [...LexicalRichEditorNodes, ...(nodes || []), ...pluginNodes]
 
   const initialConfig: InitialConfigType = {
     namespace,
     theme,
     onError,
-    nodes: LexicalRichEditorNodes,
+    nodes: allNodes,
     editorState: initalEditorState,
   }
 
@@ -109,11 +116,7 @@ export const LexicalRichEditor = ({
         {enabledPlugins.markdown && <MarkdownShortcutPlugin transformers={TRANSFORMERS} />}
         {enabledPlugins.list && <ListPlugin />}
         {enabledPlugins.link && <LinkPlugin />}
-        {/* {enabledPlugins.mentions && (
-          <MentionPlugin
-            {...(typeof enabledPlugins.mentions === "object" ? enabledPlugins.mentions : {})}
-          />
-        )} */}
+
         {plugins?.map((Plugin) => (
           <Plugin key={Plugin.id} />
         ))}
