@@ -94,8 +94,11 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
     }
   }
 
+  /**
+   * For export markdown conversion
+   */
   override getTextContent(): string {
-    return `@${this.__mentionData.name}`
+    return `[[ref:${this.__mentionData.type}:${this.__mentionData.value}]]`
   }
 
   override decorate(_editor: LexicalEditor): React.JSX.Element {
@@ -104,15 +107,6 @@ export class MentionNode extends DecoratorNode<React.JSX.Element> {
         <MentionComponent mentionData={this.__mentionData} />
       </React.Suspense>
     )
-  }
-
-  getMentionData(): MentionData {
-    return this.__mentionData
-  }
-
-  setMentionData(mentionData: MentionData): void {
-    const writable = this.getWritable()
-    writable.__mentionData = mentionData
   }
 
   override isInline(): boolean {

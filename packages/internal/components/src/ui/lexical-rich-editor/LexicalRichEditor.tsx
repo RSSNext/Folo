@@ -101,7 +101,7 @@ export const LexicalRichEditor = ({
               )}
               aria-placeholder={placeholder}
               placeholder={
-                <div className="text-text-secondary pointer-events-none absolute left-5 top-3.5 text-sm">
+                <div className="text-text-secondary pointer-events-none absolute left-0 top-0 text-sm">
                   {placeholder}
                 </div>
               }

@@ -16,6 +16,12 @@ interface MentionBlockReference {
   mentionData: MentionData
 }
 
+const getResourceId = (type: string, value: string) => `${type}:${value}`
+
+const getBlockType = (mentionType: string): AIChatContextBlock["type"] => {
+  return mentionType === "feed" ? "referFeed" : "referEntry"
+}
+
 /**
  * Hook that manages bidirectional synchronization between mention nodes and context blocks
  * - When a mention is added, corresponding block is created
@@ -31,13 +37,6 @@ export const useMentionBlockSync = () => {
   const mentionToBlockRef = useRef(new Map<string, MentionBlockReference>()) // mentionNodeKey -> reference
   const resourceToMentionsRef = useRef(new Map<string, Set<string>>()) // resourceId -> Set<mentionNodeKey>
   const blockToResourceRef = useRef(new Map<string, string>()) // blockId -> resourceId
-
-  // Helper functions
-  const getResourceId = useCallback((type: string, value: string) => `${type}:${value}`, [])
-
-  const getBlockType = useCallback((mentionType: string): AIChatContextBlock["type"] => {
-    return mentionType === "feed" ? "referFeed" : "referEntry"
-  }, [])
 
   // Add mention-block reference
   const addMentionReference = useCallback(
@@ -61,7 +60,7 @@ export const useMentionBlockSync = () => {
 
       blockToResourceRef.current.set(blockId, resourceId)
     },
-    [getResourceId],
+    [],
   )
 
   // Remove mention reference
@@ -130,7 +129,7 @@ export const useMentionBlockSync = () => {
       // Track the reference
       addMentionReference(mentionData, mentionNodeKey, blockId)
     },
-    [blocks, blockActions, getResourceId, getBlockType, addMentionReference],
+    [blocks, blockActions, addMentionReference],
   )
 
   // Handle mention removal - remove block if no other mentions reference it

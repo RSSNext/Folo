@@ -30,7 +30,4 @@ export const LexicalRichEditorNodes = [
 
   // Text format nodes
   MarkNode, // For HIGHLIGHT transformer
-
-  // Mention nodes moved to desktop app
-  // MentionNode, // For @mentions
 ]
