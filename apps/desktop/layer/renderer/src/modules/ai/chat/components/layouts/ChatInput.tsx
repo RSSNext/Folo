@@ -1,5 +1,6 @@
 import type { LexicalRichEditorRef } from "@follow/components/ui/lexical-rich-editor/index.js"
 import { LexicalRichEditor } from "@follow/components/ui/lexical-rich-editor/index.js"
+import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { cn, stopPropagation } from "@follow/utils"
 import type { VariantProps } from "class-variance-authority"
 import { cva } from "class-variance-authority"
@@ -92,16 +93,18 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
       <div className={cn(chatInputVariants({ variant }))}>
         {/* Input Area */}
         <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
-          <LexicalRichEditor
-            ref={editorRef}
-            placeholder="Message AI assistant..."
-            className="w-full"
-            onChange={handleEditorChange}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            plugins={[MentionPlugin]}
-            namespace="AIChatRichEditor"
-          />
+          <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
+            <LexicalRichEditor
+              ref={editorRef}
+              placeholder="Message AI assistant..."
+              className="w-full"
+              onChange={handleEditorChange}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              plugins={[MentionPlugin]}
+              namespace="AIChatRichEditor"
+            />
+          </ScrollArea>
           <div className="absolute right-3 top-3">
             <AIChatSendButton
               onClick={isProcessing ? stop : handleSend}

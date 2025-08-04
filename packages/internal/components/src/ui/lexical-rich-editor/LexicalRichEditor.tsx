@@ -96,7 +96,7 @@ export const LexicalRichEditor = ({
             <ContentEditable
               className={cn(
                 "scrollbar-none text-text placeholder:text-text-secondary cursor-text",
-                "max-h-40 min-h-14 w-full resize-none bg-transparent px-5 py-3.5 pr-14",
+                "max-h-40 min-h-14 w-full resize-none bg-transparent",
                 "text-sm !outline-none transition-all duration-200 focus:outline-none",
               )}
               aria-placeholder={placeholder}
