@@ -25,7 +25,7 @@ export enum TrackerMapper {
   Register = 3000,
   OnBoarding = 3001,
   Subscribe = 3002,
-  EntryRead = 3003,
-  EntryAction = 3004,
-  ViewAction = 3005,
+
+  // AI
+  AIChatMessageSent = 4000,
 }

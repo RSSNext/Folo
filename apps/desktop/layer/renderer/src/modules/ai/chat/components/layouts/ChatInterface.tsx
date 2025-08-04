@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { tracker } from "@follow/tracker"
 import { cn, nextFrame } from "@follow/utils"
 import { springScrollTo } from "@follow/utils/scroller"
 import type { BizUIMessage } from "@folo-services/ai-tools"
@@ -125,6 +126,7 @@ export const ChatInterface = () => {
         role: "user",
         id: nanoid(),
       })
+      tracker.aiChatMessageSent()
     },
   )
 
