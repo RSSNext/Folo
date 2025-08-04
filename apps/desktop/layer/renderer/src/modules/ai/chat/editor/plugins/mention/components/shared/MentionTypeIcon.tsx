@@ -7,10 +7,7 @@ interface MentionTypeIconProps {
   className?: string
 }
 
-export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({ 
-  type, 
-  className = "size-3" 
-}) => {
+export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({ type, className = "size-3" }) => {
   switch (type) {
     case "entry": {
       return <i className={`i-mgc-paper-cute-fi ${className}`} />
@@ -19,7 +16,7 @@ export const MentionTypeIcon: React.FC<MentionTypeIconProps> = ({
       return <i className={`i-mgc-rss-cute-fi ${className}`} />
     }
     default: {
-      return <i className={`i-mingcute-at-line ${className}`} />
+      return <i className={`i-mgc-ai-cute-re ${className}`} />
     }
   }
 }

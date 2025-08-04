@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import {
+  COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
@@ -42,7 +43,12 @@ export const useMentionKeyboard = ({
 
   // Handle enter key
   const handleEnterKey = useCallback(() => {
-    if (!isActive || suggestions.length === 0 || selectedIndex < 0 || selectedIndex >= suggestions.length) {
+    if (
+      !isActive ||
+      suggestions.length === 0 ||
+      selectedIndex < 0 ||
+      selectedIndex >= suggestions.length
+    ) {
       return false
     }
     onEnterKey()
@@ -88,26 +94,36 @@ export const useMentionKeyboard = ({
       editor.registerCommand(
         KEY_ENTER_COMMAND,
         (event) => {
-          if (isActive && suggestions.length > 0) {
+          if (
+            isActive &&
+            suggestions.length > 0 &&
+            selectedIndex >= 0 &&
+            selectedIndex < suggestions.length
+          ) {
             event?.preventDefault()
             return handleEnterKey()
           }
           return false
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_HIGH,
       ),
 
       // Tab key (same as enter)
       editor.registerCommand(
         KEY_TAB_COMMAND,
         (event) => {
-          if (isActive && suggestions.length > 0) {
+          if (
+            isActive &&
+            suggestions.length > 0 &&
+            selectedIndex >= 0 &&
+            selectedIndex < suggestions.length
+          ) {
             event.preventDefault()
             return handleEnterKey()
           }
           return false
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_HIGH,
       ),
 
       // Escape key

@@ -1,4 +1,3 @@
-import type { LexicalEditor } from "lexical"
 import { $getSelection, $isRangeSelection, $isTextNode } from "lexical"
 
 import { MENTION_TRIGGER_PATTERN } from "../constants"

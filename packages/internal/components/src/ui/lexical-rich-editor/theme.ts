@@ -66,5 +66,4 @@ export const defaultLexicalTheme = {
   },
   link: "text-accent underline hover:text-accent/80",
   mark: "bg-yellow-200 px-1 py-0.5 rounded",
-  mention: "inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-medium text-sm cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 border",
 }

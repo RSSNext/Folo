@@ -1,25 +1,16 @@
-import type { LexicalEditor } from "lexical"
-
 export type MentionType = "entry" | "feed"
 
 export interface MentionData {
   id: string
   name: string
   type: MentionType
+  value: unknown
 }
 
 export interface MentionMatch {
   leadOffset: number
   matchingString: string
   replaceableString: string
-}
-
-export interface MentionPluginProps {
-  onSearch?: (query: string, type: MentionType) => Promise<MentionData[]> | MentionData[]
-
-  maxSuggestions?: number
-  triggerFn?: (text: string, editor: LexicalEditor) => MentionMatch | null
-  onMentionInsert?: (mention: MentionData) => void
 }
 
 export interface MentionDropdownPosition {

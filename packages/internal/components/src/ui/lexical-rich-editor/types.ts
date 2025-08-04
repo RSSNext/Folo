@@ -1,7 +1,5 @@
 import type { EditorState, LexicalEditor } from "lexical"
 
-import type { MentionPluginProps } from "./plugins"
-
 export interface LexicalRichEditorRef {
   getEditor: () => LexicalEditor
   focus: () => void
@@ -9,6 +7,13 @@ export interface LexicalRichEditorRef {
   isEmpty: () => boolean
 }
 
+export interface BuiltInPlugins {
+  history?: boolean
+  markdown?: boolean
+  list?: boolean
+  link?: boolean
+  autoFocus?: boolean
+}
 export interface LexicalRichEditorProps {
   placeholder?: string
   className?: string
@@ -17,13 +22,10 @@ export interface LexicalRichEditorProps {
   autoFocus?: boolean
   namespace?: string
   theme?: any
-  enabledPlugins?: {
-    history?: boolean
-    markdown?: boolean
-    list?: boolean
-    link?: boolean
-    autoFocus?: boolean
-    mentions?: boolean | MentionPluginProps
-  }
+  enabledPlugins?: BuiltInPlugins
   initalEditorState?: EditorState
+  plugins?: LexicalPluginFC[]
+}
+export type LexicalPluginFC<T = unknown> = React.FC<T> & {
+  id: string
 }

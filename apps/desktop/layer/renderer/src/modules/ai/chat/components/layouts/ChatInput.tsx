@@ -10,6 +10,7 @@ import { memo, useCallback, useRef, useState } from "react"
 import { AIChatContextBar } from "~/modules/ai/chat/components/AIChatContextBar"
 
 import { useChatActions, useChatError, useChatStatus } from "../../__internal__/hooks"
+import { MentionPlugin } from "../../editor"
 import { AIChatSendButton } from "./AIChatSendButton"
 import { CollapsibleError } from "./CollapsibleError"
 
@@ -98,6 +99,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             autoFocus
+            plugins={[MentionPlugin]}
             namespace="AIChatRichEditor"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">

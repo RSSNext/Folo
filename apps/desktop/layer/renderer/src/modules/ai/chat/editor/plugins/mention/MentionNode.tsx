@@ -160,6 +160,7 @@ function convertMentionElement(domNode: HTMLElement): DOMConversionOutput {
     id: mentionId,
     name,
     type: mentionType,
+    value: null,
   }
 
   const node = $createMentionNode(mentionData)

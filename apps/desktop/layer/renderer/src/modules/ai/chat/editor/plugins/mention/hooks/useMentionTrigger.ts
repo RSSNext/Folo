@@ -1,10 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import type {LexicalEditor} from "lexical";
-import {
-  $getSelection,
-  $isRangeSelection,
-  $isTextNode
-} from "lexical"
+import type { LexicalEditor } from "lexical"
+import { $getSelection, $isRangeSelection, $isTextNode } from "lexical"
 import { useCallback, useEffect, useState } from "react"
 
 import type { MentionMatch } from "../types"
@@ -22,10 +18,13 @@ export const useMentionTrigger = ({
   const [editor] = useLexicalComposerContext()
   const [mentionMatch, setMentionMatch] = useState<MentionMatch | null>(null)
 
-  const updateMentionMatch = useCallback((match: MentionMatch | null) => {
-    setMentionMatch(match)
-    onTrigger?.(match)
-  }, [onTrigger])
+  const updateMentionMatch = useCallback(
+    (match: MentionMatch | null) => {
+      setMentionMatch(match)
+      onTrigger?.(match)
+    },
+    [onTrigger],
+  )
 
   const clearMentionMatch = useCallback(() => {
     updateMentionMatch(null)

@@ -1,21 +1,22 @@
 import * as React from "react"
-import { useMemo } from "react"
+import { Suspense, useMemo } from "react"
 
 import { MentionDropdown } from "./components/MentionDropdown"
-import { DEFAULT_MAX_SUGGESTIONS, DEFAULT_MENTION_TYPES } from "./constants"
+import { DEFAULT_MAX_SUGGESTIONS } from "./constants"
 import { useMentionKeyboard } from "./hooks/useMentionKeyboard"
 import { useMentionSearch } from "./hooks/useMentionSearch"
 import { useMentionSelection } from "./hooks/useMentionSelection"
 import { useMentionTrigger } from "./hooks/useMentionTrigger"
-import type { MentionPluginProps } from "./types"
+import { defaultTriggerFn } from "./utils/triggerDetection"
 
-export function MentionPlugin({
-  onSearch,
-
-  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
-  triggerFn,
-  onMentionInsert,
-}: MentionPluginProps) {
+const defaultMentionPluginConfiguration = {
+  maxSuggestions: DEFAULT_MAX_SUGGESTIONS,
+  triggerFn: defaultTriggerFn,
+  onMentionInsert: () => {},
+}
+const onSearch = async () => []
+export function MentionPlugin() {
+  const { maxSuggestions, triggerFn, onMentionInsert } = defaultMentionPluginConfiguration
   // Hook for detecting mention triggers
   const { mentionMatch, isActive, clearMentionMatch } = useMentionTrigger({
     triggerFn,
@@ -105,9 +106,25 @@ export function MentionPlugin({
       selectedIndex,
       isLoading,
       onSelect: selectMention,
+      onClose: handleEscapeKey,
       query: mentionMatch?.matchingString || "",
     }
-  }, [isActive, hasResults, suggestions, selectedIndex, isLoading, selectMention, mentionMatch])
+  }, [
+    isActive,
+    hasResults,
+    suggestions,
+    selectedIndex,
+    isLoading,
+    selectMention,
+    handleEscapeKey,
+    mentionMatch,
+  ])
 
-  return dropdownProps ? <MentionDropdown {...dropdownProps} /> : null
+  return dropdownProps ? (
+    <Suspense fallback={null}>
+      <MentionDropdown {...dropdownProps} />
+    </Suspense>
+  ) : null
 }
+
+MentionPlugin.id = "mention"

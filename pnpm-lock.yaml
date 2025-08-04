@@ -22,6 +22,10 @@ overrides:
   react-dom: 19.0.0
   react-native-ios-context-menu: 3.1.1
   react-native-ios-utilities: 5.1.5
+  '@floating-ui/core': 1.7.2
+  '@floating-ui/dom': 1.7.2
+  '@floating-ui/react-dom': 2.1.4
+  '@floating-ui/react': 0.27.14
 
 patchedDependencies:
   '@microflash/remark-callout-directives':
@@ -1444,6 +1448,15 @@ importers:
       '@essentials/request-timeout':
         specifier: 1.3.0
         version: 1.3.0
+      '@floating-ui/core':
+        specifier: 1.7.2
+        version: 1.7.2
+      '@floating-ui/react':
+        specifier: 0.27.14
+        version: 0.27.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@floating-ui/react-dom':
+        specifier: 2.1.4
+        version: 2.1.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@follow/hooks':
         specifier: workspace:*
         version: link:../hooks
@@ -4051,32 +4064,14 @@ packages:
   '@firebase/webchannel-wrapper@1.0.3':
     resolution: {integrity: sha512-2xCRM9q9FlzGZCdgDMJwc0gyUkWFtkosy7Xxr6sFgQwn+wMNIWd7xIvYNauU1r64B5L5rsGKy/n9TKJ0aAFeqQ==}
 
-  '@floating-ui/core@1.7.0':
-    resolution: {integrity: sha512-FRdBLykrPPA6P76GGGqlex/e7fbe0F1ykgxHYNXQsH/iTEtjMj/f9bpY5oQqbjt5VgZvgz/uKXbGuROijh3VLA==}
-
   '@floating-ui/core@1.7.2':
     resolution: {integrity: sha512-wNB5ooIKHQc+Kui96jE/n69rHFWAVoxn5CAzL1Xdd8FG03cgY3MLO+GF9U3W737fYDSgPWA6MReKhBQBop6Pcw==}
-
-  '@floating-ui/dom@1.7.0':
-    resolution: {integrity: sha512-lGTor4VlXcesUMh1cupTUTDoCxMb0V6bm3CnxHzQcw8Eaf1jQbgQX4i02fYgT0vJ82tb5MZ4CZk1LRGkktJCzg==}
 
   '@floating-ui/dom@1.7.2':
     resolution: {integrity: sha512-7cfaOQuCS27HD7DX+6ib2OrnW+b4ZBwDNnCcT0uTyidcmyWb03FnQqJybDBoCnpdxwBSfA94UAYlRCt7mV+TbA==}
 
-  '@floating-ui/react-dom@2.1.2':
-    resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
-    peerDependencies:
-      react: 19.0.0
-      react-dom: 19.0.0
-
   '@floating-ui/react-dom@2.1.4':
     resolution: {integrity: sha512-JbbpPhp38UmXDDAu60RJmbeme37Jbgsm7NrHGgzYYFKmblzRUh6Pa641dII6LsjwF4XlScDrde2UAzDo/b9KPw==}
-    peerDependencies:
-      react: 19.0.0
-      react-dom: 19.0.0
-
-  '@floating-ui/react@0.26.28':
-    resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
     peerDependencies:
       react: 19.0.0
       react-dom: 19.0.0
@@ -4089,9 +4084,6 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
-
-  '@floating-ui/utils@0.2.9':
-    resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
   '@follow-app/client-sdk@0.3.25':
     resolution: {integrity: sha512-+x9x3bvcCedkqH2ypw1ae2zYySzT70FniC9LH8/TdqpYKIUzQZaMSZxGNIA9KaAQT1EtvL9e7lO07/zpQiEPSw==}
@@ -19285,17 +19277,8 @@ snapshots:
 
   '@firebase/webchannel-wrapper@1.0.3': {}
 
-  '@floating-ui/core@1.7.0':
-    dependencies:
-      '@floating-ui/utils': 0.2.10
-
   '@floating-ui/core@1.7.2':
     dependencies:
-      '@floating-ui/utils': 0.2.10
-
-  '@floating-ui/dom@1.7.0':
-    dependencies:
-      '@floating-ui/core': 1.7.0
       '@floating-ui/utils': 0.2.10
 
   '@floating-ui/dom@1.7.2':
@@ -19303,25 +19286,11 @@ snapshots:
       '@floating-ui/core': 1.7.2
       '@floating-ui/utils': 0.2.10
 
-  '@floating-ui/react-dom@2.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@floating-ui/dom': 1.7.0
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
   '@floating-ui/react-dom@2.1.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@floating-ui/dom': 1.7.2
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-
-  '@floating-ui/react@0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@floating-ui/utils': 0.2.9
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-      tabbable: 6.2.0
 
   '@floating-ui/react@0.27.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
@@ -19332,8 +19301,6 @@ snapshots:
       tabbable: 6.2.0
 
   '@floating-ui/utils@0.2.10': {}
-
-  '@floating-ui/utils@0.2.9': {}
 
   '@follow-app/client-sdk@0.3.25(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(expo-sqlite@15.2.12(expo@53.0.12(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0)))(bufferutil@4.0.9)(graphql@16.8.1)(react-native-webview@13.15.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.28.0)(@types/react@19.1.8)(bufferutil@4.0.9)(react@19.0.0))(react@19.0.0))(kysely@0.28.2)(pg@8.16.3)':
     dependencies:
@@ -19582,7 +19549,7 @@ snapshots:
 
   '@headlessui/react@2.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@floating-ui/react': 0.27.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-aria/focus': 3.20.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-aria/interactions': 3.25.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tanstack/react-virtual': 3.13.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -21027,7 +20994,7 @@ snapshots:
 
   '@radix-ui/react-popper@1.2.7(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@floating-ui/react-dom': 2.1.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-arrow': 1.1.7(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-compose-refs': 1.1.2(@types/react@19.1.8)(react@19.0.0)
       '@radix-ui/react-context': 1.1.2(@types/react@19.1.8)(react@19.0.0)
