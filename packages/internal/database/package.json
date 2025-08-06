@@ -36,7 +36,7 @@
     "@follow/constants": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/shared": "workspace:*",
-    "ai": "5.0.2",
+    "ai": "5.0.4",
     "drizzle-orm": "0.44.3",
     "expo-sqlite": "15.2.12",
     "sqlocal": "npm:@hyoban/sqlocal@0.14.1-fork.4",
