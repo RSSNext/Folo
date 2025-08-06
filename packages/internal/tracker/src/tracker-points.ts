@@ -114,16 +114,8 @@ export class TrackerPoints {
     this.track(TrackerMapper.Subscribe, props)
   }
 
-  entryRead(props: { entryId: string }) {
-    this.track(TrackerMapper.EntryRead, props)
-  }
-
-  entryAction(props: { entryId: string; action: string }) {
-    this.track(TrackerMapper.EntryAction, props)
-  }
-
-  viewAction(props: { view: string; action: string }) {
-    this.track(TrackerMapper.ViewAction, props)
+  aiChatMessageSent() {
+    this.track(TrackerMapper.AIChatMessageSent)
   }
 
   private track(code: TrackerMapper, properties?: Record<string, unknown>) {

@@ -6,7 +6,7 @@
  * automatic light/dark mode adaptation.
  */
 export const defaultLexicalTheme = {
-  paragraph: "mb-1",
+  paragraph: "mb-1 last:mb-0",
   text: {
     bold: "font-semibold",
     italic: "italic",

@@ -14,16 +14,17 @@ import remarkGfm from "remark-gfm"
 import remarkGithubAlerts from "remark-gh-alerts"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
-import type { Processor } from "unified"
+import type { PluggableList, Processor } from "unified"
 import { unified } from "unified"
 
 export interface RemarkOptions {
   components: Partial<Components>
   applyMiddleware?: <T extends Processor<any, any, any, any, any>>(pipeline: T) => T
+  rehypePlugins?: PluggableList
 }
 
 export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>) => {
-  const { components, applyMiddleware } = options || {}
+  const { components, applyMiddleware, rehypePlugins } = options || {}
 
   let pipeline: Processor<any, any, any, any, any> = unified()
     .use(remarkDirective)
@@ -67,9 +68,13 @@ export const parseMarkdown = (content: string, options?: Partial<RemarkOptions>)
     pipeline = applyMiddleware(pipeline)
   }
 
-  pipeline = pipeline
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeStringify, { allowDangerousHtml: true })
+  pipeline = pipeline.use(remarkRehype, { allowDangerousHtml: true })
+
+  if (rehypePlugins) {
+    pipeline = pipeline.use(rehypePlugins)
+  }
+
+  pipeline = pipeline.use(rehypeStringify, { allowDangerousHtml: true })
 
   const tree = pipeline.parse(content)
 

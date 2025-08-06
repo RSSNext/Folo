@@ -9,7 +9,7 @@ import {
   useSortedUngroupedSubscription,
 } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
-import type { FlashList } from "@shopify/flash-list"
+import type { FlashListRef } from "@shopify/flash-list"
 import type { ParseKeys } from "i18next"
 import { memo, useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -127,7 +127,7 @@ const SubscriptionListImpl = ({
   const onRefresh = useEventCallback(() => {
     return subscriptionSyncService.fetch(view)
   })
-  const scrollViewRef = useRegisterNavigationScrollView<FlashList<any> | null>(active)
+  const scrollViewRef = useRegisterNavigationScrollView<FlashListRef<any> | null>(active)
 
   return (
     <TimelineSelectorList
@@ -141,7 +141,6 @@ const SubscriptionListImpl = ({
       }}
       isRefetching={refreshing}
       data={data}
-      estimatedItemSize={50}
       renderItem={ItemRender}
       keyExtractor={keyExtractor}
       extraData={extraData}

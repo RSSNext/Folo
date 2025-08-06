@@ -1,6 +1,6 @@
 import { debouncedFetchEntryContentByStream } from "@follow/store/entry/store"
 import { unreadSyncService } from "@follow/store/unread/store"
-import type ViewToken from "@shopify/flash-list/dist/viewability/ViewToken"
+import type { ViewToken } from "@shopify/flash-list"
 import { fetch as expoFetch } from "expo/fetch"
 import { useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
@@ -8,14 +8,14 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { getCookie } from "@/src/lib/auth"
 
-const defaultIdExtractor = (item: ViewToken) => item.key
+const defaultIdExtractor = (item: ViewToken<string>) => item.key
 export function useOnViewableItemsChanged({
   disabled,
   idExtractor = defaultIdExtractor,
   onScroll: onScrollProp,
 }: {
   disabled?: boolean
-  idExtractor?: (item: ViewToken) => string
+  idExtractor?: (item: ViewToken<string>) => string
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void
 } = {}) {
   const orientation = useRef<"down" | "up">("down")
@@ -23,15 +23,15 @@ export function useOnViewableItemsChanged({
 
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenRendering = useGeneralSettingKey("renderMarkUnread")
-  const [viewableItems, setViewableItems] = useState<ViewToken[]>([])
-  const [lastViewableItems, setLastViewableItems] = useState<ViewToken[] | null>()
-  const [lastRemovedItems, setLastRemovedItems] = useState<ViewToken[] | null>(null)
+  const [viewableItems, setViewableItems] = useState<ViewToken<string>[]>([])
+  const [lastViewableItems, setLastViewableItems] = useState<ViewToken<string>[] | null>()
+  const [lastRemovedItems, setLastRemovedItems] = useState<ViewToken<string>[] | null>(null)
 
   const [stableIdExtractor] = useState(() => idExtractor)
 
   const onViewableItemsChanged: (info: {
-    viewableItems: ViewToken[]
-    changed: ViewToken[]
+    viewableItems: ViewToken<string>[]
+    changed: ViewToken<string>[]
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
     setViewableItems(viewableItems)
 

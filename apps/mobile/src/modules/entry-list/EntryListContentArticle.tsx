@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
-import type { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
+import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
@@ -43,7 +43,7 @@ export const EntryListContentArticle = ({
     [hasNextPage, fetchedTime],
   )
 
-  const ref = useRef<FlashList<any>>(null)
+  const ref = useRef<FlashListRef<any>>(null)
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     disabled: active === false || isFetching,
@@ -82,7 +82,6 @@ export const EntryListContentArticle = ({
       data={entryIds}
       extraData={extraData}
       keyExtractor={defaultKeyExtractor}
-      estimatedItemSize={100}
       renderItem={renderItem}
       onEndReached={fetchNextPage}
       onScroll={onScroll}

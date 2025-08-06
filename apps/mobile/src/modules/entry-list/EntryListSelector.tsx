@@ -1,6 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
-import type { FlashList } from "@shopify/flash-list"
+import type { FlashListRef } from "@shopify/flash-list"
 import type { RefObject } from "react"
 import { useEffect } from "react"
 
@@ -30,7 +30,7 @@ type EntryListSelectorProps = {
 }
 
 function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSelectorProps) {
-  const ref = useRegisterNavigationScrollView<FlashList<any>>(active)
+  const ref = useRegisterNavigationScrollView<FlashListRef<any>>(active)
 
   let ContentComponent:
     | typeof EntryListContentSocial
@@ -89,7 +89,7 @@ export const EntryListSelector = withErrorBoundary(
 )
 
 const useAutoScrollToEntryAfterPullUpToNext = (
-  ref: RefObject<FlashList<any> | null>,
+  ref: RefObject<FlashListRef<any> | null>,
   entryIds: string[],
 ) => {
   const navigation = useNavigation()

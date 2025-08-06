@@ -16,6 +16,7 @@
     ["[a-zA-Z]+[cC]lass[nN]ame[\"'`]?:\\s*[\"'`]([^\"'`]*)[\"'`]", "([^\"'`]*)"],
     ["[a-zA-Z]+[cC]lass[nN]ame\\s*=\\s*[\"'`]([^\"'`]*)[\"'`]", "([^\"'`]*)"]
   ],
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
   "tailwindCSS.experimental.configFile": {
     "apps/mobile/tailwind.config.ts": "apps/mobile/**",
     "apps/ssr/tailwind.config.ts": "apps/ssr/**",

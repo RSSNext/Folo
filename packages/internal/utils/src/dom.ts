@@ -4,11 +4,16 @@ export const stopPropagation = <T extends { stopPropagation: () => any }>(e: T) 
 export const preventDefault = <T extends { preventDefault: () => any }>(e: T) => e.preventDefault()
 
 export const nextFrame = (fn: (...args: any[]) => any) => {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
+  let timer2: number | null = null
+  const timer1 = requestAnimationFrame(() => {
+    timer2 = requestAnimationFrame(() => {
       fn()
     })
   })
+  return () => {
+    if (timer1) cancelAnimationFrame(timer1)
+    if (timer2) cancelAnimationFrame(timer2)
+  }
 }
 
 export const getElementTop = (element: HTMLElement) => {

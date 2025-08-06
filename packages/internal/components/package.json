@@ -23,6 +23,9 @@
   },
   "dependencies": {
     "@essentials/request-timeout": "1.3.0",
+    "@floating-ui/core": "*",
+    "@floating-ui/react": "*",
+    "@floating-ui/react-dom": "*",
     "@follow/hooks": "workspace:*",
     "@follow/models": "workspace:*",
     "@follow/types": "workspace:*",

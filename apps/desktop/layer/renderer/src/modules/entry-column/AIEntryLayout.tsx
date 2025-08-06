@@ -14,7 +14,7 @@ import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
 import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
-import { AIChatRoot } from "../ai/chat/components/AIChatRoot"
+import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {

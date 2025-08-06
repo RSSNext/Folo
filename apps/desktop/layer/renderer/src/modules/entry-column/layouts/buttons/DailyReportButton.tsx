@@ -3,7 +3,7 @@ import { tracker } from "@follow/tracker"
 import type { FC } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useAIDailyReportModal } from "~/modules/ai/ai-daily/useAIDailyReportModal"
+import { useAIDailyReportModal } from "~/modules/ai-daily/useAIDailyReportModal"
 
 export const DailyReportButton: FC = () => {
   const present = useAIDailyReportModal()

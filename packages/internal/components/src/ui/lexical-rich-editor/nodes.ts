@@ -5,6 +5,9 @@ import { MarkNode } from "@lexical/mark"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ParagraphNode, TextNode } from "lexical"
 
+// Mention functionality moved to desktop app, import should be handled there
+// import { MentionNode } from "./plugins/mention"
+
 export const LexicalRichEditorNodes = [
   // Core nodes
   ParagraphNode,

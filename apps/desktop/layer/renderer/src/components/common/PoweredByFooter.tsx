@@ -9,7 +9,7 @@ export const PoweredByFooter: Component = ({ className }) => (
     <Logo className="size-5" />{" "}
     <a
       href={pkg.homepage}
-      className="text-accent cursor-pointer font-bold no-underline"
+      className="cursor-pointer font-bold text-orange-500 no-underline"
       target="_blank"
       rel="noreferrer"
     >

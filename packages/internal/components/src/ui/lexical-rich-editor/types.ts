@@ -1,4 +1,4 @@
-import type { EditorState, LexicalEditor } from "lexical"
+import type { EditorState, Klass, LexicalEditor, LexicalNode } from "lexical"
 
 export interface LexicalRichEditorRef {
   getEditor: () => LexicalEditor
@@ -7,6 +7,13 @@ export interface LexicalRichEditorRef {
   isEmpty: () => boolean
 }
 
+export interface BuiltInPlugins {
+  history?: boolean
+  markdown?: boolean
+  list?: boolean
+  link?: boolean
+  autoFocus?: boolean
+}
 export interface LexicalRichEditorProps {
   placeholder?: string
   className?: string
@@ -15,12 +22,11 @@ export interface LexicalRichEditorProps {
   autoFocus?: boolean
   namespace?: string
   theme?: any
-  enabledPlugins?: {
-    history?: boolean
-    markdown?: boolean
-    list?: boolean
-    link?: boolean
-    autoFocus?: boolean
-  }
+  enabledPlugins?: BuiltInPlugins
   initalEditorState?: EditorState
+  plugins?: LexicalPluginFC[]
+}
+export type LexicalPluginFC<T = unknown> = React.FC<T> & {
+  id: string
+  nodes?: ReadonlyArray<Klass<LexicalNode>>
 }

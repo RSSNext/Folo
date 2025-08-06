@@ -1,12 +1,12 @@
 import { RSSHubCategories } from "@follow/constants"
 import type { RSSHubRouteDeclaration } from "@follow/models/rsshub"
 import { isASCII } from "@follow/utils"
-import type { ContentStyle } from "@shopify/flash-list"
+import type { FlashListRef } from "@shopify/flash-list"
 import { FlashList } from "@shopify/flash-list"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import type { ScrollView } from "react-native"
+import type { ScrollView, StyleProp, ViewStyle } from "react-native"
 import { Animated, useAnimatedValue, useWindowDimensions, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import { useSharedValue } from "react-native-reanimated"
@@ -137,7 +137,7 @@ const LanguageMap = {
   cmn: "zh-CN",
 } as const
 export const RecommendationTab: TabComponent<{
-  contentContainerStyle?: ContentStyle
+  contentContainerStyle?: StyleProp<ViewStyle>
   insets?: {
     top?: number
     bottom?: number
@@ -231,7 +231,7 @@ export const RecommendationTab: TabComponent<{
 
   // Add ref for FlashList
   const listRef = useRegisterNavigationScrollView<
-    FlashList<{
+    FlashListRef<{
       key: string
       data: RSSHubRouteDeclaration
     }>
@@ -287,7 +287,6 @@ export const RecommendationTab: TabComponent<{
           }
         }}
         scrollEventThrottle={16}
-        estimatedItemSize={150}
         ref={listRef}
         data={alphabetGroups}
         keyExtractor={keyExtractor}
