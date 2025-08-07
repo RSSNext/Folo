@@ -197,7 +197,7 @@ const ChatInterfaceContent = () => {
         className={clsx(
           "absolute mx-auto duration-200 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
-          !hasMessages && "inset-x-0 bottom-1/2 max-w-3xl translate-y-[calc(100%+2rem)] px-6 pb-6",
+          !hasMessages && "inset-x-0 bottom-1/2 max-w-3xl translate-y-[calc(100%-2rem)] px-6 pb-6",
         )}
       >
         {error && <CollapsibleError error={error} />}
