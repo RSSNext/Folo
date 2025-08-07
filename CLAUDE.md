@@ -104,6 +104,21 @@ pnpm run icons:sync
 - Shared Tailwind utilities in `packages/configs/tailwindcss/`
 - **UI Design Style**: Follow Vercel and Linear SaaS UI aesthetics - clean, modern, minimal design with subtle shadows, rounded corners, and excellent typography
 
+### Animation with Framer Motion
+
+- **LazyMotion Integration**: Project uses Framer Motion with LazyMotion for optimized bundle size
+- **Usage Rule**: Always use `m.` instead of `motion.` when creating animated components
+- **Import**: `import { m } from 'motion/react'`
+- **Examples**: `m.div`, `m.button`, `m.span` (not `motion.div`, `motion.button`, etc.)
+- **Benefits**: Reduces bundle size while maintaining all Framer Motion functionality
+
+**Animation Presets**:
+
+- **Prefer Spring Presets**: Use predefined spring animations from `@follow/components/constants/spring.js`
+- **Available Presets Constants**: `Spring.presets.smooth`, `Spring.presets.snappy`, `Spring.presets.bouncy` (extracted from Apple's spring parameters)
+- **Import**: `import { Spring } from '@follow/components/constants/spring.js'`
+- **Usage Example**: `transition={Spring.presets.smooth}`
+
 #### UIKit Colors for Desktop Components
 
 For desktop components (`apps/desktop/**/*`) and shared UI components (`packages/internal/components/**/*`), use Apple UIKit color system with Tailwind classes. **Important**: Always use the correct Tailwind prefix for each color category:
@@ -165,25 +180,6 @@ Example:
   "shortcuts.validation.required": "Name and prompt are required"
 }
 ```
-
-## Development Setup Notes
-
-### Prerequisites
-
-- Enable Corepack: `corepack enable && corepack prepare`
-- For mobile development: macOS with Xcode required
-
-### Environment Setup
-
-- Copy `.env.example` to `.env` in relevant app directories
-- For development, use `VITE_API_URL=https://api.follow.is`
-- Browser development uses `https://app.folo.is/__debug_proxy` for API access
-
-### Mobile Development
-
-- iOS development requires Xcode and iOS simulator
-- Native module development in `apps/mobile/native/`
-- Use `pnpm expo prebuild --clean` for clean builds
 
 ## Code Organization Patterns
 

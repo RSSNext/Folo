@@ -93,6 +93,31 @@ export function formatFileSize(bytes: number): string {
   return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
 
+export function getFileCategoryFromMimeType(mimeType: string): FileCategory {
+  // Images
+  if (mimeType.startsWith("image/")) {
+    return "image"
+  }
+
+  // Documents
+  if (mimeType === "application/pdf") {
+    return "document"
+  }
+
+  // Text files
+  if (mimeType.startsWith("text/")) {
+    return "text"
+  }
+
+  // Audio files
+  if (mimeType.startsWith("audio/")) {
+    return "audio"
+  }
+
+  // Default fallback
+  return "image"
+}
+
 export function getFileIconName(category: FileCategory): string {
   switch (category) {
     case "image": {

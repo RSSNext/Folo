@@ -4,7 +4,11 @@ import { motion } from "motion/react"
 import { memo } from "react"
 
 import type { FileAttachment } from "../../store/types"
-import { formatFileSize, getFileIconName } from "../../utils/file-validation"
+import {
+  formatFileSize,
+  getFileCategoryFromMimeType,
+  getFileIconName,
+} from "../../utils/file-validation"
 
 interface FileAttachmentBlockProps {
   fileAttachment: FileAttachment
@@ -17,17 +21,8 @@ export const FileAttachmentBlock = memo(
   ({ fileAttachment, onRemove, showRemoveButton = true, className }: FileAttachmentBlockProps) => {
     const { id, name, type, size, previewUrl, uploadStatus, errorMessage } = fileAttachment
 
-    const iconName = getFileIconName(
-      type.startsWith("image/")
-        ? "image"
-        : type === "application/pdf"
-          ? "document"
-          : type.startsWith("text/")
-            ? "text"
-            : type.startsWith("audio/")
-              ? "audio"
-              : "image",
-    )
+    const fileCategory = getFileCategoryFromMimeType(type)
+    const iconName = getFileIconName(fileCategory)
 
     const isProcessing = uploadStatus === "processing"
     const hasError = uploadStatus === "error"

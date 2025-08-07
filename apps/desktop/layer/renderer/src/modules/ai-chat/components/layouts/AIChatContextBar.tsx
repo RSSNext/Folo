@@ -28,6 +28,7 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 
 import { useChatBlockActions } from "../../store/hooks"
 import { processFileList } from "../../utils/file-processing"
+import { getFileCategoryFromMimeType, getFileIconName } from "../../utils/file-validation"
 
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
   ({ className, onSendShortcut }) => {
@@ -402,10 +403,8 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       case "fileAttachment": {
         if (block.fileAttachment) {
           const { type } = block.fileAttachment
-          if (type.startsWith("image/")) return "i-mgc-pic-cute-re"
-          if (type === "application/pdf") return "i-mgc-file-cute-re"
-          if (type.startsWith("text/")) return "i-mgc-document-cute-re"
-          if (type.startsWith("audio/")) return "i-mgc-voice-cute-re"
+          const fileCategory = getFileCategoryFromMimeType(type)
+          return getFileIconName(fileCategory)
         }
         return "i-mgc-attachment-cute-re"
       }
