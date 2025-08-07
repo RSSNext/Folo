@@ -1,6 +1,6 @@
 import { toast } from "sonner"
 
-import { apiClient, apiFetch } from "./api-fetch"
+import { followApi } from "./api-client"
 import { getFetchErrorMessage } from "./error-parser"
 
 /**
@@ -10,19 +10,14 @@ import { getFetchErrorMessage } from "./error-parser"
  * @returns Promise<string> - The uploaded image URL
  */
 export async function uploadAvatarBlob(blob: Blob): Promise<string> {
-  const formData = new FormData()
-  formData.append("file", blob, "avatar.jpg")
+  const { url } = await followApi.upload
+    .uploadAvatar({
+      file: blob,
+    })
+    .catch((err) => {
+      toast.error(getFetchErrorMessage(err))
+      throw err
+    })
 
-  const res = await apiFetch<{
-    url: string
-  }>(apiClient.upload.avatar.$url().toString(), {
-    method: "POST",
-
-    body: formData,
-  }).catch((err) => {
-    toast.error(getFetchErrorMessage(err))
-    throw err
-  })
-
-  return res.url
+  return url
 }
