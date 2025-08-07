@@ -31,5 +31,10 @@
   "shortcuts.title": "AI Shortcuts",
   "shortcuts.updated": "Shortcut updated successfully",
   "shortcuts.validation.required": "Name and prompt are required",
+  "token_usage.description": "Monitor your AI token consumption and limits",
+  "token_usage.resets_at": "Resets at",
+  "token_usage.title": "Token Usage",
+  "token_usage.tokens_remaining": "tokens remaining",
+  "token_usage.tokens_used": "{{used}} / {{total}} tokens used",
   "welcome_description": "I'm here to help you with your reading and writing needs. How can I assist you today?"
 }
