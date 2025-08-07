@@ -4,90 +4,55 @@ on:
   push:
     branches:
       - main
-
+env:
+  NODE_OPTIONS: --max-old-space-size=8192
 jobs:
   create_tag:
-    name: Create Release Tag
     runs-on: ubuntu-latest
-    outputs:
-      tag_version: ${{ env.tag_version }}
-      platform: ${{ env.platform }}
-      version: ${{ env.version }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 22
 
-      - name: Make script executable
+      - name: Extract SemVer using Node.js
+        id: extract_semver
         run: |
-          chmod +x .github/scripts/extract-release-info.mjs
+          node -e '
+          const execSync = require("child_process").execSync;
+          const fs = require("fs");
+          const commitMessage = execSync("git log -1 --pretty=%B").toString("utf-8");
+          const semverRegex = /release\(desktop\): Release (v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-.]+)?)/;
+          const match = commitMessage.match(semverRegex);
+          if (match) {
+            fs.appendFileSync(process.env.GITHUB_ENV, `tag_version=${match[1]}\n`);
+          } else {
+            console.log("No SemVer found in commit body.");
+            process.exit(0);
+          }
+          '
 
-      - name: Extract release information
-        id: extract_info
-        run: .github/scripts/extract-release-info.mjs
-        continue-on-error: false
-
-      - name: Validate git configuration
-        if: env.tag_version
+      - name: Create a new tag
+        if: ${{ env.tag_version }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Create and push tag
-        if: env.tag_version
+          git tag ${{ env.tag_version }}
+          git push origin ${{ env.tag_version }}
+      - name: Trigger Build Desktop Workflow
+        if: ${{ env.tag_version }}
         run: |
-          echo "Creating tag: ${{ env.tag_version }}"
-          if git rev-parse "${{ env.tag_version }}" >/dev/null 2>&1; then
-            echo "Tag ${{ env.tag_version }} already exists, skipping creation"
-            exit 0
-          fi
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-desktop.yml/dispatches \
+            -d '{"ref":"main", "inputs": {"tag_version": "true"}}'
 
-          git tag "${{ env.tag_version }}"
-          git push origin "${{ env.tag_version }}"
-          echo "Successfully created and pushed tag: ${{ env.tag_version }}"
-
-  trigger_builds:
-    name: Trigger Platform Builds
-    needs: create_tag
-    if: needs.create_tag.outputs.tag_version
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Trigger Desktop Build
-        if: needs.create_tag.outputs.platform == 'desktop'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-desktop.yml',
-              ref: 'main',
-              inputs: {
-                tag_version: 'true'
-              }
-            });
-            console.log('Desktop build triggered successfully');
-
-      - name: Trigger Mobile Build
-        if: needs.create_tag.outputs.platform == 'mobile'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-android.yml',
-              ref: 'main',
-              inputs: {
-                release: 'true'
-              }
-            });
-            console.log('Mobile build triggered successfully');
+      - name: Trigger Build Android Workflow
+        if: ${{ env.tag_version }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-android.yml/dispatches \
+            -d '{"ref":"main", "inputs": {"release": "true"}}'

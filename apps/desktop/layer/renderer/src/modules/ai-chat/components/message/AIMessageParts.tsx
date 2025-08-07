@@ -108,7 +108,7 @@ export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message
 
       case "tool-displayFlowChart": {
         const loadingElement = (
-          <div className="my-2 flex aspect-[4/3] w-full items-center justify-center">
+          <div className="my-2 flex aspect-[4/3] w-[99999999px] max-w-full items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-loading-3-cute-re text-text-secondary size-4 animate-spin" />

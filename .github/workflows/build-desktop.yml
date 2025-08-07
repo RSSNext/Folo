@@ -222,7 +222,7 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
-      - uses: signpath/github-action-submit-signing-request@v1.3
+      - uses: signpath/github-action-submit-signing-request@v1.2
         continue-on-error: true
         if: runner.os == 'windows' && env.RELEASE == 'true'
         with:
@@ -297,10 +297,10 @@ jobs:
         if: env.RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: Desktop v${{ steps.version.outputs.APP_VERSION }}
+          name: v${{ steps.version.outputs.APP_VERSION }}
           draft: false
           prerelease: true
-          tag_name: desktop/v${{ steps.version.outputs.APP_VERSION }}
+          tag_name: v${{ steps.version.outputs.APP_VERSION }}
           files: |
             apps/desktop/out/make/**/Folo-*.dmg
             apps/desktop/out/make/**/Folo-*.zip

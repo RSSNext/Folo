@@ -129,8 +129,8 @@ export const ChatMoreDropdown = () => {
                       </p>
                     </div>
                     <div className="relative flex min-w-0 items-center">
-                      <span className="text-text-secondary group-hover:text-text-secondary-dark ml-2 shrink-0 text-xs">
-                        <RelativeDay date={session.createdAt} />
+                      <span className="text-text-secondary group-hover:text-text-secondary-dark ml-2 shrink-0 cursor-help text-xs">
+                        <RelativeDay date={session.updatedAt} />
                       </span>
                       <button
                         type="button"

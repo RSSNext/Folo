@@ -11,6 +11,7 @@ import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/a
 import { useChatActions } from "~/modules/ai-chat/store/hooks"
 import type { BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
 
+import { MentionPlugin } from "../../editor"
 import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
@@ -56,7 +57,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
           break
         }
         case "data-rich-text": {
-          lexicalEditor ||= createDefaultLexicalEditor()
+          lexicalEditor ||= createDefaultLexicalEditor([MentionPlugin])
           lexicalEditor.setEditorState(
             lexicalEditor.parseEditorState((part as RichTextPart).data.state),
           )
