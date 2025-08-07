@@ -3,7 +3,8 @@ import { produce } from "immer"
 import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
-import type { AIChatContextBlock } from "../types"
+import { cleanupFileAttachment } from "../../utils/file-processing"
+import type { AIChatContextBlock, FileAttachment } from "../types"
 
 export interface BlockSlice {
   blocks: AIChatContextBlock[]
@@ -60,6 +61,10 @@ export class BlockSliceAction {
   removeBlock(id: string) {
     this.set(
       produce((state: BlockSlice) => {
+        const blockToRemove = state.blocks.find((block) => block.id === id)
+        if (blockToRemove?.fileAttachment) {
+          cleanupFileAttachment(blockToRemove.fileAttachment)
+        }
         state.blocks = state.blocks.filter((block) => block.id !== id)
       }),
     )
@@ -87,6 +92,12 @@ export class BlockSliceAction {
   clearBlocks() {
     this.set(
       produce((state: BlockSlice) => {
+        // Clean up file attachments before clearing
+        state.blocks.forEach((block) => {
+          if (block.fileAttachment) {
+            cleanupFileAttachment(block.fileAttachment)
+          }
+        })
         state.blocks = []
       }),
     )
@@ -95,6 +106,12 @@ export class BlockSliceAction {
   resetContext() {
     this.set(
       produce((state: BlockSlice) => {
+        // Clean up file attachments before resetting
+        state.blocks.forEach((block) => {
+          if (block.fileAttachment) {
+            cleanupFileAttachment(block.fileAttachment)
+          }
+        })
         state.blocks = []
       }),
     )
@@ -102,5 +119,46 @@ export class BlockSliceAction {
 
   getBlocks() {
     return this.get().blocks
+  }
+
+  // File attachment specific methods
+  addFileAttachment(fileAttachment: FileAttachment) {
+    const fileBlock: AIChatContextBlock = {
+      id: fileAttachment.id,
+      type: "fileAttachment",
+      value: fileAttachment.name,
+      fileAttachment,
+    }
+    this.addBlock(fileBlock)
+  }
+
+  updateFileAttachmentStatus(
+    fileId: string,
+    status: FileAttachment["uploadStatus"],
+    errorMessage?: string,
+  ) {
+    this.set(
+      produce((state: BlockSlice) => {
+        const block = state.blocks.find((b) => b.id === fileId)
+        if (block?.fileAttachment) {
+          block.fileAttachment.uploadStatus = status
+          if (errorMessage) {
+            block.fileAttachment.errorMessage = errorMessage
+          }
+        }
+      }),
+    )
+  }
+
+  removeFileAttachment(fileId: string) {
+    this.removeBlock(fileId)
+  }
+
+  getFileAttachments() {
+    return this.get().blocks.filter((block) => block.type === "fileAttachment")
+  }
+
+  hasFileAttachments() {
+    return this.get().blocks.some((block) => block.type === "fileAttachment")
   }
 }

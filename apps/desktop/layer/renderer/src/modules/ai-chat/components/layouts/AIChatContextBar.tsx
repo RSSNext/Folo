@@ -7,7 +7,7 @@ import { stopPropagation } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
 import Fuse from "fuse.js"
 import type { FC } from "react"
-import { memo, useMemo, useState } from "react"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
 import { useDebounceCallback } from "usehooks-ts"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
@@ -27,12 +27,14 @@ import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
 
 import { useChatBlockActions } from "../../store/hooks"
+import { processFileList } from "../../utils/file-processing"
 
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
   ({ className, onSendShortcut }) => {
     const blocks = useAIChatStore()((s) => s.blocks)
     const blockActions = useChatBlockActions()
     const { shortcuts } = useAISettingValue()
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     // Filter enabled shortcuts
     const enabledShortcuts = useMemo(
@@ -41,6 +43,34 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     )
 
     const showSettingModal = useSettingModal()
+
+    // File upload handlers
+    const handleFileInputChange = useCallback(
+      async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { files } = event.target
+        if (files && files.length > 0) {
+          try {
+            const results = await processFileList(files)
+            results.forEach((result) => {
+              if (result.success && result.fileAttachment) {
+                blockActions.addFileAttachment(result.fileAttachment)
+              } else {
+                console.error("File processing error:", result.error)
+              }
+            })
+          } catch (error) {
+            console.error("Error processing files:", error)
+          }
+        }
+        // Reset file input
+        event.target.value = ""
+      },
+      [blockActions],
+    )
+
+    const handleAttachFile = useCallback(() => {
+      fileInputRef.current?.click()
+    }, [])
     const contextMenuContent = (
       <DropdownMenuContent align="start">
         <DropdownMenuSub>
@@ -134,6 +164,26 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           </DropdownMenuTrigger>
           {contextMenuContent}
         </DropdownMenu>
+
+        {/* File Upload Button */}
+        <button
+          type="button"
+          onClick={handleAttachFile}
+          className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+          title="Upload Files"
+        >
+          <i className="i-mgc-attachment-cute-re size-3.5" />
+        </button>
+
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,.pdf,.txt,.md,.mp3,.wav,.m4a"
+          onChange={handleFileInputChange}
+          className="hidden"
+        />
 
         {/* AI Shortcuts Button */}
         {enabledShortcuts.length > 0 && (
@@ -349,6 +399,16 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       case "selectedText": {
         return "i-mgc-quill-pen-cute-re"
       }
+      case "fileAttachment": {
+        if (block.fileAttachment) {
+          const { type } = block.fileAttachment
+          if (type.startsWith("image/")) return "i-mgc-pic-cute-re"
+          if (type === "application/pdf") return "i-mgc-file-cute-re"
+          if (type.startsWith("text/")) return "i-mgc-document-cute-re"
+          if (type.startsWith("audio/")) return "i-mgc-voice-cute-re"
+        }
+        return "i-mgc-attachment-cute-re"
+      }
 
       default: {
         return "i-mgc-paper-cute-fi"
@@ -367,6 +427,9 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       }
       case "selectedText": {
         return `"${block.value}"`
+      }
+      case "fileAttachment": {
+        return block.fileAttachment?.name || block.value
       }
       default: {
         return block.value
@@ -387,6 +450,9 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       }
       case "selectedText": {
         return "Text"
+      }
+      case "fileAttachment": {
+        return "File"
       }
 
       default: {
