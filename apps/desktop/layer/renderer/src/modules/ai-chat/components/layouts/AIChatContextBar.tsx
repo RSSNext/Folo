@@ -8,6 +8,7 @@ import { cn } from "@follow/utils/utils"
 import Fuse from "fuse.js"
 import type { FC } from "react"
 import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { toast } from "sonner"
 import { useDebounceCallback } from "usehooks-ts"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
@@ -29,6 +30,7 @@ import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack
 import { useChatBlockActions } from "../../store/hooks"
 import { processFileList } from "../../utils/file-processing"
 import { getFileCategoryFromMimeType, getFileIconName } from "../../utils/file-validation"
+import { ImageThumbnail } from "./ImageThumbnail"
 
 export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => void }> = memo(
   ({ className, onSendShortcut }) => {
@@ -50,18 +52,15 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
       async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { files } = event.target
         if (files && files.length > 0) {
-          try {
-            const results = await processFileList(files)
-            results.forEach((result) => {
-              if (result.success && result.fileAttachment) {
-                blockActions.addFileAttachment(result.fileAttachment)
-              } else {
-                console.error("File processing error:", result.error)
-              }
-            })
-          } catch (error) {
-            console.error("Error processing files:", error)
-          }
+          const results = await processFileList(files)
+          results.forEach((result) => {
+            if (result.success && result.fileAttachment) {
+              blockActions.addFileAttachment(result.fileAttachment)
+            } else {
+              toast.error(`File processing error: ${result.error}`)
+              console.error("File processing error:", result.error)
+            }
+          })
         }
         // Reset file input
         event.target.value = ""
@@ -181,7 +180,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*,.pdf,.txt,.md,.mp3,.wav,.m4a"
+          accept="image/*,.pdf,.txt,.md"
           onChange={handleFileInputChange}
           className="hidden"
         />
@@ -383,7 +382,7 @@ const FeedPickerItem: FC<{
   )
 }
 
-const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
+const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) => {
   const blockActions = useChatBlockActions()
 
   const getBlockIcon = () => {
@@ -402,8 +401,14 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
       }
       case "fileAttachment": {
         if (block.fileAttachment) {
-          const { type } = block.fileAttachment
+          const { type, dataUrl, previewUrl } = block.fileAttachment
           const fileCategory = getFileCategoryFromMimeType(type)
+
+          // Don't show icon for images with thumbnails, as the thumbnail serves as the icon
+          if (fileCategory === "image" && (dataUrl || previewUrl)) {
+            return null
+          }
+
           return getFileIconName(fileCategory)
         }
         return "i-mgc-attachment-cute-re"
@@ -428,6 +433,26 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
         return `"${block.value}"`
       }
       case "fileAttachment": {
+        if (block.fileAttachment) {
+          const { type, name, dataUrl, previewUrl } = block.fileAttachment
+          const fileCategory = getFileCategoryFromMimeType(type)
+
+          if (fileCategory === "image" && (dataUrl || previewUrl)) {
+            return (
+              <div className="flex items-center gap-1.5">
+                <ImageThumbnail
+                  previewUrl={previewUrl || dataUrl}
+                  originalUrl={dataUrl}
+                  alt={name}
+                  filename={name}
+                  className={"m-0.5 size-5 rounded-md"}
+                />
+
+                <span className="min-w-0 flex-1 truncate">{name}</span>
+              </div>
+            )
+          }
+        }
         return block.fileAttachment?.name || block.value
       }
       default: {
@@ -463,30 +488,43 @@ const ContextBlock: FC<{ block: AIChatContextBlock }> = ({ block }) => {
   const canRemove = block.type !== "mainEntry"
 
   return (
-    <div className="bg-fill-tertiary border-border group relative flex h-7 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 rounded-lg border px-2.5">
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <div className="flex items-center gap-1">
-          <i className={cn("size-3.5 flex-shrink-0", getBlockIcon())} />
-          <span className="text-text-tertiary text-xs font-medium">{getBlockLabel()}</span>
-        </div>
+    <div
+      className={cn(
+        "group relative flex h-7 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
+        "bg-fill-tertiary border-border border",
+      )}
+    >
+      <div
+        className={
+          canRemove
+            ? "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]"
+            : void 0
+        }
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <div className="flex items-center gap-1">
+            {getBlockIcon() && <i className={cn("size-3.5 flex-shrink-0", getBlockIcon())} />}
+            <span className="text-text-tertiary text-xs font-medium">{getBlockLabel()}</span>
+          </div>
 
-        <span className={cn("text-text min-w-0 flex-1 truncate text-xs")}>
-          {getDisplayContent()}
-        </span>
+          <span className={cn("text-text min-w-0 flex-1 truncate text-xs")}>
+            {getDisplayContent()}
+          </span>
+        </div>
       </div>
 
       {canRemove && (
         <button
           type="button"
           onClick={() => blockActions.removeBlock(block.id)}
-          className="text-text-tertiary hover:text-text-secondary flex-shrink-0 opacity-0 transition-all group-hover:opacity-100"
+          className="text-text/90 cursor-button hover:text-text absolute inset-y-0 right-2 flex-shrink-0 opacity-0 transition-all ease-in group-hover:opacity-100"
         >
           <i className="i-mgc-close-cute-re size-3" />
         </button>
       )}
     </div>
   )
-}
+})
 
 const EntryTitle: FC<{ entryId?: string; fallback: string }> = ({ entryId, fallback }) => {
   const entryTitle = useEntry(entryId!, (e) => e?.title)

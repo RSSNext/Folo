@@ -60,16 +60,13 @@ Examples:
 - Preferred: `i-mgc-copy-cute-re`, `i-mgc-external-link-cute-re`
 - Fallback only: `i-mingcute-copy-line` (only if no mgc equivalent exists)
 
-## Animation with Framer Motion
+## Using Framer Motion
 
 - **LazyMotion Integration**: Project uses Framer Motion with LazyMotion for optimized bundle size
 - **Usage Rule**: Always use `m.` instead of `motion.` when creating animated components
 - **Import**: `import { m } from 'motion/react'`
 - **Examples**: `m.div`, `m.button`, `m.span` (not `motion.div`, `motion.button`, etc.)
 - **Benefits**: Reduces bundle size while maintaining all Framer Motion functionality
-
-**Animation Presets**:
-
 - **Prefer Spring Presets**: Use predefined spring animations from `@follow/components/constants/spring.js`
 - **Available Presets Constants**: `Spring.presets.smooth`, `Spring.presets.snappy`, `Spring.presets.bouncy` (extracted from Apple's spring parameters)
 - **Usage Example**: `transition={Spring.presets.smooth}` or `transition={Spring.snappy(0.3, 0.1)}`

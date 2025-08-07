@@ -1,20 +1,17 @@
+const MAX_IMAGE_ALLOWED_SIZE = 3 * 1024 * 1024
+const MAX_DOCUMENT_ALLOWED_SIZE = 1 * 1024 * 1024
 export const SUPPORTED_FILE_TYPES = {
   // Images
-  "image/png": { extension: "png", category: "image", maxSize: 10 * 1024 * 1024 }, // 10MB
-  "image/jpeg": { extension: "jpg", category: "image", maxSize: 10 * 1024 * 1024 },
-  "image/jpg": { extension: "jpg", category: "image", maxSize: 10 * 1024 * 1024 },
-  "image/webp": { extension: "webp", category: "image", maxSize: 10 * 1024 * 1024 },
-  "image/gif": { extension: "gif", category: "image", maxSize: 10 * 1024 * 1024 },
+  "image/png": { extension: "png", category: "image", maxSize: MAX_IMAGE_ALLOWED_SIZE },
+  "image/jpeg": { extension: "jpg", category: "image", maxSize: MAX_IMAGE_ALLOWED_SIZE },
+  "image/jpg": { extension: "jpg", category: "image", maxSize: MAX_IMAGE_ALLOWED_SIZE },
+  "image/webp": { extension: "webp", category: "image", maxSize: MAX_IMAGE_ALLOWED_SIZE },
+  "image/gif": { extension: "gif", category: "image", maxSize: MAX_IMAGE_ALLOWED_SIZE },
 
   // Documents
-  "application/pdf": { extension: "pdf", category: "document", maxSize: 25 * 1024 * 1024 }, // 25MB
-  "text/plain": { extension: "txt", category: "text", maxSize: 1 * 1024 * 1024 }, // 1MB
-  "text/markdown": { extension: "md", category: "text", maxSize: 1 * 1024 * 1024 },
-
-  // Audio
-  "audio/mpeg": { extension: "mp3", category: "audio", maxSize: 25 * 1024 * 1024 },
-  "audio/wav": { extension: "wav", category: "audio", maxSize: 25 * 1024 * 1024 },
-  "audio/mp4": { extension: "m4a", category: "audio", maxSize: 25 * 1024 * 1024 },
+  "application/pdf": { extension: "pdf", category: "document", maxSize: MAX_DOCUMENT_ALLOWED_SIZE },
+  "text/plain": { extension: "txt", category: "text", maxSize: MAX_DOCUMENT_ALLOWED_SIZE },
+  "text/markdown": { extension: "md", category: "text", maxSize: MAX_DOCUMENT_ALLOWED_SIZE },
 } as const
 
 export type SupportedFileType = keyof typeof SUPPORTED_FILE_TYPES
@@ -45,7 +42,7 @@ export function validateFile(file: File): FileValidationResult {
       isValid: false,
       error: {
         type: "unsupported",
-        message: `File type "${file.type}" is not supported. Supported types: images, PDFs, text files, and audio files.`,
+        message: `File type "${file.type}" is not supported. Supported types: images, PDFs, text files.`,
       },
     }
   }
@@ -109,11 +106,6 @@ export function getFileCategoryFromMimeType(mimeType: string): FileCategory {
     return "text"
   }
 
-  // Audio files
-  if (mimeType.startsWith("audio/")) {
-    return "audio"
-  }
-
   // Default fallback
   return "image"
 }
@@ -129,9 +121,7 @@ export function getFileIconName(category: FileCategory): string {
     case "text": {
       return "i-mgc-document-cute-re"
     }
-    case "audio": {
-      return "i-mgc-voice-cute-re"
-    }
+
     default: {
       return "i-mgc-attachment-cute-re"
     }

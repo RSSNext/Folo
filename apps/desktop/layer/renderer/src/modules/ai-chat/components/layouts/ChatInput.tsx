@@ -11,8 +11,7 @@ import { memo, useCallback, useRef, useState } from "react"
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
 import { MentionPlugin } from "../../editor"
-import { useBlockActions, useChatActions, useChatStatus } from "../../store/hooks"
-import { FilePreviewGrid } from "../file"
+import { useChatActions, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 
 const chatInputVariants = cva(
@@ -40,7 +39,6 @@ interface ChatInputProps extends VariantProps<typeof chatInputVariants> {
 export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
   const status = useChatStatus()
   const chatActions = useChatActions()
-  const blockActions = useBlockActions()
 
   const stop = useCallback(() => {
     chatActions.stop()
@@ -51,8 +49,6 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
   const [currentEditor, setCurrentEditor] = useState<LexicalEditor | null>(null)
 
   const isProcessing = status === "submitted" || status === "streaming"
-  const fileAttachments = blockActions.getFileAttachments()
-  const hasFiles = fileAttachments.length > 0
 
   const handleSend = useCallback(() => {
     if (currentEditor && editorRef.current && !editorRef.current.isEmpty()) {
@@ -87,26 +83,14 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
     })
   }, [])
 
-  const handleRemoveFile = useCallback(
-    (fileId: string) => {
-      blockActions.removeFileAttachment(fileId)
-    },
-    [blockActions],
-  )
-
   return (
-    <div className={cn(chatInputVariants({ variant }))}>
-      {/* File Attachments Preview */}
-      {hasFiles && (
-        <div className="border-border/20 border-b bg-transparent px-4 py-3">
-          <FilePreviewGrid
-            fileBlocks={fileAttachments}
-            onRemove={handleRemoveFile}
-            maxColumns={2}
-          />
-        </div>
-      )}
-
+    <div
+      className={cn(chatInputVariants({ variant }))}
+      onDragEnter={stopPropagation}
+      onDragOver={stopPropagation}
+      onDragLeave={stopPropagation}
+      onDrop={stopPropagation}
+    >
       {/* Input Area */}
       <div className="relative z-10 flex items-end" onContextMenu={stopPropagation}>
         <ScrollArea rootClassName="mx-5 my-3.5 mr-14 flex-1 overflow-auto">
@@ -124,7 +108,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
         <div className="absolute right-3 top-3">
           <AIChatSendButton
             onClick={isProcessing ? stop : handleSend}
-            disabled={!isProcessing && isEmpty && !hasFiles}
+            disabled={!isProcessing && isEmpty}
             isProcessing={isProcessing}
             size="sm"
           />
