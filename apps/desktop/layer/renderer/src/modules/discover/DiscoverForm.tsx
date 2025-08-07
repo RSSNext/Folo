@@ -42,7 +42,7 @@ const info: Record<
     prefix?: string[]
     showModal?: boolean
     default?: string
-    labelSuffix?: React.ReactNode
+    labelSuffix?: (t: any) => React.ReactNode
   }
 > = {
   search: {
@@ -53,7 +53,7 @@ const info: Record<
     default: "https://",
     prefix: ["https://", "http://"],
     showModal: true,
-    labelSuffix: (
+    labelSuffix: (t) => (
       <a
         href={`${repository.url}/wiki/Folo-Flavored-Feed-Spec`}
         target="_blank"
@@ -61,7 +61,7 @@ const info: Record<
         className="text-accent border-accent inline-flex w-auto items-center gap-1 rounded-full border px-2 py-px text-sm font-normal"
       >
         <i className="i-mgc-book-6-cute-re" />
-        <span>Folo Flavored Feed Spec</span>
+        <span>{t("discover.folo_flavored_feed_spec")}</span>
       </a>
     ),
   },
@@ -70,7 +70,7 @@ const info: Record<
     prefix: ["rsshub://"],
     default: "rsshub://",
     showModal: true,
-    labelSuffix: (
+    labelSuffix: (t) => (
       <a
         href="https://docs.rsshub.app/"
         target="_blank"
@@ -78,7 +78,7 @@ const info: Record<
         className="text-accent border-accent inline-flex w-auto items-center gap-1 rounded-full border px-2 py-px text-sm font-normal"
       >
         <i className="i-mgc-book-6-cute-re" />
-        <span>RSSHub Docs</span>
+        <span>{t("discover.rsshub_docs")}</span>
       </a>
     ),
   },
@@ -262,14 +262,14 @@ export function DiscoverForm({ type = "search" }: { type?: string }) {
                 <FormItem className="mb-4">
                   <FormLabel className="text-text text-headline mb-2 flex items-center gap-2 pl-2 font-bold">
                     {t(info[type]?.label!)}
-                    {info[type]?.labelSuffix}
+                    {info[type]?.labelSuffix?.(t)}
                   </FormLabel>
                   <FormControl>
                     <Input
                       autoFocus
                       {...field}
                       onChange={handleKeywordChange}
-                      placeholder={type === "search" ? "Enter URL or keyword..." : undefined}
+                      placeholder={type === "search" ? t("discover.search_placeholder") : undefined}
                     />
                   </FormControl>
                   <FormMessage />
