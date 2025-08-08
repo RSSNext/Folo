@@ -222,7 +222,7 @@ jobs:
             apps/desktop/out/make/**/latest.yml
           retention-days: 90
 
-      - uses: signpath/github-action-submit-signing-request@v1.2
+      - uses: signpath/github-action-submit-signing-request@v1.3
         continue-on-error: true
         if: runner.os == 'windows' && env.RELEASE == 'true'
         with:
