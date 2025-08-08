@@ -8,7 +8,7 @@ import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC } from "react"
-import { useCallback, useEffect, useState } from "react"
+import { Suspense, useCallback, useEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import {
@@ -233,5 +233,9 @@ export const ChatInterface = () => (
 const Messages: FC = () => {
   const messages = useMessages()
 
-  return messages.map((message) => <AIChatMessage key={message.id} message={message} />)
+  return messages.map((message) => (
+    <Suspense key={message.id}>
+      <AIChatMessage message={message} />
+    </Suspense>
+  ))
 }

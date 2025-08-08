@@ -1,5 +1,5 @@
 import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
-import { stopPropagation } from "@follow/utils"
+import { stopPropagation, thenable } from "@follow/utils"
 import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { m } from "motion/react"
@@ -31,6 +31,9 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
+  if (message.metadata?.error || message.parts.length === 0) {
+    throw thenable
+  }
   const chatActions = useChatActions()
 
   const messageId = message.id
