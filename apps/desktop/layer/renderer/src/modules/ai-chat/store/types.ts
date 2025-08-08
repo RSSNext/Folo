@@ -7,16 +7,33 @@ export interface FileAttachment {
   size: number
   dataUrl: string
   previewUrl?: string
-  uploadStatus: "processing" | "completed" | "error"
+  uploadStatus: "processing" | "uploading" | "completed" | "error"
+  serverUrl?: string
   errorMessage?: string
+  /** Upload progress percentage (0-100) */
+  uploadProgress?: number
 }
 
-export interface AIChatContextBlock {
+interface BaseContextBlock {
   id: string
-  type: "mainEntry" | "referEntry" | "referFeed" | "selectedText" | "fileAttachment"
-  value: string
-  fileAttachment?: FileAttachment
 }
+
+export interface ValueContextBlock extends BaseContextBlock {
+  type: "mainEntry" | "referEntry" | "referFeed" | "selectedText"
+  value: string
+}
+
+export interface FileAttachmentContextBlock extends BaseContextBlock {
+  type: "fileAttachment"
+  attachment: FileAttachment
+}
+
+export type AIChatContextBlock = ValueContextBlock | FileAttachmentContextBlock
+
+// Helper type for creating new blocks without id
+export type AIChatContextBlockInput =
+  | Omit<ValueContextBlock, "id">
+  | Omit<FileAttachmentContextBlock, "id">
 
 export interface AIChatStoreInitial {
   blocks: AIChatContextBlock[]

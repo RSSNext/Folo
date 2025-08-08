@@ -4,7 +4,7 @@ import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
 import { cleanupFileAttachment } from "../../utils/file-processing"
-import type { AIChatContextBlock, FileAttachment } from "../types"
+import type { AIChatContextBlock, AIChatContextBlockInput, FileAttachment } from "../types"
 
 export interface BlockSlice {
   blocks: AIChatContextBlock[]
@@ -40,7 +40,7 @@ export class BlockSliceAction {
   get get() {
     return this.params[1]
   }
-  addBlock(block: Omit<AIChatContextBlock, "id">) {
+  addBlock(block: AIChatContextBlockInput) {
     const currentBlocks = this.get().blocks
 
     // Only allow one SPECIAL_TYPES
@@ -62,8 +62,8 @@ export class BlockSliceAction {
     this.set(
       produce((state: BlockSlice) => {
         const blockToRemove = state.blocks.find((block) => block.id === id)
-        if (blockToRemove?.fileAttachment) {
-          cleanupFileAttachment(blockToRemove.fileAttachment)
+        if (blockToRemove && blockToRemove.type === "fileAttachment") {
+          cleanupFileAttachment(blockToRemove.attachment)
         }
         state.blocks = state.blocks.filter((block) => block.id !== id)
       }),
@@ -73,9 +73,18 @@ export class BlockSliceAction {
   updateBlock(id: string, updates: Partial<AIChatContextBlock>) {
     this.set(
       produce((state: BlockSlice) => {
-        state.blocks = state.blocks.map((block) =>
-          block.id === id ? { ...block, ...updates } : block,
-        )
+        state.blocks = state.blocks.map((block) => {
+          if (block.id !== id) return block
+
+          // Handle discriminated union updates carefully
+          if (updates.type && updates.type !== block.type) {
+            // Type change - need to replace the entire block
+            return { ...updates, id } as AIChatContextBlock
+          } else {
+            // Same type - safe to spread
+            return { ...block, ...updates } as AIChatContextBlock
+          }
+        })
       }),
     )
   }
@@ -94,8 +103,8 @@ export class BlockSliceAction {
       produce((state: BlockSlice) => {
         // Clean up file attachments before clearing
         state.blocks.forEach((block) => {
-          if (block.fileAttachment) {
-            cleanupFileAttachment(block.fileAttachment)
+          if (block.type === "fileAttachment") {
+            cleanupFileAttachment(block.attachment)
           }
         })
         state.blocks = []
@@ -108,8 +117,8 @@ export class BlockSliceAction {
       produce((state: BlockSlice) => {
         // Clean up file attachments before resetting
         state.blocks.forEach((block) => {
-          if (block.fileAttachment) {
-            cleanupFileAttachment(block.fileAttachment)
+          if (block.type === "fileAttachment") {
+            cleanupFileAttachment(block.attachment)
           }
         })
         state.blocks = []
@@ -126,10 +135,20 @@ export class BlockSliceAction {
     const fileBlock: AIChatContextBlock = {
       id: fileAttachment.id,
       type: "fileAttachment",
-      value: fileAttachment.name,
-      fileAttachment,
+      attachment: fileAttachment,
     }
     this.addBlock(fileBlock)
+  }
+
+  updateFileAttachment(fileId: string, updatedAttachment: FileAttachment) {
+    this.set(
+      produce((state: BlockSlice) => {
+        const block = state.blocks.find((b) => b.id === fileId)
+        if (block && block.type === "fileAttachment") {
+          block.attachment = updatedAttachment
+        }
+      }),
+    )
   }
 
   updateFileAttachmentStatus(
@@ -140,10 +159,10 @@ export class BlockSliceAction {
     this.set(
       produce((state: BlockSlice) => {
         const block = state.blocks.find((b) => b.id === fileId)
-        if (block?.fileAttachment) {
-          block.fileAttachment.uploadStatus = status
+        if (block && block.type === "fileAttachment") {
+          block.attachment.uploadStatus = status
           if (errorMessage) {
-            block.fileAttachment.errorMessage = errorMessage
+            block.attachment.errorMessage = errorMessage
           }
         }
       }),

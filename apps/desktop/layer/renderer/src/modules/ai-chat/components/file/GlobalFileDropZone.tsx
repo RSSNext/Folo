@@ -4,18 +4,28 @@ import { AnimatePresence, m } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
 import { memo, useCallback, useRef, useState } from "react"
 
-import { useBlockActions } from "../../store/hooks"
-import { processFileList } from "../../utils/file-processing"
+import { useFileUploadWithDefaults } from "../../hooks/useFileUpload"
+import { useAIChatStore } from "../../store/AIChatContext"
+import { UploadProgress } from "../ui/UploadProgress"
 
 interface GlobalFileDropZoneProps extends PropsWithChildren {
   className?: string
 }
 
 export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children, className }) => {
-  const blockActions = useBlockActions()
+  const { handleFileDrop } = useFileUploadWithDefaults()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const dragCounterRef = useRef(0)
+
+  // Get uploading files from the store
+  const blocks = useAIChatStore()((s) => s.blocks)
+  const uploadingFiles = blocks
+    .filter(
+      (block): block is Extract<typeof block, { type: "fileAttachment" }> =>
+        block.type === "fileAttachment" && block.attachment.uploadStatus === "uploading",
+    )
+    .map((block) => block.attachment)
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -58,22 +68,14 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
       setIsProcessing(true)
 
       try {
-        const results = await processFileList(files)
-
-        results.forEach((result) => {
-          if (result.success && result.fileAttachment) {
-            blockActions.addFileAttachment(result.fileAttachment)
-          } else {
-            console.error("File processing error:", result.error)
-          }
-        })
+        await handleFileDrop(files)
       } catch (error) {
         console.error("Error processing files:", error)
       } finally {
         setIsProcessing(false)
       }
     },
-    [blockActions],
+    [handleFileDrop],
   )
 
   return (
@@ -105,7 +107,7 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 20, opacity: 0 }}
               transition={Spring.presets.snappy}
-              className="bg-background/95 border-accent/20 shadow-accent/10 relative flex flex-col items-center gap-4 rounded-2xl border p-8 shadow-2xl"
+              className="bg-background/95 border-accent/20 shadow-accent/10 relative flex max-w-md flex-col items-center gap-4 rounded-2xl border p-8 shadow-2xl"
             >
               {isProcessing ? (
                 <>
@@ -144,6 +146,48 @@ export const GlobalFileDropZone: FC<GlobalFileDropZoneProps> = memo(({ children,
                   </div>
                 </>
               )}
+            </m.div>
+          </m.div>
+        )}
+      </AnimatePresence>
+
+      {/* Upload Progress Overlay */}
+      <AnimatePresence>
+        {uploadingFiles.length > 0 && (
+          <m.div className="pointer-events-none fixed bottom-4 right-4 z-40 max-w-sm">
+            <m.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={Spring.presets.snappy}
+              className="bg-background/95 border-border shadow-popover rounded-lg border p-4 shadow-lg backdrop-blur-sm"
+            >
+              <div className="mb-3 flex items-center gap-2">
+                <i className="i-mgc-file-upload-cute-re text-accent size-5" />
+                <span className="text-text text-sm font-medium">
+                  Uploading {uploadingFiles.length} file{uploadingFiles.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {uploadingFiles.map((file) => (
+                  <div key={file.id} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-text-secondary truncate text-xs" title={file.name}>
+                        {file.name}
+                      </span>
+                      <span className="text-text-tertiary text-xs">
+                        {file.uploadProgress ? Math.round(file.uploadProgress) : 0}%
+                      </span>
+                    </div>
+                    <UploadProgress
+                      progress={file.uploadProgress || 0}
+                      size="sm"
+                      variant="default"
+                    />
+                  </div>
+                ))}
+              </div>
             </m.div>
           </m.div>
         )}

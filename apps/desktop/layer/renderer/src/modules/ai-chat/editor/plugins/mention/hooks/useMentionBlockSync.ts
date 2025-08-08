@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react"
 
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
-import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
+import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 
 import { $isMentionNode, MentionNode } from "../MentionNode"
 import type { MentionData } from "../types"
@@ -18,7 +18,7 @@ interface MentionBlockReference {
 
 const getResourceId = (type: string, value: string) => `${type}:${value}`
 
-const getBlockType = (mentionType: string): AIChatContextBlock["type"] => {
+const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
   return mentionType === "feed" ? "referFeed" : "referEntry"
 }
 
@@ -105,7 +105,7 @@ export const useMentionBlockSync = () => {
         const blockType = getBlockType(mentionData.type)
 
         // Generate block ID (mimicking the block slice logic)
-        const newBlock: Omit<AIChatContextBlock, "id"> = {
+        const newBlock: Omit<ValueContextBlock, "id"> = {
           type: blockType,
           value: mentionData.value as string,
         }
@@ -115,7 +115,8 @@ export const useMentionBlockSync = () => {
         // Use current blocks state directly from store instead of stale closure
         const currentBlocks = blockActions.getBlocks()
         const addedBlock = currentBlocks.find(
-          (block) => block.type === blockType && block.value === mentionData.value,
+          (block): block is Extract<AIChatContextBlock, { type: typeof blockType }> =>
+            block.type === blockType && block.value === mentionData.value,
         )
 
         if (addedBlock) {

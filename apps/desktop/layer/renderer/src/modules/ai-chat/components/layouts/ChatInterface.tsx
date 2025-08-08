@@ -103,29 +103,31 @@ const ChatInterfaceContent = () => {
     (message: string | EditorState, editor: LexicalEditor | null) => {
       resetScrollState()
 
+      const blocks = [] as any[]
+
+      for (const block of blockActions.getBlocks()) {
+        if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+          blocks.push({
+            ...block,
+            attachment: {
+              id: block.attachment.id,
+              name: block.attachment.name,
+              type: block.attachment.type,
+              size: block.attachment.size,
+              serverUrl: block.attachment.serverUrl,
+            },
+          })
+        } else {
+          blocks.push(block)
+        }
+      }
+
       const parts: BizUIMessage["parts"] = [
         {
           type: "data-block",
-          data: blockActions
-            .getBlocks()
-            .filter((b) => b.type !== "fileAttachment") // Exclude file attachments from data-block
-            .map((b) => ({
-              type: b.type,
-              value: b.value,
-            })),
+          data: blocks,
         },
       ]
-
-      // Add file attachments as text parts with attachment info
-      const fileAttachmentBlocks = blockActions.getFileAttachments()
-      fileAttachmentBlocks.forEach((block) => {
-        if (block.fileAttachment && block.fileAttachment.uploadStatus === "completed") {
-          parts.push({
-            type: "text",
-            text: `[File: ${block.fileAttachment.name} (${block.fileAttachment.type})]`,
-          })
-        }
-      })
 
       if (typeof message === "string") {
         parts.push({

@@ -25,15 +25,17 @@ interface AIRichTextMessageProps {
 
 export const AIRichTextMessage: React.FC<AIRichTextMessageProps> = React.memo(
   ({ data, className }) => {
-    const initialConfig: InitialConfigType = {
-      namespace: "AIRichTextDisplay",
-      theme: defaultLexicalTheme,
-      onError,
-      editable: false, // Read-only mode
-      editorState: JSON.stringify(data.state),
-      nodes: [...LexicalRichEditorNodes, MentionNode],
+    let initialConfig: InitialConfigType = null!
+    if (!initialConfig) {
+      initialConfig = {
+        namespace: "AIRichTextDisplay",
+        theme: defaultLexicalTheme,
+        onError,
+        editable: false, // Read-only mode
+        editorState: JSON.stringify(data.state),
+        nodes: [...LexicalRichEditorNodes, MentionNode],
+      }
     }
-
     return (
       <div className={cn("text-text relative text-sm", className)}>
         <LexicalComposer initialConfig={initialConfig}>
