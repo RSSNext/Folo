@@ -31,7 +31,7 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
-  if (message.metadata?.error || message.parts.length === 0) {
+  if (message.parts.length === 0) {
     throw thenable
   }
   const chatActions = useChatActions()
