@@ -165,5 +165,14 @@ const SearchTrigger = () => {
     { preventDefault: true },
   )
 
-  return null
+  const t = useI18n()
+  return (
+    <ActionButton
+      shortcut="$mod+K"
+      tooltip={t("words.search")}
+      onClick={() => setAppSearchOpen(true)}
+    >
+      <i className="i-mgc-search-3-cute-re text-text-secondary size-5" />
+    </ActionButton>
+  )
 }
