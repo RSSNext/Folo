@@ -1,8 +1,6 @@
 import "@xyflow/react/dist/style.css"
 
 import type { ToolUIPart } from "ai"
-import type { SerializedEditorState } from "lexical"
-import { m } from "motion/react"
 import * as React from "react"
 
 import type {
@@ -34,30 +32,8 @@ const LazyAIDisplayFlowPart = React.lazy(() =>
 interface MessagePartsProps {
   message: BizUIMessage
 }
-const ThinkingIndicator: React.FC = () => {
-  return (
-    <div className="flex w-24 items-center">
-      <m.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative inline-block"
-      >
-        <span className="from-text-tertiary via-text to-text-tertiary animate-[shimmer_5s_linear_infinite] bg-gradient-to-r bg-[length:200%_100%] bg-clip-text text-sm font-medium text-transparent">
-          Thinking...
-        </span>
-      </m.div>
-    </div>
-  )
-}
 
 export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message }) => {
-  if (!message.parts || message.parts.length === 0) {
-    // In AI SDK v5, messages should always have parts
-    if (message.role === "assistant") {
-      return <ThinkingIndicator />
-    }
-    return null
-  }
   const isUser = message.role === "user"
 
   return message.parts.map((part, index) => {
@@ -85,7 +61,7 @@ export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message
         return (
           <AIRichTextMessage
             key={partKey}
-            data={part.data as { state: SerializedEditorState; text: string }}
+            data={part.data as { state: string; text: string }}
             className={isUser ? "text-white" : "text-text"}
           />
         )
@@ -108,7 +84,7 @@ export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message
 
       case "tool-displayFlowChart": {
         const loadingElement = (
-          <div className="my-2 flex aspect-[4/3] w-full items-center justify-center">
+          <div className="my-2 flex aspect-[4/3] w-[99999999px] max-w-full items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
                 <i className="i-mgc-loading-3-cute-re text-text-secondary size-4 animate-spin" />

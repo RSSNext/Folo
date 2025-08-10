@@ -17,28 +17,6 @@ export const useCurrentTitle = () => {
 }
 
 /**
- * Hook to get the setter for current room ID
- */
-export const useSetCurrentChatId = () => {
-  const store = useAIChatStore()
-  return (chatId: string | null) => {
-    const actions = store.getState().chatActions
-    if (chatId && chatId !== actions.getCurrentChatId()) {
-      // If we need to switch to a different room, create a new chat
-      actions.newChat()
-    }
-  }
-}
-
-/**
- * Hook to get the setter for current title
- */
-export const useSetCurrentTitle = () => {
-  const store = useAIChatStore()
-  return store.getState().chatActions.setCurrentTitle
-}
-
-/**
  * Hook to get the chat actions
  */
 export const useChatActions = () => {
@@ -52,14 +30,6 @@ export const useChatActions = () => {
 export const useBlockActions = () => {
   const store = useAIChatStore()
   return store((state) => state.blockActions)
-}
-
-/**
- * Hook to get the chat instance
- */
-export const useChatInstance = () => {
-  const store = useAIChatStore()
-  return store((state) => state.chatInstance)
 }
 
 /**
@@ -93,12 +63,4 @@ export const useChatStatus = () => {
 export const useChatError = () => {
   const store = useAIChatStore()
   return store((state) => state.error)
-}
-
-/**
- * Hook to get the streaming status
- */
-export const useIsStreaming = () => {
-  const store = useAIChatStore()
-  return store((state) => state.isStreaming)
 }

@@ -34,32 +34,12 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
           <div className="flex flex-col gap-2">
             <h1 className="text-text text-2xl font-semibold">{APP_NAME} AI</h1>
             <p className="text-text-secondary text-balance text-sm">{t("welcome_description")}</p>
-            {hasCustomPrompt && (
-              <div className="bg-material-medium border-border mx-auto mt-2 w-full max-w-2xl rounded-lg border p-3 text-left">
-                <div className="flex items-center justify-between">
-                  <div className="text-text-secondary mb-1 text-xs font-medium">
-                    Personal Prompt:
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => settingModalPresent("ai")}
-                    className="text-text-tertiary hover:text-text-secondary flex size-5 items-center justify-center rounded transition-colors"
-                    title="Edit in Settings"
-                  >
-                    <i className="i-mgc-edit-cute-re size-3.5" />
-                  </button>
-                </div>
-                <p className="text-text-secondary text-xs leading-relaxed">
-                  {aiSettings.personalizePrompt}
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
         <div className="relative mx-auto h-36 max-w-2xl" />
 
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="relative flex flex-wrap items-center justify-center gap-2">
           {/* Custom shortcuts first */}
           {enabledShortcuts.slice(0, 6).map((shortcut, index) => (
             <m.button
@@ -91,6 +71,25 @@ export const WelcomeScreen = ({ onSend }: WelcomeScreenProps) => {
                 {suggestion}
               </m.button>
             ))}
+
+          {hasCustomPrompt && (
+            <div className="bg-material-medium border-border absolute -bottom-4 mx-auto mt-2 w-full max-w-2xl translate-y-full rounded-lg border p-3 text-left">
+              <div className="flex items-center justify-between">
+                <div className="text-text-secondary mb-1 text-xs font-medium">Personal Prompt:</div>
+                <button
+                  type="button"
+                  onClick={() => settingModalPresent("ai")}
+                  className="text-text-tertiary hover:text-text-secondary flex size-5 items-center justify-center rounded transition-colors"
+                  title="Edit in Settings"
+                >
+                  <i className="i-mgc-edit-cute-re size-3.5" />
+                </button>
+              </div>
+              <p className="text-text-secondary text-xs leading-relaxed">
+                {aiSettings.personalizePrompt}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

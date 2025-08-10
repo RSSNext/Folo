@@ -92,6 +92,35 @@ export class ChatSliceActions {
     return this.get().chatId
   }
 
+  // Edit chat title
+  editChatTitle = async (newTitle: string) => {
+    const currentChatId = this.getCurrentChatId()
+    if (!currentChatId) {
+      throw new Error("No active chat to edit title for")
+    }
+
+    const trimmedTitle = newTitle.trim()
+    const currentTitle = this.getCurrentTitle()
+
+    // If no changes, return early
+    if (trimmedTitle === currentTitle) {
+      return
+    }
+
+    try {
+      // Optimistic update
+      this.setCurrentTitle(trimmedTitle)
+
+      // Persist to database
+      await AIPersistService.updateSessionTitle(currentChatId, trimmedTitle)
+    } catch (error) {
+      // Rollback on error
+      this.setCurrentTitle(currentTitle)
+      console.error("Failed to update chat title:", error)
+      throw error
+    }
+  }
+
   // Core chat actions using AI SDK AbstractChat methods
   sendMessage = async (message: string | BizUIMessage) => {
     try {

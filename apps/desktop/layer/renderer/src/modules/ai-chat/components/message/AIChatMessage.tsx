@@ -1,5 +1,5 @@
 import { createDefaultLexicalEditor } from "@follow/components/ui/lexical-rich-editor/editor.js"
-import { stopPropagation } from "@follow/utils"
+import { stopPropagation, thenable } from "@follow/utils"
 import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
 import { m } from "motion/react"
@@ -11,6 +11,7 @@ import { useEditingMessageId, useSetEditingMessageId } from "~/modules/ai-chat/a
 import { useChatActions } from "~/modules/ai-chat/store/hooks"
 import type { BizUIMetadata, BizUITools } from "~/modules/ai-chat/store/types"
 
+import { MentionPlugin } from "../../editor"
 import type { RichTextPart } from "../../types/ChatSession"
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
 import { AIMessageParts } from "./AIMessageParts"
@@ -30,6 +31,9 @@ interface AIChatMessageProps {
 }
 
 export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message }) => {
+  if (message.parts.length === 0) {
+    throw thenable
+  }
   const chatActions = useChatActions()
 
   const messageId = message.id
@@ -56,7 +60,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
           break
         }
         case "data-rich-text": {
-          lexicalEditor ||= createDefaultLexicalEditor()
+          lexicalEditor ||= createDefaultLexicalEditor([MentionPlugin])
           lexicalEditor.setEditorState(
             lexicalEditor.parseEditorState((part as RichTextPart).data.state),
           )
