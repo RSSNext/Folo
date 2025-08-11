@@ -247,8 +247,17 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
 
 export const AIChatWaitingIndicator: React.FC = () => {
   return (
-    <span className="text-text-tertiary text-xs">
-      <i className="i-mgc-loading-3-cute-re size-3 animate-spin" />
-    </span>
+    <m.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 8 }}
+      transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="sticky bottom-4 z-10 flex w-full justify-center pb-2"
+    >
+      <div className="backdrop-blur-background border-border/50 bg-material-ultra-thin/70 text-text-secondary hover:bg-material-thin/70 flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)] transition-colors">
+        <i className="i-mgc-loading-3-cute-re size-3 animate-spin" />
+        <span className="font-medium">Thinking…</span>
+      </div>
+    </m.div>
   )
 }

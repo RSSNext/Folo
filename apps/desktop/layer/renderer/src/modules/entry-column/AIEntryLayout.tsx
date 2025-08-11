@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
@@ -144,12 +145,7 @@ const AIEntryLayoutImpl = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={{
-                    type: "spring",
-                    damping: 30,
-                    stiffness: 400,
-                    duration: 0.3,
-                  }}
+                  transition={Spring.presets.smooth}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
                   {/* Scroll hint indicator */}

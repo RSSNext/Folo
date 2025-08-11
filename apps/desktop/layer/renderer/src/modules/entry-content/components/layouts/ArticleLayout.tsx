@@ -72,7 +72,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   if (!entry) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "mx-auto")}>
+    <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
       <WrappedElementProvider boundingDetection>

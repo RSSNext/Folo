@@ -297,10 +297,10 @@ jobs:
         if: env.RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.APP_VERSION }}
+          name: Desktop v${{ steps.version.outputs.APP_VERSION }}
           draft: false
           prerelease: true
-          tag_name: v${{ steps.version.outputs.APP_VERSION }}
+          tag_name: desktop/v${{ steps.version.outputs.APP_VERSION }}
           files: |
             apps/desktop/out/make/**/Folo-*.dmg
             apps/desktop/out/make/**/Folo-*.zip

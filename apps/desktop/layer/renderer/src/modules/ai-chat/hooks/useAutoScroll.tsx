@@ -1,25 +1,21 @@
 import { springScrollTo } from "@follow/utils/scroller"
-import { debounce } from "es-toolkit/compat"
+import { debounce, throttle } from "es-toolkit/compat"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 const BOTTOM_THRESHOLD = 50
 
 export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) => {
   const [isAtBottom, setIsAtBottom] = useState(true)
-  const [isUserInteracting, setIsUserInteracting] = useState(false)
   const scrollAnimationRef = useRef<{ stop: () => void } | null>(null)
-  const interactionTimeoutRef = useRef<number | null>(null)
   const isAutoScrollingRef = useRef(false)
-
-  const isUserInteractingRef = useRef(isUserInteracting)
-  useEffect(() => {
-    isUserInteractingRef.current = isUserInteracting
-  }, [isUserInteracting])
+  const isAutoScrollCancelledRef = useRef(false)
 
   const isAtBottomRef = useRef(isAtBottom)
   useEffect(() => {
     isAtBottomRef.current = isAtBottom
   }, [isAtBottom])
+
+  // cancellation is tracked purely via ref to avoid re-renders while user interacts
 
   const scrollToBottom = useCallback(
     (force = false) => {
@@ -29,7 +25,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
         scrollAnimationRef.current.stop()
       }
 
-      if (force || (!isUserInteractingRef.current && isAtBottomRef.current)) {
+      if (force || (isAtBottomRef.current && !isAutoScrollCancelledRef.current)) {
         isAutoScrollingRef.current = true
         const targetScrollTop = viewport.scrollHeight - viewport.clientHeight
         const animation = springScrollTo(targetScrollTop, viewport)
@@ -52,55 +48,43 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
 
   useEffect(() => {
     if (!viewport) return
+    if (!enabled) return
 
-    if (!enabled) {
-      return
-    }
-
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       if (isAutoScrollingRef.current) {
         return
       }
+    }, 100)
 
-      const { scrollTop, scrollHeight, clientHeight } = viewport
-      const atBottom = scrollHeight - scrollTop - clientHeight <= BOTTOM_THRESHOLD
-
-      if (!isUserInteractingRef.current) {
-        setIsAtBottom(atBottom)
-      }
-    }
-
-    const handleWheel = () => {
+    const cancelAutoScroll = () => {
       isAutoScrollingRef.current = false
-      setIsUserInteracting(true)
 
       if (scrollAnimationRef.current) {
         scrollAnimationRef.current.stop()
       }
-      if (interactionTimeoutRef.current) {
-        window.clearTimeout(interactionTimeoutRef.current)
-      }
-
-      interactionTimeoutRef.current = window.setTimeout(() => {
-        setIsUserInteracting(false)
-        handleScroll() // Re-check position after interaction ends
-      }, 150)
+      isAutoScrollCancelledRef.current = true
+      handleScroll()
     }
+
+    const handleWheel = throttle(cancelAutoScroll, 100)
+    const handleTouchStart = handleWheel
+    const handleTouchMove = handleWheel
 
     viewport.addEventListener("scroll", handleScroll, { passive: true })
     viewport.addEventListener("wheel", handleWheel, { passive: true })
+    viewport.addEventListener("touchstart", handleTouchStart, { passive: true })
+    viewport.addEventListener("touchmove", handleTouchMove, { passive: true })
 
     return () => {
       viewport.removeEventListener("scroll", handleScroll)
       viewport.removeEventListener("wheel", handleWheel)
-      if (interactionTimeoutRef.current) {
-        window.clearTimeout(interactionTimeoutRef.current)
-      }
+      viewport.removeEventListener("touchstart", handleTouchStart)
+      viewport.removeEventListener("touchmove", handleTouchMove)
       if (scrollAnimationRef.current) {
         scrollAnimationRef.current.stop()
       }
     }
-  }, [viewport])
+  }, [viewport, enabled])
 
   useEffect(() => {
     if (!viewport || !enabled) return
@@ -110,7 +94,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
 
     const resizeObserver = new ResizeObserver(
       debounce(() => {
-        if (!isUserInteractingRef.current && isAtBottomRef.current) {
+        if (isAtBottomRef.current && !isAutoScrollCancelledRef.current) {
           requestAnimationFrame(() => {
             scrollToBottom()
           })
@@ -126,7 +110,7 @@ export const useAutoScroll = (viewport: HTMLElement | null, enabled: boolean) =>
   }, [viewport, enabled, scrollToBottom])
 
   const resetScrollState = useCallback(() => {
-    setIsUserInteracting(false)
+    isAutoScrollCancelledRef.current = false
     setIsAtBottom(true)
     scrollToBottom(true)
   }, [scrollToBottom])

@@ -154,23 +154,25 @@ class AIPersistServiceStatic {
     await db
       .insert(aiChatMessagesTable)
       .values(
-        messages.map((message) => {
-          const convertedParts = message.parts as any[]
+        messages
+          .filter((message) => message.parts.length > 0)
+          .map((message) => {
+            const convertedParts = message.parts as any[]
 
-          return {
-            id: message.id,
-            chatId,
-            role: message.role,
-            contentFormat: "plaintext" as const,
-            createdAt: new Date(),
-            status: "completed" as const,
-            finishedAt: message.metadata?.finishTime
-              ? new Date(message.metadata.finishTime)
-              : undefined,
-            messageParts: convertedParts,
-            metadata: message.metadata,
-          } as typeof aiChatMessagesTable.$inferInsert
-        }),
+            return {
+              id: message.id,
+              chatId,
+              role: message.role,
+              contentFormat: "plaintext" as const,
+              createdAt: new Date(),
+              status: "completed" as const,
+              finishedAt: message.metadata?.finishTime
+                ? new Date(message.metadata.finishTime)
+                : undefined,
+              messageParts: convertedParts,
+              metadata: message.metadata,
+            } as typeof aiChatMessagesTable.$inferInsert
+          }),
       )
       .onConflictDoUpdate({
         target: [aiChatMessagesTable.id],
