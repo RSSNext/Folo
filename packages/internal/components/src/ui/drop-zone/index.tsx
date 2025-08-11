@@ -51,13 +51,13 @@ const useDragAndDrop = ({ callback }: { callback: (file: FileList) => void | Pro
 
 export interface DropZoneProps {
   id?: string
-  onDrop: (files: FileList) => void | Promise<void>
-  className?: string
-  inputEl?: ReactNode
+  accept?: string
   children?: ReactNode
+  className?: string
+  onDrop: (files: FileList) => void | Promise<void>
 }
 
-export const DropZone = ({ id, children, inputEl, className, onDrop }: DropZoneProps) => {
+export const DropZone = ({ id, accept, children, className, onDrop }: DropZoneProps) => {
   const { isDragging, dragHandlers } = useDragAndDrop({ callback: onDrop })
 
   return (
@@ -72,7 +72,13 @@ export const DropZone = ({ id, children, inputEl, className, onDrop }: DropZoneP
       {...dragHandlers}
     >
       {children}
-      {inputEl}
+      <input
+        id={id}
+        type="file"
+        accept={accept}
+        onChange={(e) => e.target.files && onDrop(e.target.files)}
+        className="hidden"
+      />
     </label>
   )
 }

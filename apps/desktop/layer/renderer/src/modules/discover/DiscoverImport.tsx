@@ -7,7 +7,6 @@ import {
 import { Button } from "@follow/components/ui/button/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
 import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
-import { Input } from "@follow/components/ui/input/index.js"
 import type { BizRespose } from "@follow/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -163,22 +162,13 @@ export function DiscoverImport() {
           <FormField
             control={form.control}
             name="file"
-            render={({ field: { value, onChange, ...fieldProps } }) => (
+            render={({ field: { value, onChange } }) => (
               <FormItem>
                 <FormControl>
                   <DropZone
                     id="upload-file"
+                    accept=".opml,.xml"
                     onDrop={(fileList) => onChange(fileList[0])}
-                    inputEl={
-                      <Input
-                        {...fieldProps}
-                        id="upload-file"
-                        type="file"
-                        accept=".opml,.xml"
-                        className="hidden"
-                        onChange={(event) => onChange(event.target.files && event.target.files[0])}
-                      />
-                    }
                   >
                     {form.formState.dirtyFields.file ? (
                       <Fragment>

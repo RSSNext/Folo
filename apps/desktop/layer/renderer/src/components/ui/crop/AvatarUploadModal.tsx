@@ -380,16 +380,8 @@ export const AvatarUploadModal = ({
           <DropZone
             id="upload-avatar"
             onDrop={handleFileSelect}
+            accept="image/*"
             className="size-full"
-            inputEl={
-              <input
-                id="upload-avatar"
-                type="file"
-                accept="image/*"
-                onChange={(e) => e.target.files && handleFileSelect(e.target.files)}
-                className="hidden"
-              />
-            }
           >
             <div className="flex flex-col items-center gap-2 p-8">
               <i className="i-mgc-file-upload-cute-re text-text-secondary text-4xl" />
