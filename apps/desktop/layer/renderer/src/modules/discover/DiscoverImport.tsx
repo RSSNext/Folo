@@ -6,13 +6,7 @@ import {
 } from "@follow/components/ui/accordion/index.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { DropZone } from "@follow/components/ui/drop-zone/index.js"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@follow/components/ui/form/index.jsx"
+import { Form, FormControl, FormField, FormItem } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
 import type { BizRespose } from "@follow/models"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -172,7 +166,20 @@ export function DiscoverImport() {
             render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem>
                 <FormControl>
-                  <DropZone onDrop={(fileList) => onChange(fileList[0])}>
+                  <DropZone
+                    id="upload-file"
+                    onDrop={(fileList) => onChange(fileList[0])}
+                    inputEl={
+                      <Input
+                        {...fieldProps}
+                        id="upload-file"
+                        type="file"
+                        accept=".opml,.xml"
+                        className="hidden"
+                        onChange={(event) => onChange(event.target.files && event.target.files[0])}
+                      />
+                    }
+                  >
                     {form.formState.dirtyFields.file ? (
                       <Fragment>
                         <i className="i-mgc-file-upload-cute-re size-5" />
@@ -188,15 +195,6 @@ export function DiscoverImport() {
                     )}
                   </DropZone>
                 </FormControl>
-                <Input
-                  {...fieldProps}
-                  id="upload-file"
-                  type="file"
-                  accept=".opml,.xml"
-                  className="hidden"
-                  onChange={(event) => onChange(event.target.files && event.target.files[0])}
-                />
-                <FormMessage />
               </FormItem>
             )}
           />
