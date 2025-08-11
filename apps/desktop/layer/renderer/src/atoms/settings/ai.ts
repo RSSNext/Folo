@@ -19,7 +19,7 @@ export const {
 export const aiServerSyncWhiteListKeys = []
 // Local Setting for ai
 
-const aiChatPinnedAtom = atom<boolean>(false)
+const aiChatPinnedAtom = atom<boolean>(true)
 export const useAIChatPinned = () => useAtomValue(aiChatPinnedAtom)
 export const setAIChatPinned = (pinned: boolean) => {
   jotaiStore.set(aiChatPinnedAtom, pinned)

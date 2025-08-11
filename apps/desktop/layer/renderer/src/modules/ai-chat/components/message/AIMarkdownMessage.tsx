@@ -13,7 +13,7 @@ import {
   useSyncExternalStore,
 } from "react"
 
-import { ShikiHighLighter } from "~/components/ui/code-highlighter"
+import { MemoizedShikiCode } from "~/components/ui/code-highlighter"
 import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
@@ -26,6 +26,11 @@ interface BufferConfig {
   maxBufferTime: number
   semanticTimeout: number
   emergencyTimeout: number
+  // Ensure a cool-down between flushes to avoid overlapping animations
+  minFlushInterval: number
+  // Initial burst controls for faster first paint
+  initialMinBufferSize: number
+  initialMaxWait: number
 }
 
 // Buffer endpoint patterns by priority
@@ -118,11 +123,20 @@ class StreamingMessageBuffer {
     const now = Date.now()
     const timeSinceLastFlush = now - this.lastFlushTime
 
+    // Accelerate first paint: show something quickly at the very beginning
+    if (this.displayedText.length === 0) {
+      if (bufferedText.length >= this.config.initialMinBufferSize) return true
+      if (timeSinceLastFlush > this.config.initialMaxWait && bufferedText.length > 0) return true
+    }
+
     // Emergency timeout - always flush
     if (timeSinceLastFlush > this.config.emergencyTimeout) return true
 
     // Buffer size limit - prevent OOM
     if (bufferedText.length > this.config.maxBufferSize) return true
+
+    // Avoid overlapping animations by enforcing a minimal interval between flushes
+    if (timeSinceLastFlush < this.config.minFlushInterval) return false
 
     // Minimum buffer size not met
     if (bufferedText.length < this.config.minBufferSize) return false
@@ -225,7 +239,13 @@ const BUFFER_CONFIG = {
   maxBufferSize: 10000, // Prevent OOM with 10KB limit
   maxBufferTime: 100,
   semanticTimeout: 300,
-  emergencyTimeout: 500,
+  // Keep emergency slightly larger than animation duration to prevent overlap
+  emergencyTimeout: 1200,
+  // Match animation duration in animatedPlugin (duration-1000) with a small buffer
+  minFlushInterval: 1000,
+  // Ensure very fast first paint
+  initialMinBufferSize: 2,
+  initialMaxWait: 80,
 } as const
 
 // Hook to use streaming text buffer
@@ -327,15 +347,18 @@ export const AIMarkdownStreamingMessage = memo(
   prose-li:list-disc prose-li:marker:text-accent prose-hr:border-border prose-hr:mx-8`
 
     // Use intelligent streaming buffer for semantic text rendering
-    const bufferedText = useStreamingTextBuffer(text, isProcessing ?? false)
+    const bufferedTextRaw = useStreamingTextBuffer(text, isProcessing ?? false)
 
     // Use deferred value for lower priority rendering during streaming
-    const deferredText = useDeferredValue(bufferedText)
+    const deferredText = useDeferredValue(bufferedTextRaw)
+
+    // For small snippets (common at the very beginning), avoid deferring so text appears instantly
+    const effectiveBufferedText = bufferedTextRaw.length < 20 ? bufferedTextRaw : deferredText
 
     // Use our optimized parsing hook with buffered text
     const parsedContent = useThrottledMarkdownParsing(
-      // During streaming, use deferred buffered text for optimal rendering
-      isProcessing ? deferredText : text,
+      // During streaming, use non-deferred value for tiny snippets to improve first paint
+      isProcessing ? effectiveBufferedText : text,
       isProcessing ?? false,
     )
 
@@ -363,7 +386,7 @@ export const AIMarkdownStreamingMessage = memo(
     }
 
     // Default comparison
-    return false
+    return prevProps === nextProps
   },
 )
 
@@ -411,7 +434,7 @@ function baseAIMarkdownParser(content: string, isProcessing: boolean) {
             const language = className.replace("language-", "")
             const code = children
 
-            return <ShikiHighLighter code={code} language={language} showCopy />
+            return <MemoizedShikiCode code={code} language={language} showCopy />
           }
         }
 

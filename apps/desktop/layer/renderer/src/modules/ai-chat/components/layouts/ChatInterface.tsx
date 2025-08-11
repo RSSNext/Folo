@@ -10,6 +10,7 @@ import type { FC } from "react"
 import { Suspense, useEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { useAISettingKey } from "~/atoms/settings/ai"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
@@ -73,7 +74,12 @@ const ChatInterfaceContent = () => {
     },
   })
 
-  const { resetScrollState } = useAutoScroll(scrollAreaRef, status === "streaming")
+  const autoScrollWhenStreaming = useAISettingKey("autoScrollWhenStreaming")
+
+  const { resetScrollState } = useAutoScroll(
+    scrollAreaRef,
+    autoScrollWhenStreaming && status === "streaming",
+  )
 
   useEffect(() => {
     const scrollElement = scrollAreaRef
@@ -167,6 +173,7 @@ const ChatInterfaceContent = () => {
             <WelcomeScreen onSend={handleSendMessage} />
           ) : (
             <ScrollArea
+              flex
               scrollbarClassName="mb-40 mt-12"
               ref={setScrollAreaRef}
               rootClassName="flex-1"
@@ -177,7 +184,7 @@ const ChatInterfaceContent = () => {
                   <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
                 </div>
               ) : (
-                <div className="mx-auto max-w-4xl px-6 py-8">
+                <div className="mx-auto w-full max-w-4xl px-6 py-8">
                   <Messages />
 
                   {(status === "submitted" || status === "streaming") && <AIChatWaitingIndicator />}
@@ -228,9 +235,13 @@ export const ChatInterface = () => (
 const Messages: FC = () => {
   const messages = useMessages()
 
-  return messages.map((message) => (
-    <Suspense key={message.id}>
-      <AIChatMessage message={message} />
-    </Suspense>
-  ))
+  return (
+    <div className="relative flex min-w-0 flex-1 flex-col">
+      {messages.map((message) => (
+        <Suspense key={message.id}>
+          <AIChatMessage message={message} />
+        </Suspense>
+      ))}
+    </div>
+  )
 }
