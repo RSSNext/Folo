@@ -18,6 +18,7 @@ export const createDefaultUISettings = (): UISettings => ({
   // Discover
   discoverLanguage: getDefaultLanguage().startsWith("zh") ? "all" : "eng",
   accentColor: "orange",
+  showSearchButton: true,
 })
 
 const zenModeAtom = atom(false)

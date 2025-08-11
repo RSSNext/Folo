@@ -158,6 +158,8 @@
   "appearance.reduce_motion.description": "减弱动态效果以提高整体性能并减少电量消耗。",
   "appearance.reduce_motion.label": "减弱动态效果",
   "appearance.save": "保存",
+  "appearance.show_search_button.description": "是否在主页显示搜索按钮",
+  "appearance.show_search_button.label": "显示搜索按钮",
   "appearance.sidebar": "侧边栏",
   "appearance.sidebar_title": "外观",
   "appearance.subscription_list.title": "订阅列表",
