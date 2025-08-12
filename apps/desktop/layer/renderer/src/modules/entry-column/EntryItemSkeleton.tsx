@@ -28,7 +28,11 @@ export const EntryItemSkeleton: FC<{
   }
 
   return (
-    <div className={cn(views[view]!.gridMode ? girdClassNames : "flex flex-col")}>
+    <div
+      className={cn(
+        views.find((v) => v.view === view)?.gridMode ? girdClassNames : "flex flex-col",
+      )}
+    >
       {Array.from({ length: count }).map((_, index) => (
         // eslint-disable-next-line @eslint-react/no-array-index-key -- index is unique
         <div key={index}>{SkeletonItem}</div>

@@ -45,6 +45,7 @@ interface EntryState {
 const defaultState: EntryState = {
   data: {},
   entryIdByView: {
+    [FeedViewType.All]: new Set(),
     [FeedViewType.Articles]: new Set(),
     [FeedViewType.Audios]: new Set(),
     [FeedViewType.Notifications]: new Set(),
@@ -95,8 +96,11 @@ class EntryActions implements Hydratable, Resetable {
       (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
       subscription?.hideFromTimeline
 
-    if (typeof subscription?.view === "number" && !ignore) {
-      draft.entryIdByView[subscription.view].add(entryId)
+    if (!ignore) {
+      if (typeof subscription?.view === "number") {
+        draft.entryIdByView[subscription.view].add(entryId)
+      }
+      draft.entryIdByView[FeedViewType.All].add(entryId)
     }
 
     // lists
@@ -106,8 +110,11 @@ class EntryActions implements Hydratable, Resetable {
         (hidePrivateSubscriptionsInTimeline && subscription?.isPrivate) ||
         subscription?.hideFromTimeline
 
-      if (typeof subscription?.view === "number" && !ignore) {
-        draft.entryIdByView[subscription.view].add(entryId)
+      if (!ignore) {
+        if (typeof subscription?.view === "number") {
+          draft.entryIdByView[subscription.view].add(entryId)
+        }
+        draft.entryIdByView[FeedViewType.All].add(entryId)
       }
     }
   }
@@ -436,6 +443,7 @@ class EntryActions implements Hydratable, Resetable {
       delete draft.data[entryId]
       draft.entryIdSet.delete(entryId)
       draft.entryIdByInbox[entry.inboxHandle!]?.delete(entryId)
+      draft.entryIdByView[FeedViewType.All].delete(entryId)
     })
   }
 

@@ -200,14 +200,16 @@ const ListItemCellImpl: ListRenderItem<ListModel> = ({ item: list }) => {
             </Text>
           )}
           <View className="flex-row items-center gap-1">
-            {!!views[list.view]?.icon &&
-              createElement(views[list.view]!.icon, {
-                color: views[list.view]!.activeColor,
+            {!!views.find((v) => v.view === list.view)?.icon &&
+              createElement(views.find((v) => v.view === list.view)!.icon, {
+                color: views.find((v) => v.view === list.view)!.activeColor,
                 height: 16,
                 width: 16,
               })}
-            {!!views[list.view]?.name && (
-              <Text className="text-secondary-label text-base">{t(views[list.view]!.name)}</Text>
+            {!!views.find((v) => v.view === list.view)?.name && (
+              <Text className="text-secondary-label text-base">
+                {t(views.find((v) => v.view === list.view)!.name)}
+              </Text>
             )}
           </View>
         </View>

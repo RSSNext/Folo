@@ -87,15 +87,17 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
-              <>
-                <EntryHeader view={view} entryId={entryId} />
-                <DividerVertical className="mx-2 w-px" />
-              </>
-            )}
+            {views.find((v) => v.view === view)?.wideMode &&
+              entryId &&
+              entryId !== ROUTE_ENTRY_PENDING && (
+                <>
+                  <EntryHeader view={view} entryId={entryId} />
+                  <DividerVertical className="mx-2 w-px" />
+                </>
+              )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && <WideModeButton />}
+              {!views.find((v) => v.view === view)?.wideMode && <WideModeButton />}
               {view === FeedViewType.SocialMedia && <DailyReportButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>

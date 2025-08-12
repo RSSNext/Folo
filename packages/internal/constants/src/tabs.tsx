@@ -4,6 +4,7 @@ import { FeedViewType } from "./enums"
 
 export interface ViewDefinition {
   name:
+    | "feed_view_type.all"
     | "feed_view_type.articles"
     | "feed_view_type.audios"
     | "feed_view_type.notifications"
@@ -20,6 +21,17 @@ export interface ViewDefinition {
   activeColor: string
 }
 export const views: ViewDefinition[] = [
+  {
+    name: "feed_view_type.all",
+    icon: <i className="i-mgc-bubble-cute-fi" />,
+    className: "text-gray-600 dark:text-gray-500",
+    peerClassName: "peer-checked:text-gray-600 peer-checked:dark:text-gray-500",
+    translation: "title,description,content",
+    view: FeedViewType.All,
+    gridMode: true,
+    wideMode: true,
+    activeColor: "#6b7280",
+  },
   {
     name: "feed_view_type.articles",
     icon: <i className="i-mgc-paper-cute-fi" />,

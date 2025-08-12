@@ -29,7 +29,7 @@ export const EntryColumnGrid: FC<EntryListProps> = (props) => {
   const isMobile = useMobile()
   const masonry = useUISettingKey("pictureViewMasonry") || isMobile
 
-  if (masonry && view === FeedViewType.Pictures) {
+  if (masonry && (view === FeedViewType.Pictures || view === FeedViewType.All)) {
     return (
       <PictureMasonry
         key={feedId}
