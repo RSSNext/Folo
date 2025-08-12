@@ -78,7 +78,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const { t } = useTranslation()
   const { t: tCommon } = useTranslation("common")
   const textLabelColor = useColor("label")
-  const { feedId: id, defaultView } = props
+  const { feedId: id, defaultView = FeedViewType.Articles } = props
   const feed = useFeedById(id)
   const subscription = useSubscriptionByFeedId(feed?.id)
   const isSubscribed = !!subscription
@@ -89,7 +89,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
       isPrivate: subscription?.isPrivate ?? undefined,
       hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
-      view: subscription?.view ?? defaultView ?? FeedViewType.Articles,
+      view: subscription?.view ?? defaultView,
     },
   })
   useEffect(() => {
@@ -290,7 +290,7 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
               name="view"
               control={form.control}
               render={({ field: { onChange, value } }) => (
-                <FeedViewSelector value={value as any as FeedViewType} onChange={onChange} />
+                <FeedViewSelector value={value} onChange={onChange} />
               )}
             />
           </View>

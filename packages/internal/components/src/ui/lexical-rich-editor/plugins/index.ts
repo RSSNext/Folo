@@ -1,1 +1,1 @@
-export { KeyboardPlugin } from "./KeyboardPlugin"
+export { KeyboardPlugin } from "./keyboard"

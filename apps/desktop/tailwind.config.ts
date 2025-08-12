@@ -76,6 +76,14 @@ export default extendConfig({
             backgroundPosition: "100% 50%",
           },
         },
+        shimmer: {
+          "0%": {
+            backgroundPosition: "200% 0",
+          },
+          "100%": {
+            backgroundPosition: "-200% 0",
+          },
+        },
       },
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
@@ -83,6 +91,7 @@ export default extendConfig({
         "accordion-up": "accordion-up 0.2s ease-out",
         "gradient-x": "gradient-x 3s linear infinite",
         glow: "glow 1.5s ease-in-out infinite",
+        shimmer: "shimmer 2s linear infinite",
       },
     },
   },

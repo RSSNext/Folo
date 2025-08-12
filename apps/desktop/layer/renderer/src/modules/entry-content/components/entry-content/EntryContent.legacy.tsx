@@ -9,6 +9,7 @@ import type { FeedModel } from "@follow/models/types"
 import { useEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
+import { thenable } from "@follow/utils"
 import { nextFrame, stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { clsx, cn } from "@follow/utils/utils"
@@ -70,7 +71,8 @@ const EntryContentImpl: Component<EntryContentProps> = ({
 
     return { feedId, inboxId: inboxHandle, title, url }
   })
-  const entryExists = !!entry
+  if (!entry) throw thenable
+
   useTitle(entry?.title)
 
   const feed = useFeedById(entry?.feedId)
@@ -94,7 +96,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const prevEntryId = useRef<string | undefined>(undefined)
   const scrollAnimationRef = useRef<JSAnimation<any> | null>(null)
   useEffect(() => {
-    if (entryExists && prevEntryId.current !== entryId) {
+    if (prevEntryId.current !== entryId) {
       scrollAnimationRef.current?.stop()
       nextFrame(() => {
         scrollerRef.current?.scrollTo({ top: 0 })
@@ -104,14 +106,13 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       })
       prevEntryId.current = entryId
     }
-  }, [animationController, entryExists, entryId])
+  }, [animationController, entryId])
 
   const isInHasTimelineView = ![
     FeedViewType.Pictures,
     FeedViewType.SocialMedia,
     FeedViewType.Videos,
   ].includes(view)
-  if (!entry) return null
 
   return (
     <>

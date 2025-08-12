@@ -2,14 +2,9 @@ import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchSubscription } from "@follow/store/subscription/hooks"
 import { usePrefetchUnread } from "@follow/store/unread/hooks"
 import { nextFrame } from "@follow/utils"
-import type {
-  FlashListProps,
-  MasonryFlashListProps,
-  MasonryFlashListRef,
-} from "@shopify/flash-list"
-import { FlashList, MasonryFlashList } from "@shopify/flash-list"
+import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
+import { FlashList } from "@shopify/flash-list"
 import * as Haptics from "expo-haptics"
-import type { ElementRef, RefObject } from "react"
 import { use, useCallback, useImperativeHandle, useRef } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { RefreshControl, View } from "react-native"
@@ -32,8 +27,9 @@ export const TimelineSelectorList = ({
   onRefresh,
   isRefetching,
   ...props
-}: Props & Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.Ref<FlashList<any> | null> }) => {
-  const ref = useRef<FlashList<any>>(null)
+}: Props &
+  Omit<FlashListProps<any>, "onRefresh"> & { ref?: React.Ref<FlashListRef<any> | null> }) => {
+  const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardedRef, () => ref.current!)
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
@@ -118,8 +114,8 @@ export const TimelineSelectorMasonryList = ({
   isRefetching,
   ...props
 }: Props &
-  Omit<MasonryFlashListProps<any>, "onRefresh"> & {
-    ref?: React.Ref<ElementRef<typeof MasonryFlashList> | null>
+  Omit<FlashListProps<any>, "onRefresh"> & {
+    ref?: React.Ref<FlashListRef<any> | null>
   }) => {
   const { refetch: unreadRefetch } = usePrefetchUnread()
   const { refetch: subscriptionRefetch } = usePrefetchSubscription()
@@ -147,8 +143,9 @@ export const TimelineSelectorMasonryList = ({
   }
 
   return (
-    <MasonryFlashList
-      ref={ref as RefObject<MasonryFlashListRef<any>>}
+    <FlashList
+      ref={ref}
+      masonry
       refreshControl={
         <RefreshControl
           progressViewOffset={headerHeight}
@@ -163,11 +160,13 @@ export const TimelineSelectorMasonryList = ({
         />
       }
       {...props}
-      contentContainerStyle={{
-        paddingTop: headerHeight,
-        paddingBottom: tabBarHeight,
-        ...props.contentContainerStyle,
-      }}
+      contentContainerStyle={[
+        {
+          paddingTop: headerHeight,
+          paddingBottom: tabBarHeight,
+        },
+        props.contentContainerStyle,
+      ]}
       scrollIndicatorInsets={{
         top: headerHeight - insets.top,
         bottom: tabBarHeight ? tabBarHeight - insets.bottom : undefined,

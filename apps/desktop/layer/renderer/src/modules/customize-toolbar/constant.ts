@@ -19,7 +19,6 @@ const MAIN_ACTIONS = [
 
   COMMAND_ID.entry.toggleAISummary,
   COMMAND_ID.entry.readability,
-  COMMAND_ID.global.toggleAIChatPinned,
 
   COMMAND_ID.entry.viewSourceContent,
   COMMAND_ID.entry.share,

@@ -3,6 +3,7 @@ import { createEditor } from "lexical"
 
 import { LexicalRichEditorNodes } from "./nodes"
 import { defaultLexicalTheme } from "./theme"
+import type { LexicalPluginFC } from "./types"
 
 export const createLexicalEditor = (options: CreateEditorArgs) => {
   const editor = createEditor({
@@ -13,10 +14,13 @@ export const createLexicalEditor = (options: CreateEditorArgs) => {
   return editor
 }
 
-export const createDefaultLexicalEditor = () => {
+export const createDefaultLexicalEditor = (plugins?: LexicalPluginFC<unknown>[]) => {
+  const pluginNodes = plugins?.flatMap((plugin) => plugin.nodes || []) || []
+
+  const allNodes = [...LexicalRichEditorNodes, ...pluginNodes]
   return createLexicalEditor({
     namespace: "LexicalRichEditor",
     theme: defaultLexicalTheme,
-    nodes: LexicalRichEditorNodes,
+    nodes: allNodes,
   })
 }

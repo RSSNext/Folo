@@ -1,4 +1,4 @@
-import { useEntry, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
+import { useEntry } from "@follow/store/entry/hooks"
 import { useCallback } from "react"
 
 import { PeekModal } from "~/components/ui/modal/inspire/PeekModal"
@@ -35,9 +35,7 @@ export const usePeekModal = () => {
             "relative mx-auto mt-[10vh] scrollbar-none max-w-full overflow-auto px-2 lg:max-w-[65rem] lg:p-0",
 
           CustomModalComponent: ({ children }) => {
-            usePrefetchEntryDetail(entryId)
             const feedId = useEntry(entryId, (state) => state.feedId)
-
             if (!feedId) return null
 
             return (

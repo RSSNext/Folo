@@ -9,12 +9,13 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
-import { KeyRecorder } from "~/components/ui/keyboard-recorder"
 
 import { SettingActionItem, SettingDescription } from "../control"
+import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
+const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
 
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
@@ -25,9 +26,20 @@ export const SettingAI = () => {
         settings={[
           {
             type: "title",
+            value: t("features.title"),
+          },
+          defineSettingItem("autoScrollWhenStreaming", {
+            label: t("autoScrollWhenStreaming.label"),
+            description: t("autoScrollWhenStreaming.description"),
+          }),
+
+          {
+            type: "title",
             value: t("personalize.title"),
           },
+
           PersonalizePromptSetting,
+
           {
             type: "title",
             value: t("shortcuts.title"),
@@ -279,9 +291,8 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
   const { t } = useTranslation("ai")
   const [name, setName] = useState(shortcut?.name || "")
   const [prompt, setPrompt] = useState(shortcut?.prompt || "")
-  const [hotkey, setHotkey] = useState(shortcut?.hotkey || "")
+
   const [enabled, setEnabled] = useState(shortcut?.enabled ?? true)
-  const [isRecording, setIsRecording] = useState(false)
 
   const handleSave = () => {
     if (!name.trim() || !prompt.trim()) {
@@ -292,7 +303,6 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
     onSave({
       name: name.trim(),
       prompt: prompt.trim(),
-      hotkey: hotkey.trim() || undefined,
       enabled,
     })
   }
@@ -308,7 +318,7 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
             placeholder={t("shortcuts.name_placeholder")}
           />
         </div>
-        <div className="col-span-2 space-y-2">
+        {/* <div className="col-span-2 space-y-2">
           <Label className="text-text text-xs">{t("shortcuts.hotkey")}</Label>
           <button
             type="button"
@@ -337,7 +347,7 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
               </div>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="space-y-2">

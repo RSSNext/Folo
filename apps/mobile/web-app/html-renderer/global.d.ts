@@ -6,6 +6,7 @@ interface Bridge {
   measure: () => void
   setContentHeight: (height: number) => void
   previewImage: (data: { imageUrls: string[]; index: number }) => void
+  seekAudio: (time: number) => void
 }
 
 declare global {

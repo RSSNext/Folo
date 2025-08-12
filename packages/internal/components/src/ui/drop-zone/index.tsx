@@ -1,6 +1,6 @@
 import { cn } from "@follow/utils/utils"
 import type { DragEvent, ReactNode } from "react"
-import { useCallback, useId, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 
 // Ported from https://github.com/react-dropzone/react-dropzone/issues/753#issuecomment-774782919
 const useDragAndDrop = ({ callback }: { callback: (file: FileList) => void | Promise<void> }) => {
@@ -49,18 +49,17 @@ const useDragAndDrop = ({ callback }: { callback: (file: FileList) => void | Pro
   }
 }
 
-export const DropZone = ({
-  onDrop,
-  children,
-  className,
-}: {
-  onDrop: (file: FileList) => void | Promise<void>
-  className?: string
+export interface DropZoneProps {
+  id?: string
+  accept?: string
   children?: ReactNode
-}) => {
+  className?: string
+  onDrop: (files: FileList) => void | Promise<void>
+}
+
+export const DropZone = ({ id, accept, children, className, onDrop }: DropZoneProps) => {
   const { isDragging, dragHandlers } = useDragAndDrop({ callback: onDrop })
 
-  const id = useId()
   return (
     <label
       className={cn(
@@ -76,7 +75,7 @@ export const DropZone = ({
       <input
         id={id}
         type="file"
-        accept="image/*"
+        accept={accept}
         onChange={(e) => e.target.files && onDrop(e.target.files)}
         className="hidden"
       />

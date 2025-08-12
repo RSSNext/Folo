@@ -4,6 +4,8 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.jsx"
+import { timeStringToSeconds } from "@follow/utils/utils"
+import { useCallback } from "react"
 
 export interface LinkProps {
   href: string
@@ -16,6 +18,23 @@ export const MarkdownLink = (props: LinkProps) => {
   // TODO should populate the href with the populatedFullHref
 
   const populatedFullHref = props.href
+
+  const childrenText = typeof props.children === "string" ? props.children : null
+  const time = childrenText ? timeStringToSeconds(childrenText) : null
+
+  const handleTimestampClick = useCallback(() => {
+    if (time === null) return
+    bridge.seekAudio(time)
+  }, [time])
+
+  if (time !== null) {
+    return (
+      <button className="text-accent underline" onClick={handleTimestampClick} type="button">
+        {props.children}
+      </button>
+    )
+  }
+
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>

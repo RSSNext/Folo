@@ -60,29 +60,32 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
     return customIntegrations.some(
       (integration) =>
         integration.name.toLowerCase().includes(query) ||
-        integration.fetchTemplate.url.toLowerCase().includes(query) ||
-        integration.fetchTemplate.method.toLowerCase().includes(query) ||
-        Object.keys(integration.fetchTemplate.headers || {}).some(
+        integration.fetchTemplate?.url?.toLowerCase().includes(query) ||
+        integration.fetchTemplate?.method?.toLowerCase().includes(query) ||
+        Object.keys(integration.fetchTemplate?.headers || {}).some(
           (key) =>
             key.toLowerCase().includes(query) ||
-            integration.fetchTemplate.headers?.[key]?.toLowerCase().includes(query) ||
+            integration.fetchTemplate?.headers?.[key]?.toLowerCase().includes(query) ||
             false,
         ) ||
-        (integration.fetchTemplate.body &&
-          integration.fetchTemplate.body.toLowerCase().includes(query)),
+        (integration.fetchTemplate?.body &&
+          integration.fetchTemplate.body.toLowerCase().includes(query)) ||
+        (integration.type === "url-scheme" &&
+          integration.urlSchemeTemplate?.scheme?.toLowerCase().includes(query)),
     )
   }, [searchQuery, t, settings.customIntegration])
 
   const handleCreateCustomIntegration = useCallback(() => {
     present({
       title: t("integration.custom_integrations.create.title"),
-      content: ({ dismiss: _dismiss }) => (
+      content: () => (
         <CustomIntegrationModalContent
           onSave={(integrationData) => {
             const newIntegration: CustomIntegration = {
-              id: nanoid(),
               ...integrationData,
+              id: nanoid(),
             }
+
             const currentIntegrations = settings.customIntegration || []
             setIntegrationSetting("customIntegration", [...currentIntegrations, newIntegration])
           }}
@@ -95,7 +98,7 @@ export const CustomIntegrationSection = memo(({ searchQuery }: CustomIntegration
     (integration: CustomIntegration) => {
       present({
         title: t("integration.custom_integrations.edit.title"),
-        content: ({ dismiss: _dismiss }) => (
+        content: () => (
           <CustomIntegrationModalContent
             integration={integration}
             onSave={(integrationData) => {
@@ -247,9 +250,13 @@ const CustomIntegrationsSection = ({
                 </div>
                 <p className="text-text-tertiary truncate text-xs">
                   <span className="bg-fill text-text-secondary mr-2 rounded px-1.5 py-0.5 font-mono text-xs">
-                    {integration.fetchTemplate.method}
+                    {integration.type === "url-scheme"
+                      ? "URL"
+                      : integration.fetchTemplate?.method || "GET"}
                   </span>
-                  {integration.fetchTemplate.url}
+                  {integration.type === "url-scheme"
+                    ? integration.urlSchemeTemplate?.scheme
+                    : integration.fetchTemplate?.url}
                 </p>
               </div>
               <div className="flex items-center gap-1">

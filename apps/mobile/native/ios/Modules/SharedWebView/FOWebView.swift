@@ -203,6 +203,14 @@ extension FOWebView: WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate 
               self.state.previewImages(urls: urls, index: index)
             }
           }
+        case "audio:seekTo":
+            let data = try? JSONDecoder().decode(
+                AudioSeekPayload.self, from: decode
+            )
+            guard let data = data else { return }
+            DispatchQueue.main.async {
+                self.state.seekAudio(time: data.payload.time)
+            }
 
         default:
           break

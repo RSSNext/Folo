@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
 
+import { shell } from "electron"
 import path from "pathe"
 
 import { store } from "~/lib/store"
@@ -342,6 +343,48 @@ ${content}
         errorName: error instanceof Error ? error.name : "Unknown",
         duration: `${duration}ms`,
         url: url.split("?")[0], // Remove query params for privacy
+      })
+
+      throw error
+    }
+  }
+
+  @IpcMethod()
+  async openURLScheme(context: IpcContext, scheme: string) {
+    const requestId = Math.random().toString(36).slice(2, 8)
+
+    try {
+      // Validate URL scheme format
+      if (!scheme.includes("://")) {
+        throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
+      }
+
+      // Log URL scheme execution (mask sensitive data)
+      const safeScheme = scheme.replaceAll(/(\?|&)([^=]+)=([^&]+)/g, (_, prefix, key, value) =>
+        // Mask potential sensitive query parameters
+        key.toLowerCase().includes("token") ||
+        key.toLowerCase().includes("key") ||
+        key.toLowerCase().includes("password")
+          ? `${prefix}${key}=***`
+          : `${prefix}${key}=${value}`,
+      )
+
+      logger.info(`[URLScheme:${requestId}] Opening URL scheme`, {
+        scheme: safeScheme,
+        protocol: scheme.split("://")[0],
+      })
+
+      // Use Electron's shell.openExternal to open URL scheme
+      // This will trigger the system's default handler for the scheme
+      await shell.openExternal(scheme)
+
+      logger.info(`[URLScheme:${requestId}] URL scheme opened successfully`)
+
+      return { success: true }
+    } catch (error) {
+      logger.error(`[URLScheme:${requestId}] Failed to open URL scheme`, {
+        error: error instanceof Error ? error.message : String(error),
+        scheme: scheme.split("://")[0], // Only log protocol for privacy
       })
 
       throw error

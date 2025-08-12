@@ -30,6 +30,14 @@ export const atStart = `
         },
       })
     },
+    seekAudio: (time) => {
+      send({
+        type: "audio:seekTo",
+        payload: {
+          time,
+        },
+      })
+    }
   }
 })()
 `

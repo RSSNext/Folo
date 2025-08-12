@@ -1,6 +1,14 @@
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.js"
 import katexStyle from "katex/dist/katex.min.css?raw"
-import { createElement, Fragment, memo, useEffect, useMemo, useState } from "react"
+import {
+  createElement,
+  Fragment,
+  memo,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react"
 import type { JSX } from "react/jsx-runtime"
 
 import { ENTRY_CONTENT_RENDER_CONTAINER_ID } from "~/constants/dom"
@@ -24,7 +32,16 @@ export type HTMLProps<A extends keyof JSX.IntrinsicElements = "div"> = {
     renderInlineStyle: boolean
   }>
 const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProps<A>) => {
-  const { children, renderInlineStyle, as = "div", accessory, noMedia, mediaInfo, ...rest } = props
+  const {
+    children,
+    renderInlineStyle,
+    as = "div",
+    accessory,
+    noMedia,
+    mediaInfo,
+    ref,
+    ...rest
+  } = props
   const [remarkOptions, setRemarkOptions] = useState({
     renderInlineStyle,
     noMedia,
@@ -43,6 +60,7 @@ const HTMLImpl = <A extends keyof JSX.IntrinsicElements = "div">(props: HTMLProp
   }, [renderInlineStyle, noMedia])
 
   const [refElement, setRefElement] = useState<HTMLElement | null>(null)
+  useImperativeHandle(ref as any, () => refElement)
 
   const markdownElement = useMemo(
     () =>

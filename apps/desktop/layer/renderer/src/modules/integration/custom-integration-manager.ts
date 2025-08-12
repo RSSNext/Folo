@@ -1,4 +1,8 @@
-import type { CustomIntegration, FetchTemplate } from "@follow/shared/settings/interface"
+import type {
+  CustomIntegration,
+  FetchTemplate,
+  URLSchemeTemplate,
+} from "@follow/shared/settings/interface"
 import type { EntryModel } from "@follow/store/entry/types"
 import { getSummary } from "@follow/store/summary/getters"
 import { tracker } from "@follow/tracker"
@@ -9,6 +13,7 @@ import { getIntegrationSettings } from "~/atoms/settings/integration"
 import { parseHtml } from "~/lib/parse-html"
 
 import { getFetchAdapter } from "./fetch-adapter"
+import { URLSchemeHandler } from "./url-scheme-handler"
 
 /**
  * Placeholder values that can be used in custom integration templates
@@ -208,37 +213,84 @@ export class CustomIntegrationManager {
       // Build placeholder context
       const context = await this.buildPlaceholderContext(entry)
 
-      // Process fetch template
-      const { url, headers, body, method } = await this.processFetchTemplate(
-        integration.fetchTemplate,
-        context,
-      )
+      if (integration.type === "url-scheme" && integration.urlSchemeTemplate) {
+        // Execute URL scheme
+        await URLSchemeHandler.getInstance().executeURLScheme(integration.urlSchemeTemplate, {
+          title: context.title,
+          url: context.url,
+          content_html: context.contentHtml,
+          content_markdown: context.contentMarkdown,
+          summary: context.summary,
+          author: context.author,
+          published_at: context.publishedAt,
+          description: context.description,
+        })
+        return { success: true }
+      } else if ((integration.type === "http" || !integration.type) && integration.fetchTemplate) {
+        // Execute HTTP request (existing logic)
+        const { url, headers, body, method } = await this.processFetchTemplate(
+          integration.fetchTemplate,
+          context,
+        )
 
-      // Prepare request options for fetch adapter
-      const finalHeaders = { ...headers }
+        // Prepare request options for fetch adapter
+        const finalHeaders = { ...headers }
 
-      // Set content-type if not already set and we have a body
-      if (
-        body &&
-        ["POST", "PUT", "PATCH"].includes(method) &&
-        !Object.keys(headers).some((key) => key.toLowerCase() === "content-type")
-      ) {
-        finalHeaders["Content-Type"] = "application/json"
+        // Set content-type if not already set and we have a body
+        if (
+          body &&
+          ["POST", "PUT", "PATCH"].includes(method) &&
+          !Object.keys(headers).some((key) => key.toLowerCase() === "content-type")
+        ) {
+          finalHeaders["Content-Type"] = "application/json"
+        }
+
+        // Execute the HTTP request using fetch adapter
+        const response = await getFetchAdapter().fetch(url, {
+          method: method as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+          headers: finalHeaders,
+          body: body && ["POST", "PUT", "PATCH"].includes(method) ? body : undefined,
+        })
+
+        // Check if request was successful
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`)
+        }
+
+        return { success: true }
+      } else {
+        // Handle backward compatibility for integrations without type field
+        if (integration.fetchTemplate) {
+          // Treat as HTTP integration
+          const { url, headers, body, method } = await this.processFetchTemplate(
+            integration.fetchTemplate,
+            context,
+          )
+
+          const finalHeaders = { ...headers }
+          if (
+            body &&
+            ["POST", "PUT", "PATCH"].includes(method) &&
+            !Object.keys(headers).some((key) => key.toLowerCase() === "content-type")
+          ) {
+            finalHeaders["Content-Type"] = "application/json"
+          }
+
+          const response = await getFetchAdapter().fetch(url, {
+            method: method as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+            headers: finalHeaders,
+            body: body && ["POST", "PUT", "PATCH"].includes(method) ? body : undefined,
+          })
+
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}: ${response.statusText}`)
+          }
+
+          return { success: true }
+        }
       }
 
-      // Execute the HTTP request using fetch adapter
-      const response = await getFetchAdapter().fetch(url, {
-        method: method as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-        headers: finalHeaders,
-        body: body && ["POST", "PUT", "PATCH"].includes(method) ? body : undefined,
-      })
-
-      // Check if request was successful
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}: ${response.statusText}`)
-      }
-
-      return { success: true }
+      return { success: false, error: "Invalid integration configuration" }
     } catch (error) {
       const errorMessage = (error as Error)?.message || "Unknown error"
       return { success: false, error: errorMessage }
@@ -298,6 +350,79 @@ export class CustomIntegrationManager {
   }
 
   /**
+   * Validate a URL scheme template
+   */
+  static validateURLSchemeTemplate(template: URLSchemeTemplate): {
+    valid: boolean
+    errors: string[]
+  } {
+    const errors: string[] = []
+
+    if (!template.scheme?.trim()) {
+      errors.push("URL scheme is required")
+    }
+
+    if (template.scheme && !template.scheme.includes("://")) {
+      errors.push("URL scheme must include protocol (e.g., 'app://')")
+    }
+
+    try {
+      if (template.scheme) {
+        // Replace placeholders with sample values for validation
+        const testScheme = template.scheme.replaceAll(/\[.*?\]/g, "test")
+        new URL(testScheme)
+      }
+    } catch {
+      errors.push("Invalid URL scheme format")
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    }
+  }
+
+  /**
+   * Validate a custom integration
+   */
+  static validateCustomIntegration(integration: Partial<CustomIntegration>): {
+    valid: boolean
+    errors: string[]
+  } {
+    const errors: string[] = []
+
+    if (!integration.name?.trim()) {
+      errors.push("Integration name is required")
+    }
+
+    // Type is optional for backward compatibility, default to "http"
+    const integrationType = integration.type || "http"
+
+    if (integrationType === "http") {
+      if (!integration.fetchTemplate) {
+        errors.push("HTTP template is required for HTTP integrations")
+      } else {
+        const templateValidation = this.validateFetchTemplate(integration.fetchTemplate)
+        errors.push(...templateValidation.errors)
+      }
+    } else if (integrationType === "url-scheme") {
+      if (!integration.urlSchemeTemplate) {
+        errors.push("URL scheme template is required for URL scheme integrations")
+      } else {
+        const templateValidation = this.validateURLSchemeTemplate(integration.urlSchemeTemplate)
+        errors.push(...templateValidation.errors)
+      }
+    } else {
+      errors.push("Invalid integration type. Must be 'http' or 'url-scheme'")
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    }
+  }
+
+  /**
    * Get template preview with sample data
    */
   static async getTemplatePreview(
@@ -322,5 +447,36 @@ export class CustomIntegrationManager {
     }
 
     return this.processFetchTemplate(fetchTemplate, sampleContext)
+  }
+
+  /**
+   * Get URL scheme preview with sample data
+   */
+  static getURLSchemePreview(
+    template: URLSchemeTemplate,
+    sampleEntry?: Partial<EntryModel>,
+  ): string {
+    // Create sample context
+    const sampleData = {
+      title: sampleEntry?.title || "Sample Article Title",
+      url: sampleEntry?.url || "https://example.com/article",
+      content_html: sampleEntry?.content || "<p>This is sample HTML content</p>",
+      content_markdown: "# Sample Article\n\nThis is sample markdown content.",
+      summary: "This is a sample summary of the article content.",
+      author: sampleEntry?.author || "John Doe",
+      published_at: sampleEntry?.publishedAt?.toISOString() || new Date().toISOString(),
+      description: sampleEntry?.description || "Sample article description",
+    }
+
+    let result = template.scheme
+
+    // Replace all placeholders with sample data
+    Object.entries(sampleData).forEach(([key, value]) => {
+      const placeholder = `[${key}]`
+      const encodedValue = encodeURIComponent(value || "")
+      result = result.replaceAll(placeholder, encodedValue)
+    })
+
+    return result
   }
 }

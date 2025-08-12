@@ -10,6 +10,7 @@ import WebKit
 
 let onContentHeightChanged = "onContentHeightChanged"
 let onImagePreview = "onImagePreview"
+let onSeekAudio = "onSeekAudio"
 
 public class SharedWebViewModule: Module {
     private var pendingJavaScripts: [String] = []
@@ -36,6 +37,7 @@ public class SharedWebViewModule: Module {
 
         View(WebViewView.self) {
             Events("onContentHeightChange")
+            Events("onSeekAudio")
 
             Prop("url") { (_: UIView, urlString: String) in
                 DispatchQueue.main.async {
@@ -46,6 +48,7 @@ public class SharedWebViewModule: Module {
 
         Events(onContentHeightChanged)
         Events(onImagePreview)
+        Events(onSeekAudio)
 
         OnStartObserving {
             // Monitor content height changes
@@ -62,6 +65,14 @@ public class SharedWebViewModule: Module {
                 .compactMap { $0 } // Filter out nil values
                 .sink { [weak self] event in
                     self?.sendEvent(onImagePreview, ["imageUrls": event.imageUrls, "index": event.index])
+                }
+                .store(in: &self.cancellables)
+
+            WebViewManager.state.$audioSeekEvent
+                .receive(on: DispatchQueue.main)
+                .compactMap { $0 }
+                .sink { [weak self] event in
+                    self?.sendEvent(onSeekAudio, ["time": event.time])
                 }
                 .store(in: &self.cancellables)
         }

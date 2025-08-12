@@ -5,7 +5,7 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
@@ -13,6 +13,9 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
+import type { TextSelectionEvent } from "~/lib/simple-text-selection"
+import { useBlockActions } from "~/modules/ai-chat/store/hooks"
+import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
@@ -52,10 +55,24 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   const { content } = useEntryContent(entryId)
   const customCSS = useUISettingKey("customCSS")
 
+  const { addOrUpdateBlock, removeBlock } = useBlockActions()
+  const handleTextSelect = useCallback(
+    (event: TextSelectionEvent) => {
+      addOrUpdateBlock({
+        id: BlockSliceAction.SPECIAL_TYPES.selectedText,
+        type: "selectedText",
+        value: event.selectedText,
+      })
+    },
+    [addOrUpdateBlock],
+  )
+  const handleSelectionClear = useCallback(() => {
+    removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
+  }, [removeBlock])
   if (!entry) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "mx-auto")}>
+    <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
       <WrappedElementProvider boundingDetection>
@@ -64,7 +81,12 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
           <AISummary entryId={entryId} />
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
-            <ShadowDOM injectHostStyles={!isInbox}>
+            <ShadowDOM
+              injectHostStyles={!isInbox}
+              textSelectionEnabled
+              onTextSelect={handleTextSelect}
+              onSelectionClear={handleSelectionClear}
+            >
               {!!customCSS && <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>}
 
               <Renderer
@@ -96,6 +118,9 @@ const Renderer: React.FC<{
     content?: string
     title?: string
   }
+  onTextSelect?: (event: TextSelectionEvent) => void
+  onSelectionClear?: (entryId: string) => void
+  textSelectionEnabled?: boolean
 }> = ({ entryId, view, feedId, noMedia = false, content = "", translation }) => {
   const mediaInfo = useEntryMediaInfo(entryId)
   const readerRenderInlineStyle = useUISettingKey("readerRenderInlineStyle")

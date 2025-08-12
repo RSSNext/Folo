@@ -1,5 +1,5 @@
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
-import type { FlashList, ListRenderItemInfo } from "@shopify/flash-list"
+import type { FlashListRef, ListRenderItemInfo } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
@@ -25,7 +25,7 @@ export const EntryListContentSocial = ({
   const { fetchNextPage, isFetching, refetch, isRefetching, hasNextPage, isReady } = useEntries()
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
 
-  const ref = useRef<FlashList<any>>(null)
+  const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-callback
   const renderItem = useCallback(
@@ -61,7 +61,6 @@ export const EntryListContentSocial = ({
         isRefetching={false}
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
-        estimatedItemSize={5}
         renderItem={EntryItemSkeleton}
         ItemSeparatorComponent={ItemSeparatorFullWidth}
       />
@@ -78,7 +77,6 @@ export const EntryListContentSocial = ({
       data={entryIds}
       extraData={extraData}
       keyExtractor={(id) => id}
-      estimatedItemSize={100}
       renderItem={renderItem}
       onEndReached={fetchNextPage}
       onViewableItemsChanged={onViewableItemsChanged}

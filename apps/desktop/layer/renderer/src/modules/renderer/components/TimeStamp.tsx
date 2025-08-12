@@ -1,6 +1,6 @@
 import { useEntry } from "@follow/store/entry/hooks"
 import { nextFrame } from "@follow/utils/dom"
-import { formatTimeToSeconds } from "@follow/utils/utils"
+import { formatTimeToSeconds, timeStringToSeconds } from "@follow/utils/utils"
 import { use } from "react"
 
 import { AudioPlayer } from "~/atoms/player"
@@ -100,18 +100,4 @@ const CircleProgress: React.FC<CircleProgressProps> = ({
       />
     </svg>
   )
-}
-
-function timeStringToSeconds(time: string): number | null {
-  const timeParts = time.split(":").map(Number)
-
-  if (timeParts.length === 2) {
-    const [minutes, seconds] = timeParts
-    return minutes! * 60 + seconds!
-  } else if (timeParts.length === 3) {
-    const [hours, minutes, seconds] = timeParts
-    return hours! * 3600 + minutes! * 60 + seconds!
-  } else {
-    return null
-  }
 }

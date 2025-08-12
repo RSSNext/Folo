@@ -1,6 +1,6 @@
 import { useTypeScriptHappyCallback } from "@follow/hooks"
 import { usePrefetchEntryTranslation } from "@follow/store/translation/hooks"
-import type { FlashList, MasonryFlashListProps } from "@shopify/flash-list"
+import type { FlashListProps, FlashListRef } from "@shopify/flash-list"
 import type { ElementRef } from "react"
 import { useImperativeHandle, useMemo, useRef } from "react"
 import { StyleSheet, View } from "react-native"
@@ -22,10 +22,10 @@ export const EntryListContentVideo = ({
   active,
   ...rest
 }: { entryIds: string[] | null; active?: boolean } & Omit<
-  MasonryFlashListProps<string>,
+  FlashListProps<string>,
   "data" | "renderItem"
 > & { ref?: React.Ref<ElementRef<typeof TimelineSelectorMasonryList> | null> }) => {
-  const ref = useRef<FlashList<any>>(null)
+  const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
   const { fetchNextPage, refetch, isRefetching, isFetching, hasNextPage, isReady } = useEntries()
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
@@ -95,7 +95,6 @@ export const EntryListContentVideo = ({
       onScroll={onScroll}
       onEndReached={fetchNextPage}
       numColumns={2}
-      estimatedItemSize={100}
       ListFooterComponent={ListFooterComponent}
       {...rest}
       onRefresh={refetch}

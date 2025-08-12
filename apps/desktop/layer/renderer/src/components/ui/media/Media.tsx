@@ -282,7 +282,7 @@ const MediaImpl: FC<MediaProps> = ({
             className={cn(
               "center",
               !(finalWidth || finalHeight) && "size-full",
-              "cursor-card relative bg-stone-100 object-cover",
+              "cursor-card relative object-cover",
               mediaContainerClassName,
             )}
             onClick={handleClick}
@@ -520,7 +520,7 @@ const VideoPreview: FC<{
           poster={previewImageUrl}
           ref={setVideoRef}
           muted
-          className="relative size-full object-cover"
+          className="not-prose relative size-full object-cover"
         />
       )}
 
