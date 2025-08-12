@@ -472,16 +472,122 @@ export function doesTextContainHTML(text?: string | null): boolean {
 }
 
 /**
+ * Cache for current language to avoid repeated localStorage reads
+ */
+let cachedLanguage: string | null = null
+let cacheTimestamp = 0
+const CACHE_DURATION = 5000 // 5 seconds cache
+
+/**
+ * Get current language from localStorage with caching
+ */
+const getCurrentLanguage = (): string => {
+  // Return cached value if still valid
+  const now = Date.now()
+  if (cachedLanguage && now - cacheTimestamp < CACHE_DURATION) {
+    return cachedLanguage
+  }
+
+  try {
+    // First try to get from I18N_LOCALE
+    const i18nLocale = globalThis.localStorage?.getItem("follow:I18N_LOCALE")
+    if (i18nLocale) {
+      cachedLanguage = i18nLocale
+      cacheTimestamp = now
+      return i18nLocale
+    }
+
+    // Then try general settings
+    const generalSettings = globalThis.localStorage?.getItem("follow:general")
+    if (generalSettings) {
+      const settings = JSON.parse(generalSettings)
+      const language = settings?.language || "en"
+      cachedLanguage = language
+      cacheTimestamp = now
+      return language
+    }
+
+    // Legacy keys
+    const settingsKey =
+      globalThis.localStorage?.getItem("follow:settings") ||
+      globalThis.localStorage?.getItem("follow-web:settings")
+    if (settingsKey) {
+      const settings = JSON.parse(settingsKey)
+      const language = settings?.general?.language || "en"
+      cachedLanguage = language
+      cacheTimestamp = now
+      return language
+    }
+  } catch (error) {
+    console.error("Error occurred while determining the current language:", error)
+  }
+
+  cachedLanguage = "en"
+  cacheTimestamp = now
+  return "en"
+}
+
+/**
+ * Clears the cached language and resets the cache timestamp.
+ *
+ * This function should be called whenever the application's language changes
+ * to ensure that subsequent calls to `getCurrentLanguage` fetch the updated
+ * language from localStorage instead of using stale cached values.
+ */
+export const clearLanguageCache = () => {
+  cachedLanguage = null
+  cacheTimestamp = 0
+}
+
+/**
  * Format number to a more readable format
  * @param num - The number to format
+ * @param locale - The locale to use for formatting (e.g. "en", "ko", "zh-CN"). If not provided, uses current language
  * @returns The formatted number
  */
-export function formatNumber(num: number): string {
+export function formatNumber(num: number): string
+export function formatNumber(num: number, locale?: string): string
+export function formatNumber(num: number, locale?: string): string {
   // Handle negative numbers
   const isNegative = num < 0
   const absNum = Math.abs(num)
 
-  // Define thresholds
+  // Use provided locale or get current language
+  const currentLocale = locale || getCurrentLanguage()
+
+  // Special handling for Korean (만/억/조 system)
+  if (currentLocale === "ko") {
+    const jo = 1_000_000_000_000 // 조 (1 trillion)
+    const uk = 100_000_000 // 억 (100 million)
+    const man = 10_000 // 만 (10 thousand)
+
+    if (absNum >= jo) {
+      const joValue = absNum / jo
+      // If it's a clean 조 value, don't show decimal
+      if (joValue === Math.floor(joValue)) {
+        return `${isNegative ? "-" : ""}${joValue}조`
+      }
+      return `${isNegative ? "-" : ""}${joValue.toFixed(1)}조`
+    } else if (absNum >= uk) {
+      const ukValue = absNum / uk
+      // If it's a clean 억 value, don't show decimal
+      if (ukValue === Math.floor(ukValue)) {
+        return `${isNegative ? "-" : ""}${ukValue}억`
+      }
+      return `${isNegative ? "-" : ""}${ukValue.toFixed(1)}억`
+    } else if (absNum >= man) {
+      const manValue = absNum / man
+      // If it's a clean 만 value, don't show decimal
+      if (manValue === Math.floor(manValue)) {
+        return `${isNegative ? "-" : ""}${manValue}만`
+      }
+      return `${isNegative ? "-" : ""}${manValue.toFixed(1)}만`
+    }
+
+    return `${isNegative ? "-" : ""}${absNum.toLocaleString("ko-KR")}`
+  }
+
+  // Standard international system for other languages
   const billion = 1_000_000_000
   const million = 1_000_000
   const thousand = 1_000

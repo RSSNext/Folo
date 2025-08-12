@@ -277,7 +277,7 @@ export const DiscoverFeedForm = ({
                               }}
                               placeholder={
                                 (parameters?.default ?? formPlaceholder[keyItem.name])
-                                  ? `e.g. ${formPlaceholder[keyItem.name]}`
+                                  ? `${t("discover.example_prefix")} ${formPlaceholder[keyItem.name]}`
                                   : void 0
                               }
                             />

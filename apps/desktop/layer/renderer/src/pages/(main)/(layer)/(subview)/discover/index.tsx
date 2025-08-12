@@ -139,14 +139,18 @@ export function Component() {
           <Divider />
 
           <div>
-            <h2 className="text-text mb-6 text-center text-xl font-semibold">Trending</h2>
+            <h2 className="text-text mb-6 text-center text-xl font-semibold">
+              {t("discover.trending")}
+            </h2>
             <Trending center />
           </div>
 
           <Divider />
 
           <div>
-            <h2 className="text-text mb-6 text-center text-xl font-semibold">Recommendations</h2>
+            <h2 className="text-text mb-6 text-center text-xl font-semibold">
+              {t("discover.recommendations")}
+            </h2>
             <AppErrorBoundary errorType={ErrorComponentType.RSSHubDiscoverError}>
               <Recommendations />
             </AppErrorBoundary>
