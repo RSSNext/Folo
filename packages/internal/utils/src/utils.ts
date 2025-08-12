@@ -475,8 +475,8 @@ export function doesTextContainHTML(text?: string | null): boolean {
  * Cache for current language to avoid repeated localStorage reads
  */
 let cachedLanguage: string | null = null
-let cacheTimestamp = 0
-const CACHE_DURATION = 5000 // 5 seconds cache
+let languageCacheTimestamp = 0
+const CACHE_DURATION = 300000 // 5 minutes cache
 
 /**
  * Get current language from localStorage with caching
@@ -484,7 +484,7 @@ const CACHE_DURATION = 5000 // 5 seconds cache
 const getCurrentLanguage = (): string => {
   // Return cached value if still valid
   const now = Date.now()
-  if (cachedLanguage && now - cacheTimestamp < CACHE_DURATION) {
+  if (cachedLanguage && now - languageCacheTimestamp < CACHE_DURATION) {
     return cachedLanguage
   }
 
@@ -493,7 +493,7 @@ const getCurrentLanguage = (): string => {
     const i18nLocale = globalThis.localStorage?.getItem("follow:I18N_LOCALE")
     if (i18nLocale) {
       cachedLanguage = i18nLocale
-      cacheTimestamp = now
+      languageCacheTimestamp = now
       return i18nLocale
     }
 
@@ -503,7 +503,7 @@ const getCurrentLanguage = (): string => {
       const settings = JSON.parse(generalSettings)
       const language = settings?.language || "en"
       cachedLanguage = language
-      cacheTimestamp = now
+      languageCacheTimestamp = now
       return language
     }
 
@@ -515,7 +515,7 @@ const getCurrentLanguage = (): string => {
       const settings = JSON.parse(settingsKey)
       const language = settings?.general?.language || "en"
       cachedLanguage = language
-      cacheTimestamp = now
+      languageCacheTimestamp = now
       return language
     }
   } catch (error) {
@@ -523,7 +523,7 @@ const getCurrentLanguage = (): string => {
   }
 
   cachedLanguage = "en"
-  cacheTimestamp = now
+  languageCacheTimestamp = now
   return "en"
 }
 
@@ -536,7 +536,7 @@ const getCurrentLanguage = (): string => {
  */
 export const clearLanguageCache = () => {
   cachedLanguage = null
-  cacheTimestamp = 0
+  languageCacheTimestamp = 0
 }
 
 /**
