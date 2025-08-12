@@ -1,21 +1,18 @@
 import type { FC } from "react"
 
-import { Focusable } from "~/components/common/Focusable"
-import { HotkeyScope } from "~/constants"
-import { ChatHeader } from "~/modules/ai-chat/components/layouts/ChatHeader"
-import { ChatInterface } from "~/modules/ai-chat/components/layouts/ChatInterface"
+import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 
-export const AIChatLayout: FC<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
-> = ({ ...props }) => {
-  return (
-    <Focusable
-      scope={HotkeyScope.AIChat}
-      className="bg-background relative flex h-full flex-col overflow-hidden"
-      {...props}
-    >
-      <ChatHeader />
-      <ChatInterface />
-    </Focusable>
-  )
+import { AIChatFixedPanel } from "./AIChatFixedPanel"
+import { AIChatFloatingPanel } from "./AIChatFloatingPanel"
+
+export interface AIChatLayoutProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+
+export const AIChatLayout: FC<AIChatLayoutProps> = ({ ...props }) => {
+  const panelStyle = useAIChatPanelStyle()
+
+  if (panelStyle === AIChatPanelStyle.Floating) {
+    return <AIChatFloatingPanel {...props} />
+  }
+  return <AIChatFixedPanel {...props} />
 }

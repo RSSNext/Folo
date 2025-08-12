@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react"
 
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { useChatBlockActions } from "~/modules/ai-chat/store/hooks"
-import type { AIChatContextBlock } from "~/modules/ai-chat/store/types"
+import type { AIChatContextBlock, ValueContextBlock } from "~/modules/ai-chat/store/types"
 
 import { $isMentionNode, MentionNode } from "../MentionNode"
 import type { MentionData } from "../types"
@@ -18,7 +18,7 @@ interface MentionBlockReference {
 
 const getResourceId = (type: string, value: string) => `${type}:${value}`
 
-const getBlockType = (mentionType: string): AIChatContextBlock["type"] => {
+const getBlockType = (mentionType: string): ValueContextBlock["type"] => {
   return mentionType === "feed" ? "referFeed" : "referEntry"
 }
 
@@ -34,9 +34,20 @@ export const useMentionBlockSync = () => {
   const blocks = useAIChatStore()((state) => state.blocks)
 
   // Reference tracking maps
-  const mentionToBlockRef = useRef(new Map<string, MentionBlockReference>()) // mentionNodeKey -> reference
-  const resourceToMentionsRef = useRef(new Map<string, Set<string>>()) // resourceId -> Set<mentionNodeKey>
-  const blockToResourceRef = useRef(new Map<string, string>()) // blockId -> resourceId
+  const mentionToBlockRef = useRef<Map<string, MentionBlockReference>>(undefined!)
+  if (!mentionToBlockRef.current) {
+    mentionToBlockRef.current = new Map()
+  }
+
+  const resourceToMentionsRef = useRef<Map<string, Set<string>>>(undefined!)
+  if (!resourceToMentionsRef.current) {
+    resourceToMentionsRef.current = new Map()
+  }
+
+  const blockToResourceRef = useRef<Map<string, string>>(undefined!)
+  if (!blockToResourceRef.current) {
+    blockToResourceRef.current = new Map()
+  }
 
   // Add mention-block reference
   const addMentionReference = useCallback(
@@ -105,7 +116,7 @@ export const useMentionBlockSync = () => {
         const blockType = getBlockType(mentionData.type)
 
         // Generate block ID (mimicking the block slice logic)
-        const newBlock: Omit<AIChatContextBlock, "id"> = {
+        const newBlock: Omit<ValueContextBlock, "id"> = {
           type: blockType,
           value: mentionData.value as string,
         }
@@ -115,7 +126,8 @@ export const useMentionBlockSync = () => {
         // Use current blocks state directly from store instead of stale closure
         const currentBlocks = blockActions.getBlocks()
         const addedBlock = currentBlocks.find(
-          (block) => block.type === blockType && block.value === mentionData.value,
+          (block): block is Extract<AIChatContextBlock, { type: typeof blockType }> =>
+            block.type === blockType && block.value === mentionData.value,
         )
 
         if (addedBlock) {
@@ -239,11 +251,5 @@ export const useMentionBlockSync = () => {
   return {
     handleMentionInsert,
     handleMentionRemove,
-    // Debug helpers
-    getMentionReferences: () => ({
-      mentionToBlock: new Map(mentionToBlockRef.current),
-      resourceToMentions: new Map(resourceToMentionsRef.current),
-      blockToResource: new Map(blockToResourceRef.current),
-    }),
   }
 }

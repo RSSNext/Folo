@@ -43,6 +43,7 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
 
     return {
       author,
+      authorUrl,
       estimatedMins,
       feedId,
       iconEntry,
@@ -120,6 +121,25 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
               <FeedIcon fallback feed={feed || inbox} entry={entry.iconEntry} size={16} />
               {getPreferredTitle(feed || inbox, entry.titleEntry)}
             </div>
+
+            {entry.author && (
+              <div className="flex items-center gap-1.5">
+                <i className="i-mgc-user-3-cute-re text-base" />
+                {entry.authorUrl ? (
+                  <a
+                    href={entry.authorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-text text-xs font-medium transition-colors"
+                  >
+                    {entry.author}
+                  </a>
+                ) : (
+                  <span className="text-xs font-medium">{entry.author}</span>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5">
               <i className="i-mgc-calendar-time-add-cute-re text-base" />
               <span className="text-xs tabular-nums">

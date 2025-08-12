@@ -7,7 +7,7 @@ import { useMemo } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { useAIChatPinned } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -102,7 +102,8 @@ const Grid = ({ entryId }) => {
   const wideMode = !!(settingWideMode && entryId)
   const feedColumnTempShow = useTimelineColumnTempShow()
   const feedColumnShow = useTimelineColumnShow()
-  const aiPinned = useAIChatPinned()
+  const panelStyle = useAIChatPanelStyle()
+  const aiPinned = panelStyle === AIChatPanelStyle.Fixed
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   const { isDragging, position, separatorProps, separatorCursor } = useResizable({

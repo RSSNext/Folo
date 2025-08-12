@@ -58,4 +58,4 @@ overrides:
 
 catalog:
   typescript: "5.8.3"
-  "@follow-app/client-sdk": "0.3.27"
+  "@follow-app/client-sdk": "0.3.29"

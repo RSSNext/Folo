@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
@@ -7,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
+import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
@@ -20,6 +22,7 @@ import { EntryColumn } from "./index"
 const AIEntryLayoutImpl = () => {
   const { entryId } = useParams()
   const navigate = useNavigateEntry()
+  const panelStyle = useAIChatPanelStyle()
 
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
 
@@ -129,7 +132,7 @@ const AIEntryLayoutImpl = () => {
 
   return (
     <div className="relative flex min-w-0 grow">
-      <div className="h-full flex-1 border-r">
+      <div className={cn("h-full flex-1", panelStyle === AIChatPanelStyle.Fixed && "border-r")}>
         <AppLayoutGridContainerProvider>
           <div className="relative h-full">
             {/* Entry list - always rendered to prevent animation */}
@@ -144,12 +147,7 @@ const AIEntryLayoutImpl = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={{
-                    type: "spring",
-                    damping: 30,
-                    stiffness: 400,
-                    duration: 0.3,
-                  }}
+                  transition={Spring.presets.smooth}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
                   {/* Scroll hint indicator */}
@@ -179,20 +177,29 @@ const AIEntryLayoutImpl = () => {
           </div>
         </AppLayoutGridContainerProvider>
       </div>
-      <PanelSplitter
-        {...separatorProps}
-        cursor={separatorCursor}
-        isDragging={isDragging}
-        onDoubleClick={() => {
-          setUISetting("aiColWidth", defaultUISettings.aiColWidth)
-          setPosition(defaultUISettings.aiColWidth)
-        }}
-      />
-      <AIChatLayout
-        style={
-          { width: position, "--ai-chat-layout-width": `${position}px` } as React.CSSProperties
-        }
-      />
+
+      {/* Fixed panel layout */}
+      {panelStyle === AIChatPanelStyle.Fixed && (
+        <>
+          <PanelSplitter
+            {...separatorProps}
+            cursor={separatorCursor}
+            isDragging={isDragging}
+            onDoubleClick={() => {
+              setUISetting("aiColWidth", defaultUISettings.aiColWidth)
+              setPosition(defaultUISettings.aiColWidth)
+            }}
+          />
+          <AIChatLayout
+            style={
+              { width: position, "--ai-chat-layout-width": `${position}px` } as React.CSSProperties
+            }
+          />
+        </>
+      )}
+
+      {/* Floating panel - renders outside layout flow */}
+      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout />}
     </div>
   )
 }

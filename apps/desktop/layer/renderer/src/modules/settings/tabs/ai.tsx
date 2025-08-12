@@ -11,9 +11,11 @@ import { toast } from "sonner"
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
 import { SettingActionItem, SettingDescription } from "../control"
+import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
+const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
 
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
@@ -24,9 +26,20 @@ export const SettingAI = () => {
         settings={[
           {
             type: "title",
+            value: t("features.title"),
+          },
+          defineSettingItem("autoScrollWhenStreaming", {
+            label: t("autoScrollWhenStreaming.label"),
+            description: t("autoScrollWhenStreaming.description"),
+          }),
+
+          {
+            type: "title",
             value: t("personalize.title"),
           },
+
           PersonalizePromptSetting,
+
           {
             type: "title",
             value: t("shortcuts.title"),

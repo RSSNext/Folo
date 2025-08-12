@@ -119,5 +119,6 @@ export const SettingSync = () => {
   useUXSettingSync()
   useLanguageSync()
   useGeneralSettingSync()
+
   return null
 }

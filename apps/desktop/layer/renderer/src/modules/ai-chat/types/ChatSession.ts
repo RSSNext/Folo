@@ -4,6 +4,7 @@ export interface ChatSession {
   chatId: string
   title?: string
   createdAt: Date
+  updatedAt: Date
   messageCount: number
 }
 

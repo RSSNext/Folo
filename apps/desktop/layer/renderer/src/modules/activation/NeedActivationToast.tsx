@@ -3,7 +3,7 @@ import { stopPropagation } from "@follow/utils/dom"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useSettingModal } from "../settings/modal/useSettingModal"
+import { useSettingModal } from "../settings/modal/use-setting-modal-hack"
 
 export const NeedActivationToast = (props: { dimiss: () => void }) => {
   const settingModalPresent = useSettingModal()
