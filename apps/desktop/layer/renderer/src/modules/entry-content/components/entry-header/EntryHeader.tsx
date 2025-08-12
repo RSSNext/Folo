@@ -23,7 +23,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
   const shouldShowMeta = !isAtTop && !!entryTitleMeta?.title
 
   const aiEnabled = useFeature("ai")
-  const isWide = views[view]?.wideMode || aiEnabled
+  const isWide = views.find((v) => v.view === view)?.wideMode || aiEnabled
 
   if (!entry) return null
 
@@ -41,7 +41,7 @@ function EntryHeaderImpl({ view, entryId, className, compact }: EntryHeaderProps
           className={cn(
             "zen-mode-macos:left-12 text-body absolute left-5 top-0 flex h-full items-center gap-2 leading-none",
             "visible z-[11]",
-            views[view]!.wideMode && "static",
+            views.find((v) => v.view === view)?.wideMode && "static",
             shouldShowMeta && "hidden",
           )}
         >

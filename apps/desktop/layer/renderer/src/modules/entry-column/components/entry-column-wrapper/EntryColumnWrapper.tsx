@@ -18,7 +18,10 @@ export const EntryColumnWrapper = ({ ref, children, onScroll }: EntryColumnWrapp
   return (
     <div className={cn(styles, animationStyles)}>
       <ScrollArea
-        scrollbarClassName={cn(!views[view]!.wideMode ? "w-[5px] p-0" : "", "z-[3]")}
+        scrollbarClassName={cn(
+          !views.find((v) => v.view === view)?.wideMode ? "w-[5px] p-0" : "",
+          "z-[3]",
+        )}
         mask={false}
         ref={ref}
         rootClassName={cn("h-full", isZenMode ? "max-w-[80ch] mx-auto" : "")}

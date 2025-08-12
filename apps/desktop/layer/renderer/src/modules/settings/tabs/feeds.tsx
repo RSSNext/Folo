@@ -459,8 +459,8 @@ const FeedListItem = memo(
         </div>
 
         <div className="text-text flex items-center gap-1 text-sm opacity-80">
-          {views[subscription.view]!.icon}
-          <span>{tCommon(views[subscription.view]!.name)}</span>
+          {views.find((v) => v.view === subscription.view)!.icon}
+          <span>{tCommon(views.find((v) => v.view === subscription.view)!.name)}</span>
         </div>
         {!!subscription.createdAt && (
           <div className="whitespace-nowrap pr-1 text-center text-sm">
