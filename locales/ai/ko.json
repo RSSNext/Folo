@@ -24,8 +24,6 @@
   "shortcuts.empty.description": "일반적인 작업을 빠르게 수행하고 즉각적인 AI 지원을 받기 위한 맞춤 AI 단축키를 만드세요.",
   "shortcuts.empty.title": "아직 단축키가 없습니다",
   "shortcuts.enabled": "활성화됨",
-  "shortcuts.hotkey": "단축키 (선택사항)",
-  "shortcuts.hotkey_placeholder": "예: Cmd+S",
   "shortcuts.name": "이름",
   "shortcuts.name_placeholder": "예: 아티클 요약하기",
   "shortcuts.prompt": "프롬프트",

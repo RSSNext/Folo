@@ -240,8 +240,6 @@
   "general.content": "콘텐츠",
   "general.data": "데이터",
   "general.data_file.label": "데이터 파일",
-  "general.data_persist.description": "오프라인 액세스 및 로컬 검색을 위해 데이터를 로컬에 유지합니다.",
-  "general.data_persist.label": "오프라인 사용을 위해 데이터 유지",
   "general.dim_read.description": "타임라인에서 읽은 항목의 색상을 흐리게 합니다.",
   "general.dim_read.label": "읽은 항목 흐리게 표시",
   "general.enhanced.description": "향상된 설정을 활성화하면 더 많은 사용자 정의 옵션을 제공하지만 예상치 못한 문제가 발생할 수도 있습니다.\n!!! 나중에 필요한 경우 진정한 실험적/복잡한 기능에 대한 게이트웨이로 유지하고, 그렇지 않으면 다른 설정이 특정 기능을 다루는 경우 제거할 수 있습니다.",
