@@ -1,4 +1,6 @@
 {
+  "autoScrollWhenStreaming.description": "Automatically scroll to the bottom of the chat when streaming",
+  "autoScrollWhenStreaming.label": "Auto scroll when streaming",
   "clear_chat": "Clear Chat",
   "clear_chat_message": "Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.",
   "delete_chat": "Delete Chat",
@@ -8,6 +10,7 @@
   "export_empty_chat": "Cannot export an empty chat",
   "export_error": "Failed to export chat",
   "export_success": "Chat exported successfully",
+  "features.title": "Features",
   "personalize.description": "Tell me about yourself to get personalized AI responses",
   "personalize.prompt.help": "This helps AI provide personalized responses based on your preferences.",
   "personalize.prompt.label": "Personal Prompt",

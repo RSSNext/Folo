@@ -65,7 +65,7 @@ export const AIDisplayFlowPart = toolMemo(
     }, [nodes, edges, colorMode, present])
 
     return (
-      <div className="group relative my-2 aspect-[4/3] w-[99999999px] max-w-full overflow-hidden rounded-md">
+      <div className="group relative my-2 aspect-[4/3] w-[calc(var(--ai-chat-layout-width,65ch)-120px)] max-w-prose overflow-hidden rounded-md">
         <ReactFlow
           colorMode={colorMode}
           nodes={nodes}

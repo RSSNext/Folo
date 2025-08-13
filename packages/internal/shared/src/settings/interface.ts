@@ -182,4 +182,7 @@ export interface AIShortcut {
 export interface AISettings {
   personalizePrompt: string
   shortcuts: AIShortcut[]
+
+  // Features
+  autoScrollWhenStreaming: boolean
 }

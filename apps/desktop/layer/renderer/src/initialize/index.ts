@@ -14,9 +14,9 @@ import { subscribeNetworkStatus } from "../atoms/network"
 import { appLog } from "../lib/log"
 import { initAnalytics } from "./analytics"
 import { registerHistoryStack } from "./history"
-import { hydrateSettings } from "./hydrate"
 import { doMigration } from "./migrates"
 import { initSentry } from "./sentry"
+import { initializeSettings } from "./settings"
 
 declare global {
   interface Window {
@@ -80,7 +80,7 @@ export const initializeApp = async () => {
 
   subscribeNetworkStatus()
 
-  apm("hydrateSettings", hydrateSettings)
+  apm("initializeSettings", initializeSettings)
 
   initSentry()
   await apm("i18n", initI18n)
