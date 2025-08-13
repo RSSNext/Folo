@@ -97,9 +97,11 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   }, [addOrUpdateBlock, entryId, removeBlock])
   const animationController = useAnimationControls()
 
+  const focusableRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     animationController.set(contentVariants.exit)
     animationController.start(contentVariants.animate)
+    focusableRef.current?.focus()
     return () => {
       animationController.stop()
     }
@@ -116,6 +118,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
+        ref={focusableRef}
         scope={HotkeyScope.EntryRender}
         className="@container relative flex min-h-0 w-full flex-1 flex-col overflow-hidden print:size-auto print:overflow-visible"
       >

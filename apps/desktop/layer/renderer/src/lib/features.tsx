@@ -3,10 +3,9 @@ import type { FC } from "react"
 
 import { useFeature } from "~/hooks/biz/useFeature"
 
-export const featureConfigMap: Record<string, keyof ExtractResponseData<GetStatusConfigsResponse>> =
-  {
-    ai: "AI_CHAT_ENABLED",
-  }
+export const featureConfigMap = {
+  ai: "AI_CHAT_ENABLED",
+} satisfies Record<string, keyof ExtractResponseData<GetStatusConfigsResponse>>
 
 export const withFeature =
   (feature: keyof typeof featureConfigMap) =>

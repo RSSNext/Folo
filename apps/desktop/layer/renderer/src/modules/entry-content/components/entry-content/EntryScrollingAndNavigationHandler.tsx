@@ -11,9 +11,13 @@ import type { JSAnimation } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { useEventCallback } from "usehooks-ts"
 
+import { useIsZenMode } from "~/atoms/settings/ui"
 import { FocusablePresets } from "~/components/common/Focusable"
+import { useFeature } from "~/hooks/biz/useFeature"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
 import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
@@ -50,11 +54,26 @@ export const EntryScrollingAndNavigationHandler = ({
     when,
   })
 
+  const isZenMode = useIsZenMode()
+  // TODO: Here, do not rely on the AI switch, but should be deps on the new layout.
+  const isAiEnabled = useFeature("ai")
+
+  const useBackHandler = isZenMode || isAiEnabled
+
   useCommandHotkey({
     commandId: COMMAND_ID.layout.focusToTimeline,
-    when,
+    when: when && !useBackHandler,
     shortcut: "Backspace, Escape",
   })
+
+  const navigateToTimeline = useNavigateEntry()
+  useHotkeys(
+    "Escape",
+    () => {
+      navigateToTimeline({ entryId: null })
+    },
+    { enabled: when && useBackHandler },
+  )
 
   const { highlightBoundary } = useFocusActions()
   const smoothScrollTo = useSmoothScroll()
