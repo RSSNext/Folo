@@ -202,10 +202,9 @@ export const useIsShortcutConflict = (
   }, [shortcut, excludeCommandId, overrideCommandShortcuts])
 }
 
-export const useCommandBinding = <T extends BindingCommandId>({
+export const useCommandBinding = <T extends keyof typeof defaultCommandShortcuts>({
   commandId,
   when = true,
-  args,
 }: Omit<RegisterHotkeyOptions<T>, "shortcut">) => {
   const commandShortcut = useCommandShortcut(commandId)
 
@@ -213,6 +212,5 @@ export const useCommandBinding = <T extends BindingCommandId>({
     shortcut: commandShortcut,
     commandId,
     when,
-    args,
   })
 }
