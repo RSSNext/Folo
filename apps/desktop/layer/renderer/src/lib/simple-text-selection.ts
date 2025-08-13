@@ -25,9 +25,13 @@ export function addTextSelectionListener(
       if (!selection) return
 
       // Check if selection is within our shadow root
-      const range = selection.getRangeAt(0)
-      if (!shadowRoot.contains(range.commonAncestorContainer)) return
-
+      try {
+        const range = selection.getRangeAt(0)
+        if (!shadowRoot.contains(range.commonAncestorContainer)) return
+      } catch {
+        // Uncaught IndexSizeError: Failed to execute 'getRangeAt' on 'Selection': 0 is not a valid index.
+        return
+      }
       if (!selection.isCollapsed) {
         const selectedText = selection.toString().trim()
         if (selectedText) {

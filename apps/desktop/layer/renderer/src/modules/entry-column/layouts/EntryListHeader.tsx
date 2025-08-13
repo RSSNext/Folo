@@ -17,6 +17,7 @@ import { previewBackPath } from "~/atoms/preview"
 import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useTimelineColumnShow } from "~/atoms/sidebar"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
 import { useFollow } from "~/hooks/biz/useFollow"
 import { getRouteParams, useRouteParams } from "~/hooks/biz/useRouteParams"
 import { COMMAND_ID } from "~/modules/command/commands/id"
@@ -66,6 +67,8 @@ export const EntryListHeader: FC<{
   const feedColumnShow = useTimelineColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
+
+  const aiEnabled = useFeature("ai")
   return (
     <div
       className={cn(
@@ -89,13 +92,13 @@ export const EntryListHeader: FC<{
           >
             {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
               <>
-                <EntryHeader view={view} entryId={entryId} />
+                <EntryHeader entryId={entryId} />
                 <DividerVertical className="mx-2 w-px" />
               </>
             )}
 
             <AppendTaildingDivider>
-              {!views[view]!.wideMode && <WideModeButton />}
+              {!views[view]!.wideMode && !aiEnabled && <WideModeButton />}
               {view === FeedViewType.SocialMedia && <DailyReportButton />}
               {view === FeedViewType.Pictures && <SwitchToMasonryButton />}
             </AppendTaildingDivider>

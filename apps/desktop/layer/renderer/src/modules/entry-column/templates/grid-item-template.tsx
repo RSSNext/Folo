@@ -1,6 +1,6 @@
 import { TitleMarquee } from "@follow/components/ui/marquee/index.jsx"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
-import { useEntry } from "@follow/store/entry/hooks"
+import { useEntry, useHasEntry } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
@@ -21,9 +21,9 @@ interface GridItemProps extends UniversalItemProps {
 }
 export function GridItem(props: GridItemProps) {
   const { entryId, entryPreview, wrapperClassName, children, translation } = props
-  const entry = useEntry(entryId, () => ({}))
+  const hasEntry = useHasEntry(entryId)
 
-  if (!entry) return null
+  if (!hasEntry) return null
   return (
     <div className={cn("p-1.5", wrapperClassName)}>
       {children}

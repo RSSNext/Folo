@@ -98,7 +98,7 @@ export class BlockSliceAction {
     }
   }
 
-  clearBlocks() {
+  clearBlocks({ keepSpecialTypes = false }: { keepSpecialTypes?: boolean } = {}) {
     this.set(
       produce((state: BlockSlice) => {
         // Clean up file attachments before clearing
@@ -107,7 +107,11 @@ export class BlockSliceAction {
             cleanupFileAttachment(block.attachment)
           }
         })
-        state.blocks = []
+        state.blocks = keepSpecialTypes
+          ? state.blocks.filter((b) =>
+              Object.values(BlockSliceAction.SPECIAL_TYPES).includes(b.type),
+            )
+          : []
       }),
     )
   }

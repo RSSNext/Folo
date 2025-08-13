@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avata
 import { TooltipContent, TooltipPortal } from "@follow/components/ui/tooltip/index.jsx"
 import { useUserById } from "@follow/store/user/hooks"
 import { getNameInitials } from "@follow/utils/cjk"
-import { m } from "motion/react"
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -19,9 +18,7 @@ export const EntryUser: Component<{
   if (!user) return null
   return (
     <div className="no-drag-region relative cursor-pointer hover:!z-[99999]" ref={ref}>
-      <m.button
-        layout="position"
-        layoutId={userId}
+      <button
         type="button"
         onClick={() => {
           presentUserProfile(userId)
@@ -34,7 +31,7 @@ export const EntryUser: Component<{
           />
           <AvatarFallback>{getNameInitials(user.name || "")}</AvatarFallback>
         </Avatar>
-      </m.button>
+      </button>
       <TooltipPortal>
         <TooltipContent side="top">
           {t("entry_actions.recent_reader")} {user.name}

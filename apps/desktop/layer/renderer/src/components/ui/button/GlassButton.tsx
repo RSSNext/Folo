@@ -155,7 +155,7 @@ export const GlassButton: FC<GlassButtonProps> = ({
   tapScale = 0.95,
   size = "md",
   theme = "auto",
-  variant = "glass",
+  variant = "flat",
 }) => {
   return (
     <Tooltip>

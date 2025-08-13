@@ -139,6 +139,9 @@ export function VideoItem({ entryId, entryPreview, translation }: UniversalItemP
               src={entry.firstMedia.url}
               type={entry.firstMedia.type}
               previewImageUrl={entry.firstMedia.preview_image_url}
+              width={entry.firstMedia.width}
+              height={entry.firstMedia.height}
+              blurhash={entry.firstMedia.blurhash}
               className={cn(
                 "aspect-video w-full shrink-0 rounded-md object-cover",
                 isActive && "rounded-b-none",
