@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { useFeedEntrySearchService } from "~/modules/ai-chat/services/feedEntrySearchService"
+import { useFeedEntrySearchService } from "~/modules/ai-chat/hooks/useFeedEntrySearchService"
 
 import type { MentionData, MentionType } from "../types"
 

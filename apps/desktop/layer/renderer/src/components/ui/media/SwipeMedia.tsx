@@ -70,6 +70,8 @@ export function SwipeMedia({
                   loading="lazy"
                   proxy={proxySize || undefined}
                   blurhash={med.blurhash}
+                  width={med.width}
+                  height={med.height}
                   onClick={(e) => {
                     if (onPreview) {
                       e.stopPropagation()

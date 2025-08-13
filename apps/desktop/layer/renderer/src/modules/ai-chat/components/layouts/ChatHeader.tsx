@@ -2,6 +2,7 @@ import { ActionButton } from "@follow/components/ui/button/index.js"
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
+import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useBlockActions, useChatActions, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 import { useSettingModal } from "~/modules/settings/modal/use-setting-modal-hack"
@@ -30,7 +31,7 @@ export const ChatHeader = () => {
       variant: "danger",
       onConfirm: () => {
         chatActions.newChat()
-        blockActions.clearBlocks()
+        blockActions.clearBlocks({ keepSpecialTypes: true })
       },
     })
   }, [chatActions, currentTitle, ask, t, blockActions])
@@ -42,6 +43,7 @@ export const ChatHeader = () => {
     [chatActions],
   )
 
+  const panelStyle = useAIChatPanelStyle()
   const maskImage = `linear-gradient(to bottom, black 0%, black 75%, transparent 100%)`
   return (
     <div className="absolute inset-x-0 top-0 z-[1] h-12">
@@ -54,8 +56,7 @@ export const ChatHeader = () => {
       />
 
       <div className="relative z-10 flex h-full items-center justify-between px-4">
-        {/* Left side - Title */}
-        <div className="mr-2 min-w-0 flex-1">
+        <div className="mr-2 flex min-w-0 flex-1 items-center">
           <EditableTitle
             title={currentTitle}
             onSave={handleTitleSave}
@@ -74,6 +75,15 @@ export const ChatHeader = () => {
           </ActionButton>
 
           <ChatMoreDropdown />
+
+          {panelStyle === AIChatPanelStyle.Floating && (
+            <>
+              <div className="bg-border h-5 w-px" />
+              <ActionButton tooltip="Close" onClick={() => setAIPanelVisibility(false)}>
+                <i className="i-mgc-close-cute-re text-text-secondary size-5" />
+              </ActionButton>
+            </>
+          )}
         </div>
       </div>
     </div>

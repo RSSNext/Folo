@@ -12,7 +12,6 @@ declare module "@follow/utils/event-bus" {
     "global:toggle-corner-play": void
     "global:quick-add": void
     "global:toggle-ai-chat": void
-    "global:toggle-ai-chat-pinned": void
   }
 }
 
@@ -72,18 +71,6 @@ export const useRegisterGlobalCommands = () => {
       icon: aiIcon,
       category,
     },
-    {
-      id: COMMAND_ID.global.toggleAIChatPinned,
-      label: {
-        title: t("command.global.toggle_ai_chat_pinned.title"),
-        description: t("command.global.toggle_ai_chat_pinned.description"),
-      },
-      run: () => {
-        EventBus.dispatch(COMMAND_ID.global.toggleAIChatPinned)
-      },
-      icon: aiIcon,
-      category,
-    },
   ])
 }
 
@@ -107,14 +94,8 @@ export type ToggleAIChatCommand = Command<{
   fn: (ctx?: { entryId?: string }) => void
 }>
 
-export type ToggleAIChatPinnedCommand = Command<{
-  id: typeof COMMAND_ID.global.toggleAIChatPinned
-  fn: (ctx?: { entryId?: string }) => void
-}>
-
 export type GlobalCommand =
   | ShowShortcutsCommand
   | ToggleCornerPlayCommand
   | QuickAddCommand
   | ToggleAIChatCommand
-  | ToggleAIChatPinnedCommand

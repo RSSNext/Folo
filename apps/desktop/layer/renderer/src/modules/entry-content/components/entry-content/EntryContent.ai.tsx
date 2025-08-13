@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.js"
 import { ScrollArea } from "@follow/components/ui/scroll-area/index.js"
@@ -10,8 +11,9 @@ import { useIsInbox } from "@follow/store/inbox/hooks"
 import { thenable } from "@follow/utils"
 import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { clsx, cn } from "@follow/utils/utils"
+import { cn } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
+import { m, useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
@@ -28,8 +30,8 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent } from "../../hooks"
-import { EntryHeader } from "../entry-header"
-import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
+import { AIEntryHeader } from "../entry-header"
+import { EntryTimeline } from "../EntryTimelineSidebar"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
@@ -38,6 +40,11 @@ import { EntryNoContent } from "./EntryNoContent"
 import { EntryScrollingAndNavigationHandler } from "./EntryScrollingAndNavigationHandler.js"
 import type { EntryContentProps } from "./types"
 
+const contentVariants = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 30 },
+}
 const EntryContentImpl: Component<EntryContentProps> = ({
   entryId,
   noMedia,
@@ -65,7 +72,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const safeUrl = useFeedSafeUrl(entryId)
 
-  const isInPeekModal = useInPeekModal()
   const isZenMode = useIsZenMode()
 
   const [panelPortalElement, setPanelPortalElement] = useState<HTMLDivElement | null>(null)
@@ -89,18 +95,24 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       removeBlock(BlockSliceAction.SPECIAL_TYPES.mainEntry)
     }
   }, [addOrUpdateBlock, entryId, removeBlock])
+  const animationController = useAnimationControls()
+
+  useEffect(() => {
+    animationController.set(contentVariants.exit)
+    animationController.start(contentVariants.animate)
+    return () => {
+      animationController.stop()
+    }
+  }, [animationController, entryId])
 
   return (
     <div className={cn(className, "@container flex flex-col")}>
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
-      {!isInPeekModal && (
-        <EntryHeader
-          entryId={entryId}
-          view={view}
-          className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
-          compact={compact}
-        />
-      )}
+      <AIEntryHeader
+        entryId={entryId}
+        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+        compact={compact}
+      />
       <div className="w-full" ref={setPanelPortalElement} />
 
       <Focusable
@@ -113,44 +125,45 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRef}
           />
         </RootPortal>
-        <EntryTimelineSidebar entryId={entryId} />
+        <EntryTimeline entryId={entryId} className="top-48" />
         <EntryScrollArea scrollerRef={scrollerRef}>
           {/* Indicator for the entry */}
-          <div className="select-text">
-            {!isZenMode && isInHasTimelineView && !isInPeekModal && (
-              <>
-                <div className="absolute inset-y-0 left-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
-                  <MotionButtonBase
-                    // -12： Visual center point
-                    className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
-                    onClick={() => {
-                      EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
-                    }}
-                  >
-                    <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
-                  </MotionButtonBase>
-                </div>
+          {!isZenMode && isInHasTimelineView && (
+            <>
+              <div className="absolute inset-y-0 left-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+                <MotionButtonBase
+                  // -12： Visual center point
+                  className="absolute left-0 shrink-0 !-translate-y-12 cursor-pointer"
+                  onClick={() => {
+                    EventBus.dispatch(COMMAND_ID.timeline.switchToPrevious)
+                  }}
+                >
+                  <i className="i-mgc-left-small-sharp text-text-secondary size-16" />
+                </MotionButtonBase>
+              </div>
 
-                <div className="absolute inset-y-0 right-0 flex w-12 items-center justify-center opacity-0 duration-200 hover:opacity-100">
-                  <MotionButtonBase
-                    className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
-                    onClick={() => {
-                      EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
-                    }}
-                  >
-                    <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
-                  </MotionButtonBase>
-                </div>
-              </>
-            )}
-
+              <div className="absolute inset-y-0 right-0 z-[9] flex w-12 items-center justify-center opacity-40 duration-200 hover:opacity-100">
+                <MotionButtonBase
+                  className="absolute right-0 shrink-0 !-translate-y-12 cursor-pointer"
+                  onClick={() => {
+                    EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
+                  }}
+                >
+                  <i className="i-mgc-right-small-sharp text-text-secondary size-16" />
+                </MotionButtonBase>
+              </div>
+            </>
+          )}
+          <m.div
+            className="select-text"
+            initial={{ opacity: 0, y: 30 }}
+            animate={animationController}
+            transition={Spring.presets.smooth}
+          >
             <article
               data-testid="entry-render"
               onContextMenu={stopPropagation}
-              className={clsx(
-                "relative w-full min-w-0 pb-10 pt-2",
-                isInPeekModal ? "max-w-full" : view === FeedViewType.Articles ? "" : "max-w-full",
-              )}
+              className={"relative w-full min-w-0 pb-10 pt-2"}
             >
               <ApplyEntryActions entryId={entryId} key={entryId} />
 
@@ -181,7 +194,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
                 />
               )}
             </article>
-          </div>
+          </m.div>
         </EntryScrollArea>
         <SourceContentPanel src={safeUrl ?? "#"} />
       </Focusable>
@@ -204,7 +217,9 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      stopWheelPropagation={false}
+      viewportProps={{
+        onWheel: stopPropagation,
+      }}
       flex
       rootClassName={cn(
         "flex-1 min-h-0 overflow-y-auto print:h-auto print:overflow-visible",

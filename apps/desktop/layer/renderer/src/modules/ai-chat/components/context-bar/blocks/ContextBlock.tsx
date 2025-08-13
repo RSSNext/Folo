@@ -1,4 +1,4 @@
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import type { FC } from "react"
 import { memo } from "react"
 
@@ -171,16 +171,17 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
   return (
     <div
       className={cn(
-        "group relative flex h-7 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
+        "group relative flex h-7 min-w-0 max-w-[calc(50%-0.5rem)] flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg px-2.5",
         "bg-fill-tertiary border-border border",
       )}
     >
       <div
-        className={
+        className={clsx(
+          "min-w-0",
           canRemove
-            ? "min-w-0 group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]"
-            : void 0
-        }
+            ? "group-hover:[mask-image:linear-gradient(to_right,black_0%,black_calc(100%-3rem),rgba(0,0,0,0.8)_calc(100%-2rem),rgba(0,0,0,0.3)_calc(100%-1rem),transparent_100%)]"
+            : void 0,
+        )}
       >
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <div className="flex items-center gap-1">
@@ -188,9 +189,7 @@ export const ContextBlock: FC<{ block: AIChatContextBlock }> = memo(({ block }) 
             <span className="text-text-tertiary text-xs font-medium">{getBlockLabel()}</span>
           </div>
 
-          <span className={cn("text-text min-w-0 flex-1 truncate text-xs")}>
-            {getDisplayContent()}
-          </span>
+          <span className={"text-text min-w-0 flex-1 truncate text-xs"}>{getDisplayContent()}</span>
         </div>
       </div>
 
