@@ -155,6 +155,9 @@ export const defaultIntegrationSettings: IntegrationSettings = {
 export const defaultAISettings: AISettings = {
   personalizePrompt: "",
   shortcuts: [],
+
+  // Features
+  autoScrollWhenStreaming: true,
 }
 
 export const defaultSettings = {

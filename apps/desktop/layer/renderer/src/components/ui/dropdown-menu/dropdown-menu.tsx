@@ -121,6 +121,7 @@ const DropdownMenuItem = ({
   active,
   highlightColor = "accent",
   shortcut,
+  checked,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
@@ -128,6 +129,7 @@ const DropdownMenuItem = ({
   active?: boolean
   highlightColor?: "accent" | "gray"
   shortcut?: string
+  checked?: boolean
 } & { ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item> | null> }) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
@@ -159,6 +161,14 @@ const DropdownMenuItem = ({
         <Kbd wrapButton={false} className="ml-auto">
           {shortcut}
         </Kbd>
+      </>
+    )}
+    {checked && !shortcut && (
+      <>
+        <span className="ml-4" />
+        <span className="ml-auto inline-flex size-4 items-center justify-center">
+          <i className="i-mgc-check-filled size-3" />
+        </span>
       </>
     )}
   </DropdownMenuPrimitive.Item>

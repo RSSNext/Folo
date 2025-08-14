@@ -11,25 +11,15 @@
   },
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "require": "./src/index.ts",
-      "import": "./src/index.ts"
-    },
     "./action/*": {
-      "types": "./src/action/*.ts",
-      "require": "./src/action/*.ts",
-      "import": "./src/action/*.ts"
-    },
-    "./atoms/*": {
-      "types": "./src/atoms/*.ts",
-      "require": "./src/atoms/*.ts",
-      "import": "./src/atoms/*.ts"
+      "types": "./src/modules/action/*.ts",
+      "require": "./src/modules/action/*.ts",
+      "import": "./src/modules/action/*.ts"
     },
     "./collection/*": {
-      "types": "./src/collection/*.ts",
-      "require": "./src/collection/*.ts",
-      "import": "./src/collection/*.ts"
+      "types": "./src/modules/collection/*.ts",
+      "require": "./src/modules/collection/*.ts",
+      "import": "./src/modules/collection/*.ts"
     },
     "./constants/*": {
       "types": "./src/constants/*.ts",
@@ -42,14 +32,14 @@
       "import": "./src/context.ts"
     },
     "./entry/*": {
-      "types": "./src/entry/*.ts",
-      "require": "./src/entry/*.ts",
-      "import": "./src/entry/*.ts"
+      "types": "./src/modules/entry/*.ts",
+      "require": "./src/modules/entry/*.ts",
+      "import": "./src/modules/entry/*.ts"
     },
     "./feed/*": {
-      "types": "./src/feed/*.ts",
-      "require": "./src/feed/*.ts",
-      "import": "./src/feed/*.ts"
+      "types": "./src/modules/feed/*.ts",
+      "require": "./src/modules/feed/*.ts",
+      "import": "./src/modules/feed/*.ts"
     },
     "./hydrate": {
       "types": "./src/hydrate.ts",
@@ -57,19 +47,19 @@
       "import": "./src/hydrate.ts"
     },
     "./image/*": {
-      "types": "./src/image/*.ts",
-      "require": "./src/image/*.ts",
-      "import": "./src/image/*.ts"
+      "types": "./src/modules/image/*.ts",
+      "require": "./src/modules/image/*.ts",
+      "import": "./src/modules/image/*.ts"
     },
     "./inbox/*": {
-      "types": "./src/inbox/*.ts",
-      "require": "./src/inbox/*.ts",
-      "import": "./src/inbox/*.ts"
+      "types": "./src/modules/inbox/*.ts",
+      "require": "./src/modules/inbox/*.ts",
+      "import": "./src/modules/inbox/*.ts"
     },
     "./list/*": {
-      "types": "./src/list/*.ts",
-      "require": "./src/list/*.ts",
-      "import": "./src/list/*.ts"
+      "types": "./src/modules/list/*.ts",
+      "require": "./src/modules/list/*.ts",
+      "import": "./src/modules/list/*.ts"
     },
     "./morph": {
       "types": "./src/morph/*.ts",
@@ -82,29 +72,29 @@
       "import": "./src/reset.ts"
     },
     "./subscription/*": {
-      "types": "./src/subscription/*.ts",
-      "require": "./src/subscription/*.ts",
-      "import": "./src/subscription/*.ts"
+      "types": "./src/modules/subscription/*.ts",
+      "require": "./src/modules/subscription/*.ts",
+      "import": "./src/modules/subscription/*.ts"
     },
     "./summary/*": {
-      "types": "./src/summary/*.ts",
-      "require": "./src/summary/*.ts",
-      "import": "./src/summary/*.ts"
+      "types": "./src/modules/summary/*.ts",
+      "require": "./src/modules/summary/*.ts",
+      "import": "./src/modules/summary/*.ts"
     },
     "./translation/*": {
-      "types": "./src/translation/*.ts",
-      "require": "./src/translation/*.ts",
-      "import": "./src/translation/*.ts"
+      "types": "./src/modules/translation/*.ts",
+      "require": "./src/modules/translation/*.ts",
+      "import": "./src/modules/translation/*.ts"
     },
     "./unread/*": {
-      "types": "./src/unread/*.ts",
-      "require": "./src/unread/*.ts",
-      "import": "./src/unread/*.ts"
+      "types": "./src/modules/unread/*.ts",
+      "require": "./src/modules/unread/*.ts",
+      "import": "./src/modules/unread/*.ts"
     },
     "./user/*": {
-      "types": "./src/user/*.ts",
-      "require": "./src/user/*.ts",
-      "import": "./src/user/*.ts"
+      "types": "./src/modules/user/*.ts",
+      "require": "./src/modules/user/*.ts",
+      "import": "./src/modules/user/*.ts"
     }
   },
   "scripts": {

@@ -2,7 +2,7 @@ import { ELECTRON_BUILD } from "@follow/shared/constants"
 import { cn } from "@follow/utils/utils"
 import { useIsomorphicLayoutEffect } from "foxact/use-isomorphic-layout-effect"
 import type { FC } from "react"
-import { useInsertionEffect, useMemo, useRef, useState } from "react"
+import { memo, useInsertionEffect, useMemo, useRef, useState } from "react"
 import type {
   BundledLanguage,
   BundledTheme,
@@ -155,6 +155,7 @@ export const ShikiHighLighter: FC<ShikiProps> = (props) => {
   return <ShikiCode {...props} language={currentLanguage} codeTheme={codeTheme} />
 }
 
+export const MemoizedShikiCode = memo(ShikiHighLighter)
 const ShikiCode: FC<
   ShikiProps & {
     codeTheme: string

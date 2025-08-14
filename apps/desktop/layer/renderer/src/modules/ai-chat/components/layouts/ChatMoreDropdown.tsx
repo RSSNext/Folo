@@ -3,6 +3,7 @@ import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { AIChatPanelStyle, setAIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { RelativeDay } from "~/components/ui/datetime"
 import {
   DropdownMenu,
@@ -23,6 +24,7 @@ import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai-chat/utils/
 export const ChatMoreDropdown = () => {
   const currentTitle = useCurrentTitle()
   const currentChatId = useCurrentChatId()
+  const panelStyle = useAIChatPanelStyle()
 
   const chatActions = useChatActions()
   const { t } = useTranslation("ai")
@@ -91,6 +93,12 @@ export const ChatMoreDropdown = () => {
     }
   }, [chatActions, currentTitle, t])
 
+  const handleToggleMode = useCallback(() => {
+    const newStyle =
+      panelStyle === AIChatPanelStyle.Fixed ? AIChatPanelStyle.Floating : AIChatPanelStyle.Fixed
+    setAIChatPanelStyle(newStyle)
+  }, [panelStyle])
+
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>
       <DropdownMenuTrigger asChild>
@@ -129,8 +137,8 @@ export const ChatMoreDropdown = () => {
                       </p>
                     </div>
                     <div className="relative flex min-w-0 items-center">
-                      <span className="text-text-secondary group-hover:text-text-secondary-dark ml-2 shrink-0 text-xs">
-                        <RelativeDay date={session.createdAt} />
+                      <span className="text-text-secondary group-hover:text-text-secondary-dark ml-2 shrink-0 cursor-help text-xs">
+                        <RelativeDay date={session.updatedAt} />
                       </span>
                       <button
                         type="button"
@@ -147,14 +155,6 @@ export const ChatMoreDropdown = () => {
                     </div>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator className="my-1.5" />
-                <DropdownMenuItem
-                  onClick={chatActions.newChat}
-                  className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-2.5"
-                >
-                  <i className="i-mgc-add-cute-re size-4" />
-                  <span className="text-sm">New Chat</span>
-                </DropdownMenuItem>
               </>
             ) : (
               <div className="flex flex-col items-center py-8 text-center">
@@ -168,6 +168,19 @@ export const ChatMoreDropdown = () => {
         <DropdownMenuItem onClick={handleExport}>
           <i className="i-mgc-download-2-cute-re mr-2 size-4" />
           <span>Export Chat</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={handleToggleMode}>
+          <i
+            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
+          />
+          <span>
+            {panelStyle === AIChatPanelStyle.Fixed
+              ? "Switch to Floating Panel"
+              : "Switch to Fixed Panel"}
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

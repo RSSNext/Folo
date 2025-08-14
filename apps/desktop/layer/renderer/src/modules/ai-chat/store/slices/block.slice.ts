@@ -3,7 +3,8 @@ import { produce } from "immer"
 import { nanoid } from "nanoid"
 import type { StateCreator } from "zustand"
 
-import type { AIChatContextBlock } from "../types"
+import { cleanupFileAttachment } from "../../utils/file-processing"
+import type { AIChatContextBlock, AIChatContextBlockInput, FileAttachment } from "../types"
 
 export interface BlockSlice {
   blocks: AIChatContextBlock[]
@@ -39,7 +40,7 @@ export class BlockSliceAction {
   get get() {
     return this.params[1]
   }
-  addBlock(block: Omit<AIChatContextBlock, "id">) {
+  addBlock(block: AIChatContextBlockInput) {
     const currentBlocks = this.get().blocks
 
     // Only allow one SPECIAL_TYPES
@@ -60,6 +61,10 @@ export class BlockSliceAction {
   removeBlock(id: string) {
     this.set(
       produce((state: BlockSlice) => {
+        const blockToRemove = state.blocks.find((block) => block.id === id)
+        if (blockToRemove && blockToRemove.type === "fileAttachment") {
+          cleanupFileAttachment(blockToRemove.attachment)
+        }
         state.blocks = state.blocks.filter((block) => block.id !== id)
       }),
     )
@@ -68,9 +73,18 @@ export class BlockSliceAction {
   updateBlock(id: string, updates: Partial<AIChatContextBlock>) {
     this.set(
       produce((state: BlockSlice) => {
-        state.blocks = state.blocks.map((block) =>
-          block.id === id ? { ...block, ...updates } : block,
-        )
+        state.blocks = state.blocks.map((block) => {
+          if (block.id !== id) return block
+
+          // Handle discriminated union updates carefully
+          if (updates.type && updates.type !== block.type) {
+            // Type change - need to replace the entire block
+            return { ...updates, id } as AIChatContextBlock
+          } else {
+            // Same type - safe to spread
+            return { ...block, ...updates } as AIChatContextBlock
+          }
+        })
       }),
     )
   }
@@ -84,10 +98,20 @@ export class BlockSliceAction {
     }
   }
 
-  clearBlocks() {
+  clearBlocks({ keepSpecialTypes = false }: { keepSpecialTypes?: boolean } = {}) {
     this.set(
       produce((state: BlockSlice) => {
-        state.blocks = []
+        // Clean up file attachments before clearing
+        state.blocks.forEach((block) => {
+          if (block.type === "fileAttachment") {
+            cleanupFileAttachment(block.attachment)
+          }
+        })
+        state.blocks = keepSpecialTypes
+          ? state.blocks.filter((b) =>
+              Object.values(BlockSliceAction.SPECIAL_TYPES).includes(b.type),
+            )
+          : []
       }),
     )
   }
@@ -95,6 +119,12 @@ export class BlockSliceAction {
   resetContext() {
     this.set(
       produce((state: BlockSlice) => {
+        // Clean up file attachments before resetting
+        state.blocks.forEach((block) => {
+          if (block.type === "fileAttachment") {
+            cleanupFileAttachment(block.attachment)
+          }
+        })
         state.blocks = []
       }),
     )
@@ -102,5 +132,50 @@ export class BlockSliceAction {
 
   getBlocks() {
     return this.get().blocks
+  }
+
+  // File attachment specific methods
+  addFileAttachment(fileAttachment: FileAttachment) {
+    const fileBlock: AIChatContextBlock = {
+      id: fileAttachment.id,
+      type: "fileAttachment",
+      attachment: fileAttachment,
+    }
+    this.addBlock(fileBlock)
+  }
+
+  updateFileAttachment(attachmentId: string, updatedAttachment: FileAttachment) {
+    this.set(
+      produce((state: BlockSlice) => {
+        const block = state.blocks.find(
+          (b) => b.type === "fileAttachment" && b.attachment.id === attachmentId,
+        )
+        if (block && block.type === "fileAttachment") {
+          block.attachment = updatedAttachment
+        }
+      }),
+    )
+  }
+
+  updateFileAttachmentStatus(
+    fileId: string,
+    status: FileAttachment["uploadStatus"],
+    errorMessage?: string,
+  ) {
+    this.set(
+      produce((state: BlockSlice) => {
+        const block = state.blocks.find((b) => b.id === fileId)
+        if (block && block.type === "fileAttachment") {
+          block.attachment.uploadStatus = status
+          if (errorMessage) {
+            block.attachment.errorMessage = errorMessage
+          }
+        }
+      }),
+    )
+  }
+
+  removeFileAttachment(fileId: string) {
+    this.removeBlock(fileId)
   }
 }

@@ -1,16 +1,16 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { tracker } from "@follow/tracker"
 import { clsx, cn, nextFrame } from "@follow/utils"
-import { springScrollTo } from "@follow/utils/scroller"
 import type { BizUIMessage } from "@folo-services/ai-tools"
 import { ErrorBoundary } from "@sentry/react"
 import type { EditorState, LexicalEditor } from "lexical"
 import { AnimatePresence } from "motion/react"
 import { nanoid } from "nanoid"
 import type { FC } from "react"
-import { useCallback, useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
+import { useAISettingKey } from "~/atoms/settings/ai"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
@@ -28,18 +28,25 @@ import {
 } from "~/modules/ai-chat/store/hooks"
 
 import { convertLexicalToMarkdown } from "../../utils/lexical-markdown"
+import { GlobalFileDropZone } from "../file/GlobalFileDropZone"
 import { AIErrorFallback } from "./AIErrorFallback"
 import { ChatInput } from "./ChatInput"
 import { CollapsibleError } from "./CollapsibleError"
 import { WelcomeScreen } from "./WelcomeScreen"
 
-const SCROLL_BOTTOM_THRESHOLD = window.innerHeight / 2
+const SCROLL_BOTTOM_THRESHOLD = 100
 
 const ChatInterfaceContent = () => {
   const hasMessages = useHasMessages()
   const status = useChatStatus()
   const chatActions = useChatActions()
   const error = useChatError()
+
+  useEffect(() => {
+    if (error) {
+      console.error("AIChat Error:", error)
+    }
+  }, [error])
 
   const currentChatId = useCurrentChatId()
 
@@ -67,7 +74,12 @@ const ChatInterfaceContent = () => {
     },
   })
 
-  const { resetScrollState } = useAutoScroll(scrollAreaRef, status === "streaming")
+  const autoScrollWhenStreaming = useAISettingKey("autoScrollWhenStreaming")
+
+  const { resetScrollState } = useAutoScroll(
+    scrollAreaRef,
+    autoScrollWhenStreaming && status === "streaming",
+  )
 
   useEffect(() => {
     const scrollElement = scrollAreaRef
@@ -90,25 +102,34 @@ const ChatInterfaceContent = () => {
     }
   }, [scrollAreaRef])
 
-  const scrollToBottom = useCallback(() => {
-    const scrollElement = scrollAreaRef
-    if (!scrollElement) return
-
-    springScrollTo(scrollElement.scrollHeight, scrollElement)
-  }, [scrollAreaRef])
-
   const blockActions = useBlockActions()
   const handleSendMessage = useEventCallback(
     (message: string | EditorState, editor: LexicalEditor | null) => {
       resetScrollState()
 
+      const blocks = [] as any[]
+
+      for (const block of blockActions.getBlocks()) {
+        if (block.type === "fileAttachment" && block.attachment.serverUrl) {
+          blocks.push({
+            ...block,
+            attachment: {
+              id: block.attachment.id,
+              name: block.attachment.name,
+              type: block.attachment.type,
+              size: block.attachment.size,
+              serverUrl: block.attachment.serverUrl,
+            },
+          })
+        } else {
+          blocks.push(block)
+        }
+      }
+
       const parts: BizUIMessage["parts"] = [
         {
           type: "data-block",
-          data: blockActions.getBlocks().map((b) => ({
-            type: b.type,
-            value: b.value,
-          })),
+          data: blocks,
         },
       ]
 
@@ -121,7 +142,7 @@ const ChatInterfaceContent = () => {
         parts.push({
           type: "data-rich-text",
           data: {
-            state: message.toJSON(),
+            state: JSON.stringify(message.toJSON()),
             text: convertLexicalToMarkdown(editor),
           },
         })
@@ -145,13 +166,15 @@ const ChatInterfaceContent = () => {
   const shouldShowScrollToBottom = hasMessages && !isAtBottom && !isLoadingHistory
 
   return (
-    <div className="flex size-full flex-col">
+    <GlobalFileDropZone className="flex size-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col">
         <AnimatePresence>
           {!hasMessages && !isLoadingHistory ? (
             <WelcomeScreen onSend={handleSendMessage} />
           ) : (
             <ScrollArea
+              flex
+              scrollbarClassName="mb-40 mt-12"
               ref={setScrollAreaRef}
               rootClassName="flex-1"
               viewportClassName={cn("pt-12 pb-32", error && "pb-48")}
@@ -161,9 +184,10 @@ const ChatInterfaceContent = () => {
                   <i className="i-mgc-loading-3-cute-re text-text size-8 animate-spin" />
                 </div>
               ) : (
-                <div className="mx-auto max-w-4xl px-6 py-8">
+                <div className="mx-auto w-full max-w-4xl px-6 py-8">
                   <Messages />
-                  {status === "submitted" && <AIChatWaitingIndicator />}
+
+                  {(status === "submitted" || status === "streaming") && <AIChatWaitingIndicator />}
                 </div>
               )}
             </ScrollArea>
@@ -172,24 +196,19 @@ const ChatInterfaceContent = () => {
       </div>
 
       {shouldShowScrollToBottom && (
-        <div className="absolute inset-x-0 bottom-32 z-10">
-          <div className="mx-auto max-w-[300px] p-6 pb-3">
-            <button
-              type="button"
-              onClick={scrollToBottom}
-              className="bg-accent/10 border-accent/20 shadow-accent/5 dark:shadow-accent/10 hover:bg-accent/15 backdrop-blur-background group relative w-full overflow-hidden rounded-xl border shadow-lg transition-colors"
-            >
-              {/* Glass effect overlay */}
-              <div className="from-accent/5 absolute inset-0 bg-gradient-to-r to-transparent" />
-
-              {/* Content */}
-              <div className="relative z-10 flex items-center justify-center gap-2 p-3">
-                <i className="i-mingcute-arrow-down-circle-fill text-accent size-3" />
-
-                <span className="text-accent text-sm font-medium">Scroll to Bottom</span>
-              </div>
-            </button>
-          </div>
+        <div className={clsx("absolute right-1/2 z-40 translate-x-1/2", "bottom-44")}>
+          <button
+            type="button"
+            onClick={() => resetScrollState()}
+            className={cn(
+              "backdrop-blur-background group flex items-center gap-2 rounded-full border px-3.5 py-2 transition-all",
+              "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
+              "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+            )}
+          >
+            <i className="i-mingcute-arrow-down-line text-text/90 size-3" />
+            <span className="text-text/90 text-[13px] font-medium">Scroll to Bottom</span>
+          </button>
         </div>
       )}
 
@@ -203,7 +222,7 @@ const ChatInterfaceContent = () => {
         {error && <CollapsibleError error={error} />}
         <ChatInput onSend={handleSendMessage} variant={!hasMessages ? "minimal" : "default"} />
       </div>
-    </div>
+    </GlobalFileDropZone>
   )
 }
 
@@ -216,5 +235,13 @@ export const ChatInterface = () => (
 const Messages: FC = () => {
   const messages = useMessages()
 
-  return messages.map((message) => <AIChatMessage key={message.id} message={message} />)
+  return (
+    <div className="relative flex min-w-0 flex-1 flex-col">
+      {messages.map((message) => (
+        <Suspense key={message.id}>
+          <AIChatMessage message={message} />
+        </Suspense>
+      ))}
+    </div>
+  )
 }

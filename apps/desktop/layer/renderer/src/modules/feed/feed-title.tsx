@@ -27,8 +27,7 @@ export const FeedTitle = ({
   return (
     <div className={cn("flex select-none items-center truncate", className)} style={style}>
       <EllipsisHorizontalTextWithTooltip className={cn("truncate", titleClassName)}>
-        {getPreferredTitle(feed) || title}
-        {/* {title?.repeat(222)} */}
+        {title || getPreferredTitle(feed)}
       </EllipsisHorizontalTextWithTooltip>
       {!hideExtraBadge && (
         <>

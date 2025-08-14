@@ -377,7 +377,12 @@ export const AvatarUploadModal = ({
     <div className="flex flex-col gap-4">
       {!selectedImage ? (
         <div className="aspect-square h-[400px] space-y-4">
-          <DropZone onDrop={handleFileSelect} className="size-full">
+          <DropZone
+            id="upload-avatar"
+            onDrop={handleFileSelect}
+            accept="image/*"
+            className="size-full"
+          >
             <div className="flex flex-col items-center gap-2 p-8">
               <i className="i-mgc-file-upload-cute-re text-text-secondary text-4xl" />
               <div className="text-center">

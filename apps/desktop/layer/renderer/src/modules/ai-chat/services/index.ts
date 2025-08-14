@@ -74,7 +74,7 @@ class AIPersistServiceStatic {
    * Returns both session details and messages to avoid redundant queries
    */
   async loadSessionWithMessages(chatId: string): Promise<{
-    session: { chatId: string; title?: string; createdAt: Date } | null
+    session: { chatId: string; title?: string; createdAt: Date; updatedAt: Date } | null
     messages: BizUIMessage[]
   }> {
     // Load both session and messages in parallel
@@ -154,23 +154,25 @@ class AIPersistServiceStatic {
     await db
       .insert(aiChatMessagesTable)
       .values(
-        messages.map((message) => {
-          const convertedParts = message.parts as any[]
+        messages
+          .filter((message) => message.parts.length > 0)
+          .map((message) => {
+            const convertedParts = message.parts as any[]
 
-          return {
-            id: message.id,
-            chatId,
-            role: message.role,
-            contentFormat: "plaintext" as const,
-            createdAt: new Date(),
-            status: "completed" as const,
-            finishedAt: message.metadata?.finishTime
-              ? new Date(message.metadata.finishTime)
-              : undefined,
-            messageParts: convertedParts,
-            metadata: message.metadata,
-          } as typeof aiChatMessagesTable.$inferInsert
-        }),
+            return {
+              id: message.id,
+              chatId,
+              role: message.role,
+              contentFormat: "plaintext" as const,
+              createdAt: new Date(),
+              status: "completed" as const,
+              finishedAt: message.metadata?.finishTime
+                ? new Date(message.metadata.finishTime)
+                : undefined,
+              messageParts: convertedParts,
+              metadata: message.metadata,
+            } as typeof aiChatMessagesTable.$inferInsert
+          }),
       )
       .onConflictDoUpdate({
         target: [aiChatMessagesTable.id],
@@ -244,6 +246,7 @@ class AIPersistServiceStatic {
         chatId: true,
         title: true,
         createdAt: true,
+        updatedAt: true,
       },
     })
 
@@ -265,8 +268,9 @@ class AIPersistServiceStatic {
         chatId: true,
         title: true,
         createdAt: true,
+        updatedAt: true,
       },
-      orderBy: (t, { desc }) => desc(t.createdAt),
+      orderBy: (t, { desc }) => desc(t.updatedAt),
       limit,
     })
 
@@ -291,6 +295,7 @@ class AIPersistServiceStatic {
         chatId: chat.chatId,
         title: chat.title,
         createdAt: chat.createdAt,
+        updatedAt: chat.updatedAt,
         messageCount: messageCountMap.get(chat.chatId) || 0,
       }))
       .filter((chat) => chat.messageCount > 0)
@@ -308,6 +313,15 @@ class AIPersistServiceStatic {
       .update(aiChatTable)
       .set({
         title,
+        updatedAt: new Date(Date.now()),
+      })
+      .where(eq(aiChatTable.chatId, chatId))
+  }
+
+  async updateSessionTime(chatId: string) {
+    await db
+      .update(aiChatTable)
+      .set({
         updatedAt: new Date(Date.now()),
       })
       .where(eq(aiChatTable.chatId, chatId))

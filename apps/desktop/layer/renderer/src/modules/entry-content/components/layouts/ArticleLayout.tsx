@@ -21,7 +21,7 @@ import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { AISummary } from "../../AISummary"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
-import { EntryContentAccessories } from "../entry-content/accessories"
+import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { EntryTitleMetaHandler } from "../entry-content/EntryTitleMetaHandler"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
@@ -72,7 +72,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   if (!entry) return null
 
   return (
-    <div className={cn(readableContentMaxWidthClassName, "mx-auto")}>
+    <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
       <WrappedElementProvider boundingDetection>
@@ -129,7 +129,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
+    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} stickyClassName="top-48" />),
     [isInPeekModal],
   )
 

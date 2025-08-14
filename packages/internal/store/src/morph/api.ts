@@ -11,11 +11,11 @@ import type {
   SubscriptionWithFeed,
 } from "@follow-app/client-sdk"
 
-import type { CollectionModel } from "../collection/types"
-import type { EntryModel } from "../entry/types"
-import type { FeedModel } from "../feed/types"
-import type { ListModel } from "../list/types"
-import type { SubscriptionModel } from "../subscription/types"
+import type { CollectionModel } from "../modules/collection/types"
+import type { EntryModel } from "../modules/entry/types"
+import type { FeedModel } from "../modules/feed/types"
+import type { ListModel } from "../modules/list/types"
+import type { SubscriptionModel } from "../modules/subscription/types"
 
 class APIMorph {
   toSubscription(

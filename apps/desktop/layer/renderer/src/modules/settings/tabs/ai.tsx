@@ -10,13 +10,21 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
+import {
+  AIChatPanelStyle,
+  setAIChatPanelStyle,
+  setAISetting,
+  useAIChatPanelStyle,
+  useAISettingValue,
+} from "~/atoms/settings/ai"
 import { apiFetch } from "~/lib/api-fetch"
 
-import { SettingActionItem, SettingDescription } from "../control"
+import { SettingActionItem, SettingDescription, SettingTabbedSegment } from "../control"
+import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
+const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
 
 export const SettingAI = () => {
   const { t } = useTranslation("ai")
@@ -32,9 +40,22 @@ export const SettingAI = () => {
           TokenUsageSection,
           {
             type: "title",
+            value: t("features.title"),
+          },
+
+          PanelStyleSegment,
+          defineSettingItem("autoScrollWhenStreaming", {
+            label: t("settings.autoScrollWhenStreaming.label"),
+            description: t("settings.autoScrollWhenStreaming.description"),
+          }),
+
+          {
+            type: "title",
             value: t("personalize.title"),
           },
+
           PersonalizePromptSetting,
+
           {
             type: "title",
             value: t("shortcuts.title"),
@@ -159,7 +180,7 @@ const PersonalizePromptSetting = () => {
     <div className="space-y-4">
       <div className="space-y-2">
         <Label className="text-text text-sm font-medium">{t("personalize.prompt.label")}</Label>
-        <div className="relative">
+        <div className="relative -mx-3">
           <TextArea
             value={prompt}
             onChange={handlePromptChange}
@@ -448,5 +469,34 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
         </div>
       </div>
     </div>
+  )
+}
+
+export const PanelStyleSegment = () => {
+  const { t } = useTranslation("ai")
+  const panelStyle = useAIChatPanelStyle()
+
+  return (
+    <SettingTabbedSegment
+      key="panel-style"
+      label={t("settings.panel_style.label")}
+      description={t("settings.panel_style.description")}
+      value={panelStyle}
+      values={[
+        {
+          value: AIChatPanelStyle.Fixed,
+          label: t("settings.panel_style.fixed"),
+          icon: <i className="i-mingcute-rectangle-vertical-line" />,
+        },
+        {
+          value: AIChatPanelStyle.Floating,
+          label: t("settings.panel_style.floating"),
+          icon: <i className="i-mingcute-layout-right-line" />,
+        },
+      ]}
+      onValueChanged={(value) => {
+        setAIChatPanelStyle(value as AIChatPanelStyle)
+      }}
+    />
   )
 }

@@ -42,7 +42,7 @@ import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
-import { EntryContentAccessories } from "./accessories"
+import { ContainerToc } from "./accessories/ContainerToc"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
@@ -120,7 +120,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       {!isInPeekModal && (
         <EntryHeader
           entryId={entryId}
-          view={view}
           className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
           compact={compact}
         />
@@ -254,7 +253,9 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      stopWheelPropagation={false}
+      viewportProps={{
+        onWheel: stopPropagation,
+      }}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
         className,
@@ -284,7 +285,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
+    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} />),
     [isInPeekModal],
   )
 

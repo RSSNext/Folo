@@ -10,7 +10,7 @@ import { memo, useCallback, useRef, useState } from "react"
 
 import { AIChatContextBar } from "~/modules/ai-chat/components/layouts/AIChatContextBar"
 
-import { MentionPlugin } from "../../editor"
+import { FileUploadPlugin, MentionPlugin } from "../../editor"
 import { useChatActions, useChatStatus } from "../../store/hooks"
 import { AIChatSendButton } from "./AIChatSendButton"
 
@@ -95,7 +95,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
             onChange={handleEditorChange}
             onKeyDown={handleKeyDown}
             autoFocus
-            plugins={[MentionPlugin]}
+            plugins={[MentionPlugin, FileUploadPlugin]}
             namespace="AIChatRichEditor"
           />
         </ScrollArea>

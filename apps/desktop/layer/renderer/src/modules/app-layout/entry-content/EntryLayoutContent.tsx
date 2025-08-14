@@ -1,5 +1,6 @@
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { views } from "@follow/constants"
+import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
@@ -7,7 +8,7 @@ import { useMemo } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
-import { useAIChatPinned } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { useRealInWideMode } from "~/atoms/settings/ui"
 import { useTimelineColumnShow, useTimelineColumnTempShow } from "~/atoms/sidebar"
 import { m } from "~/components/common/Motion"
@@ -28,6 +29,7 @@ const EntryLayoutContentLegacy = () => {
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
+  usePrefetchEntryDetail(realEntryId)
   const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
   const wideMode = !!(settingWideMode && realEntryId)
   const feedColumnTempShow = useTimelineColumnTempShow()
@@ -92,7 +94,7 @@ export const EntryLayoutContentWithAI = () => {
 export const EntryLayoutContent = () => {
   const aiEnabled = useFeature("ai")
   if (aiEnabled) {
-    return <EntryLayoutContentWithAI />
+    return null
   }
   return <EntryLayoutContentLegacy />
 }
@@ -102,7 +104,8 @@ const Grid = ({ entryId }) => {
   const wideMode = !!(settingWideMode && entryId)
   const feedColumnTempShow = useTimelineColumnTempShow()
   const feedColumnShow = useTimelineColumnShow()
-  const aiPinned = useAIChatPinned()
+  const panelStyle = useAIChatPanelStyle()
+  const aiPinned = panelStyle === AIChatPanelStyle.Fixed
   const shouldHeaderPaddingLeft = feedColumnTempShow && !feedColumnShow && settingWideMode
 
   const { isDragging, position, separatorProps, separatorCursor } = useResizable({
@@ -174,6 +177,6 @@ const EntryGridContainer: FC<
       </m.div>
     )
   } else {
-    return <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+    return <div className="relative flex min-w-0 flex-1 flex-col">{children}</div>
   }
 }

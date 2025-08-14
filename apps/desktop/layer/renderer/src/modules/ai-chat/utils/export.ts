@@ -1,6 +1,7 @@
 import type { UIDataTypes, UIMessage } from "ai"
 
 import type { BizUIMetadata, BizUITools } from "../store/types"
+import type { RichTextPart } from "../types/ChatSession"
 
 export const exportChatToMarkdown = (
   messages: UIMessage<BizUIMetadata, UIDataTypes, BizUITools>[],
@@ -19,11 +20,17 @@ export const exportChatToMarkdown = (
       markdown += `## 👤 User\n`
       if (timestamp) markdown += `*${timestamp}*\n\n`
 
-      // Extract text content from parts
+      // Extract text content from parts in single pass
       const textContent =
         message.parts
-          ?.filter((part) => part.type === "text")
-          .map((part) => part.text)
+          ?.reduce((acc, part) => {
+            if (part.type === "text") {
+              acc.push(part.text)
+            } else if (part.type === "data-rich-text") {
+              acc.push((part as RichTextPart).data.text)
+            }
+            return acc
+          }, [] as string[])
           .join("\n") || ""
 
       markdown += `${textContent}\n\n`
@@ -31,11 +38,17 @@ export const exportChatToMarkdown = (
       markdown += `## 🤖 ${APP_NAME} AI\n`
       if (timestamp) markdown += `*${timestamp}*\n\n`
 
-      // Extract text content from parts
+      // Extract text content from parts in single pass
       const textContent =
         message.parts
-          ?.filter((part) => part.type === "text")
-          .map((part) => part.text)
+          ?.reduce((acc, part) => {
+            if (part.type === "text") {
+              acc.push(part.text)
+            } else if (part.type === "data-rich-text") {
+              acc.push((part as RichTextPart).data.text)
+            }
+            return acc
+          }, [] as string[])
           .join("\n") || ""
 
       markdown += `${textContent}\n\n`

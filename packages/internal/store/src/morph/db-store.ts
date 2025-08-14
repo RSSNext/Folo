@@ -1,7 +1,7 @@
 import type { EntrySchema, SubscriptionSchema } from "@follow/database/schemas/types"
 
-import type { EntryModel } from "../entry/types"
-import type { SubscriptionModel } from "../subscription/types"
+import type { EntryModel } from "../modules/entry/types"
+import type { SubscriptionModel } from "../modules/subscription/types"
 
 class DbStoreMorph {
   toSubscriptionModel(subscription: SubscriptionSchema): SubscriptionModel {

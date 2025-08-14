@@ -3,13 +3,12 @@ import { CircleProgress } from "@follow/components/icons/Progress.js"
 import { MotionButtonBase } from "@follow/components/ui/button/index.js"
 import { RootPortal } from "@follow/components/ui/portal/index.jsx"
 import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
-import { EventBus } from "@follow/utils/event-bus"
 import { springScrollTo } from "@follow/utils/scroller"
 import { cn } from "@follow/utils/utils"
 import { useStore } from "jotai"
 import { memo, useEffect, useMemo, useState } from "react"
 
-import { useAIChatPinned } from "~/atoms/settings/ai"
+import { AIChatPanelStyle, setAIPanelVisibility, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { Toc } from "~/components/ui/markdown/components/Toc"
 import { useFeature } from "~/hooks/biz/useFeature"
@@ -51,7 +50,8 @@ const BackTopIndicator: Component = memo(({ className }) => {
   const scrollElement = useScrollViewElement()
   const aiEnabled = useFeature("ai")
 
-  const isAiPanelOpen = useAIChatPinned()
+  const panelStyle = useAIChatPanelStyle()
+  const isAiPanelOpen = panelStyle === AIChatPanelStyle.Fixed
 
   return (
     <span
@@ -68,7 +68,7 @@ const BackTopIndicator: Component = memo(({ className }) => {
       {aiEnabled && !isAiPanelOpen && (
         <MotionButtonBase
           onClick={() => {
-            EventBus.dispatch("global:toggle-ai-chat-pinned")
+            setAIPanelVisibility(true)
           }}
           className={cn(
             "mt-1 flex flex-nowrap items-center gap-2 text-sm opacity-50 transition-all duration-500 hover:opacity-100",
@@ -95,16 +95,27 @@ const BackTopIndicator: Component = memo(({ className }) => {
 })
 
 export const ContainerToc = memo(
-  ({ ref, ..._ }: ComponentType & { ref?: React.Ref<TocRef | null> }) => {
+  ({
+    ref,
+    className,
+    stickyClassName,
+  }: ComponentType & {
+    ref?: React.Ref<TocRef | null>
+    className?: string
+    stickyClassName?: string
+  }) => {
     const wrappedElement = useWrappedElement()
 
     return (
       <RootPortal to={wrappedElement!}>
         <div
-          className="@[770px]:block group absolute right-[-130px] top-0 hidden h-full w-[100px]"
+          className={cn(
+            "@[770px]:block group absolute right-[-130px] top-0 hidden h-full w-[100px]",
+            className,
+          )}
           data-hide-in-print
         >
-          <div className="sticky top-0">
+          <div className={cn("sticky top-0", stickyClassName)}>
             <Toc
               ref={ref}
               className={cn(
