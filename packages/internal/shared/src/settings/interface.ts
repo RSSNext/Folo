@@ -178,9 +178,37 @@ export interface AIShortcut {
   hotkey?: string
 }
 
+export type MCPServiceHealthStatus = "healthy" | "degraded" | "unhealthy"
+
+export interface MCPService {
+  id: string
+  name: string
+  baseUrl: string
+  mcpEndpoint: string
+
+  // OAuth Discovery Data
+  authorizationEndpoint: string
+  tokenEndpoint: string
+  clientId: string
+  requiredScopes?: string
+
+  // Service Status
+  isActive: boolean
+  healthStatus?: MCPServiceHealthStatus
+
+  // Local connection state (not persisted in DB)
+  isConnected?: boolean
+  connectionStatus?: "connecting" | "connected" | "disconnected" | "error"
+  lastError?: string
+}
+
 export interface AISettings {
   personalizePrompt: string
   shortcuts: AIShortcut[]
+
+  // MCP Services
+  mcpEnabled: boolean
+  mcpServices: MCPService[]
 
   // Features
   autoScrollWhenStreaming: boolean

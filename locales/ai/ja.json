@@ -20,7 +20,6 @@
   "shortcuts.added": "ショートカットが正常に追加されました",
   "shortcuts.create_first": "最初のショートカットを作成",
   "shortcuts.deleted": "ショートカットが正常に削除されました",
-  "shortcuts.description": "クイックアクションのためのカスタムAIショートカットを作成します",
   "shortcuts.empty.description": "一般的なタスクを迅速に実行し、即座にAIアシスタンスを得るためのカスタムAIショートカットを作成します。",
   "shortcuts.empty.title": "ショートカットはまだありません",
   "shortcuts.enabled": "有効",
