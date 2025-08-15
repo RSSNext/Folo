@@ -355,7 +355,7 @@
   "integration.custom_integrations.form.body.description": "POST/PUT/PATCHメソッドのリクエストボディ。プレースホルダーとJSON形式をサポートします。",
   "integration.custom_integrations.form.body.label": "リクエストボディ",
   "integration.custom_integrations.form.body.placeholder": "{\"title\": \"[title]\", \"url\": \"[url]\", \"content\": \"[content_markdown]\"}",
-  "integration.custom_integrations.form.fetch_template.label": "Fetch Template",
+  "integration.custom_integrations.form.fetch_template.label": "テンプレートを取得する",
   "integration.custom_integrations.form.headers.add": "ヘッダーを追加",
   "integration.custom_integrations.form.headers.description": "キーと値のペアとしてカスタムヘッダーを追加します。値はプレースホルダーをサポートします。",
   "integration.custom_integrations.form.headers.key_placeholder": "ヘッダー名",
