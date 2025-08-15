@@ -222,9 +222,6 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      viewportProps={{
-        onWheel: stopPropagation,
-      }}
       flex
       rootClassName={cn(
         "flex-1 min-h-0 overflow-y-auto print:h-auto print:overflow-visible",
