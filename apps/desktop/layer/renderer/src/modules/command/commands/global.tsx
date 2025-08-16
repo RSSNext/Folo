@@ -94,8 +94,14 @@ export type ToggleAIChatCommand = Command<{
   fn: (ctx?: { entryId?: string }) => void
 }>
 
+export type ToggleAIChatPinnedCommand = Command<{
+  id: typeof COMMAND_ID.global.toggleAIChatPinned
+  fn: () => void
+}>
+
 export type GlobalCommand =
   | ShowShortcutsCommand
   | ToggleCornerPlayCommand
   | QuickAddCommand
+  | ToggleAIChatPinnedCommand
   | ToggleAIChatCommand

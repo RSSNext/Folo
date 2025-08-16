@@ -2,6 +2,8 @@
 
 ## Shiny new things
 
+- add a button to open the search panel (#4296)
+
 ## Improvements
 
 ## No longer broken

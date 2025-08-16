@@ -45,6 +45,7 @@ export const defaultGeneralSettings: GeneralSettings = {
 
 export const defaultUISettings: UISettings = {
   accentColor: "orange",
+  showSearchButton: true,
 
   // Sidebar
   entryColWidth: 356,
