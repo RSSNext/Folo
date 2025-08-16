@@ -1,4 +1,4 @@
-const langs = ["en", "ja", "zh-CN", "zh-TW"] as const
+const langs = ["en", "ja", "zh-CN", "zh-TW", "ko"] as const
 export const currentSupportedLanguages = langs as readonly string[]
 export type MobileSupportedLanguages = (typeof langs)[number]
 
@@ -10,4 +10,5 @@ export const dayjsLocaleImportMap = {
   ["zh-CN"]: ["zh-cn", () => import("dayjs/locale/zh-cn")],
   ["ja"]: ["ja", () => import("dayjs/locale/ja")],
   ["zh-TW"]: ["zh-tw", () => import("dayjs/locale/zh-tw")],
+  ["ko"]: ["ko", () => import("dayjs/locale/ko")],
 } as const
