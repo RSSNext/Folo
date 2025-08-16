@@ -17,7 +17,7 @@ jobs:
         node-version: [lts/*]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
       - name: Cache turbo build setup

@@ -56,13 +56,13 @@ jobs:
 
     steps:
       - name: Check out Git repository Fully
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: env.PROD == 'true'
         with:
           fetch-depth: 0
           lfs: true
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: env.PROD == 'false'
         with:
           fetch-depth: 1
