@@ -4,8 +4,6 @@ import { Skeleton } from "@follow/components/ui/skeleton/index.jsx"
 import { FeedViewType } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
 import { getEntry } from "@follow/store/entry/getter"
-import type { EntryModel } from "@follow/store/entry/types"
-// import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { clsx } from "@follow/utils/utils"
 import { ErrorBoundary } from "@sentry/react"
 import type { RenderComponentProps } from "masonic"
@@ -96,8 +94,6 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
       maybeLoadMore(startIndex, stopIndex, items as any[]),
     [maybeLoadMore],
   )
-
-  // Let useInfiniteLoader handle all loading - no additional scroll trigger needed
 
   // Mark as read functionality
   const renderMarkRead = useGeneralSettingKey("renderMarkUnread")
@@ -210,45 +206,18 @@ const MasonryItemRender: React.ComponentType<RenderComponentProps<MasonryItem>> 
   const entry = getEntry(data.entryId)
   if (!entry) return <LoadingSkeleton count={1} />
 
-  const viewType = determineViewType(entry)
-
   return (
     <div
       data-entry-id={data.entryId}
       data-index={index}
       className={clsx(
-        "border-border bg-background overflow-hidden rounded-lg border shadow-sm",
+        "bg-background rounded-lg shadow-sm",
         "transition-all duration-200 hover:shadow-md",
       )}
     >
-      <EntryItem entryId={data.entryId} view={viewType} />
+      <EntryItem entryId={data.entryId} view={FeedViewType.All} />
     </div>
   )
-}
-
-// Determine the most appropriate view type for an entry
-function determineViewType(entry: EntryModel): FeedViewType {
-  // Check for media content
-  if (entry.media && entry.media.length > 0) {
-    const firstMedia = entry.media[0]
-    if (firstMedia?.type?.includes("video")) {
-      return FeedViewType.Videos
-    }
-    if (firstMedia?.type?.includes("image")) {
-      return FeedViewType.Pictures
-    }
-    if (firstMedia?.type?.includes("audio")) {
-      return FeedViewType.Audios
-    }
-  }
-
-  // Check for social media indicators (short content)
-  if (entry.content && entry.content.length < 500) {
-    return FeedViewType.SocialMedia
-  }
-
-  // Default to articles
-  return FeedViewType.Articles
 }
 
 // Error boundary wrapper for Masonry
