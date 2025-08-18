@@ -178,35 +178,28 @@ export interface AIShortcut {
   hotkey?: string
 }
 
-export type MCPServiceHealthStatus = "healthy" | "degraded" | "unhealthy"
+export type MCPTransportType = "streamable-http" | "sse"
 
 export interface MCPService {
   id: string
   name: string
-  baseUrl: string
-  mcpEndpoint: string
-
-  // OAuth Discovery Data
-  authorizationEndpoint: string
-  tokenEndpoint: string
-  clientId: string
-  requiredScopes?: string
-
-  // Service Status
-  isActive: boolean
-  healthStatus?: MCPServiceHealthStatus
-
-  // Local connection state (not persisted in DB)
-  isConnected?: boolean
-  connectionStatus?: "connecting" | "connected" | "disconnected" | "error"
+  transportType: MCPTransportType
+  url?: string
+  headers?: Record<string, string>
+  isConnected: boolean
   lastError?: string
+  toolCount: number
+  resourceCount: number
+  promptCount: number
+  createdAt: string
+  lastUsed: string | null
 }
 
 export interface AISettings {
   personalizePrompt: string
   shortcuts: AIShortcut[]
 
-  // MCP Services
+  // MCP Services (stored locally, actual connections managed via server API)
   mcpEnabled: boolean
   mcpServices: MCPService[]
 

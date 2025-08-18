@@ -1,33 +1,49 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { Button } from "@follow/components/ui/button/index.js"
 import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import { KbdCombined } from "@follow/components/ui/kbd/Kbd.js"
+import { KeyValueEditor } from "@follow/components/ui/key-value-editor/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@follow/components/ui/select/index.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import type { AIShortcut, MCPService } from "@follow/shared/settings/interface"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { AnimatePresence } from "motion/react"
+import * as React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import {
-  addMCPService,
   AIChatPanelStyle,
-  connectMCPService,
-  discoverMCPService,
-  removeMCPService,
   setAIChatPanelStyle,
   setAISetting,
   setMCPEnabled,
-  toggleMCPService,
-  updateMCPService,
   useAIChatPanelStyle,
   useAISettingValue,
   useMCPEnabled,
-  useMCPServices,
 } from "~/atoms/settings/ai"
+import { m } from "~/components/common/Motion"
+import { useDialog, useModalStack } from "~/components/ui/modal/stacked/hooks"
+import {
+  createMCPConnection,
+  deleteMCPConnection,
+  fetchMCPConnections,
+  mcpQueryKeys,
+  refreshMCPTools,
+  updateMCPConnection,
+} from "~/queries/mcp"
 
 import { SettingActionItem, SettingDescription, SettingTabbedSegment } from "../control"
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
+import { SettingModalContentPortal } from "../modal/layout"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
 const defineSettingItem = createDefineSettingItem(useAISettingValue, setAISetting)
@@ -141,17 +157,31 @@ const PersonalizePromptSetting = () => {
         </SettingDescription>
       </div>
 
-      <div className="flex h-9 justify-end">
-        <Button
-          onClick={handleSave}
-          disabled={isSaving || !hasChanges || isOverLimit}
-          buttonClassName={`transition-opacity duration-200 ${
-            hasChanges && !isOverLimit ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
-      </div>
+      <AnimatePresence>
+        {hasChanges && (
+          <SettingModalContentPortal>
+            <m.div
+              initial={{ y: 20, scale: 0.95 }}
+              animate={{ y: 0, scale: 1 }}
+              exit={{ y: 20, scale: 0.95 }}
+              transition={Spring.presets.snappy}
+              className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
+            >
+              <div className="backdrop-blur-background bg-material-medium border-border shadow-perfect flex w-fit max-w-[92%] items-center justify-between gap-3 rounded-full border py-2 pl-5 pr-2">
+                <span className="text-text-secondary text-xs sm:text-sm">Unsaved changes</span>
+                <Button
+                  buttonClassName="bg-accent rounded-full"
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={isSaving || isOverLimit}
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </m.div>
+          </SettingModalContentPortal>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -159,20 +189,49 @@ const PersonalizePromptSetting = () => {
 const AIShortcutsSection = () => {
   const { t } = useTranslation("ai")
   const { shortcuts } = useAISettingValue()
-  const [isCreating, setIsCreating] = useState(false)
+  const { present } = useModalStack()
 
   const handleAddShortcut = () => {
-    setIsCreating(true)
+    present({
+      title: "Add AI Shortcut",
+      content: ({ dismiss }: { dismiss: () => void }) => (
+        <ShortcutModalContent
+          shortcut={null}
+          onSave={(shortcut) => {
+            const newShortcut: AIShortcut = {
+              ...shortcut,
+              id: Date.now().toString(),
+            }
+            setAISetting("shortcuts", [...shortcuts, newShortcut])
+            toast.success(t("shortcuts.added"))
+            dismiss()
+          }}
+          onCancel={dismiss}
+        />
+      ),
+    })
   }
 
-  const handleSaveShortcut = (shortcut: Omit<AIShortcut, "id">) => {
-    const newShortcut: AIShortcut = {
-      ...shortcut,
-      id: Date.now().toString(),
-    }
-    setAISetting("shortcuts", [...shortcuts, newShortcut])
-    setIsCreating(false)
-    toast.success(t("shortcuts.added"))
+  const handleEditShortcut = (shortcut: AIShortcut) => {
+    present({
+      title: "Edit AI Shortcut",
+      content: ({ dismiss }: { dismiss: () => void }) => (
+        <ShortcutModalContent
+          shortcut={shortcut}
+          onSave={(updatedShortcut) => {
+            setAISetting(
+              "shortcuts",
+              shortcuts.map((s) =>
+                s.id === shortcut.id ? { ...updatedShortcut, id: shortcut.id } : s,
+              ),
+            )
+            toast.success(t("shortcuts.updated"))
+            dismiss()
+          }}
+          onCancel={dismiss}
+        />
+      ),
+    })
   }
 
   const handleDeleteShortcut = (id: string) => {
@@ -190,14 +249,6 @@ const AIShortcutsSection = () => {
     )
   }
 
-  const handleUpdateShortcut = (id: string, updatedShortcut: Omit<AIShortcut, "id">) => {
-    setAISetting(
-      "shortcuts",
-      shortcuts.map((s) => (s.id === id ? { ...updatedShortcut, id } : s)),
-    )
-    toast.success(t("shortcuts.updated"))
-  }
-
   return (
     <div className="space-y-4">
       <SettingActionItem
@@ -206,11 +257,7 @@ const AIShortcutsSection = () => {
         buttonText={t("shortcuts.add")}
       />
 
-      {isCreating && (
-        <ShortcutEditor onSave={handleSaveShortcut} onCancel={() => setIsCreating(false)} />
-      )}
-
-      {shortcuts.length === 0 && !isCreating && (
+      {shortcuts.length === 0 && (
         <div className="py-8 text-center">
           <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
             <i className="i-mgc-magic-2-cute-re text-text size-6" />
@@ -226,7 +273,7 @@ const AIShortcutsSection = () => {
           shortcut={shortcut}
           onDelete={handleDeleteShortcut}
           onToggle={handleToggleShortcut}
-          onUpdate={handleUpdateShortcut}
+          onEdit={handleEditShortcut}
         />
       ))}
     </div>
@@ -237,29 +284,10 @@ interface ShortcutItemProps {
   shortcut: AIShortcut
   onDelete: (id: string) => void
   onToggle: (id: string, enabled: boolean) => void
-  onUpdate: (id: string, shortcut: Omit<AIShortcut, "id">) => void
+  onEdit: (shortcut: AIShortcut) => void
 }
 
-const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemProps) => {
-  const [isEditing, setIsEditing] = useState(false)
-
-  const handleSave = (updatedShortcut: Omit<AIShortcut, "id">) => {
-    onUpdate(shortcut.id, updatedShortcut)
-    setIsEditing(false)
-  }
-
-  if (isEditing) {
-    return (
-      <div className="before:bg-accent relative pl-4 before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-full before:content-['']">
-        <ShortcutEditor
-          shortcut={shortcut}
-          onSave={handleSave}
-          onCancel={() => setIsEditing(false)}
-        />
-      </div>
-    )
-  }
-
+const ShortcutItem = ({ shortcut, onDelete, onToggle, onEdit }: ShortcutItemProps) => {
   return (
     <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
       <div className="flex items-start justify-between">
@@ -279,7 +307,7 @@ const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemPr
 
         <div className="ml-4 flex items-center gap-3">
           <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+            <Button variant="ghost" size="sm" onClick={() => onEdit(shortcut)}>
               <i className="i-mgc-edit-cute-re size-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={() => onDelete(shortcut.id)}>
@@ -302,13 +330,13 @@ const ShortcutItem = ({ shortcut, onDelete, onToggle, onUpdate }: ShortcutItemPr
   )
 }
 
-interface ShortcutEditorProps {
-  shortcut?: AIShortcut
+interface ShortcutModalContentProps {
+  shortcut?: AIShortcut | null
   onSave: (shortcut: Omit<AIShortcut, "id">) => void
   onCancel: () => void
 }
 
-const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => {
+const ShortcutModalContent = ({ shortcut, onSave, onCancel }: ShortcutModalContentProps) => {
   const { t } = useTranslation("ai")
   const [name, setName] = useState(shortcut?.name || "")
   const [prompt, setPrompt] = useState(shortcut?.prompt || "")
@@ -329,9 +357,9 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
   }
 
   return (
-    <div className="bg-material-medium space-y-4 rounded-lg p-4">
+    <div className="w-[400px] space-y-4">
       <div className="grid grid-cols-6 gap-4">
-        <div className="col-span-4 space-y-2">
+        <div className="col-span-6 space-y-2">
           <Label className="text-text text-xs">{t("shortcuts.name")}</Label>
           <Input
             value={name}
@@ -403,52 +431,173 @@ const ShortcutEditor = ({ shortcut, onSave, onCancel }: ShortcutEditorProps) => 
 const MCPServicesSection = () => {
   const { t } = useTranslation("ai")
   const mcpEnabled = useMCPEnabled()
-  const mcpServices = useMCPServices()
+  const queryClient = useQueryClient()
+  const dialog = useDialog()
 
-  const [isCreating, setIsCreating] = useState(false)
+  // Reusable OAuth authorization handler using dialog
+  const handleOAuthAuthorization = async (authorizationUrl: string) => {
+    const confirmed = await dialog.ask({
+      title: t("integration.mcp.service.auth_required"),
+      message: t("integration.mcp.service.auth_message"),
+      confirmText: t("integration.mcp.service.open_auth"),
+      cancelText: t("words.cancel", { ns: "common" }),
+      variant: "ask",
+    })
 
-  const handleAddService = () => {
-    setIsCreating(true)
+    if (confirmed) {
+      const popup = window.open(
+        authorizationUrl,
+        "_blank",
+        "width=600,height=700,scrollbars=yes,resizable=yes",
+      )
+      if (!popup) {
+        toast.error(t("integration.mcp.service.popup_blocked"))
+      } else {
+        toast.success(t("integration.mcp.service.auth_window_opened"))
+      }
+    }
   }
 
-  const handleSaveService = async (
-    service: Omit<MCPService, "id" | "isActive" | "healthStatus">,
-  ) => {
-    try {
-      addMCPService({
-        ...service,
-        isActive: false,
-        healthStatus: undefined,
-      })
-      setIsCreating(false)
-      toast.success(t("integration.mcp.service.added"))
-    } catch {
+  // Query for MCP connections
+  const {
+    data: mcpServices = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: mcpQueryKeys.connections(),
+    queryFn: fetchMCPConnections,
+    enabled: mcpEnabled,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
+    retry: 2,
+  })
+
+  // Mutation for creating MCP connection
+  const createConnectionMutation = useMutation({
+    mutationFn: createMCPConnection,
+    onSuccess: async (result) => {
+      queryClient.invalidateQueries({ queryKey: mcpQueryKeys.connections() })
+
+      // Handle OAuth authorization if needed
+      if (result.authorizationUrl) {
+        await handleOAuthAuthorization(result.authorizationUrl)
+      } else {
+        toast.success(t("integration.mcp.service.added"))
+      }
+    },
+    onError: (error) => {
       toast.error(t("integration.mcp.service.discovery_failed"))
-    }
+      console.error("Failed to create MCP connection:", error)
+    },
+  })
+
+  // Mutation for updating MCP connection
+  const updateConnectionMutation = useMutation({
+    mutationFn: ({
+      connectionId,
+      updateData,
+    }: {
+      connectionId: string
+      updateData: Parameters<typeof updateMCPConnection>[1]
+    }) => updateMCPConnection(connectionId, updateData),
+    onSuccess: async (result) => {
+      queryClient.invalidateQueries({ queryKey: mcpQueryKeys.connections() })
+
+      // Handle OAuth authorization if needed
+      if (result.authorizationUrl) {
+        await handleOAuthAuthorization(result.authorizationUrl)
+      } else {
+        toast.success(t("integration.mcp.service.updated"))
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to update MCP connection")
+      console.error("Failed to update MCP connection:", error)
+    },
+  })
+
+  // Mutation for deleting MCP connection
+  const deleteConnectionMutation = useMutation({
+    mutationFn: deleteMCPConnection,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: mcpQueryKeys.connections() })
+      toast.success(t("integration.mcp.service.deleted"))
+    },
+    onError: (error) => {
+      toast.error("Failed to delete MCP connection")
+      console.error("Failed to delete MCP connection:", error)
+    },
+  })
+
+  // Mutation for refreshing MCP tools
+  const refreshToolsMutation = useMutation({
+    mutationFn: (connectionIds?: string[]) => refreshMCPTools(connectionIds),
+    onSuccess: () => {
+      // Invalidate both connections (for updated counts) and tools queries
+      queryClient.invalidateQueries({ queryKey: mcpQueryKeys.connections() })
+      queryClient.invalidateQueries({ queryKey: mcpQueryKeys.all })
+      toast.success("MCP tools refreshed successfully")
+    },
+    onError: (error) => {
+      toast.error("Failed to refresh MCP tools")
+      console.error("Failed to refresh MCP tools:", error)
+    },
+  })
+
+  const { present } = useModalStack()
+  const handleAddService = () => {
+    present({
+      title: "Add MCP Service",
+      content: ({ dismiss }: { dismiss: () => void }) => (
+        <MCPServiceModalContent
+          service={null}
+          onSave={(service) => {
+            createConnectionMutation.mutate(service)
+            dismiss()
+          }}
+          onCancel={dismiss}
+          isLoading={createConnectionMutation.isPending}
+        />
+      ),
+    })
+  }
+
+  const handleEditService = (service: MCPService) => {
+    present({
+      title: "Edit MCP Service",
+      content: ({ dismiss }: { dismiss: () => void }) => (
+        <MCPServiceModalContent
+          service={service}
+          onSave={(updatedService) => {
+            updateConnectionMutation.mutate({
+              connectionId: service.id,
+              updateData: updatedService,
+            })
+            dismiss()
+          }}
+          onCancel={dismiss}
+          isLoading={updateConnectionMutation.isPending}
+        />
+      ),
+    })
   }
 
   const handleDeleteService = (id: string) => {
-    removeMCPService(id)
-    toast.success(t("integration.mcp.service.deleted"))
+    deleteConnectionMutation.mutate(id)
   }
 
-  const handleToggleService = (id: string, isActive: boolean) => {
-    toggleMCPService(id, isActive)
+  const handleRefreshTools = (connectionId?: string) => {
+    refreshToolsMutation.mutate(connectionId ? [connectionId] : undefined)
   }
 
-  const handleUpdateService = (id: string, updatedService: Omit<MCPService, "id">) => {
-    updateMCPService(id, updatedService)
-    toast.success(t("integration.mcp.service.updated"))
-  }
-
-  const handleConnectService = async (id: string) => {
-    const success = await connectMCPService(id)
-    if (success) {
-      toast.success(t("integration.mcp.service.connected_success"))
-    } else {
-      toast.error(t("integration.mcp.service.connection_failed"))
+  // Show error message if query failed
+  React.useEffect(() => {
+    if (error) {
+      toast.error("Failed to load MCP connections")
+      console.error("Failed to load MCP connections:", error)
     }
-  }
+  }, [error])
 
   return (
     <div className="space-y-4">
@@ -468,17 +617,28 @@ const MCPServicesSection = () => {
             <Label className="text-text text-sm font-medium">
               {t("integration.mcp.services.title")}
             </Label>
-            <Button variant="outline" size="sm" onClick={handleAddService}>
-              <i className="i-mgc-add-cute-re mr-2 size-4" />
-              {t("integration.mcp.services.add")}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isLoading}
+                title="Refresh connections"
+              >
+                {isLoading ? (
+                  <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
+                ) : (
+                  <i className="i-mgc-refresh-2-cute-re size-4" />
+                )}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleAddService}>
+                <i className="i-mgc-add-cute-re mr-2 size-4" />
+                {t("integration.mcp.services.add")}
+              </Button>
+            </div>
           </div>
 
-          {isCreating && (
-            <MCPServiceEditor onSave={handleSaveService} onCancel={() => setIsCreating(false)} />
-          )}
-
-          {mcpServices.length === 0 && !isCreating && (
+          {mcpServices.length === 0 && (
             <div className="py-8 text-center">
               <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
                 <i className="i-mgc-plugin-2-cute-re text-text size-6" />
@@ -492,14 +652,26 @@ const MCPServicesSection = () => {
             </div>
           )}
 
+          {isLoading && (
+            <div className="flex items-center justify-center py-8">
+              <i className="i-mgc-loading-3-cute-re size-6 animate-spin" />
+            </div>
+          )}
+
           {mcpServices.map((service) => (
             <MCPServiceItem
               key={service.id}
               service={service}
               onDelete={handleDeleteService}
-              onToggle={handleToggleService}
-              onUpdate={handleUpdateService}
-              onConnect={handleConnectService}
+              onRefresh={handleRefreshTools}
+              onEdit={handleEditService}
+              isDeleting={
+                deleteConnectionMutation.isPending &&
+                deleteConnectionMutation.variables === service.id
+              }
+              isRefreshing={
+                refreshToolsMutation.isPending && refreshToolsMutation.variables?.[0] === service.id
+              }
             />
           ))}
         </div>
@@ -511,91 +683,35 @@ const MCPServicesSection = () => {
 interface MCPServiceItemProps {
   service: MCPService
   onDelete: (id: string) => void
-  onToggle: (id: string, isActive: boolean) => void
-  onUpdate: (id: string, service: Omit<MCPService, "id">) => void
-  onConnect: (id: string) => void
+  onRefresh: (connectionId: string) => void
+  onEdit: (service: MCPService) => void
+  isDeleting?: boolean
+  isRefreshing?: boolean
 }
 
 const MCPServiceItem = ({
   service,
   onDelete,
-  onToggle,
-  onUpdate,
-  onConnect,
+  onRefresh,
+  onEdit,
+  isDeleting = false,
+  isRefreshing = false,
 }: MCPServiceItemProps) => {
   const { t } = useTranslation("ai")
-  const [isEditing, setIsEditing] = useState(false)
 
-  const handleSave = (updatedService: Omit<MCPService, "id" | "isActive" | "healthStatus">) => {
-    onUpdate(service.id, {
-      ...updatedService,
-      isActive: service.isActive,
-      healthStatus: service.healthStatus,
-    })
-    setIsEditing(false)
+  const getConnectionStatusColor = (isConnected: boolean) => {
+    return isConnected ? "bg-green/10 text-green" : "bg-gray/10 text-text-tertiary"
   }
 
-  const getConnectionStatusColor = (status?: string) => {
-    switch (status) {
-      case "connected": {
-        return "bg-green/10 text-green"
-      }
-      case "connecting": {
-        return "bg-blue/10 text-blue"
-      }
-      case "error": {
-        return "bg-red/10 text-red"
-      }
-      default: {
-        return "bg-gray/10 text-text-tertiary"
-      }
-    }
+  const getConnectionStatusText = (isConnected: boolean) => {
+    return isConnected
+      ? t("integration.mcp.service.connected")
+      : t("integration.mcp.service.disconnected")
   }
 
-  const getHealthStatusColor = (status?: string) => {
-    switch (status) {
-      case "healthy": {
-        return "bg-green/10 text-green"
-      }
-      case "degraded": {
-        return "bg-yellow/10 text-yellow"
-      }
-      case "unhealthy": {
-        return "bg-red/10 text-red"
-      }
-      default: {
-        return "bg-gray/10 text-text-tertiary"
-      }
-    }
-  }
-
-  const getConnectionStatusText = (status?: string) => {
-    switch (status) {
-      case "connected": {
-        return t("integration.mcp.service.connected")
-      }
-      case "connecting": {
-        return t("integration.mcp.service.connecting")
-      }
-      case "error": {
-        return t("integration.mcp.service.error")
-      }
-      default: {
-        return t("integration.mcp.service.disconnected")
-      }
-    }
-  }
-
-  if (isEditing) {
-    return (
-      <div className="before:bg-accent relative pl-4 before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-full before:content-['']">
-        <MCPServiceEditor
-          service={service}
-          onSave={handleSave}
-          onCancel={() => setIsEditing(false)}
-        />
-      </div>
-    )
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Never"
+    return new Date(dateString).toLocaleDateString()
   }
 
   return (
@@ -605,31 +721,30 @@ const MCPServiceItem = ({
           <div className="flex items-center gap-2">
             <h4 className="text-text text-sm font-medium">{service.name}</h4>
             <div
-              className={`rounded-full px-2 py-1 text-xs ${getConnectionStatusColor(service.connectionStatus)}`}
+              className={`rounded-full px-2 py-1 text-xs ${getConnectionStatusColor(service.isConnected)}`}
             >
-              {getConnectionStatusText(service.connectionStatus)}
+              {getConnectionStatusText(service.isConnected)}
             </div>
-            {service.healthStatus && (
-              <div
-                className={`rounded-full px-2 py-1 text-xs ${getHealthStatusColor(service.healthStatus)}`}
-              >
-                {t(`integration.mcp.service.${service.healthStatus}`)}
-              </div>
-            )}
+            <div className="bg-blue/10 text-blue rounded-full px-2 py-1 text-xs">
+              {service.transportType}
+            </div>
           </div>
           <div className="space-y-1">
-            <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">Base URL:</span> {service.baseUrl}
-            </p>
-            <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">MCP Endpoint:</span> {service.mcpEndpoint}
-            </p>
-            {service.requiredScopes && (
+            {service.url && (
               <p className="text-text-secondary text-xs">
-                <span className="text-text-tertiary">{t("integration.mcp.service.scopes")}:</span>{" "}
-                {service.requiredScopes}
+                <span className="text-text-tertiary">URL:</span> {service.url}
               </p>
             )}
+            <p className="text-text-secondary text-xs">
+              <span className="text-text-tertiary">Tools:</span> {service.toolCount}
+              <span className="text-text-tertiary ml-4">Resources:</span> {service.resourceCount}
+              <span className="text-text-tertiary ml-4">Prompts:</span> {service.promptCount}
+            </p>
+            <p className="text-text-secondary text-xs">
+              <span className="text-text-tertiary">Created:</span> {formatDate(service.createdAt)}
+              <span className="text-text-tertiary ml-4">Last Used:</span>{" "}
+              {formatDate(service.lastUsed)}
+            </p>
             {service.lastError && (
               <p className="text-red text-xs">
                 <span className="text-text-tertiary">Error:</span> {service.lastError}
@@ -638,92 +753,66 @@ const MCPServiceItem = ({
           </div>
         </div>
 
-        <div className="ml-4 flex items-center gap-3">
-          <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-            {service.connectionStatus === "disconnected" && (
-              <Button variant="ghost" size="sm" onClick={() => onConnect(service.id)}>
-                <i className="i-mgc-link-cute-re size-4" />
-              </Button>
+        <div className="ml-4 flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
+          <Button variant="ghost" size="sm" onClick={() => onEdit(service)} title="Edit connection">
+            <i className="i-mgc-edit-cute-re size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRefresh(service.id)}
+            title="Refresh tools"
+            disabled={isRefreshing}
+          >
+            {isRefreshing ? (
+              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
+            ) : (
+              <i className="i-mgc-refresh-2-cute-re size-4" />
             )}
-            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-              <i className="i-mgc-edit-cute-re size-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => onDelete(service.id)}>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(service.id)}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
+            ) : (
               <i className="i-mgc-delete-2-cute-re size-4" />
-            </Button>
-          </div>
-
-          <div className="border-fill-tertiary flex items-center gap-2 border-l pl-3">
-            <span className="text-text-tertiary text-xs font-medium">
-              {service.isActive ? "ON" : "OFF"}
-            </span>
-            <Switch
-              checked={service.isActive}
-              onCheckedChange={(isActive) => onToggle(service.id, isActive)}
-            />
-          </div>
+            )}
+          </Button>
         </div>
       </div>
     </div>
   )
 }
 
-interface MCPServiceEditorProps {
-  service?: MCPService
-  onSave: (service: Omit<MCPService, "id" | "isActive" | "healthStatus">) => void
+interface MCPServiceModalContentProps {
+  service?: MCPService | null
+  onSave: (service: {
+    name: string
+    transportType: "streamable-http" | "sse"
+    url: string
+    headers?: Record<string, string>
+  }) => void
   onCancel: () => void
+  isLoading?: boolean
 }
 
-const MCPServiceEditor = ({ service, onSave, onCancel }: MCPServiceEditorProps) => {
+const MCPServiceModalContent = ({
+  service,
+  onSave,
+  onCancel,
+  isLoading = false,
+}: MCPServiceModalContentProps) => {
   const { t } = useTranslation("ai")
   const [name, setName] = useState(service?.name || "")
-  const [baseUrl, setBaseUrl] = useState(service?.baseUrl || "")
-  const [isDiscovering, setIsDiscovering] = useState(false)
-  const [discoveredService, setDiscoveredService] = useState<Omit<
-    MCPService,
-    "id" | "isActive" | "healthStatus"
-  > | null>(
-    service
-      ? {
-          name: service.name,
-          baseUrl: service.baseUrl,
-          mcpEndpoint: service.mcpEndpoint,
-          authorizationEndpoint: service.authorizationEndpoint,
-          tokenEndpoint: service.tokenEndpoint,
-          clientId: service.clientId,
-          requiredScopes: service.requiredScopes,
-        }
-      : null,
+  const [url, setUrl] = useState(service?.url || "")
+  const [transportType, setTransportType] = useState<"streamable-http" | "sse">(
+    service?.transportType || "streamable-http",
   )
-
-  const handleDiscover = async () => {
-    if (!baseUrl.trim()) {
-      toast.error(t("integration.mcp.service.validation.baseUrl_required"))
-      return
-    }
-
-    // Basic URL validation
-    try {
-      new URL(baseUrl)
-    } catch {
-      toast.error(t("integration.mcp.service.validation.invalid_url"))
-      return
-    }
-
-    setIsDiscovering(true)
-    try {
-      const discovered = await discoverMCPService(baseUrl.trim())
-      setDiscoveredService(discovered)
-      if (!name.trim()) {
-        setName(discovered.name)
-      }
-      toast.success("Service endpoints discovered successfully")
-    } catch {
-      toast.error(t("integration.mcp.service.discovery_failed"))
-    } finally {
-      setIsDiscovering(false)
-    }
-  }
+  const [headers, setHeaders] = useState<Record<string, string>>(service?.headers || {})
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -731,19 +820,29 @@ const MCPServiceEditor = ({ service, onSave, onCancel }: MCPServiceEditorProps) 
       return
     }
 
-    if (!discoveredService) {
-      toast.error("Please discover service endpoints first")
+    if (!url.trim()) {
+      toast.error(t("integration.mcp.service.validation.baseUrl_required"))
+      return
+    }
+
+    // Basic URL validation
+    try {
+      new URL(url.trim())
+    } catch {
+      toast.error(t("integration.mcp.service.validation.invalid_url"))
       return
     }
 
     onSave({
-      ...discoveredService,
       name: name.trim(),
+      transportType,
+      url: url.trim(),
+      headers: Object.keys(headers).length > 0 ? headers : undefined,
     })
   }
 
   return (
-    <div className="bg-material-medium space-y-4 rounded-lg p-4">
+    <div className="space-y-4">
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
@@ -754,80 +853,61 @@ const MCPServiceEditor = ({ service, onSave, onCancel }: MCPServiceEditorProps) 
               placeholder={t("integration.mcp.service.name_placeholder")}
             />
           </div>
+
           <div className="space-y-2">
-            <Label className="text-text text-xs">{t("integration.mcp.service.baseUrl")}</Label>
-            <div className="flex gap-2">
-              <Input
-                value={baseUrl}
-                onChange={(e) => setBaseUrl(e.target.value)}
-                placeholder={t("integration.mcp.service.baseUrl_placeholder")}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDiscover}
-                disabled={isDiscovering || !baseUrl.trim()}
-              >
-                {isDiscovering ? (
-                  <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                ) : (
-                  <i className="i-mgc-search-cute-re mr-2 size-4" />
-                )}
-                <span>{t("integration.mcp.service.discover")}</span>
-              </Button>
-            </div>
+            <Label className="text-text text-xs">Transport Type</Label>
+            <Select
+              value={transportType}
+              onValueChange={(value) => setTransportType(value as "streamable-http" | "sse")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select transport type" />
+              </SelectTrigger>
+              <SelectContent position="item-aligned">
+                <SelectItem value="streamable-http">Streamable HTTP</SelectItem>
+                <SelectItem value="sse">Server-Sent Events</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-text text-xs">URL</Label>
+            <Input
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com/mcp"
+            />
+          </div>
+
+          <div className="min-w-[500px] space-y-2">
+            <Label className="text-text text-xs">Headers (Optional)</Label>
+            <KeyValueEditor
+              value={headers}
+              onChange={setHeaders}
+              keyPlaceholder="Header name"
+              valuePlaceholder="Header value"
+              addButtonText="Add Header"
+              minRows={0}
+            />
           </div>
         </div>
-
-        {discoveredService && (
-          <div className="border-border space-y-3 rounded-lg border p-3">
-            <div className="flex items-center gap-2">
-              <i className="i-mgc-check-cute-re text-green size-4" />
-              <span className="text-text text-sm font-medium">
-                {t("integration.mcp.service.endpoints")}
-              </span>
-            </div>
-            <div className="space-y-2 text-xs">
-              <div>
-                <span className="text-text-tertiary">MCP Endpoint:</span>
-                <span className="text-text-secondary ml-2">{discoveredService.mcpEndpoint}</span>
-              </div>
-              <div>
-                <span className="text-text-tertiary">Authorization:</span>
-                <span className="text-text-secondary ml-2">
-                  {discoveredService.authorizationEndpoint}
-                </span>
-              </div>
-              <div>
-                <span className="text-text-tertiary">Token:</span>
-                <span className="text-text-secondary ml-2">{discoveredService.tokenEndpoint}</span>
-              </div>
-              <div>
-                <span className="text-text-tertiary">Client ID:</span>
-                <span className="text-text-secondary ml-2">{discoveredService.clientId}</span>
-              </div>
-              {discoveredService.requiredScopes && (
-                <div>
-                  <span className="text-text-tertiary">{t("integration.mcp.service.scopes")}:</span>
-                  <span className="text-text-secondary ml-2">
-                    {discoveredService.requiredScopes}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="flex items-center justify-between">
         <div />
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel}>
+          <Button variant="outline" size="sm" onClick={onCancel} disabled={isLoading}>
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={!discoveredService}>
-            Save
+          <Button size="sm" onClick={handleSave} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>

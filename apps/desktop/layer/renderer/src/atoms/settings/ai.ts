@@ -101,55 +101,6 @@ export const removeMCPService = (id: string) => {
   setAISetting("mcpServices", filteredServices)
 }
 
-export const toggleMCPService = (id: string, isActive: boolean) => {
-  updateMCPService(id, { isActive })
-}
-
-// MCP Service Discovery - these would connect to actual MCP server endpoints
-export const discoverMCPService = async (
-  baseUrl: string,
-): Promise<Omit<MCPService, "id" | "isActive" | "healthStatus">> => {
-  // This would make an actual HTTP request to discover OAuth endpoints
-  // For now, return a mock structure
-  return {
-    name: baseUrl.replace(/^https?:\/\//, "").replace(/\/$/, ""),
-    baseUrl,
-    mcpEndpoint: `${baseUrl}/mcp`,
-    authorizationEndpoint: `${baseUrl}/oauth/authorize`,
-    tokenEndpoint: `${baseUrl}/oauth/token`,
-    clientId: "follow-app", // This would come from the discovery response
-    requiredScopes: "mcp:read mcp:write",
-  }
-}
-
-export const connectMCPService = async (serviceId: string): Promise<boolean> => {
-  // This would handle OAuth flow and update connection status
-  updateMCPService(serviceId, {
-    connectionStatus: "connecting",
-    lastError: undefined,
-  })
-
-  try {
-    // OAuth flow would happen here
-    // For now, simulate connection
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    updateMCPService(serviceId, {
-      connectionStatus: "connected",
-      isConnected: true,
-      healthStatus: "healthy",
-    })
-    return true
-  } catch (error) {
-    updateMCPService(serviceId, {
-      connectionStatus: "error",
-      isConnected: false,
-      lastError: error instanceof Error ? error.message : "Connection failed",
-    })
-    return false
-  }
-}
-
 //// Enhance Init Ai Settings
 export const initializeDefaultAISettings = () => {
   initializeDefaultSettings()

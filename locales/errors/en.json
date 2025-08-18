@@ -79,5 +79,6 @@
   "16003": "Invalid or expired OAuth state",
   "16004": "Token exchange failed",
   "16005": "User MCP service not found",
-  "16006": "MCP configuration error"
+  "16006": "MCP configuration error",
+  "16007": "MCP tool execution failed"
 }
