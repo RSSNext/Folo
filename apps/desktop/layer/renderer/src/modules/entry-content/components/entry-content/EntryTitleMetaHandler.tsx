@@ -30,11 +30,11 @@ export const EntryTitleMetaHandler: Component<{
 
   useEffect(() => {
     if (entry?.title && feedTitle) {
-      setEntryTitleMeta({ entryTitle: entry.title, feedTitle, feedId: entry.feedId!, entryId })
+      setEntryTitleMeta({ title: entry.title, description: feedTitle })
     }
     return () => {
       setEntryTitleMeta(null)
     }
-  }, [entryId, entry?.title, feedTitle, entry?.feedId])
+  }, [entryId, entry?.title, feedTitle])
   return null
 }

@@ -57,11 +57,7 @@ export const ChatHeader = () => {
 
       <div className="relative z-10 flex h-full items-center justify-between px-4">
         <div className="mr-2 flex min-w-0 flex-1 items-center">
-          <EditableTitle
-            title={currentTitle}
-            onSave={handleTitleSave}
-            placeholder="Untitled Chat"
-          />
+          <EditableTitle title={currentTitle} onSave={handleTitleSave} placeholder="New Chat" />
         </div>
 
         {/* Right side - Actions */}

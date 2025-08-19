@@ -11,16 +11,11 @@ import type { JSAnimation } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useEventCallback } from "usehooks-ts"
 
-import { useIsZenMode } from "~/atoms/settings/ui"
 import { FocusablePresets } from "~/components/common/Focusable"
-import { useFeature } from "~/hooks/biz/useFeature"
-import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
-import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
 
 export const EntryScrollingAndNavigationHandler = ({
   scrollerRef,
@@ -53,27 +48,6 @@ export const EntryScrollingAndNavigationHandler = ({
     commandId: COMMAND_ID.entryRender.previousEntry,
     when,
   })
-
-  const isZenMode = useIsZenMode()
-  // TODO: Here, do not rely on the AI switch, but should be deps on the new layout.
-  const isAiEnabled = useFeature("ai")
-
-  const useBackHandler = isZenMode || isAiEnabled
-
-  useCommandHotkey({
-    commandId: COMMAND_ID.layout.focusToTimeline,
-    when: when && !useBackHandler,
-    shortcut: "Backspace, Escape",
-  })
-
-  const navigateToTimeline = useNavigateEntry()
-  useHotkeys(
-    "Escape",
-    () => {
-      navigateToTimeline({ entryId: null })
-    },
-    { enabled: when && useBackHandler },
-  )
 
   const { highlightBoundary } = useFocusActions()
   const smoothScrollTo = useSmoothScroll()
@@ -180,7 +154,7 @@ export const EntryScrollingAndNavigationHandler = ({
             "pointer-events-none absolute !right-1/2 z-40 !translate-x-1/2",
             "bottom-12",
             "backdrop-blur-background rounded-full border px-3.5 py-2",
-            "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
+            "border-border/40 bg-material-ultra-thick shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
             "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
           )}
         >

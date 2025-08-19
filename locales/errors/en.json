@@ -1,6 +1,9 @@
 {
   "1": "Previous operation is not completed",
   "3": "Unprocessable content",
+  "4": "Invalid input",
+  "5": "Missing configuration",
+  "6": "Not found",
   "1000": "Unauthorized",
   "1001": "create session failed",
   "1002": "Invalid parameter",
@@ -69,5 +72,6 @@
   "14001": "File too large",
   "14002": "Upload failed",
   "15000": "AI token limit exceeded. Please try again later.",
-  "15001": "You are not allowed to access AI chat"
+  "15001": "You are not allowed to access AI chat",
+  "undefined": "MCP configuration error"
 }

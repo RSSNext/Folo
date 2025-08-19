@@ -35,13 +35,23 @@ export function SwipeMedia({
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [WheelGesturesPlugin()])
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi])
+  const scrollPrev = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (emblaApi) emblaApi.scrollPrev()
+    },
+    [emblaApi],
+  )
 
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi])
+  const scrollNext = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (emblaApi) emblaApi.scrollNext()
+    },
+    [emblaApi],
+  )
 
   if (!media) return null
 

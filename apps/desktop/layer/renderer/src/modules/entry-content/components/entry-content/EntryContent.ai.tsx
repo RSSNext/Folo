@@ -13,13 +13,14 @@ import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
-import { m, useAnimationControls } from "motion/react"
+import { useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
+import { m } from "~/components/common/Motion"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -158,6 +159,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             </>
           )}
           <m.div
+            lcpOptimization
             className="select-text"
             initial={{ opacity: 0, y: 30 }}
             animate={animationController}
@@ -220,9 +222,6 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      viewportProps={{
-        onWheel: stopPropagation,
-      }}
       flex
       rootClassName={cn(
         "flex-1 min-h-0 overflow-y-auto print:h-auto print:overflow-visible",
