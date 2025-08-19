@@ -125,7 +125,8 @@ const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: accentColor,
     anonymous: false,
-    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+    // TODO: support pay on mobile
+    hideIf: () => true,
   },
   {
     label: "titles.referral.short",
@@ -135,7 +136,8 @@ const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: "#EC4899",
     anonymous: false,
-    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
+    // TODO: support pay on mobile
+    hideIf: () => true,
   },
 ]
 

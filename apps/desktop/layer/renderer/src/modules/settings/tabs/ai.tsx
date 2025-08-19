@@ -71,6 +71,7 @@ const useTokenUsage = () => {
   return useQuery({
     queryKey: ["aiTokenUsage"],
     queryFn: async () => {
+      // TODO: replace with api client call
       return (
         (await apiFetch("/ai/usage")) as {
           code: 0
@@ -89,7 +90,6 @@ const useTokenUsage = () => {
 const TokenUsageSection = () => {
   const { t } = useTranslation("ai")
 
-  // In a real implementation, you would fetch this data from your API
   const tokenUsage = useTokenUsage().data || {
     total: 0,
     used: 0,

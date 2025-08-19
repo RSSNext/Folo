@@ -59,11 +59,9 @@ export function SettingReferral() {
         <pre className="whitespace-pre-wrap text-sm">{referralLink}</pre>
         <CopyButton variant="outline" value={referralLink} />
       </div>
-      {role !== UserRole.PrePro && (
+      {role !== UserRole.Pro && (
         <div className="mt-4 space-y-2">
-          <p className="font-semibold">
-            Referral Progress for the {UserRoleName[UserRole.PrePro]}:
-          </p>
+          <p className="font-semibold">Referral Progress for the {UserRoleName[UserRole.Pro]}:</p>
           <div className="flex items-center gap-4">
             <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
             <span className="shrink-0">

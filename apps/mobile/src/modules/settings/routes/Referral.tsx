@@ -121,7 +121,7 @@ export const ReferralScreen: NavigationControllerView = () => {
       </GroupedInsetListCard>
 
       <GroupedInsetListSectionHeader
-        label={`Referral Progress for the Free ${UserRoleName[UserRole.PrePro]} ${validInvitationsAmount}/${requiredInvitationsAmount}:`}
+        label={`Referral Progress for the Free ${UserRoleName[UserRole.Pro]} ${validInvitationsAmount}/${requiredInvitationsAmount}:`}
       />
       <GroupedInsetListCard>
         <GroupedInsetListBaseCell>
