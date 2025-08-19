@@ -1,6 +1,10 @@
 {
+  "ai_summary": "AI Summary",
   "clear_chat": "Clear Chat",
   "clear_chat_message": "Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.",
+  "conversation_starters": "Conversation starters",
+  "customize_shortcuts": "Customize shortcuts",
+  "customize_shortcuts_title": "Customize AI shortcuts",
   "delete_chat": "Delete Chat",
   "delete_chat_error": "Failed to delete chat",
   "delete_chat_message": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
@@ -56,6 +60,10 @@
   "personalize.prompt.placeholder": "Tell me about yourself and how you prefer to read content...",
   "personalize.saved": "Personalization saved successfully",
   "personalize.title": "Personalization",
+  "quick_actions.discuss": "Discuss insights",
+  "quick_actions.questions": "Ask questions",
+  "quick_actions.simplify": "Simplify this",
+  "quick_actions.takeaways": "Key takeaways",
   "settings.autoScrollWhenStreaming.description": "Automatically scroll to the bottom of the chat when streaming",
   "settings.autoScrollWhenStreaming.label": "Auto scroll when streaming",
   "settings.description": "Configure your AI experience and create custom shortcuts",
@@ -78,5 +86,7 @@
   "shortcuts.title": "AI Shortcuts",
   "shortcuts.updated": "Shortcut updated successfully",
   "shortcuts.validation.required": "Name and prompt are required",
-  "welcome_description": "I'm here to help you with your reading and writing needs. How can I assist you today?"
+  "summary_not_available": "Summary not available",
+  "welcome_description": "I'm here to help you with your reading needs. How can I assist you today?",
+  "welcome_description_contextual": "Let's discuss this entry together"
 }

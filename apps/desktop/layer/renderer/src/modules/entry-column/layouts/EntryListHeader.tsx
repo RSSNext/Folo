@@ -90,7 +90,7 @@ export const EntryListHeader: FC<{
             )}
             onClick={stopPropagation}
           >
-            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && (
+            {views[view]!.wideMode && entryId && entryId !== ROUTE_ENTRY_PENDING && !aiEnabled && (
               <>
                 <EntryHeader entryId={entryId} />
                 <DividerVertical className="mx-2 w-px" />

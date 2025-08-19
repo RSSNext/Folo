@@ -1,7 +1,8 @@
-import { useEntry } from "@follow/store/entry/hooks"
+import { useEntry, useEntryReadHistory } from "@follow/store/entry/hooks"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useInboxById } from "@follow/store/inbox/hooks"
 import { useEntryTranslation } from "@follow/store/translation/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
 import { useShallow } from "zustand/shallow"
@@ -10,7 +11,6 @@ import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useActionLanguage } from "~/atoms/settings/general"
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { RelativeTime } from "~/components/ui/datetime"
-import { useFeature } from "~/hooks/biz/useFeature"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { useFeedSafeUrl } from "~/hooks/common/useFeedSafeUrl"
 import type { FeedIconEntry } from "~/modules/feed/feed-icon"
@@ -18,7 +18,6 @@ import { FeedIcon } from "~/modules/feed/feed-icon"
 import { getPreferredTitle } from "~/store/feed/hooks"
 
 import { EntryTranslation } from "../../entry-column/translation"
-import { EntryReadHistory } from "./entry-read-history"
 
 interface EntryLinkProps {
   entryId: string
@@ -26,6 +25,7 @@ interface EntryLinkProps {
 }
 
 export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
+  const user = useWhoami()
   const entry = useEntry(
     entryId,
     useShallow((state) => {
@@ -58,11 +58,10 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
     }),
   )
 
-  const aiEnabled = useFeature("ai")
-  const hideRecentReader = useUISettingKey("hideRecentReader")
-
   const feed = useFeedById(entry?.feedId)
   const inbox = useInboxById(entry?.inboxId)
+  const data = useEntryReadHistory(entryId)
+  const entryHistory = data?.entryReadHistories
   const populatedFullHref = useFeedSafeUrl(entryId)
   const enableTranslation = useShowAITranslation()
   const actionLanguage = useActionLanguage()
@@ -75,6 +74,8 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   const dateFormat = useUISettingKey("dateFormat")
 
   const navigateEntry = useNavigateEntry()
+
+  const hideRecentReader = useUISettingKey("hideRecentReader")
 
   if (!entry) return null
 
@@ -93,16 +94,6 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   ) : (
     <div className="group relative block min-w-0 rounded-lg">
       <div className="flex flex-col gap-3">
-        {/* Recent Readers */}
-        {aiEnabled &&
-          (hideRecentReader ? (
-            <div className="h-8" />
-          ) : (
-            <div className="-mb-2 mt-2 flex h-8 items-center">
-              <EntryReadHistory entryId={entryId} />
-            </div>
-          ))}
-
         <a
           href={populatedFullHref ?? "#"}
           target="_blank"
@@ -164,6 +155,19 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
                 <span className="text-xs tabular-nums">{entry.estimatedMins}</span>
               </div>
             )}
+
+            {(() => {
+              const readCount =
+                (entryHistory?.readCount ?? 0) +
+                (entryHistory?.userIds?.every((id) => id !== user?.id) ? 1 : 0)
+
+              return readCount > 0 && !hideRecentReader ? (
+                <div className="flex items-center gap-1.5">
+                  <i className="i-mgc-eye-2-cute-re text-base" />
+                  <span className="text-xs tabular-nums">{readCount.toLocaleString()}</span>
+                </div>
+              ) : null
+            })()}
           </div>
         </div>
       </div>

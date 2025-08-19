@@ -28,7 +28,7 @@ function EntryHeaderRootImpl({ entryId, className, compact, children }: EntryHea
   const entryTitleMeta = useEntryTitleMeta()
   const isAtTop = !!useEntryContentScrollToTop()
 
-  const shouldShowMeta = !isAtTop && !!entryTitleMeta?.entryTitle
+  const shouldShowMeta = !isAtTop && !!entryTitleMeta?.title
 
   const contextValue = useMemo(() => ({ entryId, compact }), [entryId, compact])
   if (!hasEntry) return null
