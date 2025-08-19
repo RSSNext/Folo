@@ -735,13 +735,11 @@ const MCPServiceItem = ({
                 <span className="text-text-tertiary">URL:</span> {service.url}
               </p>
             )}
+
             <p className="text-text-secondary text-xs">
               <span className="text-text-tertiary">Tools:</span> {service.toolCount}
-              <span className="text-text-tertiary ml-4">Resources:</span> {service.resourceCount}
-              <span className="text-text-tertiary ml-4">Prompts:</span> {service.promptCount}
-            </p>
-            <p className="text-text-secondary text-xs">
-              <span className="text-text-tertiary">Created:</span> {formatDate(service.createdAt)}
+              <span className="text-text-tertiary ml-4">Created:</span>{" "}
+              {formatDate(service.createdAt)}
               <span className="text-text-tertiary ml-4">Last Used:</span>{" "}
               {formatDate(service.lastUsed)}
             </p>
