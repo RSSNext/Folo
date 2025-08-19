@@ -86,7 +86,7 @@
     "remark-gh-alerts": "0.0.3",
     "remark-rehype": "11.1.2",
     "sonner": "2.0.6",
-    "tailwindcss-uikit-colors": "1.0.0-alpha.1",
+    "tailwindcss-uikit-colors": "catalog:",
     "unified": "11.0.5",
     "unist-util-visit": "5.0.0",
     "unist-util-visit-parents": "5.1.3",

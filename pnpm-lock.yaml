@@ -9,6 +9,9 @@ catalogs:
     '@follow-app/client-sdk':
       specifier: 0.3.38
       version: 0.3.38
+    tailwindcss-uikit-colors:
+      specifier: 1.0.0
+      version: 1.0.0
     typescript:
       specifier: 5.8.3
       version: 5.8.3
@@ -1330,8 +1333,8 @@ importers:
         specifier: 8.2.0
         version: 8.2.0
       tailwindcss-uikit-colors:
-        specifier: 1.0.0-alpha.1
-        version: 1.0.0-alpha.1
+        specifier: 'catalog:'
+        version: 1.0.0
       tsdown:
         specifier: 0.12.9
         version: 0.12.9(typescript@5.8.3)
@@ -1409,8 +1412,8 @@ importers:
         specifier: 0.6.0
         version: 0.6.0(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.0.10)(typescript@5.8.3)))
       tailwindcss-uikit-colors:
-        specifier: 1.0.0-alpha.1
-        version: 1.0.0-alpha.1
+        specifier: 'catalog:'
+        version: 1.0.0
     devDependencies:
       postcss:
         specifier: 8.5.6
@@ -1635,8 +1638,8 @@ importers:
         specifier: 2.0.6
         version: 2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwindcss-uikit-colors:
-        specifier: 1.0.0-alpha.1
-        version: 1.0.0-alpha.1
+        specifier: 'catalog:'
+        version: 1.0.0
       unified:
         specifier: 11.0.5
         version: 11.0.5
@@ -7124,6 +7127,9 @@ packages:
 
   apple-uikit-colors@0.6.2:
     resolution: {integrity: sha512-sv0b92krbTZGNt4AJQLAPioUvuEI/wW2cLqGuEBWl3KpU2JK/odOftx8+dGSC5jGWhdB5qnwBqF96X2FA8FUQA==}
+
+  apple-uikit-colors@1.0.0:
+    resolution: {integrity: sha512-G2Ti2ogMOOC1phfHacSrLacDiE0RcLI7IG3aNoaw7Ack23WI8/9QczmUuhxxkU9BoIR2euCZ2G4lD5qJ+OknwA==}
 
   archiver-utils@2.1.0:
     resolution: {integrity: sha512-bEL/yUb/fNNiNTuUz979Z0Yg5L+LzLxGJz8x79lYmR54fmTIb6ob/hNQgkQnIUDWIFjZVQwl9Xs356I6BAMHfw==}
@@ -14577,8 +14583,8 @@ packages:
   tailwindcss-uikit-colors@0.6.2:
     resolution: {integrity: sha512-RfF3VVB2nHvJwPZ2ZSTMgKYbZjRny/KW3rP6ufg6/bopxINDQ9TpN/fJXxvKnD86hIU0F2oLIfAv2r6o/ZWcZw==}
 
-  tailwindcss-uikit-colors@1.0.0-alpha.1:
-    resolution: {integrity: sha512-akeDIVZMRO6tFbr6x4YsRkx24xx/ofEfsJdL2lq7AE/sDBnUbs5Pr8by4ngBbxJ2U2eam000B/eJrb6r6YzLmw==}
+  tailwindcss-uikit-colors@1.0.0:
+    resolution: {integrity: sha512-18MGdMVSoXFKjcVkUIu7Q5USqdenAvgFJT9DEocPmdS94b8d/z3s0Uw8LvaNDINfDN9ls24hfg6/hyFqpcZpxw==}
 
   tailwindcss@3.4.17:
     resolution: {integrity: sha512-w33E2aCvSDP0tW9RZuNXadXlkHXqFzSkQew/aIa2i/Sj8fThxwovwlXHSPXTbAHwEIhBFXAedUhP2tueAKP8Og==}
@@ -22801,6 +22807,8 @@ snapshots:
     optional: true
 
   apple-uikit-colors@0.6.2: {}
+
+  apple-uikit-colors@1.0.0: {}
 
   archiver-utils@2.1.0:
     dependencies:
@@ -31596,9 +31604,9 @@ snapshots:
     dependencies:
       apple-uikit-colors: 0.6.2
 
-  tailwindcss-uikit-colors@1.0.0-alpha.1:
+  tailwindcss-uikit-colors@1.0.0:
     dependencies:
-      apple-uikit-colors: 0.6.2
+      apple-uikit-colors: 1.0.0
 
   tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.0.10)(typescript@5.8.3)):
     dependencies:
