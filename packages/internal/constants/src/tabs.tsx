@@ -43,7 +43,7 @@ export const views: ViewDefinition[] = [
   },
   {
     name: "feed_view_type.social_media",
-    icon: <i className="i-mgc-danmaku-cute-fi" />,
+    icon: <i className="i-mgc-thought-cute-fi" />,
     className: "text-sky-600 dark:text-sky-500",
     peerClassName: "peer-checked:text-sky-600 peer-checked:dark:text-sky-500",
     wideMode: true,

@@ -24,7 +24,7 @@ interface AllMasonryProps {
 }
 
 const GUTTER = 16
-const COLUMN_WIDTH = 400
+const COLUMN_WIDTH = 300
 const OVERSCAN = 2
 
 interface MasonryItem {

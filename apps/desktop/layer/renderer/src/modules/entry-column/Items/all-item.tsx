@@ -26,11 +26,7 @@ import { StarIcon } from "../star-icon"
 import { EntryTranslation } from "../translation"
 import type { UniversalItemProps } from "../types"
 
-const cardStylePresets = [
-  {
-    card: "bg-folo text-black",
-    icon: "text-white",
-  },
+const blackAndwhiteCardStylePresets = [
   {
     card: "bg-black text-white",
     icon: "text-white",
@@ -39,13 +35,29 @@ const cardStylePresets = [
     card: "bg-white text-black",
     icon: "text-black",
   },
+]
+
+const cardStylePresets = [
+  ...blackAndwhiteCardStylePresets,
   {
-    card: "bg-[#FFC800] text-black",
-    icon: "text-black",
+    card: "bg-folo text-black",
+    icon: "text-[#FEABF3]",
   },
   {
-    card: "bg-[#00B259] text-black",
-    icon: "text-black",
+    card: "bg-[#48E18F] text-black",
+    icon: "text-[#EEF542]",
+  },
+  {
+    card: "bg-[#FFE550] text-black",
+    icon: "text-[#FE99F5]",
+  },
+  {
+    card: "bg-[#FE99F5] text-black",
+    icon: "text-[#FFE550]",
+  },
+  {
+    card: "bg-[#6F6BFE] text-white",
+    icon: "text-[#C7F913]",
   },
 ]
 
@@ -99,6 +111,11 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
 
   const icon = useMemo(() => views.find((v) => v.view === view)?.icon, [view])
 
+  const entryMedia = useMemo(
+    () => entry?.media || entryPreview?.entries?.media || [],
+    [entry, entryPreview],
+  )
+
   const cardStyle = useMemo(() => {
     // Use a hash of entryId to get a consistent index for cardStylePresets
     // djb2 hash
@@ -106,11 +123,13 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
     for (let i = 0, len = entryId.length; i < len; ++i) {
       hash = (hash << 5) + hash + entryId.codePointAt(i)!
     }
-    const index = (hash >>> 0) % cardStylePresets.length
-    return cardStylePresets[index]!
-  }, [entryId])
 
-  const entryMedia = entry?.media || entryPreview?.entries?.media || []
+    const index = entryMedia?.[0]
+      ? (hash >>> 0) % blackAndwhiteCardStylePresets.length
+      : (hash >>> 0) % cardStylePresets.length
+
+    return cardStylePresets[index]!
+  }, [entryId, entryMedia])
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
 
