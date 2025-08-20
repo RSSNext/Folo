@@ -5,10 +5,12 @@ import { LetsIconsResizeDownRightLight } from "@follow/components/icons/resize.j
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { preventDefault } from "@follow/utils/dom"
 import { cn, getOS } from "@follow/utils/utils"
+import { atom, useAtomValue, useSetAtom } from "jotai"
 import type { BoundingBox } from "motion/react"
 import { Resizable } from "re-resizable"
 import type { PropsWithChildren } from "react"
-import { memo, Suspense, useCallback, useEffect, useRef } from "react"
+import { memo, Suspense, use, useCallback, useEffect, useMemo, useRef } from "react"
+import { createPortal } from "react-dom"
 
 import { useUISettingSelector } from "~/atoms/settings/ui"
 import { m } from "~/components/common/Motion"
@@ -24,7 +26,7 @@ import { useAvailableSettings, useSettingPageContext } from "../hooks/use-settin
 import { SettingsSidebarTitle } from "../title"
 import type { SettingPageConfig } from "../utils"
 import { DisableWhy } from "../utils"
-import { useSetSettingTab, useSettingTab } from "./context"
+import { SettingModalContentPortalableContext, useSetSettingTab, useSettingTab } from "./context"
 import { defaultCtx, SettingContext } from "./hooks"
 
 export function SettingModalLayout(
@@ -76,6 +78,10 @@ export function SettingModalLayout(
     }
     return constraints
   }).current
+
+  const portalableCtxValue = useMemo(() => {
+    return atom(null as any)
+  }, [])
 
   return (
     <div
@@ -142,7 +148,10 @@ export function SettingModalLayout(
                 </div>
               </div>
               <div className="bg-background relative flex h-full min-w-0 flex-1 flex-col pt-1">
-                <Suspense>{children}</Suspense>
+                <SettingModalContentPortalableContext value={portalableCtxValue}>
+                  <Suspense>{children}</Suspense>
+                  <SettingModalContentPortalable />
+                </SettingModalContentPortalableContext>
               </div>
             </div>
 
@@ -152,6 +161,11 @@ export function SettingModalLayout(
       </m.div>
     </div>
   )
+}
+
+const SettingModalContentPortalable = () => {
+  const setElement = useSetAtom(use(SettingModalContentPortalableContext))
+  return <div ref={setElement as any} />
 }
 
 const SettingItemButtonImpl = (props: {
@@ -220,3 +234,8 @@ export const SidebarItems = memo((props: { onChange?: (tab: string) => void }) =
     )
   })
 })
+
+export const SettingModalContentPortal: Component = ({ children }) => {
+  const element = useAtomValue(use(SettingModalContentPortalableContext))
+  return createPortal(children, element)
+}

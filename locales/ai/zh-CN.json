@@ -35,7 +35,6 @@
   "shortcuts.added": "快捷方式添加成功",
   "shortcuts.create_first": "创建您的第一个快捷方式",
   "shortcuts.deleted": "快捷方式删除成功",
-  "shortcuts.description": "创建自定义AI快捷方式以快速执行操作",
   "shortcuts.empty.description": "创建自定义AI快捷方式，快速执行常见任务并获得即时AI协助。",
   "shortcuts.empty.title": "暂无快捷方式",
   "shortcuts.enabled": "已启用",

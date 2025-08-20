@@ -215,8 +215,8 @@ const ChatInterfaceContent = () => {
             onClick={() => resetScrollState()}
             className={cn(
               "backdrop-blur-background group flex items-center gap-2 rounded-full border px-3.5 py-2 transition-all",
-              "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
-              "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+              "border-border/40 bg-material-ultra-thin shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
+              "hover:bg-material-medium hover:border-border/60 active:scale-[0.98]",
             )}
           >
             <i className="i-mingcute-arrow-down-line text-text/90 size-3" />

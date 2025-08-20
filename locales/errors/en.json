@@ -73,5 +73,12 @@
   "14002": "Upload failed",
   "15000": "AI token limit exceeded. Please try again later.",
   "15001": "You are not allowed to access AI chat",
-  "undefined": "MCP configuration error"
+  "16000": "MCP OAuth error",
+  "16001": "MCP discovery error",
+  "16002": "MCP service not found",
+  "16003": "Invalid or expired OAuth state",
+  "16004": "Token exchange failed",
+  "16005": "User MCP service not found",
+  "16006": "MCP configuration error",
+  "16007": "MCP tool execution failed"
 }

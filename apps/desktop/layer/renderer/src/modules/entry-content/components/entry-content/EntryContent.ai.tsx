@@ -32,7 +32,6 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent } from "../../hooks"
 import { AIEntryHeader } from "../entry-header"
-import { EntryTimeline } from "../EntryTimelineSidebar"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
@@ -129,7 +128,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRef}
           />
         </RootPortal>
-        <EntryTimeline entryId={entryId} className="top-48" />
+        {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
         <EntryScrollArea scrollerRef={scrollerRef}>
           {/* Indicator for the entry */}
           {!isZenMode && isInHasTimelineView && (
@@ -224,7 +223,7 @@ const EntryScrollArea: Component<{
       mask={false}
       flex
       rootClassName={cn(
-        "flex-1 min-h-0 overflow-y-auto print:h-auto print:overflow-visible",
+        "flex-1 min-h-0 relative z-[1] overflow-y-auto print:h-auto print:overflow-visible",
         className,
       )}
       scrollbarClassName="mr-[1.5px] print:hidden"

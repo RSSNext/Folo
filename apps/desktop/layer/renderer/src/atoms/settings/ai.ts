@@ -1,6 +1,6 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultAISettings } from "@follow/shared/settings/defaults"
-import type { AISettings } from "@follow/shared/settings/interface"
+import type { AISettings, MCPService } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils"
 import { atom, useAtomValue } from "jotai"
 
@@ -69,6 +69,37 @@ export const setAIPanelVisibility = (visibility: boolean) => {
   jotaiStore.set(aiPanelVisibilityAtom, visibility)
 }
 export const getAIPanelVisibility = () => jotaiStore.get(aiPanelVisibilityAtom)
+
+////////// MCP Services
+export const useMCPEnabled = () => useAISettingKey("mcpEnabled")
+export const setMCPEnabled = (enabled: boolean) => {
+  setAISetting("mcpEnabled", enabled)
+}
+
+export const useMCPServices = () => useAISettingKey("mcpServices")
+export const addMCPService = (service: Omit<MCPService, "id">) => {
+  const services = getAISettings().mcpServices
+  const newService = {
+    ...service,
+    id: Date.now().toString(),
+  }
+  setAISetting("mcpServices", [...services, newService])
+  return newService.id
+}
+
+export const updateMCPService = (id: string, updates: Partial<MCPService>) => {
+  const services = getAISettings().mcpServices
+  const updatedServices = services.map((service) =>
+    service.id === id ? { ...service, ...updates } : service,
+  )
+  setAISetting("mcpServices", updatedServices)
+}
+
+export const removeMCPService = (id: string) => {
+  const services = getAISettings().mcpServices
+  const filteredServices = services.filter((service) => service.id !== id)
+  setAISetting("mcpServices", filteredServices)
+}
 
 //// Enhance Init Ai Settings
 export const initializeDefaultAISettings = () => {

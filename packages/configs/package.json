@@ -24,7 +24,7 @@
     "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",
     "tailwindcss-safe-area": "0.6.0",
-    "tailwindcss-uikit-colors": "1.0.0-alpha.1"
+    "tailwindcss-uikit-colors": "catalog:"
   },
   "devDependencies": {
     "postcss": "8.5.6",
