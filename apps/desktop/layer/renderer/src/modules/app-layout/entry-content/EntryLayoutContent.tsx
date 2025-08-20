@@ -1,5 +1,6 @@
 import { PanelSplitter } from "@follow/components/ui/divider/PanelSplitter.js"
 import { views } from "@follow/constants"
+import { usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { clsx, cn } from "@follow/utils/utils"
 import { easeOut } from "motion/react"
 import type { FC, PropsWithChildren } from "react"
@@ -28,6 +29,7 @@ const EntryLayoutContentLegacy = () => {
 
   const settingWideMode = useRealInWideMode()
   const realEntryId = entryId === ROUTE_ENTRY_PENDING ? "" : entryId
+  usePrefetchEntryDetail(realEntryId)
   const showEntryContent = !(views[view]!.wideMode || (settingWideMode && !realEntryId))
   const wideMode = !!(settingWideMode && realEntryId)
   const feedColumnTempShow = useTimelineColumnTempShow()
@@ -92,7 +94,7 @@ export const EntryLayoutContentWithAI = () => {
 export const EntryLayoutContent = () => {
   const aiEnabled = useFeature("ai")
   if (aiEnabled) {
-    return <EntryLayoutContentWithAI />
+    return null
   }
   return <EntryLayoutContentLegacy />
 }
@@ -175,6 +177,6 @@ const EntryGridContainer: FC<
       </m.div>
     )
   } else {
-    return <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+    return <div className="relative flex min-w-0 flex-1 flex-col">{children}</div>
   }
 }

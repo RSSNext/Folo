@@ -50,9 +50,9 @@ const Content = () => {
       <ScrollArea.ScrollArea
         mask={false}
         ref={setScroller}
-        rootClassName="h-full grow flex-1 shrink-0 overflow-auto pl-8 pr-7"
+        rootClassName="h-full grow flex-1 shrink-0 overflow-auto"
         viewportClassName={cn(
-          "px-1 min-h-full [&>div]:min-h-full [&>div]:relative",
+          "px-1 min-h-full [&>div]:min-h-full [&>div]:relative pl-8 pr-7",
           config.viewportClassName,
         )}
       >

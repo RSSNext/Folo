@@ -2,7 +2,6 @@ import { useMobile } from "@follow/components/hooks/useMobile.js"
 import { AutoResizeHeight } from "@follow/components/ui/auto-resize-height/index.js"
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { SegmentGroup, SegmentItem } from "@follow/components/ui/segment/index.js"
-import { Slider } from "@follow/components/ui/slider/index.js"
 import { clsx, cn } from "@follow/utils/utils"
 import {
   HoverCard,
@@ -10,29 +9,20 @@ import {
   HoverCardPortal,
   HoverCardTrigger,
 } from "@radix-ui/react-hover-card"
-import { debounce } from "es-toolkit/compat"
-import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 import { setUISetting, useUISettingKey } from "~/atoms/settings/ui"
-
-import { setMasonryColumnValue, useMasonryColumnValue } from "../../atoms"
 
 export const SwitchToMasonryButton = () => {
   const isMasonry = useUISettingKey("pictureViewMasonry")
   const { t } = useTranslation()
   const isMobile = useMobile()
 
-  const masonryColumnValue = useMasonryColumnValue()
   if (isMobile) return null
   return (
-    <HoverCard>
+    <HoverCard openDelay={100}>
       <HoverCardTrigger>
-        <ActionButton
-          onClick={() => {
-            setUISetting("pictureViewMasonry", !isMasonry)
-          }}
-        >
+        <ActionButton>
           <i className={cn(!isMasonry ? "i-mgc-grid-cute-re" : "i-mgc-grid-2-cute-re")} />
         </ActionButton>
       </HoverCardTrigger>
@@ -85,24 +75,6 @@ export const SwitchToMasonryButton = () => {
                   />
                 </SegmentGroup>
               </div>
-
-              {isMasonry && (
-                <div className="flex gap-1">
-                  <label className="mr-2 w-[200px] text-sm">
-                    {t("entry_list_header.masonry_column")}
-                  </label>
-                  <Slider
-                    variant="secondary"
-                    min={1}
-                    max={6}
-                    step={1}
-                    defaultValue={[masonryColumnValue]}
-                    onValueChange={debounce((value) => {
-                      setMasonryColumnValue(value[0]!)
-                    }, 300)}
-                  />
-                </div>
-              )}
             </div>
           </AutoResizeHeight>
         </HoverCardContent>

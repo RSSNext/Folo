@@ -1,7 +1,7 @@
-import type { EntryModel } from "../entry/types"
-import type { FeedModel } from "../feed/types"
-import type { ListModel } from "../list/types"
-import type { MeModel } from "../user/store"
+import type { EntryModel } from "../modules/entry/types"
+import type { FeedModel } from "../modules/feed/types"
+import type { ListModel } from "../modules/list/types"
+import type { MeModel } from "../modules/user/store"
 import type { HonoApiClient } from "./types"
 
 /**

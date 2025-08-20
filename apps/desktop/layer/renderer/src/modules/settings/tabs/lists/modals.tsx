@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@follow/components/ui/table/index.jsx"
 import { views } from "@follow/constants"
+import { getFeedById } from "@follow/store/feed/getter"
 import { useFeedById } from "@follow/store/feed/hooks"
 import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
@@ -224,10 +225,13 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
   const autocompleteSuggestions: Suggestion[] = useMemo(() => {
     return allFeeds
       .filter((feed) => !feed.feedId || !list?.feedIds?.includes(feed.feedId))
-      .map((feed) => ({
-        name: feed.title || "",
-        value: feed.feedId || "",
-      }))
+      .map((feed) => {
+        const title = getFeedById(feed.feedId)?.title
+        return {
+          name: title || "",
+          value: feed.feedId || "",
+        }
+      })
   }, [allFeeds, list?.feedIds])
 
   if (!list) return null
@@ -259,6 +263,7 @@ export const ListFeedsModalContent = ({ id }: { id: string }) => {
               addMutation.mutate({ feedId: selectedFeedIdRef.current, listId: id })
             }
           }}
+          isLoading={addMutation.isPending}
         >
           {t("lists.feeds.add.label")}
         </Button>

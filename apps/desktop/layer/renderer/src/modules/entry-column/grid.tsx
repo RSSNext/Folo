@@ -17,6 +17,7 @@ import {
 } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
+import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { EntryItem } from "./item"
@@ -251,12 +252,14 @@ const VirtualGridImpl: FC<
                   transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
                 }}
               >
-                {ready && (
-                  <EntryItem
-                    entryId={entriesIds[virtualRow.index * columns.length + virtualColumn.index]!}
-                    view={view}
-                  />
-                )}
+                <MediaContainerWidthProvider width={columns[virtualColumn.index] ?? 0}>
+                  {ready && (
+                    <EntryItem
+                      entryId={entriesIds[virtualRow.index * columns.length + virtualColumn.index]!}
+                      view={view}
+                    />
+                  )}
+                </MediaContainerWidthProvider>
               </div>
             ))}
           </Fragment>

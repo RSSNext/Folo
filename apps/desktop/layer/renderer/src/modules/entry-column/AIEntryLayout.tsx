@@ -3,13 +3,14 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
-import { AnimatePresence, m } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
 import { AIChatPanelStyle, useAIChatPanelStyle } from "~/atoms/settings/ai"
 import { getUISettings, setUISetting } from "~/atoms/settings/ui"
+import { m } from "~/components/common/Motion"
 import { ROUTE_ENTRY_PENDING } from "~/constants"
 import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { AIChatLayout } from "~/modules/app-layout/ai/AIChatLayout"
@@ -142,12 +143,13 @@ const AIEntryLayoutImpl = () => {
             <AnimatePresence mode="wait">
               {realEntryId && (
                 <m.div
+                  lcpOptimization
                   ref={entryContentRef}
                   key={realEntryId}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={Spring.presets.smooth}
+                  transition={Spring.presets.microRebound}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
                   {/* Scroll hint indicator */}
@@ -156,7 +158,7 @@ const AIEntryLayoutImpl = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => navigate({ entryId: null })}
-                      buttonClassName="transform cursor-pointer select-none"
+                      buttonClassName="transform cursor-pointer select-none no-drag-region"
                       aria-label="Scroll up or click to exit"
                     >
                       <div className="text-text flex items-center gap-2 rounded-full font-medium">

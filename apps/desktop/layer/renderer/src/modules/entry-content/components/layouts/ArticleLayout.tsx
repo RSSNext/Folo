@@ -19,9 +19,8 @@ import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
-import { AISummary } from "../../AISummary"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
-import { EntryContentAccessories } from "../entry-content/accessories"
+import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { EntryTitleMetaHandler } from "../entry-content/EntryTitleMetaHandler"
 import { ReadabilityNotice } from "../entry-content/ReadabilityNotice"
@@ -78,7 +77,6 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
           <EntryTitleMetaHandler entryId={entryId} />
-          <AISummary entryId={entryId} />
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
             <ShadowDOM
@@ -129,7 +127,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
+    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} stickyClassName="top-48" />),
     [isInPeekModal],
   )
 

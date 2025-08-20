@@ -1,4 +1,3 @@
-import { useMobile } from "@follow/components/hooks/useMobile.js"
 import {
   MasonryIntersectionContext,
   MasonryItemsAspectRatioContext,
@@ -35,7 +34,6 @@ import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContaine
 import type { StoreImageType } from "~/store/image"
 import { imageActions } from "~/store/image"
 
-import { getMasonryColumnValue, setMasonryColumnValue, useMasonryColumnValue } from "../atoms"
 import { batchMarkRead } from "../hooks/useEntryMarkReadHandler"
 import { PictureWaterFallItem } from "./picture-item"
 
@@ -48,7 +46,6 @@ const gutter = 24
 
 export const PictureMasonry: FC<MasonryProps> = (props) => {
   const { data } = props
-  const isMobile = useMobile()
   const cacheMap = useState(() => new Map<string, object>())[0]
   const [isInitDim, setIsInitDim] = useState(false)
   const [isInitLayout, setIsInitLayout] = useState(false)
@@ -95,22 +92,9 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
     }
   }, [JSON.stringify(data)])
 
-  const customizeColumn = useMasonryColumnValue()
-  const { containerRef, currentColumn, currentItemWidth, calcItemWidth } = useMasonryColumn(
-    gutter,
-    (column) => {
-      setIsInitLayout(true)
-      if (getMasonryColumnValue() === -1) {
-        setMasonryColumnValue(column)
-      }
-    },
-  )
-
-  const finalColumn = customizeColumn !== -1 && !isMobile ? customizeColumn : currentColumn
-  const finalItemWidth = useMemo(
-    () => (customizeColumn !== -1 ? calcItemWidth(finalColumn) : currentItemWidth),
-    [calcItemWidth, currentItemWidth, customizeColumn, finalColumn],
-  )
+  const { containerRef, currentColumn, currentItemWidth } = useMasonryColumn(gutter, () => {
+    setIsInitLayout(true)
+  })
 
   const items = useMemo(() => {
     const result = data.map((entryId) => {
@@ -240,18 +224,18 @@ export const PictureMasonry: FC<MasonryProps> = (props) => {
   return (
     <div ref={containerRef} className="mx-4 pt-4">
       {isInitDim && deferIsInitLayout && (
-        <MasonryItemWidthContext value={finalItemWidth}>
+        <MasonryItemWidthContext value={currentItemWidth}>
           {/* eslint-disable-next-line @eslint-react/no-context-provider */}
           <MasonryItemsAspectRatioContext.Provider value={masonryItemsRadio}>
             <MasonryItemsAspectRatioSetterContext value={setMasonryItemsRadio}>
               <MasonryIntersectionContext value={intersectionObserver}>
-                <MediaContainerWidthProvider width={finalItemWidth}>
+                <MediaContainerWidthProvider width={currentItemWidth}>
                   <FirstScreenReadyContext value={firstScreenReady}>
                     <Masonry
                       items={firstScreenReady ? items : items.slice(0, FirstScreenItemCount)}
                       columnGutter={gutter}
-                      columnWidth={finalItemWidth}
-                      columnCount={finalColumn}
+                      columnWidth={currentItemWidth}
+                      columnCount={currentColumn}
                       overscanBy={2}
                       render={MasonryRender}
                       onRender={handleRender}

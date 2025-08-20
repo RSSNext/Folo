@@ -5,6 +5,7 @@ import { useEntryTranslation } from "@follow/store/translation/hooks"
 import { useWhoami } from "@follow/store/user/hooks"
 import { formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { titleCase } from "title-case"
+import { useShallow } from "zustand/shallow"
 
 import { useShowAITranslation } from "~/atoms/ai-translation"
 import { useActionLanguage } from "~/atoms/settings/general"
@@ -25,34 +26,37 @@ interface EntryLinkProps {
 
 export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   const user = useWhoami()
-  const entry = useEntry(entryId, (state) => {
-    const { feedId, inboxHandle } = state
-    const { author, authorAvatar, authorUrl, publishedAt, title } = state
+  const entry = useEntry(
+    entryId,
+    useShallow((state) => {
+      const { feedId, inboxHandle } = state
+      const { author, authorAvatar, authorUrl, publishedAt, title } = state
 
-    const attachments = state.attachments || []
-    const { duration_in_seconds } =
-      attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
-    const seconds = duration_in_seconds ? formatTimeToSeconds(duration_in_seconds) : undefined
-    const estimatedMins = seconds ? formatEstimatedMins(Math.floor(seconds / 60)) : undefined
+      const attachments = state.attachments || []
+      const { duration_in_seconds } =
+        attachments?.find((attachment) => attachment.duration_in_seconds) ?? {}
+      const seconds = duration_in_seconds ? formatTimeToSeconds(duration_in_seconds) : undefined
+      const estimatedMins = seconds ? formatEstimatedMins(Math.floor(seconds / 60)) : undefined
 
-    const media = state.media || []
-    const firstPhoto = media.find((a) => a.type === "photo")
-    const firstPhotoUrl = firstPhoto?.url
-    const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
-    const titleEntry = { authorUrl }
+      const media = state.media || []
+      const firstPhoto = media.find((a) => a.type === "photo")
+      const firstPhotoUrl = firstPhoto?.url
+      const iconEntry: FeedIconEntry = { firstPhotoUrl, authorAvatar }
+      const titleEntry = { authorUrl }
 
-    return {
-      author,
-      authorUrl,
-      estimatedMins,
-      feedId,
-      iconEntry,
-      inboxId: inboxHandle,
-      publishedAt,
-      title,
-      titleEntry,
-    }
-  })
+      return {
+        author,
+        authorUrl,
+        estimatedMins,
+        feedId,
+        iconEntry,
+        inboxId: inboxHandle,
+        publishedAt,
+        title,
+        titleEntry,
+      }
+    }),
+  )
 
   const feed = useFeedById(entry?.feedId)
   const inbox = useInboxById(entry?.inboxId)
@@ -90,22 +94,20 @@ export const EntryTitle = ({ entryId, compact }: EntryLinkProps) => {
   ) : (
     <div className="group relative block min-w-0 rounded-lg">
       <div className="flex flex-col gap-3">
-        <div>
-          <a
-            href={populatedFullHref ?? "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
-          >
-            <EntryTranslation
-              source={titleCase(entry.title ?? "")}
-              target={titleCase(translation?.title ?? "")}
-              className="text-text inline-block select-text hyphens-auto duration-200"
-              inline={false}
-              bilingual
-            />
-          </a>
-        </div>
+        <a
+          href={populatedFullHref ?? "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-link hover:multi-[scale-[1.01];opacity-95] inline-block select-text break-words text-[1.7rem] font-bold leading-normal duration-200"
+        >
+          <EntryTranslation
+            source={titleCase(entry.title ?? "")}
+            target={titleCase(translation?.title ?? "")}
+            className="text-text inline-block select-text hyphens-auto duration-200"
+            inline={false}
+            bilingual
+          />
+        </a>
 
         {/* Meta Information with improved layout */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">

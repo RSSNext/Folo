@@ -210,7 +210,7 @@ export const HIDE_ACTIONS_IN_ENTRY_CONTEXT_MENU = [
   COMMAND_ID.entry.viewSourceContent,
   COMMAND_ID.entry.toggleAISummary,
   COMMAND_ID.entry.toggleAITranslation,
-  COMMAND_ID.global.toggleAIChatPinned,
+
   COMMAND_ID.settings.customizeToolbar,
   COMMAND_ID.entry.readability,
   COMMAND_ID.entry.exportAsPDF,

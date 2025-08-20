@@ -155,14 +155,6 @@ export const ChatMoreDropdown = () => {
                     </div>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator className="my-1.5" />
-                <DropdownMenuItem
-                  onClick={chatActions.newChat}
-                  className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-2.5"
-                >
-                  <i className="i-mgc-add-cute-re size-4" />
-                  <span className="text-sm">New Chat</span>
-                </DropdownMenuItem>
               </>
             ) : (
               <div className="flex flex-col items-center py-8 text-center">
@@ -182,7 +174,7 @@ export const ChatMoreDropdown = () => {
 
         <DropdownMenuItem onClick={handleToggleMode}>
           <i
-            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-pin-line"}`}
+            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
           />
           <span>
             {panelStyle === AIChatPanelStyle.Fixed

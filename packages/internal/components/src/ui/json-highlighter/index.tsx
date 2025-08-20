@@ -96,7 +96,7 @@ interface Token {
 function highlightJson(jsonString: string): string {
   // Escape HTML entities first
   const escaped = jsonString
-    .replaceAll("&", "&amp;")
+    ?.replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
 

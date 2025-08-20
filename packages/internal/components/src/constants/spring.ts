@@ -14,8 +14,9 @@ const microDampingPreset: Transition = {
 
 const microReboundPreset: Transition = {
   type: "spring",
-  stiffness: 300,
-  damping: 20,
+  stiffness: 400,
+  damping: 30,
+  duration: 0.3,
 }
 
 const softSpringPreset: Transition = {

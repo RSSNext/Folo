@@ -33,7 +33,6 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
-import { AISummary } from "../../AISummary"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
 import { EntryHeader } from "../entry-header"
@@ -42,7 +41,7 @@ import { EntryTimelineSidebar } from "../EntryTimelineSidebar"
 import { EntryTitle } from "../EntryTitle"
 import { SourceContentPanel } from "../SourceContentView"
 import { SupportCreator } from "../SupportCreator"
-import { EntryContentAccessories } from "./accessories"
+import { ContainerToc } from "./accessories/ContainerToc"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
 import { EntryContentLoading } from "./EntryContentLoading"
 import { EntryNoContent } from "./EntryNoContent"
@@ -120,7 +119,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       {!isInPeekModal && (
         <EntryHeader
           entryId={entryId}
-          view={view}
           className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
           compact={compact}
         />
@@ -188,7 +186,6 @@ const EntryContentImpl: Component<EntryContentProps> = ({
               <WrappedElementProvider boundingDetection>
                 <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
                   <EntryTitleMetaHandler entryId={entryId} />
-                  <AISummary entryId={entryId} />
                   <ErrorBoundary fallback={EntryRenderError}>
                     <ReadabilityNotice entryId={entryId} />
                     <ShadowDOM injectHostStyles={!isInbox}>
@@ -254,7 +251,9 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      stopWheelPropagation={false}
+      viewportProps={{
+        onWheel: stopPropagation,
+      }}
       rootClassName={cn(
         "h-0 min-w-0 grow overflow-y-auto print:h-auto print:overflow-visible",
         className,
@@ -284,7 +283,7 @@ const Renderer: React.FC<{
 
   const tocRef = useRef<TocRef | null>(null)
   const contentAccessories = useMemo(
-    () => (isInPeekModal ? undefined : <EntryContentAccessories ref={{ tocRef }} />),
+    () => (isInPeekModal ? undefined : <ContainerToc ref={tocRef} />),
     [isInPeekModal],
   )
 

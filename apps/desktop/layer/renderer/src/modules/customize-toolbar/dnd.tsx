@@ -62,7 +62,7 @@ const warningActionButton: Partial<
     show: !IN_ELECTRON,
     info: "entry_actions.warn_info_for_desktop",
   },
-  [COMMAND_ID.global.toggleAIChatPinned]: {
+  [COMMAND_ID.global.toggleAIChat]: {
     show: true,
     info: "entry_actions.warn_info_ai_chat_pinned_tip",
   },
