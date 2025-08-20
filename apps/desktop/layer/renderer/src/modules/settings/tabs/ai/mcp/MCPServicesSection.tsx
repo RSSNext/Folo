@@ -239,7 +239,7 @@ export const MCPServicesSection = () => {
             </div>
           </div>
 
-          {mcpServices.length === 0 && (
+          {mcpServices.length === 0 && !isLoading && (
             <div className="py-8 text-center">
               <div className="bg-fill-secondary mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
                 <i className="i-mgc-plugin-2-cute-re text-text size-6" />
@@ -275,6 +275,21 @@ export const MCPServicesSection = () => {
               }
             />
           ))}
+
+          {/* Security Disclosure Section */}
+          <div className="border-fill-secondary mt-6 border-t pt-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <i className="i-mgc-safety-certificate-cute-re text-green size-4" />
+                <Label className="text-text text-sm font-medium">
+                  {t("integration.mcp.security.title")}
+                </Label>
+              </div>
+              <p className="text-text-secondary text-xs leading-relaxed">
+                {t("integration.mcp.security.description")}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>
