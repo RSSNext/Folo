@@ -1,6 +1,10 @@
+import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { useTranslation } from "react-i18next"
 
-import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
+import {
+  setAISetting,
+  useAISettingValue
+} from "~/atoms/settings/ai"
 
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
@@ -8,6 +12,7 @@ import { MCPServicesSection } from "./ai/mcp/MCPServicesSection"
 import { PanelStyleSection } from "./ai/PanelStyleSection"
 import { PersonalizePromptSection } from "./ai/PersonalizePromptSection"
 import { AIShortcutsSection } from "./ai/shortcuts/AIShortcutsSection"
+import { TaskSchedulingSection } from "./ai/tasks"
 import { TokenUsageSection } from "./ai/TokenUsageSection"
 
 const SettingBuilder = createSettingBuilder(useAISettingValue)
@@ -54,6 +59,12 @@ export const SettingAI = () => {
             value: t("integration.title"),
           },
           MCPServicesSection,
+          <Divider key="task-scheduling-divider" />,
+          {
+            type: "title",
+            value: "Task Scheduling",
+          },
+          TaskSchedulingSection,
         ]}
       />
     </div>
