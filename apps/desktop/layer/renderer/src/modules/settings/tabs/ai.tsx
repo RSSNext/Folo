@@ -97,7 +97,7 @@ const TokenUsageSection = () => {
     resetAt: new Date(),
   }
 
-  const usagePercentage = (tokenUsage.used / tokenUsage.total) * 100
+  const usagePercentage = tokenUsage.total === 0 ? 0 : (tokenUsage.used / tokenUsage.total) * 100
   const resetDate = new Date(tokenUsage.resetAt)
 
   return (
