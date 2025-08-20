@@ -2,7 +2,8 @@
 
 ## Shiny new things
 
-- - Add option for independent content font size and presets
+- Add option for independent content font size and presets
+
 ## Improvements
 
 ## No longer broken
