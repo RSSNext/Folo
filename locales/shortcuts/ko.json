@@ -22,8 +22,6 @@
   "command.global.show_shortcuts.title": "단축키 보기",
   "command.global.toggle_ai_chat.description": "AI 대화 패널 토글",
   "command.global.toggle_ai_chat.title": "AI 대화",
-  "command.global.toggle_ai_chat_pinned.description": "AI 대화 패널 고정 토글",
-  "command.global.toggle_ai_chat_pinned.title": "AI 대화(고정)",
   "command.global.toggle_corner_play.description": "재생/일시정지 토글(백그라운드에서 현재 재생 중인 오디오가 있는 경우)",
   "command.global.toggle_corner_play.title": "코너 재생 토글",
   "command.layout.focus_to_entry_render.title": "항목 렌더에 포커스",
