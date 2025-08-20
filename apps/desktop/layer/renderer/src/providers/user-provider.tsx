@@ -40,7 +40,9 @@ export const UserProvider = () => {
       const message =
         sessionRole === UserRole.Free || sessionRole === UserRole.Trial
           ? `You are currently on the ${UserRoleName[UserRole.Free]} plan. Some features may be limited.`
-          : ""
+          : sessionRole === UserRole.PreProTrial
+            ? `You are currently on the ${UserRoleName[UserRole.PreProTrial]} plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
+            : ""
       if (!message) {
         localStorage.setItem(itemKey, "true")
         return

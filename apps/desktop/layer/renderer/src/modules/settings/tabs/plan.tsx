@@ -29,7 +29,8 @@ const PLAN_TIER_MAP: Record<UserRole, number> = {
   [UserRole.Admin]: 4, // Admin has highest tier
   [UserRole.Free]: 1,
   [UserRole.Trial]: 1, // Same as Free (deprecated)
-  [UserRole.Pro]: 2,
+  [UserRole.PreProTrial]: 2,
+  [UserRole.Pro]: 3,
 }
 
 // Plan configurations

@@ -52,6 +52,8 @@ const PLAN_TIER_MAP: Record<UserRole, number> = {
   // Admin has highest tier
   [UserRole.Free]: 1,
   [UserRole.Trial]: 1,
+  // Same as Free (deprecated)
+  [UserRole.PreProTrial]: 2,
   [UserRole.Pro]: 3,
 }
 
@@ -210,7 +212,9 @@ export const PlanScreen: NavigationControllerView = () => {
               daysLeft={isProPreview ? daysLeft : null}
               onUpgrade={isProPreview ? () => upgradePlanMutation.mutate() : undefined}
               disabled={isProPreview && upgradePlanMutation.isPending}
-              isCurrentPlan={role === plan.role || plan.role === UserRole.Pro}
+              isCurrentPlan={
+                role === plan.role || (plan.role === UserRole.Pro && role === UserRole.PreProTrial)
+              }
             />
           )
         })}
@@ -225,8 +229,10 @@ export const PlanScreen: NavigationControllerView = () => {
             <Text className="text-label font-medium">Current Status</Text>
             <Text className="text-label text-sm">
               {role === UserRole.Pro
-                ? `Pro expires ${dayjs(roleEndDate).format("MMMM D, YYYY")} (${daysLeft} days left)`
-                : "Start your journey with our referral program"}
+                ? "You have an active Pro plan"
+                : role === UserRole.PreProTrial
+                  ? `Pro Preview trial expires ${dayjs(roleEndDate).format("MMMM D, YYYY")} (${daysLeft} days left)`
+                  : "Start your journey with our referral program"}
             </Text>
           </View>
         </View>

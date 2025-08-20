@@ -136,8 +136,7 @@ const ReferralGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: "#EC4899",
     anonymous: false,
-    // TODO: support pay on mobile
-    hideIf: () => true,
+    hideIf: (serverConfigs) => !serverConfigs?.REFERRAL_ENABLED,
   },
 ]
 
