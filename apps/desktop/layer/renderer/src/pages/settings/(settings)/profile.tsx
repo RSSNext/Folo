@@ -1,6 +1,7 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { Label } from "@follow/components/ui/label/index.js"
+import { useTranslation } from "react-i18next"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { AccountManagement } from "~/modules/profile/account-management"
@@ -22,6 +23,7 @@ export const loader = defineSettingPageData({
 })
 
 export function Component() {
+  const { t } = useTranslation("settings")
   const { present } = useModalStack()
   const preset = useTOTPModalWrapper(deleteUser, { force: true })
   return (
@@ -38,17 +40,16 @@ export function Component() {
           <UpdatePasswordForm />
           <TwoFactor />
           <div className="flex items-center justify-between">
-            <Label>Delete Account</Label>
+            <Label>{t("profile.delete_account.label")}</Label>
             <Button
               variant="outline"
               onClick={() => {
                 present({
-                  title: "Delete Account",
+                  title: t("profile.delete_account.label"),
                   content: () => (
                     <div className="max-w-96">
                       <p className="mb-4 text-sm text-zinc-500">
-                        Are you sure you want to delete your account? This action is irreversible
-                        and may take up to two days to take effect.
+                        {t("profile.delete_account.confirm_message")}
                       </p>
                       <Button
                         variant="outline"
@@ -56,14 +57,14 @@ export function Component() {
                           preset({})
                         }}
                       >
-                        Delete
+                        {t("profile.delete_account.button")}
                       </Button>
                     </div>
                   ),
                 })
               }}
             >
-              Delete
+              {t("profile.delete_account.button")}
             </Button>
           </div>
         </div>

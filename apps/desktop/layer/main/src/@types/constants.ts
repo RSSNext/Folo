@@ -1,4 +1,4 @@
-const langs = ["en", "zh-CN", "zh-TW", "ja"] as const
+const langs = ["en", "zh-CN", "zh-TW", "ja", "ko"] as const
 export const currentSupportedLanguages = [...langs].sort() as string[]
 export type MainSupportedLanguages = (typeof langs)[number]
 

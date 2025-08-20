@@ -35,7 +35,7 @@ type DiscoverSearchData = Awaited<ReturnType<typeof apiClient.discover.$post>>["
 const typeConfig = {
   search: {
     label: "discover.any_url_or_keyword",
-    placeholder: "Enter keywords or URL...",
+    placeholder: "discover.search_placeholder",
     prefix: [] as string[],
     default: undefined,
   },
@@ -172,14 +172,14 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
                 </FormControl>
                 <div className="text-text-secondary absolute bottom-0 right-0 flex flex-col flex-wrap items-end gap-1 text-sm">
                   <div>
-                    Or go to{" "}
+                    {t("discover.or_go_to")}{" "}
                     <Link className="text-accent underline" to="/discover" onClick={dismiss}>
                       Discover
                     </Link>
                     <i className="i-mgc-arrow-right-up-cute-re" />
                   </div>
 
-                  <p>to find more interesting contents.</p>
+                  <p>{t("discover.find_more_content")}</p>
                 </div>
               </FormItem>
             )}
@@ -194,7 +194,11 @@ export function SimpleDiscoverModal({ dismiss }: { dismiss: () => void }) {
                 <FormLabel>{t(currentConfig.label)}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={currentConfig.placeholder}
+                    placeholder={
+                      watchedType === "search"
+                        ? t("discover.search_placeholder" as any)
+                        : currentConfig.placeholder
+                    }
                     {...field}
                     onChange={handleKeywordChange}
                   />
