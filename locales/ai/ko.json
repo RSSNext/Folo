@@ -20,7 +20,6 @@
   "shortcuts.added": "단축키가 성공적으로 추가되었습니다",
   "shortcuts.create_first": "첫 번째 단축키 만들기",
   "shortcuts.deleted": "단축키가 성공적으로 삭제되었습니다",
-  "shortcuts.description": "빠른 작업을 위한 맞춤 AI 단축키를 만드세요",
   "shortcuts.empty.description": "일반적인 작업을 빠르게 수행하고 즉각적인 AI 지원을 받기 위한 맞춤 AI 단축키를 만드세요.",
   "shortcuts.empty.title": "아직 단축키가 없습니다",
   "shortcuts.enabled": "활성화됨",
