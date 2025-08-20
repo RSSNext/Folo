@@ -1,4 +1,5 @@
 import { Divider } from "@follow/components/ui/divider/Divider.js"
+import { Label } from "@follow/components/ui/label/index.js"
 import { useTranslation } from "react-i18next"
 
 import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
@@ -62,8 +63,29 @@ export const SettingAI = () => {
             value: "Task Scheduling",
           },
           TaskSchedulingSection,
+          AISecurityDisclosureSection,
         ]}
       />
+    </div>
+  )
+}
+
+const AISecurityDisclosureSection = () => {
+  const { t } = useTranslation("ai")
+
+  return (
+    <div className="border-fill-secondary mt-6 border-t pt-4">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <i className="i-mgc-safety-certificate-cute-re text-green size-4" />
+          <Label className="text-text text-sm font-medium">
+            {t("integration.mcp.security.title")}
+          </Label>
+        </div>
+        <p className="text-text-secondary text-xs leading-relaxed">
+          {t("integration.mcp.security.description")}
+        </p>
+      </div>
     </div>
   )
 }
