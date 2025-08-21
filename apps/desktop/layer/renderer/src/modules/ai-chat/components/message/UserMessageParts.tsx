@@ -1,8 +1,7 @@
 import * as React from "react"
 
-import type { AIChatContextBlock, BizUIMessage } from "~/modules/ai-chat/store/types"
+import type { BizUIMessage } from "~/modules/ai-chat/store/types"
 
-import { AIDataBlockPart } from "./AIDataBlockPart"
 import { AIMarkdownMessage } from "./AIMarkdownMessage"
 import { AIRichTextMessage } from "./AIRichTextMessage"
 
@@ -20,7 +19,8 @@ export const UserMessageParts: React.FC<UserMessagePartsProps> = React.memo(({ m
       }
 
       case "data-block": {
-        return <AIDataBlockPart key={partKey} blocks={part.data as AIChatContextBlock[]} />
+        // Skip data-block rendering here since it's handled separately in UserChatMessage
+        return null
       }
 
       case "data-rich-text": {

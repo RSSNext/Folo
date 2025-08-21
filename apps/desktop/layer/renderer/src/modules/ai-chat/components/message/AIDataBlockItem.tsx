@@ -56,10 +56,7 @@ const BlockIcon: React.FC<{
   if (block.type === "fileAttachment" && block.attachment && isImageAttachment(block)) {
     return (
       <div
-        className={cn(
-          "flex size-5 flex-shrink-0 items-center justify-center rounded-md",
-          styles.icon,
-        )}
+        className={cn("flex size-4 flex-shrink-0 items-center justify-center rounded", styles.icon)}
       >
         <ImageThumbnail attachment={block.attachment} />
       </div>
@@ -70,12 +67,9 @@ const BlockIcon: React.FC<{
 
   return (
     <div
-      className={cn(
-        "flex size-5 flex-shrink-0 items-center justify-center rounded-md",
-        styles.icon,
-      )}
+      className={cn("flex size-4 flex-shrink-0 items-center justify-center rounded", styles.icon)}
     >
-      <i className={cn("size-3", iconClass)} />
+      <i className={cn("size-2.5", iconClass)} />
     </div>
   )
 })
@@ -94,7 +88,7 @@ export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ blo
     <div
       key={block.id}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5",
+        "inline-flex items-center gap-1 rounded px-1.5 py-0.5",
         "border bg-gradient-to-r backdrop-blur-sm",
         styles.container,
       )}
@@ -106,7 +100,7 @@ export const AIDataBlockItem: React.FC<AIDataBlockItemProps> = React.memo(({ blo
         <span className={cn("text-xs font-medium", styles.label)}>{label}</span>
         <span className="text-text-secondary text-xs">·</span>
         <span
-          className="text-text max-w-32 truncate text-xs font-medium"
+          className="text-text max-w-24 truncate text-xs font-medium"
           title={typeof displayContent === "string" ? displayContent : undefined}
         >
           {displayContent}

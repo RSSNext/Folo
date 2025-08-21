@@ -168,14 +168,10 @@ export const CollapsibleError: React.FC<CollapsibleErrorProps> = ({
         className="overflow-hidden"
       >
         <div
-          className={cn(
-            "bg-red/5 border-red/20 shadow-red/5 dark:shadow-red/10 relative overflow-hidden rounded-xl backdrop-blur-2xl transition-all duration-200",
-            "group-hover:bg-red/10 group-hover:border-red/30",
-          )}
+          className={
+            "border-red/20 shadow-red/5 dark:shadow-red/10 backdrop-blur-background relative overflow-hidden rounded-xl bg-[color-mix(in_srgb,_color-mix(in_srgb,rgb(var(--color-red)),hsl(var(--background))_80%),transparent_30%)] transition-all duration-200"
+          }
         >
-          {/* Glass effect overlay */}
-          <div className="from-red/5 absolute inset-0 bg-gradient-to-r to-transparent" />
-
           {/* Collapsed Content */}
           <div className="relative z-10 flex items-center gap-3 p-3">
             <m.div

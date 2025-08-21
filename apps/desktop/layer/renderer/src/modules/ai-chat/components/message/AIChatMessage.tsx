@@ -124,6 +124,7 @@ export const AIChatWaitingIndicator: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="mb-4"
     >
       <div className="text-text-secondary flex items-center gap-2 rounded-full text-xs">
         <i className="i-mgc-loading-3-cute-re size-3 animate-spin" />
