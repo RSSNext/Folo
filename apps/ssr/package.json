@@ -55,7 +55,7 @@
     "@types/html-minifier-terser": "7.0.2",
     "chokidar": "4.0.3",
     "code-inspector-plugin": "1.2.2",
-    "daisyui": "5.0.50",
+    "daisyui": "4.12.24",
     "dotenv-flow": "4.1.0",
     "es-toolkit": "1.39.10",
     "fast-glob": "3.3.3",

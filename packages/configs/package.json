@@ -23,12 +23,13 @@
     "tailwindcss-animate": "1.0.7",
     "tailwindcss-motion": "1.1.1",
     "tailwindcss-multi": "0.4.6",
-    "tailwindcss-safe-area": "1.1.0",
+    "tailwindcss-safe-area": "0.8.0",
     "tailwindcss-uikit-colors": "catalog:"
   },
   "devDependencies": {
     "postcss": "8.5.6",
     "postcss-js": "4.0.1",
+    "tailwindcss": "3.4.17",
     "workspace-root": "3.3.1"
   }
 }
