@@ -20,6 +20,8 @@ import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-cont
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
 import { useEntryContentScrollToTop } from "../entry-content/atoms"
+import { setScrollToExitTutorialSeen } from "./atoms/tutorial"
+import { ScrollToExitTutorial } from "./components/ScrollToExitTutorial"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
@@ -63,6 +65,7 @@ const AIEntryLayoutImpl = () => {
         if (accumulatedDelta.current > 1000) {
           handleCloseGesture()
           accumulatedDelta.current = 0
+          setScrollToExitTutorialSeen(true)
         }
       } else {
         // Reset accumulation when scrolling down or not at top
@@ -157,13 +160,16 @@ const AIEntryLayoutImpl = () => {
                           aria-label="Scroll up or click to exit"
                         >
                           <div className="text-text flex items-center gap-2 rounded-full font-medium">
-                            <i className="i-mgc-up-cute-re repeat-[2] animate-smooth-bounce text-base" />
+                            <i className="i-mgc-up-cute-re repeat-[2] text-base" />
                             <span>{t("entry.scroll_up_to_exit")}</span>
                           </div>
                         </Button>
                       </m.div>
                     )}
                   </AnimatePresence>
+
+                  {/* First-time user tutorial for scroll-to-exit */}
+                  <ScrollToExitTutorial show={!!realEntryId && isAtTop} />
 
                   <EntryContent entryId={realEntryId} className="h-[calc(100%-2.25rem)]" />
                 </m.div>
