@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@follow/configs": "workspace:*",
-    "@react-native-firebase/analytics": "22.2.1"
+    "@react-native-firebase/analytics": "23.1.0"
   }
 }

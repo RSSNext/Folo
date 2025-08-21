@@ -15,6 +15,8 @@
   "features.title": "Features",
   "integration.mcp.description": "Connect to MCP-compatible services that extend AI capabilities through secure OAuth integration",
   "integration.mcp.enabled": "Enable MCP Services",
+  "integration.mcp.security.description": "OAuth authentication tokens are securely stored using AES-GCM-256 encryption to protect your credentials and ensure data privacy.",
+  "integration.mcp.security.title": "Security Disclosure",
   "integration.mcp.service.active": "Active",
   "integration.mcp.service.added": "MCP service added successfully",
   "integration.mcp.service.auth_message": "This service requires OAuth authorization. Click 'Open Authorization' to proceed with authentication in a new window.",

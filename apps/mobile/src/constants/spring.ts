@@ -1,4 +1,4 @@
-import type { SpringConfig } from "react-native-reanimated/lib/typescript/animation/springUtils"
+import type { SpringConfig } from "react-native-reanimated/lib/typescript/animation/spring"
 
 export const gentleSpringPreset: SpringConfig = {
   damping: 15,
