@@ -205,7 +205,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
         {(view === FeedViewType.Articles || view === FeedViewType.Notifications) && (
           <>
             {/* Safe area for icon*/}
-            <div className="h-16" />
+            <div className="h-10" />
 
             {entryMedia?.[0] ? (
               <Media
@@ -224,7 +224,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="line-clamp-6 p-4 text-[2rem] leading-[1.1]">{entry.title}</div>
+              <div className="line-clamp-4 p-4 text-[2rem] leading-[1.1]">{entry.title}</div>
             )}
           </>
         )}
@@ -233,11 +233,9 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
         {view === FeedViewType.SocialMedia && (
           <>
             {/* Safe area for icon*/}
-            <div className="h-16" />
+            <div className="h-10" />
 
-            <div className="line-clamp-5 p-4 text-[2.5rem] leading-[1.1]">{entry.title}</div>
-
-            {entryMedia?.[0] && (
+            {entryMedia?.[0] ? (
               <Media
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
@@ -253,6 +251,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 width={entryMedia[0].width}
                 blurhash={entryMedia[0].blurhash}
               />
+            ) : (
+              <div className="line-clamp-6 p-4 text-[1rem] leading-[1.1]">{entry.title}</div>
             )}
           </>
         )}
