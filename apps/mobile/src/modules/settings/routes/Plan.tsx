@@ -146,7 +146,12 @@ export const PlanScreen: NavigationControllerView = () => {
       if (isIOS) {
         await requestPurchase({
           request: {
-            sku: "is.follow.propreview",
+            ios: {
+              sku: "is.follow.propreview",
+            },
+            android: {
+              skus: ["is.follow.propreview"],
+            },
           },
         })
       } else {
