@@ -28,7 +28,7 @@ import type { UniversalItemProps } from "../types"
 
 const cardStylePresets = [
   {
-    card: "bg-[#7C6E63] text-black",
+    card: "bg-[#7C6E63] text-white",
     icon: "text-[#B7ADA4]",
   },
   {
@@ -174,10 +174,10 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
       {/* Hero */}
       <div
         className={cn(
-          "relative flex flex-col rounded-lg",
+          "relative flex max-h-[25em] flex-col overflow-hidden rounded-lg",
           cardStyle.card,
-          view === FeedViewType.Articles && "min-h-[10em] justify-end",
-          view === FeedViewType.Notifications && "min-h-[10em] justify-end",
+          view === FeedViewType.Articles && "min-h-[15em] justify-end",
+          view === FeedViewType.Notifications && "min-h-[15em] justify-end",
           view === FeedViewType.SocialMedia && "min-h-[20em] justify-center",
         )}
       >
@@ -199,8 +199,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
                 previewImageUrl={entryMedia[0].preview_image_url}
-                className="mt-2 w-full overflow-hidden"
-                mediaContainerClassName="w-auto h-auto"
+                className="min-h-[15em] w-full overflow-hidden"
+                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
@@ -211,8 +211,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="line-clamp-4 overflow-hidden p-4 text-[2rem] leading-[1.1]">
-                {entry.title}
+              <div className="mt-10 overflow-hidden p-4 text-[1.75rem] font-light leading-[1.1]">
+                <div className="line-clamp-4">{entry.title}</div>
               </div>
             )}
           </>
@@ -226,8 +226,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
                 previewImageUrl={entryMedia[0].preview_image_url}
-                className="mt-2 w-full overflow-hidden"
-                mediaContainerClassName="w-auto h-auto"
+                className="min-h-[15em] w-full overflow-hidden"
+                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
@@ -238,8 +238,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="line-clamp-6 overflow-hidden p-4 text-[1rem] leading-[1.1]">
-                {entry.title}
+              <div className="overflow-hidden p-4 text-[1.25rem] font-light leading-[1.1]">
+                <div className="line-clamp-6">{entry.title}</div>
               </div>
             )}
           </>
@@ -320,8 +320,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
                 previewImageUrl={entryMedia[0].preview_image_url}
-                className="mt-2 w-full overflow-hidden"
-                mediaContainerClassName="w-auto h-auto"
+                className="min-h-[15em] w-full overflow-hidden"
+                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
