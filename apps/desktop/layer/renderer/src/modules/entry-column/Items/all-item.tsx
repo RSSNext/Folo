@@ -26,38 +26,30 @@ import { StarIcon } from "../star-icon"
 import { EntryTranslation } from "../translation"
 import type { UniversalItemProps } from "../types"
 
-const blackAndwhiteCardStylePresets = [
-  {
-    card: "bg-black text-white",
-    icon: "text-white",
-  },
-  {
-    card: "bg-white text-black",
-    icon: "text-black",
-  },
-]
-
 const cardStylePresets = [
-  ...blackAndwhiteCardStylePresets,
   {
-    card: "bg-folo text-black",
-    icon: "text-[#FEABF3]",
+    card: "bg-[#7C6E63] text-black",
+    icon: "text-[#B7ADA4]",
   },
   {
-    card: "bg-[#48E18F] text-black",
-    icon: "text-[#EEF542]",
+    card: "bg-[#D7FED3] text-black",
+    icon: "text-[#92E58A]",
   },
   {
-    card: "bg-[#FFE550] text-black",
-    icon: "text-[#FE99F5]",
+    card: "bg-[#FDFFDA] text-black",
+    icon: "text-[#F9EFAA]",
   },
   {
-    card: "bg-[#FE99F5] text-black",
-    icon: "text-[#FFE550]",
+    card: "bg-[#FFE5EE] text-black",
+    icon: "text-[#FDD1E2]",
   },
   {
-    card: "bg-[#6F6BFE] text-white",
-    icon: "text-[#C7F913]",
+    card: "bg-[#CFF0FF] text-black",
+    icon: "text-[#A7D6F2]",
+  },
+  {
+    card: "bg-[#ECE7FB] text-black",
+    icon: "text-[#DFCFF0]",
   },
 ]
 
@@ -124,12 +116,10 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
       hash = (hash << 5) + hash + entryId.codePointAt(i)!
     }
 
-    const index = entryMedia?.[0]
-      ? (hash >>> 0) % blackAndwhiteCardStylePresets.length
-      : (hash >>> 0) % cardStylePresets.length
+    const index = (hash >>> 0) % cardStylePresets.length
 
     return cardStylePresets[index]!
-  }, [entryId, entryMedia])
+  }, [entryId])
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
 
@@ -221,7 +211,9 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="line-clamp-4 p-4 text-[2rem] leading-[1.1]">{entry.title}</div>
+              <div className="line-clamp-4 overflow-hidden p-4 text-[2rem] leading-[1.1]">
+                {entry.title}
+              </div>
             )}
           </>
         )}
@@ -246,7 +238,9 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="line-clamp-6 p-4 text-[1rem] leading-[1.1]">{entry.title}</div>
+              <div className="line-clamp-6 overflow-hidden p-4 text-[1rem] leading-[1.1]">
+                {entry.title}
+              </div>
             )}
           </>
         )}
