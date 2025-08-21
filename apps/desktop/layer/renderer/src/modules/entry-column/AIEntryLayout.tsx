@@ -186,6 +186,7 @@ const AIEntryLayoutImpl = () => {
             }}
           />
           <AIChatLayout
+            key="ai-chat-layout"
             style={
               { width: position, "--ai-chat-layout-width": `${position}px` } as React.CSSProperties
             }
@@ -194,7 +195,7 @@ const AIEntryLayoutImpl = () => {
       )}
 
       {/* Floating panel - renders outside layout flow */}
-      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout />}
+      {panelStyle === AIChatPanelStyle.Floating && <AIChatLayout key="ai-chat-layout" />}
     </div>
   )
 }

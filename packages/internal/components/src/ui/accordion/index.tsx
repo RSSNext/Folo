@@ -46,6 +46,7 @@ function AccordionItem({ className, children, ...props }: AccordionItemProps) {
       )}
     >
       <AccordionPrimitive.Item
+        data-state={isOpen ? "open" : "closed"}
         data-slot="accordion-item"
         className={cn("border-b", className)}
         {...props}

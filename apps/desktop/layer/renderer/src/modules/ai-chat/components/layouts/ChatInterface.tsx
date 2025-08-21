@@ -17,6 +17,7 @@ import {
   AIChatMessage,
   AIChatWaitingIndicator,
 } from "~/modules/ai-chat/components/message/AIChatMessage"
+import { UserChatMessage } from "~/modules/ai-chat/components/message/UserChatMessage"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
 import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
@@ -249,7 +250,11 @@ const Messages: FC = () => {
     <div className="relative flex min-w-0 flex-1 flex-col">
       {messages.map((message) => (
         <Suspense key={message.id}>
-          <AIChatMessage message={message} />
+          {message.role === "user" ? (
+            <UserChatMessage message={message} />
+          ) : (
+            <AIChatMessage message={message} />
+          )}
         </Suspense>
       ))}
     </div>
