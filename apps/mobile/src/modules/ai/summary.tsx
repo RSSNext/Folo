@@ -76,8 +76,8 @@ export const AISummary: FC<{
       dampingRatio: 2,
       stiffness: 90,
       overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
+      energyThreshold: 0.01,
+
       duration: 200,
     })
   }
