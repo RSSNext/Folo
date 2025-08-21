@@ -1,10 +1,7 @@
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { useTranslation } from "react-i18next"
 
-import {
-  setAISetting,
-  useAISettingValue
-} from "~/atoms/settings/ai"
+import { setAISetting, useAISettingValue } from "~/atoms/settings/ai"
 
 import { createDefineSettingItem } from "../helper/builder"
 import { createSettingBuilder } from "../helper/setting-builder"
