@@ -4,7 +4,8 @@ import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -18,10 +19,12 @@ import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
+import { useEntryContentScrollToTop } from "../entry-content/atoms"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
   const { entryId } = useParams()
+  const { t } = useTranslation()
   const navigate = useNavigateEntry()
   const panelStyle = useAIChatPanelStyle()
 
@@ -31,7 +34,6 @@ const AIEntryLayoutImpl = () => {
   const entryContentRef = useRef<HTMLDivElement>(null)
   const accumulatedDelta = useRef(0)
   const isScrollingAtTop = useRef(false)
-  const [showScrollHint, setShowScrollHint] = useState(false)
 
   const handleCloseGesture = useCallback(() => {
     navigate({ entryId: null })
@@ -50,7 +52,6 @@ const AIEntryLayoutImpl = () => {
       // Check if we're at the top of the content
       const scrollTop = scrollElement?.scrollTop || 0
       isScrollingAtTop.current = scrollTop === 0
-      setShowScrollHint(scrollTop === 0)
 
       // Handle trackpad/mouse wheel: upward scroll (deltaY < 0) or downward swipe gesture
       // On macOS trackpad, natural scrolling makes upward finger movement negative deltaY
@@ -90,24 +91,10 @@ const AIEntryLayoutImpl = () => {
       el.addEventListener("wheel", handleWheel, { passive: false })
     })
 
-    // Initial scroll position check for hint visibility
-    const initialCheckScrollPosition = () => {
-      const scrollTop = scrollViewport?.scrollTop || element.scrollTop || 0
-      setShowScrollHint(scrollTop === 0)
-    }
-
-    // Check initial position
-    initialCheckScrollPosition()
-
-    // Add scroll listener for hint visibility
-    const scrollElement = scrollViewport || element
-    scrollElement.addEventListener("scroll", initialCheckScrollPosition, { passive: true })
-
     return () => {
       elementsToListen.forEach((el) => {
         el.removeEventListener("wheel", handleWheel)
       })
-      scrollElement.removeEventListener("scroll", initialCheckScrollPosition)
     }
   }, [realEntryId, handleWheel])
 
@@ -130,6 +117,7 @@ const AIEntryLayoutImpl = () => {
       window.dispatchEvent(new Event("resize"))
     },
   })
+  const isAtTop = !!useEntryContentScrollToTop()
 
   return (
     <div className="relative flex min-w-0 grow">
@@ -152,26 +140,31 @@ const AIEntryLayoutImpl = () => {
                   transition={Spring.presets.microRebound}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
-                  {/* Scroll hint indicator */}
-                  <div className="center z-50 pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate({ entryId: null })}
-                      buttonClassName="transform cursor-pointer select-none no-drag-region"
-                      aria-label="Scroll up or click to exit"
-                    >
-                      <div className="text-text flex items-center gap-2 rounded-full font-medium">
-                        <i
-                          className={cn(
-                            "text-base",
-                            showScrollHint ? "i-mgc-up-cute-re" : "i-mgc-close-cute-re",
-                          )}
-                        />
-                        <span>{showScrollHint ? "Scroll up to exit" : "Click to exit"}</span>
-                      </div>
-                    </Button>
-                  </div>
+                  <AnimatePresence>
+                    {/* Scroll hint indicator */}
+                    {isAtTop && (
+                      <m.div
+                        className="center z-50"
+                        initial={{ y: -30, height: 0 }}
+                        animate={{ y: 0, height: "auto" }}
+                        exit={{ y: -30, height: 0 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate({ entryId: null })}
+                          buttonClassName="transform cursor-pointer select-none no-drag-region w-full py-3 rounded-none"
+                          aria-label="Scroll up or click to exit"
+                        >
+                          <div className="text-text flex items-center gap-2 rounded-full font-medium">
+                            <i className="i-mgc-up-cute-re repeat-[2] animate-smooth-bounce text-base" />
+                            <span>{t("entry.scroll_up_to_exit")}</span>
+                          </div>
+                        </Button>
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+
                   <EntryContent entryId={realEntryId} className="h-[calc(100%-2.25rem)]" />
                 </m.div>
               )}
