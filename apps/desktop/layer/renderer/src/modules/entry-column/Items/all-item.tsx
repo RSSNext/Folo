@@ -204,9 +204,6 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
         {/* Article, Notification */}
         {(view === FeedViewType.Articles || view === FeedViewType.Notifications) && (
           <>
-            {/* Safe area for icon*/}
-            <div className="h-10" />
-
             {entryMedia?.[0] ? (
               <Media
                 src={entryMedia[0].url}
@@ -232,9 +229,6 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
         {/* Social Media */}
         {view === FeedViewType.SocialMedia && (
           <>
-            {/* Safe area for icon*/}
-            <div className="h-10" />
-
             {entryMedia?.[0] ? (
               <Media
                 src={entryMedia[0].url}
