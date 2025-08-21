@@ -3,10 +3,11 @@ import { Label } from "@follow/components/ui/label/index.js"
 import { useCallback } from "react"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
-import { AITaskList, AITaskModal } from "~/modules/ai-task"
+import { AITaskList, AITaskModal, useCanCreateNewAITask } from "~/modules/ai-task"
 
 export const TaskSchedulingSection = () => {
   const { present } = useModalStack()
+  const canCreateNewTask = useCanCreateNewAITask()
 
   const handleCreateTask = useCallback(() => {
     present({
@@ -22,10 +23,15 @@ export const TaskSchedulingSection = () => {
           <Label className="text-text text-sm font-medium">{"Schedule AI Tasks"}</Label>
           <div className="text-text-secondary text-xs">
             {"Create and manage automated AI tasks that run on your schedule."}
+            {!canCreateNewTask && (
+              <span className="text-red-500">
+                {" (Limit reached: maximum number of tasks reached)"}
+              </span>
+            )}
           </div>
         </div>
         <span className="text-text-tertiary flex items-center gap-1 text-sm">
-          <Button onClick={handleCreateTask}>
+          <Button disabled={!canCreateNewTask} onClick={handleCreateTask}>
             <i className="i-mgc-add-cute-re mr-2 size-4" />
             New Task
           </Button>

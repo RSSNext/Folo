@@ -1,6 +1,7 @@
 import { ActionButton } from "@follow/components/ui/button/index.js"
 import { cn } from "@follow/utils/utils"
 import { memo, useCallback, useMemo, useRef } from "react"
+import { toast } from "sonner"
 
 import { useAISettingValue } from "~/atoms/settings/ai"
 import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu/dropdown-menu"
@@ -8,6 +9,7 @@ import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useFileUploadWithDefaults } from "~/modules/ai-chat/hooks/useFileUpload"
 import { useAIChatStore } from "~/modules/ai-chat/store/AIChatContext"
 import { SUPPORTED_MIME_ACCEPT } from "~/modules/ai-chat/utils/file-validation"
+import { useCanCreateNewAITask } from "~/modules/ai-task/query"
 
 import { AITaskModal } from "../../../ai-task/components/ai-task-modal"
 import { ContextBlock } from "../context-bar/blocks"
@@ -20,6 +22,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const { handleFileInputChange } = useFileUploadWithDefaults()
     const { present } = useModalStack()
+    const canCreateNewTask = useCanCreateNewAITask()
 
     // Filter enabled shortcuts
     const enabledShortcuts = useMemo(
@@ -32,16 +35,13 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
     }, [])
 
     const handleScheduleActionClick = () => {
+      if (!canCreateNewTask) {
+        toast.error("Please remove an existing task before creating a new one.")
+        return
+      }
       present({
         title: "Schedule AI Task",
-        content: () => (
-          <AITaskModal
-            onSubmit={(data) => {
-              // TODO: Implement actual scheduling logic
-              console.info("Scheduled AI task:", data)
-            }}
-          />
-        ),
+        content: () => <AITaskModal />,
       })
     }
 

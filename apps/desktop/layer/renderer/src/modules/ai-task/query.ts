@@ -9,6 +9,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { followApi } from "~/lib/api-client"
 
+const MAX_AI_TASKS = 10
+
 export const aiTaskKeys = {
   all: ["ai-task"] as const,
   lists: () => [...aiTaskKeys.all, "list"] as const,
@@ -25,6 +27,11 @@ export const useAITaskListQuery = () => {
     queryFn: () => followApi.aiTask.list(),
   })
   return data?.data
+}
+
+export const useCanCreateNewAITask = () => {
+  const tasks = useAITaskListQuery()
+  return !tasks || tasks.length < MAX_AI_TASKS
 }
 
 export const useAITaskQuery = (id: string | undefined, opts?: { enabled?: boolean }) => {

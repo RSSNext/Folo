@@ -24,13 +24,15 @@ import { scheduleSchema } from "~/modules/ai-task/types"
 
 import { ScheduleConfig } from "./schedule-config"
 
+const MAX_PROMPT_LENGTH = 2000
+
 const taskSchema = z
   .object({
     title: z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters"),
     prompt: z
       .string()
       .min(1, "Prompt is required")
-      .max(2000, "Prompt must be less than 2000 characters"),
+      .max(MAX_PROMPT_LENGTH, "Prompt must be less than 2000 characters"),
     schedule: scheduleSchema,
   })
   .refine(
@@ -53,10 +55,11 @@ type TaskFormData = z.infer<typeof taskSchema>
 
 interface AITaskModalProps {
   task?: AITask // Existing task for editing (optional)
+  prompt?: string
   onSubmit?: (data: TaskFormData) => void
 }
 
-export const AITaskModal = memo<AITaskModalProps>(({ task, onSubmit }) => {
+export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
@@ -72,12 +75,15 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, onSubmit }) => {
       // Default values for creating new task
       return {
         title: "AI Task",
-        prompt: "",
+        prompt: prompt || "",
         schedule: {
           type: "once",
           date: now.add(1, "hour").toISOString(),
         },
       }
+    }
+    if (prompt) {
+      console.warn("Using provided prompt for existing task, ignoring task prompt", task, prompt)
     }
 
     // Convert existing task data for editing
@@ -232,7 +238,9 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, onSubmit }) => {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>{`${field.value?.length || 0}/2000 characters`}</FormDescription>
+                  {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
+                    <FormDescription>{`${field.value.length}/${MAX_PROMPT_LENGTH} characters`}</FormDescription>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
