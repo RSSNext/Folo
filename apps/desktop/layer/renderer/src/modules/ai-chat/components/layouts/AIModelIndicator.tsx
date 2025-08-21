@@ -39,12 +39,12 @@ const parseModelString = (modelString: string) => {
 }
 
 export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndicatorProps) => {
-  const { data } = useAIModel()
-  const { currentModel, availableModels = [] } = data || {}
+  const { data, changeModel } = useAIModel()
+  const { defaultModel, availableModels = [], currentModel } = data || {}
 
   const { provider, modelName } = useMemo(() => {
-    return parseModelString(currentModel || "")
-  }, [currentModel])
+    return parseModelString(currentModel || defaultModel || "")
+  }, [currentModel, defaultModel])
 
   const iconClass = providerIcons[provider] || providerIcons.openai
   const hasMultipleModels = availableModels && availableModels.length > 1
@@ -52,9 +52,9 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
   const modelContent = (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border font-medium backdrop-blur-sm transition-colors",
+        "inline-flex shrink-0 items-center rounded-full border font-medium backdrop-blur-sm transition-colors",
         hasMultipleModels
-          ? "hover:bg-material-medium cursor-pointer"
+          ? "hover:bg-material-medium cursor-button"
           : "hover:bg-material-medium/50",
         "duration-200",
         "gap-1.5 px-2 py-1 text-xs",
@@ -81,18 +81,22 @@ export const AIModelIndicator = memo(({ className, onModelChange }: AIModelIndic
         {availableModels.map((model) => {
           const { provider: itemProvider, modelName: itemModelName } = parseModelString(model)
           const itemIconClass = providerIcons[itemProvider] || providerIcons.openai
-          const isSelected = model === currentModel
+          const isSelected = model === (currentModel || defaultModel)
+
+          const handleModelSelect = () => {
+            changeModel(model)
+            onModelChange?.(model)
+          }
 
           return (
             <DropdownMenuItem
               key={model}
               className="gap-2"
-              onClick={() => onModelChange?.(model)}
+              onClick={handleModelSelect}
               checked={isSelected}
             >
               <i className={cn("size-3", itemIconClass)} />
               <span className="truncate">{itemModelName}</span>
-              {isSelected && <i className="i-mgc-check-cute-re text-accent ml-auto size-3" />}
             </DropdownMenuItem>
           )
         })}

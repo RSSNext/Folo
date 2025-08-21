@@ -103,7 +103,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
           <button
             type="button"
             onClick={handleCopy}
-            className="text-text hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
+            className="text-text-secondary hover:bg-fill-tertiary flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors"
             title="Copy message"
           >
             <i className="i-mgc-copy-2-cute-re size-3" />

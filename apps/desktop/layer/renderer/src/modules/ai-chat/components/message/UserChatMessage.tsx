@@ -1,3 +1,4 @@
+import { Spring } from "@follow/components/constants/spring.js"
 import { stopPropagation, thenable } from "@follow/utils"
 import type { UIDataTypes, UIMessage } from "ai"
 import type { LexicalEditor, SerializedEditorState } from "lexical"
@@ -114,7 +115,18 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
       )}
 
       {/* Main chat message */}
-      <div
+      <m.div
+        initial={{
+          opacity: 0,
+          y: 20,
+          scale: 0.95,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+        }}
+        transition={Spring.presets.smooth}
         onContextMenu={stopPropagation}
         className="group flex justify-end"
         onMouseEnter={() => setIsHovered(true)}
@@ -161,7 +173,7 @@ export const UserChatMessage: React.FC<UserChatMessageProps> = React.memo(({ mes
 
           <div className="h-6" />
         </div>
-      </div>
+      </m.div>
 
       {/* Full-width edit overlay - positioned at the top level to span entire container */}
       <AnimatePresence>

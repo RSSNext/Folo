@@ -114,7 +114,7 @@ export const ChatInput = memo(({ onSend, variant }: ChatInputProps) => {
       {/* Context Bar - Always shown, positioned below the input area */}
       <div className="border-border/20 relative z-10 border-t bg-transparent">
         <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="flex-1">
+          <div className="min-w-0 flex-1 shrink">
             <AIChatContextBar
               className="border-0 bg-transparent p-0"
               onSendShortcut={(prompt) => onSend(prompt, null)}
