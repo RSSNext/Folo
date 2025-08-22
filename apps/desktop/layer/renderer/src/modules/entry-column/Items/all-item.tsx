@@ -201,6 +201,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 previewImageUrl={entryMedia[0].preview_image_url}
                 className="min-h-[15em] w-full overflow-hidden"
                 mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
+                videoClassName="min-h-[15em]"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
@@ -226,8 +227,9 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
                 previewImageUrl={entryMedia[0].preview_image_url}
-                className="min-h-[15em] w-full overflow-hidden"
-                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
+                className="min-h-[20em] w-full overflow-hidden"
+                mediaContainerClassName="w-auto min-h-[20em] h-auto object-cover"
+                videoClassName="min-h-[20em]"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
