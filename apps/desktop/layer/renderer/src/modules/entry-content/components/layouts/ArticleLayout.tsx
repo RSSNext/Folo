@@ -5,7 +5,8 @@ import { useFeedById } from "@follow/store/feed/hooks"
 import { useIsInbox } from "@follow/store/inbox/hooks"
 import { cn } from "@follow/utils"
 import { ErrorBoundary } from "@sentry/react"
-import { useCallback, useMemo, useRef } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { useCallback, useMemo, useRef, useState } from "react"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
@@ -13,6 +14,7 @@ import type { TocRef } from "~/components/ui/markdown/components/Toc"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { readableContentMaxWidthClassName } from "~/constants/ui"
 import { useRenderStyle } from "~/hooks/biz/useRenderStyle"
+import { followClient } from "~/lib/api-client"
 import type { TextSelectionEvent } from "~/lib/simple-text-selection"
 import { useBlockActions } from "~/modules/ai-chat/store/hooks"
 import { BlockSliceAction } from "~/modules/ai-chat/store/slices/block.slice"
@@ -20,6 +22,7 @@ import { EntryContentHTMLRenderer } from "~/modules/renderer/html"
 import { WrappedElementProvider } from "~/providers/wrapped-element-provider"
 
 import { useEntryContent, useEntryMediaInfo } from "../../hooks"
+import { AudioTranscript } from "../AudioTranscript"
 import { ContainerToc } from "../entry-content/accessories/ContainerToc"
 import { EntryRenderError } from "../entry-content/EntryRenderError"
 import { EntryTitleMetaHandler } from "../entry-content/EntryTitleMetaHandler"
@@ -38,6 +41,17 @@ interface ArticleLayoutProps {
   }
 }
 
+const useTranscription = (url: string | undefined) => {
+  return useQuery({
+    queryKey: ["transcription", url],
+    queryFn: async () => {
+      const res = await followClient.api.entries.transcription({ url: url! })
+      return res.data
+    },
+    enabled: !!url,
+  })
+}
+
 export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   entryId,
   compact = false,
@@ -47,9 +61,13 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   const entry = useEntry(entryId, (state) => ({
     feedId: state.feedId,
     inboxId: state.inboxHandle,
+    audioUrl: state.attachments?.find((att) => att.mime_type?.startsWith("audio/"))?.url,
   }))
+  const { data: transcriptionData } = useTranscription(entry?.audioUrl)
+
   const feed = useFeedById(entry?.feedId)
   const isInbox = useIsInbox(entry?.inboxId)
+  const [showTranscript, setShowTranscript] = useState(false)
 
   const { content } = useEntryContent(entryId)
   const customCSS = useUISettingKey("customCSS")
@@ -68,34 +86,74 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   const handleSelectionClear = useCallback(() => {
     removeBlock(BlockSliceAction.SPECIAL_TYPES.selectedText)
   }, [removeBlock])
+
   if (!entry) return null
 
   return (
     <div className={cn(readableContentMaxWidthClassName, "@[500px]:px-4 mx-auto")}>
       <EntryTitle entryId={entryId} compact={compact} />
 
+      {/* Content Type Toggle */}
+      <div className="mb-6 mt-4 flex items-center gap-2">
+        <div className="flex rounded-lg border border-gray-200 p-1 dark:border-gray-700">
+          <button
+            type="button"
+            onClick={() => setShowTranscript(false)}
+            className={cn(
+              "rounded-md px-3 py-1 text-sm transition-colors",
+              !showTranscript
+                ? "bg-blue-500 text-white"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
+            )}
+          >
+            Article
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowTranscript(true)}
+            className={cn(
+              "rounded-md px-3 py-1 text-sm transition-colors",
+              showTranscript
+                ? "bg-blue-500 text-white"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
+            )}
+          >
+            Transcript
+          </button>
+        </div>
+      </div>
+
       <WrappedElementProvider boundingDetection>
         <div className="mx-auto mb-32 mt-8 max-w-full cursor-auto text-[0.94rem]">
           <EntryTitleMetaHandler entryId={entryId} />
           <ErrorBoundary fallback={EntryRenderError}>
             <ReadabilityNotice entryId={entryId} />
-            <ShadowDOM
-              injectHostStyles={!isInbox}
-              textSelectionEnabled
-              onTextSelect={handleTextSelect}
-              onSelectionClear={handleSelectionClear}
-            >
-              {!!customCSS && <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>}
-
-              <Renderer
+            {showTranscript ? (
+              <AudioTranscript
+                className="prose dark:prose-invert !max-w-full"
+                srt={transcriptionData?.srt}
                 entryId={entryId}
-                view={FeedViewType.Articles}
-                feedId={feed?.id || ""}
-                noMedia={noMedia}
-                content={content}
-                translation={translation}
+                mergeLines={10}
               />
-            </ShadowDOM>
+            ) : (
+              <ShadowDOM
+                injectHostStyles={!isInbox}
+                textSelectionEnabled
+                onTextSelect={handleTextSelect}
+                onSelectionClear={handleSelectionClear}
+              >
+                {!!customCSS && <MemoedDangerousHTMLStyle>{customCSS}</MemoedDangerousHTMLStyle>}
+
+                <Renderer
+                  entryId={entryId}
+                  view={FeedViewType.Articles}
+                  feedId={feed?.id || ""}
+                  noMedia={noMedia}
+                  content={content}
+                  translation={translation}
+                />
+              </ShadowDOM>
+            )}
           </ErrorBoundary>
         </div>
       </WrappedElementProvider>
