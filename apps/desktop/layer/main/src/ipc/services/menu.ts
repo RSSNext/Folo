@@ -1,8 +1,7 @@
 import type { MenuItemConstructorOptions, MessageBoxOptions } from "electron"
 import { dialog, Menu, ShareMenu } from "electron"
-
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 type SerializableMenuItem = Omit<MenuItemConstructorOptions, "click" | "submenu"> & {
   submenu?: SerializableMenuItem[]

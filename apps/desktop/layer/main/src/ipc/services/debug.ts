@@ -1,5 +1,5 @@
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 interface InspectElementInput {
   x: number

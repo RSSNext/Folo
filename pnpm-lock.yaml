@@ -372,6 +372,9 @@ importers:
       electron-context-menu:
         specifier: 4.0.5
         version: 4.0.5(patch_hash=15ed04a0d246eb9e701f47314b91328c64a8a7374914ad58b4053a3f84075fab)
+      electron-ipc-decorator:
+        specifier: 0.1.1
+        version: 0.1.1(electron@37.2.0)
       electron-log:
         specifier: 5.4.1
         version: 5.4.1
@@ -592,6 +595,9 @@ importers:
       dnum:
         specifier: 2.15.0
         version: 2.15.0
+      electron-ipc-decorator:
+        specifier: 0.1.1
+        version: 0.1.1(electron@37.2.0)
       embla-carousel-react:
         specifier: 8.6.0
         version: 8.6.0(react@19.0.0)
@@ -8750,6 +8756,12 @@ packages:
     resolution: {integrity: sha512-qOa1aAQdX57C+vzhDk3549dd/PRlNL4F8y736MTD1a43qptD+PvHY97Bo9gSf+OZ8iUWE7BrYSpk/FgLUe40EA==}
     engines: {node: '>= 16'}
     hasBin: true
+
+  electron-ipc-decorator@0.1.1:
+    resolution: {integrity: sha512-qzEdgNjSWbG3iqjeAJ0WcusyiLvoKhsyb4XBn/mPqu2fkYAXVsUvvVI56Un3CKC77GGaMEhYvXcf8ddlZJO0wg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      electron: '>=32.0.0'
 
   electron-is-dev@3.0.1:
     resolution: {integrity: sha512-8TjjAh8Ec51hUi3o4TaU0mD3GMTOESi866oRNavj9A3IQJ7pmv+MJVmdZBFGw4GFT36X7bkqnuDNYvkQgvyI8Q==}
@@ -24715,6 +24727,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
     optional: true
+
+  electron-ipc-decorator@0.1.1(electron@37.2.0):
+    dependencies:
+      electron: 37.2.0
 
   electron-is-dev@3.0.1: {}
 

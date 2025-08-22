@@ -1,4 +1,5 @@
-import type { ExtractServiceMethods } from "./base"
+import type { MergeIpcService } from "electron-ipc-decorator"
+
 import { AppService } from "./services/app"
 import { AuthService } from "./services/auth"
 import { DebugService } from "./services/debug"
@@ -21,16 +22,7 @@ export const services = {
 } as const
 
 // Extract method types automatically from services
-export type IpcServices = {
-  app: ExtractServiceMethods<AppService>
-  auth: ExtractServiceMethods<AuthService>
-  debug: ExtractServiceMethods<DebugService>
-  dock: ExtractServiceMethods<DockService>
-  menu: ExtractServiceMethods<MenuService>
-  reader: ExtractServiceMethods<ReaderService>
-  setting: ExtractServiceMethods<SettingService>
-  integration: ExtractServiceMethods<IntegrationService>
-}
+export type IpcServices = MergeIpcService<typeof services>
 
 // Initialize all services (this will register all IPC handlers)
 export function initializeIpcServices() {
