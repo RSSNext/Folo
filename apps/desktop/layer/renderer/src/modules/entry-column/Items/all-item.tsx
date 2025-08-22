@@ -182,14 +182,16 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
         )}
       >
         {/* Icon */}
-        <div
-          className={cn(
-            "absolute left-4 top-4 z-[1] flex items-center justify-center text-2xl",
-            cardStyle.icon,
-          )}
-        >
-          {icon}
-        </div>
+        {!entryMedia?.[0] && (
+          <div
+            className={cn(
+              "absolute left-4 top-4 z-[1] flex items-center justify-center text-2xl",
+              cardStyle.icon,
+            )}
+          >
+            {icon}
+          </div>
+        )}
 
         {/* Article, Notification */}
         {(view === FeedViewType.Articles || view === FeedViewType.Notifications) && (
@@ -212,7 +214,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="mt-10 overflow-hidden p-4 text-[1.75rem] font-light leading-[1.1]">
+              <div className="mt-10 overflow-hidden p-4 text-[1.75rem] font-normal leading-[1.1]">
                 <div className="line-clamp-4">{entry.title}</div>
               </div>
             )}
@@ -240,7 +242,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="flex flex-col items-center justify-center overflow-hidden p-4 text-[1.25rem] font-light leading-[1.1]">
+              <div className="flex flex-col items-center justify-center overflow-hidden p-4 text-[1.25rem] font-normal leading-[1.1]">
                 <div className="line-clamp-6">{entry.title}</div>
               </div>
             )}
