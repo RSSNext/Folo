@@ -240,7 +240,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="overflow-hidden p-4 text-[1.25rem] font-light leading-[1.1]">
+              <div className="flex flex-col items-center justify-center overflow-hidden p-4 text-[1.25rem] font-light leading-[1.1]">
                 <div className="line-clamp-6">{entry.title}</div>
               </div>
             )}
