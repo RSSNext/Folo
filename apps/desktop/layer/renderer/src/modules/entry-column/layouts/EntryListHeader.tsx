@@ -63,7 +63,16 @@ export const EntryListHeader: FC<{
 
   const feed = useFeedById(feedId)
 
-  const titleStyleBasedView = ["pl-6", "pl-7", "pl-7", "pl-7", "px-5", "pl-6"]
+  const titleStyleBasedView = {
+    [FeedViewType.All]: "pl-5",
+    [FeedViewType.Articles]: "pl-7",
+    [FeedViewType.Pictures]: "pl-7",
+    [FeedViewType.Videos]: "pl-7",
+    [FeedViewType.SocialMedia]: "px-5",
+    [FeedViewType.Audios]: "pl-6",
+    [FeedViewType.Notifications]: "pl-6",
+  }
+
   const feedColumnShow = useTimelineColumnShow()
   const commandShortcuts = useCommandShortcuts()
   const runCmdFn = useRunCommandFn()
