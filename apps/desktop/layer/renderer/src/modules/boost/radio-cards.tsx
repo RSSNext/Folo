@@ -35,7 +35,7 @@ export const RadioCards = ({
         initial={{ height: "auto", opacity: 0 }}
         animate={{ height: "auto", opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        transition={Spring.presets.softSpring}
+        transition={Spring.presets.smooth}
       >
         {radios.map((item) => (
           <RadioCard
