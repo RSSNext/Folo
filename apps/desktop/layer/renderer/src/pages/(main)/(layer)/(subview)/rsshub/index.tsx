@@ -1,12 +1,12 @@
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
+import { RSSHubLogo } from "@follow/components/ui/platform-icon/icons.js"
 import type { RSSHubModel } from "@follow/models"
 import { whoami } from "@follow/store/user/getters"
 import { cn, formatNumber } from "@follow/utils/utils"
 import { memo, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
-import RSSHubIconUrl from "~/assets/rsshub-icon.png?url"
 import { ErrorTooltip } from "~/components/common/ErrorTooltip"
 import { HeaderActionButton, HeaderActionGroup } from "~/components/ui/button/HeaderActionButton"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
@@ -19,8 +19,6 @@ import { SetModalContent } from "~/modules/rsshub/set-modal-content"
 import { UserAvatar } from "~/modules/user/UserAvatar"
 import { Queries } from "~/queries"
 import { useSetRSSHubMutation } from "~/queries/rsshub"
-
-const RSSHubIcon = new URL(RSSHubIconUrl, import.meta.url).href
 
 export function Component() {
   const { t } = useTranslation("settings")
@@ -53,7 +51,7 @@ export function Component() {
       {/* Simple Header */}
       <div className="mx-auto mb-8 max-w-6xl text-center">
         <div className="mb-4 flex justify-center">
-          <img src={RSSHubIcon} className="size-16" alt="RSSHub" />
+          <RSSHubLogo className="size-16" />
         </div>
         <h1 className="text-text mb-4 text-3xl font-bold">{t("words.rsshub", { ns: "common" })}</h1>
         <p className="text-text-secondary mx-auto max-w-2xl text-sm leading-relaxed">
