@@ -63,7 +63,6 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
     throw thenable
   }
 
-  const [isHovered, setIsHovered] = React.useState(false)
   const getMessageMarkdownFormat = useMessageMarkdownFormat(message)
 
   const handleCopy = React.useCallback(async () => {
@@ -77,12 +76,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
   }, [getMessageMarkdownFormat])
 
   return (
-    <div
-      onContextMenu={stopPropagation}
-      className="group flex justify-start"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div onContextMenu={stopPropagation} className="group flex justify-start">
       <div className="text-text relative flex max-w-full flex-col gap-2">
         {/* Normal message display */}
         <div className="text-text">
@@ -92,14 +86,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
         </div>
 
         {/* Action buttons */}
-        <m.div
-          className="absolute bottom-1 left-0 flex gap-1"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: isHovered ? 1 : 0,
-          }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-        >
+        <div className="absolute -left-2 bottom-1 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <button
             type="button"
             onClick={handleCopy}
@@ -109,7 +96,7 @@ export const AIChatMessage: React.FC<AIChatMessageProps> = React.memo(({ message
             <i className="i-mgc-copy-2-cute-re size-3" />
             <span>Copy</span>
           </button>
-        </m.div>
+        </div>
 
         <div className="h-6" />
       </div>

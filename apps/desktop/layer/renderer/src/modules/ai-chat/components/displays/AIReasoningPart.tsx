@@ -24,6 +24,7 @@ export const AIReasoningPart: React.FC<AIReasoningPartProps> = React.memo(
         setIsOpen(true)
       }
     }, [isStreaming])
+    if (!text) return null
 
     return (
       <div className={cn("border-border min-w-0 max-w-full text-left", className)}>
