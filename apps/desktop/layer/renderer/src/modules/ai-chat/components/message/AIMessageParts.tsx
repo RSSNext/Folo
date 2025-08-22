@@ -17,6 +17,7 @@ import {
   AIDisplayEntriesPart,
   AIDisplayFeedsPart,
   AIDisplaySubscriptionsPart,
+  AIReasoningPart,
 } from "../displays"
 import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
@@ -41,6 +42,16 @@ export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(({ messa
             key={partKey}
             text={part.text}
             className={"text-text"}
+          />
+        )
+      }
+
+      case "reasoning": {
+        return (
+          <AIReasoningPart
+            key={partKey}
+            text={part.text}
+            isStreaming={part.state === "streaming"}
           />
         )
       }
