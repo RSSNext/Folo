@@ -351,7 +351,7 @@ const ListInnerForm = ({
                 {t("feed_form.fee")}{" "}
                 <div className="ml-2 flex scale-[0.85] items-center gap-1">
                   {list.fee}
-                  <i className="i-mgc-power text-accent size-4" />
+                  <i className="i-mgc-power text-folo size-4" />
                 </div>
               </FormLabel>
               <FormDescription className="mt-0.5">{t("feed_form.fee_description")}</FormDescription>

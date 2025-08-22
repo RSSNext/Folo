@@ -170,7 +170,7 @@ const InstanceCard = memo(({ item }: { item: InstanceItem }) => {
         </div>
         <div className="text-right">
           <div className="flex items-center gap-1 text-sm font-medium">
-            {formatNumber(price ?? 0)} <i className="i-mgc-power text-accent size-3" />
+            {formatNumber(price ?? 0)} <i className="i-mgc-power text-folo size-3" />
           </div>
         </div>
       </div>

@@ -114,8 +114,8 @@ const ListCard = memo(({ list }: { list: List }) => {
                 </div>
               )}
               {typeof list.fee === "number" && list.fee > 0 && (
-                <div className="text-accent flex items-center gap-1.5">
-                  <i className="i-mgc-power size-3" />
+                <div className="flex items-center gap-1.5">
+                  <i className="i-mgc-power text-folo size-3" />
                   <span className="font-medium">{list.fee}</span>
                 </div>
               )}

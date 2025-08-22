@@ -10,7 +10,7 @@ export function Component() {
   const { t } = useTranslation()
   useSubViewTitle(
     <div className="flex items-center gap-2">
-      <i className="i-mgc-power text-accent size-4" />
+      <i className="i-mgc-power text-folo size-4" />
       {t("words.power")}
     </div>,
     t("words.power"),
@@ -19,7 +19,7 @@ export function Component() {
     <div className="px-5 md:px-10 lg:w-[768px] lg:px-0">
       <div className="center mb-8 flex h-24 items-center gap-2 text-3xl font-bold">
         <div className="motion-preset-shake center text-accent motion-delay-500">
-          <i className="i-mgc-power size-20" />
+          <i className="i-mgc-power text-folo size-20" />
         </div>
       </div>
       <MyWalletSection />

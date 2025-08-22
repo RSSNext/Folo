@@ -49,7 +49,7 @@ export const RadioCards = ({
                 </h3>
                 <p className="text-text-secondary mt-1 flex items-center justify-center gap-1 text-xs leading-none">
                   {item.value * monthlyBoostCost}
-                  <i className="i-mgc-power text-accent" />
+                  <i className="i-mgc-power text-folo" />
                 </p>
               </div>
             }
