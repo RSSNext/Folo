@@ -130,17 +130,15 @@ const AIEntryLayoutImpl = () => {
             {/* Entry list - always rendered to prevent animation */}
             <EntryColumn key="entry-list" />
 
-            {/* Entry content overlay with exit animation */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               {realEntryId && (
                 <m.div
                   lcpOptimization
                   ref={entryContentRef}
-                  key={realEntryId}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={Spring.presets.microRebound}
+                  transition={Spring.presets.smooth}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
                   <AnimatePresence>
