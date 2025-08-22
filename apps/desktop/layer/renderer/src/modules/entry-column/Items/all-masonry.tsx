@@ -35,6 +35,8 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
   const scrollElement = useScrollViewElement()
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [width, setWidth] = useState<number>(0)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const prevDataLengthRef = useRef(data.length)
 
   // Convert entry IDs to masonry items with stable references
   const items = useMemo<MasonryItem[]>(
@@ -42,12 +44,17 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
     [data],
   )
 
+  // Handle loading state when new data arrives
+  useEffect(() => {
+    if (data.length > prevDataLengthRef.current) {
+      setIsLoadingMore(false)
+    }
+    prevDataLengthRef.current = data.length
+  }, [data.length])
+
   // Force remount when errors happen
   const [forceRemountCounter, setForceRemountCounter] = useState(0)
-  const masonryKey = useMemo(
-    () => `masonry-${data.length}-${forceRemountCounter}`,
-    [data.length, forceRemountCounter],
-  )
+  const masonryKey = useMemo(() => `masonry-${forceRemountCounter}`, [forceRemountCounter])
 
   // Handle container resize
   useEffect(() => {
@@ -76,9 +83,12 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
   }, [width, columnCount])
 
   const maybeLoadMore = useInfiniteLoader(
-    () => {
-      if (hasNextPage) endReached()
-    },
+    useCallback(() => {
+      if (hasNextPage && !isLoadingMore) {
+        setIsLoadingMore(true)
+        endReached()
+      }
+    }, [hasNextPage, endReached, isLoadingMore]),
     {
       isItemLoaded: (index, items) => index < items.length && Boolean(items[index]),
       minimumBatchSize: 24,
@@ -169,6 +179,7 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
         render={MasonryItemRender}
         onRender={handleRender}
         itemKey={itemKey}
+        itemHeightEstimate={200}
         onError={() => {
           console.info("Forcing remount due to masonry error")
           setForceRemountCounter((prev) => prev + 1)
@@ -176,7 +187,7 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
       />
       <div className="mt-8">
         {Footer && <div className="mb-4">{typeof Footer === "function" ? <Footer /> : Footer}</div>}
-        {hasNextPage && <SkeletonGrid columnCount={columnCount} />}
+        {(hasNextPage || isLoadingMore) && <SkeletonGrid columnCount={columnCount} />}
       </div>
     </div>
   )
@@ -222,16 +233,25 @@ const MasonryWrapper: FC<{
   render: React.ComponentType<RenderComponentProps<MasonryItem>>
   onRender: (startIndex: number, stopIndex: number, items: MasonryItem[]) => void
   itemKey: (item: MasonryItem, index: number) => string
+  itemHeightEstimate?: number
   onError?: () => void
 }> = (props) => {
   const [errorKey, setErrorKey] = useState(0)
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => {
+    if (hasError) {
+      const timer = setTimeout(() => setHasError(false), 100)
+      return () => clearTimeout(timer)
+    }
+  }, [hasError])
 
   return (
     <ErrorBoundary
       key={errorKey}
       fallback={(errorData) => {
         console.error("Masonry error caught:", errorData.error)
-        // Notify parent to force remount
+        setHasError(true)
         props.onError?.()
         return (
           <div className="flex items-center justify-center py-8">
@@ -243,16 +263,19 @@ const MasonryWrapper: FC<{
         setErrorKey((prev) => prev + 1)
       }}
     >
-      <Masonry
-        items={props.items}
-        columnGutter={props.columnGutter}
-        columnWidth={props.columnWidth}
-        columnCount={props.columnCount}
-        overscanBy={props.overscanBy}
-        render={props.render}
-        onRender={props.onRender}
-        itemKey={props.itemKey}
-      />
+      {!hasError && (
+        <Masonry
+          items={props.items}
+          columnGutter={props.columnGutter}
+          columnWidth={props.columnWidth}
+          columnCount={props.columnCount}
+          overscanBy={props.overscanBy}
+          render={props.render}
+          onRender={props.onRender}
+          itemKey={props.itemKey}
+          itemHeightEstimate={props.itemHeightEstimate}
+        />
+      )}
     </ErrorBoundary>
   )
 }
