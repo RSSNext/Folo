@@ -1,11 +1,9 @@
 import { Spring } from "@follow/components/constants/spring.js"
-import { Button } from "@follow/components/ui/button/index.js"
 import { PanelSplitter } from "@follow/components/ui/divider/index.js"
 import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { AnimatePresence } from "motion/react"
 import { useCallback, useEffect, useMemo, useRef } from "react"
-import { useTranslation } from "react-i18next"
 import { useResizable } from "react-resizable-layout"
 import { useParams } from "react-router"
 
@@ -19,14 +17,11 @@ import { EntryContent } from "~/modules/entry-content/components/entry-content"
 import { AppLayoutGridContainerProvider } from "~/providers/app-grid-layout-container-provider"
 
 import { AIChatRoot } from "../ai-chat/components/layouts/AIChatRoot"
-import { useEntryContentScrollToTop } from "../entry-content/atoms"
 import { setScrollToExitTutorialSeen } from "./atoms/tutorial"
-import { ScrollToExitTutorial } from "./components/ScrollToExitTutorial"
 import { EntryColumn } from "./index"
 
 const AIEntryLayoutImpl = () => {
   const { entryId } = useParams()
-  const { t } = useTranslation()
   const navigate = useNavigateEntry()
   const panelStyle = useAIChatPanelStyle()
 
@@ -120,8 +115,6 @@ const AIEntryLayoutImpl = () => {
       window.dispatchEvent(new Event("resize"))
     },
   })
-  const isAtTop = !!useEntryContentScrollToTop()
-
   return (
     <div className="relative flex min-w-0 grow">
       <div className={cn("h-full flex-1", panelStyle === AIChatPanelStyle.Fixed && "border-r")}>
@@ -141,35 +134,7 @@ const AIEntryLayoutImpl = () => {
                   transition={Spring.presets.smooth}
                   className="bg-theme-background absolute inset-0 z-10 border-l"
                 >
-                  <AnimatePresence>
-                    {/* Scroll hint indicator */}
-                    {isAtTop && (
-                      <m.div
-                        className="center z-50"
-                        initial={{ y: -30, height: 0 }}
-                        animate={{ y: 0, height: "auto" }}
-                        exit={{ y: -30, height: 0 }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => navigate({ entryId: null })}
-                          buttonClassName="transform cursor-pointer select-none no-drag-region w-full py-3 rounded-none"
-                          aria-label="Scroll up or click to exit"
-                        >
-                          <div className="text-text flex items-center gap-2 rounded-full font-medium">
-                            <i className="i-mgc-up-cute-re repeat-[2] text-base" />
-                            <span>{t("entry.scroll_up_to_exit")}</span>
-                          </div>
-                        </Button>
-                      </m.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* First-time user tutorial for scroll-to-exit */}
-                  <ScrollToExitTutorial show={!!realEntryId && isAtTop} />
-
-                  <EntryContent entryId={realEntryId} className="h-[calc(100%-2.25rem)]" />
+                  <EntryContent entryId={realEntryId} className="h-full" />
                 </m.div>
               )}
             </AnimatePresence>
