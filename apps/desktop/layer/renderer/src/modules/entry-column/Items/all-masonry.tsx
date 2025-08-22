@@ -64,20 +64,17 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
     return () => resizeObserver.disconnect()
   }, [containerRef])
 
-  // Calculate column count based on container width
   const columnCount = useMemo(() => {
     if (!width) return 1
     return Math.max(1, Math.floor(width / COLUMN_WIDTH))
   }, [width])
 
-  // Column width calculation
   const columnWidth = useMemo(() => {
     if (!width) return COLUMN_WIDTH
     const totalGutter = (columnCount - 1) * GUTTER
     return Math.floor((width - totalGutter) / columnCount)
   }, [width, columnCount])
 
-  // Infinite loading using masonic's useInfiniteLoader correctly
   const maybeLoadMore = useInfiniteLoader(
     () => {
       if (hasNextPage) endReached()
@@ -149,7 +146,6 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
       },
     )
 
-    // Store observer for cleanup
     return () => observer.disconnect()
   }, [scrollElement, renderMarkRead, scrollMarkRead, dataRef])
 
@@ -186,7 +182,6 @@ export const AllMasonry: FC<AllMasonryProps> = ({ data, hasNextPage, endReached,
   )
 }
 
-// Item key function with better error handling
 const itemKey = (item: MasonryItem, index: number) => {
   if (!item || !item.entryId) {
     console.warn("Missing item or entryId at index:", index)
@@ -195,12 +190,10 @@ const itemKey = (item: MasonryItem, index: number) => {
   return item.entryId
 }
 
-// Masonry item renderer
 const MasonryItemRender: React.ComponentType<RenderComponentProps<MasonryItem>> = ({
   data,
   index,
 }) => {
-  // Defensive guard for missing item
   if (!data || !data.entryId) return <LoadingSkeleton count={1} />
 
   const entry = getEntry(data.entryId)
@@ -220,7 +213,6 @@ const MasonryItemRender: React.ComponentType<RenderComponentProps<MasonryItem>> 
   )
 }
 
-// Error boundary wrapper for Masonry
 const MasonryWrapper: FC<{
   items: MasonryItem[]
   columnGutter: number
