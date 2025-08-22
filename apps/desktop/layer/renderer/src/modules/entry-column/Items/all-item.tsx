@@ -215,7 +215,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
               />
             ) : (
               <div className="mt-10 overflow-hidden p-4 text-[1.75rem] font-normal leading-[1.2]">
-                <div className="line-clamp-4 w-full break-words">{entry.title}</div>
+                <div className="line-clamp-4 max-w-full break-words">{entry.title}</div>
               </div>
             )}
           </>
@@ -243,7 +243,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
               />
             ) : (
               <div className="flex flex-col items-center justify-center overflow-hidden p-4 text-[1.25rem] font-normal leading-[1.2]">
-                <div className="line-clamp-6 w-full break-words">{entry.title}</div>
+                <div className="line-clamp-6 max-w-full break-words">{entry.title}</div>
               </div>
             )}
           </>
