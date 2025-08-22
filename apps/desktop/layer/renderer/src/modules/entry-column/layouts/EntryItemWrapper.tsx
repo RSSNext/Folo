@@ -141,10 +141,11 @@ export const EntryItemWrapper: FC<
       // )
 
       navigate({
+        view,
         entryId: entry.id,
       })
     },
-    [asRead, entry?.id, entry?.feedId, navigate],
+    [asRead, entry?.id, entry?.feedId, navigate, view],
   )
   const handleDoubleClick: MouseEventHandler<HTMLElement> = useCallback(
     () => entry?.url && window.open(entry.url, "_blank"),
