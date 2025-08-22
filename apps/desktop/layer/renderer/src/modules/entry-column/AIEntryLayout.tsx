@@ -130,7 +130,7 @@ const AIEntryLayoutImpl = () => {
             {/* Entry list - always rendered to prevent animation */}
             <EntryColumn key="entry-list" />
 
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {realEntryId && (
                 <m.div
                   lcpOptimization
