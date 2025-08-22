@@ -22,9 +22,13 @@ import { loadDynamicRenderEntry } from "~/updater/hot-updater"
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
 class WindowManagerStatic {
-  static readonly mainWindowDefaultSize = {
-    height: 900,
-    width: 1600,
+  static get mainWindowDefaultSize() {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { workAreaSize } = primaryDisplay
+    return {
+      height: workAreaSize.height,
+      width: workAreaSize.width,
+    }
   }
 
   // Window configuration properties for better DX
@@ -346,8 +350,10 @@ class WindowManagerStatic {
 
     const defaultSize = WindowManagerStatic.mainWindowDefaultSize
 
-    const width = Math.min(windowState?.width || defaultSize.width, maxWidth)
-    const height = Math.min(windowState?.height || defaultSize.height, maxHeight)
+    const width = windowState?.width ? Math.min(windowState.width, maxWidth) : defaultSize.width
+    const height = windowState?.height
+      ? Math.min(windowState.height, maxHeight)
+      : defaultSize.height
 
     const ensureInBounds = (value: number, min: number, max: number): number => {
       return Math.max(min, Math.min(value, max))

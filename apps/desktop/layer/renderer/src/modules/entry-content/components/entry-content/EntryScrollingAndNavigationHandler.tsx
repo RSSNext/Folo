@@ -2,19 +2,20 @@ import {
   useFocusActions,
   useGlobalFocusableScopeSelector,
 } from "@follow/components/common/Focusable/index.js"
+import { Spring } from "@follow/components/constants/spring.js"
 import { useSmoothScroll } from "@follow/hooks"
 import { nextFrame } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
-import { cn, combineCleanupFunctions } from "@follow/utils/utils"
+import { clsx, combineCleanupFunctions } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
 import { AnimatePresence, m } from "motion/react"
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
+import { useEventCallback } from "usehooks-ts"
 
 import { FocusablePresets } from "~/components/common/Focusable"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
-import { useCommandHotkey } from "~/modules/command/hooks/use-register-hotkey"
 
 export const EntryScrollingAndNavigationHandler = ({
   scrollerRef,
@@ -48,24 +49,23 @@ export const EntryScrollingAndNavigationHandler = ({
     when,
   })
 
-  useCommandHotkey({
-    commandId: COMMAND_ID.layout.focusToTimeline,
-    when,
-    shortcut: "Backspace, Escape",
-  })
-
   const { highlightBoundary } = useFocusActions()
   const smoothScrollTo = useSmoothScroll()
+  const navigateToNext = useEventCallback(() => {
+    EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
+    setShowKeepScrollingPanel(false)
+    isAlreadyScrolledBottomRef.current = false
+    if (scrollerRef.current) {
+      smoothScrollTo(0, scrollerRef.current)
+    }
+  })
   useEffect(() => {
     const checkScrollBottom = ($scroller: HTMLDivElement) => {
       const currentScroll = $scroller.scrollTop
       const { scrollHeight, clientHeight } = $scroller
 
       if (isAlreadyScrolledBottomRef.current) {
-        EventBus.dispatch(COMMAND_ID.timeline.switchToNext)
-        setShowKeepScrollingPanel(false)
-        isAlreadyScrolledBottomRef.current = false
-        smoothScrollTo(0, $scroller)
+        navigateToNext()
         return
       }
 
@@ -140,42 +140,38 @@ export const EntryScrollingAndNavigationHandler = ({
         },
       ),
     )
-  }, [highlightBoundary, scrollAnimationRef, scrollerRef, smoothScrollTo])
+  }, [highlightBoundary, navigateToNext, scrollAnimationRef, scrollerRef, smoothScrollTo])
 
   return (
     <AnimatePresence>
       {showKeepScrollingPanel && (
-        <FloatPanel side="bottom">
-          Already scrolled to the bottom.
-          <br />
-          Keep pressing to jump to the next article
-        </FloatPanel>
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={Spring.presets.smooth}
+          className={clsx(
+            "pointer-events-none absolute !right-1/2 z-40 !translate-x-1/2",
+            "bottom-12",
+            "backdrop-blur-background rounded-full border px-3.5 py-2",
+            "border-border/40 bg-material-ultra-thick shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
+            "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+          )}
+        >
+          <button
+            onClick={navigateToNext}
+            type="button"
+            className={"group pointer-events-auto flex items-center gap-2"}
+          >
+            <i className="i-mingcute-arrow-down-fill text-text/90 mr-1 size-5" />
+            <span className="text-text/90 text-left text-[13px] font-medium">
+              Already scrolled to the bottom.
+              <br />
+              Keep pressing to jump to the next article
+            </span>
+          </button>
+        </m.div>
       )}
     </AnimatePresence>
   )
 }
-
-const FloatPanel: React.FC<{ children: React.ReactNode; side: "bottom" | "top" }> = ({
-  children,
-  side,
-}) => (
-  <m.div
-    initial={{ opacity: 0, y: 32 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 32 }}
-    transition={{ duration: 0.2 }}
-    className={cn(
-      "bg-material-ultra-thick text-text backdrop-blur-background absolute left-1/2 z-50 -translate-x-1/2 select-none rounded-2xl px-6 py-3 text-center text-[15px] font-medium shadow-xl",
-      side === "bottom" ? "bottom-8" : "top-8",
-    )}
-    style={{
-      boxShadow: "0 4px 24px 0 rgba(0,0,0,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.08)",
-      WebkitBackdropFilter: "blur(16px)",
-      backdropFilter: "blur(16px)",
-      maxWidth: 360,
-      width: "calc(100vw - 32px)",
-    }}
-  >
-    {children}
-  </m.div>
-)

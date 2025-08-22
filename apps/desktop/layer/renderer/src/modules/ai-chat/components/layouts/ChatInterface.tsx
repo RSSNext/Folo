@@ -1,4 +1,5 @@
 import { ScrollArea } from "@follow/components/ui/scroll-area/ScrollArea.js"
+import { usePrefetchSummary } from "@follow/store/summary/hooks"
 import { tracker } from "@follow/tracker"
 import { clsx, cn, nextFrame } from "@follow/utils"
 import type { BizUIMessage } from "@folo-services/ai-tools"
@@ -11,12 +12,15 @@ import { Suspense, useEffect, useState } from "react"
 import { useEventCallback } from "usehooks-ts"
 
 import { useAISettingKey } from "~/atoms/settings/ai"
+import { useActionLanguage } from "~/atoms/settings/general"
 import {
   AIChatMessage,
   AIChatWaitingIndicator,
 } from "~/modules/ai-chat/components/message/AIChatMessage"
+import { UserChatMessage } from "~/modules/ai-chat/components/message/UserChatMessage"
 import { useAutoScroll } from "~/modules/ai-chat/hooks/useAutoScroll"
 import { useLoadMessages } from "~/modules/ai-chat/hooks/useLoadMessages"
+import { useMainEntryId } from "~/modules/ai-chat/hooks/useMainEntryId"
 import {
   useBlockActions,
   useChatActions,
@@ -49,11 +53,19 @@ const ChatInterfaceContent = () => {
   }, [error])
 
   const currentChatId = useCurrentChatId()
+  const mainEntryId = useMainEntryId()
+  const actionLanguage = useActionLanguage()
+
+  usePrefetchSummary({
+    entryId: mainEntryId || "",
+    target: "content",
+    actionLanguage,
+    enabled: !!mainEntryId && !hasMessages,
+  })
 
   const [scrollAreaRef, setScrollAreaRef] = useState<HTMLDivElement | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
 
-  // Reset handlers when chatId changes
   useEffect(() => {
     setIsAtBottom(true)
   }, [currentChatId])
@@ -201,13 +213,12 @@ const ChatInterfaceContent = () => {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "backdrop-blur-background group flex items-center gap-2 rounded-full border px-3.5 py-2 transition-all",
-              "border-border/40 bg-material-ultra-thin/70 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]",
-              "hover:bg-material-thin/70 hover:border-border/60 active:scale-[0.98]",
+              "center bg-background/85 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
+              "border-border",
+              "hover:border-border/60 active:scale-[0.98]",
             )}
           >
-            <i className="i-mingcute-arrow-down-line text-text/90 size-3" />
-            <span className="text-text/90 text-[13px] font-medium">Scroll to Bottom</span>
+            <i className="i-mingcute-arrow-down-line text-text/90" />
           </button>
         </div>
       )}
@@ -216,7 +227,7 @@ const ChatInterfaceContent = () => {
         className={clsx(
           "absolute mx-auto duration-200 ease-in-out",
           hasMessages && "inset-x-0 bottom-0 max-w-4xl px-6 pb-6",
-          !hasMessages && "inset-x-0 bottom-1/2 max-w-3xl translate-y-[calc(100%-2rem)] px-6 pb-6",
+          !hasMessages && "inset-x-0 bottom-0 max-w-3xl px-6 pb-6",
         )}
       >
         {error && <CollapsibleError error={error} />}
@@ -239,7 +250,11 @@ const Messages: FC = () => {
     <div className="relative flex min-w-0 flex-1 flex-col">
       {messages.map((message) => (
         <Suspense key={message.id}>
-          <AIChatMessage message={message} />
+          {message.role === "user" ? (
+            <UserChatMessage message={message} />
+          ) : (
+            <AIChatMessage message={message} />
+          )}
         </Suspense>
       ))}
     </div>

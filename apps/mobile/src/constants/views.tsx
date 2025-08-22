@@ -11,6 +11,7 @@ import { VideoCuteFiIcon } from "../icons/video_cute_fi"
 interface ViewDefinitionExtended {
   icon: React.FC<{ color?: string; height?: number; width?: number }>
 }
+// @ts-expect-error FIXME
 const extendMap: Record<FeedViewType, ViewDefinitionExtended> = {
   [FeedViewType.Articles]: {
     icon: PaperCuteFiIcon,

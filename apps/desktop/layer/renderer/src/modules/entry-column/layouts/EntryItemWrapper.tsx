@@ -6,7 +6,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { cn } from "@follow/utils/utils"
 import { AnimatePresence, m } from "motion/react"
-import type { FC, MouseEvent, MouseEventHandler, PropsWithChildren, TouchEvent } from "react"
+import type { FC, MouseEvent, PropsWithChildren, TouchEvent } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router"
@@ -147,10 +147,6 @@ export const EntryItemWrapper: FC<
     },
     [asRead, entry?.id, entry?.feedId, navigate, view],
   )
-  const handleDoubleClick: MouseEventHandler<HTMLElement> = useCallback(
-    () => entry?.url && window.open(entry.url, "_blank"),
-    [entry?.url],
-  )
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const showContextMenu = useShowContextMenu()
 
@@ -225,7 +221,6 @@ export const EntryItemWrapper: FC<
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onDoubleClick={handleDoubleClick}
         {...contextMenuProps}
         {...(!isMobile ? { onTouchStart: handleClick } : {})}
       >

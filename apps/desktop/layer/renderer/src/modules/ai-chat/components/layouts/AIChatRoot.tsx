@@ -14,14 +14,11 @@ interface AIChatRootProps extends PropsWithChildren {
   chatId?: string
 }
 
-// Inner component that has access to the AI chat store context
 const AIChatRootInner: FC<AIChatRootProps> = ({ children, chatId: externalChatId }) => {
-  // Use the new internal hooks
   const currentChatId = useCurrentChatId()
 
   const chatActions = useChatActions()
 
-  // Initialize room ID on mount
   useMemo(() => {
     if (!currentChatId && !externalChatId) {
       chatActions.newChat()

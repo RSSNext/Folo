@@ -4,7 +4,6 @@ import type { ToolUIPart } from "ai"
 import * as React from "react"
 
 import type {
-  AIChatContextBlock,
   AIDisplayAnalyticsTool,
   AIDisplayEntriesTool,
   AIDisplayFeedsTool,
@@ -19,49 +18,29 @@ import {
   AIDisplayFeedsPart,
   AIDisplaySubscriptionsPart,
 } from "../displays"
-import { AIDataBlockPart } from "./AIDataBlockPart"
-import { AIMarkdownMessage, AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
-import { AIRichTextMessage } from "./AIRichTextMessage"
+import { AIMarkdownStreamingMessage } from "./AIMarkdownMessage"
 import { ToolInvocationComponent } from "./ToolInvocationComponent"
 
 const LazyAIDisplayFlowPart = React.lazy(() =>
   import("../displays/AIDisplayFlowPart").then((mod) => ({ default: mod.AIDisplayFlowPart })),
 )
 
-interface MessagePartsProps {
+interface AIMessagePartsProps {
   message: BizUIMessage
 }
 
-export const AIMessageParts: React.FC<MessagePartsProps> = React.memo(({ message }) => {
-  const isUser = message.role === "user"
-
+export const AIMessageParts: React.FC<AIMessagePartsProps> = React.memo(({ message }) => {
   return message.parts.map((part, index) => {
     const partKey = `${message.id}-${index}`
 
     switch (part.type) {
       case "text": {
-        if (message.role === "assistant")
-          return (
-            <AIMarkdownStreamingMessage
-              isProcessing={message.metadata?.totalTokens === undefined}
-              key={partKey}
-              text={part.text}
-              className={"text-text"}
-            />
-          )
-        return <AIMarkdownMessage key={partKey} text={part.text} className={"text-white"} />
-      }
-
-      case "data-block": {
-        return <AIDataBlockPart key={partKey} blocks={part.data as AIChatContextBlock[]} />
-      }
-
-      case "data-rich-text": {
         return (
-          <AIRichTextMessage
+          <AIMarkdownStreamingMessage
+            isProcessing={message.metadata?.totalTokens === undefined}
             key={partKey}
-            data={part.data as { state: string; text: string }}
-            className={isUser ? "text-white" : "text-text"}
+            text={part.text}
+            className={"text-text"}
           />
         )
       }

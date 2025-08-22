@@ -1,5 +1,4 @@
 import { Divider } from "@follow/components/ui/divider/Divider.js"
-import { Progress } from "@follow/components/ui/progress/index.js"
 import {
   Table,
   TableBody,
@@ -14,9 +13,8 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from "@follow/components/ui/tooltip/index.js"
-import { UserRole, UserRoleName } from "@follow/constants"
 import { env } from "@follow/shared/env.desktop"
-import { useUserRole, useWhoami } from "@follow/store/user/hooks"
+import { useWhoami } from "@follow/store/user/hooks"
 import dayjs from "dayjs"
 import { Trans, useTranslation } from "react-i18next"
 
@@ -29,12 +27,9 @@ import { useReferralInfo } from "~/queries/referral"
 export function SettingReferral() {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
-  const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
   const { data: referralInfo } = useReferralInfo()
-  const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const user = useWhoami()
-  const role = useUserRole()
   const referralLink = `Here's the link to register for Folo, the reader I mentioned! Use it to enjoy a 45-day trial of Pro features:\n\n${env.VITE_WEB_URL}/register?referral=${user?.handle || user?.id}`
   const presentUserProfile = usePresentUserProfileModal("drawer")
   return (
@@ -59,19 +54,6 @@ export function SettingReferral() {
         <pre className="whitespace-pre-wrap text-sm">{referralLink}</pre>
         <CopyButton variant="outline" value={referralLink} />
       </div>
-      {role !== UserRole.PrePro && (
-        <div className="mt-4 space-y-2">
-          <p className="font-semibold">
-            Referral Progress for the {UserRoleName[UserRole.PrePro]}:
-          </p>
-          <div className="flex items-center gap-4">
-            <Progress value={(validInvitationsAmount / requiredInvitationsAmount) * 100} />
-            <span className="shrink-0">
-              {validInvitationsAmount} / {requiredInvitationsAmount}
-            </span>
-          </div>
-        </div>
-      )}
       {!!referralInfo?.invitations.length && (
         <>
           <Divider className="my-6" />

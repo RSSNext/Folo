@@ -1,6 +1,6 @@
+import { PoweredByFooter } from "@client/components/common/PoweredByFooter"
 import { Header } from "@client/components/layout/header"
 import { MemoedDangerousHTMLStyle } from "@follow/components/common/MemoedDangerousHTMLStyle.jsx"
-import { PoweredByFooter } from "@follow/components/common/PoweredByFooter.jsx"
 import { Outlet } from "react-router"
 
 export const Component = () => {
