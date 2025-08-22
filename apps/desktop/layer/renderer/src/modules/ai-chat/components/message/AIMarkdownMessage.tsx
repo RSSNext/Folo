@@ -18,6 +18,7 @@ import { MarkdownLink } from "~/components/ui/markdown/renderers/MarkdownLink"
 import { usePeekModal } from "~/hooks/biz/usePeekModal"
 
 import { animatedPlugin } from "./animatedPlugin"
+import { parseIncompleteMarkdown } from "./parse-incomplete-markdown"
 
 // Buffer configuration interface
 interface BufferConfig {
@@ -294,6 +295,7 @@ const useThrottledMarkdownParsing = (text: string, isProcessing: boolean) => {
 
   const parseWithCache = useCallback(
     (content: string, shouldProcess: boolean) => {
+      const parsedContent = parseIncompleteMarkdown(content)
       const now = Date.now()
 
       // During streaming, throttle parsing
@@ -306,14 +308,14 @@ const useThrottledMarkdownParsing = (text: string, isProcessing: boolean) => {
       }
 
       // If content hasn't changed, return cached result
-      if (content === lastParsedTextRef.current && cachedResultRef.current) {
+      if (parsedContent === lastParsedTextRef.current && cachedResultRef.current) {
         return cachedResultRef.current
       }
 
       // Parse and cache the result
-      const result = baseAIMarkdownParser(content, isProcessing)
+      const result = baseAIMarkdownParser(parsedContent, isProcessing)
 
-      lastParsedTextRef.current = content
+      lastParsedTextRef.current = parsedContent
       cachedResultRef.current = result
       lastParseTimeRef.current = now
       return result

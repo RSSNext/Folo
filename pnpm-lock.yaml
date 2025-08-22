@@ -373,8 +373,8 @@ importers:
         specifier: 4.0.5
         version: 4.0.5(patch_hash=15ed04a0d246eb9e701f47314b91328c64a8a7374914ad58b4053a3f84075fab)
       electron-ipc-decorator:
-        specifier: 0.1.1
-        version: 0.1.1(electron@37.2.0)
+        specifier: 0.1.3
+        version: 0.1.3(electron@37.2.0)
       electron-log:
         specifier: 5.4.1
         version: 5.4.1
@@ -596,8 +596,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0
       electron-ipc-decorator:
-        specifier: 0.1.1
-        version: 0.1.1(electron@37.2.0)
+        specifier: 0.1.3
+        version: 0.1.3(electron@37.2.0)
       embla-carousel-react:
         specifier: 8.6.0
         version: 8.6.0(react@19.0.0)
@@ -8757,8 +8757,8 @@ packages:
     engines: {node: '>= 16'}
     hasBin: true
 
-  electron-ipc-decorator@0.1.1:
-    resolution: {integrity: sha512-qzEdgNjSWbG3iqjeAJ0WcusyiLvoKhsyb4XBn/mPqu2fkYAXVsUvvVI56Un3CKC77GGaMEhYvXcf8ddlZJO0wg==}
+  electron-ipc-decorator@0.1.3:
+    resolution: {integrity: sha512-rMmWUc6OFuIXw+e5DEAIsgU0leC+kJ2ibVEwzRDEjxuQvAqsaZJztFrbtUS44kDdIQriRId0lFKYlDJAMm3yhQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       electron: '>=32.0.0'
@@ -24728,7 +24728,7 @@ snapshots:
       - supports-color
     optional: true
 
-  electron-ipc-decorator@0.1.1(electron@37.2.0):
+  electron-ipc-decorator@0.1.3(electron@37.2.0):
     dependencies:
       electron: 37.2.0
 
