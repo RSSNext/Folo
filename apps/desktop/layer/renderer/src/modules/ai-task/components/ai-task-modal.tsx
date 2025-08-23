@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
-import { Input, TextArea } from "@follow/components/ui/input/index.js"
+import { TextArea } from "@follow/components/ui/input/index.js"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
@@ -22,6 +22,7 @@ import { useCreateAITaskMutation, useUpdateAITaskMutation } from "~/modules/ai-t
 import type { ScheduleType } from "~/modules/ai-task/types"
 import { scheduleSchema } from "~/modules/ai-task/types"
 
+import { AITaskModalHeader } from "./ai-task-modal-header"
 import { ScheduleConfig } from "./schedule-config"
 
 const MAX_PROMPT_LENGTH = 2000
@@ -186,98 +187,90 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
   const currentMutation = isEditing ? updateAITaskMutation : createAITaskMutation
 
   return (
-    <div className="w-[500px] space-y-6 p-6">
-      <div className="space-y-2">
-        <h2 className="text-text text-lg font-semibold">
-          {isEditing ? "Edit AI Task" : "Schedule AI Task"}
-        </h2>
-        <p className="text-text-secondary text-sm">
-          {isEditing
-            ? "Modify the details and schedule of your AI task."
-            : "Create an automated AI task that will run according to your schedule."}
-        </p>
+    <>
+      <AITaskModalHeader
+        title={form.watch("title")}
+        error={form.formState.errors.title?.message as string | undefined}
+        onClose={dismiss}
+        onSaveTitle={async (newTitle) => {
+          form.setValue("title", newTitle, { shouldValidate: true, shouldDirty: true })
+        }}
+      />
+
+      <div className="w-[500px] space-y-6 p-6">
+        <div className="space-y-2">
+          <h2 className="text-text text-lg font-semibold">
+            {isEditing ? "Edit AI Task" : "Schedule AI Task"}
+          </h2>
+          <p className="text-text-secondary text-sm">
+            {isEditing
+              ? "Modify the details and schedule of your AI task."
+              : "Create an automated AI task that will run according to your schedule."}
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            {/* Task Details */}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="prompt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>AI Prompt</FormLabel>
+                    <FormDescription>
+                      The prompt that will be sent to AI when this task runs
+                    </FormDescription>
+                    <FormControl>
+                      <TextArea
+                        placeholder="Enter the AI prompt to execute..."
+                        className="min-h-[100px] resize-none"
+                        maxLength={2000}
+                        {...field}
+                      />
+                    </FormControl>
+                    {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
+                      <FormDescription>{`${field.value.length}/${MAX_PROMPT_LENGTH} characters`}</FormDescription>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Schedule Configuration */}
+            <ScheduleConfig
+              value={scheduleValue}
+              onChange={handleScheduleChange}
+              errors={form.formState.errors.schedule as Record<string, string>}
+            />
+
+            {/* Form Actions */}
+            <div className="border-border flex justify-end space-x-3 border-t pt-4">
+              <Button type="button" variant="ghost" onClick={dismiss}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={currentMutation.isPending}>
+                {currentMutation.isPending ? (
+                  <>
+                    <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
+                    {isEditing ? "Updating..." : "Scheduling..."}
+                  </>
+                ) : (
+                  <>
+                    <i
+                      className={`mr-2 size-4 ${isEditing ? "i-mgc-edit-cute-re" : "i-mgc-calendar-time-add-cute-re"}`}
+                    />
+                    {isEditing ? "Update Task" : "Schedule Task"}
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          {/* Task Details */}
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Task Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter a descriptive title for this task"
-                      maxLength={50}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>{`${field.value?.length || 0}/50 characters`}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="prompt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>AI Prompt</FormLabel>
-                  <FormDescription>
-                    The prompt that will be sent to AI when this task runs
-                  </FormDescription>
-                  <FormControl>
-                    <TextArea
-                      placeholder="Enter the AI prompt to execute..."
-                      className="min-h-[100px] resize-none"
-                      maxLength={2000}
-                      {...field}
-                    />
-                  </FormControl>
-                  {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
-                    <FormDescription>{`${field.value.length}/${MAX_PROMPT_LENGTH} characters`}</FormDescription>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Schedule Configuration */}
-          <ScheduleConfig
-            value={scheduleValue}
-            onChange={handleScheduleChange}
-            errors={form.formState.errors.schedule as Record<string, string>}
-          />
-
-          {/* Form Actions */}
-          <div className="border-border flex justify-end space-x-3 border-t pt-4">
-            <Button type="button" variant="ghost" onClick={dismiss}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={currentMutation.isPending}>
-              {currentMutation.isPending ? (
-                <>
-                  <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                  {isEditing ? "Updating..." : "Scheduling..."}
-                </>
-              ) : (
-                <>
-                  <i
-                    className={`mr-2 size-4 ${isEditing ? "i-mgc-edit-cute-re" : "i-mgc-calendar-time-add-cute-re"}`}
-                  />
-                  {isEditing ? "Update Task" : "Schedule Task"}
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+    </>
   )
 })
 
