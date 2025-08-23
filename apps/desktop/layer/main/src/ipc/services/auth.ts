@@ -1,6 +1,7 @@
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
+
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 export class AuthService extends IpcService {
   constructor() {

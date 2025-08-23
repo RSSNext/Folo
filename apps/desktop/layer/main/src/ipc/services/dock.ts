@@ -1,8 +1,9 @@
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
+
 import { UNREAD_BACKGROUND_POLLING_INTERVAL } from "../../constants/app"
 import { apiClient } from "../../lib/api-client"
 import { setDockCount } from "../../lib/dock"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 class PollingManager {
   private abortController: AbortController | null = null

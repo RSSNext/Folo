@@ -73,6 +73,7 @@
   "14002": "Upload failed",
   "15000": "AI token limit exceeded. Please try again later.",
   "15001": "You are not allowed to access AI chat",
+  "15002": "AI attachment file limit exceeded. Please try again later.",
   "16000": "MCP OAuth error",
   "16001": "MCP discovery error",
   "16002": "MCP service not found",

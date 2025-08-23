@@ -175,7 +175,7 @@ export const SettingLists = () => {
                         <TableCell size="sm">
                           <div className="flex items-center gap-1 tabular-nums">
                             {row.fee}
-                            <i className="i-mgc-power text-accent shrink-0 text-lg" />
+                            <i className="i-mgc-power text-folo shrink-0 text-lg" />
                           </div>
                         </TableCell>
                         <TableCell size="sm" className="tabular-nums">

@@ -35,7 +35,7 @@ export const RadioCards = ({
         initial={{ height: "auto", opacity: 0 }}
         animate={{ height: "auto", opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        transition={Spring.presets.softSpring}
+        transition={Spring.presets.smooth}
       >
         {radios.map((item) => (
           <RadioCard
@@ -49,7 +49,7 @@ export const RadioCards = ({
                 </h3>
                 <p className="text-text-secondary mt-1 flex items-center justify-center gap-1 text-xs leading-none">
                   {item.value * monthlyBoostCost}
-                  <i className="i-mgc-power text-accent" />
+                  <i className="i-mgc-power text-folo" />
                 </p>
               </div>
             }

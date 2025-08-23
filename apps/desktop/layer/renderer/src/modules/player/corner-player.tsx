@@ -64,7 +64,7 @@ export const CornerPlayer = ({ className, ...rest }: ControlButtonProps) => {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
-          transition={{ ...Spring.presets.microRebound, duration: 0.2 }}
+          transition={Spring.presets.snappy}
           onClick={(e) => e.stopPropagation()}
         >
           <CornerPlayerImpl {...rest} />

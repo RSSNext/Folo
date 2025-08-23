@@ -2,7 +2,7 @@ import { Progress } from "@follow/components/ui/progress/index.jsx"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
-import { apiFetch } from "~/lib/api-fetch"
+import { followClient } from "~/lib/api-client"
 
 import { SettingDescription } from "../../control"
 
@@ -10,18 +10,7 @@ const useTokenUsage = () => {
   return useQuery({
     queryKey: ["aiTokenUsage"],
     queryFn: async () => {
-      // TODO: replace with api client call
-      return (
-        (await apiFetch("/ai/usage")) as {
-          code: 0
-          data: {
-            total: number
-            used: number
-            remaining: number
-            resetAt: string
-          }
-        }
-      ).data
+      return (await followClient.api.ai.config()).usage
     },
   })
 }

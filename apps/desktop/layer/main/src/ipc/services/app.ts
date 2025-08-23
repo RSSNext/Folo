@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url"
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
 import { app, BrowserWindow, clipboard, dialog, shell } from "electron"
+import type { IpcContext } from "electron-ipc-decorator"
+import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
 import { getCacheSize } from "~/lib/cleaner"
@@ -17,8 +19,6 @@ import { cleanupOldRender, loadDynamicRenderEntry } from "~/updater/hot-updater"
 
 import { downloadFile } from "../../lib/download"
 import { checkForAppUpdates, quitAndInstall } from "../../updater"
-import type { IpcContext } from "../base"
-import { IpcMethod, IpcService } from "../base"
 
 interface WindowActionInput {
   action: "close" | "minimize" | "maximum"
