@@ -40,7 +40,8 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         return
       }
       present({
-        title: "Schedule AI Task",
+        title: "",
+        canClose: false,
         content: () => <AITaskModal />,
       })
     }
