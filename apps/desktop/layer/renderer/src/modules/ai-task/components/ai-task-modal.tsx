@@ -12,7 +12,7 @@ import { Input, TextArea } from "@follow/components/ui/input/index.js"
 import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
-import { memo, useMemo } from "react"
+import { memo } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -59,6 +59,76 @@ interface AITaskModalProps {
   onSubmit?: (data: TaskFormData) => void
 }
 
+// Convert existing task data to form format or use defaults
+const getDefaultFormData = (task?: AITask, prompt?: string): TaskFormData => {
+  // Get current date/time for default values
+  const now = dayjs()
+
+  if (!task) {
+    // Default values for creating new task
+    return {
+      title: "AI Task",
+      prompt: prompt || "",
+      schedule: {
+        type: "once",
+        date: now.add(1, "hour").toISOString(),
+      },
+    }
+  }
+  if (prompt) {
+    console.warn("Using provided prompt for existing task, ignoring task prompt", task, prompt)
+  }
+
+  // Convert existing task data for editing
+  const { schedule } = task
+  let formSchedule: TaskFormData["schedule"]
+
+  switch (schedule.type) {
+    case "once": {
+      formSchedule = {
+        type: "once",
+        date: dayjs(schedule.date).toISOString(),
+      }
+      break
+    }
+    case "daily": {
+      formSchedule = {
+        type: "daily",
+        timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
+      }
+      break
+    }
+    case "weekly": {
+      formSchedule = {
+        type: "weekly",
+        dayOfWeek: schedule.dayOfWeek,
+        timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
+      }
+      break
+    }
+    case "monthly": {
+      formSchedule = {
+        type: "monthly",
+        dayOfMonth: schedule.dayOfMonth,
+        timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
+      }
+      break
+    }
+    default: {
+      formSchedule = {
+        type: "once",
+        date: now.add(1, "hour").toISOString(),
+      }
+    }
+  }
+
+  return {
+    title: task.name,
+    prompt: task.prompt,
+    schedule: formSchedule,
+  }
+}
+
 export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
@@ -66,79 +136,9 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
 
   const isEditing = !!task
 
-  // Get current date/time for default values
-  const now = useMemo(() => dayjs(), [])
-
-  // Convert existing task data to form format or use defaults
-  const getDefaultFormData = (): TaskFormData => {
-    if (!task) {
-      // Default values for creating new task
-      return {
-        title: "AI Task",
-        prompt: prompt || "",
-        schedule: {
-          type: "once",
-          date: now.add(1, "hour").toISOString(),
-        },
-      }
-    }
-    if (prompt) {
-      console.warn("Using provided prompt for existing task, ignoring task prompt", task, prompt)
-    }
-
-    // Convert existing task data for editing
-    const { schedule } = task
-    let formSchedule: TaskFormData["schedule"]
-
-    switch (schedule.type) {
-      case "once": {
-        formSchedule = {
-          type: "once",
-          date: dayjs(schedule.date).toISOString(),
-        }
-        break
-      }
-      case "daily": {
-        formSchedule = {
-          type: "daily",
-          timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
-        }
-        break
-      }
-      case "weekly": {
-        formSchedule = {
-          type: "weekly",
-          dayOfWeek: schedule.dayOfWeek,
-          timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
-        }
-        break
-      }
-      case "monthly": {
-        formSchedule = {
-          type: "monthly",
-          dayOfMonth: schedule.dayOfMonth,
-          timeOfDay: dayjs(schedule.timeOfDay).toISOString(),
-        }
-        break
-      }
-      default: {
-        formSchedule = {
-          type: "once",
-          date: now.add(1, "hour").toISOString(),
-        }
-      }
-    }
-
-    return {
-      title: task.name,
-      prompt: task.prompt,
-      schedule: formSchedule,
-    }
-  }
-
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
-    defaultValues: getDefaultFormData(),
+    defaultValues: getDefaultFormData(task, prompt),
   })
 
   const scheduleValue = form.watch("schedule")
@@ -178,7 +178,7 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
       onSubmit?.(processedData)
       dismiss()
     } catch (error) {
-      console.error(`Failed to ${isEditing ? "update" : "create"} AI task:`, error)
+      console.error(`Failed to update/create AI task:`, error)
       toast.error(`Failed to ${isEditing ? "update" : "schedule"} AI task. Please try again.`)
     }
   }
