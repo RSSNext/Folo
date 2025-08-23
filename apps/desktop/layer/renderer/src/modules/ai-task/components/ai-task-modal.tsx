@@ -198,19 +198,15 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
       />
 
       <div className="w-[500px] space-y-6 p-6">
-        <div className="space-y-2">
-          <h2 className="text-text text-lg font-semibold">
-            {isEditing ? "Edit AI Task" : "Schedule AI Task"}
-          </h2>
-          <p className="text-text-secondary text-sm">
-            {isEditing
-              ? "Modify the details and schedule of your AI task."
-              : "Create an automated AI task that will run according to your schedule."}
-          </p>
-        </div>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            {/* Schedule Configuration */}
+            <ScheduleConfig
+              value={scheduleValue}
+              onChange={handleScheduleChange}
+              errors={form.formState.errors.schedule as Record<string, string>}
+            />
+
             {/* Task Details */}
             <div className="space-y-4">
               <FormField
@@ -238,13 +234,6 @@ export const AITaskModal = memo<AITaskModalProps>(({ task, prompt, onSubmit }) =
                 )}
               />
             </div>
-
-            {/* Schedule Configuration */}
-            <ScheduleConfig
-              value={scheduleValue}
-              onChange={handleScheduleChange}
-              errors={form.formState.errors.schedule as Record<string, string>}
-            />
 
             {/* Form Actions */}
             <div className="border-border flex justify-end space-x-3 border-t pt-4">
