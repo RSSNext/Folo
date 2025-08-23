@@ -49,7 +49,7 @@ export const SettingAbout = () => {
   }
 
   const handleOpenLegal = (type: "privacy" | "tos") => {
-    const path = type === "privacy" ? "privacy.html" : "tos.html"
+    const path = type === "privacy" ? "privacy-policy" : "terms-of-service"
     window.open(`https://folo.is/${path}`, "_blank")
   }
 
