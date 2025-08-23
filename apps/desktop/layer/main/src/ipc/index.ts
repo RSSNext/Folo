@@ -1,4 +1,5 @@
 import type { MergeIpcService } from "electron-ipc-decorator"
+import { createServices } from "electron-ipc-decorator"
 
 import { AppService } from "./services/app"
 import { AuthService } from "./services/auth"
@@ -10,17 +11,16 @@ import { ReaderService } from "./services/reader"
 import { SettingService } from "./services/setting"
 
 // Initialize all services
-export const services = {
-  app: new AppService(),
-  auth: new AuthService(),
-  debug: new DebugService(),
-  dock: new DockService(),
-  menu: new MenuService(),
-  reader: new ReaderService(),
-  setting: new SettingService(),
-  integration: new IntegrationService(),
-} as const
-
+const services = createServices([
+  AppService,
+  AuthService,
+  DebugService,
+  DockService,
+  MenuService,
+  ReaderService,
+  SettingService,
+  IntegrationService,
+])
 // Extract method types automatically from services
 export type IpcServices = MergeIpcService<typeof services>
 
@@ -28,4 +28,5 @@ export type IpcServices = MergeIpcService<typeof services>
 export function initializeIpcServices() {
   // Services are already initialized in the services constant above
   console.info("IPC services initialized")
+  void services
 }

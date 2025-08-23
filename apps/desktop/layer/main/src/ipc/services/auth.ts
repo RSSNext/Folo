@@ -4,9 +4,7 @@ import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import { deleteNotificationsToken, updateNotificationsToken } from "../../lib/user"
 
 export class AuthService extends IpcService {
-  constructor() {
-    super("auth")
-  }
+  static override readonly groupName = "auth"
 
   @IpcMethod()
   async sessionChanged(_context: IpcContext): Promise<void> {

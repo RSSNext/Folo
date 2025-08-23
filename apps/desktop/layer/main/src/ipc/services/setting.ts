@@ -20,9 +20,7 @@ interface SetLoginItemSettingsInput {
 }
 
 export class SettingService extends IpcService {
-  constructor() {
-    super("setting")
-  }
+  static override readonly groupName = "setting"
 
   @IpcMethod()
   getLoginItemSettings(_context: IpcContext): Electron.LoginItemSettings {

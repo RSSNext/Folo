@@ -29,9 +29,7 @@ interface DetectCodeStringLanguageInput {
 }
 
 export class ReaderService extends IpcService {
-  constructor() {
-    super("reader")
-  }
+  static override readonly groupName = "reader"
 
   @IpcMethod()
   async readability(_context: IpcContext, input: ReadabilityInput) {

@@ -59,9 +59,7 @@ class PollingManager {
 export class DockService extends IpcService {
   private unreadPollingManager = new PollingManager()
 
-  constructor() {
-    super("dock")
-  }
+  static override readonly groupName = "dock"
 
   @IpcMethod()
   async pollingUpdateUnreadCount(): Promise<void> {
