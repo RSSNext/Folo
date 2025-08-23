@@ -38,7 +38,6 @@ Follow (Folo) is a modern RSS aggregator and content management platform with mu
   - `utils/` - Utility functions and helpers
   - `tracker/` - Analytics and tracking
   - `logger/` - Logging utilities
-  - `legal/` - Legal and compliance utilities
 - **`packages/configs/`** - Shared configuration files
   - `tailwindcss/` - Tailwind CSS configurations
   - TypeScript and build configurations

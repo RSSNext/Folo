@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { Linking, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { KeyboardAvoidingView, KeyboardController } from "react-native-keyboard-controller"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -9,9 +9,7 @@ import * as ContextMenu from "zeego/context-menu"
 import { Logo } from "@/src/components/ui/logo"
 import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
-import { NavigationLink } from "@/src/lib/navigation/NavigationLink"
 import { useScaleHeight } from "@/src/lib/responsive"
-import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScreen"
 import { TermsMarkdown, TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
 import { EmailLogin, EmailSignUp } from "./email"
@@ -128,21 +126,19 @@ const TermsText = () => {
           By continuing, you agree to our{" "}
         </Text>
         <View className="flex-row items-center">
-          <NavigationLink
-            destination={TermsScreen}
-            suppressHighlighting
+          <Pressable
+            onPress={() => Linking.openURL("https://folo.is/terms-of-service")}
             className="text-secondary-label"
           >
             <Text className="font-semibold">Terms of Service</Text>
-          </NavigationLink>
+          </Pressable>
           <Text className="text-secondary-label">&nbsp;&&nbsp;</Text>
-          <NavigationLink
-            destination={PrivacyPolicyScreen}
-            suppressHighlighting
+          <Pressable
+            onPress={() => Linking.openURL("https://folo.is/privacy-policy")}
             className="text-secondary-label"
           >
             <Text className="font-semibold">Privacy Policy</Text>
-          </NavigationLink>
+          </Pressable>
         </View>
       </ContextMenu.Trigger>
 

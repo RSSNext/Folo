@@ -1,4 +1,3 @@
-import { legalHtml } from "@follow/legal"
 import { stopPropagation } from "@follow/utils/dom"
 import { m } from "motion/react"
 import type { FC } from "react"

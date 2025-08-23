@@ -2,19 +2,15 @@ import { Folo } from "@follow/components/icons/folo.js"
 import { Logo } from "@follow/components/icons/logo.jsx"
 import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { SocialMediaLinks } from "@follow/constants"
-import { legalHtml } from "@follow/legal"
 import { IN_ELECTRON, MODE, ModeEnum } from "@follow/shared/constants"
-import { stopPropagation } from "@follow/utils/dom"
 import { getCurrentEnvironment } from "@follow/utils/environment"
 import { cn } from "@follow/utils/utils"
 import PKG, { repository } from "@pkg"
 import { useQuery } from "@tanstack/react-query"
-import { m } from "motion/react"
 import { useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { ipcServices } from "~/lib/client"
 import { getNewIssueUrl } from "~/lib/issues"
 
@@ -26,7 +22,6 @@ export const SettingAbout = () => {
     queryKey: ["appVersion"],
     queryFn: () => ipcServices?.app.getAppVersion(),
   })
-  const { present } = useModalStack()
 
   const rendererVersion = PKG.version
 
@@ -54,14 +49,8 @@ export const SettingAbout = () => {
   }
 
   const handleOpenLegal = (type: "privacy" | "tos") => {
-    present({
-      id: `legal-${type}`,
-      title: type === "privacy" ? t("about.privacyPolicy") : t("about.termsOfService"),
-      content: () => <LegalModalContent type={type} />,
-      resizeable: true,
-      clickOutsideToDismiss: true,
-      max: true,
-    })
+    const path = type === "privacy" ? "privacy.html" : "tos.html"
+    window.open(`https://folo.is/${path}`, "_blank")
   }
 
   return (
@@ -235,26 +224,5 @@ export const SettingAbout = () => {
         </div>
       </div>
     </div>
-  )
-}
-
-type LegalModalProps = {
-  type: "privacy" | "tos"
-}
-
-const LegalModalContent: React.FC<LegalModalProps> = ({ type }) => {
-  const content = type === "privacy" ? legalHtml.privacy : legalHtml.tos
-
-  return (
-    <m.div className="size-full overflow-hidden">
-      <div className="bg-background size-full overflow-auto rounded-lg" onClick={stopPropagation}>
-        <iframe
-          sandbox="allow-scripts"
-          srcDoc={content}
-          title={type === "privacy" ? "Privacy Policy" : "Terms of Service"}
-          className="size-full border-0"
-        />
-      </div>
-    </m.div>
   )
 }

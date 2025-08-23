@@ -222,9 +222,6 @@ importers:
       '@follow/hooks':
         specifier: workspace:*
         version: link:../../packages/internal/hooks
-      '@follow/legal':
-        specifier: workspace:*
-        version: link:../../packages/internal/legal
       '@follow/models':
         specifier: workspace:*
         version: link:../../packages/internal/models
@@ -815,9 +812,6 @@ importers:
       '@follow/hooks':
         specifier: workspace:*
         version: link:../../packages/internal/hooks
-      '@follow/legal':
-        specifier: workspace:*
-        version: link:../../packages/internal/legal
       '@follow/models':
         specifier: workspace:*
         version: link:../../packages/internal/models
@@ -1284,9 +1278,6 @@ importers:
       '@follow/hooks':
         specifier: workspace:*
         version: link:../../packages/internal/hooks
-      '@follow/legal':
-        specifier: workspace:*
-        version: link:../../packages/internal/legal
       '@follow/models':
         specifier: workspace:*
         version: link:../../packages/internal/models
@@ -1748,12 +1739,6 @@ importers:
       '@follow/configs':
         specifier: workspace:*
         version: link:../../configs
-
-  packages/internal/legal:
-    devDependencies:
-      marked:
-        specifier: 16.0.0
-        version: 16.0.0
 
   packages/internal/logger:
     dependencies:
@@ -11531,11 +11516,6 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
-
-  marked@16.0.0:
-    resolution: {integrity: sha512-MUKMXDjsD/eptB7GPzxo4xcnLS6oo7/RHimUMHEDRhUooPwmN9BEpMl7AEOJv3bmso169wHI2wUF9VQgL7zfmA==}
-    engines: {node: '>= 20'}
-    hasBin: true
 
   marky@1.3.0:
     resolution: {integrity: sha512-ocnPZQLNpvbedwTy9kNrQEsknEfgvcLMvOtz3sFeWApDq1MXH1TqkCIx58xlpESsfwQOnuBO9beyQuNGzVvuhQ==}
@@ -28088,8 +28068,6 @@ snapshots:
   map-obj@5.0.0: {}
 
   markdown-table@3.0.4: {}
-
-  marked@16.0.0: {}
 
   marky@1.3.0: {}
 
