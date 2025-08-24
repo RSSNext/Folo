@@ -213,7 +213,7 @@ const ChatInterfaceContent = () => {
             type="button"
             onClick={() => resetScrollState()}
             className={cn(
-              "center bg-background/85 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
+              "center bg-mix-background/transparent-8/2 backdrop-blur-background group flex size-8 items-center gap-2 rounded-full border transition-all",
               "border-border",
               "hover:border-border/60 active:scale-[0.98]",
             )}
