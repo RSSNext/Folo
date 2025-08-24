@@ -23,9 +23,11 @@ import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai-chat/utils/
 export const ChatMoreDropdown = ({
   triggerElement,
   asChild = true,
+  canToggleMode = true,
 }: {
   triggerElement: React.ReactNode
   asChild?: boolean
+  canToggleMode?: boolean
 }) => {
   const currentTitle = useCurrentTitle()
   const currentChatId = useCurrentChatId()
@@ -171,18 +173,21 @@ export const ChatMoreDropdown = ({
           <span>Export Chat</span>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem onClick={handleToggleMode}>
-          <i
-            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
-          />
-          <span>
-            {panelStyle === AIChatPanelStyle.Fixed
-              ? "Switch to Floating Panel"
-              : "Switch to Fixed Panel"}
-          </span>
-        </DropdownMenuItem>
+        {canToggleMode && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleToggleMode}>
+              <i
+                className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
+              />
+              <span>
+                {panelStyle === AIChatPanelStyle.Fixed
+                  ? "Switch to Floating Panel"
+                  : "Switch to Fixed Panel"}
+              </span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

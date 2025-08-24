@@ -7,7 +7,7 @@ export const Component = () => {
     <div className="relative flex h-screen w-full flex-col">
       <AIChatRoot>
         <ChatPageHeader />
-        <ChatInterface />
+        <ChatInterface centerInputOnEmpty />
       </AIChatRoot>
     </div>
   )
