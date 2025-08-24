@@ -34,7 +34,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+              className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
             >
               <i className="i-mgc-add-cute-re size-3.5" />
             </button>
@@ -46,7 +46,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         <button
           type="button"
           onClick={handleAttachFile}
-          className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+          className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
           title="Upload Files"
         >
           <i className="i-mgc-attachment-cute-re size-3.5" />
@@ -68,7 +68,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+                className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
                 title="AI Shortcuts"
               >
                 <i className="i-mgc-magic-2-cute-re size-3.5" />

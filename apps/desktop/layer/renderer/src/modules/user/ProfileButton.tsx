@@ -150,6 +150,16 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
+        <DropdownMenuItem
+          className="pl-3"
+          onClick={() => {
+            navigate("/ai")
+          }}
+          icon={<i className="i-mgc-ai-cute-re" />}
+        >
+          {t("user_button.ai")}
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         {!zenModeSetting && (
