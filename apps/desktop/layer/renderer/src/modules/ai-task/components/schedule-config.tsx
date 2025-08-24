@@ -1,4 +1,4 @@
-import { Input } from "@follow/components/ui/input/index.js"
+import { Input, TimeSelect } from "@follow/components/ui/input/index.js"
 import { Label } from "@follow/components/ui/label/index.jsx"
 import {
   Select,
@@ -46,7 +46,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
   ({ value, onChange, errors = defaultErrors }) => {
     const now = useMemo(() => dayjs(), [])
 
-    const scheduleType = value?.type || "once"
+    const scheduleType = value.type
 
     const updateSchedule = (newValue: ScheduleType) => {
       onChange(newValue)
@@ -110,11 +110,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
               <Input
                 type="datetime-local"
                 min={now.format("YYYY-MM-DDTHH:mm")}
-                value={
-                  value && value.type === "once" && value.date
-                    ? dayjs(value.date).format("YYYY-MM-DDTHH:mm")
-                    : ""
-                }
+                value={dayjs(value.date).format("YYYY-MM-DDTHH:mm")}
                 onChange={(e) => {
                   updateSchedule({
                     type: "once",
@@ -128,15 +124,10 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
 
           {scheduleType === "daily" && (
             <div className="mt-2">
-              <Input
-                type="time"
-                value={
-                  value && value.type === "daily" && value.timeOfDay
-                    ? dayjs(value.timeOfDay).format("HH:mm")
-                    : "12:00"
-                }
-                onChange={(e) => {
-                  const [hours, minutes] = e.target.value.split(":")
+              <TimeSelect
+                value={dayjs(value.timeOfDay).format("HH:mm")}
+                onChange={(time) => {
+                  const [hours, minutes] = time.split(":")
                   const currentDate = dayjs()
                   const timeOfDay = currentDate
                     .hour(Number(hours))
@@ -161,16 +152,11 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   onValueChange={(dayOfWeek) =>
                     updateSchedule({
                       type: "weekly",
-                      timeOfDay:
-                        value.type === "weekly" ? value.timeOfDay : new Date().toISOString(),
+                      timeOfDay: value.timeOfDay,
                       dayOfWeek: Number(dayOfWeek),
                     })
                   }
-                  value={
-                    value && value.type === "weekly" && value.dayOfWeek !== undefined
-                      ? value.dayOfWeek.toString()
-                      : undefined
-                  }
+                  value={value.dayOfWeek.toString()}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select day" />
@@ -188,15 +174,10 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 )}
               </div>
               <div>
-                <Input
-                  type="time"
-                  value={
-                    value && value.type === "weekly" && value.timeOfDay
-                      ? dayjs(value.timeOfDay).format("HH:mm")
-                      : "12:00"
-                  }
-                  onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":")
+                <TimeSelect
+                  value={dayjs(value.timeOfDay).format("HH:mm")}
+                  onChange={(time) => {
+                    const [hours, minutes] = time.split(":")
                     const currentDate = dayjs()
                     const timeOfDay = currentDate
                       .hour(Number(hours))
@@ -206,7 +187,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                       .toISOString()
                     updateSchedule({
                       type: "weekly",
-                      dayOfWeek: value.type === "weekly" ? value.dayOfWeek : 0,
+                      dayOfWeek: value.dayOfWeek,
                       timeOfDay,
                     })
                   }}
@@ -225,16 +206,11 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   onValueChange={(dayOfMonth) =>
                     updateSchedule({
                       type: "monthly",
-                      timeOfDay:
-                        value.type === "monthly" ? value.timeOfDay : new Date().toISOString(),
+                      timeOfDay: value.timeOfDay,
                       dayOfMonth: Number(dayOfMonth),
                     })
                   }
-                  value={
-                    value && value.type === "monthly" && value.dayOfMonth !== undefined
-                      ? value.dayOfMonth.toString()
-                      : undefined
-                  }
+                  value={value.dayOfMonth.toString()}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select day" />
@@ -252,15 +228,10 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 )}
               </div>
               <div>
-                <Input
-                  type="time"
-                  value={
-                    value && value.type === "monthly" && value.timeOfDay
-                      ? dayjs(value.timeOfDay).format("HH:mm")
-                      : "12:00"
-                  }
-                  onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":")
+                <TimeSelect
+                  value={dayjs(value.timeOfDay).format("HH:mm")}
+                  onChange={(time) => {
+                    const [hours, minutes] = time.split(":")
                     const currentDate = dayjs()
                     const timeOfDay = currentDate
                       .hour(Number(hours))
@@ -270,7 +241,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                       .toISOString()
                     updateSchedule({
                       type: "monthly",
-                      dayOfMonth: value.type === "monthly" ? value.dayOfMonth : 1,
+                      dayOfMonth: value.dayOfMonth,
                       timeOfDay,
                     })
                   }}
