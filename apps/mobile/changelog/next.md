@@ -1,3 +1,11 @@
 # What's New in vNEXT_VERSION
 
-Fixed several bugs, improved stability.
+## Shiny new things
+
+## Improvements
+
+## No longer broken
+
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions
