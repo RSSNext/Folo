@@ -85,9 +85,9 @@ export const PersonalizePromptSection = () => {
         {hasChanges && (
           <SettingModalContentPortal>
             <m.div
-              initial={{ y: 20, scale: 0.95 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 20, scale: 0.95 }}
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              exit={{ y: 20, opacity: 0 }}
               transition={Spring.presets.snappy}
               className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3"
             >

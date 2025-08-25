@@ -187,6 +187,7 @@ export interface MCPService {
   url?: string
   headers?: Record<string, string>
   isConnected: boolean
+  enabled: boolean
   lastError?: string
   toolCount: number
   resourceCount: number
