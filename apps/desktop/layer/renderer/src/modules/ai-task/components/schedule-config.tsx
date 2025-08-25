@@ -10,6 +10,7 @@ import {
 import { cn } from "@follow/utils/utils"
 import dayjs from "dayjs"
 import { memo, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import type { ScheduleType } from "~/modules/ai-task/types"
 
@@ -20,14 +21,14 @@ interface ScheduleConfigProps {
 }
 
 const dayOfWeekOptions = [
-  { value: "0", label: "Sunday" },
-  { value: "1", label: "Monday" },
-  { value: "2", label: "Tuesday" },
-  { value: "3", label: "Wednesday" },
-  { value: "4", label: "Thursday" },
-  { value: "5", label: "Friday" },
-  { value: "6", label: "Saturday" },
-]
+  { value: "0", label: "schedule.days.sunday" },
+  { value: "1", label: "schedule.days.monday" },
+  { value: "2", label: "schedule.days.tuesday" },
+  { value: "3", label: "schedule.days.wednesday" },
+  { value: "4", label: "schedule.days.thursday" },
+  { value: "5", label: "schedule.days.friday" },
+  { value: "6", label: "schedule.days.saturday" },
+] as const
 
 const dayOfMonthOptions = Array.from({ length: 31 }, (_, i) => ({
   value: (i + 1).toString(),
@@ -37,50 +38,46 @@ const dayOfMonthOptions = Array.from({ length: 31 }, (_, i) => ({
 const frequencyOptions = [
   {
     value: "once",
-    label: "Once",
+    label: "schedule.frequency.once",
     icon: "i-mgc-time-cute-re",
-    description: "Run one time only",
   },
   {
     value: "daily",
-    label: "Daily",
+    label: "schedule.frequency.daily",
     icon: "i-mgc-round-cute-re",
-    description: "Run every day",
   },
   {
     value: "weekly",
-    label: "Weekly",
+    label: "schedule.frequency.weekly",
     icon: "i-mgc-layout-4-cute-re",
-    description: "Run once per week",
   },
   {
     value: "monthly",
-    label: "Monthly",
+    label: "schedule.frequency.monthly",
     icon: "i-mgc-grid-cute-re",
-    description: "Run once per month",
   },
-]
+] as const
 
 // Quick preset options for common schedules
 const getQuickPresets = () => {
   const now = dayjs()
   return [
     {
-      label: "Tomorrow 9AM",
+      label: "schedule.presets.tomorrow_9am" as const,
       value: {
         type: "once" as const,
         date: now.add(1, "day").hour(9).minute(0).second(0).millisecond(0).toISOString(),
       },
     },
     {
-      label: "Daily 6PM",
+      label: "schedule.presets.daily_6pm" as const,
       value: {
         type: "daily" as const,
         timeOfDay: now.hour(18).minute(0).second(0).millisecond(0).toISOString(),
       },
     },
     {
-      label: "Mon 9AM",
+      label: "schedule.presets.monday_9am" as const,
       value: {
         type: "weekly" as const,
         dayOfWeek: 1,
@@ -88,7 +85,7 @@ const getQuickPresets = () => {
       },
     },
     {
-      label: "1st 9AM",
+      label: "schedule.presets.first_9am" as const,
       value: {
         type: "monthly" as const,
         dayOfMonth: 1,
@@ -169,6 +166,7 @@ const getNextExecutions = (schedule: ScheduleType, count = 5): dayjs.Dayjs[] => 
 
 // Compact Timeline Preview Component
 const TimelinePreview = memo<{ schedule: ScheduleType }>(({ schedule }) => {
+  const { t } = useTranslation("ai")
   const executions = useMemo(() => getNextExecutions(schedule, 1), [schedule])
   const nextExecution = executions[0]
 
@@ -176,7 +174,7 @@ const TimelinePreview = memo<{ schedule: ScheduleType }>(({ schedule }) => {
     return (
       <div className="text-text-tertiary flex items-center gap-2 text-xs">
         <div className="i-mgc-information-cute-re size-3" />
-        <span>No upcoming executions</span>
+        <span>{t("schedule.no_upcoming")}</span>
       </div>
     )
   }
@@ -185,7 +183,10 @@ const TimelinePreview = memo<{ schedule: ScheduleType }>(({ schedule }) => {
     <div className="text-text-secondary flex items-center gap-2 text-xs">
       <div className="i-mgc-time-cute-re text-accent size-3" />
       <span>
-        Next: {nextExecution.format("MMM D, h:mm A")} ({nextExecution.fromNow()})
+        {t("schedule.next_execution", {
+          time: nextExecution.format("MMM D, h:mm A"),
+          relative: nextExecution.fromNow(),
+        })}
       </span>
     </div>
   )
@@ -195,6 +196,7 @@ TimelinePreview.displayName = "TimelinePreview"
 
 export const ScheduleConfig = memo<ScheduleConfigProps>(
   ({ value, onChange, errors = defaultErrors }) => {
+    const { t } = useTranslation("ai")
     const now = useMemo(() => dayjs(), [])
     const quickPresets = useMemo(() => getQuickPresets(), [])
 
@@ -208,7 +210,9 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
       <div className="space-y-4">
         {/* Quick Presets */}
         <div className="space-y-2">
-          <Label className="text-text pl-2 text-sm font-medium">Quick Presets</Label>
+          <Label className="text-text pl-2 text-sm font-medium">
+            {t("schedule.presets_title")}
+          </Label>
           <div className="flex gap-2">
             {quickPresets.map((preset) => (
               <button
@@ -217,7 +221,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 onClick={() => onChange(preset.value)}
                 className="bg-material-opaque hover:bg-fill-tertiary border-border/50 hover:border-border text-text-secondary hover:text-text flex-1 rounded-md border px-2 py-1.5 text-xs transition-all duration-200"
               >
-                {preset.label}
+                {t(preset.label)}
               </button>
             ))}
           </div>
@@ -226,7 +230,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
         {/* Frequency Selection */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-text pl-2 text-sm font-medium">Schedule</Label>
+            <Label className="text-text pl-2 text-sm font-medium">{t("schedule.title")}</Label>
             <TimelinePreview schedule={value} />
           </div>
           <div className="grid grid-cols-4 gap-2">
@@ -272,7 +276,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                     scheduleType === option.value ? "text-accent" : "text-text-tertiary",
                   )}
                 />
-                <span className="font-medium">{option.label}</span>
+                <span className="font-medium">{t(option.label)}</span>
               </button>
             ))}
           </div>
@@ -282,7 +286,9 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
         {/* Time Configuration */}
         {scheduleType === "once" && (
           <div className="space-y-2">
-            <Label className="text-text pl-2 text-sm font-medium">Date & Time</Label>
+            <Label className="text-text pl-2 text-sm font-medium">
+              {t("schedule.date_time_label")}
+            </Label>
             <DateTimePicker
               value={value.date}
               minDate={now.toISOString()}
@@ -292,7 +298,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   date,
                 })
               }}
-              placeholder="Select date & time"
+              placeholder={t("schedule.date_time_placeholder")}
             />
             {errors.date && <p className="text-red mt-2 text-sm">{errors.date}</p>}
           </div>
@@ -300,7 +306,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
 
         {scheduleType === "daily" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">Time</Label>
+            <Label className="text-text text-sm font-medium">{t("schedule.time_label")}</Label>
             <TimeSelect
               value={dayjs(value.timeOfDay).format("HH:mm")}
               onChange={(time) => {
@@ -324,10 +330,12 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
 
         {scheduleType === "weekly" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">Configuration</Label>
+            <Label className="text-text text-sm font-medium">
+              {t("schedule.configuration_label")}
+            </Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">Day</Label>
+                <Label className="text-text-secondary text-xs">{t("schedule.day_label")}</Label>
                 <Select
                   onValueChange={(dayOfWeek) =>
                     updateSchedule({
@@ -339,12 +347,12 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   value={value.dayOfWeek.toString()}
                 >
                   <SelectTrigger className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs">
-                    <SelectValue placeholder="Select day" />
+                    <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent position="item-aligned">
                     {dayOfWeekOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -352,7 +360,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 {errors.dayOfWeek && <p className="text-red text-sm">{errors.dayOfWeek}</p>}
               </div>
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">Time</Label>
+                <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
                 <TimeSelect
                   value={dayjs(value.timeOfDay).format("HH:mm")}
                   onChange={(time) => {
@@ -379,10 +387,12 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
 
         {scheduleType === "monthly" && (
           <div className="space-y-2 pl-2">
-            <Label className="text-text text-sm font-medium">Configuration</Label>
+            <Label className="text-text text-sm font-medium">
+              {t("schedule.configuration_label")}
+            </Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">Day</Label>
+                <Label className="text-text-secondary text-xs">{t("schedule.day_label")}</Label>
                 <Select
                   onValueChange={(dayOfMonth) =>
                     updateSchedule({
@@ -394,7 +404,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                   value={value.dayOfMonth.toString()}
                 >
                   <SelectTrigger className="bg-material-opaque hover:bg-mix-accent/background-1/4 h-6 justify-between rounded-[4px] border-0 px-1.5 py-0 text-xs">
-                    <SelectValue placeholder="Select day" />
+                    <SelectValue placeholder={t("schedule.day_placeholder")} />
                   </SelectTrigger>
                   <SelectContent position="item-aligned">
                     {dayOfMonthOptions.map((option) => (
@@ -407,7 +417,7 @@ export const ScheduleConfig = memo<ScheduleConfigProps>(
                 {errors.dayOfMonth && <p className="text-red text-sm">{errors.dayOfMonth}</p>}
               </div>
               <div className="space-y-1">
-                <Label className="text-text-secondary text-xs">Time</Label>
+                <Label className="text-text-secondary text-xs">{t("schedule.time_label")}</Label>
                 <TimeSelect
                   value={dayjs(value.timeOfDay).format("HH:mm")}
                   onChange={(time) => {
