@@ -173,13 +173,13 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
       {/* Hero */}
       <div
         className={cn(
-          "relative flex max-h-[25em] flex-col overflow-hidden rounded-lg",
+          "relative flex max-h-[35em] flex-col overflow-hidden rounded-lg",
           "before:group-hover:bg-theme-item-hover before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
           cardStyle.card,
           (view === FeedViewType.Articles ||
             view === FeedViewType.Notifications ||
             view === FeedViewType.SocialMedia) &&
-            "min-h-[20em] justify-center",
+            "min-h-[15em] justify-center",
         )}
       >
         {/* Icon */}
@@ -204,9 +204,9 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 src={entryMedia[0].url}
                 type={entryMedia[0].type}
                 previewImageUrl={entryMedia[0].preview_image_url}
-                className="min-h-[20em] w-full overflow-hidden"
-                mediaContainerClassName="w-auto min-h-[20em] h-auto object-cover"
-                videoClassName="min-h-[20em]"
+                className="min-h-[15em] w-full overflow-hidden"
+                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
+                videoClassName="min-h-[15em]"
                 loading="lazy"
                 proxy={{
                   width: entryMedia[0].width ?? 160,
@@ -217,7 +217,7 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
                 blurhash={entryMedia[0].blurhash}
               />
             ) : (
-              <div className="flex flex-col items-center justify-center overflow-hidden p-4 text-[1.25rem] font-normal leading-[1.2]">
+              <div className="flex min-h-[16em] flex-col items-center justify-center overflow-hidden p-4 text-[1.5rem] font-normal leading-[1.2]">
                 <div className="line-clamp-6 max-w-full break-words">{entry.title}</div>
               </div>
             )}
