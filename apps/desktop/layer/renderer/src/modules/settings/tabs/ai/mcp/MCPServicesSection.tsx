@@ -118,6 +118,24 @@ export const MCPServicesSection = () => {
     },
   })
 
+  const toggleConnectionMutation = useMutation({
+    mutationFn: ({ connectionId, enabled }: { connectionId: string; enabled: boolean }) =>
+      updateMCPConnection(connectionId, { enabled }),
+
+    onError: () => {
+      toast.error("Failed to update MCP connection")
+    },
+    onMutate(variables) {
+      queryClient.setQueryData(mcpQueryKeys.connections(), (old: MCPService[]) => {
+        return old.map((service) =>
+          service.id === variables.connectionId
+            ? { ...service, enabled: variables.enabled }
+            : service,
+        )
+      })
+    },
+  })
+
   // Mutation for deleting MCP connection
   const deleteConnectionMutation = useMutation({
     mutationFn: deleteMCPConnection,
@@ -204,6 +222,10 @@ export const MCPServicesSection = () => {
     refreshToolsMutation.mutate(connectionId ? [connectionId] : undefined)
   }
 
+  const handleToggleEnabled = (id: string, enabled: boolean) => {
+    toggleConnectionMutation.mutate({ connectionId: id, enabled })
+  }
+
   // Show error message if query failed
   React.useEffect(() => {
     if (error) {
@@ -272,6 +294,7 @@ export const MCPServicesSection = () => {
               onDelete={handleDeleteService}
               onRefresh={handleRefreshTools}
               onEdit={handleEditService}
+              onToggleEnabled={handleToggleEnabled}
               isDeleting={
                 deleteConnectionMutation.isPending &&
                 deleteConnectionMutation.variables === service.id

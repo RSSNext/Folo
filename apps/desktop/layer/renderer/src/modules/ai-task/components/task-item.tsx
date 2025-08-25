@@ -1,11 +1,11 @@
-import { Button } from "@follow/components/ui/button/index.js"
-import { Switch } from "@follow/components/ui/switch/index.js"
 import { cn } from "@follow/utils/utils"
 import type { AITask, TaskSchedule } from "@follow-app/client-sdk"
 import dayjs from "dayjs"
 import { memo } from "react"
 
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
+import type { ActionButton } from "~/modules/ai-task/components/ai-item-actions"
+import { ItemActions } from "~/modules/ai-task/components/ai-item-actions"
 
 import { AITaskModal } from "./ai-task-modal"
 
@@ -93,6 +93,21 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
     })
   }
 
+  const actions: ActionButton[] = [
+    {
+      icon: "i-mgc-edit-cute-re",
+      onClick: () => handleEditTask(task),
+      title: "Edit task",
+    },
+    {
+      icon: "i-mgc-delete-2-cute-re",
+      onClick: () => onDelete(task.id, task.name),
+      title: "Delete task",
+      disabled: isDeleting,
+      loading: isDeleting,
+    },
+  ]
+
   return (
     <div className="hover:bg-material-medium border-border group rounded-lg border p-4 transition-colors">
       <div className="flex items-start justify-between">
@@ -111,15 +126,6 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
               {status === "paused" && <i className="i-mgc-pause-cute-re mr-1 size-3" />}
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
-            <div className="border-fill-tertiary flex items-center gap-2 border-l pl-3">
-              <span className="text-text-tertiary text-xs font-medium">
-                {task.isEnabled ? "ON" : "OFF"}
-              </span>
-              <Switch
-                checked={task.isEnabled}
-                onCheckedChange={() => onToggle(task.id, task.name, task.isEnabled)}
-              />
-            </div>
           </div>
           <div className="space-y-1">
             <p className="text-text-secondary text-xs">
@@ -138,24 +144,11 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
           </div>
         </div>
 
-        <div className="ml-4 flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
-          <Button variant="ghost" size="sm" onClick={() => handleEditTask(task)} title="Edit task">
-            <i className="i-mgc-edit-cute-re size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isDeleting}
-            onClick={() => onDelete(task.id, task.name)}
-            title="Delete task"
-          >
-            {isDeleting ? (
-              <i className="i-mgc-loading-3-cute-re size-4 animate-spin" />
-            ) : (
-              <i className="i-mgc-delete-2-cute-re size-4" />
-            )}
-          </Button>
-        </div>
+        <ItemActions
+          actions={actions}
+          enabled={task.isEnabled}
+          onToggle={() => onToggle(task.id, task.name, task.isEnabled)}
+        />
       </div>
     </div>
   )
