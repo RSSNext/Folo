@@ -176,9 +176,10 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           "relative flex max-h-[25em] flex-col overflow-hidden rounded-lg",
           "before:group-hover:bg-theme-item-hover before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
           cardStyle.card,
-          view === FeedViewType.Articles && "min-h-[15em] justify-end",
-          view === FeedViewType.Notifications && "min-h-[15em] justify-end",
-          view === FeedViewType.SocialMedia && "min-h-[20em] justify-center",
+          (view === FeedViewType.Articles ||
+            view === FeedViewType.Notifications ||
+            view === FeedViewType.SocialMedia) &&
+            "min-h-[20em] justify-center",
         )}
       >
         {/* Icon */}
@@ -193,36 +194,10 @@ export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation })
           </div>
         )}
 
-        {/* Article, Notification */}
-        {(view === FeedViewType.Articles || view === FeedViewType.Notifications) && (
-          <>
-            {entryMedia?.[0] ? (
-              <Media
-                src={entryMedia[0].url}
-                type={entryMedia[0].type}
-                previewImageUrl={entryMedia[0].preview_image_url}
-                className="min-h-[15em] w-full overflow-hidden"
-                mediaContainerClassName="w-auto min-h-[15em] h-auto object-cover"
-                videoClassName="min-h-[15em]"
-                loading="lazy"
-                proxy={{
-                  width: entryMedia[0].width ?? 160,
-                  height: entryMedia[0].height ?? 160,
-                }}
-                height={entryMedia[0].height}
-                width={entryMedia[0].width}
-                blurhash={entryMedia[0].blurhash}
-              />
-            ) : (
-              <div className="mt-10 overflow-hidden p-4 text-[1.75rem] font-normal leading-[1.2]">
-                <div className="line-clamp-4 max-w-full break-words">{entry.title}</div>
-              </div>
-            )}
-          </>
-        )}
-
         {/* Social Media */}
-        {view === FeedViewType.SocialMedia && (
+        {(view === FeedViewType.Articles ||
+          view === FeedViewType.Notifications ||
+          view === FeedViewType.SocialMedia) && (
           <>
             {entryMedia?.[0] ? (
               <Media
