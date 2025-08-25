@@ -98,7 +98,7 @@ export const AIChatContextBar: Component<{ onSendShortcut?: (prompt: string) => 
         )}
 
         <ActionButton
-          className="bg-fill-secondary hover:bg-fill-tertiary border-border text-text-tertiary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
+          className="bg-material-medium hover:bg-material-thin border-border text-text-secondary hover:text-text-secondary flex size-7 items-center justify-center rounded-md border transition-colors"
           tooltip="Schedule Action"
           onClick={handleScheduleActionClick}
         >
