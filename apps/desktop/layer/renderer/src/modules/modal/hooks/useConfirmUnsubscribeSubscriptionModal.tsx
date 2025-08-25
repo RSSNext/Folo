@@ -11,7 +11,7 @@ export const useConfirmUnsubscribeSubscriptionModal = () => {
   const deleteSubscription = useDeleteSubscription({})
   const { t } = useTranslation()
   return useCallback(
-    (feedIds: string[]) => {
+    (feedIds: string[], callback?: () => void) => {
       present({
         title: t("sidebar.feed_actions.unfollow_feed_many_confirm"),
         icon: <i className="i-mingcute-warning-fill text-red" />,
@@ -19,6 +19,7 @@ export const useConfirmUnsubscribeSubscriptionModal = () => {
           <ConfirmDestroyModalContent
             onConfirm={() => {
               deleteSubscription.mutate({ feedIdList: feedIds })
+              callback?.()
               dismiss()
             }}
           />
