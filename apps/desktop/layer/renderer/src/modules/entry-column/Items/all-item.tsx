@@ -1,4 +1,3 @@
-import { TitleMarquee } from "@follow/components/ui/marquee/index.js"
 import { views } from "@follow/constants"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
@@ -24,7 +23,7 @@ import { FeedTitle } from "~/modules/feed/feed-title"
 
 import { StarIcon } from "../star-icon"
 import { EntryTranslation } from "../translation"
-import type { UniversalItemProps } from "../types"
+import type { EntryListItemFC } from "../types"
 
 const cardStylePresets = [
   {
@@ -55,7 +54,7 @@ const cardStylePresets = [
 
 const ViewTag = IN_ELECTRON ? "webview" : "iframe"
 
-export function AllItem({ entryId, entryPreview, translation }: UniversalItemProps) {
+export const AllItem: EntryListItemFC = ({ entryId, entryPreview, translation }) => {
   const view = useViewTypeByEntryId(entryId)
   const entry = useEntry(entryId, (state) => {
     /// keep-sorted
@@ -170,11 +169,12 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
   if (!entry) return null
 
   return (
-    <div>
+    <div className="group">
       {/* Hero */}
       <div
         className={cn(
           "relative flex max-h-[25em] flex-col overflow-hidden rounded-lg",
+          "before:group-hover:bg-theme-item-hover before:absolute before:inset-0 before:z-10 before:transition-colors before:duration-200",
           cardStyle.card,
           view === FeedViewType.Articles && "min-h-[15em] justify-end",
           view === FeedViewType.Notifications && "min-h-[15em] justify-end",
@@ -345,7 +345,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
       </div>
 
       {/* Footer */}
-      <div className={cn("relative px-4 pb-4 text-sm")}>
+      <div className={cn("relative px-1 pb-4 text-sm")}>
         <div className="flex items-center">
           <div
             className={cn(
@@ -353,14 +353,14 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
               asRead && "mr-0 w-0",
             )}
           />
-          <div
-            className={cn(
-              "relative mb-1 mt-1.5 flex w-full items-center gap-1 truncate font-medium",
-            )}
-          >
-            <TitleMarquee className="min-w-0 grow">
-              <EntryTranslation source={entry.title} target={translation?.title} />
-            </TitleMarquee>
+          <div className={cn("relative mb-1 mt-1.5 flex w-full items-center gap-1 font-medium")}>
+            <EntryTranslation
+              source={entry.title}
+              target={translation?.title}
+              className="line-clamp-2"
+              inline={false}
+            />
+
             {isInCollection && (
               <div className="h-0 shrink-0 -translate-y-2">
                 <StarIcon />
@@ -378,7 +378,7 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
               entry={entry.iconEntry}
               size={18}
             />
-            <span className={cn("min-w-0 truncate pl-1")}>
+            <span className={cn("text-text-secondary min-w-0 truncate pl-1")}>
               <FeedTitle feed={feeds} />
             </span>
           </div>
@@ -397,6 +397,8 @@ export function AllItem({ entryId, entryPreview, translation }: UniversalItemPro
     </div>
   )
 }
+
+AllItem.wrapperClassName = "hover:bg-transparent"
 
 // function AllArticleItem({ entryId, entryPreview, translation }: UniversalItemProps) {
 //   return <ListItem entryId={entryId} entryPreview={entryPreview} translation={translation} />
