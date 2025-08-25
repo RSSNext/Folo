@@ -25,18 +25,22 @@ export const TaskSchedulingSection = () => {
           <div className="text-text-secondary text-xs">
             {"Create and manage automated AI tasks that run on your schedule."}
             {!canCreateNewTask && (
-              <span className="text-red-500">
+              <span className="text-red">
                 {" (Limit reached: maximum number of tasks reached)"}
               </span>
             )}
           </div>
         </div>
-        <span className="text-text-tertiary flex items-center gap-1 text-sm">
-          <Button disabled={!canCreateNewTask} onClick={handleCreateTask}>
-            <i className="i-mgc-add-cute-re mr-2 size-4" />
-            New Task
-          </Button>
-        </span>
+
+        <Button
+          disabled={!canCreateNewTask}
+          size={"sm"}
+          variant={"outline"}
+          onClick={handleCreateTask}
+        >
+          <i className="i-mgc-add-cute-re mr-2 size-4" />
+          New Task
+        </Button>
       </div>
 
       <AITaskList />

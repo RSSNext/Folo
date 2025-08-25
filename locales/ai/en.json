@@ -28,6 +28,8 @@
   "integration.mcp.service.connecting": "Connecting...",
   "integration.mcp.service.connection_failed": "Failed to connect to MCP service",
   "integration.mcp.service.degraded": "Degraded",
+  "integration.mcp.service.delete_message": "Are you sure you want to delete this MCP service? This action cannot be undone.",
+  "integration.mcp.service.delete_title": "Delete MCP Service",
   "integration.mcp.service.deleted": "MCP service deleted successfully",
   "integration.mcp.service.disconnect": "Disconnect",
   "integration.mcp.service.disconnected": "Disconnected",

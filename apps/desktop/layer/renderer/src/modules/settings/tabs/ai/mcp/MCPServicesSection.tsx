@@ -184,8 +184,20 @@ export const MCPServicesSection = () => {
     })
   }
 
-  const handleDeleteService = (id: string) => {
-    deleteConnectionMutation.mutate(id)
+  const { ask } = useDialog()
+
+  const handleDeleteService = async (id: string) => {
+    const confirmed = await ask({
+      title: t("integration.mcp.service.delete_title"),
+      message: t("integration.mcp.service.delete_message"),
+      confirmText: t("words.delete", { ns: "common" }),
+      cancelText: t("words.cancel", { ns: "common" }),
+      variant: "danger",
+    })
+
+    if (confirmed) {
+      deleteConnectionMutation.mutate(id)
+    }
   }
 
   const handleRefreshTools = (connectionId?: string) => {
