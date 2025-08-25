@@ -53,11 +53,10 @@ const getTaskStatus = (task: AITask) => {
 
   if (task.schedule.type === "once") {
     const scheduledDate = dayjs(task.schedule.date)
-    return scheduledDate.isBefore(now) ? "completed" : "pending"
+    return scheduledDate.isBefore(now) ? "completed" : "scheduled"
   }
 
-  // For recurring tasks, they're always "active"
-  return "active"
+  return "scheduled"
 }
 
 const getStatusColor = (status: string) => {
@@ -65,11 +64,8 @@ const getStatusColor = (status: string) => {
     case "completed": {
       return "text-green-600 bg-green-50 border-green-200"
     }
-    case "active": {
+    case "scheduled": {
       return "text-blue-600 bg-blue-50 border-blue-200"
-    }
-    case "pending": {
-      return "text-yellow-600 bg-yellow-50 border-yellow-200"
     }
     case "paused": {
       return "text-gray-600 bg-gray-50 border-gray-200"
@@ -121,8 +117,9 @@ export const TaskItem = memo<TaskItemProps>(({ task, isDeleting, onDelete, onTog
               )}
             >
               {status === "completed" && <i className="i-mgc-check-cute-re mr-1 size-3" />}
-              {status === "active" && <i className="i-mgc-time-cute-re mr-1 size-3" />}
-              {status === "pending" && <i className="i-mgc-time-cute-re mr-1 size-3" />}
+              {status === "scheduled" && (
+                <i className="i-mgc-calendar-time-add-cute-re mr-1 size-3" />
+              )}
               {status === "paused" && <i className="i-mgc-pause-cute-re mr-1 size-3" />}
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
