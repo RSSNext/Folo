@@ -12,6 +12,7 @@ import type { AITask } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import dayjs from "dayjs"
 import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
@@ -131,6 +132,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
   const { dismiss } = useCurrentModal()
   const createAITaskMutation = useCreateAITaskMutation()
   const updateAITaskMutation = useUpdateAITaskMutation()
+  const { t } = useTranslation("ai")
 
   const isEditing = !!task
 
@@ -161,7 +163,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           prompt: processedData.prompt,
           schedule: processedData.schedule,
         })
-        toast.success("AI task updated successfully")
+        toast.success(t("tasks.toast.updated"))
       } else {
         // Create new task
         await createAITaskMutation.mutateAsync({
@@ -169,7 +171,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           prompt: processedData.prompt,
           schedule: processedData.schedule,
         })
-        toast.success("AI task scheduled successfully")
+        toast.success(t("tasks.toast.created"))
       }
 
       // Call the optional onSubmit callback
@@ -177,7 +179,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
       dismiss()
     } catch (error) {
       console.error(`Failed to update/create AI task:`, error)
-      toast.error(`Failed to ${isEditing ? "update" : "schedule"} AI task. Please try again.`)
+      toast.error(isEditing ? t("tasks.toast.update_error") : t("tasks.toast.create_error"))
     }
   }
 
@@ -191,18 +193,18 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <i className="i-mgc-file-upload-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">Task Information</h3>
+              <h3 className="text-text text-sm font-medium">{t("tasks.section.info")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">Task Name</Label>
+              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.name")}</Label>
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Enter a descriptive name for your task..." {...field} />
+                      <Input placeholder={t("tasks.name_placeholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -215,7 +217,7 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <i className="i-mgc-calendar-time-add-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">Schedule Configuration</h3>
+              <h3 className="text-text text-sm font-medium">{t("tasks.section.schedule")}</h3>
             </div>
 
             <ScheduleConfig
@@ -229,11 +231,11 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <i className="i-mgc-magic-2-cute-re text-text-secondary size-4" />
-              <h3 className="text-text text-sm font-medium">AI Instructions</h3>
+              <h3 className="text-text text-sm font-medium">{t("tasks.section.instructions")}</h3>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-text pl-2 text-sm font-medium">Prompt</Label>
+              <Label className="text-text pl-2 text-sm font-medium">{t("tasks.prompt")}</Label>
               <FormField
                 control={form.control}
                 name="prompt"
@@ -241,16 +243,14 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
                   <FormItem>
                     <FormControl>
                       <TextArea
-                        placeholder="Describe what you want the AI to do when this task runs..."
+                        placeholder={t("tasks.prompt_placeholder")}
                         className="min-h-[120px] resize-none px-3 py-2 text-sm leading-relaxed"
                         maxLength={2000}
                         {...field}
                       />
                     </FormControl>
                     <div className="flex items-center justify-between">
-                      <div className="text-text-tertiary text-xs">
-                        Provide clear, specific instructions for the AI to execute
-                      </div>
+                      <div className="text-text-tertiary text-xs">{t("tasks.prompt_helper")}</div>
                       {field.value?.length > MAX_PROMPT_LENGTH * 0.8 && (
                         <div className="text-text-secondary text-xs font-medium">
                           {field.value.length}/{MAX_PROMPT_LENGTH}
@@ -276,20 +276,20 @@ export const AITaskModal = ({ task, prompt, onSubmit }: AITaskModalProps) => {
                 onClick={dismiss}
                 disabled={currentMutation.isPending}
               >
-                Cancel
+                {t("words.cancel", { ns: "common" })}
               </Button>
               <Button type="submit" size="sm" disabled={currentMutation.isPending}>
                 {currentMutation.isPending ? (
                   <>
                     <i className="i-mgc-loading-3-cute-re mr-2 size-4 animate-spin" />
-                    {isEditing ? "Updating..." : "Scheduling..."}
+                    {isEditing ? t("tasks.actions.updating") : t("tasks.actions.scheduling")}
                   </>
                 ) : (
                   <>
                     <i
                       className={`mr-2 size-4 ${isEditing ? "i-mgc-edit-cute-re" : "i-mgc-calendar-time-add-cute-re"}`}
                     />
-                    {isEditing ? "Update Task" : "Schedule Task"}
+                    {isEditing ? t("tasks.actions.update") : t("tasks.actions.schedule")}
                   </>
                 )}
               </Button>
