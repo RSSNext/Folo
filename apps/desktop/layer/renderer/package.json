@@ -59,6 +59,7 @@
     "cookie-es": "2.0.0",
     "dayjs": "1.11.13",
     "dnum": "2.15.0",
+    "electron-ipc-decorator": "0.2.0",
     "embla-carousel-react": "8.6.0",
     "embla-carousel-wheel-gestures": "8.0.2",
     "es-toolkit": "1.39.6",

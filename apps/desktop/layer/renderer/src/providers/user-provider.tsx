@@ -34,11 +34,13 @@ export const UserProvider = () => {
 
     const isToastDismissed = localStorage.getItem(itemKey)
 
-    if (session.role && session.role !== UserRole.PrePro && !isToastDismissed) {
+    const sessionRole = session.role as string
+
+    if (sessionRole && sessionRole !== UserRole.Pro && !isToastDismissed) {
       const message =
-        session.role === UserRole.Free || session.role === UserRole.Trial
+        sessionRole === UserRole.Free || sessionRole === UserRole.Trial
           ? `You are currently on the ${UserRoleName[UserRole.Free]} plan. Some features may be limited.`
-          : session.role === UserRole.PreProTrial
+          : sessionRole === UserRole.PreProTrial
             ? `You are currently on the ${UserRoleName[UserRole.PreProTrial]} plan.${roleEndDate ? ` It will end on ${roleEndDate.toLocaleDateString()}.` : ""}`
             : ""
       if (!message) {

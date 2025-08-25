@@ -1,6 +1,6 @@
 import { useFeedStore } from "./store"
 
-export const getFeedById = (id: string | undefined) => {
+export const getFeedById = (id: string | undefined | null) => {
   if (!id) return
   return useFeedStore.getState().feeds[id]
 }

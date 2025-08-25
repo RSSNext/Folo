@@ -38,16 +38,20 @@ export const getSubscribedFeedIdAndInboxHandlesByView = ({
 }): string[] => {
   if (typeof view !== "number") return []
   const state = useSubscriptionStore.getState()
-  return Array.from(state.feedIdByView[view])
+
+  const feedIds = Array.from(state.feedIdByView[view])
     .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
     .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
-    .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
-    .concat(
-      Array.from(state.listIdByView[view])
-        .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
-        .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
-        .flatMap((id) => getListFeedIds(id) ?? []),
-    )
+
+  const inboxIds = view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : []
+
+  const listFeedIds = Array.from(state.listIdByView[view])
+    .filter((i) => !excludePrivate || !state.data[i]?.isPrivate)
+    .filter((i) => !excludeHidden || !state.data[i]?.hideFromTimeline)
+    .flatMap((id) => getListFeedIds(id) ?? [])
+
+  // Use Set to remove duplicates when feeds exist in both subscriptions and lists
+  return Array.from(new Set([...feedIds, ...inboxIds, ...listFeedIds]))
 }
 
 export const getSubscribedFeedIdsByView = (view: FeedViewType): string[] => {
@@ -151,9 +155,12 @@ const sortGroupedSubscriptionByUnread = (
 
 // Store selector functions (for React hooks)
 export const getSubscriptionIdsByViewSelector = (state: StateType) => (view: FeedViewType) => {
-  return Array.from(state.feedIdByView[view])
-    .concat(view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : [])
-    .concat(Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? []))
+  const feedIds = Array.from(state.feedIdByView[view])
+  const inboxIds = view === FeedViewType.Articles ? getInboxList().map((i) => i.id) : []
+  const listFeedIds = Array.from(state.listIdByView[view]).flatMap((id) => getListFeedIds(id) ?? [])
+
+  // Use Set to remove duplicates when feeds exist in both subscriptions and lists
+  return Array.from(new Set([...feedIds, ...inboxIds, ...listFeedIds]))
 }
 
 export const getFeedSubscriptionIdsByViewSelector =

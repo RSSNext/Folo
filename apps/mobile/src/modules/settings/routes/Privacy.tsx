@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Linking } from "react-native"
 
 import {
   NavigationBlurEffectHeaderView,
@@ -8,13 +9,9 @@ import {
   GroupedInsetListCard,
   GroupedInsetListNavigationLink,
 } from "@/src/components/ui/grouped/GroupedList"
-import { useNavigation } from "@/src/lib/navigation/hooks"
-import { PrivacyPolicyScreen } from "@/src/screens/(headless)/PrivacyPolicyScreen"
-import { TermsScreen } from "@/src/screens/(headless)/TermsScreen"
 
 export const PrivacyScreen = () => {
   const { t } = useTranslation("settings")
-  const { pushControllerView } = useNavigation()
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -24,13 +21,13 @@ export const PrivacyScreen = () => {
         <GroupedInsetListNavigationLink
           label={t("privacy.terms")}
           onPress={() => {
-            pushControllerView(TermsScreen)
+            Linking.openURL("https://folo.is/terms-of-service")
           }}
         />
         <GroupedInsetListNavigationLink
           label={t("privacy.privacy")}
           onPress={() => {
-            pushControllerView(PrivacyPolicyScreen)
+            Linking.openURL("https://folo.is/privacy-policy")
           }}
         />
       </GroupedInsetListCard>

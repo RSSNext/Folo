@@ -54,8 +54,6 @@ const PLAN_TIER_MAP: Record<UserRole, number> = {
   [UserRole.Trial]: 1,
   // Same as Free (deprecated)
   [UserRole.PreProTrial]: 2,
-  // Same tier as PrePro
-  [UserRole.PrePro]: 2,
   [UserRole.Pro]: 3,
 }
 
@@ -73,20 +71,20 @@ const PLAN_CONFIGS: Plan[] = [
   },
   {
     id: "pro-preview",
-    title: UserRoleName[UserRole.PrePro],
+    title: UserRoleName[UserRole.Pro],
     price: "$1 or 3 invitations",
     period: "",
     features: ["1000 feeds and lists", "10 inboxes", "10 actions", "100 webhooks"],
     isPopular: false,
-    role: UserRole.PrePro,
-    tier: PLAN_TIER_MAP[UserRole.PrePro],
+    role: UserRole.Pro,
+    tier: PLAN_TIER_MAP[UserRole.Pro],
   },
   {
     id: "pro",
     title: UserRoleName[UserRole.Pro],
     price: "Coming soon",
     period: "",
-    features: [`Everything in ${UserRoleName[UserRole.PrePro]}`, "Advanced AI features"],
+    features: [`Everything in ${UserRoleName[UserRole.Pro]}`, "Advanced AI features"],
     isPopular: false,
     role: UserRole.Pro,
     isComingSoon: true,
@@ -215,8 +213,7 @@ export const PlanScreen: NavigationControllerView = () => {
               onUpgrade={isProPreview ? () => upgradePlanMutation.mutate() : undefined}
               disabled={isProPreview && upgradePlanMutation.isPending}
               isCurrentPlan={
-                role === plan.role ||
-                (plan.role === UserRole.PrePro && role === UserRole.PreProTrial)
+                role === plan.role || (plan.role === UserRole.Pro && role === UserRole.PreProTrial)
               }
             />
           )
@@ -231,8 +228,8 @@ export const PlanScreen: NavigationControllerView = () => {
           <View>
             <Text className="text-label font-medium">Current Status</Text>
             <Text className="text-label text-sm">
-              {role === UserRole.PrePro
-                ? "You have an active Pro Preview plan"
+              {role === UserRole.Pro
+                ? "You have an active Pro plan"
                 : role === UserRole.PreProTrial
                   ? `Pro Preview trial expires ${dayjs(roleEndDate).format("MMMM D, YYYY")} (${daysLeft} days left)`
                   : "Start your journey with our referral program"}
@@ -255,7 +252,7 @@ export const PlanScreen: NavigationControllerView = () => {
           />
         </View>
 
-        {role !== UserRole.PrePro && (
+        {role !== UserRole.Pro && (
           <View className="mt-4 flex-row items-center gap-2 self-end">
             <Pressable
               className="bg-accent rounded-lg p-2"

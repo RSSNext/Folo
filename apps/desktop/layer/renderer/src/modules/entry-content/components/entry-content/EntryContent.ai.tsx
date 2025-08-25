@@ -13,13 +13,14 @@ import { stopPropagation } from "@follow/utils/dom"
 import { EventBus } from "@follow/utils/event-bus"
 import { cn } from "@follow/utils/utils"
 import type { JSAnimation } from "motion/react"
-import { m, useAnimationControls } from "motion/react"
+import { useAnimationControls } from "motion/react"
 import * as React from "react"
 import { memo, useEffect, useRef, useState } from "react"
 
 import { useEntryIsInReadability } from "~/atoms/readability"
 import { useIsZenMode } from "~/atoms/settings/ui"
 import { Focusable } from "~/components/common/Focusable"
+import { m } from "~/components/common/Motion"
 import { useInPeekModal } from "~/components/ui/modal/inspire/InPeekModal"
 import { HotkeyScope } from "~/constants"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -31,7 +32,6 @@ import { COMMAND_ID } from "~/modules/command/commands/id"
 import { ApplyEntryActions } from "../../ApplyEntryActions"
 import { useEntryContent } from "../../hooks"
 import { AIEntryHeader } from "../entry-header"
-import { EntryTimeline } from "../EntryTimelineSidebar"
 import { getEntryContentLayout } from "../layouts"
 import { SourceContentPanel } from "../SourceContentView"
 import { EntryCommandShortcutRegister } from "./EntryCommandShortcutRegister"
@@ -112,7 +112,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
       <EntryCommandShortcutRegister entryId={entryId} view={view} />
       <AIEntryHeader
         entryId={entryId}
-        className={cn("@container h-[55px] shrink-0 px-3", classNames?.header)}
+        className={cn("absolute inset-x-0 top-0", classNames?.header)}
         compact={compact}
       />
       <div className="w-full" ref={setPanelPortalElement} />
@@ -128,8 +128,8 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             scrollerRef={scrollerRef}
           />
         </RootPortal>
-        <EntryTimeline entryId={entryId} className="top-48" />
-        <EntryScrollArea scrollerRef={scrollerRef}>
+        {/* <EntryTimeline entryId={entryId} className="top-48" /> */}
+        <EntryScrollArea scrollerRef={scrollerRef} viewportClassName="pt-[95px]">
           {/* Indicator for the entry */}
           {!isZenMode && isInHasTimelineView && (
             <>
@@ -158,6 +158,7 @@ const EntryContentImpl: Component<EntryContentProps> = ({
             </>
           )}
           <m.div
+            lcpOptimization
             className="select-text"
             initial={{ opacity: 0, y: 30 }}
             animate={animationController}
@@ -210,7 +211,8 @@ export const EntryContent = memo(EntryContentImpl)
 
 const EntryScrollArea: Component<{
   scrollerRef: React.RefObject<HTMLDivElement | null>
-}> = ({ children, className, scrollerRef }) => {
+  viewportClassName?: string
+}> = ({ children, className, scrollerRef, viewportClassName }) => {
   const isInPeekModal = useInPeekModal()
 
   if (isInPeekModal) {
@@ -220,16 +222,14 @@ const EntryScrollArea: Component<{
     <ScrollArea.ScrollArea
       focusable
       mask={false}
-      viewportProps={{
-        onWheel: stopPropagation,
-      }}
       flex
       rootClassName={cn(
-        "flex-1 min-h-0 overflow-y-auto print:h-auto print:overflow-visible",
+        "flex-1 min-h-0 relative z-[1] overflow-y-auto print:h-auto print:overflow-visible",
         className,
       )}
       scrollbarClassName="mr-[1.5px] print:hidden"
       ref={scrollerRef}
+      viewportClassName={viewportClassName}
     >
       {children}
     </ScrollArea.ScrollArea>

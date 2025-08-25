@@ -10,6 +10,7 @@ import { Provider } from "jotai"
 import type { FC, PropsWithChildren } from "react"
 import { Suspense } from "react"
 
+import { LCPEndDetector } from "~/components/common/LCPEndDetector"
 import { ModalStackProvider } from "~/components/ui/modal"
 import { jotaiStore } from "~/lib/jotai"
 import { persistConfig, queryClient } from "~/lib/query-client"
@@ -52,8 +53,8 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
                 {import.meta.env.DEV && <Devtools />}
 
                 {children}
-
                 <Suspense>
+                  <LCPEndDetector />
                   <LazyExtensionExposeProvider />
                   <LazyContextMenuProvider />
                   <LazyPopoverProvider />

@@ -26,7 +26,7 @@ export const EntryTimeline = ({ entryId, className }: { entryId: string; classNa
   return (
     <m.div
       className={cn(
-        "@lg:hidden @6xl:block @6xl:max-w-[200px] @7xl:max-w-[200px] @[90rem]:max-w-[250px] absolute left-8 top-28 z-10",
+        "@lg:hidden @6xl:block @6xl:max-w-[200px] @7xl:max-w-[200px] @[90rem]:max-w-[250px] absolute left-8 top-28 z-[1]",
         className,
       )}
       initial={{ opacity: 0 }}

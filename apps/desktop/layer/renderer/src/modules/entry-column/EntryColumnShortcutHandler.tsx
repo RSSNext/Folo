@@ -27,6 +27,9 @@ export const EntryColumnShortcutHandler: FC<{
 
   const when = useGlobalFocusableScopeSelector(FocusablePresets.isTimeline)
 
+  const currentEntryIdRef = useRefValue(useRouteEntryId())
+  const navigate = useNavigateEntry()
+
   useCommandBinding({
     commandId: COMMAND_ID.timeline.switchToNext,
     when,
@@ -53,9 +56,6 @@ export const EntryColumnShortcutHandler: FC<{
     shortcut: "Backspace, Escape, H, ArrowLeft",
     when,
   })
-
-  const currentEntryIdRef = useRefValue(useRouteEntryId())
-  const navigate = useNavigateEntry()
 
   useEffect(() => {
     return EventBus.subscribe(COMMAND_ID.timeline.switchToNext, () => {

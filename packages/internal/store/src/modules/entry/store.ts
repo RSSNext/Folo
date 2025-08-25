@@ -46,6 +46,7 @@ interface EntryState {
 const defaultState: EntryState = {
   data: {},
   entryIdByView: {
+    [FeedViewType.All]: new Set(),
     [FeedViewType.Articles]: new Set(),
     [FeedViewType.Audios]: new Set(),
     [FeedViewType.Notifications]: new Set(),

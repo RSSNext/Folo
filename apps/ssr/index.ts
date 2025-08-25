@@ -12,7 +12,6 @@ import { nanoid } from "nanoid"
 import { FetchError } from "ofetch"
 
 import { MetaError } from "~/meta-handler"
-import { staticRoute } from "~/router/static"
 
 import { globalRoute } from "./src/router/global"
 import { ogRoute } from "./src/router/og"
@@ -80,7 +79,6 @@ export const createApp = async () => {
 
   ogRoute(app)
   globalRoute(app)
-  staticRoute(app)
 
   return app
 }

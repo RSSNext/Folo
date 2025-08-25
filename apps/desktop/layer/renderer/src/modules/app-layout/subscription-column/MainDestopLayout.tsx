@@ -79,7 +79,7 @@ export function MainDestopLayout() {
 
       <SearchCmdK />
       <CmdNTrigger />
-      {ELECTRON && <CmdF />}
+      {IN_ELECTRON && <CmdF />}
     </RootContainer>
   )
 }

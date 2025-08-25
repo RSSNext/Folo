@@ -8,6 +8,7 @@ import { defaultUISettings } from "@follow/shared/settings/defaults"
 import { cn } from "@follow/utils"
 import { Slot } from "@radix-ui/react-slot"
 import { debounce } from "es-toolkit/compat"
+import { AnimatePresence } from "motion/react"
 import type { PropsWithChildren } from "react"
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
@@ -21,12 +22,17 @@ import {
   useTimelineColumnShow,
   useTimelineColumnTempShow,
 } from "~/atoms/sidebar"
+import { m } from "~/components/common/Motion"
 import { FloatingLayerScope } from "~/constants"
+import { useFeature } from "~/hooks/biz/useFeature"
+import { useNavigateEntry } from "~/hooks/biz/useNavigateEntry"
+import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { useBatchUpdateSubscription } from "~/hooks/biz/useSubscriptionActions"
 import { useI18n } from "~/hooks/common"
 import { NetworkStatusIndicator } from "~/modules/app/NetworkStatusIndicator"
 import { COMMAND_ID } from "~/modules/command/commands/id"
 import { useCommandBinding } from "~/modules/command/hooks/use-command-binding"
+import { useEntryContentScrollToTop } from "~/modules/entry-content/atoms"
 import { CornerPlayer } from "~/modules/player/corner-player"
 import { SubscriptionColumn } from "~/modules/subscription-column"
 import { getSelectedFeedIds, resetSelectedFeedIds } from "~/modules/subscription-column/atom"
@@ -101,8 +107,12 @@ const FeedResponsiveResizerContainer = ({
     },
   })
 
+  const aiEnabled = useFeature("ai")
   const feedColumnShow = useTimelineColumnShow()
   const feedColumnTempShow = useTimelineColumnTempShow()
+  const { entryId, isPendingEntry } = useRouteParams()
+  const navigate = useNavigateEntry()
+  const t = useI18n()
 
   useEffect(() => {
     if (feedColumnShow) {
@@ -165,7 +175,7 @@ const FeedResponsiveResizerContainer = ({
       timer = clearTimeout(timer)
     }
   }, [feedColumnShow])
-  const t = useI18n()
+  const isAtTop = !!useEntryContentScrollToTop()
 
   return (
     <>
@@ -185,6 +195,27 @@ const FeedResponsiveResizerContainer = ({
         }}
       >
         <Slot className={!feedColumnShow ? "!bg-sidebar" : ""}>{children}</Slot>
+
+        {/* Semi-transparent overlay with exit hint when in wide mode with entry selected */}
+        <AnimatePresence>
+          {entryId && !isPendingEntry && aiEnabled && !isAtTop && (
+            <m.div
+              className="bg-background/80 hover:bg-background/90 center absolute inset-0 z-20 cursor-pointer backdrop-blur-[2px] transition-colors duration-200"
+              onClick={() => navigate({ entryId: null })}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="flex flex-col items-center gap-2 rounded-lg">
+                <div className="text-text flex items-center gap-2">
+                  <i className="i-mgc-up-cute-re text-lg" />
+                  <span className="text-sm font-medium">{t("entry.exit_detail")}</span>
+                </div>
+                <span className="text-text-secondary text-xs">{t("entry.click_to_return")}</span>
+              </div>
+            </m.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div

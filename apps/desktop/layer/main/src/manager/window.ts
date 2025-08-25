@@ -5,11 +5,10 @@ import { LEGACY_APP_PROTOCOL } from "@follow/shared"
 import { callWindowExpose, WindowState } from "@follow/shared/bridge"
 import { APP_PROTOCOL, DEV } from "@follow/shared/constants"
 import type { BrowserWindowConstructorOptions } from "electron"
-import { app, BrowserWindow, screen, shell } from "electron"
+import { BrowserWindow, screen, shell } from "electron"
 import type { Event } from "electron/main"
 import path from "pathe"
 
-import { START_IN_TRAY_ARGS } from "~/constants/app"
 import { isMacOS, isWindows, isWindows11 } from "~/env"
 import { filePathToAppUrl, getIconPath } from "~/helper"
 import { t } from "~/lib/i18n"
@@ -22,9 +21,13 @@ import { loadDynamicRenderEntry } from "~/updater/hot-updater"
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
 class WindowManagerStatic {
-  static readonly mainWindowDefaultSize = {
-    height: 900,
-    width: 1600,
+  static get mainWindowDefaultSize() {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { workAreaSize } = primaryDisplay
+    return {
+      height: workAreaSize.height,
+      width: workAreaSize.width,
+    }
   }
 
   // Window configuration properties for better DX
@@ -77,12 +80,6 @@ class WindowManagerStatic {
       // @see https://github.com/toeverything/AFFiNE/blob/280e24934a27557529479a70ab38c4f5fc65cb00/packages/frontend/electron/src/main/windows-manager/main-window.ts:L157
       refreshBound(window)
       refreshBound(window, this.config.refreshBoundDelay)
-    })
-
-    window.on("ready-to-show", () => {
-      const shouldShowWindow =
-        !app.getLoginItemSettings().wasOpenedAsHidden && !process.argv.includes(START_IN_TRAY_ARGS)
-      if (shouldShowWindow) window.show()
     })
 
     window.webContents.setWindowOpenHandler((details) => {
@@ -346,8 +343,10 @@ class WindowManagerStatic {
 
     const defaultSize = WindowManagerStatic.mainWindowDefaultSize
 
-    const width = Math.min(windowState?.width || defaultSize.width, maxWidth)
-    const height = Math.min(windowState?.height || defaultSize.height, maxHeight)
+    const width = windowState?.width ? Math.min(windowState.width, maxWidth) : defaultSize.width
+    const height = windowState?.height
+      ? Math.min(windowState.height, maxHeight)
+      : defaultSize.height
 
     const ensureInBounds = (value: number, min: number, max: number): number => {
       return Math.max(min, Math.min(value, max))

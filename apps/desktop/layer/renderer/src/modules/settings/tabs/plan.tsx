@@ -1,26 +1,22 @@
 import { Button } from "@follow/components/ui/button/index.js"
-import { Divider } from "@follow/components/ui/divider/Divider.js"
 import { UserRole, UserRoleName } from "@follow/constants"
 import { DEEPLINK_SCHEME, IN_ELECTRON } from "@follow/shared"
 import { env } from "@follow/shared/env.desktop"
-import { useRoleEndAt, useUserRole } from "@follow/store/user/hooks"
+import { useRoleEndAt, useUserRole, useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils/utils"
-import { useMutation } from "@tanstack/react-query"
-import dayjs from "dayjs"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { useState } from "react"
 import { Trans } from "react-i18next"
+import { toast } from "sonner"
 
-import { useServerConfigs } from "~/atoms/server-configs"
 import { subscription } from "~/lib/auth"
-import { useReferralInfo } from "~/queries/referral"
-
-import { useSetSettingTab } from "../modal/context"
 
 // Plan configuration types
 interface Plan {
   id: string
   title: string
-  price: string
-  period: string
+  monthlyPrice: number
+  yearlyPrice: number
   features: string[]
   isPopular?: boolean
   role: UserRole
@@ -33,8 +29,7 @@ const PLAN_TIER_MAP: Record<UserRole, number> = {
   [UserRole.Admin]: 4, // Admin has highest tier
   [UserRole.Free]: 1,
   [UserRole.Trial]: 1, // Same as Free (deprecated)
-  [UserRole.PreProTrial]: 2, // Same tier as PrePro
-  [UserRole.PrePro]: 2,
+  [UserRole.PreProTrial]: 2,
   [UserRole.Pro]: 3,
 }
 
@@ -43,41 +38,72 @@ const PLAN_CONFIGS: Plan[] = [
   {
     id: "free",
     title: UserRoleName[UserRole.Free],
-    price: "$0",
-    period: "",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
     features: ["50 feeds", "10 lists"],
     isPopular: false,
     role: UserRole.Free,
     tier: PLAN_TIER_MAP[UserRole.Free],
   },
   {
-    id: "pro-preview",
-    title: UserRoleName[UserRole.PrePro],
-    price: "$1 or 3 invitations",
-    period: "",
-    features: ["1000 feeds and lists", "10 inboxes", "10 actions", "100 webhooks"],
-    isPopular: false,
-    role: UserRole.PrePro,
-    tier: PLAN_TIER_MAP[UserRole.PrePro],
-  },
-  {
-    id: "pro",
+    id: "folo pro",
     title: UserRoleName[UserRole.Pro],
-    price: "Coming soon",
-    period: "",
-    features: [`Everything in ${UserRoleName[UserRole.PrePro]}`, "Advanced AI features"],
-    isPopular: false,
+    monthlyPrice: 20,
+    yearlyPrice: 180,
+    features: [
+      "1000 feeds and lists",
+      "10 inboxes",
+      "10 actions",
+      "100 webhooks",
+      "Advanced AI features",
+    ],
+    isPopular: true,
     role: UserRole.Pro,
-    isComingSoon: true,
     tier: PLAN_TIER_MAP[UserRole.Pro],
   },
 ]
 
-const useUpgradePlan = () => {
+// AI Token configuration types
+interface AITokenPlan {
+  id: string
+  title: string
+  price: number
+  tokens: number
+  isPopular?: boolean
+}
+const AI_TOKEN_IN_PRO_PLAN = 15_000_000
+const AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR = AI_TOKEN_IN_PRO_PLAN / 10
+// AI Token configurations
+const AI_TOKEN_CONFIGS: AITokenPlan[] = [
+  {
+    id: "folo ai token ($5)",
+    title: "Folo AI Token ($5)",
+    price: 5,
+    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 5,
+    isPopular: false,
+  },
+  {
+    id: "folo ai token ($10)",
+    title: "Folo AI Token ($10)",
+    price: 10,
+    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 10,
+    isPopular: true,
+  },
+  {
+    id: "folo ai token ($20)",
+    title: "Folo AI Token ($20)",
+    price: 20,
+    tokens: AI_TOKEN_IN_PRO_PLAN_PER_DOLLAR * 20,
+    isPopular: false,
+  },
+]
+
+const useUpgradePlan = ({ plan, annual }: { plan: string; annual: boolean }) => {
   return useMutation({
     mutationFn: async () => {
       const res = await subscription.upgrade({
-        plan: "folo pro preview",
+        plan,
+        annual,
         successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
         cancelUrl: env.VITE_WEB_URL,
         disableRedirect: IN_ELECTRON,
@@ -89,42 +115,114 @@ const useUpgradePlan = () => {
   })
 }
 
+const usePurchaseAITokens = ({ tokenPlan }: { tokenPlan: string }) => {
+  return useMutation({
+    mutationFn: async () => {
+      // TODO: Implement AI token purchase API call
+      const res = await subscription.upgrade({
+        plan: tokenPlan,
+        annual: false,
+        successUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
+        cancelUrl: env.VITE_WEB_URL,
+        disableRedirect: IN_ELECTRON,
+      })
+      if (IN_ELECTRON && res.data?.url) {
+        window.open(res.data.url, "_blank")
+      }
+    },
+  })
+}
+
+const useActiveSubscription = () => {
+  const userId = useWhoami()?.id
+  return useQuery({
+    queryKey: ["activeSubscription"],
+    queryFn: async () => {
+      const { data } = await subscription.list()
+      return data
+    },
+    enabled: !!userId,
+  })
+}
+
+const useCancelPlan = () => {
+  const activeSubscription = useActiveSubscription()
+  const latestSubscription = activeSubscription.data?.at(-1)
+  const subscriptionId = latestSubscription?.id
+  const cancelAtPeriodEnd = latestSubscription?.cancelAtPeriodEnd
+
+  const cancelMutation = useMutation({
+    mutationFn: async () => {
+      if (!subscriptionId) {
+        toast.error("No active subscription found.")
+        return
+      }
+
+      await subscription.cancel({
+        subscriptionId,
+        returnUrl: IN_ELECTRON ? `${DEEPLINK_SCHEME}refresh` : env.VITE_WEB_URL,
+        fetchOptions: {
+          onError(context) {
+            toast.error(context.error.message)
+          },
+        },
+      })
+    },
+  })
+
+  if (cancelAtPeriodEnd) {
+    return null
+  } else {
+    return cancelMutation
+  }
+}
+
 export function SettingPlan() {
-  const serverConfigs = useServerConfigs()
-  const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
-  const skipPrice = serverConfigs?.REFERRAL_PRO_PREVIEW_STRIPE_PRICE_IN_DOLLAR || 1
-  const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
-  const { data: referralInfo } = useReferralInfo()
-  const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const role = useUserRole()
   const roleEndDate = useRoleEndAt()
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly")
+
   const daysLeft = roleEndDate
     ? Math.ceil((roleEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
-
-  const upgradePlanMutation = useUpgradePlan()
 
   return (
     <section className="mt-4 space-y-8">
       {/* Description Section */}
       <p className="mb-4 space-y-2 text-sm">
-        <Trans
-          ns="settings"
-          i18nKey="plan.description"
-          values={{
-            day: referralInfo?.referralCycleDays || 45,
-          }}
-          components={{
-            Link: (
-              <a
-                href={ruleLink}
-                className="text-accent hover:text-accent/80 underline underline-offset-2 transition-colors"
-                target="_blank"
-              />
-            ),
-          }}
-        />
+        <Trans ns="settings" i18nKey="plan.description" />
       </p>
+
+      {/* Billing Period Toggle */}
+      <div className="flex justify-center">
+        <div className="bg-fill-secondary inline-flex rounded-lg p-1">
+          <button
+            type="button"
+            onClick={() => setBillingPeriod("monthly")}
+            className={cn(
+              "rounded-md px-4 py-2 text-sm font-medium transition-all",
+              billingPeriod === "monthly"
+                ? "bg-background text-text shadow-sm"
+                : "text-text-secondary hover:text-text",
+            )}
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingPeriod("yearly")}
+            className={cn(
+              "rounded-md px-4 py-2 text-sm font-medium transition-all",
+              billingPeriod === "yearly"
+                ? "bg-background text-text shadow-sm"
+                : "text-text-secondary hover:text-text",
+            )}
+          >
+            <span>Yearly</span>
+            <span className="text-green ml-2 text-xs font-medium">Save 25%</span>
+          </button>
+        </div>
+      </div>
 
       {/* Plans Grid */}
       <div className="@container">
@@ -133,209 +231,52 @@ export function SettingPlan() {
             <PlanCard
               key={plan.id}
               plan={plan}
+              billingPeriod={billingPeriod}
               currentUserRole={role || null}
               daysLeft={daysLeft}
-              isCurrentPlan={
-                role === plan.role ||
-                (plan.role === UserRole.PrePro && role === UserRole.PreProTrial)
-              }
+              isCurrentPlan={role === plan.role}
             />
           ))}
         </div>
       </div>
 
-      <Divider />
-      {/* Current Status Card */}
-      <StatusCard
-        role={role || UserRole.Free}
-        roleEndDate={roleEndDate || null}
-        daysLeft={daysLeft}
-        validInvitationsAmount={validInvitationsAmount}
-        requiredInvitationsAmount={requiredInvitationsAmount}
-        skipPrice={skipPrice}
-        onUpgrade={() => {
-          upgradePlanMutation.mutate()
-        }}
-        isLoading={upgradePlanMutation.isPending}
-      />
+      {/* AI Tokens Section */}
+      <div className="space-y-4">
+        <div className="border-fill-secondary border-b pb-2">
+          <h2 className="text-lg font-semibold">AI Tokens</h2>
+          <p className="text-text-secondary text-sm">
+            Purchase additional AI tokens for enhanced content processing and analysis.
+          </p>
+        </div>
+
+        <div className="@container">
+          <div className="@md:grid-cols-2 @xl:grid-cols-3 grid grid-cols-1 gap-4">
+            {AI_TOKEN_CONFIGS.map((tokenPlan) => (
+              <AITokenCard key={tokenPlan.id} tokenPlan={tokenPlan} />
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
-  )
-}
-
-// Reusable StatusCard Component
-interface StatusCardProps {
-  role: UserRole
-  roleEndDate: Date | null
-  daysLeft: number | null
-  validInvitationsAmount: number
-  requiredInvitationsAmount: number
-  skipPrice: number
-  onUpgrade: () => void
-  isLoading?: boolean
-}
-
-const StatusCard = ({
-  role,
-  roleEndDate,
-  daysLeft,
-  validInvitationsAmount,
-  requiredInvitationsAmount,
-  skipPrice,
-  onUpgrade,
-  isLoading,
-}: StatusCardProps) => {
-  const getStatusInfo = () => {
-    if (role === UserRole.PrePro) {
-      return {
-        title: "You have an active Pro Preview plan",
-        icon: "i-mgc-check-cute-fi",
-        iconBg: "bg-green",
-      }
-    }
-    if (role === UserRole.PreProTrial) {
-      return {
-        title: `Pro Preview trial expires ${dayjs(roleEndDate).format("MMMM D, YYYY")} (${daysLeft} days left)`,
-        icon: "i-mgc-time-cute-re",
-        iconBg: "bg-accent",
-      }
-    }
-    return {
-      title: "Start your journey with our referral program",
-      icon: "i-mgc-time-cute-re",
-      iconBg: "bg-accent",
-    }
-  }
-
-  const statusInfo = getStatusInfo()
-
-  return (
-    <div className="border-fill-tertiary from-background to-fill-quaternary relative overflow-hidden rounded-xl border bg-gradient-to-br">
-      <div className="from-accent/5 absolute inset-0 bg-gradient-to-br to-transparent" />
-      <div className="relative p-6">
-        <StatusHeader
-          title="Current Status"
-          description={statusInfo.title}
-          icon={statusInfo.icon}
-          iconBg={statusInfo.iconBg}
-        />
-
-        <ReferralProgress
-          validInvitationsAmount={validInvitationsAmount}
-          requiredInvitationsAmount={requiredInvitationsAmount}
-        />
-
-        {role !== UserRole.PrePro && (
-          <UpgradeSection skipPrice={skipPrice} onUpgrade={onUpgrade} isLoading={isLoading} />
-        )}
-      </div>
-    </div>
-  )
-}
-
-// Reusable StatusHeader Component
-interface StatusHeaderProps {
-  title: string
-  description: string
-  icon: string
-  iconBg: string
-}
-
-const StatusHeader = ({ title, description, icon, iconBg }: StatusHeaderProps) => (
-  <div className="mb-4 flex items-center gap-3">
-    <div className={cn("flex size-8 items-center justify-center rounded-full text-white", iconBg)}>
-      <i className={cn("text-sm", icon)} />
-    </div>
-    <div>
-      <h3 className="font-medium">{title}</h3>
-      <p className="text-text-secondary text-sm">{description}</p>
-    </div>
-  </div>
-)
-
-// Reusable ReferralProgress Component
-interface ReferralProgressProps {
-  validInvitationsAmount: number
-  requiredInvitationsAmount: number
-}
-
-const ReferralProgress = ({
-  validInvitationsAmount,
-  requiredInvitationsAmount,
-}: ReferralProgressProps) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <span className="text-sm font-medium">Referral Progress</span>
-      <span className="text-text-secondary text-sm">
-        {validInvitationsAmount} / {requiredInvitationsAmount}
-      </span>
-    </div>
-
-    <div className="relative">
-      <div className="bg-fill-tertiary h-2 overflow-hidden rounded-full">
-        <div
-          className="from-accent to-accent/70 h-full bg-gradient-to-r transition-all duration-500 ease-out"
-          style={{
-            width: `${Math.min((validInvitationsAmount / requiredInvitationsAmount) * 100, 100)}%`,
-          }}
-        />
-      </div>
-      {validInvitationsAmount >= requiredInvitationsAmount && <CompletionBadge />}
-    </div>
-  </div>
-)
-
-// Reusable CompletionBadge Component
-const CompletionBadge = () => (
-  <div className="bg-green absolute -top-1 right-0 flex size-4 items-center justify-center rounded-full text-white">
-    <i className="i-mgc-check-cute-re text-xs" />
-  </div>
-)
-
-// Reusable UpgradeSection Component
-interface UpgradeSectionProps {
-  skipPrice: number
-  onUpgrade: () => void
-  isLoading?: boolean
-}
-
-const UpgradeSection = ({ skipPrice, onUpgrade, isLoading }: UpgradeSectionProps) => {
-  const setTab = useSetSettingTab()
-
-  return (
-    <div className="border-fill-tertiary border-t pt-4">
-      <div className="flex items-center justify-end gap-4">
-        <Button
-          size="sm"
-          buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-          onClick={() => {
-            setTab("referral")
-          }}
-        >
-          Invite 3 friends
-        </Button>
-        <span>or</span>
-        <Button
-          size="sm"
-          buttonClassName="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
-          onClick={onUpgrade}
-          isLoading={isLoading}
-        >
-          Pay ${skipPrice}
-        </Button>
-      </div>
-    </div>
   )
 }
 
 // Reusable PlanCard Component
 interface PlanCardProps {
   plan: Plan
+  billingPeriod: "monthly" | "yearly"
   currentUserRole: UserRole | null
   isCurrentPlan: boolean
   daysLeft: number | null
 }
 
-const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardProps) => {
+const PlanCard = ({
+  plan,
+  billingPeriod,
+  currentUserRole,
+  isCurrentPlan,
+  daysLeft,
+}: PlanCardProps) => {
   const getPlanActionType = (): "current" | "upgrade" | "coming-soon" | "in-trial" | null => {
     if (plan.isComingSoon) return "coming-soon"
 
@@ -347,18 +288,36 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardPr
     const targetTier = plan.tier
 
     if (currentTier === targetTier) {
-      if (currentUserRole === UserRole.PreProTrial) {
-        return "in-trial"
-      } else {
-        return "current"
-      }
+      // if (currentUserRole === UserRole.PreProTrial) {
+      //   return "in-trial"
+      // } else {
+      //   return "current"
+      // }
+      return "current"
     }
     if (targetTier > currentTier) return "upgrade"
     return null
   }
 
   const actionType = getPlanActionType()
-  const upgradePlanMutation = useUpgradePlan()
+  const upgradePlanMutation = useUpgradePlan({
+    plan: "folo pro",
+    annual: billingPeriod === "yearly",
+  })
+  const cancelPlanMutation = useCancelPlan()
+
+  // Calculate price and period based on billing period
+  const price = billingPeriod === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
+  const formattedPrice = price === 0 ? "$0" : `$${price}`
+  const period = plan.role === UserRole.Free ? "" : billingPeriod === "yearly" ? "year" : "month"
+
+  // Calculate savings for yearly plan
+  const yearlyTotalPrice = plan.yearlyPrice
+  const monthlyTotalPrice = plan.monthlyPrice * 12
+  const savingsPercentage =
+    plan.monthlyPrice > 0 && plan.yearlyPrice > 0
+      ? Math.round(((monthlyTotalPrice - yearlyTotalPrice) / monthlyTotalPrice) * 100)
+      : 0
 
   return (
     <div
@@ -376,7 +335,15 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardPr
 
       <div className="@md:p-5 flex h-full flex-col p-4">
         <div className="@md:space-y-4 flex-1 space-y-3">
-          <PlanHeader title={plan.title} price={plan.price} period={plan.period} />
+          <PlanHeader
+            title={plan.title}
+            price={formattedPrice}
+            period={period}
+            billingPeriod={billingPeriod}
+            monthlyPrice={plan.monthlyPrice}
+            yearlyPrice={plan.yearlyPrice}
+            savingsPercentage={savingsPercentage}
+          />
           <PlanFeatures features={plan.features} />
           <div />
         </div>
@@ -385,18 +352,21 @@ const PlanCard = ({ plan, currentUserRole, isCurrentPlan, daysLeft }: PlanCardPr
           isPopular={plan.isPopular || false}
           actionType={actionType}
           daysLeft={daysLeft}
-          isLoading={upgradePlanMutation.isPending}
-          onSelect={() => {
-            if (
-              !plan.isComingSoon &&
-              !isCurrentPlan && // Handle plan selection logic
-              plan.role === UserRole.PrePro
-            ) {
-              // Trigger upgrade to Pro Preview
-              upgradePlanMutation.mutate()
-            }
-            // Add other plan selection logic as needed
-          }}
+          isLoading={upgradePlanMutation.isPending || cancelPlanMutation?.isPending}
+          onSelect={
+            !plan.isComingSoon && !isCurrentPlan
+              ? () => {
+                  upgradePlanMutation.mutate()
+                }
+              : undefined
+          }
+          onCancel={
+            isCurrentPlan && plan.role !== UserRole.Free && cancelPlanMutation
+              ? () => {
+                  cancelPlanMutation.mutate()
+                }
+              : undefined
+          }
         />
       </div>
 
@@ -419,20 +389,54 @@ const PlanBadges = ({ isPopular }: { isPopular: boolean }) => (
   </>
 )
 
-const PlanHeader = ({ title, price, period }: { title: string; price: string; period: string }) => (
+const PlanHeader = ({
+  title,
+  price,
+  period,
+  billingPeriod,
+  monthlyPrice,
+  yearlyPrice,
+  savingsPercentage,
+}: {
+  title: string
+  price: string
+  period: string
+  billingPeriod: "monthly" | "yearly"
+  monthlyPrice: number
+  yearlyPrice: number
+  savingsPercentage: number
+}) => (
   <div className="space-y-1">
     <h3 className="@md:text-lg text-base font-semibold">{title}</h3>
     <div className="flex items-baseline gap-1">
-      <span className="font-default text-xl font-bold">{price}</span>
+      <span className="text-xl font-bold">{price}</span>
       {period && <span className="text-text-secondary @md:text-sm text-xs">/{period}</span>}
+    </div>
+    <div className="@md:h-8 h-7 space-y-0.5">
+      {billingPeriod === "yearly" &&
+        monthlyPrice > 0 &&
+        yearlyPrice > 0 &&
+        savingsPercentage > 0 && (
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-text-tertiary line-through">
+              ${(monthlyPrice * 12).toFixed(0)}/year
+            </span>
+            <span className="text-green font-medium">Save {savingsPercentage}%</span>
+          </div>
+        )}
+      {billingPeriod === "yearly" && monthlyPrice > 0 && yearlyPrice > 0 && (
+        <div className="text-text-secondary text-xs">
+          ${(yearlyPrice / 12).toFixed(1)}/month billed annually
+        </div>
+      )}
     </div>
   </div>
 )
 
 const PlanFeatures = ({ features }: { features: string[] }) => (
   <div className="@md:space-y-2 space-y-1.5">
-    {features.map((feature, index) => (
-      <div key={index} className="@md:gap-3 flex items-start gap-2.5">
+    {features.map((feature) => (
+      <div key={feature} className="@md:gap-3 flex items-start gap-2.5">
         <div className="bg-green/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
           <i className="i-mgc-check-cute-re text-green @md:text-xs text-[10px]" />
         </div>
@@ -446,12 +450,14 @@ const PlanAction = ({
   isPopular,
   actionType,
   onSelect,
+  onCancel,
   isLoading,
   daysLeft,
 }: {
   isPopular: boolean
   actionType: "current" | "upgrade" | "coming-soon" | "in-trial" | null
   onSelect?: () => void
+  onCancel?: () => void
   isLoading?: boolean
   daysLeft: number | null
 }) => {
@@ -467,7 +473,7 @@ const PlanAction = ({
       }
       case "current": {
         return {
-          text: "Current Plan",
+          text: typeof daysLeft === "number" ? `${daysLeft} days left` : "Current Plan",
           variant: "outline" as const,
           className: "w-full h-9 @md:h-10 text-xs @md:text-sm text-text-secondary",
           disabled: true,
@@ -504,7 +510,7 @@ const PlanAction = ({
   }
 
   return (
-    <div>
+    <div className="space-y-2">
       <Button
         variant={buttonConfig.variant}
         buttonClassName={buttonConfig.className}
@@ -514,6 +520,108 @@ const PlanAction = ({
       >
         {buttonConfig.text}
       </Button>
+
+      {actionType === "current" && typeof daysLeft === "number" && onCancel && (
+        <Button
+          variant="ghost"
+          buttonClassName="w-full h-8 text-xs text-text-tertiary hover:text-red"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Cancel
+        </Button>
+      )}
+    </div>
+  )
+}
+
+// AI Token Card Component
+interface AITokenCardProps {
+  tokenPlan: AITokenPlan
+}
+
+const AITokenCard = ({ tokenPlan }: AITokenCardProps) => {
+  const purchaseTokensMutation = usePurchaseAITokens({
+    tokenPlan: tokenPlan.id,
+  })
+
+  // Format tokens display
+  const formatTokens = (tokens: number): string => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`
+    }
+    if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`
+    }
+    return tokens.toString()
+  }
+
+  return (
+    <div
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-xl border transition-all duration-200",
+        tokenPlan.isPopular
+          ? "border-accent"
+          : "border-fill-tertiary bg-background hover:border-fill-secondary",
+      )}
+    >
+      {/* Popular badge */}
+      {tokenPlan.isPopular && (
+        <div className="absolute -top-px right-4 z-10">
+          <div className="from-accent to-accent/80 text-caption rounded-b-lg bg-gradient-to-r px-1.5 py-1 font-medium text-white shadow-sm">
+            Most Popular
+          </div>
+        </div>
+      )}
+
+      <div className="@md:p-5 flex h-full flex-col p-4">
+        <div className="@md:space-y-4 flex-1 space-y-3">
+          {/* Header */}
+          <div className="space-y-1">
+            <h3 className="@md:text-lg text-base font-semibold">{tokenPlan.title}</h3>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold">${tokenPlan.price}</span>
+              <span className="text-text-secondary @md:text-sm text-xs">one-time</span>
+            </div>
+          </div>
+
+          {/* Token amount */}
+          <div className="@md:space-y-2 space-y-1.5">
+            <div className="@md:gap-3 flex items-start gap-2.5">
+              <div className="bg-blue/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
+                <i className="i-mgc-ai-cute-re text-blue @md:text-xs text-[10px]" />
+              </div>
+              <span className="@md:text-sm text-xs leading-relaxed">
+                {formatTokens(tokenPlan.tokens)} AI tokens
+              </span>
+            </div>
+            <div className="@md:gap-3 flex items-start gap-2.5">
+              <div className="bg-green/10 @md:size-4 mt-0.5 flex size-3.5 items-center justify-center rounded-full">
+                <i className="i-mgc-check-cute-re text-green @md:text-xs text-[10px]" />
+              </div>
+              <span className="@md:text-sm text-xs leading-relaxed">Never expires</span>
+            </div>
+          </div>
+          <div />
+        </div>
+
+        {/* Purchase button */}
+        <Button
+          variant={tokenPlan.isPopular ? undefined : "outline"}
+          buttonClassName={
+            tokenPlan.isPopular
+              ? "w-full h-9 @md:h-10 text-xs @md:text-sm bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
+              : "w-full h-9 @md:h-10 text-xs @md:text-sm"
+          }
+          onClick={() => purchaseTokensMutation.mutate()}
+          isLoading={purchaseTokensMutation.isPending}
+        >
+          Purchase
+        </Button>
+      </div>
+
+      {/* Subtle gradient line at bottom */}
+      <div className="via-fill-tertiary absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent to-transparent" />
     </div>
   )
 }

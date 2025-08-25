@@ -7,12 +7,8 @@ import { createAtomHooks } from "~/lib/jotai"
 export const [, , useEntryTitleMeta, , getEntryTitleMeta, setEntryTitleMeta] = createAtomHooks(
   atom(
     null as Nullable<{
-      entryTitle: string
-      feedTitle: string
-
-      // id-set
-      feedId: string
-      entryId: string
+      title: string
+      description: string
     }>,
   ),
 )

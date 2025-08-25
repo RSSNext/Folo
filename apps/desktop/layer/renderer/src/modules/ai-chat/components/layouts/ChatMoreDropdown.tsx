@@ -1,4 +1,3 @@
-import { ActionButton } from "@follow/components/ui/button/index.js"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -21,7 +20,15 @@ import { AIPersistService } from "~/modules/ai-chat/services"
 import { useChatActions, useCurrentChatId, useCurrentTitle } from "~/modules/ai-chat/store/hooks"
 import { downloadMarkdown, exportChatToMarkdown } from "~/modules/ai-chat/utils/export"
 
-export const ChatMoreDropdown = () => {
+export const ChatMoreDropdown = ({
+  triggerElement,
+  asChild = true,
+  canToggleMode = true,
+}: {
+  triggerElement: React.ReactNode
+  asChild?: boolean
+  canToggleMode?: boolean
+}) => {
   const currentTitle = useCurrentTitle()
   const currentChatId = useCurrentChatId()
   const panelStyle = useAIChatPanelStyle()
@@ -101,11 +108,7 @@ export const ChatMoreDropdown = () => {
 
   return (
     <DropdownMenu onOpenChange={handleDropdownOpen}>
-      <DropdownMenuTrigger asChild>
-        <ActionButton tooltip="More">
-          <i className="i-mingcute-more-1-fill size-5 opacity-80" />
-        </ActionButton>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild={asChild}>{triggerElement}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         {/* Chat History Submenu */}
         <DropdownMenuSub>
@@ -170,18 +173,21 @@ export const ChatMoreDropdown = () => {
           <span>Export Chat</span>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem onClick={handleToggleMode}>
-          <i
-            className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
-          />
-          <span>
-            {panelStyle === AIChatPanelStyle.Fixed
-              ? "Switch to Floating Panel"
-              : "Switch to Fixed Panel"}
-          </span>
-        </DropdownMenuItem>
+        {canToggleMode && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleToggleMode}>
+              <i
+                className={`mr-2 size-4 ${panelStyle === AIChatPanelStyle.Fixed ? "i-mingcute-rectangle-vertical-line" : "i-mingcute-layout-right-line"}`}
+              />
+              <span>
+                {panelStyle === AIChatPanelStyle.Fixed
+                  ? "Switch to Floating Panel"
+                  : "Switch to Fixed Panel"}
+              </span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

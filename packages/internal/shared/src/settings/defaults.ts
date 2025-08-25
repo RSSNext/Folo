@@ -157,6 +157,10 @@ export const defaultAISettings: AISettings = {
   personalizePrompt: "",
   shortcuts: [],
 
+  // MCP Services
+  mcpEnabled: false,
+  mcpServices: [],
+
   // Features
   autoScrollWhenStreaming: true,
 }

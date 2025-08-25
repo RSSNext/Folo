@@ -67,7 +67,12 @@ const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...
       exit={{ scale: 0.92, y: 100, opacity: 0 }}
       transition={Spring.presets.smooth}
       className="fixed z-50"
-      style={{ left: floatingState.x, top: floatingState.y }}
+      style={{
+        left: floatingState.x,
+        top: floatingState.y,
+        // @ts-expect-error
+        "--ai-chat-layout-width": `${floatingState.width}px`,
+      }}
     >
       <div className="relative">
         <Resizable
@@ -76,8 +81,8 @@ const AIChatFloatingPanelInner: FC<AIChatFloatingPanelProps> = ({ className, ...
           onResizeStop={handleResize}
           minWidth={500}
           minHeight={600}
-          maxWidth={600}
-          maxHeight={Math.floor(window.innerHeight * 0.85)}
+          maxWidth={800}
+          maxHeight={Math.floor(window.innerHeight * 0.9)}
           enable={{
             top: true,
             right: true,

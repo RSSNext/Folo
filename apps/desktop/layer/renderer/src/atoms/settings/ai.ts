@@ -1,7 +1,8 @@
 import { createSettingAtom } from "@follow/atoms/helper/setting.js"
 import { defaultAISettings } from "@follow/shared/settings/defaults"
-import type { AISettings } from "@follow/shared/settings/interface"
+import type { AISettings, MCPService } from "@follow/shared/settings/interface"
 import { jotaiStore } from "@follow/utils"
+import { clamp } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 
 export interface WebAISettings extends AISettings {
@@ -45,11 +46,16 @@ interface FloatingPanelState {
   y: number
 }
 
+const DEFAULT_FLOATING_PANEL_WIDTH = 500
+const DEFAULT_FLOATING_PANEL_HEIGHT = clamp(window.innerHeight * 0.9, 600, 1000)
+const DEFAULT_FLOATING_PANEL_X = window.innerWidth - DEFAULT_FLOATING_PANEL_WIDTH - 20
+const DEFAULT_FLOATING_PANEL_Y = window.innerHeight - DEFAULT_FLOATING_PANEL_HEIGHT - 20
+
 const defaultFloatingPanelState: FloatingPanelState = {
-  width: 500,
-  height: 600,
-  x: window.innerWidth - 520, // 20px margin from right
-  y: window.innerHeight - 620, // 20px margin from bottom
+  width: DEFAULT_FLOATING_PANEL_WIDTH,
+  height: DEFAULT_FLOATING_PANEL_HEIGHT,
+  x: DEFAULT_FLOATING_PANEL_X,
+  y: DEFAULT_FLOATING_PANEL_Y,
 }
 
 const floatingPanelStateAtom = atom<FloatingPanelState>(defaultFloatingPanelState)
@@ -69,6 +75,37 @@ export const setAIPanelVisibility = (visibility: boolean) => {
   jotaiStore.set(aiPanelVisibilityAtom, visibility)
 }
 export const getAIPanelVisibility = () => jotaiStore.get(aiPanelVisibilityAtom)
+
+////////// MCP Services
+export const useMCPEnabled = () => useAISettingKey("mcpEnabled")
+export const setMCPEnabled = (enabled: boolean) => {
+  setAISetting("mcpEnabled", enabled)
+}
+
+export const useMCPServices = () => useAISettingKey("mcpServices")
+export const addMCPService = (service: Omit<MCPService, "id">) => {
+  const services = getAISettings().mcpServices
+  const newService = {
+    ...service,
+    id: Date.now().toString(),
+  }
+  setAISetting("mcpServices", [...services, newService])
+  return newService.id
+}
+
+export const updateMCPService = (id: string, updates: Partial<MCPService>) => {
+  const services = getAISettings().mcpServices
+  const updatedServices = services.map((service) =>
+    service.id === id ? { ...service, ...updates } : service,
+  )
+  setAISetting("mcpServices", updatedServices)
+}
+
+export const removeMCPService = (id: string) => {
+  const services = getAISettings().mcpServices
+  const filteredServices = services.filter((service) => service.id !== id)
+  setAISetting("mcpServices", filteredServices)
+}
 
 //// Enhance Init Ai Settings
 export const initializeDefaultAISettings = () => {

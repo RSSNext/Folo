@@ -1,7 +1,10 @@
 import { useHasEntry } from "@follow/store/entry/hooks"
 import { cn } from "@follow/utils/utils"
+import type { MotionStyle } from "motion/react"
 import type { ReactNode } from "react"
 import { createContext, memo, use, useMemo } from "react"
+
+import { m } from "~/components/common/Motion"
 
 import { useEntryContentScrollToTop, useEntryTitleMeta } from "../../../atoms"
 import type { EntryHeaderProps } from "../types"
@@ -21,30 +24,38 @@ export function useEntryHeaderContext() {
 
 export interface EntryHeaderRootProps extends EntryHeaderProps {
   children: ReactNode
+  style?: MotionStyle
 }
 
-function EntryHeaderRootImpl({ entryId, className, compact, children }: EntryHeaderRootProps) {
+function EntryHeaderRootImpl({
+  entryId,
+  className,
+  compact,
+  children,
+  style,
+}: EntryHeaderRootProps) {
   const hasEntry = useHasEntry(entryId)
   const entryTitleMeta = useEntryTitleMeta()
   const isAtTop = !!useEntryContentScrollToTop()
 
-  const shouldShowMeta = !isAtTop && !!entryTitleMeta?.entryTitle
+  const shouldShowMeta = !isAtTop && !!entryTitleMeta?.title
 
   const contextValue = useMemo(() => ({ entryId, compact }), [entryId, compact])
   if (!hasEntry) return null
 
   return (
     <EntryHeaderContext value={contextValue}>
-      <div
+      <m.div
         data-hide-in-print
         className={cn(
           "zen-mode-macos:ml-margin-macos-traffic-light-x text-text-secondary relative flex min-w-0 items-center justify-between gap-3 overflow-hidden text-lg duration-200",
           shouldShowMeta && "border-border border-b",
           className,
         )}
+        style={style}
       >
         {children}
-      </div>
+      </m.div>
     </EntryHeaderContext>
   )
 }

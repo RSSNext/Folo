@@ -48,6 +48,7 @@ export interface SubscriptionState {
 }
 
 const emptyDataSetByView: Record<FeedViewType, Set<FeedId>> = {
+  [FeedViewType.All]: new Set(),
   [FeedViewType.Articles]: new Set(),
   [FeedViewType.Audios]: new Set(),
   [FeedViewType.Notifications]: new Set(),
@@ -56,6 +57,7 @@ const emptyDataSetByView: Record<FeedViewType, Set<FeedId>> = {
   [FeedViewType.Videos]: new Set(),
 }
 const emptyCategoryOpenStateByView: Record<FeedViewType, Record<string, boolean>> = {
+  [FeedViewType.All]: {},
   [FeedViewType.Articles]: {},
   [FeedViewType.Audios]: {},
   [FeedViewType.Notifications]: {},

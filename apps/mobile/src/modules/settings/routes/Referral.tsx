@@ -1,4 +1,3 @@
-import { UserRole, UserRoleName } from "@follow/constants"
 import { env } from "@follow/shared/env.rn"
 import { useWhoami } from "@follow/store/user/hooks"
 import { cn } from "@follow/utils"
@@ -40,14 +39,12 @@ export const ReferralScreen: NavigationControllerView = () => {
   const { t } = useTranslation("settings")
   const serverConfigs = useServerConfigs()
   const ruleLink = serverConfigs?.REFERRAL_RULE_LINK
-  const requiredInvitationsAmount = serverConfigs?.REFERRAL_REQUIRED_INVITATIONS || 3
   const { data: referralInfo, isLoading } = useReferralInfoQuery()
   const invitations = referralInfo?.invitations
-  const validInvitationsAmount = referralInfo?.invitations.filter((i) => i.usedAt).length || 0
   const user = useWhoami()
   const referralLink = `${env.WEB_URL}/register?referral=${user?.handle || user?.id}`
   const secondaryLabelColor = useColor("secondaryLabel")
-  const progress = (validInvitationsAmount / requiredInvitationsAmount) * 100
+
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
@@ -118,22 +115,6 @@ export const ReferralScreen: NavigationControllerView = () => {
             </ContextMenu.Item>
           </ContextMenu.Content>
         </ContextMenu.Root>
-      </GroupedInsetListCard>
-
-      <GroupedInsetListSectionHeader
-        label={`Referral Progress for the Free ${UserRoleName[UserRole.PrePro]} ${validInvitationsAmount}/${requiredInvitationsAmount}:`}
-      />
-      <GroupedInsetListCard>
-        <GroupedInsetListBaseCell>
-          <View className="bg-system-grouped-background h-2 w-full rounded-full">
-            <View
-              className="bg-accent h-2 rounded-full"
-              style={{
-                width: `${progress}%`,
-              }}
-            />
-          </View>
-        </GroupedInsetListBaseCell>
       </GroupedInsetListCard>
 
       <GroupedInsetListSectionHeader label={"Your Invited Friends"} />

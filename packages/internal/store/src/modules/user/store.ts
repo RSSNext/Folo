@@ -73,6 +73,7 @@ class UserSyncService {
       const user = honoMorph.toUser(res.user, true)
       immerSet((state) => {
         state.whoami = { ...user, emailVerified: res.user.emailVerified }
+        // @ts-expect-error
         state.role = res.role
         if (res.roleEndAt) {
           state.roleEndAt = new Date(res.roleEndAt)
@@ -181,7 +182,7 @@ class UserSyncService {
     const res = await apiClient().invitations.use.$post({ json: { code } })
     if (res.code === 0) {
       immerSet((state) => {
-        state.role = UserRole.PrePro
+        state.role = UserRole.Pro
       })
     }
 

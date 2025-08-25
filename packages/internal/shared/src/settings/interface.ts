@@ -179,9 +179,31 @@ export interface AIShortcut {
   hotkey?: string
 }
 
+export type MCPTransportType = "streamable-http" | "sse"
+
+export interface MCPService {
+  id: string
+  name: string
+  transportType: MCPTransportType
+  url?: string
+  headers?: Record<string, string>
+  isConnected: boolean
+  enabled: boolean
+  lastError?: string
+  toolCount: number
+  resourceCount: number
+  promptCount: number
+  createdAt: string
+  lastUsed: string | null
+}
+
 export interface AISettings {
   personalizePrompt: string
   shortcuts: AIShortcut[]
+
+  // MCP Services (stored locally, actual connections managed via server API)
+  mcpEnabled: boolean
+  mcpServices: MCPService[]
 
   // Features
   autoScrollWhenStreaming: boolean

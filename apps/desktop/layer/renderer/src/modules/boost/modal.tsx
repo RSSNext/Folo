@@ -84,11 +84,7 @@ export const BoostModalContent = ({ feedId }: { feedId: string }) => {
 
       {boostFeedMutation.isSuccess ? (
         <>
-          <m.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={Spring.presets.softSpring}
-          >
+          <m.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={Spring.presets.smooth}>
             {t("boost.boost_success_thanks")}
           </m.p>
           <Button variant="primary" onClick={() => dismiss()}>
